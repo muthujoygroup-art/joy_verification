@@ -88,52 +88,45 @@ export const CompanyAdminView = () => {
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
-      {/* Top Workstation Header Card */}
-      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-sky-600 via-teal-600 to-cyan-500" />
+      {/* Top Workstation Header Banner & Sub-Navigation Tabs */}
+      <div className="glass-panel p-6 border-sky-200 bg-white space-y-6 relative overflow-hidden shadow-sm">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-sky-600 to-teal-600" />
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="badge badge-cyan font-bold px-3 py-1 text-[11px] shadow-2xs">Company Admin Workstation</span>
-              <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-sky-600" />
-                <span>Executive Operations • {company.name}</span>
-              </span>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="badge badge-cyan">Company Admin Workstation</span>
+              <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {company.name} Executive Dashboard
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-3xl leading-relaxed">
-              HR Staff Telemetry, Turnaround Time Metrics, Employee Master Registry & Document Storage Hub.
-            </p>
+            <h2 className="text-2xl font-black text-slate-900 mt-1">{company.name}</h2>
+            <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Telemetry, Turnaround Time Metrics, Employee Master Registry & Document Hub.</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setShowGatewaysModal(true)}
-              className="btn btn-secondary text-xs sm:text-sm py-2 px-3.5 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
               title="Configure WhatsApp & SMTP Email Credentials"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp / Email Gateways 💬</span>
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp / Email API Gateways 💬</span>
             </button>
 
             <button
               onClick={() => setShowPaymentModal(true)}
-              className="btn btn-hrexecutive text-xs sm:text-sm py-2.5 px-4 flex items-center gap-2 shadow-md hover:shadow-lg font-black transition-all cursor-pointer"
+              className="btn btn-hrexecutive text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold shadow-sm"
               title="Pay Monthly Verification Bill Online"
             >
-              <Receipt className="w-4 h-4" />
-              <span>Pay & Settle Bill 💳</span>
+              <Receipt className="w-3.5 h-3.5" />
+              <span>Pay Online & Settle Bill 💳</span>
             </button>
 
-            <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
-              <span className="text-slate-600 font-bold">Company:</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-600 font-bold">Company:</span>
               <select 
                 value={company.id}
                 onChange={(e) => setSelectedCompanyId(e.target.value)}
-                className="form-select bg-white border-slate-300 text-slate-900 text-xs font-bold w-auto cursor-pointer"
+                className="form-select bg-slate-50 border-slate-300 text-slate-900 text-xs font-bold w-auto"
               >
                 {companies.map(c => (
                   <option key={c.id} value={c.id}>{c.name} ({c.plan})</option>
@@ -142,65 +135,63 @@ export const CompanyAdminView = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Floating Sub-Navigation Segmented Bar */}
-      <div className="bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        {/* Sub-Navigation Tabs Bar (Executive Telemetry Statistics is FIRST option) */}
+        <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto">
           <button
             onClick={() => setActiveTab('telemetry')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            <span>1. Executive Telemetry & TAT</span>
+            <span>Executive Telemetry & TAT</span>
           </button>
 
           <button
             onClick={() => setActiveTab('registry')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>2. Master Employee Registry</span>
+            <span>Master Employee Registry</span>
           </button>
 
           <button
             onClick={() => setActiveTab('hrteam')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>3. HR Executive Team</span>
+            <span>HR Executive Team</span>
           </button>
 
           <button
             onClick={() => setActiveTab('dochub')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <FolderDown className="w-4 h-4" />
-            <span>4. Compliance Document Hub</span>
+            <span>Compliance Document Hub</span>
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Settings className="w-4 h-4" />
-            <span>5. Company Settings ⚙️</span>
+            <span>Company Settings ⚙️</span>
           </button>
         </div>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Active HR Executives" 
           value={companyHrUsers.length} 
@@ -234,7 +225,7 @@ export const CompanyAdminView = () => {
 
       {/* TAB: MASTER EMPLOYEE REGISTRY */}
       {activeTab === 'registry' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">

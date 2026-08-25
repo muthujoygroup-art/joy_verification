@@ -34,9 +34,7 @@ import {
   Eye,
   Zap,
   RefreshCw,
-  AlertTriangle,
-  ChevronRight,
-  ShieldCheck
+  AlertTriangle
 } from 'lucide-react';
 
 export const HrExecutiveView = () => {
@@ -202,36 +200,29 @@ export const HrExecutiveView = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">
+    <div className="space-y-8 animate-fadeIn text-slate-900">
       
-      {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-500" />
+      {/* Top Header Banner & Navigation Tabs */}
+      <div className="glass-panel p-6 border-emerald-200 bg-white space-y-6 relative overflow-hidden shadow-sm">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="badge badge-emerald font-bold px-3 py-1 text-[11px] shadow-2xs">HR Executive Workstation</span>
-              <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>{activeHr.name} • {currentCompany.name}</span>
-              </span>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="badge badge-emerald font-bold">HR Executive Workstation</span>
+              <span className="text-xs text-slate-500 font-bold">• {activeHr.name} ({currentCompany.name})</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Employee Profiler, Verification & Document Generator
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-3xl leading-relaxed">
-              Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.
-            </p>
+            <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
+            <p className="text-xs text-slate-600 mt-0.5 font-medium">Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto">
+          <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
             <button
               onClick={() => setShowGatewaysModal(true)}
-              className="btn btn-secondary text-xs sm:text-sm py-2 px-3.5 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
               title="Configure WhatsApp & SMTP Email Credentials"
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3.5 h-3.5" />
               <span>Gateways (WhatsApp/Email) 💬</span>
             </button>
 
@@ -240,70 +231,68 @@ export const HrExecutiveView = () => {
                 setShowAddForm(true);
                 setActiveTab('profiler');
               }}
-              className="btn btn-hrexecutive text-xs sm:text-sm py-2.5 px-4 flex items-center gap-2 shadow-md hover:shadow-lg font-black transition-all cursor-pointer"
+              className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-md font-bold"
             >
               <SendHorizontal className="w-4 h-4" />
-              <span>+ Create & Send Link</span>
+              <span>Create Employee & Send Link</span>
             </button>
 
             <button 
               onClick={() => setShowFullJoiningModal(true)}
-              className="btn btn-company text-xs sm:text-sm py-2.5 px-4 flex items-center gap-2 shadow-md hover:shadow-lg font-black transition-all cursor-pointer"
+              className="btn btn-company text-xs flex items-center gap-1.5 shadow-md font-bold"
             >
               <FileEdit className="w-4 h-4" />
-              <span>HR Station Form</span>
+              <span>HR Station Form Entry</span>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Floating Sub-Navigation Segmented Bar */}
-      <div className="bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        {/* Sub-Navigation Tabs Bar */}
+        <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto">
           <button
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Smartphone className="w-4 h-4" />
-            <span>1. Candidate Pipeline & Dispatcher</span>
+            <span>Candidate Pipeline & Dispatcher</span>
           </button>
 
           <button
             onClick={() => setActiveTab('profiler')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Sliders className="w-4 h-4" />
-            <span>2. Candidate Profiler & Templates</span>
+            <span>Create Profile & Form Templates</span>
           </button>
 
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            <span>3. HR Conversion Telemetry</span>
+            <span>HR Conversion Telemetry</span>
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Settings className="w-4 h-4" />
-            <span>4. Station Settings ⚙️</span>
+            <span>Station Settings ⚙️</span>
           </button>
         </div>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Active Candidate Forms" 
           value={candidates.length} 
@@ -336,7 +325,7 @@ export const HrExecutiveView = () => {
 
       {/* TAB 1: CANDIDATE PIPELINE & MULTI-CHANNEL DISPATCHER */}
       {activeTab === 'pipeline' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 shadow-sm rounded-2xl">
           
           {/* ⏳ JCS CERTIFICATE 60-DAY EXPIRY NOTICE BOARD BANNER */}
           {(() => {
@@ -348,10 +337,10 @@ export const HrExecutiveView = () => {
             if (expiringCandidates.length === 0) return null;
 
             return (
-              <div className="p-5 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/15 space-y-3 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 animate-bounce shrink-0" />
+              <div className="p-4 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/15 space-y-3 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-2">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 animate-pulse shrink-0" />
                     <div>
                       <h4 className="font-black text-slate-900 text-sm">
                         ⏳ JCS Certificate 60-Day Expiry Notice Board ({expiringCandidates.length} Candidates Action Required)
@@ -364,11 +353,11 @@ export const HrExecutiveView = () => {
                   <span className="badge badge-amber text-[10px] shrink-0 font-bold">60-Day Lifecycle Policy</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
                   {expiringCandidates.map(c => {
                     const lc = getCertificateLifecycle(c);
                     return (
-                      <div key={c.id} className="p-3.5 bg-white rounded-xl border border-amber-200 shadow-2xs flex items-center justify-between gap-2">
+                      <div key={c.id} className="p-3 bg-white rounded-xl border border-amber-200 shadow-2xs flex items-center justify-between gap-2">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <span className="font-extrabold text-slate-900 text-xs">{c.name}</span>
@@ -383,7 +372,7 @@ export const HrExecutiveView = () => {
                           <button
                             type="button"
                             onClick={() => setViewingDossierCandidate(c)}
-                            className="btn btn-secondary text-[10px] py-1 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100 cursor-pointer"
+                            className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
                             title="Download 4-Page Dossier Backup"
                           >
                             <Download className="w-3 h-3" />
@@ -393,7 +382,7 @@ export const HrExecutiveView = () => {
                           <button
                             type="button"
                             onClick={() => dispatchReVerificationLink(c.token)}
-                            className="btn btn-hrexecutive text-[10px] py-1 px-2.5 flex items-center gap-1 font-bold shadow-2xs cursor-pointer"
+                            className="btn btn-hrexecutive text-[10px] py-1 px-2 flex items-center gap-1 font-bold shadow-2xs"
                             title="Dispatch Re-Verification Link"
                           >
                             <RefreshCw className="w-3 h-3" />
@@ -408,9 +397,9 @@ export const HrExecutiveView = () => {
             );
           })()}
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Smartphone className="w-5 h-5 text-emerald-600" />
                 <span>Employee Candidate Verification Pipeline & Document Registry</span>
               </h3>
@@ -422,7 +411,7 @@ export const HrExecutiveView = () => {
                 setShowAddForm(true);
                 setActiveTab('profiler');
               }}
-              className="btn btn-hrexecutive text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-md font-bold self-start cursor-pointer"
+              className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-sm self-start"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Add New Employee</span>
@@ -432,20 +421,20 @@ export const HrExecutiveView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
-                  <th className="py-3 px-4 rounded-l-xl">Candidate Profile</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+                  <th className="py-3 px-4">Candidate Profile</th>
                   <th className="py-3 px-4">Contact & IDs</th>
                   <th className="py-3 px-4">Verification Checklist</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-center">Certificate Validity (60-Day)</th>
-                  <th className="py-3 px-4 text-right rounded-r-xl">Official Document Downloads & Actions</th>
+                  <th className="py-3 px-4 text-right">Official Document Downloads & Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
                 {candidates.map((cand) => {
                   const lc = getCertificateLifecycle(cand);
                   return (
-                    <tr key={cand.id} className="hover:bg-emerald-50/30 transition-colors">
+                    <tr key={cand.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-4 px-4">
                         <div className="font-extrabold text-slate-900 text-sm">{cand.name}</div>
                         <div className="text-slate-500 text-[11px] font-medium">{cand.designation || 'Specialist'} • #{cand.empId || 'EMP-2026-88'}</div>
@@ -512,7 +501,7 @@ export const HrExecutiveView = () => {
                           {/* 1. Employee Profile PDF Button */}
                           <button
                             onClick={() => setViewingDossierCandidate(cand)}
-                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100 cursor-pointer"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
                             title="View & Download Comprehensive Employee Profile Dossier"
                           >
                             <FileText className="w-3.5 h-3.5 text-sky-700" />
@@ -522,7 +511,7 @@ export const HrExecutiveView = () => {
                           {/* 2. Official JOY Corporate Certificate PDF Button */}
                           <button
                             onClick={() => setViewingCertificateCandidate(cand)}
-                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
                             title="View & Download JOY Corporate Solutions Official Certificate"
                           >
                             <Award className="w-3.5 h-3.5 text-indigo-700" />
@@ -532,7 +521,7 @@ export const HrExecutiveView = () => {
                           {/* 3. Dispatch Link Trigger */}
                           <button
                             onClick={() => setDispatchingCandidate(cand)}
-                            className="btn btn-hrexecutive text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-sm cursor-pointer"
+                            className="btn btn-hrexecutive text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-sm"
                             title="Dispatch via WhatsApp, SMS, Email, QR Code"
                           >
                             <QrCode className="w-3.5 h-3.5" />
@@ -542,7 +531,7 @@ export const HrExecutiveView = () => {
                           {/* 4. Test Employee Link Portal */}
                           <button
                             onClick={() => setRoleView('employee_link', cand.token)}
-                            className="btn btn-company text-[11px] py-1.5 px-2 flex items-center gap-1 cursor-pointer"
+                            className="btn btn-company text-[11px] py-1.5 px-2 flex items-center gap-1"
                             title="Test verification link from candidate perspective"
                           >
                             <Smartphone className="w-3.5 h-3.5" />
@@ -561,180 +550,330 @@ export const HrExecutiveView = () => {
 
       {/* TAB 2: CANDIDATE PROFILER & JOINING FORM TEMPLATES */}
       {(activeTab === 'profiler' || showAddForm) && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="glass-panel p-6 border-emerald-200 bg-white space-y-6 rounded-2xl shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-teal-600" />
-                <span>Create Candidate Profile & Custom 10-Feature Verification Flags</span>
+              <span className="badge badge-emerald text-[10px] mb-1">Candidate Profiler</span>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-emerald-600" />
+                <span>Create Comprehensive Employee Profile & Dispatch Verification Link</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Auto-fill values or select standard corporate template to generate custom verification link</p>
+              <p className="text-xs text-slate-500 font-medium">Fill in employee information manually or click Auto-Fill Mock Profile for instant 1-click testing</p>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={handleAutoFillMockData}
-                className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>⚡ Auto-Fill Mock Profile</span>
-              </button>
-
-              {showAddForm && (
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="text-slate-400 hover:text-slate-700 text-xs font-bold px-2 py-1 cursor-pointer"
-                >
-                  ✕ Close Form
-                </button>
-              )}
-            </div>
+            {/* ⚡ Instant 1-Click Mock Auto-Fill Button */}
+            <button
+              type="button"
+              onClick={handleAutoFillMockData}
+              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm self-start sm:self-auto"
+            >
+              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+              <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
+            </button>
           </div>
 
-          {/* Quick Template Selector */}
+          {/* Form Template Selector Pills */}
           <div className="space-y-2">
-            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Select Pre-Configured Joining Template:</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Select Joining Form Template (Pre-Configured Verification Checks)
+            </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              {[
-                { id: 'corporate', title: '🏢 Standard Corporate', desc: 'Aadhaar + Mobile + Face + PAN + Bank' },
-                { id: 'logistics', title: '🚚 Fleet & Logistics', desc: 'Aadhaar + Mobile + DL + Address Check' },
-                { id: 'healthcare', title: '🏥 Clinical & Health', desc: 'Aadhaar + Mobile + Education + Criminal' },
-                { id: 'tech', title: '💻 IT & Engineering', desc: 'Aadhaar + Mobile + Face + UAN/EPF + PAN' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => applyFormTemplate(t.id)}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                    selectedTemplate === t.id ? 'bg-emerald-50 border-emerald-400 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <div className="font-bold text-slate-900">{t.title}</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">{t.desc}</div>
-                </button>
-              ))}
+              <div 
+                onClick={() => applyFormTemplate('corporate')}
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  selectedTemplate === 'corporate' ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-500/20' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="font-extrabold text-slate-900">Standard Corporate</div>
+                <div className="text-[10px] text-slate-500">Aadhaar + Mobile + Face + PAN + Bank</div>
+              </div>
+
+              <div 
+                onClick={() => applyFormTemplate('logistics')}
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  selectedTemplate === 'logistics' ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-500/20' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="font-extrabold text-slate-900">Fleet Driver & Logistics</div>
+                <div className="text-[10px] text-slate-500">Aadhaar + Mobile + Face + DL + Address</div>
+              </div>
+
+              <div 
+                onClick={() => applyFormTemplate('healthcare')}
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  selectedTemplate === 'healthcare' ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-500/20' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="font-extrabold text-slate-900">Healthcare Staff</div>
+                <div className="text-[10px] text-slate-500">Aadhaar + Mobile + Face + Education + Criminal</div>
+              </div>
+
+              <div 
+                onClick={() => applyFormTemplate('tech')}
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  selectedTemplate === 'tech' ? 'bg-indigo-50 border-indigo-400 ring-2 ring-indigo-500/20' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="font-extrabold text-slate-900">Tech & Senior Engg</div>
+                <div className="text-[10px] text-slate-500">Aadhaar + Mobile + Face + PAN + UAN + Bank</div>
+              </div>
             </div>
           </div>
 
-          {/* Profiler Form Grid */}
-          <form onSubmit={handleCreateCandidateSubmit} className="space-y-6 pt-2">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Candidate Full Name *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="e.g. Ramesh Kumar"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="form-input"
-                />
+          <form onSubmit={handleCreateCandidateSubmit} className="space-y-6 pt-3 border-t border-slate-100">
+            
+            {/* Section 1: Basic Profile Information */}
+            <div className="space-y-3">
+              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">1. Basic Profile & Demographic Details</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Candidate Full Name *</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="e.g. Ramesh Chandra"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="form-input font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Employee Code / ID</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. EMP-2026-99"
+                    value={formData.empId}
+                    onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
+                    className="form-input font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Father / Spouse Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Suresh Chandra"
+                    value={formData.fatherName}
+                    onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Date of Birth (DOB)</label>
+                  <input 
+                    type="date" 
+                    value={formData.dob}
+                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Mobile Number (WhatsApp/SMS) *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="+91 98765 43210"
-                  value={formData.mobile}
-                  onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                  className="form-input font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Aadhaar UID Number (12 Digits) *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="5489 1234 9876"
-                  value={formData.aadhaarNo}
-                  onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
-                  className="form-input font-mono"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Designation</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Senior Software Engineer"
+                    value={formData.designation}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                    className="form-input font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Department</label>
+                  <select 
+                    value={formData.dept}
+                    onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
+                    className="form-select font-medium"
+                  >
+                    {(masterDropdownOptions?.departments || ['Engineering', 'Logistics', 'Operations', 'Human Resources', 'Finance']).map(dept => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Blood Group</label>
+                  <select 
+                    value={formData.bloodGroup}
+                    onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+                    className="form-select font-medium"
+                  >
+                    {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
+                      <option key={bg} value={bg}>{bg}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Gender</label>
+                  <select 
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="form-select font-medium"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Department</label>
-                <select 
-                  value={formData.dept}
-                  onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
-                  className="form-select text-xs font-bold"
-                >
-                  {masterDropdownOptions.departments?.map((d, i) => (
-                    <option key={i} value={d}>{d}</option>
-                  ))}
-                </select>
+            {/* Section 2: Contact & Addresses */}
+            <div className="space-y-3 pt-3 border-t border-slate-100">
+              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">2. Contact Numbers & Addresses</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Mobile Number (WhatsApp/SMS Link) *</label>
+                  <input 
+                    type="tel" 
+                    required
+                    placeholder="+91 98765 43210"
+                    value={formData.mobile}
+                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                    className="form-input font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Official / Personal Email</label>
+                  <input 
+                    type="email" 
+                    placeholder="candidate@gmail.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Aadhaar Identity Number *</label>
+                  <input 
+                    type="text" 
+                    required
+                    maxLength="14"
+                    placeholder="XXXX XXXX XXXX"
+                    value={formData.aadhaarNo}
+                    onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
+                    className="form-input font-mono font-bold"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Designation</label>
-                <select 
-                  value={formData.designation}
-                  onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                  className="form-select text-xs font-bold"
-                >
-                  {masterDropdownOptions.designations?.map((d, i) => (
-                    <option key={i} value={d}>{d}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Official Employee ID</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. ACME-2026-88"
-                  value={formData.empId}
-                  onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
-                  className="form-input font-mono"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Present Residential Address</label>
+                  <textarea 
+                    rows="2"
+                    placeholder="124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103"
+                    value={formData.presentAddress}
+                    onChange={(e) => setFormData({ ...formData, presentAddress: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Permanent Home Town Address</label>
+                  <textarea 
+                    rows="2"
+                    placeholder="45, MG Road, Civil Lines, Jaipur, RJ - 302001"
+                    value={formData.permanentAddress}
+                    onChange={(e) => setFormData({ ...formData, permanentAddress: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Feature Flags Checklist */}
-            <div className="space-y-2 pt-2">
-              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Toggle Mandatory Verification Checks:</label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
-                {featureList.map(feat => {
-                  const keyMap = {
-                    aadhaar: 'requireAadhaar',
-                    mobileOtp: 'requireMobileOtp',
-                    faceCapture: 'requireFaceMatch',
-                    drivingLicense: 'requireDL',
-                    pan: 'requirePAN',
-                    bankCheck: 'requireBankCheck'
-                  };
-                  const configKey = keyMap[feat.id] || feat.id;
-                  const isChecked = formData.verificationConfig[configKey] ?? false;
+            {/* Section 3: Statutory & Banking Details */}
+            <div className="space-y-3 pt-3 border-t border-slate-100">
+              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">3. Statutory IDs, Banking & Nominee</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">PAN Card Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="ABCDE1234F"
+                    value={formData.panNo}
+                    onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
+                    className="form-input font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Driving License (DL)</label>
+                  <input 
+                    type="text" 
+                    placeholder="KA-01201900124"
+                    value={formData.drivingLicense}
+                    onChange={(e) => setFormData({ ...formData, drivingLicense: e.target.value })}
+                    className="form-input font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Bank Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="HDFC Bank"
+                    value={formData.bankName}
+                    onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Bank Account Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="50100234129845"
+                    value={formData.bankAccountNo}
+                    onChange={(e) => setFormData({ ...formData, bankAccountNo: e.target.value })}
+                    className="form-input font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Verification Checklist */}
+            <div className="space-y-3 pt-3 border-t border-slate-100">
+              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">
+                4. Mandatory Verification Checklist (Configured per Company Plan)
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {featureList.map((feat) => {
+                  const isEnabledBySuperAdmin = currentCompany.features?.[feat.id] ?? true;
+                  const isChecked = formData.verificationConfig?.[feat.id] ?? false;
+
+                  if (!isEnabledBySuperAdmin) {
+                    return (
+                      <div key={feat.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-xs opacity-60 flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold">{feat.name}</div>
+                          <div className="text-[10px]">Disabled by Super Admin</div>
+                        </div>
+                        <Lock className="w-3.5 h-3.5" />
+                      </div>
+                    );
+                  }
 
                   return (
-                    <label key={feat.id} className={`p-3 rounded-xl border cursor-pointer flex items-start justify-between gap-2 transition-all ${
-                      isChecked ? 'bg-emerald-50 border-emerald-300 text-slate-900 font-bold' : 'bg-slate-50 border-slate-200 text-slate-400'
-                    }`}>
-                      <div>
-                        <div className="text-xs">{feat.name}</div>
-                        <div className="text-[10px] text-slate-500 font-normal">{feat.category}</div>
-                      </div>
+                    <label 
+                      key={feat.id}
+                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                        isChecked ? 'bg-emerald-50 border-emerald-300 text-slate-900 font-medium' : 'bg-white border-slate-200 text-slate-500'
+                      }`}
+                    >
                       <input 
                         type="checkbox"
                         checked={isChecked}
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            verificationConfig: {
-                              ...formData.verificationConfig,
-                              [configKey]: e.target.checked
-                            }
-                          });
-                        }}
-                        className="accent-emerald-600 w-4 h-4 mt-0.5 shrink-0"
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          verificationConfig: { ...formData.verificationConfig, [feat.id]: e.target.checked }
+                        })}
+                        className="accent-emerald-600 mt-0.5"
                       />
+                      <div>
+                        <div className="font-bold text-xs">{feat.name}</div>
+                        <div className="text-[10px] text-slate-500">{feat.category}</div>
+                      </div>
                     </label>
                   );
                 })}
@@ -742,129 +881,200 @@ export const HrExecutiveView = () => {
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-              <button type="button" onClick={() => setShowAddForm(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
-              <button type="submit" className="btn btn-hrexecutive text-xs py-2.5 px-5 font-black shadow-md cursor-pointer">
-                Save Profile & Generate Magic Link 🚀
+              <button type="button" onClick={() => setActiveTab('pipeline')} className="btn btn-secondary text-xs font-bold">Cancel</button>
+              <button type="submit" className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md">
+                <Send className="w-4 h-4" />
+                <span>Save Profile & Generate Onboarding Link</span>
               </button>
             </div>
+
           </form>
         </div>
       )}
 
       {/* TAB 3: HR CONVERSION ANALYTICS */}
       {activeTab === 'analytics' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-indigo-600" />
-              <span>HR Onboarding Funnel & Conversion Analytics</span>
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-emerald-600" />
+              <span>HR Candidate Conversion Pipeline Telemetry</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium">Candidate response rates, turnaround time distribution, and gateway delivery metrics</p>
+            <span className="badge badge-emerald">85% Completion Conversion Rate</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
-            <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
-              <span className="text-emerald-800 font-bold block uppercase text-[10px]">Verification Completion Rate</span>
-              <span className="text-3xl font-black text-slate-900 font-mono">82.4%</span>
-              <p className="text-slate-600 text-[11px] font-medium">Average completion time: <strong>3.4 minutes</strong> per candidate</p>
+          <div className="space-y-4">
+            <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex border border-slate-200">
+              <div className="w-[45%] bg-emerald-500 h-full" title="Verified Profiles (45%)"></div>
+              <div className="w-[30%] bg-sky-500 h-full" title="In Verification (30%)"></div>
+              <div className="w-[25%] bg-amber-400 h-full" title="Link Dispatched (25%)"></div>
             </div>
 
-            <div className="p-5 bg-sky-50 border border-sky-200 rounded-2xl space-y-2">
-              <span className="text-sky-800 font-bold block uppercase text-[10px]">WhatsApp Dispatch Delivery Rate</span>
-              <span className="text-3xl font-black text-slate-900 font-mono">99.2%</span>
-              <p className="text-slate-600 text-[11px] font-medium">Sent via Meta Cloud API Gateway (Instant Webhook Ack)</p>
-            </div>
-
-            <div className="p-5 bg-purple-50 border border-purple-200 rounded-2xl space-y-2">
-              <span className="text-purple-800 font-bold block uppercase text-[10px]">Face Match Accuracy Score</span>
-              <span className="text-3xl font-black text-slate-900 font-mono">98.8%</span>
-              <p className="text-slate-600 text-[11px] font-medium">AI 3-Angle Liveness validation threshold active</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-bold text-slate-700 pt-2">
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                <span className="text-2xl font-black text-emerald-800 block">45%</span>
+                <span className="text-slate-600">Completed & Verified ({candidates.filter(c => c.status === 'Verified').length})</span>
+              </div>
+              <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 text-center">
+                <span className="text-2xl font-black text-sky-800 block">30%</span>
+                <span className="text-slate-600">In Active Verification ({candidates.filter(c => c.status === 'In Verification').length})</span>
+              </div>
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
+                <span className="text-2xl font-black text-amber-800 block">25%</span>
+                <span className="text-slate-600">Link Sent / Pending ({candidates.filter(c => c.status === 'Link Sent').length})</span>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 4: STATION SETTINGS */}
+      {/* TAB: HR EXECUTIVE WORKSTATION SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900">HR Workstation Station Settings</h3>
-            <p className="text-xs text-slate-500 font-medium">Configure default dispatch channels, standard joining templates, and real-time alert preferences</p>
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Settings className="w-5 h-5 text-indigo-600" />
+                <span>HR Executive Workstation Productivity & Dispatch Settings</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure pre-selected onboarding dispatch channels, default form templates, and fast station shortcuts.</p>
+            </div>
+            <span className="badge badge-indigo text-[10px]">HR Station Preferences</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Default Link Dispatch Channel</label>
-              <select 
-                value={systemSettings.hr?.defaultDispatchChannel || 'whatsapp'}
-                onChange={(e) => updateRoleSettings('hr', { defaultDispatchChannel: e.target.value })}
-                className="form-select"
-              >
-                <option value="whatsapp">Meta WhatsApp Cloud API (Recommended)</option>
-                <option value="sms">Carrier SMS Router</option>
-                <option value="email">SMTP Corporate Email</option>
-              </select>
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateRoleSettings('hr', systemSettings.hr);
+            }} 
+            className="space-y-6 text-xs"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-4">
+                <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <Smartphone className="w-4 h-4 text-emerald-600" />
+                  <span>Onboarding Link Dispatch Defaults</span>
+                </h4>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Preferred Default Dispatch Channel</label>
+                  <select 
+                    value={systemSettings.hr?.defaultDispatchChannel || 'whatsapp'}
+                    onChange={(e) => updateRoleSettings('hr', { defaultDispatchChannel: e.target.value })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="whatsapp">Meta WhatsApp Business API (Fastest 💬)</option>
+                    <option value="sms">Carrier SMS Gateway (Mobile OTP)</option>
+                    <option value="email">Enterprise SMTP Email (HTML Template)</option>
+                    <option value="qrcode">On-Screen Scannable QR Code</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Pre-Selected Joining Template</label>
+                  <select 
+                    value={systemSettings.hr?.defaultTemplate || 'corporate'}
+                    onChange={(e) => updateRoleSettings('hr', { defaultTemplate: e.target.value })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="corporate">Corporate Office Staff (Aadhaar + Mobile + Face Match)</option>
+                    <option value="logistics">Fleet Logistics & Field Delivery (DL + Aadhaar)</option>
+                    <option value="healthcare">Healthcare & Clinical Staff (Degree Cert + Identity)</option>
+                    <option value="tech">Software & Engineering Staff (PAN + Aadhaar + Degree)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-4">
+                <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <Sliders className="w-4 h-4 text-indigo-600" />
+                  <span>Fast Station Location & Notification Shortcuts</span>
+                </h4>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Default HR Work Location Shortcut</label>
+                  <input 
+                    type="text" 
+                    value={systemSettings.hr?.defaultWorkLocation || 'Bengaluru Tech Park (HQ)'}
+                    onChange={(e) => updateRoleSettings('hr', { defaultWorkLocation: e.target.value })}
+                    className="form-input text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Real-Time Candidate Verification Toast Alerts</label>
+                  <select 
+                    value={systemSettings.hr?.realtimeToastAlerts ? 'true' : 'false'}
+                    onChange={(e) => updateRoleSettings('hr', { realtimeToastAlerts: e.target.value === 'true' })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="true">Enabled 🟢 (Show pop-up toast when candidate verifies)</option>
+                    <option value="false">Disabled ⚪ (Silent background update)</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Default Work Location</label>
-              <input 
-                type="text" 
-                value={systemSettings.hr?.defaultWorkLocation || 'Bengaluru Tech Park (HQ)'}
-                onChange={(e) => updateRoleSettings('hr', { defaultWorkLocation: e.target.value })}
-                className="form-input"
-              />
+            <div className="flex justify-end pt-4 border-t border-slate-100">
+              <button type="submit" className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md">
+                <Save className="w-4 h-4" />
+                <span>Save Workstation Settings</span>
+              </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
 
-      {/* MODALS */}
+      {/* Multi-Channel QR Code & Link Dispatcher Modal */}
       {dispatchingCandidate && (
         <QrCodeModal 
           candidate={dispatchingCandidate}
           onClose={() => setDispatchingCandidate(null)}
+          onCopyLink={handleCopyLink}
+          isCopied={copiedToken === dispatchingCandidate.token}
         />
       )}
 
+      {/* Full 7-Section Joining Form Modal (HR Manual Station Entry) */}
       {showFullJoiningModal && (
         <FullJoiningFormModal 
-          candidate={{ ...formData, id: 'temp-new', token: 'temp-token', status: 'Draft' }}
+          candidate={candidates[0]}
           isHrMode={true}
           onClose={() => setShowFullJoiningModal(false)}
-          onSubmitComplete={(finalData) => {
-            addCandidate(finalData);
-            setShowFullJoiningModal(false);
-            showToast('Full Joining Form Saved & Candidate Profile Created!');
-          }}
+          onSubmitComplete={() => setShowFullJoiningModal(false)}
         />
       )}
 
-      {showGatewaysModal && (
-        <CommunicationGatewaysModal 
-          isOpen={showGatewaysModal}
-          onClose={() => setShowGatewaysModal(false)}
+      {/* General Document Downloader Modal */}
+      {downloadingCandidate && (
+        <DocumentDownloader 
+          candidate={downloadingCandidate} 
+          onClose={() => setDownloadingCandidate(null)} 
         />
       )}
 
+      {/* Direct JOY Corporate Solutions Certificate Preview Modal */}
       {viewingCertificateCandidate && (
-        <OfficialVerificationCertificateModal 
+        <OfficialVerificationCertificateModal
           candidate={viewingCertificateCandidate}
           onClose={() => setViewingCertificateCandidate(null)}
         />
       )}
 
+      {/* Direct Employee Profile Dossier Preview Modal */}
       {viewingDossierCandidate && (
-        <EmployeeProfileDossierModal 
+        <EmployeeProfileDossierModal
           candidate={viewingDossierCandidate}
           onClose={() => setViewingDossierCandidate(null)}
         />
       )}
 
-      {downloadingCandidate && (
-        <DocumentDownloader 
-          candidate={downloadingCandidate}
-          onClose={() => setDownloadingCandidate(null)}
+      {/* WhatsApp & SMTP Email Gateways Modal */}
+      {showGatewaysModal && (
+        <CommunicationGatewaysModal 
+          onClose={() => setShowGatewaysModal(false)} 
         />
       )}
 

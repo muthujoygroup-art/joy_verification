@@ -9,6 +9,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="description" content="JOY DATA VERIFICATION - Enterprise Employee Identity Profile Verification Web Application" />
     <title>JOY DATA VERIFICATION - Employee Identity Verification Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Plus Jakarta Sans', 'Outfit', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                dark: '#090d16',
+                card: 'rgba(255, 255, 255, 0.95)',
+                indigo: '#6366f1',
+                cyan: '#06b6d4',
+                emerald: '#10b981',
+                amber: '#f59e0b',
+                rose: '#f43f5e'
+              }
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased font-sans">
     <div id="root"></div>
