@@ -1,5 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/$USER/public_html/
-    - /bin/cp -R * $DEPLOYPATH
+    - export DEPLOYPATH=/home/$USER/test2.joycorporatesolutions.com/
+    - /bin/cp -R dist/* $DEPLOYPATH 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/test2/ 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/
+
