@@ -10,6 +10,7 @@ import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyM
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
+import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { 
   Building2, 
   Users, 
@@ -59,6 +60,7 @@ export const CompanyAdminView = () => {
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
+  const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
@@ -402,7 +404,15 @@ export const CompanyAdminView = () => {
                       </td>
 
                       <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          <button 
+                            onClick={() => setViewingBgvReportCandidate(cand)}
+                            className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100"
+                            title="View 10+ Multi-API Background Verification Dossier"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
+                            <span>360° BGV Dossier</span>
+                          </button>
                           <button 
                             onClick={() => setInspectCandidate(cand)}
                             className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold"
@@ -899,6 +909,16 @@ export const CompanyAdminView = () => {
         <OfficialVerificationCertificateModal
           candidate={viewingCertificateCandidate}
           onClose={() => setViewingCertificateCandidate(null)}
+        />
+      )}
+
+      {/* 360° Multi-API Comprehensive Background Verification Dossier Modal */}
+      {viewingBgvReportCandidate && (
+        <ComprehensiveBgvReportModal
+          candidate={viewingBgvReportCandidate}
+          companyName={company?.name || "Acme Global Technologies"}
+          hrName="Authorized Company Officer"
+          onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
 

@@ -8,6 +8,7 @@ import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysM
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
+import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { 
   UserCheck, 
   Send, 
@@ -63,6 +64,7 @@ export const HrExecutiveView = () => {
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
+  const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [dispatchingCandidate, setDispatchingCandidate] = useState(null);
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
@@ -567,17 +569,27 @@ export const HrExecutiveView = () => {
                       <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
                           
-                          {/* 1. Employee Profile PDF Button */}
+                          {/* 1. 360° Multi-API BGV Dossier Button */}
+                          <button
+                            onClick={() => setViewingBgvReportCandidate(cand)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-2xs"
+                            title="View & Download Complete 360° Background Verification Dossier (10+ APIs)"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
+                            <span>360° BGV Dossier (10+ APIs)</span>
+                          </button>
+
+                          {/* 2. Employee Profile PDF Button */}
                           <button
                             onClick={() => setViewingDossierCandidate(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
                             title="View & Download Comprehensive Employee Profile Dossier"
                           >
                             <FileText className="w-3.5 h-3.5 text-sky-700" />
-                            <span>Employee Profile PDF</span>
+                            <span>Profile PDF</span>
                           </button>
 
-                          {/* 2. Official JOY Corporate Certificate PDF Button */}
+                          {/* 3. Official JOY Corporate Certificate PDF Button */}
                           <button
                             onClick={() => setViewingCertificateCandidate(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
@@ -1161,6 +1173,16 @@ export const HrExecutiveView = () => {
           onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
           onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
           onDispatchLink={(cand) => setDispatchingCandidate(cand)}
+        />
+      )}
+
+      {/* 360° Multi-API Comprehensive Background Verification Dossier Modal */}
+      {viewingBgvReportCandidate && (
+        <ComprehensiveBgvReportModal
+          candidate={viewingBgvReportCandidate}
+          companyName={currentCompany?.name || "Acme Global Technologies"}
+          hrName={activeHr?.name || "Priya Sundaram"}
+          onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
 
