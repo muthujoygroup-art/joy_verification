@@ -33,6 +33,7 @@ import {
   Save,
   Award,
   FileText,
+  ShieldCheck,
   Eye,
   Zap,
   RefreshCw,
