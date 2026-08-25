@@ -5,6 +5,9 @@ import { InvoiceModal } from '../components/InvoiceModal';
 import { VerificationVolumeChart, TatDistributionChart } from '../components/StatsCharts';
 import { DocumentDownloader } from '../components/DocumentDownloader';
 import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyModal';
+import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
+import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
+import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { 
   Building2, 
   ShieldCheck, 
@@ -112,6 +115,9 @@ export const SuperAdminView = () => {
   const [showAddMasterFieldModal, setShowAddMasterFieldModal] = useState(false);
   const [editingFeaturesCompany, setEditingFeaturesCompany] = useState(null);
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
+  const [activeDrilldown, setActiveDrilldown] = useState(null);
+  const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
+  const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
 
   const [logFilterStatus, setLogFilterStatus] = useState('all'); // 'all' | 'unresolved' | 'solved'
 
@@ -473,6 +479,22 @@ export const SuperAdminView = () => {
               icon={CheckCircle2} 
               trend="+18.4%"
               color="emerald" 
+              onClick={() => setActiveDrilldown({
+                title: 'Total Verifications Audit',
+                subtitle: `Itemized breakdown of all candidate verifications across ${filteredCompanyList.length} enterprise account(s)`,
+                metricValue: `${totalVerifiedCount} Checks`,
+                metricType: 'total_verifications',
+                data: candidates.filter(c => selectedAnalyticsCompanyId === 'all' || c.companyId === selectedAnalyticsCompanyId).map(c => ({
+                  name: c.name,
+                  empId: c.empId,
+                  mobile: c.mobile,
+                  email: c.email,
+                  companyName: companies.find(comp => comp.id === c.companyId)?.name || 'Enterprise Client',
+                  status: c.status,
+                  verificationDate: c.verificationDate || 'Recent',
+                  token: c.token
+                }))
+              })}
             />
 
             <MetricCard 
@@ -481,6 +503,19 @@ export const SuperAdminView = () => {
               subtext="Tariff Billing Volume" 
               icon={CreditCard} 
               color="cyan" 
+              onClick={() => setActiveDrilldown({
+                title: 'Gross Billed Revenue Breakdown',
+                subtitle: 'Calculated monthly metered tariff volume across client companies',
+                metricValue: `₹${totalGrossRevenue.toLocaleString()}`,
+                metricType: 'gross_revenue',
+                data: filteredCompanyList.map(c => ({
+                  name: c.name,
+                  plan: c.plan,
+                  title: `${c.verifiedCountThisMonth} checks @ ₹${c.pricePerVerification}/check`,
+                  amount: `₹${(c.verifiedCountThisMonth * c.pricePerVerification).toLocaleString()}`,
+                  status: 'Billed'
+                }))
+              })}
             />
 
             <MetricCard 
@@ -489,6 +524,18 @@ export const SuperAdminView = () => {
               subtext="₹25 / check (UIDAI + SMS + Face)" 
               icon={Server} 
               color="amber" 
+              onClick={() => setActiveDrilldown({
+                title: 'Upstream Gateway Cost Ledger',
+                subtitle: 'Fixed upstream fee breakdown (₹15 API SETU UIDAI + ₹2 Carrier SMS + ₹8 AI Biometrics)',
+                metricValue: `₹${totalUpstreamCost.toLocaleString()}`,
+                metricType: 'upstream_cost',
+                data: filteredCompanyList.map(c => ({
+                  name: c.name,
+                  title: `UIDAI (₹15): ₹${(c.verifiedCountThisMonth * 15).toLocaleString()} • SMS (₹2): ₹${(c.verifiedCountThisMonth * 2).toLocaleString()} • Face AI (₹8): ₹${(c.verifiedCountThisMonth * 8).toLocaleString()}`,
+                  amount: `₹${(c.verifiedCountThisMonth * UPSTREAM_COST_PER_CHECK).toLocaleString()}`,
+                  status: 'Paid Upstream'
+                }))
+              })}
             />
 
             <MetricCard 
@@ -498,6 +545,25 @@ export const SuperAdminView = () => {
               icon={TrendingUp} 
               trend={`+${profitMarginPercent}% Margin`}
               color="indigo" 
+              onClick={() => setActiveDrilldown({
+                title: 'Net Platform Profit Margin Matrix',
+                subtitle: 'Company-by-company net platform revenue after deducting provider costs',
+                metricValue: `₹${totalNetProfit.toLocaleString()}`,
+                metricType: 'net_profit',
+                data: filteredCompanyList.map(c => {
+                  const gross = c.verifiedCountThisMonth * c.pricePerVerification;
+                  const cost = c.verifiedCountThisMonth * UPSTREAM_COST_PER_CHECK;
+                  const profit = gross - cost;
+                  const margin = gross > 0 ? Math.round((profit / gross) * 100) : 79;
+                  return {
+                    name: c.name,
+                    plan: c.plan,
+                    title: `Gross ₹${gross.toLocaleString()} - Upstream ₹${cost.toLocaleString()}`,
+                    amount: `₹${profit.toLocaleString()} (${margin}% Net)`,
+                    status: 'Profitable'
+                  };
+                })
+              })}
             />
 
           </div>
@@ -1966,6 +2032,37 @@ export const SuperAdminView = () => {
             setNewCompany(prev => ({ ...prev, termsAccepted: true }));
             setShowTermsModal(false);
           }}
+        />
+      )}
+
+      {/* Metric Drilldown Details Modal */}
+      {activeDrilldown && (
+        <MetricDrilldownModal
+          isOpen={Boolean(activeDrilldown)}
+          onClose={() => setActiveDrilldown(null)}
+          title={activeDrilldown.title}
+          subtitle={activeDrilldown.subtitle}
+          metricValue={activeDrilldown.metricValue}
+          metricType={activeDrilldown.metricType}
+          role="superadmin"
+          data={activeDrilldown.data}
+          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
+          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+        />
+      )}
+
+      {/* Candidate Dossier & Certificate Modals for Drilldown actions */}
+      {viewingDossierCandidate && (
+        <EmployeeProfileDossierModal
+          candidate={viewingDossierCandidate}
+          onClose={() => setViewingDossierCandidate(null)}
+        />
+      )}
+
+      {viewingCertificateCandidate && (
+        <OfficialVerificationCertificateModal
+          candidate={viewingCertificateCandidate}
+          onClose={() => setViewingCertificateCandidate(null)}
         />
       )}
 

@@ -7,6 +7,7 @@ import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
+import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { 
   UserCheck, 
   Send, 
@@ -63,6 +64,7 @@ export const HrExecutiveView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [dispatchingCandidate, setDispatchingCandidate] = useState(null);
+  const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
 
   const activeHr = hrUsers[0] || { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', dept: 'Engineering Recruitment' };
@@ -299,6 +301,23 @@ export const HrExecutiveView = () => {
           subtext="Profiles Managed by HR" 
           icon={UserCheck} 
           color="emerald" 
+          onClick={() => setActiveDrilldown({
+            title: 'Active Candidate Employee Profiles',
+            subtitle: `All candidate profiles managed under ${currentCompany.name}`,
+            metricValue: `${candidates.length} Profiles`,
+            metricType: 'hr_active',
+            data: candidates.map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: currentCompany.name,
+              status: c.status,
+              verificationDate: c.verificationDate || 'Recent',
+              token: c.token
+            }))
+          })}
         />
         <MetricCard 
           title="Links Dispatched (WhatsApp/SMS)" 
@@ -306,6 +325,23 @@ export const HrExecutiveView = () => {
           subtext="Sent via Multi-Channel Router" 
           icon={Send} 
           color="cyan" 
+          onClick={() => setActiveDrilldown({
+            title: 'Dispatched Verification Links Audit',
+            subtitle: 'Candidates who have received a magic link via WhatsApp, SMS, or Email',
+            metricValue: `${candidates.filter(c => c.status !== 'Draft').length} Dispatched`,
+            metricType: 'hr_dispatched',
+            data: candidates.filter(c => c.status !== 'Draft').map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: currentCompany.name,
+              status: c.status,
+              verificationDate: c.verificationDate || 'Dispatched',
+              token: c.token
+            }))
+          })}
         />
         <MetricCard 
           title="Verified Successfully" 
@@ -313,6 +349,23 @@ export const HrExecutiveView = () => {
           subtext="Aadhaar + Mobile + Face Completed" 
           icon={CheckCircle2} 
           color="indigo" 
+          onClick={() => setActiveDrilldown({
+            title: 'Successfully Verified Employees',
+            subtitle: 'Candidates with 100% completed Aadhaar, Mobile, and Face verifications',
+            metricValue: `${candidates.filter(c => c.status === 'Verified').length} Verified`,
+            metricType: 'hr_verified',
+            data: candidates.filter(c => c.status === 'Verified').map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: currentCompany.name,
+              status: 'Verified',
+              verificationDate: c.verificationDate || 'Completed',
+              token: c.token
+            }))
+          })}
         />
         <MetricCard 
           title="Pending Verification" 
@@ -320,6 +373,22 @@ export const HrExecutiveView = () => {
           subtext="Awaiting Candidate Response" 
           icon={Clock} 
           color="amber" 
+          onClick={() => setActiveDrilldown({
+            title: 'Pending Candidate Verifications',
+            subtitle: 'Candidates who have not yet submitted their OTP or photo verifications',
+            metricValue: `${candidates.filter(c => c.status !== 'Verified').length} Pending`,
+            metricType: 'hr_pending',
+            data: candidates.filter(c => c.status !== 'Verified').map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: currentCompany.name,
+              status: c.status || 'Draft',
+              token: c.token
+            }))
+          })}
         />
       </div>
 
@@ -1075,6 +1144,23 @@ export const HrExecutiveView = () => {
       {showGatewaysModal && (
         <CommunicationGatewaysModal 
           onClose={() => setShowGatewaysModal(false)} 
+        />
+      )}
+
+      {/* Metric Drilldown Details Modal */}
+      {activeDrilldown && (
+        <MetricDrilldownModal
+          isOpen={Boolean(activeDrilldown)}
+          onClose={() => setActiveDrilldown(null)}
+          title={activeDrilldown.title}
+          subtitle={activeDrilldown.subtitle}
+          metricValue={activeDrilldown.metricValue}
+          metricType={activeDrilldown.metricType}
+          role="hrexecutive"
+          data={activeDrilldown.data}
+          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
+          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+          onDispatchLink={(cand) => setDispatchingCandidate(cand)}
         />
       )}
 

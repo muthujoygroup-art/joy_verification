@@ -7,6 +7,9 @@ import { DocumentStorageHub } from '../components/DocumentStorageHub';
 import { PaymentModal } from '../components/PaymentModal';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyModal';
+import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
+import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
+import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { 
   Building2, 
   Users, 
@@ -53,6 +56,9 @@ export const CompanyAdminView = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [inspectCandidate, setInspectCandidate] = useState(null);
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
+  const [activeDrilldown, setActiveDrilldown] = useState(null);
+  const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
+  const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
@@ -198,6 +204,20 @@ export const CompanyAdminView = () => {
           subtext="Managing Onboarding" 
           icon={Users} 
           color="cyan" 
+          onClick={() => setActiveDrilldown({
+            title: 'Active HR Executives Team',
+            subtitle: `Recruiting & Onboarding staff assigned to ${company.name}`,
+            metricValue: `${companyHrUsers.length} HR Staff`,
+            metricType: 'company_hr',
+            data: companyHrUsers.map(h => ({
+              name: h.name,
+              email: h.email,
+              dept: h.dept,
+              companyName: company.name,
+              status: 'Active Recruiter',
+              badge: `${h.activeLinks || 0} Links Active`
+            }))
+          })}
         />
         <MetricCard 
           title="Verified Profiles" 
@@ -206,6 +226,23 @@ export const CompanyAdminView = () => {
           icon={CheckCircle2} 
           trend={`${Math.round((verifiedCount / (companyCandidates.length || 1)) * 100)}% Pass`}
           color="emerald" 
+          onClick={() => setActiveDrilldown({
+            title: 'Verified Employee Profiles Audit',
+            subtitle: `Successfully verified candidates under ${company.name}`,
+            metricValue: `${verifiedCount} Verified`,
+            metricType: 'company_verified',
+            data: companyCandidates.filter(c => c.status === 'Verified').map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: company.name,
+              status: 'Verified',
+              verificationDate: c.verificationDate || 'Recent',
+              token: c.token
+            }))
+          })}
         />
         <MetricCard 
           title="In Progress / Pending" 
@@ -213,6 +250,22 @@ export const CompanyAdminView = () => {
           subtext="Awaiting Link Completion" 
           icon={Clock} 
           color="amber" 
+          onClick={() => setActiveDrilldown({
+            title: 'Pending & In-Progress Candidates',
+            subtitle: `Candidates currently awaiting Aadhaar OTP, SMS OTP, or Face verification`,
+            metricValue: `${pendingCount} Pending`,
+            metricType: 'company_pending',
+            data: companyCandidates.filter(c => c.status !== 'Verified').map(c => ({
+              name: c.name,
+              empId: c.empId,
+              mobile: c.mobile,
+              email: c.email,
+              dept: c.designation || 'Specialist',
+              companyName: company.name,
+              status: c.status || 'In Progress',
+              token: c.token
+            }))
+          })}
         />
         <MetricCard 
           title="Monthly Quota Usage" 
@@ -220,6 +273,17 @@ export const CompanyAdminView = () => {
           subtext={`Plan: ${company.plan}`} 
           icon={FileCheck} 
           color="indigo" 
+          onClick={() => setActiveDrilldown({
+            title: 'Monthly Verification Quota Consumption',
+            subtitle: `Detailed usage breakdown for plan ${company.plan}`,
+            metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
+            metricType: 'company_quota',
+            data: [
+              { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
+              { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
+              { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
+            ]
+          })}
         />
       </div>
 
@@ -804,6 +868,37 @@ export const CompanyAdminView = () => {
           isOpen={showTermsModal}
           companyName={company?.name || 'Enterprise Employer'}
           onClose={() => setShowTermsModal(false)}
+        />
+      )}
+
+      {/* Metric Drilldown Details Modal */}
+      {activeDrilldown && (
+        <MetricDrilldownModal
+          isOpen={Boolean(activeDrilldown)}
+          onClose={() => setActiveDrilldown(null)}
+          title={activeDrilldown.title}
+          subtitle={activeDrilldown.subtitle}
+          metricValue={activeDrilldown.metricValue}
+          metricType={activeDrilldown.metricType}
+          role="company"
+          data={activeDrilldown.data}
+          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
+          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+        />
+      )}
+
+      {/* Candidate Dossier & Certificate Modals */}
+      {viewingDossierCandidate && (
+        <EmployeeProfileDossierModal
+          candidate={viewingDossierCandidate}
+          onClose={() => setViewingDossierCandidate(null)}
+        />
+      )}
+
+      {viewingCertificateCandidate && (
+        <OfficialVerificationCertificateModal
+          candidate={viewingCertificateCandidate}
+          onClose={() => setViewingCertificateCandidate(null)}
         />
       )}
 
