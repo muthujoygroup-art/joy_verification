@@ -1,0 +1,1559 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
+
+const AppContext = createContext();
+
+const INITIAL_FEATURE_LIST = [
+  { id: 'aadhaar', name: 'Aadhaar UIDAI Verification', provider: 'API SETU', category: 'Government ID', defaultOn: true },
+  { id: 'mobileOtp', name: 'Mobile Number OTP Check', provider: 'Sandbox API', category: 'Contact Verification', defaultOn: true },
+  { id: 'faceCapture', name: 'AI WebCam Face Liveness Match', provider: 'Coincircletrust', category: 'Biometrics', defaultOn: true },
+  { id: 'drivingLicense', name: 'Driving License (DL) Check', provider: 'API SETU', category: 'Government ID', defaultOn: false },
+  { id: 'pan', name: 'PAN Card Tax Identity Check', provider: 'API SETU', category: 'Tax ID', defaultOn: true },
+  { id: 'uan', name: 'UAN / EPF Employment History', provider: 'Govt EPF Portal', category: 'Employment', defaultOn: false },
+  { id: 'education', name: 'Educational Document OCR Check', provider: 'Sandbox API', category: 'Education', defaultOn: false },
+  { id: 'criminalCheck', name: 'Court & Criminal Background Check', provider: 'Coincircletrust', category: 'Compliance', defaultOn: false },
+  { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', defaultOn: false },
+  { id: 'bankCheck', name: 'Bank Account Penny Drop Check', provider: 'Sandbox API', category: 'Financial', defaultOn: true }
+];
+
+const INITIAL_COMPANIES = [
+  {
+    id: 'comp-1',
+    name: 'Acme Global Technologies',
+    code: 'ACME',
+    contactPerson: 'Vikram Malhotra',
+    email: 'admin@acmeglobal.com',
+    plan: 'Enterprise Premier',
+    pricePerVerification: 120,
+    verifiedCountThisMonth: 142,
+    maxLimit: 500,
+    status: 'Active',
+    features: {
+      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
+      pan: true, uan: true, education: true, criminalCheck: false,
+      addressCheck: false, bankCheck: true
+    }
+  },
+  {
+    id: 'comp-2',
+    name: 'Apex Logistics & Freight',
+    code: 'APEX',
+    contactPerson: 'Ananya Sharma',
+    email: 'hr-head@apexlogistics.in',
+    plan: 'Standard Tier',
+    pricePerVerification: 100,
+    verifiedCountThisMonth: 88,
+    maxLimit: 250,
+    status: 'Active',
+    features: {
+      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: false,
+      pan: true, uan: false, education: false, criminalCheck: false,
+      addressCheck: true, bankCheck: false
+    }
+  },
+  {
+    id: 'comp-3',
+    name: 'Starlight Healthcare Solutions',
+    code: 'SHS',
+    contactPerson: 'Dr. Ramesh Iyer',
+    email: 'operations@starlighthealth.org',
+    plan: 'Basic Tier',
+    pricePerVerification: 80,
+    verifiedCountThisMonth: 34,
+    maxLimit: 100,
+    status: 'Active',
+    features: {
+      aadhaar: true, mobileOtp: true, faceCapture: false, drivingLicense: false,
+      pan: false, uan: false, education: false, criminalCheck: false,
+      addressCheck: false, bankCheck: false
+    }
+  }
+];
+
+const INITIAL_HR_USERS = [
+  { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', email: 'priya.s@acmeglobal.com', dept: 'Engineering Recruitment', activeLinks: 12 },
+  { id: 'hr-2', companyId: 'comp-1', name: 'Rahul Verma', email: 'rahul.v@acmeglobal.com', dept: 'Operations & Field Staff', activeLinks: 8 },
+  { id: 'hr-3', companyId: 'comp-2', name: 'Sneha Patel', email: 'sneha.p@apexlogistics.in', dept: 'Logistics Drivers & Fleet', activeLinks: 15 }
+];
+
+const INITIAL_CANDIDATES = [
+  {
+    id: 'emp-101',
+    token: 'tok_rajesh_891',
+    name: 'Rajesh Kumar',
+    empId: 'ACME-2026-88',
+    email: 'rajesh.k@gmail.com',
+    mobile: '+91 98765 43210',
+    aadhaarNo: '5489 1234 9876',
+    designation: 'Senior Software Engineer',
+    dept: 'Engineering',
+    companyId: 'comp-1',
+    hrId: 'hr-1',
+    status: 'Verified',
+    verificationConfig: {
+      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
+    },
+    verificationsCompleted: {
+      aadhaar: true, mobile: true, face: true, pan: true, bankCheck: true
+    },
+    faceImages: {
+      straight: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      livePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      left: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      right: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'
+    },
+    verificationDate: '2026-08-19 14:32'
+  },
+  {
+    id: 'emp-104',
+    token: 'tok_vikram_771',
+    name: 'Vikram Sethi',
+    empId: 'ACME-2026-92',
+    email: 'vikram.sethi@gmail.com',
+    mobile: '+91 98112 33445',
+    aadhaarNo: '4455 6677 8899',
+    designation: 'Fleet Logistics Driver',
+    dept: 'Operations',
+    companyId: 'comp-1',
+    hrId: 'hr-1',
+    status: 'Verified',
+    verificationConfig: {
+      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: true, requireBankCheck: true
+    },
+    verificationsCompleted: {
+      aadhaar: true, mobile: true, face: true, dl: true, pan: true, bankCheck: true
+    },
+    faceImages: {
+      straight: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      livePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      left: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      right: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
+    },
+    verificationDate: '2026-07-02 10:15'
+  },
+  {
+    id: 'emp-105',
+    token: 'tok_pooja_229',
+    name: 'Pooja Sharma',
+    empId: 'ACME-2026-95',
+    email: 'pooja.sharma@health.in',
+    mobile: '+91 97766 55443',
+    aadhaarNo: '9988 7766 5544',
+    designation: 'Clinical Nurse Specialist',
+    dept: 'Healthcare',
+    companyId: 'comp-1',
+    hrId: 'hr-2',
+    status: 'Verified',
+    verificationConfig: {
+      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
+    },
+    verificationsCompleted: {
+      aadhaar: true, mobile: true, face: true, pan: true, bankCheck: true
+    },
+    faceImages: {
+      straight: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+      livePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+      left: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+      right: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
+    },
+    verificationDate: '2026-06-27 16:45'
+  },
+  {
+    id: 'emp-102',
+    token: 'tok_sunita_412',
+    name: 'Sunita Mehra',
+    empId: 'ACME-2026-89',
+    email: 'sunita.mehra@outlook.com',
+    mobile: '+91 91234 56789',
+    aadhaarNo: '7812 3456 0192',
+    designation: 'Fleet Operations Supervisor',
+    dept: 'Operations',
+    companyId: 'comp-1',
+    hrId: 'hr-2',
+    status: 'In Verification',
+    verificationConfig: {
+      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: false, requireBankCheck: false
+    },
+    verificationsCompleted: {
+      aadhaar: true, mobile: false, face: false
+    },
+    faceImages: { straight: null, left: null, right: null },
+    verificationDate: null
+  },
+  {
+    id: 'emp-103',
+    token: 'tok_karan_903',
+    name: 'Karan Malhotra',
+    empId: 'APEX-2026-14',
+    email: 'karan.m@yahoo.com',
+    mobile: '+91 99887 76655',
+    aadhaarNo: '6543 9876 2109',
+    designation: 'Logistics Coordinator',
+    dept: 'Fleet Management',
+    companyId: 'comp-2',
+    hrId: 'hr-3',
+    status: 'Link Sent',
+    verificationConfig: {
+      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true
+    },
+    verificationsCompleted: {
+      aadhaar: false, mobile: false, face: false
+    },
+    faceImages: { straight: null, left: null, right: null },
+    verificationDate: null
+  }
+];
+
+export const AppProvider = ({ children }) => {
+  const [companies, setCompanies] = useState(INITIAL_COMPANIES);
+  const [hrUsers, setHrUsers] = useState(INITIAL_HR_USERS);
+  const [candidates, setCandidates] = useState(INITIAL_CANDIDATES);
+  const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
+  const [currentUser, setCurrentUser] = useState({
+    name: 'Super Administrator',
+    email: 'superadmin@joyverification.com',
+    role: 'superadmin'
+  });
+  const [currentRole, setCurrentRole] = useState('superadmin'); // 'superadmin' | 'company' | 'hrexecutive' | 'employee_link'
+  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_rajesh_891');
+  const [toastMessage, setToastMessage] = useState(null);
+  const [isBackendConnected, setIsBackendConnected] = useState(true);
+
+  // SESSION MANAGEMENT & INACTIVITY TRACKING
+  const [sessionData, setSessionData] = useState({
+    sessionId: 'sess_prod_admin_8812',
+    role: 'superadmin',
+    expiresIn: 1800
+  });
+  const [sessionTtlSeconds, setSessionTtlSeconds] = useState(1800); // 30 mins
+  const [showInactivityWarning, setShowInactivityWarning] = useState(false);
+  const [inactivityCountdown, setInactivityCountdown] = useState(300); // 5 mins warning
+  const [lastActivityTimestamp, setLastActivityTimestamp] = useState(Date.now());
+
+  // Listen to window interactions for activity tracking
+  useEffect(() => {
+    const handleActivity = () => {
+      setLastActivityTimestamp(Date.now());
+    };
+
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('click', handleActivity);
+    window.addEventListener('scroll', handleActivity);
+    window.addEventListener('touchstart', handleActivity);
+
+    return () => {
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('click', handleActivity);
+      window.removeEventListener('scroll', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+    };
+  }, []);
+
+  // 1-Second Session Heartbeat & Inactivity Countdown Ticker
+  useEffect(() => {
+    if (!currentUser || !currentRole) return;
+
+    const interval = setInterval(() => {
+      const idleSeconds = Math.floor((Date.now() - lastActivityTimestamp) / 1000);
+      
+      setSessionTtlSeconds(prev => {
+        const next = prev - 1;
+        if (next <= 0) {
+          logoutUser();
+          return 0;
+        }
+        return next;
+      });
+
+      // If idle for > 25 minutes (1500s), show warning modal with countdown
+      if (idleSeconds >= 1500) {
+        const countdown = Math.max(0, 1800 - idleSeconds);
+        setInactivityCountdown(countdown);
+        setShowInactivityWarning(true);
+        if (countdown <= 0) {
+          logoutUser();
+        }
+      } else {
+        setShowInactivityWarning(false);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentUser, currentRole, lastActivityTimestamp]);
+
+  // SUPER ADMIN & HR MASTER DROPDOWN OPTIONS STATE
+  const [masterDropdownOptions, setMasterDropdownOptions] = useState({
+    departments: [
+      'Engineering & IT',
+      'Logistics & Delivery Fleet',
+      'Clinical & Medical Staff',
+      'Human Resources',
+      'Finance & Accounting',
+      'Sales & Business Development',
+      'Field Operations & Quality',
+      'Customer Support & Helpdesk'
+    ],
+    designations: [
+      'Senior Software Engineer',
+      'Fleet Logistics Driver',
+      'Clinical Nurse / Specialist',
+      'HR Operations Associate',
+      'Field Quality Inspector',
+      'Project Manager & Team Lead',
+      'Database & Cloud Architect',
+      'Finance Accountant'
+    ],
+    workLocations: [
+      'Bengaluru Tech Park (HQ)',
+      'Mumbai Financial District',
+      'Delhi Logistics Hub',
+      'Chennai Regional Office',
+      'Hyderabad R&D Center',
+      'Remote / Field Site'
+    ],
+    qualifications: [
+      'B.Tech / B.E. in Computer Science',
+      'Diploma in Commercial Driving',
+      'B.Sc in Nursing / Healthcare',
+      'MBA in HR & Operations',
+      'Bachelor of Commerce (B.Com)',
+      'Higher Secondary (10+2)',
+      'Secondary School (10th SSLC)'
+    ],
+    employmentTypes: [
+      'Full Time Permanent',
+      'Contract Staff',
+      'Labor / Field Operative',
+      'Internship / Trainee'
+    ],
+    bloodGroups: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+  });
+
+  // SUPER ADMIN MASTER DEFAULT FORM FIELDS STATE
+  const [masterFormFields, setMasterFormFields] = useState([
+    { id: 'name', label: 'Candidate Full Name', type: 'text', defaultMandatory: true, category: 'Personal Info' },
+    { id: 'empId', label: 'Employee ID Code', type: 'text', defaultMandatory: true, category: 'Personal Info', prefix: 'EMP-2026-' },
+    { id: 'designation', label: 'Job Designation / Title', type: 'select', defaultMandatory: true, category: 'Employment' },
+    { id: 'mobile', label: 'Registered Mobile Number (SMS Link)', type: 'tel', defaultMandatory: true, category: 'Contact' },
+    { id: 'email', label: 'Official Email Address', type: 'email', defaultMandatory: true, category: 'Contact' },
+    { id: 'aadhaarNo', label: 'Aadhaar Identity Number (12 Digits)', type: 'text', defaultMandatory: true, category: 'Government ID' },
+    { id: 'panNo', label: 'Tax PAN Card Number', type: 'text', defaultMandatory: false, category: 'Tax ID' },
+    { id: 'bankAccount', label: 'Bank Account Number & IFSC', type: 'text', defaultMandatory: false, category: 'Financial' }
+  ]);
+
+  // SUPER ADMIN SYSTEM ERROR & ISSUE LOGS STATE
+  const [systemErrorLogs, setSystemErrorLogs] = useState([
+    { id: 'LOG-901', timestamp: '2026-08-20 12:24:10', section: 'Aadhaar UIDAI Gateway', event: 'Invalid Aadhaar OTP Attempt', details: 'Candidate entered incorrect OTP code 3 times in succession.', severity: 'Warning', solved: false, company: 'Acme Global' },
+    { id: 'LOG-902', timestamp: '2026-08-20 12:18:45', section: 'AI WebCam Biometrics', event: 'WebCam Permission Blocked', details: 'User browser blocked camera device access stream.', severity: 'Critical', solved: false, company: 'Apex Logistics' },
+    { id: 'LOG-903', timestamp: '2026-08-20 12:05:30', section: 'Automated SMS Router', event: 'SMS OTP Dispatch Timeout', details: 'Carrier gateway delayed OTP delivery by 45 seconds.', severity: 'Warning', solved: true, company: 'Acme Global' }
+  ]);
+
+  // WHATSAPP & EMAIL INTEGRATION GATEWAYS STATE
+  const [whatsappConfig, setWhatsappConfig] = useState({
+    enabled: true,
+    wabaId: 'WABA-99823412091',
+    phoneNumberId: 'PN-919876543210',
+    accessToken: 'EAAG99823412091ZABCPASSWORDTOKEN',
+    webhookUrl: 'https://api.joyverification.com/v1/whatsapp/webhook',
+    autoSendOnboardingLink: true,
+    autoSendOtpCode: true,
+    autoSendPdfCertificate: true,
+    status: 'Connected 🟢'
+  });
+
+  const [emailConfig, setEmailConfig] = useState({
+    enabled: true,
+    smtpHost: 'email-smtp.us-east-1.amazonaws.com',
+    smtpPort: 587,
+    senderEmail: 'onboarding@joyverification.com',
+    apiKey: 'SG.99823412091_JOYSECRETKEY',
+    autoSendOnboardingEmail: true,
+    autoSendPdfCertificate: true,
+    status: 'Active 🟢'
+  });
+
+  // ROLE-SPECIFIC SETTINGS
+  const [systemSettings, setSystemSettings] = useState({
+    superadmin: {
+      platformTitle: 'JOY DATA VERIFICATION',
+      apiRateLimitPerMin: 600,
+      apiTimeoutSeconds: 30,
+      requireSuperAdmin2FA: true,
+      sessionTimeoutMins: 30,
+      logRetentionDays: 90,
+      defaultSmsCarrier: 'AWS SNS / Twilio'
+    },
+    company: {
+      faceMatchThreshold: 85,
+      lowCreditAlertThreshold: 50,
+      autoRenewCredits: false,
+      maxHrSeats: 10,
+      mandatoryAadhaarOtp: true
+    },
+    hr: {
+      defaultDispatchChannel: 'whatsapp',
+      defaultTemplate: 'corporate',
+      defaultWorkLocation: 'Bengaluru Tech Park (HQ)',
+      realtimeToastAlerts: true
+    },
+    candidate: {
+      language: 'en',
+      digilockerConsent: true,
+      highContrast: false,
+      largeFont: false
+    }
+  });
+
+  // GUIDELINES
+  const [platformGuidelines, setPlatformGuidelines] = useState({
+    superadmin: {
+      title: 'Super Admin Master Governance Workflow',
+      summary: 'Super Admin controls client company onboarding, API verification lookup, 10 feature flags, metered billing, and support tickets.',
+      step1: 'Onboarding Client Enterprises & Tariff Rate Setup: Navigate to Companies & Feature Matrix -> Click "Onboard Company". Input company name, email, subscription tier, and price per verification.',
+      step2: 'Configuring Topic-Based Master Data Dropdown Options: Open Master Form Fields tab. Manage master data by topics (Departments, Designations, Locations, Qualifications, Contract Types, Blood Groups).',
+      step3: 'Replying to Support Tickets & Data Transactions: Open Error Logs & Support Tickets tab. View client ticket thread with exact date & time stamps. Type official reply message and select status.'
+    },
+    company: {
+      title: 'Company Admin Executive Operations Guidelines',
+      summary: 'Company Admin monitors executive staff telemetry, TAT metrics, employee master registry, compliance document vault, and online billing payments.',
+      step1: 'Monitoring Turnaround Time (TAT) & HR Telemetry: Open Executive Telemetry & TAT tab. Inspect HR performance charts, total verification volume, and average candidate turnaround time stats.',
+      step2: 'Compliance Document Storage Hub (DMS): Navigate to Compliance Document Hub. Search candidates, preview certificates, and export audit files in PDF, Excel, Word, or Image formats.',
+      step3: 'Online Invoice Payment & Instant Settlement: Click "Pay Online & Settle Bill 💳" in header. Scan UPI QR code or input card details to complete payment settlement with instant receipt generation.'
+    },
+    hr: {
+      title: 'HR Executive Onboarding Workstation Guidelines',
+      summary: 'HR Executives profile new employees, assign customized 10-feature verification flags, and dispatch magic token links via WhatsApp, SMS, Email, or QR code.',
+      step1: 'Creating Candidate Profile & Assigning 10-Feature Flags: Click "Send Link to Employee". Input employee name, mobile number, designation, and department dropdowns. Toggle mandatory verification checks.',
+      step2: 'Dispatching Magic Token Links via Meta WhatsApp & Email: In Candidate Pipeline, click "Dispatch Link". Dispatch onboarding link via WhatsApp Cloud API, carrier SMS, SMTP email, or display scannable QR Code.',
+      step3: 'HR Station Form Manual Entry: If candidate is present at HR desk, click "HR Station Form Entry" to complete full 7-section joining form with pre-filled dropdown options.'
+    },
+    candidate: {
+      title: 'Candidate Verification Portal Guidelines',
+      summary: 'Candidates complete verification steps using passwordless magic links on mobile or desktop browsers.',
+      step1: 'Aadhaar UIDAI 6-Digit OTP Verification: Click "Verify Aadhaar UIDAI" -> Click "Send Aadhaar OTP". Input 6-digit verification code received on Aadhaar-registered mobile number.',
+      step2: 'AI WebCam 3-Pose Face Liveness Capture: Click "Capture WebCam Liveness" -> Allow camera permission. Align face inside oval frame and capture 3 pose snapshots.',
+      step3: 'Language Selection & Accessibility: Click "Portal Settings ⚙️" to switch language (English, Hindi, Tamil, Telugu, Kannada, Marathi) or enable high contrast text display.'
+    }
+  });
+
+  // NOTIFICATIONS (CROSS-ROLE SMART NOTIFICATION FEED)
+  const [notifications, setNotifications] = useState([
+    // HR NOTIFICATIONS (CRITICAL 60-DAY EXPIRY + PIPELINE)
+    {
+      id: 'notif-hr-1',
+      role: 'hr',
+      title: '⏳ JCS Certificate Expiring Soon (6 Days Left)',
+      message: 'Employee Vikram Sethi (ACME-2026-92) verified on 2026-07-02 has a JCS Certificate expiring on 2026-08-31. Please download the permanent dossier backup or dispatch a re-verification link.',
+      timestamp: '2026-08-25 08:30',
+      isRead: false,
+      priority: 'high',
+      category: 'expiry',
+      candidateToken: 'tok_vikram_771',
+      candidateName: 'Vikram Sethi'
+    },
+    {
+      id: 'notif-hr-2',
+      role: 'hr',
+      title: '🚨 Urgent: Certificate Expiry Tomorrow!',
+      message: 'Employee Pooja Sharma (ACME-2026-95) verified on 2026-06-27 is reaching the 60-day retention cutoff tomorrow. Take action now.',
+      timestamp: '2026-08-25 09:00',
+      isRead: false,
+      priority: 'critical',
+      category: 'expiry',
+      candidateToken: 'tok_pooja_229',
+      candidateName: 'Pooja Sharma'
+    },
+    {
+      id: 'notif-hr-3',
+      role: 'hr',
+      title: '✅ Candidate Verification Completed',
+      message: 'Rajesh Kumar completed Aadhaar OTP and Live Biometric Face Capture with 99.4% confidence score.',
+      timestamp: '2026-08-24 16:45',
+      isRead: true,
+      priority: 'normal',
+      category: 'verification',
+      candidateToken: 'tok_rajesh_891',
+      candidateName: 'Rajesh Kumar'
+    },
+    {
+      id: 'notif-hr-4',
+      role: 'hr',
+      title: '⚠️ Candidate Onboarding Stalled (>48h)',
+      message: 'Candidate Sunita Mehra received verification link 48 hours ago but has pending Mobile OTP. Click to resend WhatsApp/SMS reminder.',
+      timestamp: '2026-08-24 14:10',
+      isRead: false,
+      priority: 'medium',
+      category: 'candidate',
+      candidateToken: 'tok_sunita_412',
+      candidateName: 'Sunita Mehra'
+    },
+
+    // COMPANY ADMIN NOTIFICATIONS
+    {
+      id: 'notif-comp-1',
+      role: 'company',
+      title: '⏳ Workforce Compliance: 2 Certificates Expiring',
+      message: '2 employee JCS Certificates in your organization are expiring within 15 days (60-day policy). View the Master Registry to archive dossiers or renew verifications.',
+      timestamp: '2026-08-25 08:30',
+      isRead: false,
+      priority: 'high',
+      category: 'expiry'
+    },
+    {
+      id: 'notif-comp-2',
+      role: 'company',
+      title: '💳 Monthly Verification Quota Alert',
+      message: 'Acme Global Technologies has utilized 420 / 500 verifications (84% of monthly Premier limit). Auto-rollover enabled.',
+      timestamp: '2026-08-24 18:00',
+      isRead: false,
+      priority: 'medium',
+      category: 'billing'
+    },
+    {
+      id: 'notif-comp-3',
+      role: 'company',
+      title: '👥 HR Workstation Activity Summary',
+      message: 'HR Executive Priya Sundaram created 4 candidate verification links and finalized 2 verified dossiers today.',
+      timestamp: '2026-08-24 17:30',
+      isRead: true,
+      priority: 'normal',
+      category: 'hr'
+    },
+
+    // SUPER ADMIN NOTIFICATIONS
+    {
+      id: 'notif-sa-1',
+      role: 'superadmin',
+      title: '💳 Enterprise Bill Settled (₹14,160)',
+      message: 'Acme Global Technologies completed monthly invoice payment via UPI QR Code. Receipt #PAY-2026-9812 logged in PostgreSQL.',
+      timestamp: '2026-08-25 09:15',
+      isRead: false,
+      priority: 'high',
+      category: 'billing'
+    },
+    {
+      id: 'notif-sa-2',
+      role: 'superadmin',
+      title: '🚨 Upstream Gateway Latency Spike',
+      message: 'API SETU DigiLocker Govt gateway experienced 8.4s response latency on Aadhaar KYC calls. Traffic auto-routed to Sandbox fallback.',
+      timestamp: '2026-08-24 15:20',
+      isRead: false,
+      priority: 'critical',
+      category: 'system'
+    },
+    {
+      id: 'notif-sa-3',
+      role: 'superadmin',
+      title: '🏢 New Enterprise Onboarding Complete',
+      message: 'Starlight Healthcare Solutions onboarded with 10 Feature Matrix Flags and Basic Tier (₹80/check).',
+      timestamp: '2026-08-24 11:00',
+      isRead: true,
+      priority: 'normal',
+      category: 'company'
+    },
+
+    // CANDIDATE PORTAL NOTIFICATIONS
+    {
+      id: 'notif-cand-1',
+      role: 'candidate',
+      title: '📜 JCS Official Certificate Ready (60-Day Access)',
+      message: 'Your official JOY Corporate Solutions Verification Certificate is generated and accessible for download for the next 60 days.',
+      timestamp: '2026-08-24 16:45',
+      isRead: false,
+      priority: 'high',
+      category: 'certificate'
+    },
+    {
+      id: 'notif-cand-2',
+      role: 'candidate',
+      title: '🔒 Secure Onboarding Link Activated',
+      message: 'Your secure onboarding token is encrypted and active for 7 calendar days on this device.',
+      timestamp: '2026-08-24 10:00',
+      isRead: true,
+      priority: 'normal',
+      category: 'security'
+    }
+  ]);
+
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    superadmin: { whatsapp: true, email: true, sms: true, inAppSound: true },
+    company: { whatsapp: true, email: true, sms: false, inAppSound: true },
+    hr: { whatsapp: true, email: true, sms: true, inAppSound: true },
+    candidate: { whatsapp: true, email: true, sms: true, inAppSound: false }
+  });
+
+  // PAYMENT LEDGER
+  const [companyPaymentLedger, setCompanyPaymentLedger] = useState({
+    'comp-1': { status: 'SETTLED ✅', paymentId: 'PAY-2026-9812', date: '2026-08-20 11:20', amount: 14160, method: 'UPI QR (GPay / Razorpay)' },
+    'comp-2': { status: 'PENDING DEBIT ⏳', paymentId: null, date: null, amount: 21240, method: null }
+  });
+
+  // SUPPORT TICKETS
+  const [supportTickets, setSupportTickets] = useState([
+    {
+      id: 'TICK-2026-881',
+      companyName: 'Acme Global Technologies',
+      companyId: 'comp-1',
+      reporterName: 'Priya Sundaram (HR)',
+      subject: 'Aadhaar OTP Carrier Gateway Delay on Mobile Verification',
+      category: 'API Gateway',
+      priority: 'High',
+      status: 'In Progress',
+      createdAt: '2026-08-20 12:45:10',
+      details: 'Candidates reported 30-second SMS OTP delivery delay for Jio numbers.',
+      messages: [
+        {
+          id: 'msg-1',
+          sender: 'Priya Sundaram (HR)',
+          text: 'Candidates reported 30-second SMS OTP delivery delay for Jio mobile numbers during onboarding.',
+          timestamp: '2026-08-20 12:45:10',
+          type: 'user_ticket'
+        },
+        {
+          id: 'msg-2',
+          sender: 'Super Admin Support',
+          text: 'Inspecting Jio carrier gateway routing table and switching fallback SMS router to AWS SNS.',
+          timestamp: '2026-08-20 13:10:00',
+          type: 'admin_reply'
+        }
+      ]
+    }
+  ]);
+
+  // SUPER ADMIN API CONFIGURATIONS
+  const [apiConfigurations, setApiConfigurations] = useState({
+    apiSetu: {
+      name: 'API SETU (Government DigiLocker Gateway)',
+      clientId: 'SETU_GOVT_998124_CLIENT',
+      clientSecret: '••••••••••••••••••••••••',
+      endpointUrl: 'https://api.apisetu.gov.in/v2/verify',
+      status: 'Online',
+      mode: 'Production',
+      latency: '42 ms',
+      rateLimitPerMin: 1200,
+      costPerCall: 5.0,
+      monthlyCallCount: 14820,
+      errorCount: 12
+    },
+    sandbox: {
+      name: 'Sandbox Private API Router',
+      apiKey: 'SB_KEY_774912903_LIVE',
+      secretKey: '••••••••••••••••••••••••',
+      endpointUrl: 'https://api.sandbox.co.in/v1/identity',
+      status: 'Online',
+      mode: 'Production',
+      latency: '65 ms',
+      rateLimitPerMin: 2500,
+      costPerCall: 2.5,
+      monthlyCallCount: 22400,
+      errorCount: 4
+    },
+    coincircletrust: {
+      name: 'Coincircletrust Biometrics Engine',
+      cameraKey: 'CCT_FACE_LIVENESS_8831',
+      livenessThreshold: 95,
+      endpointUrl: 'https://biometrics.coincircletrust.io/v3/match',
+      status: 'Online',
+      mode: 'Production',
+      latency: '98 ms',
+      rateLimitPerMin: 800,
+      costPerCall: 8.0,
+      monthlyCallCount: 9450,
+      errorCount: 2
+    }
+  });
+
+  const showToast = (msg, type = 'success') => {
+    setToastMessage({ msg, type });
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // INITIAL LOAD: Sync with Python FastAPI & PostgreSQL Backend
+  useEffect(() => {
+    const fetchBackendData = async () => {
+      try {
+        const [comps, cands, dropdowns, logs, tickets] = await Promise.all([
+          api.getCompanies().catch(() => null),
+          api.getCandidates().catch(() => null),
+          api.getMasterDropdowns().catch(() => null),
+          api.getLogs().catch(() => null),
+          api.getTickets().catch(() => null),
+        ]);
+
+        if (comps && Array.isArray(comps)) {
+          setCompanies(comps.map(c => ({
+            id: c.id,
+            name: c.name,
+            code: c.code,
+            contactPerson: c.contact_person,
+            email: c.email,
+            plan: c.plan,
+            pricePerVerification: c.price_per_verification,
+            verifiedCountThisMonth: c.verified_count_this_month,
+            maxLimit: c.max_limit,
+            status: c.status,
+            features: c.features || {}
+          })));
+          setIsBackendConnected(true);
+        }
+
+        if (cands && Array.isArray(cands)) {
+          setCandidates(cands.map(c => ({
+            id: c.id,
+            token: c.token,
+            name: c.name,
+            empId: c.emp_id,
+            email: c.email,
+            mobile: c.mobile,
+            aadhaarNo: c.aadhaar_no,
+            designation: c.designation,
+            dept: c.dept,
+            companyId: c.company_id,
+            hrId: c.hr_id,
+            status: c.status,
+            verificationConfig: c.verification_config || {},
+            verificationsCompleted: c.verifications_completed || {},
+            faceImages: c.face_images || { straight: null, left: null, right: null },
+            manualChecks: c.manual_checks || {},
+            joiningFormData: c.joining_form_data || {},
+            verificationDate: c.verification_date
+          })));
+        }
+
+        if (dropdowns && typeof dropdowns === 'object') {
+          setMasterDropdownOptions(prev => ({
+            ...prev,
+            ...dropdowns
+          }));
+        }
+
+        if (logs && Array.isArray(logs)) {
+          setSystemErrorLogs(logs.map(l => ({
+            id: l.id,
+            timestamp: l.timestamp,
+            section: l.section,
+            event: l.error_code,
+            details: l.message,
+            severity: l.severity,
+            solved: l.solved,
+            resolvedTimestamp: l.resolved_at
+          })));
+        }
+
+        if (tickets && Array.isArray(tickets)) {
+          setSupportTickets(tickets.map(t => ({
+            id: t.id,
+            companyName: t.company_name,
+            companyId: t.company_id,
+            subject: t.subject,
+            category: t.category,
+            priority: t.priority,
+            status: t.status,
+            createdAt: t.created_at,
+            messages: (t.replies || []).map(r => ({
+              id: r.id,
+              sender: r.sender_name,
+              text: r.message,
+              timestamp: r.timestamp,
+              type: r.sender_role === 'superadmin' ? 'admin_reply' : 'user_ticket'
+            }))
+          })));
+        }
+      } catch (err) {
+        console.warn('Backend sync in background:', err.message);
+      }
+    };
+
+    fetchBackendData();
+  }, []);
+
+  // Login handler with JWT Session Generation
+  const loginUser = async (role, userData = {}) => {
+    try {
+      const resp = await api.login({
+        role,
+        email: userData.email || '',
+        token: userData.token || ''
+      });
+
+      setCurrentRole(resp.role);
+      setCurrentUser({
+        ...resp.user,
+        role: resp.role,
+        loginTimestamp: new Date().toLocaleTimeString()
+      });
+      setSessionData({
+        sessionId: resp.session_id,
+        token: resp.access_token,
+        role: resp.role,
+        expiresIn: resp.expires_in
+      });
+      setSessionTtlSeconds(resp.expires_in || 1800);
+      setLastActivityTimestamp(Date.now());
+      setShowInactivityWarning(false);
+      showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 30 Mins)!`);
+    } catch (err) {
+      // Fallback local login if backend is booting
+      setCurrentRole(role);
+      setCurrentUser({
+        role,
+        loginTimestamp: new Date().toLocaleTimeString(),
+        ...userData
+      });
+      setSessionData({
+        sessionId: `sess_${Math.random().toString(36).substring(2, 10)}`,
+        role: role,
+        expiresIn: 1800
+      });
+      setSessionTtlSeconds(1800);
+      setLastActivityTimestamp(Date.now());
+      showToast(`Logged in as ${role.toUpperCase()}!`);
+    }
+  };
+
+  const refreshUserSession = async () => {
+    try {
+      const resp = await api.refreshSession();
+      if (resp && resp.expires_in) {
+        setSessionTtlSeconds(resp.expires_in);
+      } else {
+        setSessionTtlSeconds(1800);
+      }
+    } catch (err) {
+      setSessionTtlSeconds(1800);
+    }
+    setLastActivityTimestamp(Date.now());
+    setShowInactivityWarning(false);
+    showToast('⚡ Active Session extended by +30 Minutes!');
+  };
+
+  const setRoleView = (role, candidateToken = null) => {
+    loginUser(role, candidateToken ? { token: candidateToken } : {});
+    if (candidateToken) {
+      setSelectedCandidateToken(candidateToken);
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      await api.logoutSession();
+    } catch (err) {}
+    setCurrentUser(null);
+    setCurrentRole(null);
+    setSessionData(null);
+    setShowInactivityWarning(false);
+    showToast('Logged out of session successfully');
+  };
+
+  // Add Company (Persists to PostgreSQL)
+  const addCompany = async (companyData) => {
+    try {
+      const created = await api.createCompany({
+        name: companyData.name,
+        contact_person: companyData.contactPerson || companyData.name,
+        email: companyData.email,
+        plan: companyData.plan || 'Enterprise Premier',
+        price_per_verification: companyData.pricePerVerification || 120,
+        max_limit: companyData.maxLimit || 500,
+        features: companyData.features
+      });
+
+      const formatted = {
+        id: created.id,
+        name: created.name,
+        code: created.code,
+        contactPerson: created.contact_person,
+        email: created.email,
+        plan: created.plan,
+        pricePerVerification: created.price_per_verification,
+        verifiedCountThisMonth: created.verified_count_this_month,
+        maxLimit: created.max_limit,
+        status: created.status,
+        features: created.features || {}
+      };
+
+      setCompanies(prev => [formatted, ...prev]);
+      showToast(`Company "${created.name}" onboarded & saved to PostgreSQL!`);
+    } catch (err) {
+      const newComp = {
+        id: `comp-${Date.now()}`,
+        code: companyData.name.substring(0, 4).toUpperCase(),
+        verifiedCountThisMonth: 0,
+        status: 'Active',
+        pricePerVerification: companyData.plan === 'Enterprise Premier' ? 120 : 100,
+        ...companyData
+      };
+      setCompanies(prev => [newComp, ...prev]);
+      showToast(`Company "${companyData.name}" onboarded!`);
+    }
+  };
+
+  // Update Company Features
+  const updateCompanyFeatures = async (companyId, newFeatures, newPlan) => {
+    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, features: newFeatures, plan: newPlan || c.plan } : c));
+    try {
+      await api.updateCompanyFeatures(companyId, newFeatures);
+      showToast('Company features updated & synced to PostgreSQL');
+    } catch (err) {
+      showToast('Company feature flags updated');
+    }
+  };
+
+  // Add Candidate (Persists to PostgreSQL)
+  const addCandidate = async (candidateData) => {
+    try {
+      const created = await api.createCandidate({
+        name: candidateData.name,
+        emp_id: candidateData.empId,
+        email: candidateData.email,
+        mobile: candidateData.mobile,
+        aadhaar_no: candidateData.aadhaarNo,
+        designation: candidateData.designation,
+        dept: candidateData.dept,
+        company_id: candidateData.companyId,
+        hr_id: candidateData.hrId,
+        verification_config: candidateData.verificationConfig,
+        manual_checks: candidateData.manualChecks
+      });
+
+      const formatted = {
+        id: created.id,
+        token: created.token,
+        name: created.name,
+        empId: created.emp_id,
+        email: created.email,
+        mobile: created.mobile,
+        aadhaarNo: created.aadhaar_no,
+        designation: created.designation,
+        dept: created.dept,
+        companyId: created.company_id,
+        hrId: created.hr_id,
+        status: created.status,
+        verificationConfig: created.verification_config || {},
+        verificationsCompleted: created.verifications_completed || {},
+        faceImages: created.face_images || { straight: null, left: null, right: null },
+        manualChecks: created.manual_checks || {},
+        verificationDate: created.verification_date
+      };
+
+      setCandidates(prev => [formatted, ...prev]);
+      setSelectedCandidateToken(created.token);
+      showToast(`Verification token created for ${candidateData.name}! Saved in DB.`);
+      return created.token;
+    } catch (err) {
+      const newToken = `tok_${candidateData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
+      const newCand = {
+        id: `emp-${Date.now()}`,
+        token: newToken,
+        status: 'Link Sent',
+        verificationsCompleted: { aadhaar: false, mobile: false, face: false },
+        faceImages: { straight: null, left: null, right: null },
+        verificationDate: null,
+        ...candidateData
+      };
+      setCandidates(prev => [newCand, ...prev]);
+      setSelectedCandidateToken(newToken);
+      showToast(`Verification link generated for ${candidateData.name}!`);
+      return newToken;
+    }
+  };
+
+  // Update candidate verification state (Aadhaar, Mobile, Face, Complete)
+  const updateCandidateVerification = async (token, stepName, stepData = true) => {
+    setCandidates(prev => prev.map(cand => {
+      if (cand.token !== token) return cand;
+      
+      const updatedVerifs = { ...cand.verificationsCompleted, [stepName]: stepData };
+      let updatedFaceImages = { ...cand.faceImages };
+      if (stepName === 'faceImages' && typeof stepData === 'object') {
+        updatedFaceImages = { ...updatedFaceImages, ...stepData };
+      }
+
+      const config = cand.verificationConfig || {};
+      const aadhaarDone = !config.requireAadhaar || updatedVerifs.aadhaar;
+      const mobileDone = !config.requireMobileOtp || updatedVerifs.mobile;
+      const faceDone = !config.requireFaceMatch || updatedVerifs.face;
+      const allFinished = aadhaarDone && mobileDone && faceDone;
+
+      const newStatus = allFinished ? 'Verified' : 'In Verification';
+
+      if (allFinished && cand.status !== 'Verified') {
+        setCompanies(comps => comps.map(c => c.id === cand.companyId ? { ...c, verifiedCountThisMonth: c.verifiedCountThisMonth + 1 } : c));
+        // Complete in backend
+        api.completeVerification({ token }).catch(() => {});
+      }
+
+      return {
+        ...cand,
+        verificationsCompleted: updatedVerifs,
+        faceImages: updatedFaceImages,
+        status: newStatus,
+        verificationDate: allFinished ? new Date().toISOString().replace('T', ' ').substring(0, 16) : cand.verificationDate
+      };
+    }));
+  };
+
+  // Add HR user
+  const addHrUser = async (hrData) => {
+    try {
+      const created = await api.addHrUser(hrData.companyId || 'comp-1', {
+        name: hrData.name,
+        email: hrData.email,
+        dept: hrData.dept,
+        company_id: hrData.companyId || 'comp-1'
+      });
+      setHrUsers(prev => [...prev, created]);
+      showToast(`HR Executive "${hrData.name}" created & stored in PostgreSQL!`);
+    } catch (err) {
+      const newHr = { id: `hr-${Date.now()}`, activeLinks: 0, ...hrData };
+      setHrUsers(prev => [...prev, newHr]);
+      showToast(`HR Executive "${hrData.name}" created!`);
+    }
+  };
+
+  // Master Dropdowns
+  const addMasterDropdownOption = async (categoryKey, newOptionValue) => {
+    if (!newOptionValue || !newOptionValue.trim()) return;
+    const trimmed = newOptionValue.trim();
+    if (masterDropdownOptions[categoryKey]?.includes(trimmed)) {
+      showToast(`Option "${trimmed}" already exists.`, 'warning');
+      return;
+    }
+    setMasterDropdownOptions(prev => ({
+      ...prev,
+      [categoryKey]: [...(prev[categoryKey] || []), trimmed]
+    }));
+    try {
+      await api.addMasterDropdownOption(categoryKey, trimmed);
+      showToast(`Added "${trimmed}" to ${categoryKey} & saved to Database!`);
+    } catch (err) {
+      showToast(`Added "${trimmed}" to ${categoryKey}!`);
+    }
+  };
+
+  const removeMasterDropdownOption = async (categoryKey, optionValue) => {
+    setMasterDropdownOptions(prev => ({
+      ...prev,
+      [categoryKey]: (prev[categoryKey] || []).filter(opt => opt !== optionValue)
+    }));
+    try {
+      await api.removeMasterDropdownOption(categoryKey, optionValue);
+      showToast(`Removed "${optionValue}" from ${categoryKey}.`);
+    } catch (err) {
+      showToast(`Removed "${optionValue}" from ${categoryKey}.`);
+    }
+  };
+
+  const addMasterFormField = async (fieldData) => {
+    const newField = {
+      id: `field_${Date.now()}`,
+      category: 'Custom Field',
+      defaultMandatory: false,
+      ...fieldData
+    };
+    setMasterFormFields(prev => [...prev, newField]);
+    try {
+      await api.addMasterFormField({
+        label: fieldData.label,
+        type: fieldData.type || 'text',
+        category: fieldData.category || 'Personal Info',
+        default_mandatory: fieldData.defaultMandatory ?? false
+      });
+      showToast(`Master field "${fieldData.label}" saved in PostgreSQL!`);
+    } catch (err) {
+      showToast(`Master default field "${fieldData.label}" created!`);
+    }
+  };
+
+  // Toggle Error Log Solved
+  const toggleLogSolvedStatus = async (logId) => {
+    let newSolved = false;
+    setSystemErrorLogs(prev => prev.map(log => {
+      if (log.id !== logId) return log;
+      newSolved = !log.solved;
+      return { ...log, solved: newSolved, resolvedTimestamp: newSolved ? new Date().toLocaleTimeString() : null };
+    }));
+    showToast(`Log issue #${logId} updated to ${newSolved ? 'SOLVED ✅' : 'UNRESOLVED 🔴'}`);
+    try {
+      await api.toggleLogSolved(logId, newSolved);
+    } catch (err) {}
+  };
+
+  // Support Tickets
+  const addSupportTicket = async (ticketData) => {
+    const timeNow = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const newTicketId = `TICK-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newTicket = {
+      id: newTicketId,
+      status: 'Open',
+      createdAt: timeNow,
+      messages: [
+        {
+          id: `msg-${Date.now()}`,
+          sender: ticketData.reporterName || 'HR User',
+          text: ticketData.details,
+          timestamp: timeNow,
+          type: 'user_ticket'
+        }
+      ],
+      ...ticketData
+    };
+    setSupportTickets(prev => [newTicket, ...prev]);
+    showToast(`Support Ticket #${newTicketId} raised & stored in Database!`);
+    try {
+      await api.createTicket({
+        company_id: ticketData.companyId || 'comp-1',
+        company_name: ticketData.companyName || 'Acme Global',
+        subject: ticketData.subject,
+        category: ticketData.category || 'API Integration',
+        priority: ticketData.priority || 'Medium',
+        initial_message: ticketData.details
+      });
+    } catch (err) {}
+  };
+
+  const addTicketReply = async (ticketId, replyText, senderName = 'Super Admin Support', newStatus = 'In Progress') => {
+    if (!replyText || !replyText.trim()) return;
+    const timeNow = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    setSupportTickets(prev => prev.map(t => {
+      if (t.id !== ticketId) return t;
+
+      const newMsg = {
+        id: `msg-${Date.now()}`,
+        sender: senderName,
+        text: replyText.trim(),
+        timestamp: timeNow,
+        type: senderName.includes('Super Admin') ? 'admin_reply' : 'user_reply'
+      };
+
+      return {
+        ...t,
+        status: newStatus,
+        messages: [...(t.messages || []), newMsg]
+      };
+    }));
+
+    showToast(`Reply sent for Ticket #${ticketId}! Status: ${newStatus}`);
+
+    try {
+      await api.addTicketReply(ticketId, {
+        sender_role: senderName.includes('Super Admin') ? 'superadmin' : 'company',
+        sender_name: senderName,
+        message: replyText.trim()
+      });
+      await api.updateTicketStatus(ticketId, newStatus);
+    } catch (err) {}
+  };
+
+  // Payment Settlement
+  const payCompanyInvoice = async (companyId, amount, method = 'UPI (Razorpay / GPay)') => {
+    const newPaymentId = `PAY-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    setCompanyPaymentLedger(prev => ({
+      ...prev,
+      [companyId]: {
+        status: 'SETTLED ✅',
+        paymentId: newPaymentId,
+        date: dateStr,
+        amount: amount,
+        method: method
+      }
+    }));
+
+    showToast(`Payment of ₹${amount.toLocaleString()} SETTLED! Ref: ${newPaymentId}`);
+
+    try {
+      await api.recordPayment({
+        company_id: companyId,
+        amount: amount,
+        payment_method: method,
+        transaction_ref: newPaymentId
+      });
+    } catch (err) {}
+  };
+
+  const updateCommunicationGateways = async (waData, mailData) => {
+    if (waData) setWhatsappConfig(prev => ({ ...prev, ...waData }));
+    if (mailData) setEmailConfig(prev => ({ ...prev, ...mailData }));
+    showToast('WhatsApp & Enterprise Email Gateway credentials saved in Database!');
+    try {
+      if (waData) await api.saveGateway({ gateway_type: 'whatsapp', settings: waData });
+      if (mailData) await api.saveGateway({ gateway_type: 'email_smtp', settings: mailData });
+    } catch (err) {}
+  };
+
+  const updateRoleSettings = async (roleKey, newSettings) => {
+    setSystemSettings(prev => ({
+      ...prev,
+      [roleKey]: { ...(prev[roleKey] || {}), ...newSettings }
+    }));
+    showToast(`Settings for ${roleKey.toUpperCase()} saved to Database!`);
+    try {
+      await api.updateRoleSettings(roleKey, newSettings);
+    } catch (err) {}
+  };
+
+  const updateGuidelines = (targetRole, updatedGuideData) => {
+    setPlatformGuidelines(prev => ({
+      ...prev,
+      [targetRole]: { ...(prev[targetRole] || {}), ...updatedGuideData }
+    }));
+    showToast(`Operational Guidelines for ${targetRole.toUpperCase()} updated!`);
+  };
+
+  const updateApiConfig = async (gatewayKey, newConfig) => {
+    setApiConfigurations(prev => ({
+      ...prev,
+      [gatewayKey]: { ...prev[gatewayKey], ...newConfig }
+    }));
+    showToast(`API Configuration for ${apiConfigurations[gatewayKey]?.name || gatewayKey} updated!`);
+  };
+
+  const markNotificationAsRead = (id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+  };
+
+  const markAllNotificationsAsRead = (roleKey) => {
+    setNotifications(prev => prev.map(n => n.role === roleKey ? { ...n, isRead: true } : n));
+    showToast(`Marked all notifications as read for ${roleKey.toUpperCase()}`);
+  };
+
+  const clearAllNotifications = (roleKey) => {
+    setNotifications(prev => prev.filter(n => n.role !== roleKey));
+    showToast(`Cleared notification feed for ${roleKey.toUpperCase()}`);
+  };
+
+  const updateNotificationPreferences = (roleKey, newPrefs) => {
+    setNotificationPreferences(prev => ({
+      ...prev,
+      [roleKey]: { ...(prev[roleKey] || {}), ...newPrefs }
+    }));
+    showToast(`Updated notification preferences for ${roleKey.toUpperCase()}`);
+  };
+
+  // ⏳ JCS CERTIFICATE 60-DAY (2-MONTH) RETENTION & EXPIRY CALCULATOR
+  const getCertificateLifecycle = (candidate) => {
+    if (!candidate || candidate.status !== 'Verified' || !candidate.verificationDate) {
+      return {
+        isVerified: false,
+        verificationDate: null,
+        expiryDate: null,
+        daysRemaining: 0,
+        status: 'unverified',
+        badgeColor: 'badge-slate',
+        badgeLabel: 'Unverified',
+        progressPercent: 0
+      };
+    }
+
+    const verifTime = new Date(candidate.verificationDate).getTime();
+    const validityPeriodMs = 60 * 24 * 60 * 60 * 1000; // 60 days in milliseconds
+    const expiryTime = verifTime + validityPeriodMs;
+    const expiryDateObj = new Date(expiryTime);
+    const now = Date.now();
+    
+    const diffMs = expiryTime - now;
+    const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const elapsedDays = Math.max(0, 60 - daysRemaining);
+    const progressPercent = Math.min(100, Math.max(0, Math.round((elapsedDays / 60) * 100)));
+
+    const expiryDateFormatted = isNaN(expiryDateObj.getTime()) 
+      ? '2026-10-18' 
+      : expiryDateObj.toISOString().split('T')[0];
+
+    if (daysRemaining <= 0) {
+      return {
+        isVerified: true,
+        verificationDate: candidate.verificationDate,
+        expiryDate: expiryDateFormatted,
+        daysRemaining: 0,
+        status: 'expired',
+        badgeColor: 'badge-rose',
+        badgeLabel: 'Expired (Purge/Renew)',
+        progressPercent: 100,
+        isExpired: true
+      };
+    } else if (daysRemaining <= 3) {
+      return {
+        isVerified: true,
+        verificationDate: candidate.verificationDate,
+        expiryDate: expiryDateFormatted,
+        daysRemaining,
+        status: 'critical',
+        badgeColor: 'badge-rose',
+        badgeLabel: `🚨 Expiring in ${daysRemaining}d`,
+        progressPercent,
+        isExpiringSoon: true
+      };
+    } else if (daysRemaining <= 15) {
+      return {
+        isVerified: true,
+        verificationDate: candidate.verificationDate,
+        expiryDate: expiryDateFormatted,
+        daysRemaining,
+        status: 'expiring_soon',
+        badgeColor: 'badge-amber',
+        badgeLabel: `⚠️ Expiring in ${daysRemaining}d`,
+        progressPercent,
+        isExpiringSoon: true
+      };
+    } else {
+      return {
+        isVerified: true,
+        verificationDate: candidate.verificationDate,
+        expiryDate: expiryDateFormatted,
+        daysRemaining,
+        status: 'valid',
+        badgeColor: 'badge-emerald',
+        badgeLabel: `🟢 ${daysRemaining}d Valid`,
+        progressPercent,
+        isValid: true
+      };
+    }
+  };
+
+  // 📜 CUSTOM COMPANY TERMS & CONDITIONS CONTRACTS STATE
+  const [customCompanyTerms, setCustomCompanyTerms] = useState({
+    'comp-1': {
+      companyId: 'comp-1',
+      companyName: 'Acme Global Technologies',
+      retentionDays: 60,
+      customSla: '99.95% High-Availability SLA Tier',
+      customIndemnityLimit: '₹10,00,000 INR',
+      customClauseNotes: 'Dedicated 24/7 priority enterprise support line & quarterly cryptographic audit certifications.',
+      boundVersion: 'v2.4-2026',
+      signedBy: 'Vikram Malhotra (Director HR)',
+      signedDate: '2026-08-15 10:30'
+    },
+    'comp-2': {
+      companyId: 'comp-2',
+      companyName: 'Apex Logistics Solutions',
+      retentionDays: 90,
+      customSla: '99.9% Standard Commercial Tier',
+      customIndemnityLimit: '₹5,00,000 INR',
+      customClauseNotes: 'Extended 90-day fleet driver KYC retention with fast-track automated DL authentication.',
+      boundVersion: 'v2.4-2026',
+      signedBy: 'Sneha Patel (Operations Head)',
+      signedDate: '2026-08-18 14:20'
+    },
+    'comp-3': {
+      companyId: 'comp-3',
+      companyName: 'Starlight Healthcare Solutions',
+      retentionDays: 60,
+      customSla: '99.9% Clinical Priority Tier',
+      customIndemnityLimit: '₹15,00,000 INR',
+      customClauseNotes: 'Healthcare clinical background check indemnity & priority criminal record verification.',
+      boundVersion: 'v2.4-2026',
+      signedBy: 'Dr. Ramesh Iyer (Medical Director)',
+      signedDate: '2026-08-22 09:45'
+    }
+  });
+
+  // 👥 MULTI-ROLE LOGIN TELEMETRY & LIVE SESSIONS
+  const [multiRoleSessions, setMultiRoleSessions] = useState([
+    {
+      id: 'sess-101',
+      role: 'superadmin',
+      roleLabel: 'Super Admin',
+      userName: 'Super Administrator',
+      email: 'superadmin@joyverification.com',
+      company: 'JOY Platform HQ',
+      ipAddress: '127.0.0.1 (Localhost Gateway)',
+      device: 'Chrome 128 / Windows 11 (Host)',
+      loginTime: '2026-08-25 08:00:12',
+      lastActive: 'Just now',
+      actionsCount: 52,
+      status: 'Active 🟢'
+    },
+    {
+      id: 'sess-102',
+      role: 'company',
+      roleLabel: 'Company Admin',
+      userName: 'Vikram Malhotra',
+      email: 'admin@acmeglobal.com',
+      company: 'Acme Global Technologies',
+      ipAddress: '192.168.1.83 (Wi-Fi Internal)',
+      device: 'Edge 127 / macOS Sequoia',
+      loginTime: '2026-08-25 08:30:45',
+      lastActive: '4 mins ago',
+      actionsCount: 22,
+      status: 'Active 🟢'
+    },
+    {
+      id: 'sess-103',
+      role: 'hrexecutive',
+      roleLabel: 'HR Executive',
+      userName: 'Priya Sundaram',
+      email: 'priya.s@acmeglobal.com',
+      company: 'Acme Global Technologies',
+      ipAddress: '106.51.24.112 (Bengaluru ISP)',
+      device: 'Chrome 128 / Windows 11',
+      loginTime: '2026-08-25 08:45:00',
+      lastActive: '1 min ago',
+      actionsCount: 38,
+      status: 'Active 🟢'
+    },
+    {
+      id: 'sess-104',
+      role: 'hrexecutive',
+      roleLabel: 'HR Executive',
+      userName: 'Sneha Patel',
+      email: 'sneha.p@apexlogistics.in',
+      company: 'Apex Logistics Solutions',
+      ipAddress: '157.48.92.10 (Mumbai Gateway)',
+      device: 'Safari 17 / iOS Mobile',
+      loginTime: '2026-08-25 09:10:20',
+      lastActive: '12 mins ago',
+      actionsCount: 14,
+      status: 'Active 🟢'
+    },
+    {
+      id: 'sess-105',
+      role: 'employee_link',
+      roleLabel: 'Candidate Link',
+      userName: 'Rajesh Kumar',
+      email: 'rajesh.k@gmail.com',
+      company: 'Acme Global Technologies',
+      ipAddress: '49.37.112.98 (Jio 5G Mobile)',
+      device: 'Chrome Mobile / Android 14',
+      loginTime: '2026-08-24 16:30:10',
+      lastActive: 'Yesterday',
+      actionsCount: 8,
+      status: 'Completed / Idle 🟡'
+    }
+  ]);
+
+  // Dispatch Official Invoice Bill to Company
+  const sendCompanyInvoiceBill = async (companyId) => {
+    const company = companies.find(c => c.id === companyId);
+    if (!company) return;
+    const subtotal = company.verifiedCountThisMonth * company.pricePerVerification;
+    const gst = Math.round(subtotal * 0.18);
+    const total = subtotal + gst;
+    const invoiceId = `INV-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newNotif = {
+      id: `notif-bill-${Date.now()}`,
+      role: 'company',
+      title: `💳 Monthly Invoice Dispatched (#${invoiceId})`,
+      message: `Official bill for ₹${total.toLocaleString()} (${company.verifiedCountThisMonth} verifications + 18% GST) has been dispatched to ${company.email} via SMTP & WhatsApp Cloud Gateway.`,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      isRead: false,
+      priority: 'high',
+      category: 'billing'
+    };
+
+    setNotifications(prev => [newNotif, ...prev]);
+    showToast(`📧 Invoice #${invoiceId} (₹${total.toLocaleString()}) dispatched to ${company.name} via Email & WhatsApp!`);
+  };
+
+  // Update Custom Company Terms & Conditions
+  const updateCustomCompanyTerms = (companyId, termsData) => {
+    setCustomCompanyTerms(prev => ({
+      ...prev,
+      [companyId]: {
+        ...(prev[companyId] || {}),
+        ...termsData,
+        lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      }
+    }));
+    showToast(`Custom Terms & Conditions updated for ${termsData.companyName || companyId}!`);
+  };
+
+  // Dispatch 1-Click Re-Verification Link (renews 60-day lifecycle)
+  const dispatchReVerificationLink = (token) => {
+    const newToken = `tok_renew_${Date.now().toString().slice(-4)}`;
+    setCandidates(prev => prev.map(c => {
+      if (c.token !== token) return c;
+      return {
+        ...c,
+        token: newToken,
+        status: 'Link Sent',
+        verificationsCompleted: { aadhaar: false, mobile: false, face: false, dl: false, pan: false, bankCheck: false },
+        verificationDate: null
+      };
+    }));
+    setSelectedCandidateToken(newToken);
+    showToast(`🔄 Re-Verification Token dispatched! Candidate reset for fresh 60-day lifecycle.`);
+    return newToken;
+  };
+
+  const getActiveCandidate = () => {
+    return candidates.find(c => c.token === selectedCandidateToken) || candidates[0];
+  };
+
+  return (
+    <AppContext.Provider value={{
+      currentUser,
+      currentRole,
+      loginUser,
+      setRoleView,
+      logoutUser,
+      companies,
+      addCompany,
+      updateCompanyFeatures,
+      hrUsers,
+      addHrUser,
+      candidates,
+      addCandidate,
+      updateCandidateVerification,
+      getActiveCandidate,
+      selectedCandidateToken,
+      setSelectedCandidateToken,
+      getCertificateLifecycle,
+      dispatchReVerificationLink,
+      customCompanyTerms,
+      updateCustomCompanyTerms,
+      multiRoleSessions,
+      sendCompanyInvoiceBill,
+      apiConfigurations,
+      updateApiConfig,
+      masterFormFields,
+      addMasterFormField,
+      masterDropdownOptions,
+      addMasterDropdownOption,
+      removeMasterDropdownOption,
+      systemErrorLogs,
+      toggleLogSolvedStatus,
+      supportTickets,
+      addSupportTicket,
+      addTicketReply,
+      whatsappConfig,
+      emailConfig,
+      updateCommunicationGateways,
+      companyPaymentLedger,
+      payCompanyInvoice,
+      systemSettings,
+      updateRoleSettings,
+      platformGuidelines,
+      updateGuidelines,
+      notifications,
+      notificationPreferences,
+      markNotificationAsRead,
+      markAllNotificationsAsRead,
+      clearAllNotifications,
+      updateNotificationPreferences,
+      featureList: INITIAL_FEATURE_LIST,
+      activeInvoiceModal,
+      setActiveInvoiceModal,
+      toastMessage,
+      showToast,
+      isBackendConnected,
+      sessionData,
+      sessionTtlSeconds,
+      showInactivityWarning,
+      inactivityCountdown,
+      refreshUserSession,
+      activeRole: currentRole
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+export const useApp = () => useContext(AppContext);
