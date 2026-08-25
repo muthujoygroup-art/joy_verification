@@ -270,14 +270,14 @@ export const SuperAdminView = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">
+    <div className="flex flex-col gap-6 animate-fadeIn text-slate-900 pb-16">
       
       {/* Top Header Card */}
       <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500" />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="badge badge-purple font-bold px-3 py-1 text-[11px] shadow-2xs">Super Admin Master Console</span>
               <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
@@ -316,7 +316,7 @@ export const SuperAdminView = () => {
       </div>
 
       {/* Sleek Sub-Navigation Segmented Bar */}
-      <div className="bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="bg-white/95 backdrop-blur-md p-2.5 rounded-2xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
           {navigationTabs.map((tab) => {
             const Icon = tab.icon;
@@ -341,7 +341,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 1: PLATFORM STATISTICS & COMPANY-WISE PROFIT MARGIN ANALYTICS */}
       {activeTab === 'analytics' && (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           
           {/* Company-Wise Filter Bar */}
           <div className="bg-indigo-50/70 border border-indigo-200/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
