@@ -52,7 +52,10 @@ import {
   FileCode,
   BookOpen,
   MessageSquare,
-  Trash2
+  Trash2,
+  ChevronRight,
+  Shield,
+  Sparkles
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
@@ -250,190 +253,89 @@ export const SuperAdminView = () => {
     showToast('SQL Query Executed Successfully on PostgreSQL Engine (Execution time: 4.2ms)');
   };
 
+  const navigationTabs = [
+    { id: 'analytics', label: 'Profit & Analytics', icon: BarChart3, color: 'text-indigo-600', activeBg: 'bg-indigo-600' },
+    { id: 'companies', label: 'Companies (10 Flags)', icon: Building2, color: 'text-purple-600', activeBg: 'bg-purple-600' },
+    { id: 'terms_hub', label: 'Terms & Contracts Hub', icon: Scale, color: 'text-amber-600', activeBg: 'bg-amber-600' },
+    { id: 'billing', label: 'Metered Invoicing', icon: CreditCard, color: 'text-sky-600', activeBg: 'bg-sky-600' },
+    { id: 'logins', label: 'Multi-Role Logins', icon: Users, color: 'text-emerald-600', activeBg: 'bg-emerald-600' },
+    { id: 'dbms', label: 'Database (DBMS)', icon: Database, color: 'text-teal-700', activeBg: 'bg-teal-700' },
+    { id: 'masterfields', label: 'Form Fields & Dropdowns', icon: ListCheck, color: 'text-teal-600', activeBg: 'bg-teal-600' },
+    { id: 'apiconfig', label: 'API Credentials', icon: Server, color: 'text-emerald-600', activeBg: 'bg-emerald-600' },
+    { id: 'reports', label: 'Reports Center', icon: FileDown, color: 'text-amber-600', activeBg: 'bg-amber-600' },
+    { id: 'tickets', label: `Support Tickets (${supportTickets.length})`, icon: LifeBuoy, color: 'text-indigo-700', activeBg: 'bg-indigo-700' },
+    { id: 'issuelogs', label: `Error Logs (${totalUnresolvedErrorCount})`, icon: AlertCircle, color: 'text-rose-600', activeBg: 'bg-rose-600' },
+    { id: 'guidelines', label: 'Role Guidelines', icon: BookOpen, color: 'text-purple-700', activeBg: 'bg-purple-700' },
+    { id: 'settings', label: 'System Settings', icon: Settings, color: 'text-slate-800', activeBg: 'bg-slate-800' }
+  ];
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">
       
-      {/* Top Header Banner & Sub-Navigation Tabs Bar */}
-      <div className="glass-panel p-6 border-indigo-200 bg-white space-y-6 relative overflow-hidden shadow-sm rounded-2xl">
+      {/* Top Header Card */}
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500" />
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="badge badge-purple font-bold">Super Admin Console</span>
-              <span className="text-xs text-slate-500 font-bold">• Enterprise Governance, Profit Telemetry & DBMS</span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="badge badge-purple font-bold px-3 py-1 text-[11px] shadow-2xs">Super Admin Master Console</span>
+              <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Enterprise Governance, Profit Telemetry & Database Management</span>
+              </span>
             </div>
-            <h2 className="text-2xl font-black text-slate-900 mt-1">Platform Master Control, Analytics & Database Operations</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium">Manage enterprise contracts, metered billing, multi-role session monitoring, and real-time PostgreSQL database tables.</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Platform Master Control & Operations
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-3xl leading-relaxed">
+              Manage enterprise client contracts, metered billing dispatch, multi-role session security, and live PostgreSQL database operations.
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap self-start lg:self-auto">
             {totalUnresolvedErrorCount > 0 && (
               <button 
                 onClick={() => setActiveTab('issuelogs')}
-                className="badge badge-amber text-xs px-3 py-1.5 flex items-center gap-1 font-bold animate-pulse"
+                className="badge badge-amber text-xs px-3.5 py-2 flex items-center gap-2 font-bold shadow-2xs hover:bg-amber-100 transition-all cursor-pointer"
               >
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
                 <span>{totalUnresolvedErrorCount} Unresolved Issues</span>
               </button>
             )}
             
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold"
+              className="btn btn-superadmin text-xs sm:text-sm py-2.5 px-4.5 flex items-center gap-2 shadow-md hover:shadow-lg font-black transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Onboard Company</span>
+              <span>+ Onboard Company</span>
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Sub-Navigation Tabs Bar */}
-        <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto">
-          
-          {/* TAB 1: Analytics & Profit */}
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>1. Platform & Profit Analytics</span>
-          </button>
-
-          {/* TAB 2: Companies & Features */}
-          <button
-            onClick={() => setActiveTab('companies')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>2. Companies & Feature Matrix</span>
-          </button>
-
-          {/* TAB 3: Terms & Conditions Contracts Hub */}
-          <button
-            onClick={() => setActiveTab('terms_hub')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Scale className="w-4 h-4" />
-            <span>3. Terms & Contracts Hub 📜</span>
-          </button>
-
-          {/* TAB 4: Metered Billing & Invoices */}
-          <button
-            onClick={() => setActiveTab('billing')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'billing' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>4. Metered Invoicing & Bill Dispatch</span>
-          </button>
-
-          {/* TAB 5: Multi-Login Telemetry */}
-          <button
-            onClick={() => setActiveTab('logins')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'logins' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>5. Login Sessions Telemetry 👥</span>
-          </button>
-
-          {/* TAB 6: Database Management System (DBMS) */}
-          <button
-            onClick={() => setActiveTab('dbms')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'dbms' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Database className="w-4 h-4" />
-            <span>6. Database Management (DBMS) 🗄️</span>
-          </button>
-
-          {/* TAB 7: Master Fields & Dropdowns */}
-          <button
-            onClick={() => setActiveTab('masterfields')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'masterfields' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <ListCheck className="w-4 h-4" />
-            <span>7. Master Fields & Dropdowns</span>
-          </button>
-
-          {/* TAB 8: API Credentials */}
-          <button
-            onClick={() => setActiveTab('apiconfig')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'apiconfig' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Server className="w-4 h-4" />
-            <span>8. API Credentials</span>
-          </button>
-
-          {/* TAB 9: Reports Center */}
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'reports' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileDown className="w-4 h-4" />
-            <span>9. Reports Center</span>
-          </button>
-
-          {/* TAB 10: Support Tickets */}
-          <button
-            onClick={() => setActiveTab('tickets')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'tickets' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <LifeBuoy className="w-4 h-4" />
-            <span>10. Support Helpdesk ({supportTickets.length})</span>
-          </button>
-
-          {/* TAB 11: Issue Logs */}
-          <button
-            onClick={() => setActiveTab('issuelogs')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'issuelogs' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <AlertCircle className="w-4 h-4" />
-            <span>11. Error Logs ({totalUnresolvedErrorCount})</span>
-          </button>
-
-          {/* TAB 12: Guidelines */}
-          <button
-            onClick={() => setActiveTab('guidelines')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'guidelines' ? 'bg-purple-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>12. Platform Guidelines</span>
-          </button>
-
-          {/* TAB 13: Settings */}
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'settings' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>13. Settings</span>
-          </button>
-
+      {/* Sleek Sub-Navigation Segmented Bar */}
+      <div className="bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {navigationTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                  isActive 
+                    ? `${tab.activeBg} text-white shadow-md scale-[1.02]` 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : tab.color}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -442,16 +344,18 @@ export const SuperAdminView = () => {
         <div className="space-y-6">
           
           {/* Company-Wise Filter Bar */}
-          <div className="glass-panel p-4 border-indigo-200 bg-indigo-50/40 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-indigo-700" />
-              <span className="text-xs font-black text-slate-900 uppercase tracking-wide">Filter Analytics View:</span>
+          <div className="bg-indigo-50/70 border border-indigo-200/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 text-indigo-950 font-black text-xs uppercase tracking-wider">
+                <Filter className="w-4 h-4 text-indigo-600" />
+                <span>Filter Analytics View:</span>
+              </div>
               <select 
                 value={selectedAnalyticsCompanyId}
                 onChange={(e) => setSelectedAnalyticsCompanyId(e.target.value)}
-                className="bg-white border border-indigo-300 text-slate-900 rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs"
+                className="bg-white border border-indigo-300 text-slate-900 rounded-xl px-3.5 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs cursor-pointer"
               >
-                <option value="all">🌐 All Enterprise Companies (Consolidated)</option>
+                <option value="all">🌐 All Enterprise Companies (Consolidated Platform)</option>
                 {companies.map(c => (
                   <option key={c.id} value={c.id}>🏢 {c.name} ({c.plan})</option>
                 ))}
@@ -459,12 +363,12 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="text-xs text-slate-600 font-medium">
-              Showing financial & operational metrics for: <strong className="text-indigo-900">{selectedAnalyticsCompanyId === 'all' ? 'All Client Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
+              Showing financial & operational metrics for: <strong className="text-indigo-900 font-bold">{selectedAnalyticsCompanyId === 'all' ? 'All Enterprise Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
             </div>
           </div>
 
           {/* High-Level Financial & Profit KPI Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             
             <MetricCard 
               title="Total Verifications" 
@@ -503,8 +407,8 @@ export const SuperAdminView = () => {
           </div>
 
           {/* Company-Wise Profit Matrix Table */}
-          <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -512,21 +416,21 @@ export const SuperAdminView = () => {
                 </h3>
                 <p className="text-xs text-slate-500 font-medium">Detailed financial breakdown of gross billings, upstream provider costs, and net platform profit per client</p>
               </div>
-              <span className="badge badge-emerald text-[10px]">Real-Time Telemetry</span>
+              <span className="badge badge-emerald text-[10px] self-start sm:self-auto">Real-Time Telemetry</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
-                    <th className="py-3 px-4">Client Enterprise</th>
+                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
+                    <th className="py-3 px-4 rounded-l-xl">Client Enterprise</th>
                     <th className="py-3 px-4">Subscription Plan</th>
                     <th className="py-3 px-4 text-center">Verified Volume</th>
                     <th className="py-3 px-4 text-center">Tariff Rate</th>
                     <th className="py-3 px-4 text-center">Gross Revenue</th>
                     <th className="py-3 px-4 text-center">Upstream Cost (₹25/ck)</th>
                     <th className="py-3 px-4 text-center">Net Profit</th>
-                    <th className="py-3 px-4 text-center">Profit Margin</th>
+                    <th className="py-3 px-4 text-center rounded-r-xl">Profit Margin</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -537,7 +441,7 @@ export const SuperAdminView = () => {
                     const margin = gross > 0 ? Math.round((profit / gross) * 100) : 79;
 
                     return (
-                      <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                      <tr key={c.id} className="hover:bg-indigo-50/30 transition-colors">
                         <td className="py-4 px-4 font-bold text-slate-900 text-sm">{c.name}</td>
                         <td className="py-4 px-4">
                           <span className="badge badge-indigo text-[10px]">{c.plan}</span>
@@ -560,7 +464,7 @@ export const SuperAdminView = () => {
 
           {/* Interactive Statistics Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="glass-panel p-6 border-slate-200 bg-white rounded-2xl shadow-sm">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-indigo-600" />
                 <span>Verification Volume Trend (Last 7 Days)</span>
@@ -568,7 +472,7 @@ export const SuperAdminView = () => {
               <VerificationVolumeChart />
             </div>
 
-            <div className="glass-panel p-6 border-slate-200 bg-white rounded-2xl shadow-sm">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-600" />
                 <span>Turnaround Time (TAT) Distribution</span>
@@ -582,7 +486,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 2: COMPANIES & 10-FEATURE FLAGS MATRIX */}
       {activeTab === 'companies' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -594,7 +498,7 @@ export const SuperAdminView = () => {
             
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto"
+              className="btn btn-superadmin text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>+ Onboard New Company</span>
@@ -604,12 +508,12 @@ export const SuperAdminView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
-                  <th className="py-3 px-4">Company Profile</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
+                  <th className="py-3 px-4 rounded-l-xl">Company Profile</th>
                   <th className="py-3 px-4">Contact Info</th>
                   <th className="py-3 px-4">Tariff & Quota</th>
                   <th className="py-3 px-4 text-center">Active Features (out of 10)</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4 text-right rounded-r-xl">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -654,7 +558,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 3: TERMS & CONDITIONS CONTRACTS HUB & AGREEMENT LEDGER */}
       {activeTab === 'terms_hub' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -680,13 +584,13 @@ export const SuperAdminView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
-                  <th className="py-3 px-4">Enterprise Company</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
+                  <th className="py-3 px-4 rounded-l-xl">Enterprise Company</th>
                   <th className="py-3 px-4">Bound T&C Version</th>
                   <th className="py-3 px-4 text-center">Retention Period</th>
                   <th className="py-3 px-4">SLA Tier & Indemnity</th>
                   <th className="py-3 px-4">Authorized Signatory</th>
-                  <th className="py-3 px-4 text-right">Contract Actions</th>
+                  <th className="py-3 px-4 text-right rounded-r-xl">Contract Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -751,7 +655,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 4: METERED BILLING & AUTOMATED BILL SENDING */}
       {activeTab === 'billing' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -763,7 +667,7 @@ export const SuperAdminView = () => {
             <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {companies.map((comp) => {
               const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
               const gst = Math.round(subtotal * 0.18);
@@ -783,7 +687,7 @@ export const SuperAdminView = () => {
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 p-3.5 bg-white rounded-xl border border-slate-200 text-xs">
+                  <div className="space-y-2 p-4 bg-white rounded-xl border border-slate-200 text-xs">
                     <div className="flex justify-between text-slate-600">
                       <span>Verifications this Month:</span>
                       <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
@@ -800,7 +704,7 @@ export const SuperAdminView = () => {
                       <span>GST (18%):</span>
                       <span className="font-mono">₹{gst.toLocaleString()}</span>
                     </div>
-                    <div className="border-t border-slate-100 pt-1.5 flex justify-between font-black text-sm text-indigo-950">
+                    <div className="border-t border-slate-100 pt-2 flex justify-between font-black text-sm text-indigo-950">
                       <span>Net Invoice Amount:</span>
                       <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
                     </div>
@@ -836,7 +740,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 5: MULTI-ROLE LOGIN SESSIONS & TELEMETRY */}
       {activeTab === 'logins' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -851,14 +755,14 @@ export const SuperAdminView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
-                  <th className="py-3 px-4">Login Role</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
+                  <th className="py-3 px-4 rounded-l-xl">Login Role</th>
                   <th className="py-3 px-4">User & Email</th>
                   <th className="py-3 px-4">Organization Entity</th>
                   <th className="py-3 px-4">IP Address & Network</th>
                   <th className="py-3 px-4">Device / Browser</th>
                   <th className="py-3 px-4 text-center">Actions Count</th>
-                  <th className="py-3 px-4 text-right">Session Status</th>
+                  <th className="py-3 px-4 text-right rounded-r-xl">Session Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -892,7 +796,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 6: DATABASE MANAGEMENT SYSTEM (DBMS) CONSOLE */}
       {activeTab === 'dbms' && (
-        <div className="glass-panel p-6 border-teal-300 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-teal-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
@@ -948,7 +852,7 @@ export const SuperAdminView = () => {
           {/* Table Selector Pills */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 uppercase">Select PostgreSQL Table to Inspect:</label>
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-bold">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
               {[
                 { id: 'candidates', label: 'candidates (KYC Dossiers)' },
                 { id: 'companies', label: 'companies (Enterprise Accounts)' },
@@ -961,7 +865,7 @@ export const SuperAdminView = () => {
                 <button
                   key={tbl.id}
                   onClick={() => setSelectedDbTable(tbl.id)}
-                  className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
                     selectedDbTable === tbl.id ? 'bg-teal-700 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -973,19 +877,19 @@ export const SuperAdminView = () => {
 
           {/* Table Telemetry Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl">
+            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
               <span className="text-teal-800 font-bold block text-[10px] uppercase">Total Table Rows</span>
               <span className="text-base font-black text-slate-900">{currentTableRows.length} Records</span>
             </div>
-            <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl">
+            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
               <span className="text-teal-800 font-bold block text-[10px] uppercase">Added Today</span>
               <span className="text-base font-black text-emerald-700">+8 New Rows</span>
             </div>
-            <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl">
+            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
               <span className="text-teal-800 font-bold block text-[10px] uppercase">Table Disk Storage</span>
               <span className="text-base font-black text-slate-900 font-mono">128.4 KB</span>
             </div>
-            <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl">
+            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
               <span className="text-teal-800 font-bold block text-[10px] uppercase">Engine Sync</span>
               <span className="text-base font-black text-slate-900">PostgreSQL Pool (20)</span>
             </div>
@@ -1030,7 +934,7 @@ export const SuperAdminView = () => {
           </div>
 
           {/* SQL Query Runner Console */}
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-900 text-slate-100 space-y-3">
+          <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-mono text-xs text-teal-400 font-bold">
                 <Terminal className="w-4 h-4" />
@@ -1044,20 +948,20 @@ export const SuperAdminView = () => {
                 rows={2}
                 value={customSqlQuery}
                 onChange={(e) => setCustomSqlQuery(e.target.value)}
-                className="w-full bg-slate-950 text-teal-300 font-mono text-xs p-3 rounded-lg border border-slate-800 outline-none focus:border-teal-500"
+                className="w-full bg-slate-950 text-teal-300 font-mono text-xs p-3 rounded-xl border border-slate-800 outline-none focus:border-teal-500"
               />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px] text-slate-400">
                   <span>Quick Templates:</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT * FROM candidates WHERE status = \'Verified\';')} className="underline hover:text-teal-300">Verified Candidates</button>
+                  <button onClick={() => setCustomSqlQuery('SELECT * FROM candidates WHERE status = \'Verified\';')} className="underline hover:text-teal-300 cursor-pointer">Verified Candidates</button>
                   <span>•</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT id, name, plan, verified_count_this_month FROM companies;')} className="underline hover:text-teal-300">Company Volume</button>
+                  <button onClick={() => setCustomSqlQuery('SELECT id, name, plan, verified_count_this_month FROM companies;')} className="underline hover:text-teal-300 cursor-pointer">Company Volume</button>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleExecuteSql}
-                  className="btn btn-superadmin text-xs py-1.5 px-4 font-mono font-bold flex items-center gap-1.5 shadow-md"
+                  className="btn btn-superadmin text-xs py-1.5 px-4 font-mono font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
                 >
                   <span>Execute SQL ▶</span>
                 </button>
@@ -1065,7 +969,7 @@ export const SuperAdminView = () => {
             </div>
 
             {queryExecutionResult && (
-              <div className="p-3 bg-slate-950 rounded-lg border border-teal-900/50 text-[11px] font-mono text-teal-200 space-y-1">
+              <div className="p-3 bg-slate-950 rounded-xl border border-teal-900/50 text-[11px] font-mono text-teal-200 space-y-1">
                 <span className="text-[10px] text-teal-400 block font-bold">Query Execution Output ({queryExecutionResult.length} rows returned):</span>
                 <pre className="max-h-36 overflow-y-auto overflow-x-auto text-[10px] text-slate-300">
                   {JSON.stringify(queryExecutionResult, null, 2)}
@@ -1082,7 +986,7 @@ export const SuperAdminView = () => {
         <div className="space-y-8">
           
           {/* SECTION 1: MASTER CANDIDATE DEFAULT FORM FIELDS */}
-          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -1101,7 +1005,7 @@ export const SuperAdminView = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {masterFormFields.map((field) => (
                 <div key={field.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3">
                   <div>
@@ -1109,14 +1013,14 @@ export const SuperAdminView = () => {
                     <h4 className="font-black text-slate-900 text-sm mt-1">{field.label}</h4>
                     <p className="text-slate-500 text-[10px] font-mono">Type: {field.type} • {field.defaultMandatory ? 'Mandatory ✅' : 'Optional'}</p>
                   </div>
-                  <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* SECTION 2: TOPIC-BASED MASTER DATA DROPDOWN OPTIONS MANAGER */}
-          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
             <div className="border-b border-slate-100 pb-3">
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-indigo-600" />
@@ -1128,17 +1032,17 @@ export const SuperAdminView = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
               
               {/* Dropdown 1: Departments */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🏢 Departments List ({masterDropdownOptions.departments?.length || 0})</h4>
                   <span className="badge badge-indigo text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
                   {masterDropdownOptions.departments?.map((opt, i) => (
-                    <span key={i} className="badge badge-indigo text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
+                    <span key={i} className="badge badge-indigo text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('departments', opt)} className="text-indigo-400 hover:text-indigo-900 font-black">✕</button>
+                      <button onClick={() => removeMasterDropdownOption('departments', opt)} className="text-indigo-400 hover:text-indigo-900 font-black cursor-pointer">✕</button>
                     </span>
                   ))}
                 </div>
@@ -1158,7 +1062,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, departments: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1166,17 +1070,17 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 2: Designations */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">👔 Designations List ({masterDropdownOptions.designations?.length || 0})</h4>
                   <span className="badge badge-purple text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
                   {masterDropdownOptions.designations?.map((opt, i) => (
-                    <span key={i} className="badge badge-purple text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
+                    <span key={i} className="badge badge-purple text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('designations', opt)} className="text-purple-400 hover:text-purple-900 font-black">✕</button>
+                      <button onClick={() => removeMasterDropdownOption('designations', opt)} className="text-purple-400 hover:text-purple-900 font-black cursor-pointer">✕</button>
                     </span>
                   ))}
                 </div>
@@ -1196,7 +1100,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, designations: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1204,17 +1108,17 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 3: Work Locations */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">📍 Work Locations ({masterDropdownOptions.workLocations?.length || 0})</h4>
                   <span className="badge badge-teal text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
                   {masterDropdownOptions.workLocations?.map((opt, i) => (
-                    <span key={i} className="badge badge-teal text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
+                    <span key={i} className="badge badge-teal text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('workLocations', opt)} className="text-teal-400 hover:text-teal-900 font-black">✕</button>
+                      <button onClick={() => removeMasterDropdownOption('workLocations', opt)} className="text-teal-400 hover:text-teal-900 font-black cursor-pointer">✕</button>
                     </span>
                   ))}
                 </div>
@@ -1234,7 +1138,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, workLocations: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1242,17 +1146,17 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 4: Educational Qualifications */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🎓 Educational Qualifications ({masterDropdownOptions.qualifications?.length || 0})</h4>
                   <span className="badge badge-amber text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
                   {masterDropdownOptions.qualifications?.map((opt, i) => (
-                    <span key={i} className="badge badge-amber text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
+                    <span key={i} className="badge badge-amber text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('qualifications', opt)} className="text-amber-500 hover:text-amber-900 font-black">✕</button>
+                      <button onClick={() => removeMasterDropdownOption('qualifications', opt)} className="text-amber-500 hover:text-amber-900 font-black cursor-pointer">✕</button>
                     </span>
                   ))}
                 </div>
@@ -1272,7 +1176,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, qualifications: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1287,7 +1191,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 8: API CREDENTIALS & SENSITIVE KEYS */}
       {activeTab === 'apiconfig' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -1299,7 +1203,7 @@ export const SuperAdminView = () => {
             <span className="badge badge-emerald text-[10px]">256-Bit Encrypted</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Gateway 1 */}
             <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
               <span className="badge badge-indigo text-[10px]">Govt Gateway</span>
@@ -1316,7 +1220,7 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('apiSetu')} className="btn btn-superadmin text-xs py-1.5 w-full font-bold">Save API SETU</button>
+                <button onClick={() => handleSaveApiConfig('apiSetu')} className="btn btn-superadmin text-xs py-1.5 w-full font-bold cursor-pointer">Save API SETU</button>
               </div>
             </div>
 
@@ -1336,7 +1240,7 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('sandbox')} className="btn btn-company text-xs py-1.5 w-full font-bold">Save SMS Gateway</button>
+                <button onClick={() => handleSaveApiConfig('sandbox')} className="btn btn-company text-xs py-1.5 w-full font-bold cursor-pointer">Save SMS Gateway</button>
               </div>
             </div>
 
@@ -1356,7 +1260,7 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('coincircletrust')} className="btn btn-hrexecutive text-xs py-1.5 w-full font-bold">Save Biometrics</button>
+                <button onClick={() => handleSaveApiConfig('coincircletrust')} className="btn btn-hrexecutive text-xs py-1.5 w-full font-bold cursor-pointer">Save Biometrics</button>
               </div>
             </div>
           </div>
@@ -1365,7 +1269,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 9: REPORTS SECTION (4 DETAILED REPORTS) */}
       {activeTab === 'reports' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
               <FileDown className="w-5 h-5 text-amber-600" />
@@ -1384,7 +1288,7 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Platform_Master_Summary', `JOY DATA VERIFICATION - PLATFORM MASTER REPORT\nDate: ${new Date().toLocaleString()}\nTotal Companies: ${companies.length}\nTotal Checks: ${totalVerifiedCount}\nRevenue: ₹${totalGrossRevenue.toLocaleString()}`, '.pdf', 'application/pdf')}
-                className="btn btn-superadmin text-xs py-1.5 px-3 font-bold"
+                className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold cursor-pointer"
               >
                 Export PDF
               </button>
@@ -1399,7 +1303,7 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Monthly_Revenue_Statement', `Company,Plan,Volume,Price,Gross,GST,Net\n` + companies.map(c => `${c.name},${c.plan},${c.verifiedCountThisMonth},${c.pricePerVerification},${c.verifiedCountThisMonth*c.pricePerVerification},${Math.round(c.verifiedCountThisMonth*c.pricePerVerification*0.18)},${Math.round(c.verifiedCountThisMonth*c.pricePerVerification*1.18)}`).join('\n'), '.csv', 'text/csv')}
-                className="btn btn-hrexecutive text-xs py-1.5 px-3 font-bold"
+                className="btn btn-hrexecutive text-xs py-1.5 px-3.5 font-bold cursor-pointer"
               >
                 Export Excel
               </button>
@@ -1414,7 +1318,7 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('API_SLA_Latency_Audit', `API GATEWAY SLA & LATENCY AUDIT REPORT\nDate: ${new Date().toLocaleString()}\nDigiLocker Uptime: 99.95%\nAvg Latency: 1.2s\nCarrier SMS Uptime: 99.88%`, '.doc', 'application/msword')}
-                className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
+                className="btn btn-secondary text-xs py-1.5 px-3.5 font-bold cursor-pointer"
               >
                 Export Word
               </button>
@@ -1429,7 +1333,7 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Company_Feature_Quota_Audit', `Company,Plan,MaxLimit,UsedThisMonth,Aadhaar,Mobile,Face,PAN,DL,Bank\n` + companies.map(c => `${c.name},${c.plan},${c.maxLimit},${c.verifiedCountThisMonth},${c.features.aadhaar},${c.features.mobileOtp},${c.features.faceCapture},${c.features.pan},${c.features.drivingLicense},${c.features.bankCheck}`).join('\n'), '.csv', 'text/csv')}
-                className="btn btn-company text-xs py-1.5 px-3 font-bold"
+                className="btn btn-company text-xs py-1.5 px-3.5 font-bold cursor-pointer"
               >
                 Export CSV
               </button>
@@ -1440,7 +1344,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 10: CUSTOMER SUPPORT & TICKET HELPDESK HUB */}
       {activeTab === 'tickets' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -1454,7 +1358,7 @@ export const SuperAdminView = () => {
 
           <div className="space-y-4 text-xs">
             {supportTickets.map(ticket => (
-              <div key={ticket.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div key={ticket.id} className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-slate-900 text-sm">#{ticket.id} • {ticket.subject}</span>
@@ -1464,9 +1368,9 @@ export const SuperAdminView = () => {
                 </div>
 
                 {/* Message Thread */}
-                <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-white rounded-lg border border-slate-200">
+                <div className="space-y-2 max-h-48 overflow-y-auto p-2.5 bg-white rounded-lg border border-slate-200">
                   {ticket.messages?.map(msg => (
-                    <div key={msg.id} className={`p-2 rounded-lg text-xs ${msg.type === 'admin_reply' ? 'bg-indigo-50 border border-indigo-200 text-indigo-950 ml-4' : 'bg-slate-100 text-slate-800 mr-4'}`}>
+                    <div key={msg.id} className={`p-2.5 rounded-lg text-xs ${msg.type === 'admin_reply' ? 'bg-indigo-50 border border-indigo-200 text-indigo-950 ml-4' : 'bg-slate-100 text-slate-800 mr-4'}`}>
                       <div className="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
                         <span>{msg.sender}</span>
                         <span>{msg.timestamp}</span>
@@ -1492,7 +1396,7 @@ export const SuperAdminView = () => {
                         setTicketReplyText({ ...ticketReplyText, [ticket.id]: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold flex items-center gap-1 shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold flex items-center gap-1 shrink-0 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Reply</span>
@@ -1506,7 +1410,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 11: ERROR LOGS & ISSUE TRACKER */}
       {activeTab === 'issuelogs' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-4 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
@@ -1517,9 +1421,9 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-              <button onClick={() => setLogFilterStatus('all')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-600'}`}>All</button>
-              <button onClick={() => setLogFilterStatus('unresolved')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white font-bold' : 'text-slate-600'}`}>Unresolved</button>
-              <button onClick={() => setLogFilterStatus('solved')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-600'}`}>Solved</button>
+              <button onClick={() => setLogFilterStatus('all')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-600'}`}>All</button>
+              <button onClick={() => setLogFilterStatus('unresolved')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white font-bold' : 'text-slate-600'}`}>Unresolved</button>
+              <button onClick={() => setLogFilterStatus('solved')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-600'}`}>Solved</button>
             </div>
           </div>
 
@@ -1537,7 +1441,7 @@ export const SuperAdminView = () => {
 
                 <button
                   onClick={() => toggleLogSolvedStatus(log.id)}
-                  className={`btn text-xs py-1.5 px-3 font-bold ${log.solved ? 'btn-secondary text-emerald-800' : 'btn-superadmin'}`}
+                  className={`btn text-xs py-1.5 px-3.5 font-bold cursor-pointer ${log.solved ? 'btn-secondary text-emerald-800' : 'btn-superadmin'}`}
                 >
                   {log.solved ? 'Mark Unresolved' : 'Mark Solved ✅'}
                 </button>
@@ -1549,7 +1453,7 @@ export const SuperAdminView = () => {
 
       {/* TAB 12: PLATFORM GUIDELINES */}
       {activeTab === 'guidelines' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-purple-600" />
@@ -1558,13 +1462,13 @@ export const SuperAdminView = () => {
             <p className="text-xs text-slate-500 font-medium">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
             {Object.entries(platformGuidelines).map(([roleKey, guide]) => (
-              <div key={roleKey} className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+              <div key={roleKey} className="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2.5">
                 <span className="badge badge-purple text-[10px] uppercase font-bold">{roleKey} Guide</span>
                 <h4 className="font-black text-slate-900 text-sm">{guide.title}</h4>
                 <p className="text-slate-600">{guide.summary}</p>
-                <div className="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1 text-[11px] text-slate-700 font-medium">
+                <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1.5 text-[11px] text-slate-700 font-medium">
                   <p><strong>Step 1:</strong> {guide.step1}</p>
                   <p><strong>Step 2:</strong> {guide.step2}</p>
                   <p><strong>Step 3:</strong> {guide.step3}</p>
@@ -1577,13 +1481,13 @@ export const SuperAdminView = () => {
 
       {/* TAB 13: PLATFORM SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="text-base font-black text-slate-900">Super Admin Global Platform Settings</h3>
             <p className="text-xs text-slate-500 font-medium">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Global Platform Title</label>
               <input 
@@ -1626,14 +1530,14 @@ export const SuperAdminView = () => {
 
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="glass-panel w-full max-w-lg p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-indigo-600" />
                 <span>Onboard New Enterprise Company</span>
               </h3>
-              <button onClick={() => setShowAddCompanyModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <button onClick={() => setShowAddCompanyModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleCreateCompanySubmit} className="space-y-4 text-xs">
@@ -1700,7 +1604,7 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Terms Acceptance */}
-              <div className="p-3.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2.5">
+              <div className="p-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
                     <Scale className="w-4 h-4 text-indigo-700" />
@@ -1712,7 +1616,7 @@ export const SuperAdminView = () => {
                       setSelectedTermsCompany(newCompany.name || 'New Enterprise Client');
                       setShowTermsModal(true);
                     }}
-                    className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 underline"
+                    className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 underline cursor-pointer"
                   >
                     Review Full Terms (v2.4)
                   </button>
@@ -1724,7 +1628,7 @@ export const SuperAdminView = () => {
                     required
                     checked={newCompany.termsAccepted}
                     onChange={(e) => setNewCompany({ ...newCompany, termsAccepted: e.target.checked })}
-                    className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
+                    className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
                   />
                   <span className="text-[11px] font-bold text-slate-800">
                     I confirm the authorized representative agrees to JOY Corporate Solutions Terms of Service, Point-in-Time Disclosures, and DPDP Privacy Policy.
@@ -1733,8 +1637,8 @@ export const SuperAdminView = () => {
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowAddCompanyModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-superadmin font-bold shadow-md">Save & Onboard Company</button>
+                <button type="button" onClick={() => setShowAddCompanyModal(false)} className="btn btn-secondary cursor-pointer">Cancel</button>
+                <button type="submit" className="btn btn-superadmin font-bold shadow-md cursor-pointer">Save & Onboard Company</button>
               </div>
             </form>
           </div>
@@ -1744,13 +1648,13 @@ export const SuperAdminView = () => {
       {/* Edit Custom Company Terms Modal */}
       {editingCustomTermsCompany && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="badge badge-amber text-[10px]">Custom T&C Contract Builder</span>
                 <h3 className="text-base font-black text-slate-900 mt-1">Customize Terms: {editingCustomTermsCompany.companyName}</h3>
               </div>
-              <button onClick={() => setEditingCustomTermsCompany(null)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <button onClick={() => setEditingCustomTermsCompany(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -1804,13 +1708,13 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-              <button onClick={() => setEditingCustomTermsCompany(null)} className="btn btn-secondary text-xs">Cancel</button>
+              <button onClick={() => setEditingCustomTermsCompany(null)} className="btn btn-secondary text-xs cursor-pointer">Cancel</button>
               <button 
                 onClick={() => {
                   updateCustomCompanyTerms(editingCustomTermsCompany.companyId, editingCustomTermsCompany);
                   setEditingCustomTermsCompany(null);
                 }} 
-                className="btn btn-superadmin text-xs font-bold shadow-md"
+                className="btn btn-superadmin text-xs font-bold shadow-md cursor-pointer"
               >
                 Save Custom Terms Contract
               </button>
@@ -1822,13 +1726,13 @@ export const SuperAdminView = () => {
       {/* Edit 10 Feature Flags Modal */}
       {editingFeaturesCompany && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="badge badge-indigo text-[10px]">Super Admin Feature Flags</span>
                 <h3 className="text-base font-extrabold text-slate-900 mt-1">Configure 10 Verification Modules: {editingFeaturesCompany.name}</h3>
               </div>
-              <button onClick={() => setEditingFeaturesCompany(null)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <button onClick={() => setEditingFeaturesCompany(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1 text-xs">
@@ -1855,7 +1759,7 @@ export const SuperAdminView = () => {
                         };
                         setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
                       }}
-                      className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
+                      className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
                     />
                   </label>
                 );
@@ -1863,13 +1767,13 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-              <button onClick={() => setEditingFeaturesCompany(null)} className="btn btn-secondary text-xs">Cancel</button>
+              <button onClick={() => setEditingFeaturesCompany(null)} className="btn btn-secondary text-xs cursor-pointer">Cancel</button>
               <button 
                 onClick={() => {
                   updateCompanyFeatures(editingFeaturesCompany.id, editingFeaturesCompany.features, editingFeaturesCompany.plan);
                   setEditingFeaturesCompany(null);
                 }} 
-                className="btn btn-superadmin text-xs font-bold shadow-md"
+                className="btn btn-superadmin text-xs font-bold shadow-md cursor-pointer"
               >
                 Save Feature Flags
               </button>
@@ -1881,13 +1785,13 @@ export const SuperAdminView = () => {
       {/* Add Master Default Field Modal */}
       {showAddMasterFieldModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold flex items-center gap-2">
                 <ListCheck className="w-5 h-5 text-purple-600" />
                 <span>Add Master Candidate Default Field</span>
               </h3>
-              <button onClick={() => setShowAddMasterFieldModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <button onClick={() => setShowAddMasterFieldModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleCreateMasterFieldSubmit} className="space-y-4 text-xs">
@@ -1932,8 +1836,8 @@ export const SuperAdminView = () => {
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowAddMasterFieldModal(false)} className="btn btn-secondary text-xs font-bold">Cancel</button>
-                <button type="submit" className="btn btn-superadmin text-xs font-bold">Save Master Field</button>
+                <button type="button" onClick={() => setShowAddMasterFieldModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+                <button type="submit" className="btn btn-superadmin text-xs font-bold cursor-pointer">Save Master Field</button>
               </div>
             </form>
           </div>
