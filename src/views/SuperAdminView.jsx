@@ -53,11 +53,7 @@ import {
   BookOpen,
   MessageSquare,
   Trash2,
-  ChevronRight,
-  Shield,
-  Sparkles,
-  ArrowUpRight,
-  Briefcase
+  Sparkles
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
@@ -104,11 +100,7 @@ export const SuperAdminView = () => {
     employmentTypes: ''
   });
 
-  // Active Category & Tab Management
-  const [activeCategory, setActiveCategory] = useState('finance'); // 'finance' | 'enterprises' | 'database' | 'system'
-  const [activeTab, setActiveTab] = useState('analytics'); 
-
-  // Company filtering for analytics
+  const [activeTab, setActiveTab] = useState('analytics'); // 13 tabs supported
   const [selectedAnalyticsCompanyId, setSelectedAnalyticsCompanyId] = useState('all'); 
   
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
@@ -256,185 +248,102 @@ export const SuperAdminView = () => {
     showToast('SQL Query Executed Successfully on PostgreSQL Engine (Execution time: 4.2ms)');
   };
 
-  // 4 Main Master Categories for Clean Executive Architecture
-  const masterCategories = [
-    {
-      id: 'finance',
-      label: 'Financial & Profit Center',
-      icon: DollarSign,
-      tabs: [
-        { id: 'analytics', label: 'Profit & Volume Analytics', icon: BarChart3 },
-        { id: 'billing', label: 'Metered Invoicing & Bill Dispatch', icon: CreditCard }
-      ]
-    },
-    {
-      id: 'enterprises',
-      label: 'Enterprise Clients & Legal',
-      icon: Building2,
-      tabs: [
-        { id: 'companies', label: 'Company Accounts & 10 Flags', icon: Building2 },
-        { id: 'terms_hub', label: 'Terms & Contracts Hub 📜', icon: Scale }
-      ]
-    },
-    {
-      id: 'database',
-      label: 'Database & Infrastructure',
-      icon: Database,
-      tabs: [
-        { id: 'dbms', label: 'PostgreSQL DBMS Explorer', icon: Database },
-        { id: 'logins', label: 'Multi-Role Sessions Telemetry', icon: Users },
-        { id: 'apiconfig', label: 'API Credentials & Keys', icon: Server }
-      ]
-    },
-    {
-      id: 'system',
-      label: 'System Operations & Support',
-      icon: Sliders,
-      tabs: [
-        { id: 'masterfields', label: 'Form Fields & Dropdowns', icon: ListCheck },
-        { id: 'reports', label: 'Executive Reports Center', icon: FileDown },
-        { id: 'tickets', label: `Support Helpdesk (${supportTickets.length})`, icon: LifeBuoy },
-        { id: 'issuelogs', label: `Error Logs (${totalUnresolvedErrorCount})`, icon: AlertCircle },
-        { id: 'guidelines', label: 'Platform Guidelines', icon: BookOpen },
-        { id: 'settings', label: 'Global Settings', icon: Settings }
-      ]
-    }
+  const navigationTabs = [
+    { id: 'analytics', label: 'Profit & Analytics', icon: BarChart3 },
+    { id: 'companies', label: 'Companies (10 Flags)', icon: Building2 },
+    { id: 'terms_hub', label: 'Terms & Contracts Hub', icon: Scale },
+    { id: 'billing', label: 'Metered Invoicing', icon: CreditCard },
+    { id: 'logins', label: 'Multi-Role Logins', icon: Users },
+    { id: 'dbms', label: 'Database (DBMS)', icon: Database },
+    { id: 'masterfields', label: 'Form Fields & Dropdowns', icon: ListCheck },
+    { id: 'apiconfig', label: 'API Credentials', icon: Server },
+    { id: 'reports', label: 'Reports Center', icon: FileDown },
+    { id: 'tickets', label: `Support Tickets (${supportTickets.length})`, icon: LifeBuoy },
+    { id: 'issuelogs', label: `Error Logs (${totalUnresolvedErrorCount})`, icon: AlertCircle },
+    { id: 'guidelines', label: 'Role Guidelines', icon: BookOpen },
+    { id: 'settings', label: 'System Settings', icon: Settings }
   ];
 
-  const handleCategorySelect = (categoryId) => {
-    setActiveCategory(categoryId);
-    const firstTab = masterCategories.find(c => c.id === categoryId)?.tabs[0]?.id;
-    if (firstTab) setActiveTab(firstTab);
-  };
-
   return (
-    <div className="flex flex-col gap-8 animate-fadeIn text-slate-900 pb-20">
+    <div className="space-y-6 animate-fadeIn text-slate-900 pb-16">
       
-      {/* 🌟 1. Executive Master Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-500/20 relative overflow-hidden">
-        {/* Subtle Decorative Background Glows */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+      {/* Top Header Card in Authentic SuperAdmin Purple & Indigo Light Theme */}
+      <div className="glass-panel p-6 sm:p-7 border-indigo-200 bg-white relative overflow-hidden shadow-sm rounded-2xl">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500" />
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 backdrop-blur-md">
-                Super Admin Master Console
-              </span>
-              <span className="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span>PostgreSQL 16 Engine Active</span>
-                <span className="text-slate-600">•</span>
-                <span>DPDP Act 2023 Compliant</span>
-              </span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="badge badge-purple font-bold">Super Admin Console</span>
+              <span className="text-xs text-slate-500 font-bold">• Enterprise Governance, Profit Telemetry & DBMS</span>
             </div>
-
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-              Platform Master Control & Operations
-            </h1>
-            
-            <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-3xl leading-relaxed">
-              Consolidated enterprise telemetry, custom company legal agreements, automated metered billing dispatch, and live database governance.
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Platform Master Control, Analytics & Database Operations
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-3xl">
+              Manage enterprise contracts, metered billing, multi-role session monitoring, and real-time PostgreSQL database tables.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap self-start lg:self-auto">
+          <div className="flex items-center gap-2.5 flex-wrap self-start lg:self-auto">
             {totalUnresolvedErrorCount > 0 && (
               <button 
-                onClick={() => {
-                  setActiveCategory('system');
-                  setActiveTab('issuelogs');
-                }}
-                className="px-4 py-2.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold flex items-center gap-2 hover:bg-amber-500/30 transition-all cursor-pointer shadow-lg"
+                onClick={() => setActiveTab('issuelogs')}
+                className="badge badge-amber text-xs px-3.5 py-2 flex items-center gap-2 font-bold shadow-2xs hover:bg-amber-100 transition-all cursor-pointer"
               >
-                <AlertTriangle className="w-4 h-4 text-amber-400 animate-bounce" />
+                <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
                 <span>{totalUnresolvedErrorCount} Unresolved Issues</span>
               </button>
             )}
             
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg shadow-indigo-500/30 hover:scale-[1.02] transition-all cursor-pointer"
+              className="btn btn-superadmin text-xs sm:text-sm py-2.5 px-4.5 flex items-center gap-2 shadow-md font-bold cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Onboard Company</span>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* 🧭 2. Two-Tier Executive Navigation Architecture */}
-      <div className="flex flex-col gap-3 bg-white p-3 rounded-3xl border border-slate-200 shadow-sm">
-        
-        {/* Tier 1: 4 Main Pillars */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {masterCategories.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => handleCategorySelect(cat.id)}
-                className={`p-3.5 rounded-2xl flex items-center gap-3 transition-all text-left cursor-pointer border ${
-                  isSelected 
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-md' 
-                    : 'bg-slate-50/80 text-slate-700 border-slate-200/80 hover:bg-slate-100 hover:border-slate-300'
-                }`}
-              >
-                <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 border border-slate-200'}`}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-black leading-tight">{cat.label}</div>
-                  <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {cat.tabs.length} Modules Available
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Tier 2: Active Sub-Tabs */}
-        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 overflow-x-auto pb-1">
-          {masterCategories.find(c => c.id === activeCategory)?.tabs.map((tab) => {
+        {/* 13-Tab Navigation Bar with Padding & Spacing */}
+        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 overflow-x-auto scrollbar-thin">
+          {navigationTabs.map((tab) => {
             const Icon = tab.icon;
-            const isTabActive = activeTab === tab.id;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer ${
-                  isTabActive
-                    ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
-                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                  isActive 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isTabActive ? 'text-white' : 'text-indigo-600'}`} />
+                <Icon className="w-3.5 h-3.5" />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
-
       </div>
 
-      {/* 📊 TAB 1: FINANCIAL & PROFIT ANALYTICS */}
+      {/* TAB 1: PROFIT & ANALYTICS */}
       {activeTab === 'analytics' && (
-        <div className="flex flex-col gap-8">
+        <div className="space-y-6">
           
-          {/* Executive Company-Wise Filter Command Strip */}
-          <div className="bg-white p-5 rounded-2xl border border-indigo-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Filter Bar */}
+          <div className="glass-panel p-4 sm:p-5 border-indigo-200/80 bg-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2 text-indigo-950 font-black text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-indigo-950 font-bold text-xs uppercase tracking-wider">
                 <Filter className="w-4 h-4 text-indigo-600" />
-                <span>Filter Enterprise Telemetry:</span>
+                <span>Filter Analytics View:</span>
               </div>
               <select 
                 value={selectedAnalyticsCompanyId}
                 onChange={(e) => setSelectedAnalyticsCompanyId(e.target.value)}
-                className="bg-slate-50 border border-indigo-200 text-slate-900 rounded-xl px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs cursor-pointer"
+                className="form-select bg-slate-50 border-indigo-200 text-slate-900 text-xs font-bold w-auto cursor-pointer"
               >
                 <option value="all">🌐 All Enterprise Companies (Consolidated Platform)</option>
                 {companies.map(c => (
@@ -444,12 +353,12 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="text-xs text-slate-600 font-medium">
-              Showing analytics for: <strong className="text-indigo-900 font-bold">{selectedAnalyticsCompanyId === 'all' ? 'All Enterprise Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
+              Showing metrics for: <strong className="text-indigo-900 font-bold">{selectedAnalyticsCompanyId === 'all' ? 'All Enterprise Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
             </div>
           </div>
 
           {/* 4 Financial & Operational KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             <MetricCard 
               title="Total Verifications" 
               value={totalVerifiedCount.toLocaleString()} 
@@ -486,30 +395,30 @@ export const SuperAdminView = () => {
           </div>
 
           {/* Company-Wise Profit Matrix Table */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col gap-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 shadow-sm rounded-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-emerald-600" />
                   <span>Company-Wise Profit & Margin Matrix</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">Detailed financial breakdown of gross billings, upstream provider costs, and net platform profit per client</p>
+                <p className="text-xs text-slate-500 font-medium">Detailed financial breakdown of gross billings, upstream provider costs, and net platform profit per client</p>
               </div>
-              <span className="badge badge-emerald text-[10px] font-bold self-start sm:self-auto">Real-Time Telemetry</span>
+              <span className="badge badge-emerald text-[10px]">Real-Time Telemetry</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
-                    <th className="py-3.5 px-4 rounded-l-2xl">Client Enterprise</th>
-                    <th className="py-3.5 px-4">Subscription Plan</th>
-                    <th className="py-3.5 px-4 text-center">Verified Volume</th>
-                    <th className="py-3.5 px-4 text-center">Tariff Rate</th>
-                    <th className="py-3.5 px-4 text-center">Gross Revenue</th>
-                    <th className="py-3.5 px-4 text-center">Upstream Cost (₹25/ck)</th>
-                    <th className="py-3.5 px-4 text-center">Net Profit</th>
-                    <th className="py-3.5 px-4 text-center rounded-r-2xl">Profit Margin</th>
+                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/60">
+                    <th className="py-3 px-4">Client Enterprise</th>
+                    <th className="py-3 px-4">Subscription Plan</th>
+                    <th className="py-3 px-4 text-center">Verified Volume</th>
+                    <th className="py-3 px-4 text-center">Tariff Rate</th>
+                    <th className="py-3 px-4 text-center">Gross Revenue</th>
+                    <th className="py-3 px-4 text-center">Upstream Cost (₹25/ck)</th>
+                    <th className="py-3 px-4 text-center">Net Profit</th>
+                    <th className="py-3 px-4 text-center">Profit Margin</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -520,7 +429,7 @@ export const SuperAdminView = () => {
                     const margin = gross > 0 ? Math.round((profit / gross) * 100) : 79;
 
                     return (
-                      <tr key={c.id} className="hover:bg-indigo-50/30 transition-colors">
+                      <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-4 px-4 font-bold text-slate-900 text-sm">{c.name}</td>
                         <td className="py-4 px-4">
                           <span className="badge badge-indigo text-[10px]">{c.plan}</span>
@@ -543,7 +452,7 @@ export const SuperAdminView = () => {
 
           {/* Interactive Statistics Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="glass-panel p-6 border-slate-200 bg-white shadow-sm rounded-2xl">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-indigo-600" />
                 <span>Verification Volume Trend (Last 7 Days)</span>
@@ -551,7 +460,7 @@ export const SuperAdminView = () => {
               <VerificationVolumeChart />
             </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="glass-panel p-6 border-slate-200 bg-white shadow-sm rounded-2xl">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-600" />
                 <span>Turnaround Time (TAT) Distribution</span>
@@ -563,16 +472,184 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 💳 TAB: METERED BILLING & INVOICING */}
+      {/* TAB 2: COMPANIES & 10 FLAGS */}
+      {activeTab === 'companies' && (
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-purple-600" />
+                <span>Enterprise Client Companies & Feature Matrix Flags</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company</p>
+            </div>
+            
+            <button 
+              onClick={() => setShowAddCompanyModal(true)}
+              className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Onboard New Company</span>
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/60">
+                  <th className="py-3 px-4">Company Profile</th>
+                  <th className="py-3 px-4">Contact Info</th>
+                  <th className="py-3 px-4">Tariff & Quota</th>
+                  <th className="py-3 px-4 text-center">Active Features (out of 10)</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {companies.map((comp) => {
+                  const enabledCount = Object.values(comp.features || {}).filter(Boolean).length;
+                  return (
+                    <tr key={comp.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-slate-900 text-sm">{comp.name}</div>
+                        <div className="text-slate-500 text-[11px] font-mono">Code: {comp.code} • Plan: <strong>{comp.plan}</strong></div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="text-slate-900 font-medium">{comp.contactPerson}</div>
+                        <div className="text-slate-500 text-[11px]">{comp.email}</div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-slate-900 font-mono">₹{comp.pricePerVerification} / check</div>
+                        <div className="text-slate-500 text-[11px]">Quota: {comp.verifiedCountThisMonth} / {comp.maxLimit} used</div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="badge badge-purple text-[10px] font-bold">
+                          {enabledCount} of 10 Enabled
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        <button
+                          onClick={() => setEditingFeaturesCompany(comp)}
+                          className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-xs ml-auto cursor-pointer"
+                        >
+                          <Sliders className="w-3.5 h-3.5" />
+                          <span>Configure 10 Flags</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: TERMS & CONTRACTS HUB */}
+      {activeTab === 'terms_hub' && (
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Scale className="w-5 h-5 text-amber-600" />
+                <span>Enterprise Terms & Conditions Contracts Hub & Agreement Ledger</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures</p>
+            </div>
+
+            <button
+              onClick={() => {
+                setSelectedTermsCompany('Global Base Framework');
+                setShowTermsModal(true);
+              }}
+              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
+            >
+              <Eye className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Review Global Terms (v2.4)</span>
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/60">
+                  <th className="py-3 px-4">Enterprise Company</th>
+                  <th className="py-3 px-4">Bound T&C Version</th>
+                  <th className="py-3 px-4 text-center">Retention Period</th>
+                  <th className="py-3 px-4">SLA Tier & Indemnity</th>
+                  <th className="py-3 px-4">Authorized Signatory</th>
+                  <th className="py-3 px-4 text-right">Contract Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {companies.map(comp => {
+                  const customTerms = customCompanyTerms[comp.id] || {
+                    retentionDays: 60,
+                    customSla: '99.9% Standard Commercial Tier',
+                    customIndemnityLimit: '₹5,00,000 INR',
+                    boundVersion: 'v2.4-2026',
+                    signedBy: `${comp.contactPerson} (${comp.email})`,
+                    signedDate: '2026-08-20'
+                  };
+
+                  return (
+                    <tr key={comp.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-4 px-4 font-bold text-slate-900 text-sm">{comp.name}</td>
+                      <td className="py-4 px-4">
+                        <span className="badge badge-purple text-[10px] font-black">{customTerms.boundVersion} 🟢</span>
+                      </td>
+                      <td className="py-4 px-4 text-center font-bold">
+                        <span className="badge badge-amber text-[10px]">{customTerms.retentionDays} Days Retention</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-slate-900">{customTerms.customSla}</div>
+                        <div className="text-slate-500 text-[10px]">Indemnity: {customTerms.customIndemnityLimit}</div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="font-semibold text-slate-900">{customTerms.signedBy}</div>
+                        <div className="text-slate-500 text-[10px] font-mono">{customTerms.signedDate}</div>
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setEditingCustomTermsCompany({ ...customTerms, companyId: comp.id, companyName: comp.name })}
+                            className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 cursor-pointer"
+                            title="Customize Terms & Conditions for this Company"
+                          >
+                            <Sliders className="w-3.5 h-3.5 text-amber-700" />
+                            <span>Edit T&C</span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setSelectedTermsCompany(comp.name);
+                              setShowTermsModal(true);
+                            }}
+                            className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1 font-bold shadow-xs cursor-pointer"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>View Contract</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: METERED INVOICING */}
       {activeTab === 'billing' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-sky-600" />
                 <span>Monthly Metered Invoicing & Automated Bill Dispatch Engine</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Auto-calculates monthly verification bills and dispatches official PDF invoices to company contacts via Email & WhatsApp</p>
+              <p className="text-xs text-slate-500 font-medium">Auto-calculates monthly verification bills and dispatches official PDF invoices to company contacts via Email & WhatsApp</p>
             </div>
             <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
           </div>
@@ -649,177 +726,65 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 🏢 TAB: COMPANIES & 10-FEATURE FLAGS MATRIX */}
-      {activeTab === 'companies' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      {/* TAB 5: MULTI-ROLE LOGINS */}
+      {activeTab === 'logins' && (
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
+          <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-purple-600" />
-                <span>Enterprise Client Companies & Feature Matrix Flags</span>
+                <Users className="w-5 h-5 text-emerald-600" />
+                <span>Multi-Role Login Sessions & Security Telemetry</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company</p>
+              <p className="text-xs text-slate-500 font-medium">Real-time session monitoring across Super Admin, Company Admins, HR Executives, and Candidate Links</p>
             </div>
-            
-            <button 
-              onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Onboard New Company</span>
-            </button>
+            <span className="badge badge-emerald text-[10px]">5 Active JWT Tokens</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
-                  <th className="py-3.5 px-4 rounded-l-2xl">Company Profile</th>
-                  <th className="py-3.5 px-4">Contact Info</th>
-                  <th className="py-3.5 px-4">Tariff & Quota</th>
-                  <th className="py-3.5 px-4 text-center">Active Features (out of 10)</th>
-                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Actions</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/60">
+                  <th className="py-3 px-4">Login Role</th>
+                  <th className="py-3 px-4">User & Email</th>
+                  <th className="py-3 px-4">Organization Entity</th>
+                  <th className="py-3 px-4">IP Address & Network</th>
+                  <th className="py-3 px-4">Device / Browser</th>
+                  <th className="py-3 px-4 text-center">Actions Count</th>
+                  <th className="py-3 px-4 text-right">Session Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
-                {companies.map((comp) => {
-                  const enabledCount = Object.values(comp.features || {}).filter(Boolean).length;
-                  return (
-                    <tr key={comp.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900 text-sm">{comp.name}</div>
-                        <div className="text-slate-500 text-[11px] font-mono">Code: {comp.code} • Plan: <strong>{comp.plan}</strong></div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="text-slate-900 font-medium">{comp.contactPerson}</div>
-                        <div className="text-slate-500 text-[11px]">{comp.email}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900 font-mono">₹{comp.pricePerVerification} / check</div>
-                        <div className="text-slate-500 text-[11px]">Quota: {comp.verifiedCountThisMonth} / {comp.maxLimit} used</div>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="badge badge-purple text-[10px] font-bold">
-                          {enabledCount} of 10 Enabled
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <button
-                          onClick={() => setEditingFeaturesCompany(comp)}
-                          className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-xs ml-auto cursor-pointer"
-                        >
-                          <Sliders className="w-3.5 h-3.5" />
-                          <span>Configure 10 Flags</span>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {multiRoleSessions.map(sess => (
+                  <tr key={sess.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-4 px-4">
+                      <span className={`badge text-[10px] font-bold ${
+                        sess.role === 'superadmin' ? 'badge-purple' : sess.role === 'company' ? 'badge-cyan' : sess.role === 'hrexecutive' ? 'badge-emerald' : 'badge-amber'
+                      }`}>
+                        {sess.roleLabel}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="font-bold text-slate-900 text-sm">{sess.userName}</div>
+                      <div className="text-slate-500 text-[11px] font-mono">{sess.email}</div>
+                    </td>
+                    <td className="py-4 px-4 font-semibold text-slate-900">{sess.company}</td>
+                    <td className="py-4 px-4 font-mono text-[11px] text-slate-600">{sess.ipAddress}</td>
+                    <td className="py-4 px-4 text-slate-600 font-medium">{sess.device}</td>
+                    <td className="py-4 px-4 text-center font-mono font-bold text-indigo-700">{sess.actionsCount} events</td>
+                    <td className="py-4 px-4 text-right">
+                      <span className="badge badge-emerald text-[10px] font-black">{sess.status}</span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* 📜 TAB: TERMS & CONDITIONS CONTRACTS HUB */}
-      {activeTab === 'terms_hub' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Scale className="w-5 h-5 text-amber-600" />
-                <span>Enterprise Terms & Conditions Contracts Hub & Agreement Ledger</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures</p>
-            </div>
-
-            <button
-              onClick={() => {
-                setSelectedTermsCompany('Global Base Framework');
-                setShowTermsModal(true);
-              }}
-              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
-            >
-              <Eye className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Review Global Terms (v2.4)</span>
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
-                  <th className="py-3.5 px-4 rounded-l-2xl">Enterprise Company</th>
-                  <th className="py-3.5 px-4">Bound T&C Version</th>
-                  <th className="py-3.5 px-4 text-center">Retention Period</th>
-                  <th className="py-3.5 px-4">SLA Tier & Indemnity</th>
-                  <th className="py-3.5 px-4">Authorized Signatory</th>
-                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Contract Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800">
-                {companies.map(comp => {
-                  const customTerms = customCompanyTerms[comp.id] || {
-                    retentionDays: 60,
-                    customSla: '99.9% Standard Commercial Tier',
-                    customIndemnityLimit: '₹5,00,000 INR',
-                    boundVersion: 'v2.4-2026',
-                    signedBy: `${comp.contactPerson} (${comp.email})`,
-                    signedDate: '2026-08-20'
-                  };
-
-                  return (
-                    <tr key={comp.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-4 px-4 font-bold text-slate-900 text-sm">{comp.name}</td>
-                      <td className="py-4 px-4">
-                        <span className="badge badge-purple text-[10px] font-black">{customTerms.boundVersion} 🟢</span>
-                      </td>
-                      <td className="py-4 px-4 text-center font-bold">
-                        <span className="badge badge-amber text-[10px]">{customTerms.retentionDays} Days Retention</span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900">{customTerms.customSla}</div>
-                        <div className="text-slate-500 text-[10px]">Indemnity: {customTerms.customIndemnityLimit}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-slate-900">{customTerms.signedBy}</div>
-                        <div className="text-slate-500 text-[10px] font-mono">{customTerms.signedDate}</div>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setEditingCustomTermsCompany({ ...customTerms, companyId: comp.id, companyName: comp.name })}
-                            className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 cursor-pointer"
-                            title="Customize Terms & Conditions for this Company"
-                          >
-                            <Sliders className="w-3.5 h-3.5 text-amber-700" />
-                            <span>Edit T&C</span>
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              setSelectedTermsCompany(comp.name);
-                              setShowTermsModal(true);
-                            }}
-                            className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1 font-bold shadow-xs cursor-pointer"
-                          >
-                            <FileText className="w-3.5 h-3.5" />
-                            <span>View Contract</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 🗄️ TAB: DATABASE MANAGEMENT SYSTEM (DBMS) */}
+      {/* TAB 6: DATABASE MANAGEMENT SYSTEM (DBMS) */}
       {activeTab === 'dbms' && (
-        <div className="bg-white border border-teal-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-teal-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <div className="flex items-center gap-2">
@@ -830,7 +795,7 @@ export const SuperAdminView = () => {
                 <Database className="w-5 h-5 text-teal-700" />
                 <span>Database Management System (DBMS Explorer & SQL Runner)</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Browse live tables, inspect daily stored records, export data to CSV/JSON, and run safe read-only SQL queries</p>
+              <p className="text-xs text-slate-500 font-medium">Browse live tables, inspect daily stored records, export data to CSV/JSON, and run safe read-only SQL queries</p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -872,7 +837,7 @@ export const SuperAdminView = () => {
           </div>
 
           {/* Table Selector Pills */}
-          <div className="flex flex-col gap-2">
+          <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Select PostgreSQL Table to Inspect:</label>
             <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
               {[
@@ -918,7 +883,7 @@ export const SuperAdminView = () => {
           </div>
 
           {/* Live Data Grid */}
-          <div className="flex flex-col gap-3">
+          <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div className="relative w-full sm:w-72">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -956,7 +921,7 @@ export const SuperAdminView = () => {
           </div>
 
           {/* SQL Query Runner Console */}
-          <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 flex flex-col gap-3">
+          <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-mono text-xs text-teal-400 font-bold">
                 <Terminal className="w-4 h-4" />
@@ -965,7 +930,7 @@ export const SuperAdminView = () => {
               <span className="text-[10px] text-slate-400 font-mono">Read-Only Safe Mode Active</span>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="space-y-2">
               <textarea
                 rows={2}
                 value={customSqlQuery}
@@ -1003,75 +968,17 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 👥 TAB: MULTI-ROLE LOGIN SESSIONS */}
-      {activeTab === 'logins' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-600" />
-                <span>Multi-Role Login Sessions & Security Telemetry</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Real-time session monitoring across Super Admin, Company Admins, HR Executives, and Candidate Links</p>
-            </div>
-            <span className="badge badge-emerald text-[10px]">5 Active JWT Tokens</span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
-                  <th className="py-3.5 px-4 rounded-l-2xl">Login Role</th>
-                  <th className="py-3.5 px-4">User & Email</th>
-                  <th className="py-3.5 px-4">Organization Entity</th>
-                  <th className="py-3.5 px-4">IP Address & Network</th>
-                  <th className="py-3.5 px-4">Device / Browser</th>
-                  <th className="py-3.5 px-4 text-center">Actions Count</th>
-                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Session Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800">
-                {multiRoleSessions.map(sess => (
-                  <tr key={sess.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-4 px-4">
-                      <span className={`badge text-[10px] font-bold ${
-                        sess.role === 'superadmin' ? 'badge-purple' : sess.role === 'company' ? 'badge-cyan' : sess.role === 'hrexecutive' ? 'badge-emerald' : 'badge-amber'
-                      }`}>
-                        {sess.roleLabel}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="font-bold text-slate-900 text-sm">{sess.userName}</div>
-                      <div className="text-slate-500 text-[11px] font-mono">{sess.email}</div>
-                    </td>
-                    <td className="py-4 px-4 font-semibold text-slate-900">{sess.company}</td>
-                    <td className="py-4 px-4 font-mono text-[11px] text-slate-600">{sess.ipAddress}</td>
-                    <td className="py-4 px-4 text-slate-600 font-medium">{sess.device}</td>
-                    <td className="py-4 px-4 text-center font-mono font-bold text-indigo-700">{sess.actionsCount} events</td>
-                    <td className="py-4 px-4 text-right">
-                      <span className="badge badge-emerald text-[10px] font-black">{sess.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 📋 TAB: MASTER FORM FIELDS & DROPDOWNS */}
+      {/* TAB 7: MASTER FORM FIELDS & DROPDOWNS */}
       {activeTab === 'masterfields' && (
-        <div className="flex flex-col gap-8">
-          
-          {/* SECTION 1: MASTER CANDIDATE DEFAULT FORM FIELDS */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="space-y-6">
+          <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <ListCheck className="w-5 h-5 text-teal-600" />
                   <span>Master Candidate Default Form Fields</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">Standard default candidate form fields populated across all client companies during profile creation</p>
+                <p className="text-xs text-slate-500 font-medium">Standard default candidate form fields populated across all client companies during profile creation</p>
               </div>
               
               <button 
@@ -1097,20 +1004,19 @@ export const SuperAdminView = () => {
             </div>
           </div>
 
-          {/* SECTION 2: TOPIC-BASED MASTER DATA DROPDOWN OPTIONS MANAGER */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
             <div className="border-b border-slate-100 pb-4">
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-indigo-600" />
                 <span>Topic-Based Master Data Dropdown Options Manager</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Manage standardized dropdown lists (Departments, Designations, Work Locations, Qualifications) populated in HR Stations</p>
+              <p className="text-xs text-slate-500 font-medium">Manage standardized dropdown lists (Departments, Designations, Work Locations, Qualifications) populated in HR Stations</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
               
               {/* Dropdown 1: Departments */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🏢 Departments List ({masterDropdownOptions.departments?.length || 0})</h4>
                   <span className="badge badge-indigo text-[9px]">Master Table</span>
@@ -1148,7 +1054,7 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 2: Designations */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">👔 Designations List ({masterDropdownOptions.designations?.length || 0})</h4>
                   <span className="badge badge-purple text-[9px]">Master Table</span>
@@ -1186,7 +1092,7 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 3: Work Locations */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">📍 Work Locations ({masterDropdownOptions.workLocations?.length || 0})</h4>
                   <span className="badge badge-teal text-[9px]">Master Table</span>
@@ -1224,7 +1130,7 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 4: Educational Qualifications */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🎓 Educational Qualifications ({masterDropdownOptions.qualifications?.length || 0})</h4>
                   <span className="badge badge-amber text-[9px]">Master Table</span>
@@ -1263,20 +1169,19 @@ export const SuperAdminView = () => {
 
             </div>
           </div>
-
         </div>
       )}
 
-      {/* ⚙️ TAB: API CREDENTIALS */}
+      {/* TAB 8: API CREDENTIALS */}
       {activeTab === 'apiconfig' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Server className="w-5 h-5 text-emerald-600" />
                 <span>Upstream Government & Biometrics API Credentials</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure API SETU DigiLocker, SMS Router, and Coincircletrust Biometrics Gateway keys</p>
+              <p className="text-xs text-slate-500 font-medium">Configure API SETU DigiLocker, SMS Router, and Coincircletrust Biometrics Gateway keys</p>
             </div>
             <span className="badge badge-emerald text-[10px]">256-Bit Encrypted</span>
           </div>
@@ -1348,15 +1253,15 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 📑 TAB: REPORTS CENTER */}
+      {/* TAB 9: REPORTS CENTER */}
       {activeTab === 'reports' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4">
             <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <FileDown className="w-5 h-5 text-amber-600" />
               <span>Platform Executive Reports Center (PDF, Excel, Word)</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">Export executive platform summaries, metered financial tariff reports, API SLA latency audits, and company quota allocation records</p>
+            <p className="text-xs text-slate-500 font-medium">Export executive platform summaries, metered financial tariff reports, API SLA latency audits, and company quota allocation records</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
@@ -1419,23 +1324,23 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 🎫 TAB: SUPPORT HELPDESK */}
+      {/* TAB 10: SUPPORT TICKETS */}
       {activeTab === 'tickets' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <LifeBuoy className="w-5 h-5 text-indigo-600" />
                 <span>Customer Support & Ticket Helpdesk Hub</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Review and reply to service tickets raised by HR Executives and Company Administrators</p>
+              <p className="text-xs text-slate-500 font-medium">Review and reply to service tickets raised by HR Executives and Company Administrators</p>
             </div>
             <span className="badge badge-indigo text-[10px]">{supportTickets.length} Active Tickets</span>
           </div>
 
-          <div className="flex flex-col gap-4 text-xs">
+          <div className="space-y-4 text-xs">
             {supportTickets.map(ticket => (
-              <div key={ticket.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+              <div key={ticket.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-slate-900 text-sm">#{ticket.id} • {ticket.subject}</span>
@@ -1483,16 +1388,16 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 🚨 TAB: ERROR LOGS & ISSUE TRACKER */}
+      {/* TAB 11: ERROR LOGS */}
       {activeTab === 'issuelogs' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-rose-600" />
                 <span>Section Error Logs & Diagnostics Tracker</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Monitor system errors across all sections and toggle Solved / Unresolved status</p>
+              <p className="text-xs text-slate-500 font-medium">Monitor system errors across all sections and toggle Solved / Unresolved status</p>
             </div>
 
             <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
@@ -1502,7 +1407,7 @@ export const SuperAdminView = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="space-y-3">
             {filteredLogs.map(log => (
               <div key={log.id} className={`p-5 rounded-2xl border flex items-center justify-between gap-4 ${log.solved ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`}>
                 <div className="space-y-1">
@@ -1526,20 +1431,20 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* 📘 TAB: PLATFORM GUIDELINES */}
+      {/* TAB 12: GUIDELINES */}
       {activeTab === 'guidelines' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4">
             <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-purple-600" />
               <span>Platform Role Workflows & Guidelines Hub</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
+            <p className="text-xs text-slate-500 font-medium">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             {Object.entries(platformGuidelines).map(([roleKey, guide]) => (
-              <div key={roleKey} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-3 shadow-2xs">
+              <div key={roleKey} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 space-y-3 shadow-2xs">
                 <span className="badge badge-purple text-[10px] uppercase font-bold self-start">{roleKey} Guide</span>
                 <h4 className="font-black text-slate-900 text-sm">{guide.title}</h4>
                 <p className="text-slate-600 leading-relaxed">{guide.summary}</p>
@@ -1554,15 +1459,15 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* ⚙️ TAB: PLATFORM SETTINGS */}
+      {/* TAB 13: SYSTEM SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-sm rounded-2xl">
           <div className="border-b border-slate-100 pb-4">
             <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <Settings className="w-5 h-5 text-slate-800" />
               <span>Super Admin Global Platform Settings</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
+            <p className="text-xs text-slate-500 font-medium">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
