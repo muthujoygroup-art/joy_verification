@@ -67,6 +67,7 @@ app.include_router(billing_router, prefix=settings.API_PREFIX)
 app.include_router(documents_router, prefix=settings.API_PREFIX)
 app.include_router(settings_router, prefix=settings.API_PREFIX)
 
+@app.get("/health")
 @app.get(f"{settings.API_PREFIX}/health")
 def health_check():
     """Health check endpoint to verify backend service and database connectivity"""

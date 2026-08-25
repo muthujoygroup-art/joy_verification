@@ -1,13 +1,18 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   
-  # If requested path is not in dist, rewrite internally to dist/
+  # 1. Do NOT rewrite API endpoints to dist/ (preserve for Python backend)
+  RewriteCond %{REQUEST_URI} ^/api [NC]
+  RewriteRule .* - [L]
+
+  # 2. If requested path is in dist, rewrite internally to dist/
   RewriteCond %{REQUEST_URI} !^/dist/
   RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -f [OR]
   RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -d
   RewriteRule ^(.*)$ /dist/$1 [L]
 
-  # Route all other root requests to dist/index.html for React SPA
+  # 3. Route all other root requests to dist/index.html for React SPA
   RewriteCond %{REQUEST_URI} !^/dist/
+  RewriteCond %{REQUEST_URI} !^/api [NC]
   RewriteRule ^(.*)$ /dist/index.html [L]
 </IfModule>
