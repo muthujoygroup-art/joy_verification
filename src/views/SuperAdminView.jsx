@@ -55,7 +55,9 @@ import {
   Trash2,
   ChevronRight,
   Shield,
-  Sparkles
+  Sparkles,
+  ArrowUpRight,
+  Briefcase
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
@@ -102,8 +104,9 @@ export const SuperAdminView = () => {
     employmentTypes: ''
   });
 
+  // Active Category & Tab Management
+  const [activeCategory, setActiveCategory] = useState('finance'); // 'finance' | 'enterprises' | 'database' | 'system'
   const [activeTab, setActiveTab] = useState('analytics'); 
-  // 'analytics' | 'companies' | 'terms_hub' | 'billing' | 'logins' | 'dbms' | 'masterfields' | 'apiconfig' | 'reports' | 'tickets' | 'issuelogs' | 'guidelines' | 'settings'
 
   // Company filtering for analytics
   const [selectedAnalyticsCompanyId, setSelectedAnalyticsCompanyId] = useState('all'); 
@@ -253,60 +256,106 @@ export const SuperAdminView = () => {
     showToast('SQL Query Executed Successfully on PostgreSQL Engine (Execution time: 4.2ms)');
   };
 
-  const navigationTabs = [
-    { id: 'analytics', label: 'Profit & Analytics', icon: BarChart3, color: 'text-indigo-600', activeBg: 'bg-indigo-600' },
-    { id: 'companies', label: 'Companies (10 Flags)', icon: Building2, color: 'text-purple-600', activeBg: 'bg-purple-600' },
-    { id: 'terms_hub', label: 'Terms & Contracts Hub', icon: Scale, color: 'text-amber-600', activeBg: 'bg-amber-600' },
-    { id: 'billing', label: 'Metered Invoicing', icon: CreditCard, color: 'text-sky-600', activeBg: 'bg-sky-600' },
-    { id: 'logins', label: 'Multi-Role Logins', icon: Users, color: 'text-emerald-600', activeBg: 'bg-emerald-600' },
-    { id: 'dbms', label: 'Database (DBMS)', icon: Database, color: 'text-teal-700', activeBg: 'bg-teal-700' },
-    { id: 'masterfields', label: 'Form Fields & Dropdowns', icon: ListCheck, color: 'text-teal-600', activeBg: 'bg-teal-600' },
-    { id: 'apiconfig', label: 'API Credentials', icon: Server, color: 'text-emerald-600', activeBg: 'bg-emerald-600' },
-    { id: 'reports', label: 'Reports Center', icon: FileDown, color: 'text-amber-600', activeBg: 'bg-amber-600' },
-    { id: 'tickets', label: `Support Tickets (${supportTickets.length})`, icon: LifeBuoy, color: 'text-indigo-700', activeBg: 'bg-indigo-700' },
-    { id: 'issuelogs', label: `Error Logs (${totalUnresolvedErrorCount})`, icon: AlertCircle, color: 'text-rose-600', activeBg: 'bg-rose-600' },
-    { id: 'guidelines', label: 'Role Guidelines', icon: BookOpen, color: 'text-purple-700', activeBg: 'bg-purple-700' },
-    { id: 'settings', label: 'System Settings', icon: Settings, color: 'text-slate-800', activeBg: 'bg-slate-800' }
+  // 4 Main Master Categories for Clean Executive Architecture
+  const masterCategories = [
+    {
+      id: 'finance',
+      label: 'Financial & Profit Center',
+      icon: DollarSign,
+      tabs: [
+        { id: 'analytics', label: 'Profit & Volume Analytics', icon: BarChart3 },
+        { id: 'billing', label: 'Metered Invoicing & Bill Dispatch', icon: CreditCard }
+      ]
+    },
+    {
+      id: 'enterprises',
+      label: 'Enterprise Clients & Legal',
+      icon: Building2,
+      tabs: [
+        { id: 'companies', label: 'Company Accounts & 10 Flags', icon: Building2 },
+        { id: 'terms_hub', label: 'Terms & Contracts Hub 📜', icon: Scale }
+      ]
+    },
+    {
+      id: 'database',
+      label: 'Database & Infrastructure',
+      icon: Database,
+      tabs: [
+        { id: 'dbms', label: 'PostgreSQL DBMS Explorer', icon: Database },
+        { id: 'logins', label: 'Multi-Role Sessions Telemetry', icon: Users },
+        { id: 'apiconfig', label: 'API Credentials & Keys', icon: Server }
+      ]
+    },
+    {
+      id: 'system',
+      label: 'System Operations & Support',
+      icon: Sliders,
+      tabs: [
+        { id: 'masterfields', label: 'Form Fields & Dropdowns', icon: ListCheck },
+        { id: 'reports', label: 'Executive Reports Center', icon: FileDown },
+        { id: 'tickets', label: `Support Helpdesk (${supportTickets.length})`, icon: LifeBuoy },
+        { id: 'issuelogs', label: `Error Logs (${totalUnresolvedErrorCount})`, icon: AlertCircle },
+        { id: 'guidelines', label: 'Platform Guidelines', icon: BookOpen },
+        { id: 'settings', label: 'Global Settings', icon: Settings }
+      ]
+    }
   ];
 
+  const handleCategorySelect = (categoryId) => {
+    setActiveCategory(categoryId);
+    const firstTab = masterCategories.find(c => c.id === categoryId)?.tabs[0]?.id;
+    if (firstTab) setActiveTab(firstTab);
+  };
+
   return (
-    <div className="flex flex-col gap-6 animate-fadeIn text-slate-900 pb-16">
+    <div className="flex flex-col gap-8 animate-fadeIn text-slate-900 pb-20">
       
-      {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500" />
+      {/* 🌟 1. Executive Master Header Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-500/20 relative overflow-hidden">
+        {/* Subtle Decorative Background Glows */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="badge badge-purple font-bold px-3 py-1 text-[11px] shadow-2xs">Super Admin Master Console</span>
-              <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Enterprise Governance, Profit Telemetry & Database Management</span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 backdrop-blur-md">
+                Super Admin Master Console
+              </span>
+              <span className="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>PostgreSQL 16 Engine Active</span>
+                <span className="text-slate-600">•</span>
+                <span>DPDP Act 2023 Compliant</span>
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
               Platform Master Control & Operations
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-3xl leading-relaxed">
-              Manage enterprise client contracts, metered billing dispatch, multi-role session security, and live PostgreSQL database operations.
+            </h1>
+            
+            <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-3xl leading-relaxed">
+              Consolidated enterprise telemetry, custom company legal agreements, automated metered billing dispatch, and live database governance.
             </p>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap self-start lg:self-auto">
             {totalUnresolvedErrorCount > 0 && (
               <button 
-                onClick={() => setActiveTab('issuelogs')}
-                className="badge badge-amber text-xs px-3.5 py-2 flex items-center gap-2 font-bold shadow-2xs hover:bg-amber-100 transition-all cursor-pointer"
+                onClick={() => {
+                  setActiveCategory('system');
+                  setActiveTab('issuelogs');
+                }}
+                className="px-4 py-2.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold flex items-center gap-2 hover:bg-amber-500/30 transition-all cursor-pointer shadow-lg"
               >
-                <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
+                <AlertTriangle className="w-4 h-4 text-amber-400 animate-bounce" />
                 <span>{totalUnresolvedErrorCount} Unresolved Issues</span>
               </button>
             )}
             
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs sm:text-sm py-2.5 px-4.5 flex items-center gap-2 shadow-md hover:shadow-lg font-black transition-all cursor-pointer"
+              className="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg shadow-indigo-500/30 hover:scale-[1.02] transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Onboard Company</span>
@@ -315,45 +364,77 @@ export const SuperAdminView = () => {
         </div>
       </div>
 
-      {/* Sleek Sub-Navigation Segmented Bar */}
-      <div className="bg-white/95 backdrop-blur-md p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-          {navigationTabs.map((tab) => {
+      {/* 🧭 2. Two-Tier Executive Navigation Architecture */}
+      <div className="flex flex-col gap-3 bg-white p-3 rounded-3xl border border-slate-200 shadow-sm">
+        
+        {/* Tier 1: 4 Main Pillars */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {masterCategories.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => handleCategorySelect(cat.id)}
+                className={`p-3.5 rounded-2xl flex items-center gap-3 transition-all text-left cursor-pointer border ${
+                  isSelected 
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-md' 
+                    : 'bg-slate-50/80 text-slate-700 border-slate-200/80 hover:bg-slate-100 hover:border-slate-300'
+                }`}
+              >
+                <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 border border-slate-200'}`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-black leading-tight">{cat.label}</div>
+                  <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {cat.tabs.length} Modules Available
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tier 2: Active Sub-Tabs */}
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 overflow-x-auto pb-1">
+          {masterCategories.find(c => c.id === activeCategory)?.tabs.map((tab) => {
             const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
+            const isTabActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                  isActive 
-                    ? `${tab.activeBg} text-white shadow-md scale-[1.02]` 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer ${
+                  isTabActive
+                    ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : tab.color}`} />
+                <Icon className={`w-3.5 h-3.5 ${isTabActive ? 'text-white' : 'text-indigo-600'}`} />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
+
       </div>
 
-      {/* TAB 1: PLATFORM STATISTICS & COMPANY-WISE PROFIT MARGIN ANALYTICS */}
+      {/* 📊 TAB 1: FINANCIAL & PROFIT ANALYTICS */}
       {activeTab === 'analytics' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           
-          {/* Company-Wise Filter Bar */}
-          <div className="bg-indigo-50/70 border border-indigo-200/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+          {/* Executive Company-Wise Filter Command Strip */}
+          <div className="bg-white p-5 rounded-2xl border border-indigo-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2 text-indigo-950 font-black text-xs uppercase tracking-wider">
                 <Filter className="w-4 h-4 text-indigo-600" />
-                <span>Filter Analytics View:</span>
+                <span>Filter Enterprise Telemetry:</span>
               </div>
               <select 
                 value={selectedAnalyticsCompanyId}
                 onChange={(e) => setSelectedAnalyticsCompanyId(e.target.value)}
-                className="bg-white border border-indigo-300 text-slate-900 rounded-xl px-3.5 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs cursor-pointer"
+                className="bg-slate-50 border border-indigo-200 text-slate-900 rounded-xl px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs cursor-pointer"
               >
                 <option value="all">🌐 All Enterprise Companies (Consolidated Platform)</option>
                 {companies.map(c => (
@@ -363,13 +444,12 @@ export const SuperAdminView = () => {
             </div>
 
             <div className="text-xs text-slate-600 font-medium">
-              Showing financial & operational metrics for: <strong className="text-indigo-900 font-bold">{selectedAnalyticsCompanyId === 'all' ? 'All Enterprise Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
+              Showing analytics for: <strong className="text-indigo-900 font-bold">{selectedAnalyticsCompanyId === 'all' ? 'All Enterprise Accounts' : companies.find(c => c.id === selectedAnalyticsCompanyId)?.name}</strong>
             </div>
           </div>
 
-          {/* High-Level Financial & Profit KPI Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            
+          {/* 4 Financial & Operational KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <MetricCard 
               title="Total Verifications" 
               value={totalVerifiedCount.toLocaleString()} 
@@ -403,34 +483,33 @@ export const SuperAdminView = () => {
               trend={`+${profitMarginPercent}% Margin`}
               color="indigo" 
             />
-
           </div>
 
           {/* Company-Wise Profit Matrix Table */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col gap-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-emerald-600" />
                   <span>Company-Wise Profit & Margin Matrix</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium">Detailed financial breakdown of gross billings, upstream provider costs, and net platform profit per client</p>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Detailed financial breakdown of gross billings, upstream provider costs, and net platform profit per client</p>
               </div>
-              <span className="badge badge-emerald text-[10px] self-start sm:self-auto">Real-Time Telemetry</span>
+              <span className="badge badge-emerald text-[10px] font-bold self-start sm:self-auto">Real-Time Telemetry</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
-                    <th className="py-3 px-4 rounded-l-xl">Client Enterprise</th>
-                    <th className="py-3 px-4">Subscription Plan</th>
-                    <th className="py-3 px-4 text-center">Verified Volume</th>
-                    <th className="py-3 px-4 text-center">Tariff Rate</th>
-                    <th className="py-3 px-4 text-center">Gross Revenue</th>
-                    <th className="py-3 px-4 text-center">Upstream Cost (₹25/ck)</th>
-                    <th className="py-3 px-4 text-center">Net Profit</th>
-                    <th className="py-3 px-4 text-center rounded-r-xl">Profit Margin</th>
+                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
+                    <th className="py-3.5 px-4 rounded-l-2xl">Client Enterprise</th>
+                    <th className="py-3.5 px-4">Subscription Plan</th>
+                    <th className="py-3.5 px-4 text-center">Verified Volume</th>
+                    <th className="py-3.5 px-4 text-center">Tariff Rate</th>
+                    <th className="py-3.5 px-4 text-center">Gross Revenue</th>
+                    <th className="py-3.5 px-4 text-center">Upstream Cost (₹25/ck)</th>
+                    <th className="py-3.5 px-4 text-center">Net Profit</th>
+                    <th className="py-3.5 px-4 text-center rounded-r-2xl">Profit Margin</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -464,7 +543,7 @@ export const SuperAdminView = () => {
 
           {/* Interactive Statistics Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-indigo-600" />
                 <span>Verification Volume Trend (Last 7 Days)</span>
@@ -472,7 +551,7 @@ export const SuperAdminView = () => {
               <VerificationVolumeChart />
             </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
               <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-600" />
                 <span>Turnaround Time (TAT) Distribution</span>
@@ -484,21 +563,107 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 2: COMPANIES & 10-FEATURE FLAGS MATRIX */}
+      {/* 💳 TAB: METERED BILLING & INVOICING */}
+      {activeTab === 'billing' && (
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-sky-600" />
+                <span>Monthly Metered Invoicing & Automated Bill Dispatch Engine</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Auto-calculates monthly verification bills and dispatches official PDF invoices to company contacts via Email & WhatsApp</p>
+            </div>
+            <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {companies.map((comp) => {
+              const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
+              const gst = Math.round(subtotal * 0.18);
+              const netTotal = subtotal + gst;
+              const paymentStatus = companyPaymentLedger[comp.id]?.status || 'PENDING DEBIT ⏳';
+
+              return (
+                <div key={comp.id} className="p-6 rounded-2xl border-2 border-slate-200 bg-slate-50/60 hover:border-sky-300 transition-all flex flex-col justify-between gap-4 shadow-xs">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="badge badge-purple text-[10px]">{comp.plan}</span>
+                        <h4 className="font-black text-slate-900 text-base mt-1">{comp.name}</h4>
+                        <p className="text-slate-500 text-[11px]">{comp.email}</p>
+                      </div>
+                      <span className={`badge text-[10px] ${paymentStatus.includes('SETTLED') ? 'badge-emerald' : 'badge-amber'}`}>
+                        {paymentStatus}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 p-4 bg-white rounded-xl border border-slate-200 text-xs">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Verifications this Month:</span>
+                        <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Tariff Rate:</span>
+                        <strong className="text-slate-900 font-mono">₹{comp.pricePerVerification} / check</strong>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Subtotal:</span>
+                        <span className="font-mono">₹{subtotal.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>GST (18%):</span>
+                        <span className="font-mono">₹{gst.toLocaleString()}</span>
+                      </div>
+                      <div className="border-t border-slate-100 pt-2 flex justify-between font-black text-sm text-indigo-950">
+                        <span>Net Invoice Amount:</span>
+                        <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
+                    <button
+                      type="button"
+                      onClick={() => sendCompanyInvoiceBill(comp.id)}
+                      className="btn btn-hrexecutive text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 font-black shadow-sm cursor-pointer"
+                      title="Dispatch Invoice to Company via Email & WhatsApp"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>📧 Send Bill</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveInvoiceModal(comp)}
+                      className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1 font-bold cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Invoice PDF</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 🏢 TAB: COMPANIES & 10-FEATURE FLAGS MATRIX */}
       {activeTab === 'companies' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-purple-600" />
                 <span>Enterprise Client Companies & Feature Matrix Flags</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company</p>
             </div>
             
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto"
+              className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Onboard New Company</span>
@@ -508,12 +673,12 @@ export const SuperAdminView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
-                  <th className="py-3 px-4 rounded-l-xl">Company Profile</th>
-                  <th className="py-3 px-4">Contact Info</th>
-                  <th className="py-3 px-4">Tariff & Quota</th>
-                  <th className="py-3 px-4 text-center">Active Features (out of 10)</th>
-                  <th className="py-3 px-4 text-right rounded-r-xl">Actions</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
+                  <th className="py-3.5 px-4 rounded-l-2xl">Company Profile</th>
+                  <th className="py-3.5 px-4">Contact Info</th>
+                  <th className="py-3.5 px-4">Tariff & Quota</th>
+                  <th className="py-3.5 px-4 text-center">Active Features (out of 10)</th>
+                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -541,7 +706,7 @@ export const SuperAdminView = () => {
                       <td className="py-4 px-4 text-right">
                         <button
                           onClick={() => setEditingFeaturesCompany(comp)}
-                          className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold shadow-2xs ml-auto"
+                          className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-xs ml-auto cursor-pointer"
                         >
                           <Sliders className="w-3.5 h-3.5" />
                           <span>Configure 10 Flags</span>
@@ -556,16 +721,16 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 3: TERMS & CONDITIONS CONTRACTS HUB & AGREEMENT LEDGER */}
+      {/* 📜 TAB: TERMS & CONDITIONS CONTRACTS HUB */}
       {activeTab === 'terms_hub' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Scale className="w-5 h-5 text-amber-600" />
                 <span>Enterprise Terms & Conditions Contracts Hub & Agreement Ledger</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures</p>
             </div>
 
             <button
@@ -573,24 +738,23 @@ export const SuperAdminView = () => {
                 setSelectedTermsCompany('Global Base Framework');
                 setShowTermsModal(true);
               }}
-              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold"
+              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5 text-indigo-600" />
               <span>Review Global Terms (v2.4)</span>
             </button>
           </div>
 
-          {/* Company Contracts Ledger Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
-                  <th className="py-3 px-4 rounded-l-xl">Enterprise Company</th>
-                  <th className="py-3 px-4">Bound T&C Version</th>
-                  <th className="py-3 px-4 text-center">Retention Period</th>
-                  <th className="py-3 px-4">SLA Tier & Indemnity</th>
-                  <th className="py-3 px-4">Authorized Signatory</th>
-                  <th className="py-3 px-4 text-right rounded-r-xl">Contract Actions</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
+                  <th className="py-3.5 px-4 rounded-l-2xl">Enterprise Company</th>
+                  <th className="py-3.5 px-4">Bound T&C Version</th>
+                  <th className="py-3.5 px-4 text-center">Retention Period</th>
+                  <th className="py-3.5 px-4">SLA Tier & Indemnity</th>
+                  <th className="py-3.5 px-4">Authorized Signatory</th>
+                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Contract Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -625,7 +789,7 @@ export const SuperAdminView = () => {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setEditingCustomTermsCompany({ ...customTerms, companyId: comp.id, companyName: comp.name })}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100"
+                            className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 cursor-pointer"
                             title="Customize Terms & Conditions for this Company"
                           >
                             <Sliders className="w-3.5 h-3.5 text-amber-700" />
@@ -637,7 +801,7 @@ export const SuperAdminView = () => {
                               setSelectedTermsCompany(comp.name);
                               setShowTermsModal(true);
                             }}
-                            className="btn btn-superadmin text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
+                            className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1 font-bold shadow-xs cursor-pointer"
                           >
                             <FileText className="w-3.5 h-3.5" />
                             <span>View Contract</span>
@@ -653,101 +817,202 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 4: METERED BILLING & AUTOMATED BILL SENDING */}
-      {activeTab === 'billing' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 🗄️ TAB: DATABASE MANAGEMENT SYSTEM (DBMS) */}
+      {activeTab === 'dbms' && (
+        <div className="bg-white border border-teal-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-sky-600" />
-                <span>Monthly Metered Invoicing & Automated Bill Dispatch Engine</span>
+              <div className="flex items-center gap-2">
+                <span className="badge badge-teal text-[10px] font-bold">PostgreSQL 16 Connection Pool</span>
+                <span className="text-xs text-slate-500 font-bold">• Database: joy_verification</span>
+              </div>
+              <h3 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+                <Database className="w-5 h-5 text-teal-700" />
+                <span>Database Management System (DBMS Explorer & SQL Runner)</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Auto-calculates monthly verification bills and dispatches official PDF invoices to company contacts via Email & WhatsApp</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Browse live tables, inspect daily stored records, export data to CSV/JSON, and run safe read-only SQL queries</p>
             </div>
-            <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  const csvContent = 'data:text/csv;charset=utf-8,' + [Object.keys(currentTableRows[0] || {}).join(','), ...currentTableRows.map(r => Object.values(r).join(','))].join('\n');
+                  const encodedUri = encodeURI(csvContent);
+                  const link = document.createElement('a');
+                  link.setAttribute('href', encodedUri);
+                  link.setAttribute('download', `${selectedDbTable}_export_2026.csv`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  showToast(`Exported ${selectedDbTable} table to CSV!`);
+                }}
+                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Export CSV</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentTableRows, null, 2));
+                  const link = document.createElement('a');
+                  link.setAttribute('href', jsonStr);
+                  link.setAttribute('download', `${selectedDbTable}_export_2026.json`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  showToast(`Exported ${selectedDbTable} table to JSON!`);
+                }}
+                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
+              >
+                <FileCode className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Export JSON</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {companies.map((comp) => {
-              const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
-              const gst = Math.round(subtotal * 0.18);
-              const netTotal = subtotal + gst;
-              const paymentStatus = companyPaymentLedger[comp.id]?.status || 'PENDING DEBIT ⏳';
+          {/* Table Selector Pills */}
+          <div className="flex flex-col gap-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Select PostgreSQL Table to Inspect:</label>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
+              {[
+                { id: 'candidates', label: 'candidates (KYC Dossiers)' },
+                { id: 'companies', label: 'companies (Enterprise Accounts)' },
+                { id: 'hr_users', label: 'hr_users (HR Accounts)' },
+                { id: 'invoices', label: 'invoices (Billing Ledger)' },
+                { id: 'support_tickets', label: 'support_tickets' },
+                { id: 'system_error_logs', label: 'system_error_logs' },
+                { id: 'sessions', label: 'active_sessions' }
+              ].map(tbl => (
+                <button
+                  key={tbl.id}
+                  onClick={() => setSelectedDbTable(tbl.id)}
+                  className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
+                    selectedDbTable === tbl.id ? 'bg-teal-700 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {tbl.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-              return (
-                <div key={comp.id} className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/60 hover:border-sky-300 transition-all space-y-4 shadow-2xs">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="badge badge-purple text-[10px]">{comp.plan}</span>
-                      <h4 className="font-black text-slate-900 text-base mt-1">{comp.name}</h4>
-                      <p className="text-slate-500 text-[11px]">{comp.email}</p>
-                    </div>
-                    <span className={`badge text-[10px] ${paymentStatus.includes('SETTLED') ? 'badge-emerald' : 'badge-amber'}`}>
-                      {paymentStatus}
-                    </span>
-                  </div>
+          {/* Table Telemetry Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl">
+              <span className="text-teal-800 font-bold block text-[10px] uppercase">Total Table Rows</span>
+              <span className="text-lg font-black text-slate-900">{currentTableRows.length} Records</span>
+            </div>
+            <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl">
+              <span className="text-teal-800 font-bold block text-[10px] uppercase">Added Today</span>
+              <span className="text-lg font-black text-emerald-700">+8 New Rows</span>
+            </div>
+            <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl">
+              <span className="text-teal-800 font-bold block text-[10px] uppercase">Table Disk Storage</span>
+              <span className="text-lg font-black text-slate-900 font-mono">128.4 KB</span>
+            </div>
+            <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl">
+              <span className="text-teal-800 font-bold block text-[10px] uppercase">Engine Sync</span>
+              <span className="text-lg font-black text-slate-900">PostgreSQL Pool (20)</span>
+            </div>
+          </div>
 
-                  <div className="space-y-2 p-4 bg-white rounded-xl border border-slate-200 text-xs">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Verifications this Month:</span>
-                      <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Tariff Rate:</span>
-                      <strong className="text-slate-900 font-mono">₹{comp.pricePerVerification} / check</strong>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Subtotal:</span>
-                      <span className="font-mono">₹{subtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>GST (18%):</span>
-                      <span className="font-mono">₹{gst.toLocaleString()}</span>
-                    </div>
-                    <div className="border-t border-slate-100 pt-2 flex justify-between font-black text-sm text-indigo-950">
-                      <span>Net Invoice Amount:</span>
-                      <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
-                    </div>
-                  </div>
+          {/* Live Data Grid */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input 
+                  type="text" 
+                  placeholder={`Search in ${selectedDbTable}...`}
+                  value={dbSearchQuery}
+                  onChange={(e) => setDbSearchQuery(e.target.value)}
+                  className="form-input pl-9 text-xs"
+                />
+              </div>
+              <span className="text-xs text-slate-500 font-mono font-medium">Showing {filteredDbRows.length} of {currentTableRows.length} rows</span>
+            </div>
 
-                  {/* Actions: Send Bill & Settle */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => sendCompanyInvoiceBill(comp.id)}
-                      className="btn btn-hrexecutive text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 font-black shadow-sm"
-                      title="Dispatch Invoice to Company via Email & WhatsApp"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>📧 Send Bill</span>
-                    </button>
+            <div className="overflow-x-auto max-h-72 overflow-y-auto border border-slate-200 rounded-2xl">
+              <table className="w-full text-left text-xs border-collapse font-mono">
+                <thead className="bg-slate-100 text-slate-700 font-bold sticky top-0">
+                  <tr className="border-b border-slate-200">
+                    {Object.keys(currentTableRows[0] || {}).map((col, idx) => (
+                      <th key={idx} className="py-3 px-3.5 uppercase text-[10px] whitespace-nowrap">{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800 bg-white">
+                  {filteredDbRows.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-teal-50/50 transition-colors">
+                      {Object.values(row).map((val, cIdx) => (
+                        <td key={cIdx} className="py-3 px-3.5 whitespace-nowrap max-w-xs truncate text-[11px]">{String(val)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setActiveInvoiceModal(comp)}
-                      className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1 font-bold"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Invoice PDF</span>
-                    </button>
-                  </div>
+          {/* SQL Query Runner Console */}
+          <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-mono text-xs text-teal-400 font-bold">
+                <Terminal className="w-4 h-4" />
+                <span>Super Admin SQL Query Runner (PostgreSQL Console)</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono">Read-Only Safe Mode Active</span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <textarea
+                rows={2}
+                value={customSqlQuery}
+                onChange={(e) => setCustomSqlQuery(e.target.value)}
+                className="w-full bg-slate-950 text-teal-300 font-mono text-xs p-3.5 rounded-xl border border-slate-800 outline-none focus:border-teal-500"
+              />
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                  <span>Quick Templates:</span>
+                  <button onClick={() => setCustomSqlQuery('SELECT * FROM candidates WHERE status = \'Verified\';')} className="underline hover:text-teal-300 cursor-pointer">Verified Candidates</button>
+                  <span>•</span>
+                  <button onClick={() => setCustomSqlQuery('SELECT id, name, plan, verified_count_this_month FROM companies;')} className="underline hover:text-teal-300 cursor-pointer">Company Volume</button>
                 </div>
-              );
-            })}
+
+                <button
+                  type="button"
+                  onClick={handleExecuteSql}
+                  className="btn btn-superadmin text-xs py-1.5 px-4 font-mono font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+                >
+                  <span>Execute SQL ▶</span>
+                </button>
+              </div>
+            </div>
+
+            {queryExecutionResult && (
+              <div className="p-3.5 bg-slate-950 rounded-xl border border-teal-900/50 text-[11px] font-mono text-teal-200 space-y-1">
+                <span className="text-[10px] text-teal-400 block font-bold">Query Execution Output ({queryExecutionResult.length} rows returned):</span>
+                <pre className="max-h-36 overflow-y-auto overflow-x-auto text-[10px] text-slate-300">
+                  {JSON.stringify(queryExecutionResult, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
+
         </div>
       )}
 
-      {/* TAB 5: MULTI-ROLE LOGIN SESSIONS & TELEMETRY */}
+      {/* 👥 TAB: MULTI-ROLE LOGIN SESSIONS */}
       {activeTab === 'logins' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-emerald-600" />
                 <span>Multi-Role Login Sessions & Security Telemetry</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Real-time session monitoring across Super Admin, Company Admins, HR Executives, and Candidate Links</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Real-time session monitoring across Super Admin, Company Admins, HR Executives, and Candidate Links</p>
             </div>
             <span className="badge badge-emerald text-[10px]">5 Active JWT Tokens</span>
           </div>
@@ -755,14 +1020,14 @@ export const SuperAdminView = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/50">
-                  <th className="py-3 px-4 rounded-l-xl">Login Role</th>
-                  <th className="py-3 px-4">User & Email</th>
-                  <th className="py-3 px-4">Organization Entity</th>
-                  <th className="py-3 px-4">IP Address & Network</th>
-                  <th className="py-3 px-4">Device / Browser</th>
-                  <th className="py-3 px-4 text-center">Actions Count</th>
-                  <th className="py-3 px-4 text-right rounded-r-xl">Session Status</th>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] bg-slate-50/70">
+                  <th className="py-3.5 px-4 rounded-l-2xl">Login Role</th>
+                  <th className="py-3.5 px-4">User & Email</th>
+                  <th className="py-3.5 px-4">Organization Entity</th>
+                  <th className="py-3.5 px-4">IP Address & Network</th>
+                  <th className="py-3.5 px-4">Device / Browser</th>
+                  <th className="py-3.5 px-4 text-center">Actions Count</th>
+                  <th className="py-3.5 px-4 text-right rounded-r-2xl">Session Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -794,211 +1059,24 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 6: DATABASE MANAGEMENT SYSTEM (DBMS) CONSOLE */}
-      {activeTab === 'dbms' && (
-        <div className="bg-white border border-teal-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="badge badge-teal text-[10px] font-bold">PostgreSQL 16 Connection Pool</span>
-                <span className="text-xs text-slate-500 font-bold">• Database: joy_verification</span>
-              </div>
-              <h3 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
-                <Database className="w-5 h-5 text-teal-700" />
-                <span>Database Management System (DBMS Explorer & Query Runner)</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Browse live tables, inspect daily stored records, export data to CSV/JSON, and run safe read-only SQL queries</p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  const csvContent = 'data:text/csv;charset=utf-8,' + [Object.keys(currentTableRows[0] || {}).join(','), ...currentTableRows.map(r => Object.values(r).join(','))].join('\n');
-                  const encodedUri = encodeURI(csvContent);
-                  const link = document.createElement('a');
-                  link.setAttribute('href', encodedUri);
-                  link.setAttribute('download', `${selectedDbTable}_export_2026.csv`);
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  showToast(`Exported ${selectedDbTable} table to CSV!`);
-                }}
-                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Export CSV</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentTableRows, null, 2));
-                  const link = document.createElement('a');
-                  link.setAttribute('href', jsonStr);
-                  link.setAttribute('download', `${selectedDbTable}_export_2026.json`);
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  showToast(`Exported ${selectedDbTable} table to JSON!`);
-                }}
-                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
-              >
-                <FileCode className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Export JSON</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Table Selector Pills */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-slate-700 uppercase">Select PostgreSQL Table to Inspect:</label>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
-              {[
-                { id: 'candidates', label: 'candidates (KYC Dossiers)' },
-                { id: 'companies', label: 'companies (Enterprise Accounts)' },
-                { id: 'hr_users', label: 'hr_users (HR Accounts)' },
-                { id: 'invoices', label: 'invoices (Billing Ledger)' },
-                { id: 'support_tickets', label: 'support_tickets' },
-                { id: 'system_error_logs', label: 'system_error_logs' },
-                { id: 'sessions', label: 'active_sessions' }
-              ].map(tbl => (
-                <button
-                  key={tbl.id}
-                  onClick={() => setSelectedDbTable(tbl.id)}
-                  className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                    selectedDbTable === tbl.id ? 'bg-teal-700 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {tbl.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Table Telemetry Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
-              <span className="text-teal-800 font-bold block text-[10px] uppercase">Total Table Rows</span>
-              <span className="text-base font-black text-slate-900">{currentTableRows.length} Records</span>
-            </div>
-            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
-              <span className="text-teal-800 font-bold block text-[10px] uppercase">Added Today</span>
-              <span className="text-base font-black text-emerald-700">+8 New Rows</span>
-            </div>
-            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
-              <span className="text-teal-800 font-bold block text-[10px] uppercase">Table Disk Storage</span>
-              <span className="text-base font-black text-slate-900 font-mono">128.4 KB</span>
-            </div>
-            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl">
-              <span className="text-teal-800 font-bold block text-[10px] uppercase">Engine Sync</span>
-              <span className="text-base font-black text-slate-900">PostgreSQL Pool (20)</span>
-            </div>
-          </div>
-
-          {/* Live Data Grid */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input 
-                  type="text" 
-                  placeholder={`Search in ${selectedDbTable}...`}
-                  value={dbSearchQuery}
-                  onChange={(e) => setDbSearchQuery(e.target.value)}
-                  className="form-input pl-9 text-xs"
-                />
-              </div>
-              <span className="text-xs text-slate-500 font-mono font-medium">Showing {filteredDbRows.length} of {currentTableRows.length} rows</span>
-            </div>
-
-            <div className="overflow-x-auto max-h-72 overflow-y-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs border-collapse font-mono">
-                <thead className="bg-slate-100 text-slate-700 font-bold sticky top-0">
-                  <tr className="border-b border-slate-200">
-                    {Object.keys(currentTableRows[0] || {}).map((col, idx) => (
-                      <th key={idx} className="py-2.5 px-3 uppercase text-[10px] whitespace-nowrap">{col}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800 bg-white">
-                  {filteredDbRows.map((row, rIdx) => (
-                    <tr key={rIdx} className="hover:bg-teal-50/50 transition-colors">
-                      {Object.values(row).map((val, cIdx) => (
-                        <td key={cIdx} className="py-2.5 px-3 whitespace-nowrap max-w-xs truncate text-[11px]">{String(val)}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* SQL Query Runner Console */}
-          <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono text-xs text-teal-400 font-bold">
-                <Terminal className="w-4 h-4" />
-                <span>Super Admin SQL Query Runner (PostgreSQL Console)</span>
-              </div>
-              <span className="text-[10px] text-slate-400 font-mono">Read-Only Safe Mode Active</span>
-            </div>
-
-            <div className="space-y-2">
-              <textarea
-                rows={2}
-                value={customSqlQuery}
-                onChange={(e) => setCustomSqlQuery(e.target.value)}
-                className="w-full bg-slate-950 text-teal-300 font-mono text-xs p-3 rounded-xl border border-slate-800 outline-none focus:border-teal-500"
-              />
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                  <span>Quick Templates:</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT * FROM candidates WHERE status = \'Verified\';')} className="underline hover:text-teal-300 cursor-pointer">Verified Candidates</button>
-                  <span>•</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT id, name, plan, verified_count_this_month FROM companies;')} className="underline hover:text-teal-300 cursor-pointer">Company Volume</button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleExecuteSql}
-                  className="btn btn-superadmin text-xs py-1.5 px-4 font-mono font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
-                >
-                  <span>Execute SQL ▶</span>
-                </button>
-              </div>
-            </div>
-
-            {queryExecutionResult && (
-              <div className="p-3 bg-slate-950 rounded-xl border border-teal-900/50 text-[11px] font-mono text-teal-200 space-y-1">
-                <span className="text-[10px] text-teal-400 block font-bold">Query Execution Output ({queryExecutionResult.length} rows returned):</span>
-                <pre className="max-h-36 overflow-y-auto overflow-x-auto text-[10px] text-slate-300">
-                  {JSON.stringify(queryExecutionResult, null, 2)}
-                </pre>
-              </div>
-            )}
-          </div>
-
-        </div>
-      )}
-
-      {/* TAB 7: MASTER FORM FIELDS & MASTER DROPDOWN OPTIONS HUB */}
+      {/* 📋 TAB: MASTER FORM FIELDS & DROPDOWNS */}
       {activeTab === 'masterfields' && (
-        <div className="space-y-8">
+        <div className="flex flex-col gap-8">
           
           {/* SECTION 1: MASTER CANDIDATE DEFAULT FORM FIELDS */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <ListCheck className="w-5 h-5 text-teal-600" />
                   <span>Master Candidate Default Form Fields</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium">Standard default candidate form fields populated across all client companies during profile creation</p>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Standard default candidate form fields populated across all client companies during profile creation</p>
               </div>
               
               <button 
                 onClick={() => setShowAddMasterFieldModal(true)}
-                className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto"
+                className="btn btn-superadmin text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Add Master Default Field</span>
@@ -1007,7 +1085,7 @@ export const SuperAdminView = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {masterFormFields.map((field) => (
-                <div key={field.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3">
+                <div key={field.id} className="p-4.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3 shadow-2xs">
                   <div>
                     <span className="badge badge-teal text-[9px]">{field.category}</span>
                     <h4 className="font-black text-slate-900 text-sm mt-1">{field.label}</h4>
@@ -1020,25 +1098,25 @@ export const SuperAdminView = () => {
           </div>
 
           {/* SECTION 2: TOPIC-BASED MASTER DATA DROPDOWN OPTIONS MANAGER */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-            <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+            <div className="border-b border-slate-100 pb-4">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-indigo-600" />
                 <span>Topic-Based Master Data Dropdown Options Manager</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Manage standardized dropdown lists (Departments, Designations, Work Locations, Qualifications, Contract Types) populated in HR Stations</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Manage standardized dropdown lists (Departments, Designations, Work Locations, Qualifications) populated in HR Stations</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
               
               {/* Dropdown 1: Departments */}
-              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🏢 Departments List ({masterDropdownOptions.departments?.length || 0})</h4>
                   <span className="badge badge-indigo text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
                   {masterDropdownOptions.departments?.map((opt, i) => (
                     <span key={i} className="badge badge-indigo text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
@@ -1062,7 +1140,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, departments: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1070,13 +1148,13 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 2: Designations */}
-              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">👔 Designations List ({masterDropdownOptions.designations?.length || 0})</h4>
                   <span className="badge badge-purple text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
                   {masterDropdownOptions.designations?.map((opt, i) => (
                     <span key={i} className="badge badge-purple text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
@@ -1100,7 +1178,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, designations: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1108,13 +1186,13 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 3: Work Locations */}
-              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">📍 Work Locations ({masterDropdownOptions.workLocations?.length || 0})</h4>
                   <span className="badge badge-teal text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
                   {masterDropdownOptions.workLocations?.map((opt, i) => (
                     <span key={i} className="badge badge-teal text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
@@ -1138,7 +1216,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, workLocations: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1146,13 +1224,13 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Dropdown 4: Educational Qualifications */}
-              <div className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-extrabold text-slate-900 text-xs">🎓 Educational Qualifications ({masterDropdownOptions.qualifications?.length || 0})</h4>
                   <span className="badge badge-amber text-[9px]">Master Table</span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1.5 bg-white rounded-lg border border-slate-200">
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
                   {masterDropdownOptions.qualifications?.map((opt, i) => (
                     <span key={i} className="badge badge-amber text-[10px] py-1 px-2.5 flex items-center gap-1.5 font-bold">
                       <span>{opt}</span>
@@ -1176,7 +1254,7 @@ export const SuperAdminView = () => {
                         setNewOptionInputs({ ...newOptionInputs, qualifications: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold shrink-0 cursor-pointer"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold shrink-0 cursor-pointer"
                   >
                     + Add
                   </button>
@@ -1189,28 +1267,29 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 8: API CREDENTIALS & SENSITIVE KEYS */}
+      {/* ⚙️ TAB: API CREDENTIALS */}
       {activeTab === 'apiconfig' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Server className="w-5 h-5 text-emerald-600" />
                 <span>Upstream Government & Biometrics API Credentials</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Configure API SETU DigiLocker, SMS Router, and Coincircletrust Biometrics Gateway keys</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure API SETU DigiLocker, SMS Router, and Coincircletrust Biometrics Gateway keys</p>
             </div>
             <span className="badge badge-emerald text-[10px]">256-Bit Encrypted</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Gateway 1 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-indigo text-[10px]">Govt Gateway</span>
-              <h4 className="font-black text-slate-900 text-sm">API SETU DigiLocker UIDAI</h4>
-              <p className="text-slate-500 text-[11px]">Primary gateway for authenticating Aadhaar 12-digit UID numbers and OTP checks</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-4 shadow-2xs">
+              <div className="space-y-2">
+                <span className="badge badge-indigo text-[10px]">Govt Gateway</span>
+                <h4 className="font-black text-slate-900 text-sm">API SETU DigiLocker UIDAI</h4>
+                <p className="text-slate-500 text-[11px]">Primary gateway for authenticating Aadhaar 12-digit UID numbers and OTP checks</p>
+              </div>
               
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
+              <div className="space-y-2 pt-3 border-t border-slate-200 text-xs">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">API Key Token</label>
                   <input 
@@ -1220,17 +1299,18 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('apiSetu')} className="btn btn-superadmin text-xs py-1.5 w-full font-bold cursor-pointer">Save API SETU</button>
+                <button onClick={() => handleSaveApiConfig('apiSetu')} className="btn btn-superadmin text-xs py-2 w-full font-bold cursor-pointer">Save API SETU</button>
               </div>
             </div>
 
-            {/* Gateway 2 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-cyan text-[10px]">SMS Router</span>
-              <h4 className="font-black text-slate-900 text-sm">Automated SMS OTP Router</h4>
-              <p className="text-slate-500 text-[11px]">Multi-carrier gateway for dispatching phone SMS OTP verification codes</p>
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-4 shadow-2xs">
+              <div className="space-y-2">
+                <span className="badge badge-cyan text-[10px]">SMS Router</span>
+                <h4 className="font-black text-slate-900 text-sm">Automated SMS OTP Router</h4>
+                <p className="text-slate-500 text-[11px]">Multi-carrier gateway for dispatching phone SMS OTP verification codes</p>
+              </div>
               
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
+              <div className="space-y-2 pt-3 border-t border-slate-200 text-xs">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">Carrier Secret</label>
                   <input 
@@ -1240,17 +1320,18 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('sandbox')} className="btn btn-company text-xs py-1.5 w-full font-bold cursor-pointer">Save SMS Gateway</button>
+                <button onClick={() => handleSaveApiConfig('sandbox')} className="btn btn-company text-xs py-2 w-full font-bold cursor-pointer">Save SMS Gateway</button>
               </div>
             </div>
 
-            {/* Gateway 3 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-amber text-[10px]">Biometrics Engine</span>
-              <h4 className="font-black text-slate-900 text-sm">Coincircletrust WebCam AI</h4>
-              <p className="text-slate-500 text-[11px]">AI face liveness detection & multi-angle biometric geometry validation</p>
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-4 shadow-2xs">
+              <div className="space-y-2">
+                <span className="badge badge-amber text-[10px]">Biometrics Engine</span>
+                <h4 className="font-black text-slate-900 text-sm">Coincircletrust WebCam AI</h4>
+                <p className="text-slate-500 text-[11px]">AI face liveness detection & multi-angle biometric geometry validation</p>
+              </div>
               
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
+              <div className="space-y-2 pt-3 border-t border-slate-200 text-xs">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 mb-1">Biometric Secret Key</label>
                   <input 
@@ -1260,27 +1341,26 @@ export const SuperAdminView = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <button onClick={() => handleSaveApiConfig('coincircletrust')} className="btn btn-hrexecutive text-xs py-1.5 w-full font-bold cursor-pointer">Save Biometrics</button>
+                <button onClick={() => handleSaveApiConfig('coincircletrust')} className="btn btn-hrexecutive text-xs py-2 w-full font-bold cursor-pointer">Save Biometrics</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 9: REPORTS SECTION (4 DETAILED REPORTS) */}
+      {/* 📑 TAB: REPORTS CENTER */}
       {activeTab === 'reports' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4">
+            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <FileDown className="w-5 h-5 text-amber-600" />
               <span>Platform Executive Reports Center (PDF, Excel, Word)</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium">Export executive platform summaries, metered financial tariff reports, API SLA latency audits, and company quota allocation records</p>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Export executive platform summaries, metered financial tariff reports, API SLA latency audits, and company quota allocation records</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            {/* Report 1 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-4 shadow-2xs">
               <div className="space-y-1">
                 <span className="badge badge-amber text-[10px]">Executive Audit</span>
                 <h4 className="font-black text-slate-900 text-sm">Platform Master Verification Summary (PDF)</h4>
@@ -1288,14 +1368,13 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Platform_Master_Summary', `JOY DATA VERIFICATION - PLATFORM MASTER REPORT\nDate: ${new Date().toLocaleString()}\nTotal Companies: ${companies.length}\nTotal Checks: ${totalVerifiedCount}\nRevenue: ₹${totalGrossRevenue.toLocaleString()}`, '.pdf', 'application/pdf')}
-                className="btn btn-superadmin text-xs py-1.5 px-3.5 font-bold cursor-pointer"
+                className="btn btn-superadmin text-xs py-2 px-4 font-bold cursor-pointer shrink-0"
               >
                 Export PDF
               </button>
             </div>
 
-            {/* Report 2 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between">
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-4 shadow-2xs">
               <div className="space-y-1">
                 <span className="badge badge-purple text-[10px]">Financial Statement</span>
                 <h4 className="font-black text-slate-900 text-sm">Monthly Revenue & Tariff Breakdown (Excel)</h4>
@@ -1303,14 +1382,13 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Monthly_Revenue_Statement', `Company,Plan,Volume,Price,Gross,GST,Net\n` + companies.map(c => `${c.name},${c.plan},${c.verifiedCountThisMonth},${c.pricePerVerification},${c.verifiedCountThisMonth*c.pricePerVerification},${Math.round(c.verifiedCountThisMonth*c.pricePerVerification*0.18)},${Math.round(c.verifiedCountThisMonth*c.pricePerVerification*1.18)}`).join('\n'), '.csv', 'text/csv')}
-                className="btn btn-hrexecutive text-xs py-1.5 px-3.5 font-bold cursor-pointer"
+                className="btn btn-hrexecutive text-xs py-2 px-4 font-bold cursor-pointer shrink-0"
               >
                 Export Excel
               </button>
             </div>
 
-            {/* Report 3 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between">
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-4 shadow-2xs">
               <div className="space-y-1">
                 <span className="badge badge-teal text-[10px]">Technical SLA</span>
                 <h4 className="font-black text-slate-900 text-sm">API Gateway SLA & Latency Audit (Word/Doc)</h4>
@@ -1318,14 +1396,13 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('API_SLA_Latency_Audit', `API GATEWAY SLA & LATENCY AUDIT REPORT\nDate: ${new Date().toLocaleString()}\nDigiLocker Uptime: 99.95%\nAvg Latency: 1.2s\nCarrier SMS Uptime: 99.88%`, '.doc', 'application/msword')}
-                className="btn btn-secondary text-xs py-1.5 px-3.5 font-bold cursor-pointer"
+                className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer shrink-0"
               >
                 Export Word
               </button>
             </div>
 
-            {/* Report 4 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between">
+            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-4 shadow-2xs">
               <div className="space-y-1">
                 <span className="badge badge-indigo text-[10px]">Client Quotas</span>
                 <h4 className="font-black text-slate-900 text-sm">Company Feature Flags & Quota Audit (Excel)</h4>
@@ -1333,7 +1410,7 @@ export const SuperAdminView = () => {
               </div>
               <button 
                 onClick={() => downloadSystemReport('Company_Feature_Quota_Audit', `Company,Plan,MaxLimit,UsedThisMonth,Aadhaar,Mobile,Face,PAN,DL,Bank\n` + companies.map(c => `${c.name},${c.plan},${c.maxLimit},${c.verifiedCountThisMonth},${c.features.aadhaar},${c.features.mobileOtp},${c.features.faceCapture},${c.features.pan},${c.features.drivingLicense},${c.features.bankCheck}`).join('\n'), '.csv', 'text/csv')}
-                className="btn btn-company text-xs py-1.5 px-3.5 font-bold cursor-pointer"
+                className="btn btn-company text-xs py-2 px-4 font-bold cursor-pointer shrink-0"
               >
                 Export CSV
               </button>
@@ -1342,24 +1419,24 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 10: CUSTOMER SUPPORT & TICKET HELPDESK HUB */}
+      {/* 🎫 TAB: SUPPORT HELPDESK */}
       {activeTab === 'tickets' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <LifeBuoy className="w-5 h-5 text-indigo-600" />
                 <span>Customer Support & Ticket Helpdesk Hub</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Review and reply to service tickets raised by HR Executives and Company Administrators</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Review and reply to service tickets raised by HR Executives and Company Administrators</p>
             </div>
             <span className="badge badge-indigo text-[10px]">{supportTickets.length} Active Tickets</span>
           </div>
 
-          <div className="space-y-4 text-xs">
+          <div className="flex flex-col gap-4 text-xs">
             {supportTickets.map(ticket => (
-              <div key={ticket.id} className="p-4.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
+              <div key={ticket.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col gap-3 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-slate-900 text-sm">#{ticket.id} • {ticket.subject}</span>
                     <span className={`badge text-[9px] ${ticket.status === 'Resolved' ? 'badge-emerald' : 'badge-amber'}`}>{ticket.status}</span>
@@ -1367,11 +1444,10 @@ export const SuperAdminView = () => {
                   <span className="text-[10px] text-slate-400 font-mono">Raised: {ticket.createdAt} • by {ticket.reporterName} ({ticket.companyName})</span>
                 </div>
 
-                {/* Message Thread */}
-                <div className="space-y-2 max-h-48 overflow-y-auto p-2.5 bg-white rounded-lg border border-slate-200">
+                <div className="space-y-2 max-h-48 overflow-y-auto p-3 bg-white rounded-xl border border-slate-200">
                   {ticket.messages?.map(msg => (
-                    <div key={msg.id} className={`p-2.5 rounded-lg text-xs ${msg.type === 'admin_reply' ? 'bg-indigo-50 border border-indigo-200 text-indigo-950 ml-4' : 'bg-slate-100 text-slate-800 mr-4'}`}>
-                      <div className="flex justify-between font-bold text-[10px] text-slate-500 mb-0.5">
+                    <div key={msg.id} className={`p-3 rounded-xl text-xs ${msg.type === 'admin_reply' ? 'bg-indigo-50 border border-indigo-200 text-indigo-950 ml-4' : 'bg-slate-100 text-slate-800 mr-4'}`}>
+                      <div className="flex justify-between font-bold text-[10px] text-slate-500 mb-1">
                         <span>{msg.sender}</span>
                         <span>{msg.timestamp}</span>
                       </div>
@@ -1380,7 +1456,6 @@ export const SuperAdminView = () => {
                   ))}
                 </div>
 
-                {/* Reply Composer */}
                 <div className="flex items-center gap-2 pt-1">
                   <input
                     type="text"
@@ -1396,7 +1471,7 @@ export const SuperAdminView = () => {
                         setTicketReplyText({ ...ticketReplyText, [ticket.id]: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                    className="btn btn-superadmin text-xs py-2 px-5 font-bold flex items-center gap-1 shrink-0 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Reply</span>
@@ -1408,28 +1483,28 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 11: ERROR LOGS & ISSUE TRACKER */}
+      {/* 🚨 TAB: ERROR LOGS & ISSUE TRACKER */}
       {activeTab === 'issuelogs' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-4 shadow-sm">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-rose-600" />
-                <span>Section Error Logs & Issue Tracker</span>
+                <span>Section Error Logs & Diagnostics Tracker</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Monitor system errors across all sections and toggle Solved / Unresolved status</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Monitor system errors across all sections and toggle Solved / Unresolved status</p>
             </div>
 
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-              <button onClick={() => setLogFilterStatus('all')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-600'}`}>All</button>
-              <button onClick={() => setLogFilterStatus('unresolved')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white font-bold' : 'text-slate-600'}`}>Unresolved</button>
-              <button onClick={() => setLogFilterStatus('solved')} className={`px-3 py-1 rounded-lg cursor-pointer ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-600'}`}>Solved</button>
+            <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
+              <button onClick={() => setLogFilterStatus('all')} className={`px-3.5 py-1.5 rounded-lg cursor-pointer ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-600'}`}>All</button>
+              <button onClick={() => setLogFilterStatus('unresolved')} className={`px-3.5 py-1.5 rounded-lg cursor-pointer ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white font-bold' : 'text-slate-600'}`}>Unresolved</button>
+              <button onClick={() => setLogFilterStatus('solved')} className={`px-3.5 py-1.5 rounded-lg cursor-pointer ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-600'}`}>Solved</button>
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {filteredLogs.map(log => (
-              <div key={log.id} className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${log.solved ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`}>
+              <div key={log.id} className={`p-5 rounded-2xl border flex items-center justify-between gap-4 ${log.solved ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`}>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-900 text-xs">#{log.id} • {log.section}</span>
@@ -1441,7 +1516,7 @@ export const SuperAdminView = () => {
 
                 <button
                   onClick={() => toggleLogSolvedStatus(log.id)}
-                  className={`btn text-xs py-1.5 px-3.5 font-bold cursor-pointer ${log.solved ? 'btn-secondary text-emerald-800' : 'btn-superadmin'}`}
+                  className={`btn text-xs py-2 px-4 font-bold cursor-pointer shrink-0 ${log.solved ? 'btn-secondary text-emerald-800' : 'btn-superadmin'}`}
                 >
                   {log.solved ? 'Mark Unresolved' : 'Mark Solved ✅'}
                 </button>
@@ -1451,24 +1526,24 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 12: PLATFORM GUIDELINES */}
+      {/* 📘 TAB: PLATFORM GUIDELINES */}
       {activeTab === 'guidelines' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4">
+            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-purple-600" />
               <span>Platform Role Workflows & Guidelines Hub</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             {Object.entries(platformGuidelines).map(([roleKey, guide]) => (
-              <div key={roleKey} className="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2.5">
-                <span className="badge badge-purple text-[10px] uppercase font-bold">{roleKey} Guide</span>
+              <div key={roleKey} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-3 shadow-2xs">
+                <span className="badge badge-purple text-[10px] uppercase font-bold self-start">{roleKey} Guide</span>
                 <h4 className="font-black text-slate-900 text-sm">{guide.title}</h4>
-                <p className="text-slate-600">{guide.summary}</p>
-                <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1.5 text-[11px] text-slate-700 font-medium">
+                <p className="text-slate-600 leading-relaxed">{guide.summary}</p>
+                <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2 text-[11px] text-slate-700 font-medium">
                   <p><strong>Step 1:</strong> {guide.step1}</p>
                   <p><strong>Step 2:</strong> {guide.step2}</p>
                   <p><strong>Step 3:</strong> {guide.step3}</p>
@@ -1479,15 +1554,18 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 13: PLATFORM SETTINGS */}
+      {/* ⚙️ TAB: PLATFORM SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900">Super Admin Global Platform Settings</h3>
-            <p className="text-xs text-slate-500 font-medium">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4">
+            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-slate-800" />
+              <span>Super Admin Global Platform Settings</span>
+            </h3>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Global Platform Title</label>
               <input 
@@ -1531,7 +1609,7 @@ export const SuperAdminView = () => {
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+          <div className="w-full max-w-lg p-6 sm:p-8 space-y-5 border border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-indigo-600" />
@@ -1604,7 +1682,7 @@ export const SuperAdminView = () => {
               </div>
 
               {/* Terms Acceptance */}
-              <div className="p-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2.5">
+              <div className="p-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
                     <Scale className="w-4 h-4 text-indigo-700" />
@@ -1648,7 +1726,7 @@ export const SuperAdminView = () => {
       {/* Edit Custom Company Terms Modal */}
       {editingCustomTermsCompany && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+          <div className="w-full max-w-lg p-6 sm:p-8 space-y-4 border border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="badge badge-amber text-[10px]">Custom T&C Contract Builder</span>
@@ -1726,7 +1804,7 @@ export const SuperAdminView = () => {
       {/* Edit 10 Feature Flags Modal */}
       {editingFeaturesCompany && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+          <div className="w-full max-w-xl p-6 sm:p-8 space-y-5 border border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="badge badge-indigo text-[10px]">Super Admin Feature Flags</span>
@@ -1741,7 +1819,7 @@ export const SuperAdminView = () => {
                 return (
                   <label 
                     key={feat.id}
-                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-3 ${
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start justify-between gap-3 ${
                       isChecked ? 'bg-indigo-50 border-indigo-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
                     }`}
                   >
@@ -1785,7 +1863,7 @@ export const SuperAdminView = () => {
       {/* Add Master Default Field Modal */}
       {showAddMasterFieldModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+          <div className="w-full max-w-md p-6 space-y-4 border border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold flex items-center gap-2">
                 <ListCheck className="w-5 h-5 text-purple-600" />
