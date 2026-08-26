@@ -85,23 +85,24 @@ export const Navbar = () => {
         <div className="w-full max-w-[1600px] mx-auto flex items-center justify-between gap-4">
           
           {/* Brand Logo & Active Role Badge */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer min-w-0">
               <img 
                 src="/joy_logo.png" 
                 alt="JOY Logo" 
-                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform shrink-0" 
+                className="w-9 h-9 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform shrink-0" 
               />
-              <div className="shrink-0">
-                <div className="flex items-center gap-2">
-                  <h1 className="font-black text-sm lg:text-base tracking-tight text-slate-900 leading-none whitespace-nowrap">
-                    JOY CORPORATE SOLUTIONS
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <h1 className="font-black text-xs sm:text-sm lg:text-base tracking-tight text-slate-900 leading-none truncate lg:whitespace-nowrap">
+                    <span className="hidden sm:inline">JOY CORPORATE SOLUTIONS</span>
+                    <span className="sm:hidden">JOY CORPORATE</span>
                   </h1>
-                  <span className={`badge ${currentTheme.badgeClass} text-[9px] py-0.5 px-2 font-black shrink-0 whitespace-nowrap`}>
+                  <span className={`badge ${currentTheme.badgeClass} text-[8px] sm:text-[9px] py-0.2 sm:py-0.5 px-1.5 sm:px-2 font-black shrink-0 whitespace-nowrap`}>
                     {currentTheme.label}
                   </span>
                 </div>
-                <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-1 font-bold uppercase tracking-wider whitespace-nowrap">
+                <div className="text-[10px] text-slate-500 hidden lg:flex items-center gap-2 mt-1 font-bold uppercase tracking-wider whitespace-nowrap">
                   <span className="text-indigo-700 font-extrabold">Candidate Background Verification & Digital Trust</span>
                   <span className="text-slate-300">•</span>
                   <span className="text-emerald-700 font-bold flex items-center gap-1 shrink-0">

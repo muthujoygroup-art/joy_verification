@@ -17,10 +17,10 @@ const SuperAdminRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'superadmin') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900">
+      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
             <SuperAdminView />
           </main>
         </div>
@@ -35,10 +35,10 @@ const CompanyRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'company') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900">
+      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
             <CompanyAdminView />
           </main>
         </div>
@@ -53,10 +53,10 @@ const HrRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'hrexecutive') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900">
+      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
             <HrExecutiveView />
           </main>
         </div>
@@ -80,10 +80,10 @@ const CandidateRoute = () => {
   }, [token, currentUser, currentRole, loginUser]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-between text-slate-900">
+    <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
       <div>
         <Navbar />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
           <EmployeePortalView />
         </main>
       </div>
