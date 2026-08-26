@@ -403,3 +403,30 @@ body[data-role="employee_link"] {
     display: none !important;
   }
 }
+
+/* Touch & Mobile Responsive Utilities */
+.scrollbar-none::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none,
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .glass-panel {
+    border-radius: 0.875rem;
+    padding: 1rem;
+  }
+  .btn {
+    min-height: 2.25rem;
+  }
+}
