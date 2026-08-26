@@ -186,16 +186,6 @@ export const Navbar = () => {
                 <span>Guidelines</span>
               </button>
 
-              {/* Custom Report Generator Hub Button */}
-              <button
-                onClick={() => setShowCustomReportModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-emerald-800 bg-white hover:bg-emerald-50 font-bold border border-slate-200 shadow-2xs transition-all"
-                title="Generate Custom Multi-Filter Reports"
-              >
-                <FileDown className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Reports</span>
-              </button>
-
               {/* Support Ticket Raising Button */}
               <button
                 onClick={() => setShowSupportModal(true)}

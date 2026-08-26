@@ -49,8 +49,6 @@ export const UniversalDocumentExportModal = ({
   const [selectedCandidateIds, setSelectedCandidateIds] = useState([]);
   const [exportingFormat, setExportingFormat] = useState(null);
 
-  if (!isOpen) return null;
-
   // Handle Date Presets
   const handlePresetChange = (preset) => {
     setDatePreset(preset);
@@ -369,6 +367,8 @@ export const UniversalDocumentExportModal = ({
       showToast(`Bulk Certificate Archive successfully generated!`);
     }, 1200);
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
