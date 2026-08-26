@@ -10,6 +10,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
+import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { 
   Building2, 
   ShieldCheck, 
@@ -91,10 +92,24 @@ export const SuperAdminView = () => {
     multiRoleSessions,
     sendCompanyInvoiceBill,
     getCertificateLifecycle,
+    paymentGatewayConfig,
+    updatePaymentGatewayConfig,
     showToast
   } = useApp();
 
   const [ticketReplyText, setTicketReplyText] = useState({});
+  const [showSuperAdminRazorpayModal, setShowSuperAdminRazorpayModal] = useState(false);
+  const [selectedRechargeCompanyId, setSelectedRechargeCompanyId] = useState('comp-1');
+  const [gatewayForm, setGatewayForm] = useState({
+    provider: paymentGatewayConfig?.provider || 'Razorpay Payments India',
+    mode: paymentGatewayConfig?.mode || 'Sandbox / Test Mode',
+    keyId: paymentGatewayConfig?.keyId || 'rzp_test_JoyVerif2026',
+    keySecret: paymentGatewayConfig?.keySecret || 'rzp_sec_JoyCorpMaster99',
+    webhookSecret: paymentGatewayConfig?.webhookSecret || 'whsec_JoyCorpHook2026',
+    autoInvoicing: true,
+    gstRate: 18,
+    sacCode: '998311'
+  });
 
   const [newOptionInputs, setNewOptionInputs] = useState({
     departments: '',
@@ -839,88 +854,328 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 4: METERED BILLING & AUTOMATED BILL SENDING */}
+      {/* TAB 4: METERED BILLING, RAZORPAY GATEWAY & WALLET MANAGEMENT */}
       {activeTab === 'billing' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-sky-600" />
-                <span>Monthly Metered Invoicing & Automated Bill Dispatch Engine</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Auto-calculates monthly verification bills and dispatches official PDF invoices to company contacts via Email & WhatsApp</p>
+        <div className="space-y-6 animate-fadeIn">
+          
+          {/* 1. Razorpay Payment Gateway Master Configuration Card */}
+          <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/60 via-white to-purple-50/60 space-y-6 rounded-3xl shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-purple text-xs font-black">PAYMENT INFRASTRUCTURE</span>
+                  <span className="text-xs text-slate-500 font-bold">• Razorpay India & B2B Billing Gateway</span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 mt-1 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-indigo-600" />
+                  <span>Razorpay Gateway Master Settings & Sandbox Keys</span>
+                </h3>
+                <p className="text-xs text-slate-600 font-medium">Configure credentials, webhook signatures, 18% GST invoicing SAC codes, and toggle between Sandbox/Test and Live Production.</p>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <span className={`badge text-xs font-black py-1 px-3 ${gatewayForm.mode.includes('Live') ? 'badge-emerald' : 'badge-amber'}`}>
+                  {gatewayForm.mode} ⚡
+                </span>
+              </div>
             </div>
-            <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {companies.map((comp) => {
-              const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
-              const gst = Math.round(subtotal * 0.18);
-              const netTotal = subtotal + gst;
-              const paymentStatus = companyPaymentLedger[comp.id]?.status || 'PENDING DEBIT ⏳';
+            {/* Gateway Configuration Form */}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                updatePaymentGatewayConfig(gatewayForm);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Gateway Provider</label>
+                  <input
+                    type="text"
+                    value={gatewayForm.provider}
+                    onChange={(e) => setGatewayForm({ ...gatewayForm, provider: e.target.value })}
+                    className="form-input text-xs font-bold w-full bg-white"
+                  />
+                </div>
 
-              return (
-                <div key={comp.id} className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/60 hover:border-sky-300 transition-all space-y-4 shadow-2xs">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="badge badge-purple text-[10px]">{comp.plan}</span>
-                      <h4 className="font-black text-slate-900 text-base mt-1">{comp.name}</h4>
-                      <p className="text-slate-500 text-[11px]">{comp.email}</p>
-                    </div>
-                    <span className={`badge text-[10px] ${paymentStatus.includes('SETTLED') ? 'badge-emerald' : 'badge-amber'}`}>
-                      {paymentStatus}
-                    </span>
-                  </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Gateway Environment</label>
+                  <select
+                    value={gatewayForm.mode}
+                    onChange={(e) => setGatewayForm({ ...gatewayForm, mode: e.target.value })}
+                    className="form-select text-xs font-bold w-full bg-white"
+                  >
+                    <option value="Sandbox / Test Mode">Sandbox / Test Mode (rzp_test_...)</option>
+                    <option value="Live Production">Live Production (rzp_live_...)</option>
+                  </select>
+                </div>
 
-                  <div className="space-y-1.5 p-3.5 bg-white rounded-xl border border-slate-200 text-xs">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Verifications this Month:</span>
-                      <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Tariff Rate:</span>
-                      <strong className="text-slate-900 font-mono">₹{comp.pricePerVerification} / check</strong>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Subtotal:</span>
-                      <span className="font-mono">₹{subtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>GST (18%):</span>
-                      <span className="font-mono">₹{gst.toLocaleString()}</span>
-                    </div>
-                    <div className="border-t border-slate-100 pt-1.5 flex justify-between font-black text-sm text-indigo-950">
-                      <span>Net Invoice Amount:</span>
-                      <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Actions: Send Bill & Settle */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => sendCompanyInvoiceBill(comp.id)}
-                      className="btn btn-hrexecutive text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 font-black shadow-sm"
-                      title="Dispatch Invoice to Company via Email & WhatsApp"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>📧 Send Bill</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveInvoiceModal(comp)}
-                      className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1 font-bold"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Invoice PDF</span>
-                    </button>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">GST Tax Rate & SAC Code</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value="18% GST"
+                      disabled
+                      className="form-input text-xs font-bold w-24 bg-slate-100 text-slate-600"
+                    />
+                    <input
+                      type="text"
+                      value="SAC: 998311 (IT/BGV)"
+                      disabled
+                      className="form-input text-xs font-bold flex-1 bg-slate-100 text-slate-600"
+                    />
                   </div>
                 </div>
-              );
-            })}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Razorpay Key ID *</label>
+                  <input
+                    type="text"
+                    required
+                    value={gatewayForm.keyId}
+                    onChange={(e) => setGatewayForm({ ...gatewayForm, keyId: e.target.value })}
+                    className="form-input text-xs font-mono font-bold w-full bg-white text-indigo-700"
+                    placeholder="rzp_test_..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Razorpay Key Secret *</label>
+                  <input
+                    type="password"
+                    required
+                    value={gatewayForm.keySecret}
+                    onChange={(e) => setGatewayForm({ ...gatewayForm, keySecret: e.target.value })}
+                    className="form-input text-xs font-mono font-bold w-full bg-white"
+                    placeholder="••••••••••••••••"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Webhook Secret Key</label>
+                  <input
+                    type="password"
+                    value={gatewayForm.webhookSecret}
+                    onChange={(e) => setGatewayForm({ ...gatewayForm, webhookSecret: e.target.value })}
+                    className="form-input text-xs font-mono font-bold w-full bg-white"
+                    placeholder="whsec_..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-200/80">
+                <div className="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>Supports Instant UPI (Google Pay, PhonePe, Paytm), Corporate Credit Cards, NetBanking & Payment Links</span>
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-superadmin text-xs py-2 px-5 flex items-center gap-2 font-black shadow-md cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Gateway Settings</span>
+                </button>
+              </div>
+            </form>
           </div>
+
+          {/* 2. Platform Revenue & Margin Overview Telemetry */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Platform Wallet Recharges</span>
+              <div className="text-2xl font-black text-slate-900">
+                ₹{companies.reduce((sum, c) => sum + (c.rechargeTransactions || []).reduce((acc, t) => acc + (t.baseAmount || 0), 0), 0).toLocaleString('en-IN')}
+              </div>
+              <span className="badge badge-emerald text-[9px] font-black">Gross Inflow 🟢</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Active Corporate Wallets</span>
+              <div className="text-2xl font-black text-indigo-700">
+                ₹{companies.reduce((sum, c) => sum + (c.walletBalance || 0), 0).toLocaleString('en-IN')}
+              </div>
+              <span className="text-[11px] text-slate-500 font-medium">{companies.length} Corporate Clients</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estimated Upstream API Cost</span>
+              <div className="text-2xl font-black text-amber-700">
+                ₹{Math.round(companies.reduce((sum, c) => sum + c.verifiedCountThisMonth, 0) * 25).toLocaleString('en-IN')}
+              </div>
+              <span className="text-[11px] text-slate-500 font-medium">Sandbox + CoinCircle @ ₹25/check</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white border border-emerald-200 shadow-2xs space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Gross Profit Margin</span>
+              <div className="text-2xl font-black text-emerald-700">
+                79.2% Margin
+              </div>
+              <span className="text-[11px] text-emerald-700 font-bold">₹95 Avg Profit per Candidate Check</span>
+            </div>
+          </div>
+
+          {/* 3. Corporate Clients Wallet & Invoicing Status Grid */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-sky-600" />
+                  <span>Corporate Client Wallets & Monthly Metered Invoicing</span>
+                </h3>
+                <p className="text-xs text-slate-500 font-medium">Manage company prepaid balances, recharge credits via Razorpay on their behalf, or dispatch monthly tax bills</p>
+              </div>
+              <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {companies.map((comp) => {
+                const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
+                const gst = Math.round(subtotal * 0.18);
+                const netTotal = subtotal + gst;
+                const paymentStatus = companyPaymentLedger[comp.id]?.status || 'PENDING DEBIT ⏳';
+
+                return (
+                  <div key={comp.id} className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/60 hover:border-indigo-300 transition-all space-y-4 shadow-2xs">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="badge badge-purple text-[10px]">{comp.plan}</span>
+                        <h4 className="font-black text-slate-900 text-base mt-1">{comp.name}</h4>
+                        <p className="text-slate-500 text-[11px]">{comp.email}</p>
+                      </div>
+                      <span className={`badge text-[10px] ${paymentStatus.includes('SETTLED') ? 'badge-emerald' : 'badge-amber'}`}>
+                        {paymentStatus}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 p-3.5 bg-white rounded-xl border border-slate-200 text-xs">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Prepaid Wallet Balance:</span>
+                        <strong className="text-indigo-700 font-mono font-black">₹{(comp.walletBalance || 0).toLocaleString('en-IN')}</strong>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Verifications this Month:</span>
+                        <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Tariff Rate:</span>
+                        <strong className="text-slate-900 font-mono">₹{comp.pricePerVerification} / check</strong>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Subtotal:</span>
+                        <span className="font-mono">₹{subtotal.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>GST (18%):</span>
+                        <span className="font-mono">₹{gst.toLocaleString()}</span>
+                      </div>
+                      <div className="border-t border-slate-100 pt-1.5 flex justify-between font-black text-sm text-indigo-950">
+                        <span>Net Monthly Consumption:</span>
+                        <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    {/* Actions: Recharge, Send Bill & Invoice PDF */}
+                    <div className="space-y-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedRechargeCompanyId(comp.id);
+                          setShowSuperAdminRazorpayModal(true);
+                        }}
+                        className="btn btn-superadmin text-xs py-2 px-3 w-full flex items-center justify-center gap-1.5 font-black shadow-sm cursor-pointer"
+                        title="Recharge Wallet via Razorpay for this Company"
+                      >
+                        <Zap className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
+                        <span>Recharge Wallet (Razorpay) ⚡</span>
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => sendCompanyInvoiceBill(comp.id)}
+                          className="btn btn-hrexecutive text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1.5 font-bold shadow-2xs"
+                          title="Dispatch Invoice to Company via Email & WhatsApp"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Send Bill 📧</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setActiveInvoiceModal(comp)}
+                          className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>PDF</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 4. Global Recharge Transactions Ledger across all Clients */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
+                  <Receipt className="w-4 h-4 text-indigo-600" />
+                  <span>Platform-Wide Razorpay Recharge Transactions Ledger</span>
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">Real-time payment captures, Razorpay Order IDs, and GST tax invoice records across all enrolled companies.</p>
+              </div>
+              <span className="badge badge-emerald text-[9px] font-bold">100% Reconciled</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500 font-bold bg-slate-50/50">
+                    <th className="py-2.5 px-3">Company</th>
+                    <th className="py-2.5 px-3">Transaction Ref</th>
+                    <th className="py-2.5 px-3">Razorpay Payment ID</th>
+                    <th className="py-2.5 px-3">Date & Time</th>
+                    <th className="py-2.5 px-3">Base Recharge</th>
+                    <th className="py-2.5 px-3">GST (18%)</th>
+                    <th className="py-2.5 px-3">Total Paid</th>
+                    <th className="py-2.5 px-3">Credits Added</th>
+                    <th className="py-2.5 px-3">Payment Method</th>
+                    <th className="py-2.5 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {companies.flatMap(comp => 
+                    (comp.rechargeTransactions || []).map(tx => ({ ...tx, companyName: comp.name }))
+                  ).map((tx, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-3 font-bold text-slate-900">{tx.companyName}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-slate-900">{tx.id}</td>
+                      <td className="py-3 px-3 font-mono text-indigo-700 font-bold">{tx.paymentId}</td>
+                      <td className="py-3 px-3 text-slate-500">{tx.date}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-slate-900">₹{(tx.baseAmount || 0).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 font-mono text-slate-600">₹{(tx.gstAmount || 0).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 font-mono font-black text-emerald-700">₹{(tx.totalAmount || 0).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 font-bold text-indigo-700">+{tx.creditsAdded} Checks</td>
+                      <td className="py-3 px-3 text-slate-600">{tx.method}</td>
+                      <td className="py-3 px-3">
+                        <span className="badge badge-emerald text-[9px] font-bold">{tx.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       )}
 
@@ -2244,6 +2499,13 @@ export const SuperAdminView = () => {
         isOpen={showUniversalExportModal}
         onClose={() => setShowUniversalExportModal(false)}
         initialRole="superadmin"
+      />
+
+      {/* ⚡ Razorpay Verification Wallet Recharge Modal */}
+      <RazorpayPaymentModal
+        isOpen={showSuperAdminRazorpayModal}
+        onClose={() => setShowSuperAdminRazorpayModal(false)}
+        targetCompanyId={selectedRechargeCompanyId}
       />
 
     </div>

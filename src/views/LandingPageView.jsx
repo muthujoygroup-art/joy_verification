@@ -38,9 +38,11 @@ import {
   CheckCircle,
   Laptop,
   CheckCheck,
-  Menu
+  Menu,
+  SendHorizontal
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
+import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import confetti from 'canvas-confetti';
 
 export const LandingPageView = () => {
@@ -51,6 +53,8 @@ export const LandingPageView = () => {
   const [openFaq, setOpenFaq] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
+  const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
 
   // Interactive Live Simulator State
   const [selectedRoleSample, setSelectedRoleSample] = useState('engineer');
@@ -853,6 +857,162 @@ export const LandingPageView = () => {
         </div>
       </section>
 
+      {/* 💳 TRANSPARENT VERIFICATION CREDITS & PRICING PLANS */}
+      <section id="pricing" className="py-16 sm:py-24 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <span className="badge badge-purple text-xs font-black uppercase tracking-wider">Metered B2B Pricing</span>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+              Prepaid Verification Credits via Razorpay
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+              No hidden contracts or long setup fees. Recharge verification wallet via Instant UPI, Cards, or NetBanking with official 18% GST Tax Invoices.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Plan 1: Starter Pack */}
+            <div className="glass-panel p-6 sm:p-8 bg-slate-50/70 border-2 border-slate-200 rounded-3xl space-y-6 flex flex-col justify-between hover:border-indigo-300 transition-all shadow-sm">
+              <div className="space-y-4">
+                <span className="badge badge-cyan text-xs font-black">STARTER PACK</span>
+                <h3 className="text-xl font-black text-slate-900">Startup & SME</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl sm:text-4xl font-black text-slate-900">₹2,500</span>
+                  <span className="text-xs text-slate-500 font-bold">/ recharge</span>
+                </div>
+                <p className="text-xs text-slate-600 font-medium">Ideal for hiring up to 20 candidates with core government identity checks.</p>
+
+                <div className="space-y-2.5 pt-2 text-xs text-slate-700 font-semibold border-t border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>~20 Candidate Verifications</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>UIDAI Aadhaar OTP + NSDL PAN Check</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Mobile OTP & WhatsApp Magic Links</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Official PDF Verification Dossiers</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setLandingSelectedAmount(2500);
+                  setShowLandingRazorpayModal(true);
+                }}
+                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
+              >
+                <span>Recharge ₹2,500 via Razorpay ⚡</span>
+              </button>
+            </div>
+
+            {/* Plan 2: Growth Pack (Most Popular) */}
+            <div className="glass-panel p-6 sm:p-8 bg-gradient-to-b from-indigo-50/80 to-white border-2 border-indigo-600 rounded-3xl space-y-6 flex flex-col justify-between shadow-xl relative scale-102">
+              <span className="absolute -top-3.5 right-6 px-3 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm">
+                Most Popular ⭐
+              </span>
+
+              <div className="space-y-4">
+                <span className="badge badge-purple text-xs font-black">GROWTH PACK</span>
+                <h3 className="text-xl font-black text-slate-900">Scale-Ups & Mid-Market</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl sm:text-4xl font-black text-indigo-700">₹5,000</span>
+                  <span className="text-xs text-slate-500 font-bold">/ recharge</span>
+                </div>
+                <p className="text-xs text-slate-600 font-medium">Complete identity, EPFO past employment history, and bank account checks.</p>
+
+                <div className="space-y-2.5 pt-2 text-xs text-slate-700 font-semibold border-t border-indigo-100">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>~45 Candidate Verifications</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>UIDAI Aadhaar + PAN + MoRTH DL</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>EPFO Past Employment Passbook Audit</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Bank Penny Drop (NPCI / IMPS ₹1 Drop)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>AI WebCam 3D Liveness Biometrics</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setLandingSelectedAmount(5000);
+                  setShowLandingRazorpayModal(true);
+                }}
+                className="btn btn-superadmin w-full text-xs py-3.5 font-black justify-center shadow-lg cursor-pointer hover:scale-102 transition-transform"
+              >
+                <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+                <span>Recharge ₹5,000 (Razorpay) ⚡</span>
+              </button>
+            </div>
+
+            {/* Plan 3: Enterprise Pack */}
+            <div className="glass-panel p-6 sm:p-8 bg-slate-50/70 border-2 border-slate-200 rounded-3xl space-y-6 flex flex-col justify-between hover:border-purple-300 transition-all shadow-sm">
+              <div className="space-y-4">
+                <span className="badge badge-purple text-xs font-black">ENTERPRISE SCALE</span>
+                <h3 className="text-xl font-black text-slate-900">Large Enterprises</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl sm:text-4xl font-black text-slate-900">₹15,000</span>
+                  <span className="text-xs text-slate-500 font-bold">/ recharge</span>
+                </div>
+                <p className="text-xs text-slate-600 font-medium">High volume recruitment with dedicated virtual bank accounts and priority SLAs.</p>
+
+                <div className="space-y-2.5 pt-2 text-xs text-slate-700 font-semibold border-t border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>~150 Candidate Verifications (+10 Bonus)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>All 10+ Government & Biometric APIs</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Dedicated NEFT / RTGS Virtual Account</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Custom SLAs & Dedicated Account Manager</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setLandingSelectedAmount(15000);
+                  setShowLandingRazorpayModal(true);
+                }}
+                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
+              >
+                <span>Recharge ₹15,000 via Razorpay ⚡</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
       {/* ❓ FREQUENTLY ASKED QUESTIONS (FAQ) */}
       <section id="faq" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -1069,6 +1229,13 @@ export const LandingPageView = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* ⚡ Razorpay Verification Wallet Recharge Modal */}
+      <RazorpayPaymentModal
+        isOpen={showLandingRazorpayModal}
+        onClose={() => setShowLandingRazorpayModal(false)}
+        defaultAmount={landingSelectedAmount}
       />
 
     </div>

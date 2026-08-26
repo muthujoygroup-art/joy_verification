@@ -25,9 +25,38 @@ const INITIAL_COMPANIES = [
     email: 'admin@acmeglobal.com',
     plan: 'Enterprise Premier',
     pricePerVerification: 120,
+    walletBalance: 42500,
     verifiedCountThisMonth: 142,
     maxLimit: 500,
     status: 'Active',
+    rechargeTransactions: [
+      {
+        id: 'PAY-RZP-981241',
+        paymentId: 'pay_Nq98xK1982',
+        orderId: 'order_Nq98xK1982',
+        date: '2026-08-22 11:30 AM',
+        baseAmount: 25000,
+        gstAmount: 4500,
+        totalAmount: 29500,
+        creditsAdded: 208,
+        method: 'Razorpay UPI (Google Pay)',
+        status: 'Success 🟢',
+        invoiceNumber: 'INV-2026-AUG-781'
+      },
+      {
+        id: 'PAY-RZP-871239',
+        paymentId: 'pay_Mp77xL9821',
+        orderId: 'order_Mp77xL9821',
+        date: '2026-08-10 03:15 PM',
+        baseAmount: 15000,
+        gstAmount: 2700,
+        totalAmount: 17700,
+        creditsAdded: 125,
+        method: 'Razorpay NetBanking (HDFC)',
+        status: 'Success 🟢',
+        invoiceNumber: 'INV-2026-AUG-542'
+      }
+    ],
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
       pan: true, uan: true, education: true, criminalCheck: false,
@@ -42,9 +71,25 @@ const INITIAL_COMPANIES = [
     email: 'hr-head@apexlogistics.in',
     plan: 'Standard Tier',
     pricePerVerification: 100,
+    walletBalance: 15000,
     verifiedCountThisMonth: 88,
     maxLimit: 250,
     status: 'Active',
+    rechargeTransactions: [
+      {
+        id: 'PAY-RZP-761920',
+        paymentId: 'pay_Lx66xM9123',
+        orderId: 'order_Lx66xM9123',
+        date: '2026-08-15 02:00 PM',
+        baseAmount: 15000,
+        gstAmount: 2700,
+        totalAmount: 17700,
+        creditsAdded: 150,
+        method: 'Razorpay Corporate Card',
+        status: 'Success 🟢',
+        invoiceNumber: 'INV-2026-AUG-612'
+      }
+    ],
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: false,
       pan: true, uan: false, education: false, criminalCheck: false,
@@ -59,9 +104,25 @@ const INITIAL_COMPANIES = [
     email: 'operations@starlighthealth.org',
     plan: 'Basic Tier',
     pricePerVerification: 80,
+    walletBalance: 8500,
     verifiedCountThisMonth: 34,
     maxLimit: 100,
     status: 'Active',
+    rechargeTransactions: [
+      {
+        id: 'PAY-RZP-651811',
+        paymentId: 'pay_Kw55xN8102',
+        orderId: 'order_Kw55xN8102',
+        date: '2026-08-05 10:45 AM',
+        baseAmount: 10000,
+        gstAmount: 1800,
+        totalAmount: 11800,
+        creditsAdded: 125,
+        method: 'Razorpay UPI (PhonePe)',
+        status: 'Success 🟢',
+        invoiceNumber: 'INV-2026-AUG-421'
+      }
+    ],
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: false, drivingLicense: false,
       pan: false, uan: false, education: false, criminalCheck: false,
@@ -1483,8 +1544,54 @@ export const AppProvider = ({ children }) => {
     return newToken;
   };
 
-  const getActiveCandidate = () => {
-    return candidates.find(c => c.token === selectedCandidateToken) || candidates[0];
+  // 💳 RAZORPAY PAYMENT GATEWAY MASTER CONFIGURATION
+  const [paymentGatewayConfig, setPaymentGatewayConfig] = useState({
+    provider: 'Razorpay Payments India',
+    mode: 'Sandbox / Test Mode', // 'Live Production' | 'Sandbox / Test Mode'
+    keyId: 'rzp_test_JoyVerif2026',
+    keySecret: 'rzp_sec_JoyCorpMaster99',
+    webhookSecret: 'whsec_JoyCorpHook2026',
+    autoInvoicing: true,
+    gstRate: 18,
+    sacCode: '998311'
+  });
+
+  const updatePaymentGatewayConfig = (newConfig) => {
+    setPaymentGatewayConfig(prev => ({ ...prev, ...newConfig }));
+    showToast('Payment Gateway settings updated successfully!');
+  };
+
+  // ⚡ 1-Click Verification Wallet Recharge via Razorpay / Payment Link
+  const rechargeCompanyWallet = (companyId, amount, paymentRecord) => {
+    setCompanies(prev => prev.map(c => {
+      if (c.id === companyId) {
+        const currentBal = c.walletBalance || 0;
+        const newBalance = currentBal + amount;
+        const addedChecks = paymentRecord?.creditsAdded || Math.floor(amount / (c.pricePerVerification || 120));
+        const updatedTx = [paymentRecord, ...(c.rechargeTransactions || [])];
+        return {
+          ...c,
+          walletBalance: newBalance,
+          maxLimit: (c.maxLimit || 500) + addedChecks,
+          rechargeTransactions: updatedTx
+        };
+      }
+      return c;
+    }));
+
+    const targetComp = companies.find(c => c.id === companyId);
+    const newNotif = {
+      id: `notif-recharge-${Date.now()}`,
+      role: 'company',
+      title: `⚡ Wallet Recharged: ₹${amount.toLocaleString('en-IN')}`,
+      message: `Successfully credited ₹${amount.toLocaleString('en-IN')} (${paymentRecord?.creditsAdded || ''} BGV checks) to ${targetComp?.name || 'Company'} wallet via ${paymentRecord?.method || 'Razorpay'}.`,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      isRead: false,
+      priority: 'high',
+      category: 'billing'
+    };
+
+    setNotifications(prev => [newNotif, ...prev]);
   };
 
   return (
@@ -1511,6 +1618,9 @@ export const AppProvider = ({ children }) => {
       updateCustomCompanyTerms,
       multiRoleSessions,
       sendCompanyInvoiceBill,
+      paymentGatewayConfig,
+      updatePaymentGatewayConfig,
+      rechargeCompanyWallet,
       apiConfigurations,
       updateApiConfig,
       masterFormFields,
