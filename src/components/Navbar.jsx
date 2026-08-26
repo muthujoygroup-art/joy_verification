@@ -25,7 +25,8 @@ import {
   Bell,
   Scale,
   Compass,
-  Home
+  Home,
+  Download
 } from 'lucide-react';
 
 export const Navbar = () => {
