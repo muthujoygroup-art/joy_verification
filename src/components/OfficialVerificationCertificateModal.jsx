@@ -76,10 +76,12 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           {/* Top Brand Dual-Logo Header Block */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-indigo-100 pb-4 relative z-10">
             {/* Logo 1: JOY Corporate Solutions Logo */}
-            <div className="p-3 rounded-xl bg-indigo-950 text-white flex flex-col items-center justify-center font-black shadow-md min-w-[130px]">
-              <ShieldCheck className="w-6 h-6 mb-0.5 text-indigo-400" />
-              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-300">JOY CORPORATE</span>
-              <span className="text-xs font-black text-white text-center leading-tight">SOLUTIONS</span>
+            <div className="p-2 rounded-2xl bg-white border-2 border-indigo-100 shadow-sm flex items-center justify-center shrink-0">
+              <img 
+                src="/joy_logo.png" 
+                alt="JOY Logo" 
+                className="w-14 h-14 object-contain" 
+              />
             </div>
 
             {/* Central Authority Header */}

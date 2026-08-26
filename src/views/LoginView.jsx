@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
   ShieldCheck, 
@@ -25,12 +26,13 @@ import {
   Mail,
   Send,
   QrCode,
-  Fingerprint
+  Fingerprint,
+  ArrowLeft
 } from 'lucide-react';
 
-export const LoginView = () => {
+export const LoginView = ({ initialRole = 'superadmin' }) => {
   const { loginUser, candidates, companies, hrUsers } = useApp();
-  const [selectedRoleTab, setSelectedRoleTab] = useState('superadmin');
+  const [selectedRoleTab, setSelectedRoleTab] = useState(initialRole || 'superadmin');
   
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -153,27 +155,34 @@ export const LoginView = () => {
         
         {/* Top Header Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-sky-500 to-emerald-500 p-[2px] shadow-sm shrink-0">
-              <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-indigo-600" />
-              </div>
-            </div>
+          <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
+            <img 
+              src="/joy_logo.png" 
+              alt="JOY Logo" 
+              className="w-12 h-12 object-contain group-hover:scale-105 transition-transform" 
+            />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">JOY DATA VERIFICATION</h2>
-                <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block">v2.0 Platform</span>
+                <h2 className="font-black text-base sm:text-lg text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
+                <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">PVT LTD</span>
               </div>
-              <p className="text-[11px] text-slate-500 font-medium">Enterprise Employee Identity & Profile Verification Platform</p>
+              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Digital Solution for Recruitment & Payroll</p>
             </div>
-          </div>
+          </Link>
 
-          <div className="flex items-center gap-2 text-xs flex-wrap justify-center">
+          <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
+            <Link 
+              to="/" 
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Homepage 🌐</span>
+            </Link>
             <span className="badge badge-emerald flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
-              PostgreSQL Connected
+              Gateway Online
             </span>
-            <span className="badge badge-indigo">ISO 27001 & DPDP Act Certified</span>
+            <span className="badge badge-indigo">ISO 27001 & DPDP Act</span>
           </div>
         </div>
 

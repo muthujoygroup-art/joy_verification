@@ -228,19 +228,21 @@ Digital Hash: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()
         
         {/* Top Control Bar */}
         <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-indigo-600/30 border border-indigo-400/40">
-              <ShieldCheck className="w-6 h-6 text-indigo-400" />
-            </div>
+          <div className="flex items-center gap-3.5">
+            <img 
+              src="/joy_logo.png" 
+              alt="JOY Logo" 
+              className="w-10 h-10 object-contain shrink-0" 
+            />
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
                   10+ APIs Verified (360° Dossier)
                 </span>
-                <span className="text-xs text-slate-400 font-mono">ISO 27001 & DPDP Act Certified</span>
+                <span className="text-xs text-slate-400 font-mono">ISO 27001 & DPDP Act</span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">
-                Multi-API Background Verification Dossier
+                JOY CORPORATE SOLUTIONS — Multi-API Background Verification Dossier
               </h2>
             </div>
           </div>

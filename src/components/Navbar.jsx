@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { SupportTicketModal } from './SupportTicketModal';
 import { HelpGuidelinesModal } from './HelpGuidelinesModal';
@@ -21,7 +22,8 @@ import {
   FileDown,
   Bell,
   Scale,
-  Compass
+  Compass,
+  Home
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -76,31 +78,31 @@ export const Navbar = () => {
           
           {/* Brand Logo & Active Role Badge */}
           <div className="flex items-center justify-between w-full xl:w-auto gap-3">
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${currentTheme.gradientClass} p-[2px] shadow-sm flex-shrink-0`}>
-                <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
-                  <RoleIcon className="w-4 h-4 text-indigo-600" />
-                </div>
-              </div>
+            <Link to="/" className="flex items-center gap-3 group cursor-pointer">
+              <img 
+                src="/joy_logo.png" 
+                alt="JOY Logo" 
+                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform shrink-0" 
+              />
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="font-extrabold text-base lg:text-lg tracking-tight text-slate-900 leading-none">
-                    JOY DATA VERIFICATION
+                  <h1 className="font-black text-sm lg:text-base tracking-tight text-slate-900 leading-none">
+                    JOY CORPORATE SOLUTIONS
                   </h1>
                   <span className={`badge ${currentTheme.badgeClass} text-[9px] py-0.5 px-2`}>
                     {currentTheme.label}
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5 font-medium">
-                  <span>Enterprise Verification System</span>
+                <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5 font-bold uppercase tracking-wider">
+                  <span>Recruitment & Payroll</span>
                   <span className="text-slate-300">•</span>
                   <span className="text-emerald-700 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    Govt Gateway Online
+                    Gateway Online
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Mobile Session Badge (visible on small screens) */}
             <div className="xl:hidden">
@@ -113,6 +115,16 @@ export const Navbar = () => {
             
             {/* Quick Action Navigation Buttons */}
             <div className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-xl border border-slate-200/80">
+              
+              {/* Return to Public Homepage */}
+              <Link
+                to="/"
+                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-slate-700 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs transition-all"
+                title="Return to Public Homepage & Services Overview"
+              >
+                <Home className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Home 🌐</span>
+              </Link>
               
               {/* Interactive Guided Tour Replay Button */}
               <button
