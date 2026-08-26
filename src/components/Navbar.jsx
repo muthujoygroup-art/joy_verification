@@ -77,95 +77,95 @@ export const Navbar = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/95 border-b border-slate-200/80 px-3 sm:px-6 lg:px-8 py-2.5 transition-all shadow-xs relative">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/95 border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 py-2.5 transition-all shadow-xs relative">
         
         {/* Top Role-Specific Dual-Color Accent Line */}
         <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${currentTheme.gradientClass}`} />
 
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+        <div className="w-full max-w-[1600px] mx-auto flex items-center justify-between gap-4">
           
           {/* Brand Logo & Active Role Badge */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer min-w-0">
+          <div className="flex items-center gap-3 shrink-0">
+            <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
               <img 
                 src="/joy_logo.png" 
                 alt="JOY Logo" 
-                className="w-9 h-9 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform shrink-0" 
+                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform shrink-0" 
               />
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <h1 className="font-black text-xs sm:text-sm lg:text-base tracking-tight text-slate-900 leading-none truncate">
-                    JOY CORPORATE
+              <div className="shrink-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-black text-sm lg:text-base tracking-tight text-slate-900 leading-none whitespace-nowrap">
+                    JOY CORPORATE SOLUTIONS
                   </h1>
-                  <span className={`badge ${currentTheme.badgeClass} text-[8px] sm:text-[9px] py-0.2 sm:py-0.5 px-1.5 sm:px-2 font-bold shrink-0`}>
+                  <span className={`badge ${currentTheme.badgeClass} text-[9px] py-0.5 px-2 font-black shrink-0 whitespace-nowrap`}>
                     {currentTheme.label}
                   </span>
                 </div>
-                <div className="text-[9px] sm:text-[10px] text-slate-500 hidden sm:flex items-center gap-2 mt-0.5 font-bold uppercase tracking-wider">
-                  <span className="text-indigo-700 font-extrabold truncate">Candidate Verification & Digital Trust</span>
+                <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-1 font-bold uppercase tracking-wider whitespace-nowrap">
+                  <span className="text-indigo-700 font-extrabold">Candidate Background Verification & Digital Trust</span>
                   <span className="text-slate-300">•</span>
                   <span className="text-emerald-700 font-bold flex items-center gap-1 shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    Online
+                    Gateway Online
                   </span>
                 </div>
               </div>
             </Link>
           </div>
 
-          {/* Desktop Action Bar (>= xl screens) */}
-          <div className="hidden xl:flex items-center gap-2 text-xs">
+          {/* Desktop Action Bar (>= lg screens) */}
+          <div className="hidden lg:flex items-center gap-2.5 text-xs shrink-0 whitespace-nowrap">
             
-            {/* Quick Action Navigation Buttons */}
-            <div className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-xl border border-slate-200/80">
+            {/* Quick Action Navigation Buttons Toolbar */}
+            <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 shadow-2xs">
               
               {/* Return to Public Homepage */}
               <Link
                 to="/"
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-slate-700 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs transition-all"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-slate-700 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs transition-all whitespace-nowrap"
                 title="Return to Public Homepage & Services Overview"
               >
-                <Home className="w-3.5 h-3.5 text-indigo-600" />
+                <Home className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span>Home 🌐</span>
               </Link>
               
               {/* Interactive Guided Tour Replay Button */}
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Launch Game-Style Interactive Guided Walkthrough"
               >
-                <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow" />
+                <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow shrink-0" />
                 <span>Tour 🎮</span>
               </button>
 
               {/* Statutory Legal & DPDP Compliance Handbook Trigger */}
               <button
                 onClick={() => setShowLegalHandbook(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Statutory Legal & DPDP Act 2023 Compliance Framework"
               >
-                <Scale className="w-3.5 h-3.5 text-indigo-700" />
+                <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
                 <span>Legal & DPDP 🛡️</span>
               </button>
 
               {/* Universal Date-Filtered Document & Report Export Trigger */}
               <button
                 onClick={() => setShowUniversalExportModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Download Date-Filtered Candidate Reports in PDF, CSV, or ZIP"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-700" />
+                <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                 <span>Reports 📥</span>
               </button>
 
               {/* Notification Center Bell Button */}
               <button
                 onClick={() => setShowNotificationsModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-amber-800 bg-white hover:bg-amber-50 font-bold border border-slate-200 shadow-2xs transition-all relative cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-amber-800 bg-white hover:bg-amber-50 font-bold border border-slate-200 shadow-2xs transition-all relative cursor-pointer whitespace-nowrap"
                 title="Real-Time Notifications & System Alerts"
               >
-                <Bell className="w-3.5 h-3.5 text-amber-600" />
+                <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span>Alerts</span>
                 {unreadCount > 0 && (
                   <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-black animate-pulse">
@@ -177,43 +177,46 @@ export const Navbar = () => {
               {/* Help Guidelines Button */}
               <button
                 onClick={() => setShowGuidelinesModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-indigo-800 bg-white hover:bg-indigo-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-indigo-800 bg-white hover:bg-indigo-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Operational Guidelines & How-To Manual"
               >
-                <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+                <BookOpen className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span>Guidelines</span>
               </button>
 
               {/* Support Ticket Raising Button */}
               <button
                 onClick={() => setShowSupportModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-800 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-purple-800 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Raise Support Ticket / Feedback"
               >
-                <LifeBuoy className="w-3.5 h-3.5 text-purple-600" />
+                <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                 <span>Support</span>
               </button>
 
               {/* Legal Terms of Service & Privacy Disclosures */}
               <button
                 onClick={() => setShowTermsModal(true)}
-                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-800 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer"
+                className="h-8 px-2.5 rounded-lg flex items-center gap-1.5 text-slate-800 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 title="Enterprise Terms of Service, Privacy Policy & Point-in-Time Disclosures"
               >
-                <Scale className="w-3.5 h-3.5 text-slate-600" />
+                <Scale className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                 <span>Legal</span>
               </button>
             </div>
 
-            {/* Desktop Active Session Badge */}
-            <div className="hidden xl:block">
+            {/* Vertical Divider */}
+            <div className="h-6 w-px bg-slate-200 shrink-0" />
+
+            {/* Desktop Active Session Countdown Badge */}
+            <div className="shrink-0">
               <ActiveSessionBadge />
             </div>
 
             {/* User Profile Pill */}
-            <div className="flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-xl border border-slate-200 text-xs shadow-2xs">
-              <User className="w-3.5 h-3.5 text-indigo-600" />
-              <div className="text-left max-w-[140px] truncate">
+            <div className="flex items-center gap-2 bg-slate-100/90 px-3 h-8 rounded-xl border border-slate-200 text-xs shadow-2xs shrink-0 whitespace-nowrap">
+              <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <div className="text-left max-w-[150px] truncate">
                 <p className="font-extrabold text-slate-900 leading-tight truncate">
                   {currentUser?.email || `${currentRole?.toUpperCase()} User`}
                 </p>
@@ -223,16 +226,16 @@ export const Navbar = () => {
             {/* Logout Button */}
             <button 
               onClick={logoutUser}
-              className="px-3 py-1.5 flex items-center gap-1 text-rose-700 hover:text-rose-800 border border-rose-200 hover:border-rose-300 bg-rose-50 hover:bg-rose-100 font-bold rounded-xl shadow-2xs transition-all cursor-pointer"
+              className="h-8 px-3 rounded-xl flex items-center gap-1.5 text-rose-700 hover:text-rose-800 border border-rose-200 hover:border-rose-300 bg-rose-50 hover:bg-rose-100 font-bold shadow-2xs transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Logout / Switch Login Context"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
               <span>Logout</span>
             </button>
           </div>
 
-          {/* Mobile Action Controls (< xl screens) */}
-          <div className="flex xl:hidden items-center gap-1.5 sm:gap-2">
+          {/* Mobile Action Controls (< lg screens) */}
+          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
             <ActiveSessionBadge />
             
             <button
@@ -261,7 +264,7 @@ export const Navbar = () => {
 
         {/* 📱 SLIDE-DOWN MOBILE DRAWER FOR TABLET & MOBILE VIEW */}
         {mobileMenuOpen && (
-          <div className="xl:hidden mt-3 pt-3 border-t border-slate-200 bg-white/95 backdrop-blur-xl rounded-2xl p-4 space-y-4 shadow-xl animate-drawerSlide border border-slate-200">
+          <div className="lg:hidden mt-3 pt-3 border-t border-slate-200 bg-white/95 backdrop-blur-xl rounded-2xl p-4 space-y-4 shadow-xl animate-drawerSlide border border-slate-200">
             {/* User profile & Active context card */}
             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
               <div className="flex items-center gap-2.5 min-w-0">
