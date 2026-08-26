@@ -91,6 +91,18 @@ const CandidateRoute = () => {
   );
 };
 
+// Wrapper for Generic /login Route
+const GenericLoginRoute = () => {
+  const { currentRole, currentUser } = useApp();
+  if (currentUser) {
+    if (currentRole === 'superadmin') return <Navigate to="/superadmin" replace />;
+    if (currentRole === 'company') return <Navigate to="/company" replace />;
+    if (currentRole === 'hrexecutive') return <Navigate to="/hr" replace />;
+    if (currentRole === 'employee_link') return <Navigate to="/verify" replace />;
+  }
+  return <LoginView initialRole="superadmin" />;
+};
+
 // Main Routing Container with Inactivity and Toast Modals
 const MainApp = () => {
   const { 
@@ -122,7 +134,7 @@ const MainApp = () => {
         <Route path="/hr/*" element={<HrRoute />} />
         <Route path="/verify" element={<CandidateRoute />} />
         <Route path="/candidate" element={<CandidateRoute />} />
-        <Route path="/login" element={<LoginView />} />
+        <Route path="/login" element={<GenericLoginRoute />} />
 
         {/* Catch-All Unknown Routes */}
         <Route path="*" element={<Navigate to="/" replace />} />

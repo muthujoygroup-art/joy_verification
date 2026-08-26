@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
   ShieldCheck, 
@@ -31,7 +31,8 @@ import {
 } from 'lucide-react';
 
 export const LoginView = ({ initialRole = 'superadmin' }) => {
-  const { loginUser, candidates, companies, hrUsers } = useApp();
+  const { loginUser, candidates, companies, hrUsers, currentUser, currentRole } = useApp();
+  const navigate = useNavigate();
   const [selectedRoleTab, setSelectedRoleTab] = useState(initialRole || 'superadmin');
   
   const [emailInput, setEmailInput] = useState('');
@@ -133,15 +134,20 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
   const handleCustomLoginSubmit = (e) => {
     e.preventDefault();
     if (selectedRoleTab === 'employee_link') {
-      loginUser('employee_link', { token: candidateTokenInput });
+      const tok = candidateTokenInput || 'tok_sunita_412';
+      loginUser('employee_link', { token: tok });
+      navigate(`/verify?token=${tok}`);
     } else if (selectedRoleTab === 'company') {
       const comp = companies.find(c => c.id === selectedCompanyId) || companies[0];
       loginUser('company', { email: emailInput || comp.email, companyId: comp.id });
+      navigate('/company');
     } else if (selectedRoleTab === 'hrexecutive') {
       const hr = hrUsers.find(h => h.id === selectedHrId) || hrUsers[0];
       loginUser('hrexecutive', { email: emailInput || hr.email, hrId: hr.id });
+      navigate('/hr');
     } else {
       loginUser('superadmin', { email: emailInput || currentDetail.demoEmail });
+      navigate('/superadmin');
     }
   };
 
@@ -282,13 +288,18 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
             <button 
               onClick={() => {
                 if (selectedRoleTab === 'employee_link') {
-                  loginUser('employee_link', { token: candidateTokenInput });
+                  const tok = candidateTokenInput || 'tok_sunita_412';
+                  loginUser('employee_link', { token: tok });
+                  navigate(`/verify?token=${tok}`);
                 } else if (selectedRoleTab === 'company') {
                   loginUser('company', { email: 'admin@acmeglobal.com', companyId: 'comp-1' });
+                  navigate('/company');
                 } else if (selectedRoleTab === 'hrexecutive') {
                   loginUser('hrexecutive', { email: 'priya.s@acmeglobal.com', hrId: 'hr-1' });
+                  navigate('/hr');
                 } else {
                   loginUser('superadmin', { email: 'superadmin@joyverification.com' });
+                  navigate('/superadmin');
                 }
               }}
               className={`btn ${currentDetail.btnClass} text-xs px-5 py-3 flex items-center justify-center gap-2 shrink-0 shadow-md font-bold cursor-pointer w-full sm:w-auto`}
