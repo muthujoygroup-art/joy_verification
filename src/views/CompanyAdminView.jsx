@@ -12,6 +12,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
+import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   Building2, 
   Users, 
@@ -33,7 +34,8 @@ import {
   Receipt,
   Settings,
   Save,
-  Lock
+  Lock,
+  Scale
 } from 'lucide-react';
 
 export const CompanyAdminView = () => {
@@ -63,6 +65,7 @@ export const CompanyAdminView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [activeGuideStep, setActiveGuideStep] = useState(0);
 
   const companyGuideSteps = [
@@ -991,6 +994,12 @@ export const CompanyAdminView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
 
     </div>
   );

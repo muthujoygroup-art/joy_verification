@@ -10,6 +10,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
+import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   UserCheck, 
   Send, 
@@ -38,7 +39,8 @@ import {
   Eye,
   Zap,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  Scale
 } from 'lucide-react';
 
 export const HrExecutiveView = () => {
@@ -70,6 +72,7 @@ export const HrExecutiveView = () => {
   const [dispatchingCandidate, setDispatchingCandidate] = useState(null);
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
   const [activeGuideStep, setActiveGuideStep] = useState(0);
 
@@ -530,6 +533,34 @@ export const HrExecutiveView = () => {
               </div>
             );
           })()}
+
+          {/* ⚖️ Fair Hiring & DPDP Act 2023 Statutory Advisory Banner */}
+          <div className="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-600/40 text-indigo-300 shrink-0">
+                <Scale className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded-full border border-indigo-400/30">
+                    Statutory Fair Hiring Notice
+                  </span>
+                  <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">DPDP Act 2023 Section 7(a)</span>
+                </div>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  All verification queries are conducted pursuant to candidate digital consent gathered automatically on link dispatch. Masked Aadhaar and 60-day document lifecycle rules apply.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowLegalHandbook(true)}
+              className="btn btn-secondary text-xs py-1.5 px-3 font-bold text-white bg-white/10 hover:bg-white/20 border-white/20 shrink-0 self-start sm:self-auto flex items-center gap-1.5 cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Legal Guidelines 📖</span>
+            </button>
+          </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div>
@@ -1250,6 +1281,12 @@ export const HrExecutiveView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
 
     </div>
   );

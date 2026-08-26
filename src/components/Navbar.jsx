@@ -7,6 +7,7 @@ import { CustomReportBuilderModal } from './CustomReportBuilderModal';
 import { NotificationCenterModal } from './NotificationCenterModal';
 import { ActiveSessionBadge } from './ActiveSessionBadge';
 import { TermsAndPrivacyPolicyModal } from './TermsAndPrivacyPolicyModal';
+import { LegalComplianceHandbookModal } from './LegalComplianceHandbookModal';
 import { 
   ShieldCheck, 
   Building2, 
@@ -33,6 +34,7 @@ export const Navbar = () => {
   const [showCustomReportModal, setShowCustomReportModal] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
   const roleKey = currentRole === 'employee_link' ? 'candidate' : currentRole;
   const unreadCount = (notifications || []).filter(n => n.role === roleKey && !n.isRead).length;
@@ -134,6 +136,16 @@ export const Navbar = () => {
               >
                 <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow" />
                 <span>Tour 🎮</span>
+              </button>
+
+              {/* Statutory Legal & DPDP Compliance Handbook Trigger */}
+              <button
+                onClick={() => setShowLegalHandbook(true)}
+                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs transition-all cursor-pointer"
+                title="Statutory Legal & DPDP Act 2023 Compliance Framework"
+              >
+                <Scale className="w-3.5 h-3.5 text-indigo-700" />
+                <span>Legal & DPDP 🛡️</span>
               </button>
 
               {/* Notification Center Bell Button */}
@@ -264,6 +276,12 @@ export const Navbar = () => {
           onClose={() => setShowTermsModal(false)} 
         />
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
     </>
   );
 };

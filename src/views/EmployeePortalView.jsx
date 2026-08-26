@@ -7,6 +7,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
+import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -26,7 +27,8 @@ import {
   Award, 
   FileText,
   UserCheck,
-  Scan
+  Scan,
+  Scale
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
@@ -43,6 +45,8 @@ export const EmployeePortalView = () => {
 
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
+  const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
   const isAllComplete = candidate?.status === 'Verified';
   const [activeGuideStep, setActiveGuideStep] = useState(0);
@@ -352,6 +356,65 @@ export const EmployeePortalView = () => {
           <FileCheck2 className="w-4 h-4" />
           <span>Open Full Joining Form</span>
         </button>
+      </div>
+
+      {/* 🛡️ DPDP Act 2023 Statutory Consent & Privacy Shield Checkpoint */}
+      <div className="glass-panel p-5 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white rounded-2xl border-2 border-purple-500/40 shadow-lg space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-purple-600/40 border border-purple-400/40 text-purple-300">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded-full border border-purple-400/30">
+                  DPDP Act 2023 Consent Shield
+                </span>
+                <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">Section 6(1) Compliant</span>
+              </div>
+              <h4 className="text-sm font-black text-white mt-0.5">
+                Voluntary Candidate Authorization & Privacy Disclosure
+              </h4>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowLegalHandbook(true)}
+            className="text-[11px] font-bold text-purple-300 hover:text-white flex items-center gap-1 cursor-pointer bg-white/10 px-2.5 py-1 rounded-xl hover:bg-white/20 transition-all self-start sm:self-auto"
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>Read Legal Handbook 📖</span>
+          </button>
+        </div>
+
+        <div className="text-xs text-slate-200 space-y-2 leading-relaxed">
+          <p>
+            By proceeding, you grant voluntary affirmative consent to <strong>JOY CORPORATE SOLUTIONS PVT LTD</strong> and your employer to verify your submitted identity credentials against official government repositories (UIDAI Aadhaar OTP, NSDL PAN, EPFO UAN, and NPCI IMPS Bank Verification).
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-purple-200 pt-1">
+            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
+              🔒 Masked Aadhaar: <strong className="text-white">XXXX-XXXX-9876</strong>
+            </div>
+            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
+              ⏱️ Expiry Policy: <strong className="text-white">60-Day Auto Purge</strong>
+            </div>
+            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
+              🛡️ Audit Stamp: <strong className="text-emerald-400">Consent Logged ✓</strong>
+            </div>
+          </div>
+        </div>
+
+        <label className="flex items-start gap-2 pt-2 border-t border-white/10 cursor-pointer text-xs font-bold text-slate-200">
+          <input 
+            type="checkbox"
+            checked={candidateConsentAgreed}
+            onChange={(e) => setCandidateConsentAgreed(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-white/30 bg-white/10 accent-purple-600" 
+          />
+          <span>
+            I acknowledge the statutory privacy disclosure and grant voluntary consent for employment background verification.
+          </span>
+        </label>
       </div>
 
       {/* 3-Step Verification Checklist Cards */}
@@ -665,6 +728,12 @@ export const EmployeePortalView = () => {
           onClose={() => setShowLaborDossierModal(false)}
         />
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
 
     </div>
   );

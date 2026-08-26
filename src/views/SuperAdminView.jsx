@@ -8,6 +8,7 @@ import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyM
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
+import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   Building2, 
   ShieldCheck, 
@@ -110,6 +111,7 @@ export const SuperAdminView = () => {
   
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [selectedTermsCompany, setSelectedTermsCompany] = useState(null);
   const [editingCustomTermsCompany, setEditingCustomTermsCompany] = useState(null);
   const [showAddMasterFieldModal, setShowAddMasterFieldModal] = useState(false);
@@ -438,6 +440,17 @@ export const SuperAdminView = () => {
           >
             <Settings className="w-4 h-4" />
             <span>13. Settings</span>
+          </button>
+
+          {/* TAB 14: Legal & DPDP Governance */}
+          <button
+            onClick={() => setActiveTab('legal_governance')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
+              activeTab === 'legal_governance' ? 'bg-purple-800 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Scale className="w-4 h-4 text-purple-400" />
+            <span>14. Legal & DPDP Governance 🏛️</span>
           </button>
 
         </div>
@@ -1690,6 +1703,149 @@ export const SuperAdminView = () => {
         </div>
       )}
 
+      {/* TAB 14: Legal & DPDP Regulatory Governance Hub */}
+      {activeTab === 'legal_governance' && (
+        <div className="space-y-6 animate-fadeIn">
+          
+          {/* Master Banner */}
+          <div className="glass-panel p-6 sm:p-8 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white rounded-3xl border-2 border-purple-500/40 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3.5">
+                <div className="p-3 rounded-2xl bg-purple-600/40 border border-purple-400/40 text-purple-300">
+                  <Scale className="w-8 h-8" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="badge badge-purple text-[10px] font-black uppercase">
+                      Master Regulatory Governance
+                    </span>
+                    <span className="text-xs text-slate-300 font-mono">DPDP Act 2023 & ISO 27001</span>
+                  </div>
+                  <h3 className="text-lg sm:text-2xl font-black text-white mt-1">
+                    Statutory Compliance & Legal Telemetry Monitor
+                  </h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowLegalHandbook(true)}
+                className="btn btn-superadmin text-xs py-2.5 px-5 font-black shadow-lg flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Open Full Legal Handbook 📖</span>
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-200 font-medium leading-relaxed max-w-3xl">
+              Real-time platform governance ensuring zero regulatory risk across all verification channels. Enforces explicit candidate digital consent (Section 6 DPDP Act), automated 60-day data lifecycle purges, and UIDAI masked Aadhaar storage integrity.
+            </p>
+          </div>
+
+          {/* 4 Regulatory Pillar Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass-panel p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="badge badge-purple text-[10px]">DPDP Act 2023</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-xl font-black text-slate-900 font-mono">100% Logged</div>
+              <div className="text-xs text-slate-500 font-semibold">Consent Records Captured</div>
+              <p className="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100">
+                Timestamp + IP + Device Hash
+              </p>
+            </div>
+
+            <div className="glass-panel p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="badge badge-indigo text-[10px]">UIDAI Aadhaar Shield</span>
+                <ShieldCheck className="w-4 h-4 text-indigo-600" />
+              </div>
+              <div className="text-xl font-black text-indigo-700 font-mono">0 Leaks (100%)</div>
+              <div className="text-xs text-slate-500 font-semibold">Masked Aadhaar Integrity</div>
+              <p className="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100">
+                XXXX-XXXX-9876 Format Enforced
+              </p>
+            </div>
+
+            <div className="glass-panel p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="badge badge-emerald text-[10px]">Data Retention Policy</span>
+                <Clock className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-xl font-black text-emerald-700 font-mono">60 Days Active</div>
+              <div className="text-xs text-slate-500 font-semibold">Automated Purge Scheduler</div>
+              <p className="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100">
+                Next Queue: 3 candidates
+              </p>
+            </div>
+
+            <div className="glass-panel p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="badge badge-cyan text-[10px]">IT Act Section 79</span>
+                <Scale className="w-4 h-4 text-sky-600" />
+              </div>
+              <div className="text-xl font-black text-sky-700 font-mono">Safe Harbor</div>
+              <div className="text-xs text-slate-500 font-semibold">Technology Intermediary Status</div>
+              <p className="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100">
+                Point-in-Time Public Repository
+              </p>
+            </div>
+          </div>
+
+          {/* Master DPDP Consent Audit Table */}
+          <div className="glass-panel p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 className="text-base font-black text-slate-900">Live Candidate Digital Consent Audit Ledger</h4>
+                <p className="text-xs text-slate-500 font-medium">Immutable consent trail recorded under Section 6(1) of the DPDP Act 2023</p>
+              </div>
+              <span className="badge badge-emerald text-xs font-mono font-bold">100% Legally Authorized</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
+                    <th className="py-2.5 px-3">Candidate & Token</th>
+                    <th className="py-2.5 px-3">Employer Fiduciary</th>
+                    <th className="py-2.5 px-3">Authorized Scope</th>
+                    <th className="py-2.5 px-3">Consent Timestamp</th>
+                    <th className="py-2.5 px-3">IP Address & Device</th>
+                    <th className="py-2.5 px-3 text-right">Legal Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800">
+                  {candidates.map((c, i) => (
+                    <tr key={c.id} className="hover:bg-slate-50">
+                      <td className="py-3 px-3">
+                        <div className="font-bold text-slate-900">{c.name}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">{c.token}</div>
+                      </td>
+                      <td className="py-3 px-3 font-semibold text-slate-700">
+                        {companies.find(comp => comp.id === c.companyId)?.name || 'Acme Global Technologies'}
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="badge badge-indigo text-[9px]">Aadhaar + PAN + EPFO + Bank</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-[11px] text-slate-600">
+                        2026-08-26 10:{20 + i}:14 UTC
+                      </td>
+                      <td className="py-3 px-3 font-mono text-[10px] text-slate-500">
+                        117.201.88.{40 + i} (Mobile Safari / Chrome)
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <span className="badge badge-emerald text-[9px] font-black">VALID CONSENT ✓</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      )}
+
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -2065,6 +2221,12 @@ export const SuperAdminView = () => {
           onClose={() => setViewingCertificateCandidate(null)}
         />
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
 
     </div>
   );

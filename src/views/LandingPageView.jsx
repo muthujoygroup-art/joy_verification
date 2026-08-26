@@ -40,6 +40,7 @@ import {
   CheckCheck,
   Menu
 } from 'lucide-react';
+import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import confetti from 'canvas-confetti';
 
 export const LandingPageView = () => {
@@ -49,6 +50,7 @@ export const LandingPageView = () => {
   const [demoSubmitted, setDemoSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
   // Interactive Live Simulator State
   const [selectedRoleSample, setSelectedRoleSample] = useState('engineer');
@@ -881,11 +883,26 @@ export const LandingPageView = () => {
           <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-[11px] text-slate-500">
             <p>© 2026 JOY CORPORATE SOLUTIONS PVT LTD. All Rights Reserved.</p>
             <div className="flex items-center gap-4">
-              <span>Privacy Policy</span>
+              <button 
+                onClick={() => setShowLegalHandbook(true)} 
+                className="hover:text-purple-400 underline cursor-pointer transition-colors"
+              >
+                DPDP Privacy Policy & Legal Handbook 🛡️
+              </button>
               <span>•</span>
-              <span>Terms of Service</span>
+              <button 
+                onClick={() => setShowLegalHandbook(true)} 
+                className="hover:text-indigo-400 underline cursor-pointer transition-colors"
+              >
+                Terms of Service
+              </button>
               <span>•</span>
-              <span>SLA Terms</span>
+              <button 
+                onClick={() => setShowLegalHandbook(true)} 
+                className="hover:text-sky-400 underline cursor-pointer transition-colors"
+              >
+                SLA & Safe Harbor
+              </button>
             </div>
           </div>
 
@@ -997,6 +1014,12 @@ export const LandingPageView = () => {
           </div>
         </div>
       )}
+
+      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      <LegalComplianceHandbookModal
+        isOpen={showLegalHandbook}
+        onClose={() => setShowLegalHandbook(false)}
+      />
 
     </div>
   );
