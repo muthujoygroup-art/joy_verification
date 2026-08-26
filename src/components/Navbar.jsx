@@ -8,6 +8,7 @@ import { NotificationCenterModal } from './NotificationCenterModal';
 import { ActiveSessionBadge } from './ActiveSessionBadge';
 import { TermsAndPrivacyPolicyModal } from './TermsAndPrivacyPolicyModal';
 import { LegalComplianceHandbookModal } from './LegalComplianceHandbookModal';
+import { UniversalDocumentExportModal } from './UniversalDocumentExportModal';
 import { 
   ShieldCheck, 
   Building2, 
@@ -35,6 +36,7 @@ export const Navbar = () => {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
 
   const roleKey = currentRole === 'employee_link' ? 'candidate' : currentRole;
   const unreadCount = (notifications || []).filter(n => n.role === roleKey && !n.isRead).length;
@@ -146,6 +148,16 @@ export const Navbar = () => {
               >
                 <Scale className="w-3.5 h-3.5 text-indigo-700" />
                 <span>Legal & DPDP 🛡️</span>
+              </button>
+
+              {/* Universal Date-Filtered Document & Report Export Trigger */}
+              <button
+                onClick={() => setShowUniversalExportModal(true)}
+                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs transition-all cursor-pointer"
+                title="Download Date-Filtered Candidate Reports in PDF, CSV, or ZIP"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Reports 📥</span>
               </button>
 
               {/* Notification Center Bell Button */}
@@ -281,6 +293,13 @@ export const Navbar = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* Universal Date-Filtered Document & Report Export Modal */}
+      <UniversalDocumentExportModal
+        isOpen={showUniversalExportModal}
+        onClose={() => setShowUniversalExportModal(false)}
+        initialRole={currentRole}
       />
     </>
   );

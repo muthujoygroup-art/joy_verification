@@ -11,6 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
+import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { 
   UserCheck, 
   Send, 
@@ -73,6 +74,7 @@ export const HrExecutiveView = () => {
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
 
   const [activeGuideStep, setActiveGuideStep] = useState(0);
 
@@ -571,16 +573,27 @@ export const HrExecutiveView = () => {
               <p className="text-xs text-slate-500 font-medium">Dispatch onboarding links via WhatsApp/SMS/Email, monitor 60-day certificate validity, and export official dossiers</p>
             </div>
             
-            <button
-              onClick={() => {
-                setShowAddForm(true);
-                setActiveTab('profiler');
-              }}
-              className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-sm self-start"
-            >
-              <UserPlus className="w-3.5 h-3.5" />
-              <span>+ Add New Employee</span>
-            </button>
+            <div className="flex items-center gap-2 self-start flex-wrap">
+              <button
+                onClick={() => setShowUniversalExportModal(true)}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
+                title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
+              >
+                <Download className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Date-Filtered Reports 📥</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowAddForm(true);
+                  setActiveTab('profiler');
+                }}
+                className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-sm"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>+ Add New Employee</span>
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -1286,6 +1299,14 @@ export const HrExecutiveView = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* Universal Date-Filtered Document & Report Export Modal */}
+      <UniversalDocumentExportModal
+        isOpen={showUniversalExportModal}
+        onClose={() => setShowUniversalExportModal(false)}
+        initialRole="hrexecutive"
+        scopedCompanyId={currentCompany?.id}
       />
 
     </div>

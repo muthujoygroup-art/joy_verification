@@ -9,6 +9,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
+import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { 
   Building2, 
   ShieldCheck, 
@@ -112,6 +113,7 @@ export const SuperAdminView = () => {
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [selectedTermsCompany, setSelectedTermsCompany] = useState(null);
   const [editingCustomTermsCompany, setEditingCustomTermsCompany] = useState(null);
   const [showAddMasterFieldModal, setShowAddMasterFieldModal] = useState(false);
@@ -286,6 +288,15 @@ export const SuperAdminView = () => {
               </button>
             )}
             
+            <button 
+              onClick={() => setShowUniversalExportModal(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+              title="Download platform-wide cross-company reports by date range"
+            >
+              <Download className="w-4 h-4 text-indigo-600" />
+              <span>Date-Filtered Reports 📥</span>
+            </button>
+
             <button 
               onClick={() => setShowAddCompanyModal(true)}
               className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold"
@@ -2226,6 +2237,13 @@ export const SuperAdminView = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* Universal Date-Filtered Document & Report Export Modal */}
+      <UniversalDocumentExportModal
+        isOpen={showUniversalExportModal}
+        onClose={() => setShowUniversalExportModal(false)}
+        initialRole="superadmin"
       />
 
     </div>

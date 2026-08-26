@@ -13,6 +13,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
+import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { 
   Building2, 
   Users, 
@@ -66,6 +67,7 @@ export const CompanyAdminView = () => {
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [activeGuideStep, setActiveGuideStep] = useState(0);
 
   const companyGuideSteps = [
@@ -176,6 +178,15 @@ export const CompanyAdminView = () => {
             >
               <MessageSquare className="w-3.5 h-3.5" />
               <span>WhatsApp / Email API Gateways 💬</span>
+            </button>
+
+            <button
+              onClick={() => setShowUniversalExportModal(true)}
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
+              title="Download date-filtered candidate dossiers and Excel CSVs"
+            >
+              <Download className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Date-Filtered Reports 📥</span>
             </button>
 
             <button
@@ -999,6 +1010,14 @@ export const CompanyAdminView = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* Universal Date-Filtered Document & Report Export Modal */}
+      <UniversalDocumentExportModal
+        isOpen={showUniversalExportModal}
+        onClose={() => setShowUniversalExportModal(false)}
+        initialRole="company"
+        scopedCompanyId={company?.id}
       />
 
     </div>
