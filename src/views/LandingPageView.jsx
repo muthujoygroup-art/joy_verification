@@ -266,8 +266,8 @@ export const LandingPageView = () => {
                   PVT LTD
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
-                Digital Solution for Recruitment & Payroll
+              <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider mt-0.5">
+                Candidate Background Verification & Digital Trust
               </p>
             </div>
           </Link>
@@ -374,19 +374,19 @@ export const LandingPageView = () => {
           {/* Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-indigo-200 text-indigo-900 text-xs font-black shadow-sm backdrop-blur-sm animate-float-slow">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span>Next-Gen Candidate Verification & Payroll Onboarding</span>
+            <span>Next-Gen Candidate Background Verification & Digital KYC</span>
           </div>
 
           {/* Hero Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
-            Screen & Onboard Candidates in{' '}
+            Automate Candidate Verification in{' '}
             <span className="animated-gradient-text">
               Seconds, Not Weeks
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-            Eliminate candidate drop-offs and resume fraud. Automate identity verification, past employment checks, and bank penny drop with instant audit-ready certified dossiers.
+            Eliminate resume fraud, moonlighting, and hiring delays. Instantly verify Aadhaar, PAN, EPFO past employment history, and bank account details with audit-ready certified dossiers.
           </p>
 
           {/* Hero CTAs */}
@@ -851,7 +851,7 @@ export const LandingPageView = () => {
                 <img src="/joy_logo.png" alt="JOY Logo" className="w-12 h-12 object-contain" />
                 <div>
                   <h4 className="text-base font-black text-white">JOY CORPORATE SOLUTIONS PVT LTD</h4>
-                  <p className="text-[11px] text-slate-400 font-bold uppercase">Digital Solution for Recruitment & Payroll</p>
+                  <p className="text-[11px] text-indigo-400 font-bold uppercase tracking-wider">Candidate Background Verification & Digital Trust</p>
                 </div>
               </div>
               <p className="text-slate-400 text-xs font-medium max-w-md leading-relaxed">

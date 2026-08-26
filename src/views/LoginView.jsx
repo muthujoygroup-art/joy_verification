@@ -172,7 +172,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                 <h2 className="font-black text-base sm:text-lg text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
                 <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">PVT LTD</span>
               </div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Digital Solution for Recruitment & Payroll</p>
+              <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider">Candidate Background Verification & Digital Trust</p>
             </div>
           </Link>
 

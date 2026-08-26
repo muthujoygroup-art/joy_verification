@@ -99,7 +99,7 @@ export const Navbar = () => {
                   </span>
                 </div>
                 <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5 font-bold uppercase tracking-wider">
-                  <span>Recruitment & Payroll</span>
+                  <span className="text-indigo-700 font-extrabold">Background Verification & Digital Trust</span>
                   <span className="text-slate-300">•</span>
                   <span className="text-emerald-700 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
