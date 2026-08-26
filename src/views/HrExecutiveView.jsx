@@ -9,6 +9,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
+import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
 import { 
   UserCheck, 
   Send, 
@@ -69,6 +70,40 @@ export const HrExecutiveView = () => {
   const [dispatchingCandidate, setDispatchingCandidate] = useState(null);
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
+
+  const [showTour, setShowTour] = useState(() => {
+    return !localStorage.getItem('joy_tour_completed_hr');
+  });
+
+  // Listen for manual Tour trigger from Navbar
+  React.useEffect(() => {
+    const handleLaunchTour = () => setShowTour(true);
+    window.addEventListener('launch_guided_tour', handleLaunchTour);
+    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
+  }, []);
+
+  const hrTourSteps = [
+    {
+      target: 'hr-pipeline-tab',
+      title: '1. Candidate Pipeline & Status Tracker',
+      description: 'Track candidate verification progression in real-time, view verification tags, and monitor 60-day certificate expiry timers.'
+    },
+    {
+      target: 'hr-bgv-dossier-btn',
+      title: '2. 360° Multi-API BGV Dossier (10+ APIs)',
+      description: 'Click on any candidate to inspect real-time outputs across 10+ APIs (Aadhaar, PAN, Bank Penny Drop, EPFO, Sarathi DL) and download certified audit dossiers.'
+    },
+    {
+      target: 'hr-dispatch-btn',
+      title: '3. Dispatch Onboarding Link',
+      description: 'Dispatch secure candidate verification links instantly via WhatsApp, SMS, Email, or dynamic QR code.'
+    },
+    {
+      target: 'hr-profiler-tab',
+      title: '4. Candidate Profiler & Verification Configurator',
+      description: 'Create new employee profiles, select required verification gates per candidate, and customize department onboarding templates.'
+    }
+  ];
 
   const activeHr = hrUsers[0] || { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', dept: 'Engineering Recruitment' };
   const currentCompany = companies.find(c => c.id === activeHr.companyId) || companies[0];
@@ -255,6 +290,7 @@ export const HrExecutiveView = () => {
         {/* Sub-Navigation Tabs Bar */}
         <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto">
           <button
+            data-tour-step="hr-pipeline-tab"
             onClick={() => setActiveTab('pipeline')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -265,6 +301,7 @@ export const HrExecutiveView = () => {
           </button>
 
           <button
+            data-tour-step="hr-profiler-tab"
             onClick={() => setActiveTab('profiler')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -572,6 +609,7 @@ export const HrExecutiveView = () => {
                           
                           {/* 1. 360° Multi-API BGV Dossier Button */}
                           <button
+                            data-tour-step={index === 0 ? 'hr-bgv-dossier-btn' : undefined}
                             onClick={() => setViewingBgvReportCandidate(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-2xs"
                             title="View & Download Complete 360° Background Verification Dossier (10+ APIs)"
@@ -602,6 +640,7 @@ export const HrExecutiveView = () => {
 
                           {/* 3. Dispatch Link Trigger */}
                           <button
+                            data-tour-step={index === 0 ? 'hr-dispatch-btn' : undefined}
                             onClick={() => setDispatchingCandidate(cand)}
                             className="btn btn-hrexecutive text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-sm"
                             title="Dispatch via WhatsApp, SMS, Email, QR Code"
@@ -1186,6 +1225,15 @@ export const HrExecutiveView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
+
+      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
+      <GuidedTourSpotlight
+        tourId="hr"
+        roleTitle="HR Executive"
+        steps={hrTourSteps}
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+      />
 
     </div>
   );

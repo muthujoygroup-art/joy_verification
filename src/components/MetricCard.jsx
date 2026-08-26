@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const MetricCard = ({ title, value, subtext, icon: Icon, trend, color = 'indigo', onClick }) => {
+export const MetricCard = ({ title, value, subtext, icon: Icon, trend, color = 'indigo', onClick, tourStep }) => {
   const colorMap = {
     indigo: {
       border: 'border-indigo-200/80',
@@ -43,6 +43,7 @@ export const MetricCard = ({ title, value, subtext, icon: Icon, trend, color = '
 
   return (
     <div 
+      data-tour-step={tourStep}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

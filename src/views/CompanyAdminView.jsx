@@ -11,6 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
+import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
 import { 
   Building2, 
   Users, 
@@ -62,6 +63,39 @@ export const CompanyAdminView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showTour, setShowTour] = useState(() => {
+    return !localStorage.getItem('joy_tour_completed_company');
+  });
+
+  // Listen for manual Tour trigger from Navbar
+  React.useEffect(() => {
+    const handleLaunchTour = () => setShowTour(true);
+    window.addEventListener('launch_guided_tour', handleLaunchTour);
+    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
+  }, []);
+
+  const companyTourSteps = [
+    {
+      target: 'company-quota-card',
+      title: '1. Monitor Verification Quota & Plan Tier',
+      description: 'Track your monthly candidate verification quota consumption, remaining checks balance, and billing plan tier in real-time.'
+    },
+    {
+      target: 'company-hr-tab',
+      title: '2. Manage HR Recruiter Team',
+      description: 'Add and manage recruiting officers, assign departmental responsibilities, and monitor individual link dispatch volume.'
+    },
+    {
+      target: 'company-registry-tab',
+      title: '3. Master Employee Registry & 360° Dossiers',
+      description: 'Inspect verified candidate profiles, track 60-day validity lifecycles, and download comprehensive 10+ API verification dossiers.'
+    },
+    {
+      target: 'company-dochub-tab',
+      title: '4. Encrypted Document Storage Hub',
+      description: 'Access centralized government-verified documents, certificate vaults, and official GST tax invoices.'
+    }
+  ];
 
   const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
   const companyHrUsers = hrUsers.filter(h => h.companyId === company.id);
@@ -157,6 +191,7 @@ export const CompanyAdminView = () => {
           </button>
 
           <button
+            data-tour-step="company-registry-tab"
             onClick={() => setActiveTab('registry')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -167,6 +202,7 @@ export const CompanyAdminView = () => {
           </button>
 
           <button
+            data-tour-step="company-hr-tab"
             onClick={() => setActiveTab('hrteam')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -177,6 +213,7 @@ export const CompanyAdminView = () => {
           </button>
 
           <button
+            data-tour-step="company-dochub-tab"
             onClick={() => setActiveTab('dochub')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -270,6 +307,7 @@ export const CompanyAdminView = () => {
           })}
         />
         <MetricCard 
+          tourStep="company-quota-card"
           title="Monthly Quota Usage" 
           value={`${company.verifiedCountThisMonth} / ${company.maxLimit}`} 
           subtext={`Plan: ${company.plan}`} 
@@ -921,6 +959,15 @@ export const CompanyAdminView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
+
+      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
+      <GuidedTourSpotlight
+        tourId="company"
+        roleTitle="Company Admin"
+        steps={companyTourSteps}
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+      />
 
     </div>
   );

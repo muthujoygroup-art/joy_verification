@@ -20,7 +20,8 @@ import {
   BookOpen,
   FileDown,
   Bell,
-  Scale
+  Scale,
+  Compass
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -112,6 +113,17 @@ export const Navbar = () => {
             
             {/* Quick Action Navigation Buttons */}
             <div className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-xl border border-slate-200/80">
+              
+              {/* Interactive Guided Tour Replay Button */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
+                className="px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs transition-all cursor-pointer"
+                title="Launch Game-Style Interactive Guided Walkthrough"
+              >
+                <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow" />
+                <span>Tour 🎮</span>
+              </button>
+
               {/* Notification Center Bell Button */}
               <button
                 onClick={() => setShowNotificationsModal(true)}

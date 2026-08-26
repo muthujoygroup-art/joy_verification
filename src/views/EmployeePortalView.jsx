@@ -6,6 +6,7 @@ import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
+import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -43,7 +44,39 @@ export const EmployeePortalView = () => {
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
 
-  const isAllComplete = candidate?.status === 'Verified';
+  const [showTour, setShowTour] = useState(() => {
+    return !localStorage.getItem('joy_tour_completed_candidate');
+  });
+
+  // Listen for manual Tour trigger from Navbar
+  useEffect(() => {
+    const handleLaunchTour = () => setShowTour(true);
+    window.addEventListener('launch_guided_tour', handleLaunchTour);
+    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
+  }, []);
+
+  const candidateTourSteps = [
+    {
+      target: 'candidate-aadhaar-gate',
+      title: '1. UIDAI Aadhaar Verification Gate',
+      description: 'Click "Verify Aadhaar OTP" to validate your official identity against UIDAI government records with instant OTP.'
+    },
+    {
+      target: 'candidate-mobile-gate',
+      title: '2. Mobile Number SMS OTP Validation',
+      description: 'Authenticate your registered phone number via secure 6-digit carrier SMS OTP verification.'
+    },
+    {
+      target: 'candidate-face-gate',
+      title: '3. 3-Pose AI WebCam Face Liveness',
+      description: 'Complete a quick 3-angle biometric camera scan (Straight, Left, Right) to ensure tamper-proof real-time liveness.'
+    },
+    {
+      target: 'candidate-docs-gate',
+      title: '4. Download Compliance Certificates',
+      description: 'Once all checks are passed, instantly download your official JOY Corporate Verification Certificate and 360° Profile Dossier.'
+    }
+  ];
 
   useEffect(() => {
     if (isAllComplete) {
@@ -278,7 +311,10 @@ export const EmployeePortalView = () => {
       )}
 
       {/* Comprehensive Joining Form Card Banner */}
-      <div className="glass-panel p-5 border-indigo-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl shadow-sm">
+      <div 
+        data-tour-step="candidate-docs-gate"
+        className="glass-panel p-5 border-indigo-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl shadow-sm"
+      >
         <div className="flex items-start gap-3">
           <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 font-bold shrink-0">
             <FileEdit className="w-6 h-6" />
@@ -318,9 +354,12 @@ export const EmployeePortalView = () => {
 
         {/* STEP 1: Aadhaar UIDAI OTP */}
         {verificationConfig.requireAadhaar && (
-          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
-            verificationsCompleted.aadhaar ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
-          }`}>
+          <div 
+            data-tour-step="candidate-aadhaar-gate"
+            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+              verificationsCompleted.aadhaar ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+            }`}
+          >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
@@ -359,9 +398,12 @@ export const EmployeePortalView = () => {
 
         {/* STEP 2: Mobile Number OTP */}
         {verificationConfig.requireMobileOtp && (
-          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
-            verificationsCompleted.mobile ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
-          }`}>
+          <div 
+            data-tour-step="candidate-mobile-gate"
+            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+              verificationsCompleted.mobile ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+            }`}
+          >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
@@ -400,9 +442,12 @@ export const EmployeePortalView = () => {
 
         {/* STEP 3: Live Employee Photo Capture & Biometric Face Verification */}
         {verificationConfig.requireFaceMatch && (
-          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
-            verificationsCompleted.face ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/20'
-          }`}>
+          <div 
+            data-tour-step="candidate-face-gate"
+            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+              verificationsCompleted.face ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/20'
+            }`}
+          >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
@@ -605,6 +650,15 @@ export const EmployeePortalView = () => {
           onClose={() => setShowLaborDossierModal(false)}
         />
       )}
+
+      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
+      <GuidedTourSpotlight
+        tourId="candidate"
+        roleTitle="Candidate Portal"
+        steps={candidateTourSteps}
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+      />
 
     </div>
   );
