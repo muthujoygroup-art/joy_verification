@@ -1056,6 +1056,12 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
+  // Get active candidate by token or default
+  const getActiveCandidate = (token) => {
+    const searchToken = token || selectedCandidateToken;
+    return candidates.find(c => c.token === searchToken) || candidates[0] || null;
+  };
+
   // Add HR user
   const addHrUser = async (hrData) => {
     try {
