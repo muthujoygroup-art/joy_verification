@@ -248,45 +248,45 @@ export const LandingPageView = () => {
       
       {/* 🌐 TOP ENTERPRISE NAVIGATION BAR */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Official Brand Logo */}
-          <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3.5 group cursor-pointer min-w-0">
             <img 
               src="/joy_logo.png" 
               alt="JOY CORPORATE SOLUTIONS PVT LTD Logo" 
-              className="w-12 h-12 object-contain group-hover:scale-105 transition-transform" 
+              className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform shrink-0" 
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-lg sm:text-xl text-slate-900 tracking-tight leading-none">
-                  JOY CORPORATE SOLUTIONS
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-black text-xs sm:text-base lg:text-xl text-slate-900 tracking-tight leading-none truncate">
+                  JOY CORPORATE
                 </span>
-                <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">
+                <span className="badge badge-purple text-[8px] sm:text-[9px] py-0.2 sm:py-0.5 px-1.5 sm:px-2 font-black shrink-0">
                   PVT LTD
                 </span>
               </div>
-              <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider mt-0.5">
-                Candidate Background Verification & Digital Trust
+              <p className="text-[9px] sm:text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider mt-0.5 truncate">
+                Candidate Background Verification
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-xs font-bold text-slate-600">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-xs font-bold text-slate-600">
             <a href="#how-it-works" className="hover:text-indigo-600 transition-colors">How It Works</a>
             <a href="#benefits" className="hover:text-indigo-600 transition-colors">Enterprise Benefits</a>
-            <a href="#simulator" className="hover:text-indigo-600 transition-colors">Live Demo Simulator</a>
+            <a href="#simulator" className="hover:text-indigo-600 transition-colors">Live Simulator</a>
             <a href="#portals" className="hover:text-indigo-600 transition-colors">Portal Logins</a>
             <a href="#roi-calculator" className="hover:text-indigo-600 transition-colors">ROI Calculator</a>
             <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <button
               onClick={() => setShowDemoModal(true)}
-              className="btn btn-secondary text-xs py-2 px-3.5 font-bold hidden sm:flex items-center gap-1.5 cursor-pointer hover:border-indigo-300"
+              className="btn btn-secondary text-xs py-1.5 sm:py-2 px-2.5 sm:px-3.5 font-bold hidden md:flex items-center gap-1.5 cursor-pointer hover:border-indigo-300"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
               <span>Book Demo</span>
@@ -294,70 +294,120 @@ export const LandingPageView = () => {
 
             <a
               href="#portals"
-              className="btn btn-superadmin text-xs py-2 px-4 font-black shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-102 transition-transform"
+              className="btn btn-superadmin text-xs py-1.5 sm:py-2 px-3 sm:px-4 font-black shadow-md flex items-center gap-1 cursor-pointer hover:scale-102 transition-transform shrink-0"
             >
-              <span>Sign In to Portals</span>
-              <ChevronDown className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign In to Portals</span>
+              <span className="sm:hidden">Portals ➔</span>
+              <ChevronDown className="w-3 h-3 hidden sm:inline" />
             </a>
 
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+              title="Toggle Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
 
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-3 animate-fadeIn text-xs font-bold">
-            <a 
-              href="#how-it-works" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block py-2 text-slate-700 hover:text-indigo-600"
-            >
-              How It Works
-            </a>
-            <a 
-              href="#benefits" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block py-2 text-slate-700 hover:text-indigo-600"
-            >
-              Enterprise Benefits
-            </a>
-            <a 
-              href="#simulator" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block py-2 text-slate-700 hover:text-indigo-600"
-            >
-              Live Demo Simulator
-            </a>
-            <a 
-              href="#portals" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block py-2 text-slate-700 hover:text-indigo-600"
-            >
-              Portal Logins
-            </a>
-            <a 
-              href="#roi-calculator" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block py-2 text-slate-700 hover:text-indigo-600"
-            >
-              ROI Calculator
-            </a>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setShowDemoModal(true);
-              }}
-              className="btn btn-superadmin w-full text-xs py-2.5 font-bold justify-center"
-            >
-              Schedule Live Demo 🚀
-            </button>
+          <div className="lg:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-4 py-5 space-y-4 animate-drawerSlide text-xs font-bold shadow-2xl">
+            <div className="grid grid-cols-2 gap-2 text-slate-700">
+              <a 
+                href="#how-it-works" 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+              >
+                How It Works
+              </a>
+              <a 
+                href="#benefits" 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+              >
+                Benefits
+              </a>
+              <a 
+                href="#simulator" 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+              >
+                Live Simulator
+              </a>
+              <a 
+                href="#roi-calculator" 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+              >
+                ROI Calculator
+              </a>
+            </div>
+
+            {/* Direct Login Sub-Portals */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-100">
+              <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Direct Portal Access</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/superadmin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 flex items-center gap-1.5"
+                >
+                  <Crown className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span className="truncate">Super Admin</span>
+                </Link>
+                <Link
+                  to="/company"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 flex items-center gap-1.5"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                  <span className="truncate">Company Admin</span>
+                </Link>
+                <Link
+                  to="/hr"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 flex items-center gap-1.5"
+                >
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span className="truncate">HR Recruiter</span>
+                </Link>
+                <Link
+                  to="/verify?token=tok_sunita_412"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1.5"
+                >
+                  <Smartphone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span className="truncate">Candidate</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowDemoModal(true);
+                }}
+                className="btn btn-superadmin w-full text-xs py-2.5 font-bold justify-center cursor-pointer"
+              >
+                Schedule Live Demo 🚀
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowLegalHandbook(true);
+                }}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Scale className="w-3.5 h-3.5 text-indigo-600" />
+                <span>DPDP Act 2023 Legal Handbook 🛡️</span>
+              </button>
+            </div>
           </div>
         )}
       </header>
