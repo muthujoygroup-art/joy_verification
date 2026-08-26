@@ -14,6 +14,7 @@ import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvRepor
 import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
+import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { 
   Building2, 
   Users, 
