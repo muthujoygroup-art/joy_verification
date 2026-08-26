@@ -430,3 +430,88 @@ body[data-role="employee_link"] {
     min-height: 2.25rem;
   }
 }
+
+/* Modern Enterprise Landing Page Animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+.animated-gradient-text {
+  background: linear-gradient(135deg, #1e3a8a, #4f46e5, #0284c7, #059669);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 6s ease infinite;
+}
+
+.hero-mesh-pattern {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.card-hover-lift {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover-lift:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.12), 0 10px 15px -5px rgba(15, 23, 42, 0.04);
+}
+
