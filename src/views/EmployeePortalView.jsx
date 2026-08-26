@@ -6,7 +6,7 @@ import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
-import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
+import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -44,37 +44,41 @@ export const EmployeePortalView = () => {
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
 
-  const [showTour, setShowTour] = useState(() => {
-    return !localStorage.getItem('joy_tour_completed_candidate');
-  });
+  const isAllComplete = candidate?.status === 'Verified';
+  const [activeGuideStep, setActiveGuideStep] = useState(0);
 
-  // Listen for manual Tour trigger from Navbar
-  useEffect(() => {
-    const handleLaunchTour = () => setShowTour(true);
-    window.addEventListener('launch_guided_tour', handleLaunchTour);
-    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
-  }, []);
-
-  const candidateTourSteps = [
+  const candidateGuideSteps = [
     {
-      target: 'candidate-aadhaar-gate',
-      title: '1. UIDAI Aadhaar Verification Gate',
-      description: 'Click "Verify Aadhaar OTP" to validate your official identity against UIDAI government records with instant OTP.'
+      id: 'aadhaar',
+      title: 'Aadhaar UIDAI OTP Verification',
+      shortTitle: '1. Aadhaar OTP',
+      description: 'Verify your Aadhaar identity by entering the one-time password (OTP) sent by UIDAI to your registered mobile.',
+      actionLabel: '👉 Verify Aadhaar',
+      action: () => handleSendAadhaarOtp()
     },
     {
-      target: 'candidate-mobile-gate',
-      title: '2. Mobile Number SMS OTP Validation',
-      description: 'Authenticate your registered phone number via secure 6-digit carrier SMS OTP verification.'
+      id: 'mobile',
+      title: 'Mobile Number SMS OTP Validation',
+      shortTitle: '2. Mobile OTP',
+      description: 'Authenticate your registered phone number via secure 6-digit carrier SMS OTP verification.',
+      actionLabel: '👉 Send SMS OTP',
+      action: () => handleSendMobileOtp()
     },
     {
-      target: 'candidate-face-gate',
-      title: '3. 3-Pose AI WebCam Face Liveness',
-      description: 'Complete a quick 3-angle biometric camera scan (Straight, Left, Right) to ensure tamper-proof real-time liveness.'
+      id: 'face',
+      title: '3-Pose AI WebCam Face Liveness',
+      shortTitle: '3. Face Match',
+      description: 'Capture a quick 3-angle biometric camera scan (Straight, Left turn, Right turn) to confirm real-time identity liveness.',
+      actionLabel: '👉 Open Camera',
+      action: () => setShowLivePhotoModal(true)
     },
     {
-      target: 'candidate-docs-gate',
-      title: '4. Download Compliance Certificates',
-      description: 'Once all checks are passed, instantly download your official JOY Corporate Verification Certificate and 360° Profile Dossier.'
+      id: 'docs',
+      title: 'Download Official Verified Certificate',
+      shortTitle: '4. Download Docs',
+      description: 'Once all verification gates are passed, instantly download your official JOY Corporate Verification Certificate and 360° Profile Dossier.',
+      actionLabel: '👉 View Certificate',
+      action: () => setShowCertModal(true)
     }
   ];
 
@@ -260,6 +264,17 @@ export const EmployeePortalView = () => {
           </span>
         </div>
       </div>
+
+      {/* 🎮 Game-Style Action Guide Hub */}
+      <GameActionGuideHub
+        roleKey="candidate"
+        roleTitle="Candidate Verification"
+        badgeColor="amber"
+        steps={candidateGuideSteps}
+        currentStepIndex={activeGuideStep}
+        onStepChange={setActiveGuideStep}
+        onActionClick={(step) => step.action()}
+      />
 
       {/* Completion Banner with Dual-Document Downloads */}
       {isAllComplete && (
@@ -650,15 +665,6 @@ export const EmployeePortalView = () => {
           onClose={() => setShowLaborDossierModal(false)}
         />
       )}
-
-      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
-      <GuidedTourSpotlight
-        tourId="candidate"
-        roleTitle="Candidate Portal"
-        steps={candidateTourSteps}
-        isOpen={showTour}
-        onClose={() => setShowTour(false)}
-      />
 
     </div>
   );

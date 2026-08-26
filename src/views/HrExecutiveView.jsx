@@ -9,7 +9,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
-import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
+import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { 
   UserCheck, 
   Send, 
@@ -71,37 +71,51 @@ export const HrExecutiveView = () => {
   const [activeDrilldown, setActiveDrilldown] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('corporate');
 
-  const [showTour, setShowTour] = useState(() => {
-    return !localStorage.getItem('joy_tour_completed_hr');
-  });
+  const [activeGuideStep, setActiveGuideStep] = useState(0);
 
-  // Listen for manual Tour trigger from Navbar
-  React.useEffect(() => {
-    const handleLaunchTour = () => setShowTour(true);
-    window.addEventListener('launch_guided_tour', handleLaunchTour);
-    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
-  }, []);
-
-  const hrTourSteps = [
+  const hrGuideSteps = [
     {
-      target: 'hr-pipeline-tab',
-      title: '1. Candidate Pipeline & Status Tracker',
-      description: 'Track candidate verification progression in real-time, view verification tags, and monitor 60-day certificate expiry timers.'
+      id: 'profile',
+      title: 'Profile Candidate & Enter Aadhaar',
+      shortTitle: '1. Profiler',
+      description: 'Enter candidate demographics (Name, Aadhaar UID, Mobile Number, DOB) to prepare their onboarding record.',
+      actionLabel: '👉 Open Profiler',
+      action: () => {
+        setActiveTab('profiler');
+        setShowAddForm(true);
+      }
     },
     {
-      target: 'hr-bgv-dossier-btn',
-      title: '2. 360° Multi-API BGV Dossier (10+ APIs)',
-      description: 'Click on any candidate to inspect real-time outputs across 10+ APIs (Aadhaar, PAN, Bank Penny Drop, EPFO, Sarathi DL) and download certified audit dossiers.'
+      id: 'apis',
+      title: 'Configure 10+ Verification APIs',
+      shortTitle: '2. Select APIs',
+      description: 'Toggle which checks to run for this candidate (UIDAI Aadhaar, NSDL PAN, MoRTH DL, Bank Penny Drop, AI Face Match).',
+      actionLabel: '👉 Choose Checks',
+      action: () => {
+        setActiveTab('profiler');
+      }
     },
     {
-      target: 'hr-dispatch-btn',
-      title: '3. Dispatch Onboarding Link',
-      description: 'Dispatch secure candidate verification links instantly via WhatsApp, SMS, Email, or dynamic QR code.'
+      id: 'dispatch',
+      title: 'Dispatch Encrypted Magic Link',
+      shortTitle: '3. Dispatch Link',
+      description: 'Send the onboarding link to the candidate via WhatsApp, SMS, Email, or generate a QR code for on-spot scanning.',
+      actionLabel: '👉 Dispatch Link',
+      action: () => {
+        setActiveTab('pipeline');
+        if (candidates[0]) setDispatchingCandidate(candidates[0]);
+      }
     },
     {
-      target: 'hr-profiler-tab',
-      title: '4. Candidate Profiler & Verification Configurator',
-      description: 'Create new employee profiles, select required verification gates per candidate, and customize department onboarding templates.'
+      id: 'dossier',
+      title: 'Inspect 360° Multi-API BGV Dossier',
+      shortTitle: '4. 360° Dossier',
+      description: 'View all verified API results in one place, audit 60-day expiry timelines, and download certified Master BGV PDF dossiers.',
+      actionLabel: '👉 View 360° Dossier',
+      action: () => {
+        setActiveTab('pipeline');
+        if (candidates[0]) setViewingBgvReportCandidate(candidates[0]);
+      }
     }
   ];
 
@@ -333,6 +347,17 @@ export const HrExecutiveView = () => {
         </div>
       </div>
 
+      {/* 🎮 Game-Style Action Guide Hub */}
+      <GameActionGuideHub
+        roleKey="hrexecutive"
+        roleTitle="HR Executive"
+        badgeColor="emerald"
+        steps={hrGuideSteps}
+        currentStepIndex={activeGuideStep}
+        onStepChange={setActiveGuideStep}
+        onActionClick={(step) => step.action()}
+      />
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
@@ -540,7 +565,7 @@ export const HrExecutiveView = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
-                {candidates.map((cand) => {
+                {candidates.map((cand, index) => {
                   const lc = getCertificateLifecycle(cand);
                   return (
                     <tr key={cand.id} className="hover:bg-slate-50/80 transition-colors">
@@ -1225,15 +1250,6 @@ export const HrExecutiveView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
-
-      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
-      <GuidedTourSpotlight
-        tourId="hr"
-        roleTitle="HR Executive"
-        steps={hrTourSteps}
-        isOpen={showTour}
-        onClose={() => setShowTour(false)}
-      />
 
     </div>
   );

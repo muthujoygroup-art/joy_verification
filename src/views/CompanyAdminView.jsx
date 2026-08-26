@@ -11,7 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
-import { GuidedTourSpotlight } from '../components/GuidedTourSpotlight';
+import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { 
   Building2, 
   Users, 
@@ -63,37 +63,58 @@ export const CompanyAdminView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showTour, setShowTour] = useState(() => {
-    return !localStorage.getItem('joy_tour_completed_company');
-  });
+  const [activeGuideStep, setActiveGuideStep] = useState(0);
 
-  // Listen for manual Tour trigger from Navbar
-  React.useEffect(() => {
-    const handleLaunchTour = () => setShowTour(true);
-    window.addEventListener('launch_guided_tour', handleLaunchTour);
-    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
-  }, []);
-
-  const companyTourSteps = [
+  const companyGuideSteps = [
     {
-      target: 'company-quota-card',
-      title: '1. Monitor Verification Quota & Plan Tier',
-      description: 'Track your monthly candidate verification quota consumption, remaining checks balance, and billing plan tier in real-time.'
+      id: 'quota',
+      title: 'Monitor Verification Quota & Plan Limits',
+      shortTitle: '1. Quota & Limits',
+      description: 'Track real-time monthly verification consumption, plan tier status, and remaining quota balance.',
+      actionLabel: '👉 Inspect Quota',
+      action: () => {
+        setActiveDrilldown({
+          title: 'Monthly Verification Quota Consumption',
+          subtitle: `Detailed usage breakdown for plan ${company.plan}`,
+          metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
+          metricType: 'company_quota',
+          data: [
+            { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
+            { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
+            { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
+          ]
+        });
+      }
     },
     {
-      target: 'company-hr-tab',
-      title: '2. Manage HR Recruiter Team',
-      description: 'Add and manage recruiting officers, assign departmental responsibilities, and monitor individual link dispatch volume.'
+      id: 'hrteam',
+      title: 'Manage HR Recruiters & Permissions',
+      shortTitle: '2. HR Team',
+      description: 'Add new HR staff, assign departments (e.g. Engineering, Sales), and track candidate dispatch volumes.',
+      actionLabel: '👉 Manage HR Staff',
+      action: () => {
+        setActiveTab('hrteam');
+      }
     },
     {
-      target: 'company-registry-tab',
-      title: '3. Master Employee Registry & 360° Dossiers',
-      description: 'Inspect verified candidate profiles, track 60-day validity lifecycles, and download comprehensive 10+ API verification dossiers.'
+      id: 'registry',
+      title: 'Master Employee Registry & 360° Dossiers',
+      shortTitle: '3. Master Registry',
+      description: 'Inspect verified profiles, audit 60-day certificate expiry timelines, and download 10+ API verification reports.',
+      actionLabel: '👉 View Registry',
+      action: () => {
+        setActiveTab('registry');
+      }
     },
     {
-      target: 'company-dochub-tab',
-      title: '4. Encrypted Document Storage Hub',
-      description: 'Access centralized government-verified documents, certificate vaults, and official GST tax invoices.'
+      id: 'dochub',
+      title: 'Compliance Document Storage & Invoices',
+      shortTitle: '4. Document Hub',
+      description: 'Access encrypted cloud document vaults, tax invoices, and official JOY Corporate compliance certificates.',
+      actionLabel: '👉 Open Doc Hub',
+      action: () => {
+        setActiveTab('dochub');
+      }
     }
   ];
 
@@ -234,6 +255,17 @@ export const CompanyAdminView = () => {
           </button>
         </div>
       </div>
+
+      {/* 🎮 Game-Style Action Guide Hub */}
+      <GameActionGuideHub
+        roleKey="company"
+        roleTitle="Company Admin"
+        badgeColor="sky"
+        steps={companyGuideSteps}
+        currentStepIndex={activeGuideStep}
+        onStepChange={setActiveGuideStep}
+        onActionClick={(step) => step.action()}
+      />
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -959,15 +991,6 @@ export const CompanyAdminView = () => {
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}
-
-      {/* 🎮 Interactive First-Time Guided Onboarding Tour */}
-      <GuidedTourSpotlight
-        tourId="company"
-        roleTitle="Company Admin"
-        steps={companyTourSteps}
-        isOpen={showTour}
-        onClose={() => setShowTour(false)}
-      />
 
     </div>
   );
