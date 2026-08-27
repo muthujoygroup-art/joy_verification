@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Camera, 
+  Smartphone,
   RefreshCw, 
   CheckCircle2, 
   AlertCircle, 
