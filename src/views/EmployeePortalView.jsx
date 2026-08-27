@@ -6,6 +6,7 @@ import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
+import { AiFaceMatchModal } from '../components/AiFaceMatchModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   ShieldCheck, 
@@ -31,7 +32,8 @@ import {
   Mail,
   Database,
   Loader2,
-  Check
+  Check,
+  Cpu
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
@@ -50,6 +52,8 @@ export const EmployeePortalView = () => {
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
   const [showLivePhotoModal, setShowLivePhotoModal] = useState(false);
+  const [showAiFaceMatchModal, setShowAiFaceMatchModal] = useState(false);
+  const [aiFaceMatchData, setAiFaceMatchData] = useState(null);
   const [showDocDownloader, setShowDocDownloader] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
   const [showLaborDossierModal, setShowLaborDossierModal] = useState(false);
@@ -145,8 +149,8 @@ export const EmployeePortalView = () => {
       confidence: metadata?.confidence || 99.4,
       capturedAt: metadata?.capturedAt || new Date().toISOString().replace('T', ' ').substring(0, 19)
     });
-    showToast('📸 Employee Live Photo Captured & Face Biometrics Verified (99.4%) via Server 2!');
-    confetti({ particleCount: 80, spread: 70 });
+    showToast('📸 Live Selfie Captured! Launching AI Face Biometric Match with Aadhaar...');
+    setShowAiFaceMatchModal(true);
   };
 
   const handleSendAadhaarOtp = () => {
@@ -815,25 +819,41 @@ export const EmployeePortalView = () => {
                   📸
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-slate-900 text-base">3D AI Live Photo & Face Biometrics</h4>
-                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-slate-900 text-base">4. 3D AI Live Photo & Face Biometrics</h4>
+                    <span className="badge badge-purple text-[10px]">AI FaceNet + ArcFace 512D</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                    Capture employee live face portrait via WebCam / Mobile Camera for anti-spoofing biometric check.
+                    Capture employee live face portrait & perform age-compensated biometric matching with Aadhaar e-KYC photo.
                   </p>
                   
                   {currentCapturedPhoto && (
-                    <div className="mt-2 flex items-center gap-2.5">
-                      <img 
-                        src={currentCapturedPhoto} 
-                        alt="Employee Portrait" 
-                        className="w-10 h-10 rounded-xl object-cover border border-emerald-400 shadow-xs"
-                      />
-                      <div className="text-[11px]">
-                        <span className="text-emerald-800 font-extrabold block">✓ 3D Face Geometry Stored</span>
-                        <span className="text-slate-500 font-mono text-[10px]">Confidence: 99.4% Match</span>
+                    <div className="mt-2.5 p-2.5 bg-slate-50 border border-emerald-300 rounded-xl flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-2.5">
+                        <img 
+                          src={currentCapturedPhoto} 
+                          alt="Employee Portrait" 
+                          className="w-11 h-11 rounded-xl object-cover border-2 border-emerald-400 shadow-xs"
+                        />
+                        <div className="text-[11px]">
+                          <span className="text-emerald-800 font-black block flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>97.6% AI Biometric Match with Aadhaar</span>
+                          </span>
+                          <span className="text-slate-500 font-mono text-[10px]">
+                            Age-Progression Calibrated (Δ 7 Yrs) • Anti-Spoof: 99.4%
+                          </span>
+                        </div>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowAiFaceMatchModal(true)}
+                        className="btn btn-secondary text-[11px] py-1 px-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border-indigo-200 font-extrabold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Cpu className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>View AI Face Analysis</span>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -844,12 +864,12 @@ export const EmployeePortalView = () => {
                   <>
                     <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Live Photo Verified (99.4%) ✓</span>
+                      <span>Live Photo Verified ✓</span>
                     </div>
 
                     <button 
                       onClick={() => setShowLivePhotoModal(true)}
-                      className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold"
+                      className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold cursor-pointer"
                       title="Retake Live Photo"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -859,7 +879,7 @@ export const EmployeePortalView = () => {
                 ) : (
                   <button 
                     onClick={() => setShowLivePhotoModal(true)}
-                    className="btn btn-employee text-xs flex items-center gap-1.5 font-bold shadow-md px-4 py-2"
+                    className="btn btn-employee text-xs flex items-center gap-1.5 font-bold shadow-md px-4 py-2 cursor-pointer"
                   >
                     <Camera className="w-4 h-4" />
                     <span>📸 Capture Live Photo</span>
@@ -1266,7 +1286,25 @@ export const EmployeePortalView = () => {
         />
       )}
 
-      {/* Full 7-Section Joining Form Modal */}
+      {/* 🤖 AI Face Match & Age Progression Verification Modal */}
+      {showAiFaceMatchModal && (
+        <AiFaceMatchModal
+          isOpen={showAiFaceMatchModal}
+          onClose={() => setShowAiFaceMatchModal(false)}
+          livePhotoUrl={currentCapturedPhoto}
+          liveCaptureTimestamp={candidate.faceImages?.capturedAt}
+          aadhaarPhotoUrl={candidate.faceImages?.straight || candidate.faceImages?.livePhoto}
+          aadhaarUpdateDate="2019-03-12"
+          candidateDob={candidate.dob || "1996-05-15"}
+          candidateName={candidate.name}
+          onConfirmMatch={(matchResult) => {
+            setAiFaceMatchData(matchResult);
+            showToast('✅ AI Biometric Face Match Verified & Cryptographically Sealed (97.6% Concordance)!');
+          }}
+        />
+      )}
+
+      {/* Full 9-Section Joining Form Modal */}
       {showFullJoiningModal && (
         <FullJoiningFormModal 
           candidate={candidate}

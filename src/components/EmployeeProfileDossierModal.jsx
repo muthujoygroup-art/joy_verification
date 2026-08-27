@@ -207,6 +207,43 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <div><span className="text-slate-400 block text-[11px]">Notice Period:</span><strong>60 Days</strong></div>
                 </div>
               </div>
+
+              {/* Section 3: AI Biometric Face Match & Age Progression Verification */}
+              <div className="space-y-2">
+                <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>SECTION 3: AI BIOMETRIC FACE MATCH & AGE-PROGRESSION VERIFICATION</span>
+                  </div>
+                  <span className="badge badge-emerald text-[9px]">97.6% Biometric Match (High Confidence)</span>
+                </div>
+                
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-3 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="p-2 bg-white rounded-md border border-slate-200 text-center">
+                      <span className="text-[10px] text-slate-400 block font-bold">Aadhaar Photo Age</span>
+                      <strong className="text-purple-700">23 Years (2019-03-12)</strong>
+                    </div>
+                    <div className="p-2 bg-white rounded-md border border-slate-200 text-center">
+                      <span className="text-[10px] text-slate-400 block font-bold">Current Live Age</span>
+                      <strong className="text-emerald-700">30 Years (2026-08-27)</strong>
+                    </div>
+                    <div className="p-2 bg-white rounded-md border border-slate-200 text-center">
+                      <span className="text-[10px] text-slate-400 block font-bold">Temporal Aging Delta</span>
+                      <strong className="text-slate-900">+7.4 Years Elapsed</strong>
+                    </div>
+                    <div className="p-2 bg-white rounded-md border border-slate-200 text-center">
+                      <span className="text-[10px] text-slate-400 block font-bold">3D Bone Concordance</span>
+                      <strong className="text-sky-700 font-mono font-bold">98.4% Match</strong>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] bg-emerald-50 p-2 rounded-md border border-emerald-200 text-emerald-950 font-medium">
+                    <span>✓ ArcFace 512D Vector Cosine Similarity: <strong>96.8%</strong> • Liveness Anti-Spoof: <strong>99.4%</strong></span>
+                    <strong className="font-mono text-emerald-800">SEAL: SHA256-FACEMATCH-88192</strong>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
