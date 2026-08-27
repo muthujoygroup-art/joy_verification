@@ -166,10 +166,11 @@ const INITIAL_CANDIDATES = [
       aadhaar: true, mobile: true, face: true, pan: true, bankCheck: true
     },
     faceImages: {
-      straight: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      livePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      left: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      right: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'
+      straight: '/aadhaar_reference_photo.jpg',
+      livePhoto: '/aadhaar_reference_photo.jpg',
+      aadhaarRef: '/aadhaar_reference_photo.jpg',
+      left: '/aadhaar_reference_photo.jpg',
+      right: '/aadhaar_reference_photo.jpg'
     },
     verificationDate: '2026-08-19 14:32'
   },
