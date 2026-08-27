@@ -4,16 +4,19 @@ import { api } from '../services/api';
 const AppContext = createContext();
 
 const INITIAL_FEATURE_LIST = [
-  { id: 'aadhaar', name: 'Aadhaar UIDAI Verification', provider: 'API SETU', category: 'Government ID', defaultOn: true },
-  { id: 'mobileOtp', name: 'Mobile Number OTP Check', provider: 'Sandbox API', category: 'Contact Verification', defaultOn: true },
-  { id: 'faceCapture', name: 'AI WebCam Face Liveness Match', provider: 'Coincircletrust', category: 'Biometrics', defaultOn: true },
-  { id: 'drivingLicense', name: 'Driving License (DL) Check', provider: 'API SETU', category: 'Government ID', defaultOn: false },
-  { id: 'pan', name: 'PAN Card Tax Identity Check', provider: 'API SETU', category: 'Tax ID', defaultOn: true },
-  { id: 'uan', name: 'UAN / EPF Employment History', provider: 'Govt EPF Portal', category: 'Employment', defaultOn: false },
-  { id: 'education', name: 'Educational Document OCR Check', provider: 'Sandbox API', category: 'Education', defaultOn: false },
-  { id: 'criminalCheck', name: 'Court & Criminal Background Check', provider: 'Coincircletrust', category: 'Compliance', defaultOn: false },
-  { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', defaultOn: false },
-  { id: 'bankCheck', name: 'Bank Account Penny Drop Check', provider: 'Sandbox API', category: 'Financial', defaultOn: true }
+  { id: 'aadhaar', name: 'Aadhaar UIDAI Verification', provider: 'Server 1 & 2', category: 'Government ID', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: true, description: '12-Digit UIDAI OTP & Demographic matching' },
+  { id: 'pan', name: 'PAN Card NSDL Verification & Link Audit', provider: 'Server 1 & 2', category: 'Tax ID', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: true, description: 'NSDL status, Name matching & Aadhaar-PAN link audit' },
+  { id: 'bankCheck', name: 'Bank Account Penny Drop (IMPS ₹1 / Pennyless)', provider: 'Server 1 & 2', category: 'Financial', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: true, description: 'NPCI IMPS penny drop or pennyless account holder match' },
+  { id: 'drivingLicense', name: 'Driving License (MoRTH) Check', provider: 'Server 1 & 2', category: 'Government ID', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: false, description: 'MoRTH Sarathi DL status & vehicle classes' },
+  { id: 'voterId', name: 'Voter ID Card (ECI) Verification', provider: 'Server 1 & 2', category: 'Government ID', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: false, description: 'Election Commission of India EPIC voter verification' },
+  { id: 'mobileOtp', name: 'Mobile Number OTP & WhatsApp Carrier', provider: 'Multi-Carrier Gateway', category: 'Contact Verification', serverMode: 'both', serverTag: 'Multi-Carrier', defaultOn: true, description: 'Direct carrier SMS OTP and Meta WhatsApp Cloud API' },
+  { id: 'passport', name: 'Passport Verification (MEA Direct)', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Government ID', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of External Affairs Passport File No & Date of Birth verification' },
+  { id: 'uan', name: 'EPFO Past Employment / UAN Dual Employment V3', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Employment', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: 'EPFO Service Passbook history, overlapping dates & moonlighting detection' },
+  { id: 'criminalCheck', name: 'Court & Criminal Record Background Check', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'District Court, High Court & National Crime CCTNS record check' },
+  { id: 'education', name: 'Educational Degree & University Board Check', provider: 'Server 2 (CoinCircleTrust)', category: 'Education', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'University roll number, UGC/AICTE degree authentication' },
+  { id: 'directorship', name: 'DIN / MCA Directorship Check (Moonlighting Prevention)', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of Corporate Affairs Director Identification Number & CIN audit' },
+  { id: 'faceCapture', name: 'AI 3D WebCam Biometric Liveness Match', provider: 'Server 2 (CoinCircleTrust Biometrics)', category: 'Biometrics', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: '3D face geometry, anti-spoofing liveness & photo match score' },
+  { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', serverMode: 'both', serverTag: 'Internal Ops', defaultOn: false, description: 'GPS geotagged physical home/office visit' }
 ];
 
 const INITIAL_COMPANIES = [
@@ -29,6 +32,7 @@ const INITIAL_COMPANIES = [
     verifiedCountThisMonth: 142,
     maxLimit: 500,
     status: 'Active',
+    apiRoutingEngine: 'hybrid', // 'hybrid' | 'server1' | 'server2'
     rechargeTransactions: [
       {
         id: 'PAY-RZP-981241',
@@ -60,7 +64,7 @@ const INITIAL_COMPANIES = [
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
       pan: true, uan: true, education: true, criminalCheck: false,
-      addressCheck: false, bankCheck: true
+      addressCheck: false, bankCheck: true, passport: true, directorship: false, voterId: false
     }
   },
   {
@@ -75,6 +79,7 @@ const INITIAL_COMPANIES = [
     verifiedCountThisMonth: 88,
     maxLimit: 250,
     status: 'Active',
+    apiRoutingEngine: 'hybrid',
     rechargeTransactions: [
       {
         id: 'PAY-RZP-761920',
@@ -91,9 +96,9 @@ const INITIAL_COMPANIES = [
       }
     ],
     features: {
-      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: false,
+      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
       pan: true, uan: false, education: false, criminalCheck: false,
-      addressCheck: true, bankCheck: false
+      addressCheck: true, bankCheck: false, passport: false, directorship: false, voterId: true
     }
   },
   {
@@ -108,6 +113,7 @@ const INITIAL_COMPANIES = [
     verifiedCountThisMonth: 34,
     maxLimit: 100,
     status: 'Active',
+    apiRoutingEngine: 'hybrid',
     rechargeTransactions: [
       {
         id: 'PAY-RZP-651811',
@@ -125,8 +131,8 @@ const INITIAL_COMPANIES = [
     ],
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: false, drivingLicense: false,
-      pan: false, uan: false, education: false, criminalCheck: false,
-      addressCheck: false, bankCheck: false
+      pan: true, uan: false, education: false, criminalCheck: false,
+      addressCheck: false, bankCheck: false, passport: false, directorship: false, voterId: false
     }
   }
 ];
@@ -683,46 +689,94 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
-  // SUPER ADMIN API CONFIGURATIONS
+  // SUPER ADMIN API CONFIGURATIONS (SERVER 1: SANDBOX + SERVER 2: COINCIRCLETRUST)
   const [apiConfigurations, setApiConfigurations] = useState({
-    apiSetu: {
-      name: 'API SETU (Government DigiLocker Gateway)',
-      clientId: 'SETU_GOVT_998124_CLIENT',
-      clientSecret: '••••••••••••••••••••••••',
-      endpointUrl: 'https://api.apisetu.gov.in/v2/verify',
+    server1_sandbox: {
+      id: 'server1_sandbox',
+      serverNumber: 1,
+      name: 'Server 1: Sandbox API Router (api.sandbox.co.in)',
+      shortName: 'Server 1 (Sandbox API)',
+      provider: 'Sandbox API India',
+      apiKey: 'sb_live_key_9942a1bc88',
+      secretKey: 'sb_sec_JoyCorp2026_m89',
+      endpointUrl: 'https://api.sandbox.co.in/v2',
       status: 'Online',
-      mode: 'Production',
-      latency: '42 ms',
-      rateLimitPerMin: 1200,
-      costPerCall: 5.0,
-      monthlyCallCount: 14820,
-      errorCount: 12
+      mode: 'Production (Live Mode)',
+      latency: '48 ms',
+      rateLimitPerMin: 2500,
+      costPerCall: 2.50,
+      monthlyCallCount: 24850,
+      errorCount: 3,
+      supportedDocs: [
+        'Aadhaar UIDAI OTP',
+        'PAN Card Basic (NSDL)',
+        'Bank Account IMPS Penny Drop (₹1)',
+        'Driving License (MoRTH)',
+        'Voter ID (ECI)',
+        'GSTIN Search & Filing Status',
+        'Basic EPFO Passbook'
+      ],
+      unsupportedDocs: [
+        'Passport Verification (MEA Direct)',
+        'UAN Dual Employment & Moonlighting History V3',
+        'Court & Criminal Record Search (eCourts/CCTNS)',
+        'ESIC Social Security Data',
+        'DIN to MCA Moonlighting Directorship Check',
+        'Credit Score (CRIF / Experian / CIBIL)',
+        'AI 3D WebCam Biometrics & Facial Geometry'
+      ]
+    },
+    server2_coincircle: {
+      id: 'server2_coincircle',
+      serverNumber: 2,
+      name: 'Server 2: CoinCircleTrust API Gateway (47+ APIs)',
+      shortName: 'Server 2 (CoinCircleTrust)',
+      provider: 'CoinCircleTrust Institutional Gateway',
+      clientId: 'CCT_CORP_VERIF_882910',
+      apiKey: 'CCT_CORP_VERIF_882910',
+      clientSecret: 'cct_sec_JoyCircleTrust_9921_xK',
+      secretKey: 'cct_sec_JoyCircleTrust_9921_xK',
+      endpointUrl: 'https://api.coincircletrust.com/api/v1',
+      status: 'Online',
+      mode: 'Production (Live Mode)',
+      latency: '62 ms',
+      rateLimitPerMin: 5000,
+      costPerCall: 4.00,
+      monthlyCallCount: 38400,
+      errorCount: 1,
+      totalApis: 47,
+      supportedDocs: [
+        'Passport Verification (MEA Direct File & DOB Check)',
+        'UAN to Employment Profile & Full History V3 (Moonlighting Audit)',
+        'Aadhaar–PAN Link Check & Aadhaar to Unmasked PAN',
+        'Court & Criminal Record Background Check (eCourts)',
+        'Bank Verification Pennyless & UPI ID Analyser',
+        'ESIC Data & Social Security Audit',
+        'DIN to MCA & CIN Directorship (Moonlighting Prevention)',
+        'Credit Report PDF (CRIF / Experian / CIBIL)',
+        'Vehicle RC Advance & Traffic Challan Search',
+        'AI 3D WebCam Biometrics & Face Anti-Spoofing Match'
+      ],
+      categories: [
+        { name: 'Identity & Government (12 APIs)', count: 12 },
+        { name: 'Employment & EPFO History (8 APIs)', count: 8 },
+        { name: 'Banking & Financial Assets (9 APIs)', count: 9 },
+        { name: 'Compliance, Court & Moonlighting (10 APIs)', count: 10 },
+        { name: 'Vehicles, Transport & Biometrics (8 APIs)', count: 8 }
+      ]
+    },
+    // Backwards compatibility aliases
+    apiSetu: {
+      apiKey: 'sb_live_key_9942a1bc88',
+      name: 'Server 1: Sandbox API Router'
     },
     sandbox: {
-      name: 'Sandbox Private API Router',
-      apiKey: 'SB_KEY_774912903_LIVE',
-      secretKey: '••••••••••••••••••••••••',
-      endpointUrl: 'https://api.sandbox.co.in/v1/identity',
-      status: 'Online',
-      mode: 'Production',
-      latency: '65 ms',
-      rateLimitPerMin: 2500,
-      costPerCall: 2.5,
-      monthlyCallCount: 22400,
-      errorCount: 4
+      apiKey: 'sb_live_key_9942a1bc88',
+      name: 'Server 1: Sandbox API Router'
     },
     coincircletrust: {
-      name: 'Coincircletrust Biometrics Engine',
-      cameraKey: 'CCT_FACE_LIVENESS_8831',
-      livenessThreshold: 95,
-      endpointUrl: 'https://biometrics.coincircletrust.io/v3/match',
-      status: 'Online',
-      mode: 'Production',
-      latency: '98 ms',
-      rateLimitPerMin: 800,
-      costPerCall: 8.0,
-      monthlyCallCount: 9450,
-      errorCount: 2
+      apiKey: 'CCT_CORP_VERIF_882910',
+      name: 'Server 2: CoinCircleTrust API Gateway'
     }
   });
 
@@ -960,6 +1014,17 @@ export const AppProvider = ({ children }) => {
     } catch (err) {
       showToast('Company feature flags updated');
     }
+  };
+
+  // Update Company API Server Engine Routing (Hybrid / Server 1 Sandbox / Server 2 CoinCircle)
+  const updateCompanyRoutingEngine = (companyId, engine) => {
+    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, apiRoutingEngine: engine } : c));
+    const engineLabels = {
+      hybrid: 'Smart Hybrid Engine (Server 1 + Server 2 Auto-Fallback ⚡)',
+      server1: 'Server 1 Only (Sandbox API Gateway 🌐)',
+      server2: 'Server 2 Only (CoinCircleTrust 47+ APIs 🛡️)'
+    };
+    showToast(`Verification Engine set to ${engineLabels[engine] || engine}`);
   };
 
   // Add Candidate (Persists to PostgreSQL)
@@ -1610,6 +1675,7 @@ export const AppProvider = ({ children }) => {
       companies,
       addCompany,
       updateCompanyFeatures,
+      updateCompanyRoutingEngine,
       hrUsers,
       addHrUser,
       candidates,

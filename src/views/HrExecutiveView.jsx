@@ -144,6 +144,8 @@ export const HrExecutiveView = () => {
     permanentAddress: '',
     panNo: '',
     drivingLicense: '',
+    passportNo: '',
+    voterId: '',
     uanEpf: '',
     highestQualification: 'B.Tech in Computer Science',
     university: 'VTU Technological University',
@@ -155,12 +157,18 @@ export const HrExecutiveView = () => {
     companyId: currentCompany.id,
     hrId: activeHr.id,
     verificationConfig: {
-      requireAadhaar: true,
-      requireMobileOtp: true,
-      requireFaceMatch: true,
-      requireDL: false,
-      requirePAN: true,
-      requireBankCheck: true
+      aadhaar: true,
+      pan: true,
+      bankCheck: true,
+      drivingLicense: false,
+      voterId: false,
+      mobileOtp: true,
+      passport: false,
+      uan: true,
+      criminalCheck: false,
+      education: false,
+      directorship: false,
+      faceCapture: true
     },
     manualChecks: {
       hrReferenceCompleted: true,
@@ -193,6 +201,8 @@ export const HrExecutiveView = () => {
       permanentAddress: '45, MG Road, Civil Lines, Jaipur, RJ - 302001',
       panNo: 'ABCDE1234F',
       drivingLicense: 'KA-01201900124',
+      passportNo: 'J8912401',
+      voterId: 'WZK8912301',
       uanEpf: '100982341209',
       highestQualification: 'B.Tech / B.E. in Computer Science',
       university: 'VTU Technological University',
@@ -204,12 +214,18 @@ export const HrExecutiveView = () => {
       companyId: currentCompany.id,
       hrId: activeHr.id,
       verificationConfig: {
-        requireAadhaar: true,
-        requireMobileOtp: true,
-        requireFaceMatch: true,
-        requireDL: false,
-        requirePAN: true,
-        requireBankCheck: true
+        aadhaar: true,
+        pan: true,
+        bankCheck: true,
+        drivingLicense: false,
+        voterId: false,
+        mobileOtp: true,
+        passport: true,
+        uan: true,
+        criminalCheck: false,
+        education: false,
+        directorship: false,
+        faceCapture: true
       },
       manualChecks: {
         hrReferenceCompleted: true,
@@ -977,7 +993,7 @@ export const HrExecutiveView = () => {
             <div className="space-y-3 pt-3 border-t border-slate-100">
               <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">3. Statutory IDs, Banking & Nominee</h4>
               
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">PAN Card Number</label>
                   <input 
@@ -985,6 +1001,26 @@ export const HrExecutiveView = () => {
                     placeholder="ABCDE1234F"
                     value={formData.panNo}
                     onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
+                    className="form-input font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Passport Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="J8912401"
+                    value={formData.passportNo || ''}
+                    onChange={(e) => setFormData({ ...formData, passportNo: e.target.value.toUpperCase() })}
+                    className="form-input font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">EPFO UAN Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="100982341209"
+                    value={formData.uanEpf}
+                    onChange={(e) => setFormData({ ...formData, uanEpf: e.target.value })}
                     className="form-input font-mono"
                   />
                 </div>
@@ -1009,7 +1045,7 @@ export const HrExecutiveView = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank Account Number</label>
+                  <label className="block text-slate-700 font-bold mb-1">Bank Account No</label>
                   <input 
                     type="text" 
                     placeholder="50100234129845"
@@ -1021,23 +1057,57 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            {/* Verification Checklist */}
-            <div className="space-y-3 pt-3 border-t border-slate-100">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">
-                4. Mandatory Verification Checklist (Configured per Company Plan)
-              </h4>
+            {/* Section 4: Mandatory Verification Requirements Selector */}
+            <div className="space-y-4 pt-3 border-t border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>4. Select Required Verification Checks for this Employee</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Pick which documents and background records are mandatory for this candidate. Checks are processed via Server 1 (Sandbox) or Server 2 (CoinCircleTrust).
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allOn = {};
+                      featureList.forEach(f => { allOn[f.id] = true; });
+                      setFormData({ ...formData, verificationConfig: allOn });
+                    }}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                  >
+                    Select All Checks ✓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ 
+                        ...formData, 
+                        verificationConfig: { aadhaar: true, mobileOtp: true, pan: true, bankCheck: true, faceCapture: true } 
+                      });
+                    }}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  >
+                    Reset to Standard
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {featureList.map((feat) => {
                   const isEnabledBySuperAdmin = currentCompany.features?.[feat.id] ?? true;
-                  const isChecked = formData.verificationConfig?.[feat.id] ?? false;
+                  const isChecked = !!formData.verificationConfig?.[feat.id];
 
                   if (!isEnabledBySuperAdmin) {
                     return (
                       <div key={feat.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-xs opacity-60 flex items-center justify-between">
                         <div>
                           <div className="font-semibold">{feat.name}</div>
-                          <div className="text-[10px]">Disabled by Super Admin</div>
+                          <div className="text-[10px]">Disabled in Company Plan</div>
                         </div>
                         <Lock className="w-3.5 h-3.5" />
                       </div>
@@ -1047,8 +1117,10 @@ export const HrExecutiveView = () => {
                   return (
                     <label 
                       key={feat.id}
-                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
-                        isChecked ? 'bg-emerald-50 border-emerald-300 text-slate-900 font-medium' : 'bg-white border-slate-200 text-slate-500'
+                      className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
+                        isChecked 
+                          ? 'bg-emerald-50/70 border-emerald-400 text-slate-900 shadow-2xs' 
+                          : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                       }`}
                     >
                       <input 
@@ -1058,11 +1130,20 @@ export const HrExecutiveView = () => {
                           ...formData,
                           verificationConfig: { ...formData.verificationConfig, [feat.id]: e.target.checked }
                         })}
-                        className="accent-emerald-600 mt-0.5"
+                        className="accent-emerald-600 mt-1 w-4 h-4 shrink-0"
                       />
-                      <div>
-                        <div className="font-bold text-xs">{feat.name}</div>
-                        <div className="text-[10px] text-slate-500">{feat.category}</div>
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-black text-xs text-slate-900 leading-tight">{feat.name}</span>
+                          <span className={`text-[8px] px-1.5 py-0.5 rounded font-black uppercase whitespace-nowrap ${
+                            feat.serverMode === 'server2_only' 
+                              ? 'bg-purple-100 text-purple-800 border border-purple-200' 
+                              : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                          }`}>
+                            {feat.serverMode === 'server2_only' ? 'Server 2 ⚡' : 'Server 1/2'}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 leading-relaxed">{feat.description || feat.category}</div>
                       </div>
                     </label>
                   );

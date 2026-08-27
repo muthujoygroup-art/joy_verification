@@ -40,7 +40,8 @@ import {
   Scale,
   Zap,
   Copy,
-  SendHorizontal
+  SendHorizontal,
+  Server
 } from 'lucide-react';
 
 export const CompanyAdminView = () => {
@@ -56,7 +57,9 @@ export const CompanyAdminView = () => {
     platformGuidelines, 
     updateGuidelines,
     getCertificateLifecycle,
-    rechargeCompanyWallet
+    rechargeCompanyWallet,
+    updateCompanyRoutingEngine,
+    apiConfigurations
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState('comp-1');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet'
@@ -701,6 +704,125 @@ export const CompanyAdminView = () => {
             }} 
             className="space-y-6 text-xs"
           >
+            {/* ⚡ MASTER API ROUTING ENGINE SELECTOR (SERVER 1 SANDBOX vs SERVER 2 COINCIRCLE) */}
+            <div className="p-6 rounded-2xl border-2 border-teal-300 bg-gradient-to-br from-teal-50/80 via-white to-sky-50/80 space-y-4 shadow-sm relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-teal-200 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-teal-600 text-white shadow-sm">
+                    <Server className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-900 text-sm sm:text-base">Upstream Verification Server Routing Engine</h4>
+                    <p className="text-slate-500 text-[11px]">Select your company's upstream data fetching engine between Server 1 (Sandbox) and Server 2 (CoinCircleTrust)</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-emerald text-[10px] font-bold">
+                    Active: {company.apiRoutingEngine === 'server1' ? 'Server 1 Only' : company.apiRoutingEngine === 'server2' ? 'Server 2 Only' : 'Smart Hybrid ⚡'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Engine Selector Radio Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                
+                {/* 1. Smart Hybrid Engine (Recommended) */}
+                <div 
+                  onClick={() => updateCompanyRoutingEngine(company.id, 'hybrid')}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between space-y-3 relative ${
+                    (company.apiRoutingEngine || 'hybrid') === 'hybrid'
+                      ? 'border-teal-600 bg-white shadow-md ring-2 ring-teal-500/20'
+                      : 'border-slate-200 bg-slate-50/70 hover:border-teal-300 hover:bg-white'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="badge badge-emerald text-[9px] font-black">RECOMMENDED</span>
+                      <input 
+                        type="radio" 
+                        name="routingEngine"
+                        checked={(company.apiRoutingEngine || 'hybrid') === 'hybrid'}
+                        onChange={() => updateCompanyRoutingEngine(company.id, 'hybrid')}
+                        className="text-teal-600"
+                      />
+                    </div>
+                    <strong className="text-slate-900 font-black text-xs block">⚡ Smart Hybrid Engine</strong>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Routes standard IDs via <strong>Server 1 (Sandbox)</strong>. Automatically routes non-Sandbox checks (<strong>Passport, EPFO UAN V3, Court Records, Moonlighting Directorship</strong>) via <strong>Server 2 (CoinCircleTrust)</strong>.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-teal-800">
+                    <span>Zero Missing Doc Fallbacks</span>
+                    <span>100% Coverage</span>
+                  </div>
+                </div>
+
+                {/* 2. Server 1 Only (Sandbox API) */}
+                <div 
+                  onClick={() => updateCompanyRoutingEngine(company.id, 'server1')}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between space-y-3 ${
+                    company.apiRoutingEngine === 'server1'
+                      ? 'border-indigo-600 bg-white shadow-md ring-2 ring-indigo-500/20'
+                      : 'border-slate-200 bg-slate-50/70 hover:border-indigo-300 hover:bg-white'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="badge badge-indigo text-[9px] font-black">SERVER 1</span>
+                      <input 
+                        type="radio" 
+                        name="routingEngine"
+                        checked={company.apiRoutingEngine === 'server1'}
+                        onChange={() => updateCompanyRoutingEngine(company.id, 'server1')}
+                        className="text-indigo-600"
+                      />
+                    </div>
+                    <strong className="text-slate-900 font-black text-xs block">🌐 Server 1: Sandbox API Router</strong>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Exclusively queries Sandbox API (<code className="font-mono text-[10px]">api.sandbox.co.in</code>). Fast standard checks for Aadhaar, PAN, Bank IMPS, and Driving License.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                    <span>Latency: ~48ms</span>
+                    <span>Cost: ₹2.50/call</span>
+                  </div>
+                </div>
+
+                {/* 3. Server 2 Only (CoinCircleTrust 47+ APIs) */}
+                <div 
+                  onClick={() => updateCompanyRoutingEngine(company.id, 'server2')}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between space-y-3 ${
+                    company.apiRoutingEngine === 'server2'
+                      ? 'border-purple-600 bg-white shadow-md ring-2 ring-purple-500/20'
+                      : 'border-slate-200 bg-slate-50/70 hover:border-purple-300 hover:bg-white'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="badge badge-purple text-[9px] font-black">SERVER 2 (47+ APIs)</span>
+                      <input 
+                        type="radio" 
+                        name="routingEngine"
+                        checked={company.apiRoutingEngine === 'server2'}
+                        onChange={() => updateCompanyRoutingEngine(company.id, 'server2')}
+                        className="text-purple-600"
+                      />
+                    </div>
+                    <strong className="text-slate-900 font-black text-xs block">🛡️ Server 2: CoinCircleTrust</strong>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Exclusively queries CoinCircleTrust (<code className="font-mono text-[10px]">api.coincircletrust.com</code>). Full institutional BGV, Passport, Court eCourts, Dual Employment, and 3D Biometrics.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-purple-700 font-bold">
+                    <span>47 Enterprise APIs</span>
+                    <span>Cost: ₹4.00/call</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Card 1: Verification Rules & AI Thresholds */}

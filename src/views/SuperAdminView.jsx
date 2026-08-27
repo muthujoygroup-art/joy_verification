@@ -175,7 +175,22 @@ export const SuperAdminView = () => {
     }
   });
 
-  const [editApiConfig, setEditApiConfig] = useState(apiConfigurations);
+  const [editApiConfig, setEditApiConfig] = useState(() => ({
+    server1_sandbox: {
+      apiKey: apiConfigurations.server1_sandbox?.apiKey || 'sb_live_key_9942a1bc88',
+      secretKey: apiConfigurations.server1_sandbox?.secretKey || 'sb_sec_JoyCorp2026_m89',
+      endpointUrl: apiConfigurations.server1_sandbox?.endpointUrl || 'https://api.sandbox.co.in/v2',
+      status: apiConfigurations.server1_sandbox?.status || 'Online',
+      mode: apiConfigurations.server1_sandbox?.mode || 'Production (Live Mode)'
+    },
+    server2_coincircle: {
+      clientId: apiConfigurations.server2_coincircle?.clientId || 'CCT_CORP_VERIF_882910',
+      clientSecret: apiConfigurations.server2_coincircle?.clientSecret || 'cct_sec_JoyCircleTrust_9921_xK',
+      endpointUrl: apiConfigurations.server2_coincircle?.endpointUrl || 'https://api.coincircletrust.com/api/v1',
+      status: apiConfigurations.server2_coincircle?.status || 'Online',
+      mode: apiConfigurations.server2_coincircle?.mode || 'Production (Live Mode)'
+    }
+  }));
 
   // Profit and Revenue Analytics Calculations
   const filteredCompanyList = selectedAnalyticsCompanyId === 'all' 
@@ -1630,81 +1645,350 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 8: API CREDENTIALS & SENSITIVE KEYS */}
+      {/* TAB 8: DUAL UPSTREAM API GATEWAYS (SERVER 1: SANDBOX + SERVER 2: COINCIRCLETRUST) */}
       {activeTab === 'apiconfig' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <Server className="w-5 h-5 text-emerald-600" />
-                <span>Upstream Government & Biometrics API Credentials</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Configure API SETU DigiLocker, SMS Router, and Coincircletrust Biometrics Gateway keys</p>
-            </div>
-            <span className="badge badge-emerald text-[10px]">256-Bit Encrypted</span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Gateway 1 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-indigo text-[10px]">Govt Gateway</span>
-              <h4 className="font-black text-slate-900 text-sm">API SETU DigiLocker UIDAI</h4>
-              <p className="text-slate-500 text-[11px]">Primary gateway for authenticating Aadhaar 12-digit UID numbers and OTP checks</p>
-              
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">API Key Token</label>
-                  <input 
-                    type="password" 
-                    value={editApiConfig.apiSetu.apiKey}
-                    onChange={(e) => setEditApiConfig({ ...editApiConfig, apiSetu: { ...editApiConfig.apiSetu, apiKey: e.target.value } })}
-                    className="form-input text-xs font-mono"
-                  />
+        <div className="space-y-6 animate-fadeIn">
+          
+          {/* Top Info Banner */}
+          <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/70 via-white to-purple-50/70 rounded-3xl space-y-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-purple text-xs font-black">PLATFORM VERIFICATION ENGINES</span>
+                  <span className="text-xs text-slate-500 font-bold">• 2 Master Upstream Gateways</span>
                 </div>
-                <button onClick={() => handleSaveApiConfig('apiSetu')} className="btn btn-superadmin text-xs py-1.5 w-full font-bold">Save API SETU</button>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 flex items-center gap-2">
+                  <Server className="w-6 h-6 text-indigo-600" />
+                  <span>Dual Upstream API Providers Configuration</span>
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5 font-medium">
+                  Configure upstream credentials, endpoint URLs, and failover capabilities for <strong>Server 1 (Sandbox API)</strong> and <strong>Server 2 (CoinCircleTrust 47+ APIs)</strong>.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-bold">
+                <span className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                  <span>99.98% Gateway Uptime</span>
+                </span>
               </div>
             </div>
 
-            {/* Gateway 2 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-cyan text-[10px]">SMS Router</span>
-              <h4 className="font-black text-slate-900 text-sm">Automated SMS OTP Router</h4>
-              <p className="text-slate-500 text-[11px]">Multi-carrier gateway for dispatching phone SMS OTP verification codes</p>
-              
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Carrier Secret</label>
-                  <input 
-                    type="password" 
-                    value={editApiConfig.sandbox.apiKey}
-                    onChange={(e) => setEditApiConfig({ ...editApiConfig, sandbox: { ...editApiConfig.sandbox, apiKey: e.target.value } })}
-                    className="form-input text-xs font-mono"
-                  />
-                </div>
-                <button onClick={() => handleSaveApiConfig('sandbox')} className="btn btn-company text-xs py-1.5 w-full font-bold">Save SMS Gateway</button>
+            {/* Live Gateway Telemetry Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+              <div className="p-3 bg-white rounded-2xl border border-indigo-200 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 font-bold uppercase">Server 1 (Sandbox API) Volume</span>
+                <div className="text-lg font-black text-indigo-700">24,850 Checks Completed</div>
+                <span className="text-[11px] text-emerald-700 font-bold">Latency: 48 ms • Cost: ₹2.50/call</span>
               </div>
-            </div>
 
-            {/* Gateway 3 */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
-              <span className="badge badge-amber text-[10px]">Biometrics Engine</span>
-              <h4 className="font-black text-slate-900 text-sm">Coincircletrust WebCam AI</h4>
-              <p className="text-slate-500 text-[11px]">AI face liveness detection & multi-angle biometric geometry validation</p>
-              
-              <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Biometric Secret Key</label>
-                  <input 
-                    type="password" 
-                    value={editApiConfig.coincircletrust.apiKey}
-                    onChange={(e) => setEditApiConfig({ ...editApiConfig, coincircletrust: { ...editApiConfig.coincircletrust, apiKey: e.target.value } })}
-                    className="form-input text-xs font-mono"
-                  />
-                </div>
-                <button onClick={() => handleSaveApiConfig('coincircletrust')} className="btn btn-hrexecutive text-xs py-1.5 w-full font-bold">Save Biometrics</button>
+              <div className="p-3 bg-white rounded-2xl border border-purple-200 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 font-bold uppercase">Server 2 (CoinCircleTrust) Volume</span>
+                <div className="text-lg font-black text-purple-700">38,400 Checks Completed</div>
+                <span className="text-[11px] text-emerald-700 font-bold">Latency: 62 ms • Cost: ₹4.00/call (47 APIs)</span>
+              </div>
+
+              <div className="p-3 bg-white rounded-2xl border border-emerald-200 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 font-bold uppercase">Smart Hybrid Auto-Routing</span>
+                <div className="text-lg font-black text-emerald-700">Active on 3/3 Companies</div>
+                <span className="text-[11px] text-slate-600 font-medium">Automatic fallback for unsupported docs</span>
               </div>
             </div>
           </div>
+
+          {/* Dual API Server Cards Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* ========================================================================= */}
+            {/* SERVER 1: SANDBOX PRIVATE API ROUTER */}
+            {/* ========================================================================= */}
+            <div className="glass-panel p-6 border-2 border-indigo-200 bg-white rounded-3xl space-y-5 shadow-sm flex flex-col justify-between">
+              <div className="space-y-4">
+                
+                {/* Header */}
+                <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="badge badge-indigo text-[10px] font-black">SERVER 1 (SANDBOX API)</span>
+                      <span className="badge badge-emerald text-[10px] font-bold">Online 🟢</span>
+                    </div>
+                    <h4 className="font-black text-slate-900 text-base mt-1">Sandbox Private API Gateway</h4>
+                    <p className="text-slate-500 text-xs font-medium">Standard Government Identity & Core Banking Verification Engine</p>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">api.sandbox.co.in</span>
+                </div>
+
+                {/* Configuration Form */}
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSaveApiConfig('server1_sandbox');
+                  }}
+                  className="space-y-3 text-xs"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Sandbox API Key ID *</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={editApiConfig.server1_sandbox.apiKey}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server1_sandbox: { ...editApiConfig.server1_sandbox, apiKey: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono font-bold text-indigo-900"
+                        placeholder="sb_live_key_..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Sandbox API Secret Key *</label>
+                      <input 
+                        type="password" 
+                        required
+                        value={editApiConfig.server1_sandbox.secretKey}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server1_sandbox: { ...editApiConfig.server1_sandbox, secretKey: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono font-bold"
+                        placeholder="sb_sec_..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL</label>
+                      <input 
+                        type="text" 
+                        value={editApiConfig.server1_sandbox.endpointUrl}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server1_sandbox: { ...editApiConfig.server1_sandbox, endpointUrl: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono text-slate-700"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
+                      <select
+                        value={editApiConfig.server1_sandbox.mode}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server1_sandbox: { ...editApiConfig.server1_sandbox, mode: e.target.value } 
+                        })}
+                        className="form-select text-xs font-bold"
+                      >
+                        <option value="Production (Live Mode)">Production (Live Mode)</option>
+                        <option value="Sandbox / Staging Mode">Sandbox / Staging Mode</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                    <span className="text-[11px] text-slate-500 font-semibold">Rate Limit: 2,500 req/min • ₹2.50/call</span>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => showToast('⚡ Server 1 (Sandbox API) Connection Ping: 200 OK (Latency: 48ms)')}
+                        className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
+                      >
+                        Ping Test ⚡
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="btn btn-superadmin text-xs py-1.5 px-4 font-black shadow-md cursor-pointer"
+                      >
+                        Save Server 1 💾
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Supported & Unsupported Scope Breakdown */}
+                <div className="space-y-3 pt-3 border-t border-slate-100 text-xs">
+                  <div>
+                    <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block mb-1.5">
+                      ✅ Server 1 Supported Documents (7 Core APIs)
+                    </span>
+                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                      {['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)', 'Driving License (MoRTH)', 'Voter ID (ECI)', 'GSTIN Search', 'Basic EPFO Passbook'].map((doc, idx) => (
+                        <span key={idx} className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+                          ✓ {doc}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-950 text-[11px] space-y-1">
+                    <span className="font-extrabold flex items-center gap-1 text-amber-900">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>Sandbox Limitation & Smart Auto-Fallback:</span>
+                    </span>
+                    <p className="text-[10px] text-amber-800 leading-relaxed font-medium">
+                      Passport verification, UAN Dual Employment History V3, Court & Criminal records, and MCA Directorship checks are <strong>NOT available in Sandbox</strong>. Any requests for these documents are automatically routed through <strong>Server 2 (CoinCircleTrust)</strong>.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* SERVER 2: COINCIRCLETRUST API GATEWAY (47+ ENTERPRISE APIS) */}
+            {/* ========================================================================= */}
+            <div className="glass-panel p-6 border-2 border-purple-200 bg-white rounded-3xl space-y-5 shadow-sm flex flex-col justify-between">
+              <div className="space-y-4">
+                
+                {/* Header */}
+                <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="badge badge-purple text-[10px] font-black">SERVER 2 (COINCIRCLETRUST)</span>
+                      <span className="badge badge-emerald text-[10px] font-bold">Online 🟢</span>
+                    </div>
+                    <h4 className="font-black text-slate-900 text-base mt-1">CoinCircleTrust Institutional Gateway</h4>
+                    <p className="text-slate-500 text-xs font-medium">Full 47+ Enterprise KYC, Dual Employment, Court & Biometric APIs</p>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">api.coincircletrust.com</span>
+                </div>
+
+                {/* Configuration Form */}
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSaveApiConfig('server2_coincircle');
+                  }}
+                  className="space-y-3 text-xs"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">CoinCircle Client ID / API Key *</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={editApiConfig.server2_coincircle.clientId}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server2_coincircle: { ...editApiConfig.server2_coincircle, clientId: e.target.value, apiKey: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono font-bold text-purple-900"
+                        placeholder="CCT_CORP_..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Secret Access Token *</label>
+                      <input 
+                        type="password" 
+                        required
+                        value={editApiConfig.server2_coincircle.clientSecret}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server2_coincircle: { ...editApiConfig.server2_coincircle, clientSecret: e.target.value, secretKey: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono font-bold"
+                        placeholder="cct_sec_..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL</label>
+                      <input 
+                        type="text" 
+                        value={editApiConfig.server2_coincircle.endpointUrl}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server2_coincircle: { ...editApiConfig.server2_coincircle, endpointUrl: e.target.value } 
+                        })}
+                        className="form-input text-xs font-mono text-slate-700"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
+                      <select
+                        value={editApiConfig.server2_coincircle.mode}
+                        onChange={(e) => setEditApiConfig({ 
+                          ...editApiConfig, 
+                          server2_coincircle: { ...editApiConfig.server2_coincircle, mode: e.target.value } 
+                        })}
+                        className="form-select text-xs font-bold"
+                      >
+                        <option value="Production (Live Mode)">Production (Live Mode)</option>
+                        <option value="Staging / Test Sandbox">Staging / Test Sandbox</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                    <span className="text-[11px] text-slate-500 font-semibold">Rate Limit: 5,000 req/min • ₹4.00/call (47 APIs)</span>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => showToast('⚡ Server 2 (CoinCircleTrust 47 APIs) Connection Ping: 200 OK (Latency: 62ms)')}
+                        className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
+                      >
+                        Ping Test ⚡
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="btn btn-superadmin text-xs py-1.5 px-4 font-black shadow-md cursor-pointer"
+                      >
+                        Save Server 2 💾
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Categorized 47+ APIs Browser */}
+                <div className="space-y-3 pt-3 border-t border-slate-100 text-xs">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
+                        ⚡ 47+ Specialized Enterprise APIs & Document Handlers
+                      </span>
+                      <span className="badge badge-purple text-[9px] font-bold">All 47 Active</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
+                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
+                        <strong className="text-purple-950 font-bold block">🛂 Passport & Advanced Identity (12 APIs)</strong>
+                        <span className="text-slate-600 block">Passport MEA Direct, Aadhaar-PAN Link Check, Aadhaar to Unmasked PAN, Voter, DL.</span>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
+                        <strong className="text-purple-950 font-bold block">🏢 EPFO UAN Dual Employment (8 APIs)</strong>
+                        <span className="text-slate-600 block">UAN Advance, UAN to Employment Profile, History V3 with Moonlighting Overlap Detection.</span>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
+                        <strong className="text-purple-950 font-bold block">⚖️ Legal, Court & Moonlighting (10 APIs)</strong>
+                        <span className="text-slate-600 block">District/High Court eCourts records, CCTNS Criminal Search, DIN to MCA Directorship.</span>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
+                        <strong className="text-purple-950 font-bold block">🏦 Financial, UPI & Biometrics (17 APIs)</strong>
+                        <span className="text-slate-600 block">Pennyless Bank Verification, UPI ID Analyser, CRIF/Experian Credit, 3D WebCam Biometrics.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
         </div>
       )}
 

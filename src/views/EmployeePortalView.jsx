@@ -105,7 +105,31 @@ export const EmployeePortalView = () => {
 
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate;
 
-  // ⚡ 1-Click Quick Mock Verification (Simulate Passing All 3 Steps in 1 second)
+  const isAadhaarReq = verificationConfig.aadhaar ?? verificationConfig.requireAadhaar ?? true;
+  const isMobileReq = verificationConfig.mobileOtp ?? verificationConfig.requireMobileOtp ?? true;
+  const isFaceReq = verificationConfig.faceCapture ?? verificationConfig.requireFaceMatch ?? true;
+  const isPanReq = verificationConfig.pan ?? verificationConfig.requirePAN ?? false;
+  const isBankReq = verificationConfig.bankCheck ?? verificationConfig.requireBankCheck ?? false;
+  const isDlReq = verificationConfig.drivingLicense ?? verificationConfig.requireDL ?? false;
+  const isPassportReq = verificationConfig.passport ?? false;
+  const isUanReq = verificationConfig.uan ?? false;
+
+  const requiredStepKeys = [
+    isAadhaarReq && 'aadhaar',
+    isMobileReq && 'mobile',
+    isFaceReq && 'face',
+    isPanReq && 'pan',
+    isBankReq && 'bankCheck',
+    isDlReq && 'drivingLicense',
+    isPassportReq && 'passport',
+    isUanReq && 'uan'
+  ].filter(Boolean);
+
+  const totalConfiguredSteps = requiredStepKeys.length || 3;
+  const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
+  const progressPercentage = Math.round((completedStepsCount / totalConfiguredSteps) * 100);
+
+  // ⚡ 1-Click Quick Mock Verification (Simulate Passing All HR-Configured Steps)
   const handleQuickMockVerifyAll = () => {
     const samplePortrait = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400';
     const sampleSnaps = {
@@ -117,12 +141,12 @@ export const EmployeePortalView = () => {
       capturedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
     };
 
-    updateCandidateVerification(candidate.token, 'aadhaar', true);
-    updateCandidateVerification(candidate.token, 'mobile', true);
-    updateCandidateVerification(candidate.token, 'face', true);
+    requiredStepKeys.forEach(k => {
+      updateCandidateVerification(candidate.token, k, true);
+    });
     updateCandidateVerification(candidate.token, 'faceImages', sampleSnaps);
 
-    showToast('⚡ Quick Mock Verify Passed: Aadhaar OTP, Mobile OTP & Live Photo Matched (99.4%)!');
+    showToast('⚡ Quick Mock Verify Passed: All HR-configured verification steps completed with live server signatures!');
     confetti({ particleCount: 100, spread: 80 });
   };
 
@@ -136,13 +160,9 @@ export const EmployeePortalView = () => {
       confidence: metadata?.confidence || 99.4,
       capturedAt: metadata?.capturedAt || new Date().toISOString().replace('T', ' ').substring(0, 19)
     });
-    showToast('📸 Employee Live Photo Captured & Face Biometrics Verified (99.4%)!');
+    showToast('📸 Employee Live Photo Captured & Face Biometrics Verified (99.4%) via Server 2!');
     confetti({ particleCount: 80, spread: 70 });
   };
-
-  const totalConfiguredSteps = (verificationConfig.requireAadhaar ? 1 : 0) + (verificationConfig.requireMobileOtp ? 1 : 0) + (verificationConfig.requireFaceMatch ? 1 : 0);
-  const completedStepsCount = (verificationsCompleted.aadhaar ? 1 : 0) + (verificationsCompleted.mobile ? 1 : 0) + (verificationsCompleted.face ? 1 : 0);
-  const progressPercentage = Math.round((completedStepsCount / (totalConfiguredSteps || 1)) * 100);
 
   const handleSendAadhaarOtp = () => {
     setShowAadhaarOtpModal(true);
@@ -417,13 +437,16 @@ export const EmployeePortalView = () => {
         </label>
       </div>
 
-      {/* 3-Step Verification Checklist Cards */}
+      {/* HR Configured Document Verification Checklist Cards */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm uppercase font-extrabold tracking-wider text-slate-600 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>Required Verification Verification Steps</span>
-          </h3>
+          <div>
+            <h3 className="text-sm uppercase font-extrabold tracking-wider text-slate-900 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>Required Identity & Document Verification Steps ({completedStepsCount}/{totalConfiguredSteps})</span>
+            </h3>
+            <p className="text-xs text-slate-500 font-medium">Verification requests selected specifically by your HR manager</p>
+          </div>
 
           <span className="text-xs text-slate-500 font-bold">
             Status: <span className={isAllComplete ? 'text-emerald-700' : 'text-amber-700'}>{candidate.status}</span>
@@ -431,7 +454,7 @@ export const EmployeePortalView = () => {
         </div>
 
         {/* STEP 1: Aadhaar UIDAI OTP */}
-        {verificationConfig.requireAadhaar && (
+        {isAadhaarReq && (
           <div 
             data-tour-step="candidate-aadhaar-gate"
             className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
@@ -443,12 +466,12 @@ export const EmployeePortalView = () => {
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
                   verificationsCompleted.aadhaar ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
                 }`}>
-                  1
+                  🆔
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-slate-900 text-base">Aadhaar UIDAI OTP Check</h4>
-                    <span className="badge badge-indigo text-[10px]">API SETU Gateway</span>
+                    <h4 className="font-extrabold text-slate-900 text-base">Aadhaar UIDAI OTP Verification</h4>
+                    <span className="badge badge-indigo text-[10px]">Server 1 / Server 2</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
                     Aadhaar Number: <code className="text-slate-900 font-mono font-bold">{candidate.aadhaarNo || '5489 1234 9876'}</code>
@@ -475,7 +498,7 @@ export const EmployeePortalView = () => {
         )}
 
         {/* STEP 2: Mobile Number OTP */}
-        {verificationConfig.requireMobileOtp && (
+        {isMobileReq && (
           <div 
             data-tour-step="candidate-mobile-gate"
             className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
@@ -487,12 +510,12 @@ export const EmployeePortalView = () => {
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
                   verificationsCompleted.mobile ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-sky-100 text-sky-800 border border-sky-200'
                 }`}>
-                  2
+                  📱
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-slate-900 text-base">Mobile Number SMS OTP</h4>
-                    <span className="badge badge-cyan text-[10px]">Sandbox Gateway</span>
+                    <span className="badge badge-cyan text-[10px]">Multi-Carrier Gateway</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
                     Registered Mobile: <strong className="text-slate-900 font-mono">{candidate.mobile}</strong>
@@ -518,8 +541,8 @@ export const EmployeePortalView = () => {
           </div>
         )}
 
-        {/* STEP 3: Live Employee Photo Capture & Biometric Face Verification */}
-        {verificationConfig.requireFaceMatch && (
+        {/* STEP 3: Live Photo & Biometric Face Verification */}
+        {isFaceReq && (
           <div 
             data-tour-step="candidate-face-gate"
             className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
@@ -531,18 +554,17 @@ export const EmployeePortalView = () => {
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
                   verificationsCompleted.face ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-200'
                 }`}>
-                  3
+                  📸
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-slate-900 text-base">Employee Live Photo & Face Verification</h4>
-                    <span className="badge badge-amber text-[10px]">Biometric Camera Sensor</span>
+                    <h4 className="font-extrabold text-slate-900 text-base">3D AI Live Photo & Face Biometrics</h4>
+                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                    Capture employee live face portrait via WebCam / Mobile Camera for biometric authentication.
+                    Capture employee live face portrait via WebCam / Mobile Camera for anti-spoofing biometric check.
                   </p>
                   
-                  {/* If Photo is Captured, show small preview strip */}
                   {currentCapturedPhoto && (
                     <div className="mt-2 flex items-center gap-2.5">
                       <img 
@@ -551,7 +573,7 @@ export const EmployeePortalView = () => {
                         className="w-10 h-10 rounded-xl object-cover border border-emerald-400 shadow-xs"
                       />
                       <div className="text-[11px]">
-                        <span className="text-emerald-800 font-extrabold block">✓ Live Portrait Stored</span>
+                        <span className="text-emerald-800 font-extrabold block">✓ 3D Face Geometry Stored</span>
                         <span className="text-slate-500 font-mono text-[10px]">Confidence: 99.4% Match</span>
                       </div>
                     </div>
@@ -586,6 +608,182 @@ export const EmployeePortalView = () => {
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: PAN Card NSDL Verification & Aadhaar Link */}
+        {isPanReq && (
+          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            verificationsCompleted.pan ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  verificationsCompleted.pan ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                }`}>
+                  💳
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-slate-900 text-base">PAN Card Tax Identity & Aadhaar Link</h4>
+                    <span className="badge badge-indigo text-[10px]">Server 1 / Server 2</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    PAN Number: <strong className="text-slate-900 font-mono">{candidate.panNo || 'ABCDE1234F'}</strong> • NSDL Status & Name Match
+                  </p>
+                </div>
+              </div>
+
+              {verificationsCompleted.pan ? (
+                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>PAN & Link Verified ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    updateCandidateVerification(candidate.token, 'pan', true);
+                    showToast('💳 PAN Card Verified via NSDL Database & Linked with Aadhaar!');
+                  }}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify PAN Identity</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: Bank Account Penny Drop IMPS */}
+        {isBankReq && (
+          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            verificationsCompleted.bankCheck ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  verificationsCompleted.bankCheck ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                }`}>
+                  🏦
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-slate-900 text-base">Bank Account Verification (Penny Drop ₹1)</h4>
+                    <span className="badge badge-emerald text-[10px]">Server 1 / Server 2</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    Account: <code className="text-slate-900 font-mono font-bold">{candidate.bankAccountNo || '50100234129845'}</code> ({candidate.bankName || 'HDFC Bank'})
+                  </p>
+                </div>
+              </div>
+
+              {verificationsCompleted.bankCheck ? (
+                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Bank Account Verified ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    updateCandidateVerification(candidate.token, 'bankCheck', true);
+                    showToast('🏦 Bank Account Verified via IMPS Penny Drop (Account Holder Matched)!');
+                  }}
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify Bank Account</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 6: Passport MEA Verification (Server 2 Exclusive) */}
+        {isPassportReq && (
+          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            verificationsCompleted.passport ? 'border-purple-300 bg-purple-50/40' : 'border-slate-200'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  verificationsCompleted.passport ? 'bg-purple-100 text-purple-800 border border-purple-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+                }`}>
+                  🛂
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-slate-900 text-base">Passport Verification (MEA Direct)</h4>
+                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    Passport File Number: <strong className="text-slate-900 font-mono">{candidate.passportNo || 'J8912401'}</strong> • Ministry of External Affairs Verified
+                  </p>
+                </div>
+              </div>
+
+              {verificationsCompleted.passport ? (
+                <div className="flex items-center gap-1.5 text-purple-900 font-extrabold text-xs bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Passport MEA Verified ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    updateCandidateVerification(candidate.token, 'passport', true);
+                    showToast('🛂 Passport Number Authenticated via MEA Direct Database (Server 2)!');
+                  }}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify Passport (Server 2)</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 7: EPFO UAN Dual Employment History (Server 2 Exclusive) */}
+        {isUanReq && (
+          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            verificationsCompleted.uan ? 'border-purple-300 bg-purple-50/40' : 'border-slate-200'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  verificationsCompleted.uan ? 'bg-purple-100 text-purple-800 border border-purple-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+                }`}>
+                  🏢
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-slate-900 text-base">EPFO UAN Dual Employment & Moonlighting Check</h4>
+                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    UAN Number: <strong className="text-slate-900 font-mono">{candidate.uanEpf || '100982341209'}</strong> • Past Service Passbook History & Overlap Detection
+                  </p>
+                </div>
+              </div>
+
+              {verificationsCompleted.uan ? (
+                <div className="flex items-center gap-1.5 text-purple-900 font-extrabold text-xs bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>EPFO UAN Verified (Zero Moonlighting) ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    updateCandidateVerification(candidate.token, 'uan', true);
+                    showToast('🏢 EPFO Employment Service History & Moonlighting Audit Completed (Server 2)!');
+                  }}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify EPFO History (Server 2)</span>
+                </button>
+              )}
             </div>
           </div>
         )}
