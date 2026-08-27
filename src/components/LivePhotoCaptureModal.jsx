@@ -26,6 +26,7 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
+  const nativeCameraInputRef = useRef(null);
 
   // Sample high-quality verified demo portraits for quick 1-click test
   const demoPortraits = [
@@ -46,23 +47,64 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
   const startLiveCamera = async () => {
     stopLiveCamera();
     setCameraError(null);
+
+    // Check for Secure Context / MediaDevices API support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const isHttp = window.location.protocol === 'http:' && window.location.hostname !== 'localhost';
+      if (isHttp) {
+        setCameraError('WebCam requires HTTPS encryption. Please access via https:// or use Phone Camera below.');
+      } else {
+        setCameraError('WebCam API is not supported in this browser. Please use Phone Camera or Upload Photo.');
+      }
+      setCameraActive(false);
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: facingMode
-        },
-        audio: false
-      });
-      setCameraStream(stream);
-      setCameraActive(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      let stream = null;
+
+      // Tier 1: Try with ideal HD resolution & facing mode
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: { ideal: facingMode }
+          },
+          audio: false
+        });
+      } catch (tier1Err) {
+        console.warn('Tier 1 camera constraints failed, attempting fallback...', tier1Err);
+        // Tier 2: Try basic video true
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+      }
+
+      if (stream) {
+        setCameraStream(stream);
+        setCameraActive(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          try {
+            await videoRef.current.play();
+          } catch (playErr) {
+            console.warn('Video auto-play warning:', playErr);
+          }
+        }
       }
     } catch (err) {
       console.warn('Camera access error:', err);
-      setCameraError('WebCam access not available or permission denied.');
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraError('Camera permission was blocked. Click the lock/camera icon in your address bar to allow access, or use Phone Camera below.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setCameraError('No camera device detected. Please connect a webcam, use Phone Camera, or upload a photo.');
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        setCameraError('Camera is already in use by another application. Please close other apps using the camera.');
+      } else {
+        setCameraError('Unable to open live camera stream. Use Phone Camera or Upload Photo below.');
+      }
       setCameraActive(false);
     }
   };
@@ -81,12 +123,12 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
 
   // Capture instant snapshot from live video stream
   const handleCaptureSnapshot = () => {
-    if (videoRef.current && canvasRef.current) {
+    if (videoRef.current && cameraActive && videoRef.current.videoWidth > 0) {
       setIsProcessing(true);
       setLivenessPhase('verifying');
       
       const video = videoRef.current;
-      const canvas = canvasRef.current;
+      const canvas = canvasRef.current || document.createElement('canvas');
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
@@ -105,10 +147,14 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
         setIsProcessing(false);
         setLivenessPhase('accepted');
         stopLiveCamera();
-      }, 700);
+      }, 600);
     } else {
-      // Fallback demo snapshot
-      handleSelectDemoPhoto(demoPortraits[0].url);
+      // If camera is not active or stream hasn't produced frames, trigger native camera or fallback
+      if (nativeCameraInputRef.current) {
+        nativeCameraInputRef.current.click();
+      } else {
+        handleSelectDemoPhoto(demoPortraits[0].url);
+      }
     }
   };
 
@@ -282,36 +328,80 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
 
               {/* Fallback overlay if WebCam access is restricted */}
               {cameraError && (
-                <div className="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center p-4 text-center text-amber-200 text-xs space-y-2">
-                  <AlertCircle className="w-8 h-8 text-amber-400" />
-                  <p className="font-bold">{cameraError}</p>
-                  <p className="text-slate-400 text-[11px]">You can use the 1-click demo photo options or upload an ID picture below.</p>
+                <div className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-5 text-center text-amber-200 text-xs space-y-3">
+                  <AlertCircle className="w-9 h-9 text-amber-400 animate-bounce" />
+                  <div className="space-y-1 max-w-xs">
+                    <p className="font-black text-amber-300 text-sm">Camera Restricted / Permission Needed</p>
+                    <p className="text-slate-300 text-[11px] leading-snug">{cameraError}</p>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1 flex-wrap justify-center">
+                    <button
+                      type="button"
+                      onClick={startLiveCamera}
+                      className="btn btn-secondary text-[11px] py-1.5 px-3 bg-amber-400 text-amber-950 hover:bg-amber-300 font-black flex items-center gap-1 cursor-pointer"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Retry Camera</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => nativeCameraInputRef.current?.click()}
+                      className="btn btn-company text-[11px] py-1.5 px-3 font-black flex items-center gap-1 cursor-pointer"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Open Phone Camera App</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Snapshot Trigger & Quick Demo Options */}
             <div className="space-y-3">
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-2.5 flex-wrap">
                 <button
                   type="button"
                   onClick={handleCaptureSnapshot}
                   disabled={isProcessing}
-                  className="btn btn-superadmin text-xs py-2.5 px-6 flex items-center gap-2 font-black shadow-lg"
+                  className="btn btn-superadmin text-xs py-2.5 px-5 flex items-center gap-2 font-black shadow-lg cursor-pointer"
                 >
                   <Camera className="w-4 h-4" />
-                  <span>📸 Capture Live Snapshot Now</span>
+                  <span>📸 Capture Snapshot</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => nativeCameraInputRef.current?.click()}
+                  className="btn btn-company text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
+                  title="Directly launch phone camera app"
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                  <span>Phone Camera</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold"
+                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
                   title="Upload ID Portrait from disk"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Upload Photo</span>
+                  <span>Upload</span>
                 </button>
+
+                {/* Hidden Native Camera File Input for Mobile Devices */}
+                <input 
+                  type="file" 
+                  ref={nativeCameraInputRef} 
+                  onChange={handleFileUpload} 
+                  accept="image/*" 
+                  capture="user" 
+                  className="hidden" 
+                />
+
+                {/* Hidden File Input for Image Upload */}
                 <input 
                   type="file" 
                   ref={fileInputRef} 
