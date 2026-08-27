@@ -119,6 +119,11 @@ export const SuperAdminView = () => {
     employmentTypes: ''
   });
 
+  const [activeMasterMenu, setActiveMasterMenu] = useState('skills');
+  const [masterSearchQuery, setMasterSearchQuery] = useState('');
+  const [masterEntriesPerPage, setMasterEntriesPerPage] = useState(10);
+  const [newMasterItemInput, setNewMasterItemInput] = useState('');
+
   const [activeTab, setActiveTab] = useState('analytics'); 
   // 'analytics' | 'companies' | 'terms_hub' | 'billing' | 'logins' | 'dbms' | 'masterfields' | 'apiconfig' | 'reports' | 'tickets' | 'issuelogs' | 'guidelines' | 'settings'
 
@@ -342,6 +347,7 @@ export const SuperAdminView = () => {
           
           {/* TAB 1: Analytics & Profit */}
           <button
+            data-tour-step="superadmin-analytics-tab"
             onClick={() => setActiveTab('analytics')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
               activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -353,6 +359,7 @@ export const SuperAdminView = () => {
 
           {/* TAB 2: Companies & Features */}
           <button
+            data-tour-step="superadmin-companies-tab"
             onClick={() => setActiveTab('companies')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
               activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -375,6 +382,7 @@ export const SuperAdminView = () => {
 
           {/* TAB 4: Metered Billing & Invoices */}
           <button
+            data-tour-step="superadmin-billing-tab"
             onClick={() => setActiveTab('billing')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
               activeTab === 'billing' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -397,6 +405,7 @@ export const SuperAdminView = () => {
 
           {/* TAB 6: Database Management System (DBMS) */}
           <button
+            data-tour-step="superadmin-dbms-tab"
             onClick={() => setActiveTab('dbms')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
               activeTab === 'dbms' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -419,6 +428,7 @@ export const SuperAdminView = () => {
 
           {/* TAB 8: API Credentials */}
           <button
+            data-tour-step="superadmin-apiconfig-tab"
             onClick={() => setActiveTab('apiconfig')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
               activeTab === 'apiconfig' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -1437,213 +1447,242 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 7: MASTER FORM FIELDS & MASTER DROPDOWN OPTIONS HUB */}
-      {activeTab === 'masterfields' && (
-        <div className="space-y-8">
-          
-          {/* SECTION 1: MASTER CANDIDATE DEFAULT FORM FIELDS */}
-          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+      {/* TAB 7: ENTERPRISE MANAGE MASTER CONSOLE */}
+      {activeTab === 'masterfields' && (() => {
+        const MASTER_CATEGORIES = [
+          { key: 'skills', label: 'Manage Skills' },
+          { key: 'selfInterests', label: 'Manage Self Interest' },
+          { key: 'qualificationCategories', label: 'Manage Qualification Category' },
+          { key: 'qualifications', label: 'Manage Qualification' },
+          { key: 'languages', label: 'Manage Language Known' },
+          { key: 'jobCategories', label: 'Manage Job Category' },
+          { key: 'jobTypes', label: 'Manage Job Type' },
+          { key: 'states', label: 'Manage State' },
+          { key: 'cities', label: 'Manage City' },
+          { key: 'areas', label: 'Manage Area' },
+          { key: 'statutoryForms', label: 'Manage Statutory Forms & Agreements' },
+          { key: 'documentTypes', label: 'Manage Document Types' },
+          { key: 'departments', label: 'Manage Departments' },
+          { key: 'designations', label: 'Manage Designations' },
+          { key: 'workLocations', label: 'Manage Work Locations' },
+          { key: 'employmentTypes', label: 'Manage Employment Types' }
+        ];
+
+        const currentMasterCategoryObj = MASTER_CATEGORIES.find(c => c.key === activeMasterMenu) || MASTER_CATEGORIES[0];
+        const allCurrentMasterItems = masterDropdownOptions[activeMasterMenu] || [];
+        const filteredMasterItems = allCurrentMasterItems.filter(item => 
+          item.toLowerCase().includes(masterSearchQuery.toLowerCase())
+        );
+        const displayedMasterItems = filteredMasterItems.slice(0, masterEntriesPerPage);
+
+        return (
+          <div className="glass-panel p-6 border-amber-200 bg-white rounded-3xl space-y-6 shadow-sm">
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <ListCheck className="w-5 h-5 text-teal-600" />
-                  <span>Master Candidate Default Form Fields</span>
+                <span className="badge badge-amber text-[10px] mb-1 font-bold">Enterprise System Master</span>
+                <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <Sliders className="w-5 h-5 text-amber-600" />
+                  <span>Centralized Manage Master Console</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium">Standard default candidate form fields populated across all client companies during profile creation</p>
+                <p className="text-xs text-slate-500 font-medium">Standardize master records (Skills, Qualifications, Languages, Job Types, Locations, Statutory Forms) populated across all HR & Candidate forms</p>
               </div>
-              
-              <button 
-                onClick={() => setShowAddMasterFieldModal(true)}
-                className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold self-start sm:self-auto"
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ Add Master Default Field</span>
-              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {masterFormFields.map((field) => (
-                <div key={field.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex items-center justify-between gap-3">
-                  <div>
-                    <span className="badge badge-teal text-[9px]">{field.category}</span>
-                    <h4 className="font-black text-slate-900 text-sm mt-1">{field.label}</h4>
-                    <p className="text-slate-500 text-[10px] font-mono">Type: {field.type} • {field.defaultMandatory ? 'Mandatory ✅' : 'Optional'}</p>
+            {/* Master 2-Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              
+              {/* Left Column: Manage Master Sidebar (Orange Header & List) */}
+              <div className="lg:col-span-4 rounded-2xl border border-amber-300 overflow-hidden shadow-xs bg-slate-50">
+                {/* Sidebar Header */}
+                <div className="bg-[#e67300] text-white font-black text-sm px-4 py-3.5 flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Manage Master</span>
                   </div>
-                  <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                  <span className="text-xs">▼</span>
                 </div>
-              ))}
+
+                {/* Menu Links */}
+                <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
+                  {MASTER_CATEGORIES.map((cat) => {
+                    const isActive = activeMasterMenu === cat.key;
+                    return (
+                      <button
+                        key={cat.key}
+                        onClick={() => {
+                          setActiveMasterMenu(cat.key);
+                          setMasterSearchQuery('');
+                          setNewMasterItemInput('');
+                        }}
+                        className={`w-full text-left px-4 py-3 text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          isActive 
+                            ? 'bg-[#e67300] text-white font-black shadow-inner' 
+                            : 'text-slate-700 hover:bg-amber-50 hover:text-amber-900'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className={isActive ? 'text-white' : 'text-[#e67300]'}>➔</span>
+                          <span>{cat.label}</span>
+                        </div>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                          isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+                        }`}>
+                          {masterDropdownOptions[cat.key]?.length || 0}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Column: Data Table View */}
+              <div className="lg:col-span-8 space-y-4">
+                
+                {/* Quick Add Bar */}
+                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="w-full sm:w-auto">
+                    <h4 className="font-extrabold text-slate-900 text-xs">
+                      + Add New {currentMasterCategoryObj?.label?.replace('Manage ', '')} Record
+                    </h4>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <input
+                      type="text"
+                      placeholder={`Enter new ${currentMasterCategoryObj?.label?.replace('Manage ', '').toLowerCase()}...`}
+                      value={newMasterItemInput}
+                      onChange={(e) => setNewMasterItemInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newMasterItemInput.trim()) {
+                          addMasterDropdownOption(activeMasterMenu, newMasterItemInput);
+                          setNewMasterItemInput('');
+                        }
+                      }}
+                      className="form-input text-xs w-full sm:w-64"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newMasterItemInput.trim()) {
+                          addMasterDropdownOption(activeMasterMenu, newMasterItemInput);
+                          setNewMasterItemInput('');
+                        }
+                      }}
+                      className="btn btn-company text-xs py-2 px-4 font-bold shrink-0 bg-[#e67300] hover:bg-[#cc6600] text-white shadow-xs"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                </div>
+
+                {/* Data Table Controls: Show Entries & Search */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-500 font-medium">Show</span>
+                    <select
+                      value={masterEntriesPerPage}
+                      onChange={(e) => setMasterEntriesPerPage(Number(e.target.value))}
+                      className="form-input text-xs py-1 px-2.5 w-20"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <span className="text-slate-500 font-medium">entries</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-500 font-medium">Search:</span>
+                    <input
+                      type="text"
+                      placeholder="Search in table..."
+                      value={masterSearchQuery}
+                      onChange={(e) => setMasterSearchQuery(e.target.value)}
+                      className="form-input text-xs py-1 px-3 w-48 sm:w-56"
+                    />
+                  </div>
+                </div>
+
+                {/* Data Table */}
+                <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-white">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-slate-50 text-slate-700 font-extrabold border-b border-slate-200">
+                      <tr>
+                        <th className="p-3 w-16 text-center">SNo</th>
+                        <th className="p-3">{currentMasterCategoryObj?.label?.replace('Manage ', '') || 'Item Name'}</th>
+                        <th className="p-3 w-28 text-center">Status</th>
+                        <th className="p-3 w-32">Created By</th>
+                        <th className="p-3 w-28 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {displayedMasterItems.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-slate-400">
+                            No records found for "{masterSearchQuery || currentMasterCategoryObj?.label}".
+                          </td>
+                        </tr>
+                      ) : (
+                        displayedMasterItems.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3 text-center text-slate-500 font-mono font-medium">{idx + 1}</td>
+                            <td className="p-3 font-bold text-slate-900">{item}</td>
+                            <td className="p-3 text-center">
+                              <span className="bg-[#00a65a] text-white font-bold text-[10px] px-3 py-1 rounded-full shadow-xs">
+                                Active
+                              </span>
+                            </td>
+                            <td className="p-3 text-slate-500 text-[11px] font-medium">Super Admin</td>
+                            <td className="p-3 text-center">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    const newVal = prompt(`Edit ${currentMasterCategoryObj?.label?.replace('Manage ', '')}:`, item);
+                                    if (newVal && newVal.trim() && newVal !== item) {
+                                      removeMasterDropdownOption(activeMasterMenu, item);
+                                      addMasterDropdownOption(activeMasterMenu, newVal.trim());
+                                    }
+                                  }}
+                                  className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all cursor-pointer"
+                                  title="Edit Record"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => removeMasterDropdownOption(activeMasterMenu, item)}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer"
+                                  title="Delete Record"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Table Footer / Summary */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 pt-1">
+                  <span>
+                    Showing 1 to {Math.min(displayedMasterItems.length, masterEntriesPerPage)} of {filteredMasterItems.length} entries
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button className="btn btn-secondary text-xs py-1 px-2.5 font-bold" disabled>Previous</button>
+                    <button className="btn btn-superadmin text-xs py-1 px-2.5 font-bold">1</button>
+                    <button className="btn btn-secondary text-xs py-1 px-2.5 font-bold" disabled>Next</button>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
-
-          {/* SECTION 2: TOPIC-BASED MASTER DATA DROPDOWN OPTIONS MANAGER */}
-          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
-            <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-indigo-600" />
-                <span>Topic-Based Master Data Dropdown Options Manager</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Manage standardized dropdown lists (Departments, Designations, Work Locations, Qualifications, Contract Types) populated in HR Stations</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
-              
-              {/* Dropdown 1: Departments */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-extrabold text-slate-900 text-xs">🏢 Departments List ({masterDropdownOptions.departments?.length || 0})</h4>
-                  <span className="badge badge-indigo text-[9px]">Master Table</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
-                  {masterDropdownOptions.departments?.map((opt, i) => (
-                    <span key={i} className="badge badge-indigo text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
-                      <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('departments', opt)} className="text-indigo-400 hover:text-indigo-900 font-black">✕</button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    placeholder="Add new department..."
-                    value={newOptionInputs.departments}
-                    onChange={(e) => setNewOptionInputs({ ...newOptionInputs, departments: e.target.value })}
-                    className="form-input text-xs"
-                  />
-                  <button
-                    onClick={() => {
-                      if (newOptionInputs.departments.trim()) {
-                        addMasterDropdownOption('departments', newOptionInputs.departments);
-                        setNewOptionInputs({ ...newOptionInputs, departments: '' });
-                      }
-                    }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
-                  >
-                    + Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Dropdown 2: Designations */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-extrabold text-slate-900 text-xs">👔 Designations List ({masterDropdownOptions.designations?.length || 0})</h4>
-                  <span className="badge badge-purple text-[9px]">Master Table</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
-                  {masterDropdownOptions.designations?.map((opt, i) => (
-                    <span key={i} className="badge badge-purple text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
-                      <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('designations', opt)} className="text-purple-400 hover:text-purple-900 font-black">✕</button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    placeholder="Add new designation..."
-                    value={newOptionInputs.designations}
-                    onChange={(e) => setNewOptionInputs({ ...newOptionInputs, designations: e.target.value })}
-                    className="form-input text-xs"
-                  />
-                  <button
-                    onClick={() => {
-                      if (newOptionInputs.designations.trim()) {
-                        addMasterDropdownOption('designations', newOptionInputs.designations);
-                        setNewOptionInputs({ ...newOptionInputs, designations: '' });
-                      }
-                    }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
-                  >
-                    + Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Dropdown 3: Work Locations */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-extrabold text-slate-900 text-xs">📍 Work Locations ({masterDropdownOptions.workLocations?.length || 0})</h4>
-                  <span className="badge badge-teal text-[9px]">Master Table</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
-                  {masterDropdownOptions.workLocations?.map((opt, i) => (
-                    <span key={i} className="badge badge-teal text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
-                      <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('workLocations', opt)} className="text-teal-400 hover:text-teal-900 font-black">✕</button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    placeholder="Add new location..."
-                    value={newOptionInputs.workLocations}
-                    onChange={(e) => setNewOptionInputs({ ...newOptionInputs, workLocations: e.target.value })}
-                    className="form-input text-xs"
-                  />
-                  <button
-                    onClick={() => {
-                      if (newOptionInputs.workLocations.trim()) {
-                        addMasterDropdownOption('workLocations', newOptionInputs.workLocations);
-                        setNewOptionInputs({ ...newOptionInputs, workLocations: '' });
-                      }
-                    }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
-                  >
-                    + Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Dropdown 4: Educational Qualifications */}
-              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-extrabold text-slate-900 text-xs">🎓 Educational Qualifications ({masterDropdownOptions.qualifications?.length || 0})</h4>
-                  <span className="badge badge-amber text-[9px]">Master Table</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-white rounded-lg border border-slate-200">
-                  {masterDropdownOptions.qualifications?.map((opt, i) => (
-                    <span key={i} className="badge badge-amber text-[10px] py-1 px-2 flex items-center gap-1.5 font-bold">
-                      <span>{opt}</span>
-                      <button onClick={() => removeMasterDropdownOption('qualifications', opt)} className="text-amber-500 hover:text-amber-900 font-black">✕</button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    placeholder="Add qualification..."
-                    value={newOptionInputs.qualifications}
-                    onChange={(e) => setNewOptionInputs({ ...newOptionInputs, qualifications: e.target.value })}
-                    className="form-input text-xs"
-                  />
-                  <button
-                    onClick={() => {
-                      if (newOptionInputs.qualifications.trim()) {
-                        addMasterDropdownOption('qualifications', newOptionInputs.qualifications);
-                        setNewOptionInputs({ ...newOptionInputs, qualifications: '' });
-                      }
-                    }}
-                    className="btn btn-superadmin text-xs py-1.5 px-3 font-bold shrink-0"
-                  >
-                    + Add
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-      )}
+        );
+      })()}
 
       {/* TAB 8: DUAL UPSTREAM API GATEWAYS (SERVER 1: SANDBOX + SERVER 2: COINCIRCLETRUST) */}
       {activeTab === 'apiconfig' && (

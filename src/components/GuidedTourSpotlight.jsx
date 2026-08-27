@@ -11,18 +11,143 @@ import {
   Play
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useApp } from '../context/AppContext';
 
-export const GuidedTourSpotlight = ({ 
-  tourId, 
-  roleTitle, 
-  steps = [], 
-  isOpen, 
-  onClose 
-}) => {
+export const ROLE_TOUR_STEPS = {
+  superadmin: {
+    roleTitle: 'Super Admin Master Console',
+    steps: [
+      {
+        target: 'superadmin-analytics-tab',
+        title: '1. Platform & Profit Analytics',
+        description: 'Track real-time multi-tenant verification volumes, revenue gross margins, and active enterprise licenses.'
+      },
+      {
+        target: 'superadmin-companies-tab',
+        title: '2. Companies & Feature Matrix',
+        description: 'Provision enterprise client tenants, configure custom KYC API suites, and adjust verification quota tiers.'
+      },
+      {
+        target: 'superadmin-apiconfig-tab',
+        title: '3. Dual Upstream API Gateways',
+        description: 'Manage and test API keys for Server 1 (Sandbox API Gateway) and Server 2 (CoinCircleTrust 47+ APIs Gateway).'
+      },
+      {
+        target: 'superadmin-billing-tab',
+        title: '4. Metered Invoicing & Razorpay Ledger',
+        description: 'Audit monthly metered billing, Razorpay wallet top-ups, and dispatch official GST tax invoices.'
+      },
+      {
+        target: 'superadmin-dbms-tab',
+        title: '5. Master DBMS Table Explorer',
+        description: 'Direct SQL-like inspection of live SQLite database tables across Candidates, Companies, Invoices, and Logs.'
+      }
+    ]
+  },
+  company: {
+    roleTitle: 'Company Admin Console',
+    steps: [
+      {
+        target: 'company-quota-card',
+        title: '1. Monthly Verification Quota Monitor',
+        description: 'Track real-time verification consumption against your subscription plan tier and remaining quota balance.'
+      },
+      {
+        target: 'company-registry-tab',
+        title: '2. Master Employee Verification Registry',
+        description: 'Inspect verified profiles, audit 60-day certificate expiry timelines, and download 10+ API verification reports.'
+      },
+      {
+        target: 'company-hr-tab',
+        title: '3. HR Recruitment Team Governance',
+        description: 'Provision recruiter seats, assign department access, and monitor candidate link dispatch metrics.'
+      },
+      {
+        target: 'company-dochub-tab',
+        title: '4. Compliance Document Storage Hub',
+        description: 'Access encrypted cloud document vaults, tax invoices, and official JOY Corporate compliance certificates.'
+      },
+      {
+        target: 'company-settings-tab',
+        title: '5. Upstream Server Engine Selector',
+        description: 'Choose your upstream routing engine: Smart Hybrid Engine (Sandbox + CoinCircleTrust fallback), Server 1 Only, or Server 2 Only.'
+      }
+    ]
+  },
+  hrexecutive: {
+    roleTitle: 'HR Executive Workstation',
+    steps: [
+      {
+        target: 'hr-pipeline-tab',
+        title: '1. Candidate Onboarding Pipeline',
+        description: 'View active candidate profiles, filter by verification status, and audit 60-day certificate lifecycle deadlines.'
+      },
+      {
+        target: 'hr-profiler-tab',
+        title: '2. Create Profile & Select Verification Checks',
+        description: 'Input candidate demographics and pick custom verification checks per employee with live Server 1 / Server 2 tags.'
+      },
+      {
+        target: 'hr-bgv-dossier-btn',
+        title: '3. 360° Multi-API Background Dossier',
+        description: 'Inspect comprehensive 360° background verification reports combining Aadhaar, PAN, Bank, DL, Passport, and UAN.'
+      },
+      {
+        target: 'hr-dispatch-btn',
+        title: '4. Multi-Channel Magic Link Dispatch',
+        description: 'Send encrypted verification links to candidates directly via WhatsApp, SMS, Email, or generate on-spot QR codes.'
+      }
+    ]
+  },
+  employee_link: {
+    roleTitle: 'Candidate Verification Portal',
+    steps: [
+      {
+        target: 'candidate-docs-gate',
+        title: '1. Comprehensive Joining Form',
+        description: 'Review and submit your 7-section digital onboarding details (Demographics, Contact, KYC, Education, Nominee).'
+      },
+      {
+        target: 'candidate-aadhaar-gate',
+        title: '2. Aadhaar UIDAI OTP Gate',
+        description: 'Authenticate your identity in real-time via 6-digit UIDAI OTP verification.'
+      },
+      {
+        target: 'candidate-mobile-gate',
+        title: '3. Mobile Number SMS OTP Validation',
+        description: 'Verify your active phone number with multi-carrier instant SMS OTP validation.'
+      },
+      {
+        target: 'candidate-face-gate',
+        title: '4. 3D WebCam Biometric Live Portrait',
+        description: 'Capture a secure 3-angle facial liveness scan via camera for anti-spoofing biometric match.'
+      }
+    ]
+  }
+};
+
+export const GuidedTourSpotlight = () => {
+  const { currentRole } = useApp();
+  const [isOpen, setIsOpen] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
 
+  const effectiveRole = currentRole || 'superadmin';
+  const roleConfig = ROLE_TOUR_STEPS[effectiveRole] || ROLE_TOUR_STEPS.superadmin;
+  const steps = roleConfig.steps || [];
+  const roleTitle = roleConfig.roleTitle || 'Platform Guide';
   const currentStep = steps[currentStepIndex];
+
+  // Listen for global launch_guided_tour event triggered from Navbar
+  useEffect(() => {
+    const handleLaunchTour = () => {
+      setCurrentStepIndex(0);
+      setIsOpen(true);
+    };
+
+    window.addEventListener('launch_guided_tour', handleLaunchTour);
+    return () => window.removeEventListener('launch_guided_tour', handleLaunchTour);
+  }, []);
 
   // Update target element spotlight position
   useEffect(() => {
@@ -48,8 +173,8 @@ export const GuidedTourSpotlight = ({
       }
     };
 
-    // Small delay to allow any dynamic tab renders to settle
-    const timer = setTimeout(updatePosition, 300);
+    // Allow dynamic tab transitions to settle
+    const timer = setTimeout(updatePosition, 250);
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', updatePosition);
 
@@ -58,7 +183,7 @@ export const GuidedTourSpotlight = ({
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition);
     };
-  }, [isOpen, currentStepIndex, currentStep]);
+  }, [isOpen, currentStepIndex, currentStep, currentRole]);
 
   if (!isOpen || !currentStep) return null;
 
@@ -67,7 +192,7 @@ export const GuidedTourSpotlight = ({
       setCurrentStepIndex(currentStepIndex + 1);
     } else {
       // Tour completed!
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+      confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
       handleComplete();
     }
   };
@@ -79,8 +204,7 @@ export const GuidedTourSpotlight = ({
   };
 
   const handleComplete = () => {
-    localStorage.setItem(`joy_tour_completed_${tourId}`, 'true');
-    onClose();
+    setIsOpen(false);
   };
 
   return (
@@ -95,18 +219,18 @@ export const GuidedTourSpotlight = ({
             left: targetRect.left - 6,
             width: targetRect.width + 12,
             height: targetRect.height + 12,
-            borderRadius: '16px',
-            border: '2px solid #6366f1',
-            boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.25), 0 0 25px rgba(99, 102, 241, 0.4)',
+            borderRadius: '18px',
+            border: '2px solid #4f46e5',
+            boxShadow: '0 0 0 6px rgba(79, 70, 229, 0.25), 0 0 30px rgba(79, 70, 229, 0.4)',
             transition: 'all 0.3s ease-in-out',
             pointerEvents: 'none'
           }}
           className="animate-pulse"
         >
           {/* Animated Directional Pointer Tag */}
-          <div className="absolute -top-7 left-2 bg-indigo-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-md uppercase tracking-wider">
-            <Zap className="w-3 h-3 text-yellow-300 fill-yellow-300" />
-            <span>Step {currentStepIndex + 1} Target</span>
+          <div className="absolute -top-7 left-2 bg-indigo-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg uppercase tracking-wider">
+            <Zap className="w-3 h-3 text-amber-300 fill-amber-300" />
+            <span>Step {currentStepIndex + 1} Spotlight</span>
           </div>
         </div>
       )}
@@ -125,7 +249,7 @@ export const GuidedTourSpotlight = ({
                 Interactive Onboarding
               </span>
               <h4 className="font-extrabold text-slate-900 text-xs mt-0.5">
-                {roleTitle} Guide
+                {roleTitle}
               </h4>
             </div>
           </div>

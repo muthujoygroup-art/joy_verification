@@ -11,7 +11,6 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
-import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
@@ -77,60 +76,6 @@ export const CompanyAdminView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
-  const [activeGuideStep, setActiveGuideStep] = useState(0);
-
-  const companyGuideSteps = [
-    {
-      id: 'quota',
-      title: 'Monitor Verification Quota & Plan Limits',
-      shortTitle: '1. Quota & Limits',
-      description: 'Track real-time monthly verification consumption, plan tier status, and remaining quota balance.',
-      actionLabel: '👉 Inspect Quota',
-      action: () => {
-        setActiveDrilldown({
-          title: 'Monthly Verification Quota Consumption',
-          subtitle: `Detailed usage breakdown for plan ${company.plan}`,
-          metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
-          metricType: 'company_quota',
-          data: [
-            { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
-            { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
-            { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
-          ]
-        });
-      }
-    },
-    {
-      id: 'hrteam',
-      title: 'Manage HR Recruiters & Permissions',
-      shortTitle: '2. HR Team',
-      description: 'Add new HR staff, assign departments (e.g. Engineering, Sales), and track candidate dispatch volumes.',
-      actionLabel: '👉 Manage HR Staff',
-      action: () => {
-        setActiveTab('hrteam');
-      }
-    },
-    {
-      id: 'registry',
-      title: 'Master Employee Registry & 360° Dossiers',
-      shortTitle: '3. Master Registry',
-      description: 'Inspect verified profiles, audit 60-day certificate expiry timelines, and download 10+ API verification reports.',
-      actionLabel: '👉 View Registry',
-      action: () => {
-        setActiveTab('registry');
-      }
-    },
-    {
-      id: 'dochub',
-      title: 'Compliance Document Storage & Invoices',
-      shortTitle: '4. Document Hub',
-      description: 'Access encrypted cloud document vaults, tax invoices, and official JOY Corporate compliance certificates.',
-      actionLabel: '👉 Open Doc Hub',
-      action: () => {
-        setActiveTab('dochub');
-      }
-    }
-  ];
 
   const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
   const companyHrUsers = hrUsers.filter(h => h.companyId === company.id);
@@ -288,6 +233,7 @@ export const CompanyAdminView = () => {
           </button>
 
           <button
+            data-tour-step="company-settings-tab"
             onClick={() => setActiveTab('settings')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
@@ -298,17 +244,6 @@ export const CompanyAdminView = () => {
           </button>
         </div>
       </div>
-
-      {/* 🎮 Game-Style Action Guide Hub */}
-      <GameActionGuideHub
-        roleKey="company"
-        roleTitle="Company Admin"
-        badgeColor="sky"
-        steps={companyGuideSteps}
-        currentStepIndex={activeGuideStep}
-        onStepChange={setActiveGuideStep}
-        onActionClick={(step) => step.action()}
-      />
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

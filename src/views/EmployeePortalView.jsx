@@ -6,7 +6,6 @@ import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
-import { GameActionGuideHub } from '../components/GameActionGuideHub';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { 
   ShieldCheck, 
@@ -28,63 +27,49 @@ import {
   FileText,
   UserCheck,
   Scan,
-  Scale
+  Scale,
+  Mail,
+  Database,
+  Loader2,
+  Check
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
-  const { getActiveCandidate, updateCandidateVerification, showToast, setRoleView } = useApp();
+  const { 
+    candidates, 
+    selectedCandidateToken, 
+    setSelectedCandidateToken, 
+    getActiveCandidate, 
+    updateCandidateVerification, 
+    showToast, 
+    setRoleView 
+  } = useApp();
   const candidate = getActiveCandidate();
 
   const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
+  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
   const [showLivePhotoModal, setShowLivePhotoModal] = useState(false);
   const [showDocDownloader, setShowDocDownloader] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
   const [showLaborDossierModal, setShowLaborDossierModal] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
 
+  // Aadhaar Live Data Fetching & e-KYC telemetry states
+  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
+  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
+  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
+  const [fetchedAadhaarProfile, setFetchedAadhaarProfile] = useState(null);
+  const [showAadhaarSuccessCard, setShowAadhaarSuccessCard] = useState(false);
+
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
+  const [emailInputOtp, setEmailInputOtp] = useState('');
+  const [isEmailVerified, setIsEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
   const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
   const isAllComplete = candidate?.status === 'Verified';
-  const [activeGuideStep, setActiveGuideStep] = useState(0);
-
-  const candidateGuideSteps = [
-    {
-      id: 'aadhaar',
-      title: 'Aadhaar UIDAI OTP Verification',
-      shortTitle: '1. Aadhaar OTP',
-      description: 'Verify your Aadhaar identity by entering the one-time password (OTP) sent by UIDAI to your registered mobile.',
-      actionLabel: '👉 Verify Aadhaar',
-      action: () => handleSendAadhaarOtp()
-    },
-    {
-      id: 'mobile',
-      title: 'Mobile Number SMS OTP Validation',
-      shortTitle: '2. Mobile OTP',
-      description: 'Authenticate your registered phone number via secure 6-digit carrier SMS OTP verification.',
-      actionLabel: '👉 Send SMS OTP',
-      action: () => handleSendMobileOtp()
-    },
-    {
-      id: 'face',
-      title: '3-Pose AI WebCam Face Liveness',
-      shortTitle: '3. Face Match',
-      description: 'Capture a quick 3-angle biometric camera scan (Straight, Left turn, Right turn) to confirm real-time identity liveness.',
-      actionLabel: '👉 Open Camera',
-      action: () => setShowLivePhotoModal(true)
-    },
-    {
-      id: 'docs',
-      title: 'Download Official Verified Certificate',
-      shortTitle: '4. Download Docs',
-      description: 'Once all verification gates are passed, instantly download your official JOY Corporate Verification Certificate and 360° Profile Dossier.',
-      actionLabel: '👉 View Certificate',
-      action: () => setShowCertModal(true)
-    }
-  ];
 
   useEffect(() => {
     if (isAllComplete) {
@@ -175,9 +160,49 @@ export const EmployeePortalView = () => {
       alert('Please enter 6-digit OTP code.');
       return;
     }
-    updateCandidateVerification(candidate.token, 'aadhaar', true);
     setShowAadhaarOtpModal(false);
-    showToast('Aadhaar OTP Verified successfully!');
+    setIsFetchingAadhaarData(true);
+    setAadhaarFetchProgress(15);
+    setAadhaarFetchStep(0); // Connecting to CIDR
+
+    // Step 1: Connecting to CIDR
+    setTimeout(() => {
+      setAadhaarFetchProgress(45);
+      setAadhaarFetchStep(1); // Validating 256-bit XML signature & OTP
+    }, 700);
+
+    // Step 2: Extracting e-KYC record
+    setTimeout(() => {
+      setAadhaarFetchProgress(80);
+      setAadhaarFetchStep(2); // Fetching official demographic e-KYC record & high-res portrait
+    }, 1400);
+
+    // Step 3: Populating master profile
+    setTimeout(() => {
+      setAadhaarFetchProgress(100);
+      setAadhaarFetchStep(3);
+
+      const fetchedData = {
+        name: candidate.name || 'Rajesh Suresh Kumar',
+        fatherName: 'Suresh Kumar',
+        dob: '1996-05-15',
+        gender: 'Male',
+        maskedAadhaar: candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876',
+        address: '124, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103',
+        photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
+        pincode: '560103',
+        uidaiTxnId: `UIDAI-TXN-${Date.now().toString().slice(-8)}`,
+        verifiedTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST',
+        xmlSignature: 'VALID_SHA256_RSA_2048'
+      };
+
+      setFetchedAadhaarProfile(fetchedData);
+      setIsFetchingAadhaarData(false);
+      setShowAadhaarSuccessCard(true);
+      updateCandidateVerification(candidate.token, 'aadhaar', true);
+      showToast('🎉 UIDAI e-KYC Data Fetched & Verified Successfully! Profile updated with official government records.');
+      confetti({ particleCount: 90, spread: 70 });
+    }, 2200);
   };
 
   const handleSendMobileOtp = () => {
@@ -193,23 +218,77 @@ export const EmployeePortalView = () => {
     }
     updateCandidateVerification(candidate.token, 'mobile', true);
     setShowMobileOtpModal(false);
-    showToast('Mobile Number Verified!');
+    showToast('📱 Mobile Number SMS OTP Verified Successfully!');
+  };
+
+  const handleSendEmailOtp = () => {
+    setShowEmailOtpModal(true);
+    setEmailInputOtp('');
+  };
+
+  const handleVerifyEmailOtpSubmit = (e) => {
+    e.preventDefault();
+    if (emailInputOtp.length < 4) {
+      alert('Please enter valid 6-digit Email OTP.');
+      return;
+    }
+    setIsEmailVerified(true);
+    updateCandidateVerification(candidate.token, 'email', true);
+    setShowEmailOtpModal(false);
+    showToast('📧 Official Email Verified via OTP Code!');
+    confetti({ particleCount: 70, spread: 60 });
   };
 
   const currentCapturedPhoto = candidate.faceImages?.livePhoto || candidate.faceImages?.straight;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-12 text-slate-900">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-16 text-slate-900">
       
-      {/* Top Welcome Banner */}
-      <div className="glass-panel p-6 border-amber-200 bg-white relative overflow-hidden rounded-2xl shadow-sm">
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-500" />
+      {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR */}
+      <div className="p-3.5 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-md border border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className="text-amber-400 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4" />
+            <span>Switch Candidate Scenario:</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {candidates.map(c => {
+            const isSelected = candidate?.token === c.token;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setSelectedCandidateToken(c.token)}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 cursor-pointer ${
+                  isSelected 
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white ring-2 ring-indigo-400 shadow-sm scale-102'
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
+                }`}
+              >
+                <span>{c.name}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
+                  c.status === 'Submitted - Pending HR Review' ? 'bg-amber-400 text-amber-950 animate-pulse' :
+                  c.status === 'Corrections Requested' ? 'bg-rose-400 text-rose-950' :
+                  c.status === 'Verified' ? 'bg-emerald-400 text-emerald-950' : 'bg-slate-600 text-white'
+                }`}>
+                  {c.status === 'Submitted - Pending HR Review' ? 'Pending HR Review' : c.status}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 🏢 SECTION 1: EMPLOYER VERIFICATION INVITATION HEADER */}
+      <div className="glass-panel p-6 sm:p-7 border-2 border-slate-200/90 bg-white relative overflow-hidden rounded-3xl shadow-sm space-y-5">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 border-b border-slate-100 pb-5">
           <div className="flex items-center gap-4">
             {/* Live Captured Photo Avatar or Initials */}
             {currentCapturedPhoto ? (
-              <div className="relative">
+              <div className="relative shrink-0">
                 <img 
                   src={currentCapturedPhoto} 
                   alt={candidate.name} 
@@ -220,19 +299,19 @@ export const EmployeePortalView = () => {
                 </div>
               </div>
             ) : (
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-black text-xl border border-amber-300 shadow-sm shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-2xl border-2 border-indigo-200 shadow-sm shrink-0">
                 {candidate.name?.charAt(0) || 'E'}
               </div>
             )}
             
             <div>
               <div className="flex items-center gap-2">
-                <span className="badge badge-amber text-[10px]">Secure Verification Portal</span>
-                <span className="text-xs text-slate-500 font-bold">• Employee Onboarding</span>
+                <span className="badge badge-indigo text-[10px] font-black">CANDIDATE ONBOARDING</span>
+                <span className="text-xs text-slate-500 font-bold">• Official Employment Verification</span>
               </div>
-              <h2 className="text-xl font-black text-slate-900 mt-1">Welcome, {candidate.name}</h2>
-              <p className="text-xs text-slate-500 font-medium">
-                {candidate.designation || 'Specialist'} • Department: <strong>{candidate.dept || 'Operations'}</strong>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{candidate.name}</h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Role: <strong className="text-slate-800">{candidate.designation || 'Specialist'}</strong> • Dept: <strong className="text-slate-800">{candidate.dept || 'Engineering'}</strong> • ID: <code className="text-slate-700 font-bold font-mono">{candidate.empId || 'EMP-2026-88'}</code>
               </p>
             </div>
           </div>
@@ -242,199 +321,274 @@ export const EmployeePortalView = () => {
             {!isAllComplete && (
               <button
                 onClick={handleQuickMockVerifyAll}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition-all hover:scale-102"
-                title="Simulate passing all 3 verification gates instantly"
+                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition-all hover:scale-102 cursor-pointer"
+                title="Simulate passing all verification gates instantly"
               >
-                <Zap className="w-4 h-4 text-yellow-200 fill-yellow-200 animate-bounce" />
-                <span>⚡ Quick Mock Verify (1-Click)</span>
+                <Zap className="w-4 h-4 text-amber-300 fill-amber-300 animate-bounce" />
+                <span>⚡ 1-Click Auto Verify</span>
               </button>
             )}
 
             <button
               onClick={() => setRoleView('hrexecutive')}
-              className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
+              className="btn btn-secondary text-xs py-2 px-3 font-bold cursor-pointer"
             >
-              Switch to HR View
+              Switch to HR
             </button>
+          </div>
+        </div>
+
+        {/* 💬 ALWAYS-VISIBLE TOP HR MESSAGE & INSTRUCTIONS BANNER */}
+        <div className="p-4 bg-indigo-50/95 border-2 border-indigo-200 rounded-2xl text-xs text-indigo-950 space-y-1.5 shadow-2xs">
+          <div className="flex items-center justify-between font-extrabold text-indigo-900">
+            <div className="flex items-center gap-2">
+              <span className="text-base">💬</span>
+              <span className="text-xs uppercase tracking-wider">Instructions from HR Department (Priya Sundaram):</span>
+            </div>
+            <span className="badge badge-indigo text-[9px]">HR Direct Message</span>
+          </div>
+          <p className="text-indigo-950 font-semibold pl-6 leading-relaxed text-[12px]">
+            "{candidate.hrCustomMessage || 'Welcome to our organization! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}"
+          </p>
+        </div>
+
+        {/* ⚠️ URGENT CORRECTION REQUEST BANNER (IF HR RESENT WITH REMARKS) */}
+        {candidate.status === 'Corrections Requested' && (
+          <div className="p-4 bg-rose-50 border-2 border-rose-400 rounded-2xl text-xs text-rose-950 space-y-2.5 shadow-xs animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-black text-rose-900">
+                <span className="text-lg">⚠️</span>
+                <span className="text-sm">Action Required: HR Requested Corrections</span>
+              </div>
+              <span className="badge badge-rose text-[9px]">Corrections Pending</span>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-rose-200 text-rose-900 font-medium">
+              <strong className="block text-[11px] text-rose-950 mb-0.5">HR Remarks & Instructions:</strong>
+              {candidate.hrCorrectionRemarks || "Please re-upload a clearer PAN card image and verify your residential address details."}
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] text-rose-700 font-medium">
+                Please update the highlighted sections in the joining form and re-submit.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowFullJoiningModal(true)}
+                className="btn btn-rose text-xs py-1.5 px-3.5 font-black shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
+              >
+                <FileEdit className="w-3.5 h-3.5" />
+                <span>Fix & Update Joining Form</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ⏳ SUBMITTED - PENDING HR REVIEW BANNER */}
+        {candidate.status === 'Submitted - Pending HR Review' && (
+          <div className="p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-xs text-amber-950 space-y-1.5 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-black text-amber-900">
+                <span className="text-base">⏳</span>
+                <span>Onboarding Form & Documents Submitted — Under HR Review</span>
+              </div>
+              <span className="badge badge-amber text-[9px]">Under HR Review</span>
+            </div>
+            <p className="text-[11px] text-amber-900/90 leading-relaxed font-medium">
+              Your onboarding particulars, uploaded original documents, and statutory compliance declarations were successfully transmitted to HR on <strong className="font-mono">{candidate.lastSubmittedAt || 'today'}</strong>. HR is currently reviewing your submission. You will receive an SMS/WhatsApp once verified.
+            </p>
+          </div>
+        )}
+
+        {/* ⚡ ATTENTION & CANDIDATE GUIDELINES BANNER */}
+        <div className="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl space-y-2.5 shadow-md">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <h3 className="font-black text-xs uppercase tracking-wider text-amber-300">Important Candidate Attention & Guidelines</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-200">
+            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+              <strong className="text-white block font-bold">1. Legal Identity Match</strong>
+              <p className="text-slate-300 leading-snug">Ensure Full Legal Name, Father's Name, and DOB match your Government Aadhaar & PAN Card exactly.</p>
+            </div>
+            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+              <strong className="text-white block font-bold">2. Clear Original Document Scans</strong>
+              <p className="text-slate-300 leading-snug">Upload high-resolution color scans or sharp phone photos of original documents (not photocopies).</p>
+            </div>
+            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+              <strong className="text-white block font-bold">3. Review Statutory Declarations</strong>
+              <p className="text-slate-300 leading-snug">Check your Form 16A TDS, Form 11 EPFO, and Form F Gratuity nominations before digital sign-off.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 📝 HERO CALL-TO-ACTION: FILL FULL JOINING FORM & UPLOAD DOCUMENTS */}
+        <div className="p-5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-indigo-400/30">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-400 text-amber-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
+                Step 1 of 2: Master Profile
+              </span>
+              <span className="text-indigo-200 text-xs font-bold">• 9 Comprehensive Sections</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-white">
+              Candidate Onboarding Joining Form & Document Vault
+            </h3>
+            <p className="text-xs text-indigo-100 font-medium">
+              Fill Personal Details, Address, Govt Proofs, Education, Bank Payroll, Upload Original Files with Live Previews & Sign Form 16A/11/F/NDA.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowFullJoiningModal(true)}
+            className="btn bg-white text-indigo-900 hover:bg-indigo-50 border-0 text-xs font-black py-3 px-5 flex items-center gap-2 shrink-0 shadow-md cursor-pointer rounded-xl transition-all hover:scale-103"
+          >
+            <FileEdit className="w-4 h-4 text-indigo-700" />
+            <span>📝 Fill Full Joining Form</span>
+          </button>
+        </div>
+
+        {/* Employer Verification Notice Strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase block">Requesting Organization</span>
+            <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Acme Global Technologies</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase block">Verification Infrastructure</span>
+            <div className="font-extrabold text-emerald-800 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>JOY Corporate Solutions 256-Bit</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase block">Encrypted Magic Token</span>
+            <div className="font-mono font-bold text-slate-900 truncate">
+              {candidate.token}
+            </div>
           </div>
         </div>
 
         {/* Real-time Progress Bar */}
-        <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+        <div className="pt-2 space-y-2">
           <div className="flex items-center justify-between text-xs font-bold text-slate-700">
             <span className="flex items-center gap-1.5">
-              <BarChart2 className="w-4 h-4 text-amber-600" />
-              <span>Identity & Biometric Verification Completion</span>
+              <BarChart2 className="w-4 h-4 text-indigo-600" />
+              <span>Identity & Document Verification Progress</span>
             </span>
-            <span className="text-amber-700 font-extrabold">{completedStepsCount} of {totalConfiguredSteps} Checks ({progressPercentage}%)</span>
+            <span className="text-indigo-700 font-black">{completedStepsCount} of {totalConfiguredSteps} Checks Completed ({progressPercentage}%)</span>
           </div>
 
-          <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
             <div 
               style={{ width: `${progressPercentage}%` }} 
-              className="h-full bg-gradient-to-r from-amber-500 to-orange-600 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500 rounded-full transition-all duration-500"
             />
           </div>
         </div>
-
-        <div className="mt-3 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 font-medium">
-          <span className="flex items-center gap-1.5">
-            <Building2 className="w-4 h-4 text-indigo-600" />
-            <span>Employer: <strong>Acme Global Technologies</strong></span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Lock className="w-4 h-4 text-emerald-600" />
-            <span>Encrypted Token: <code className="text-slate-900 font-bold">{candidate.token}</code></span>
-          </span>
-        </div>
       </div>
 
-      {/* 🎮 Game-Style Action Guide Hub */}
-      <GameActionGuideHub
-        roleKey="candidate"
-        roleTitle="Candidate Verification"
-        badgeColor="amber"
-        steps={candidateGuideSteps}
-        currentStepIndex={activeGuideStep}
-        onStepChange={setActiveGuideStep}
-        onActionClick={(step) => step.action()}
-      />
-
-      {/* Completion Banner with Dual-Document Downloads */}
-      {isAllComplete && (
-        <div className="glass-panel p-6 border-2 border-emerald-400 bg-emerald-50/80 text-center space-y-4 rounded-2xl shadow-lg animate-fadeIn">
-          <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-300 shadow-sm">
-            <CheckCircle2 className="w-7 h-7" />
-          </div>
-          <div>
-            <h3 className="text-xl font-black text-slate-900">Employee Profile & Identity Verified Successfully!</h3>
-            <p className="text-xs text-emerald-950 max-w-lg mx-auto font-medium mt-1">
-              Your identity details and live biometric portrait have been authenticated by <strong>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</strong> via Government Repositories & Biometric Engines.
-            </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 bg-emerald-100/90 border border-emerald-300 px-3 py-1 rounded-xl text-xs font-bold text-emerald-950 shadow-2xs">
-              <span>📜 Official Certificate Validity: Active for 60 Days (Valid until 2026-10-18)</span>
-            </div>
-          </div>
-
-          {/* Dual Document Download Action Buttons */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            
-            {/* 1. Download Employee Profile Dossier */}
-            <button 
-              onClick={() => setShowLaborDossierModal(true)}
-              className="btn btn-company text-xs py-2 px-4 flex items-center gap-2 font-black shadow-md"
-            >
-              <FileText className="w-4 h-4" />
-              <span>1. Employee Profile Dossier (4-Page PDF)</span>
-            </button>
-
-            {/* 2. Download Official JOY Corporate Certificate */}
-            <button 
-              onClick={() => setShowCertModal(true)}
-              className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-2 font-black shadow-md"
-            >
-              <Award className="w-4 h-4" />
-              <span>2. JOY Corporate Certificate (PDF)</span>
-            </button>
-
-            {/* 3. All Documents Vault */}
-            <button 
-              onClick={() => setShowDocDownloader(true)}
-              className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold"
-            >
-              <Download className="w-4 h-4" />
-              <span>All Formats Hub</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Comprehensive Joining Form Card Banner */}
-      <div 
-        data-tour-step="candidate-docs-gate"
-        className="glass-panel p-5 border-indigo-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl shadow-sm"
-      >
-        <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 font-bold shrink-0">
-            <FileEdit className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h4 className="font-black text-slate-900 text-base">Comprehensive Employee Joining Form</h4>
-              <span className="badge badge-purple text-[10px]">7 Sections</span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5 font-medium">
-              Review and submit Personal Demographics, Contact, KYC Proofs, Employment, Education, Bank Payroll & Nominee details.
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => setShowFullJoiningModal(true)}
-          className="btn btn-superadmin text-xs flex items-center gap-2 shrink-0 shadow-md font-bold"
-        >
-          <FileCheck2 className="w-4 h-4" />
-          <span>Open Full Joining Form</span>
-        </button>
-      </div>
-
-      {/* 🛡️ DPDP Act 2023 Statutory Consent & Privacy Shield Checkpoint */}
-      <div className="glass-panel p-5 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white rounded-2xl border-2 border-purple-500/40 shadow-lg space-y-3">
+      {/* 📜 SECTION 2: TRANSPARENT DATA DISCLOSURE & DPDP ACT 2023 CANDIDATE CONSENT GATE */}
+      <div className="glass-panel p-6 border-2 border-indigo-200 bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 text-white rounded-3xl shadow-md space-y-4">
+        
+        {/* Header & Policy Badge */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-purple-600/40 border border-purple-400/40 text-purple-300">
-              <ShieldCheck className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-indigo-500/20 border border-indigo-400/40 text-indigo-300">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded-full border border-purple-400/30">
-                  DPDP Act 2023 Consent Shield
+                <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-2.5 py-0.5 rounded-full border border-indigo-400/30">
+                  DPDP Act 2023 Statutory Privacy Disclosure
                 </span>
-                <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">Section 6(1) Compliant</span>
+                <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">• Section 6(1) Notice</span>
               </div>
-              <h4 className="text-sm font-black text-white mt-0.5">
-                Voluntary Candidate Authorization & Privacy Disclosure
-              </h4>
+              <h3 className="text-base sm:text-lg font-black text-white mt-1">
+                Employer Data Authorization & Purpose Notice
+              </h3>
             </div>
           </div>
 
           <button
             onClick={() => setShowLegalHandbook(true)}
-            className="text-[11px] font-bold text-purple-300 hover:text-white flex items-center gap-1 cursor-pointer bg-white/10 px-2.5 py-1 rounded-xl hover:bg-white/20 transition-all self-start sm:self-auto"
+            className="text-xs font-bold text-indigo-200 hover:text-white flex items-center gap-1.5 cursor-pointer bg-white/10 px-3 py-1.5 rounded-xl hover:bg-white/20 transition-all self-start sm:self-auto border border-white/10"
           >
             <Scale className="w-3.5 h-3.5" />
-            <span>Read Legal Handbook 📖</span>
+            <span>Read Privacy Handbook 📖</span>
           </button>
         </div>
 
-        <div className="text-xs text-slate-200 space-y-2 leading-relaxed">
+        {/* Transparency Explanation Cards */}
+        <div className="text-xs text-slate-200 space-y-3 leading-relaxed">
           <p>
-            By proceeding, you grant voluntary affirmative consent to <strong>JOY CORPORATE SOLUTIONS PVT LTD</strong> and your employer to verify your submitted identity credentials against official government repositories (UIDAI Aadhaar OTP, NSDL PAN, EPFO UAN, and NPCI IMPS Bank Verification).
+            Your prospective employer (<strong>Acme Global Technologies</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-purple-200 pt-1">
-            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
-              🔒 Masked Aadhaar: <strong className="text-white">XXXX-XXXX-9876</strong>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] font-medium text-slate-200 pt-1">
+            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+              <strong className="text-indigo-300 font-bold block">🔒 Irreversible Masking</strong>
+              <span>Aadhaar numbers are processed in UIDAI-compliant masked format (<code>XXXX-XXXX-9876</code>).</span>
             </div>
-            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
-              ⏱️ Expiry Policy: <strong className="text-white">60-Day Auto Purge</strong>
+
+            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+              <strong className="text-sky-300 font-bold block">⏱️ 60-Day Purge Policy</strong>
+              <span>Verification records automatically expire after 60 days in compliance with ISO 27001 standards.</span>
             </div>
-            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
-              🛡️ Audit Stamp: <strong className="text-emerald-400">Consent Logged ✓</strong>
+
+            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+              <strong className="text-emerald-300 font-bold block">🛡️ Verified Sources Only</strong>
+              <span>Queries official databases (UIDAI, NSDL Income Tax, EPFO, MoRTH, NPCI Bank Gateway).</span>
             </div>
           </div>
         </div>
 
-        <label className="flex items-start gap-2 pt-2 border-t border-white/10 cursor-pointer text-xs font-bold text-slate-200">
+        {/* Affirmative Consent Checkbox */}
+        <label className="flex items-start gap-3 p-3.5 bg-white/10 rounded-2xl border border-white/20 cursor-pointer text-xs font-bold text-white hover:bg-white/15 transition-all">
           <input 
             type="checkbox"
             checked={candidateConsentAgreed}
             onChange={(e) => setCandidateConsentAgreed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-white/30 bg-white/10 accent-purple-600" 
+            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-white/40 bg-white/20 accent-indigo-500 shrink-0" 
           />
-          <span>
-            I acknowledge the statutory privacy disclosure and grant voluntary consent for employment background verification.
+          <span className="leading-snug">
+            I understand the verification purpose and grant voluntary affirmative consent to authenticate my records with government repositories and institutional verification servers.
           </span>
         </label>
+      </div>
+
+      {/* 📄 SECTION 3: COMPREHENSIVE ONBOARDING FORM GATE */}
+      <div 
+        data-tour-step="candidate-docs-gate"
+        className="glass-panel p-5 sm:p-6 border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl shadow-sm"
+      >
+        <div className="flex items-start gap-3.5">
+          <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 font-bold shrink-0 border border-indigo-100">
+            <FileEdit className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="font-black text-slate-900 text-base">Comprehensive Employee Joining Form</h4>
+              <span className="badge badge-purple text-[10px]">9 Sections • Document Vault • Form 16A/11/F/NDA</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">
+              Fill and review Personal Demographics, Contact, KYC Proofs, Employment, Education, Bank Payroll, Nominee details, Upload Original Evidence & Execute Statutory Agreements.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowFullJoiningModal(true)}
+          className="btn btn-superadmin text-xs flex items-center gap-2 shrink-0 shadow-md font-black py-2.5 px-4 cursor-pointer"
+        >
+          <FileCheck2 className="w-4 h-4" />
+          <span>Open Full Joining Form (9 Sections)</span>
+        </button>
       </div>
 
       {/* HR Configured Document Verification Checklist Cards */}
@@ -453,12 +607,23 @@ export const EmployeePortalView = () => {
           </span>
         </div>
 
-        {/* STEP 1: Aadhaar UIDAI OTP */}
+        {/* 🔑 OTP VS AUTOMATED API NOTICE STRIP */}
+        <div className="p-3 bg-slate-100 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="p-1 rounded-md bg-indigo-600 text-white font-black text-[10px]">OTP GATES</span>
+            <span className="font-bold text-slate-800">Only 3 Items Require OTP: Aadhaar UIDAI, Mobile Number & Official Email</span>
+          </div>
+          <span className="text-[10px] text-slate-500 font-bold bg-white px-2 py-0.5 rounded border">
+            All other checks are verified via automated government database lookups
+          </span>
+        </div>
+
+        {/* STEP 1: Aadhaar UIDAI OTP & Live Data Fetching */}
         {isAadhaarReq && (
           <div 
             data-tour-step="candidate-aadhaar-gate"
-            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
-              verificationsCompleted.aadhaar ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm space-y-3 ${
+              verificationsCompleted.aadhaar ? 'border-emerald-300 bg-emerald-50/40' : 'border-slate-200'
             }`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -469,35 +634,87 @@ export const EmployeePortalView = () => {
                   🆔
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-slate-900 text-base">Aadhaar UIDAI OTP Verification</h4>
-                    <span className="badge badge-indigo text-[10px]">Server 1 / Server 2</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-slate-900 text-base">1. Aadhaar UIDAI OTP & Live e-KYC Fetching</h4>
+                    <span className="badge badge-indigo text-[10px]">Requires 6-Digit UIDAI OTP</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                    Aadhaar Number: <code className="text-slate-900 font-mono font-bold">{candidate.aadhaarNo || '5489 1234 9876'}</code>
+                    Aadhaar Number: <code className="text-slate-900 font-mono font-bold">{candidate.aadhaarNo || '5489 1234 9876'}</code> • Fetches Official Govt Demographic Profile
                   </p>
                 </div>
               </div>
 
               {verificationsCompleted.aadhaar ? (
-                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Aadhaar Verified ✓</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Aadhaar e-KYC Verified ✓</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSendAadhaarOtp}
+                    className="btn btn-secondary text-[11px] py-1 px-2.5 font-bold cursor-pointer"
+                    title="Re-fetch Aadhaar e-KYC Data"
+                  >
+                    Re-Fetch
+                  </button>
                 </div>
               ) : (
                 <button 
                   onClick={handleSendAadhaarOtp}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
                 >
                   <KeyRound className="w-4 h-4" />
-                  <span>Verify Aadhaar OTP</span>
+                  <span>Verify Aadhaar OTP & Fetch Data</span>
                 </button>
               )}
             </div>
+
+            {/* 📋 AUTHORITATIVE UIDAI e-KYC FETCHED PROFILE CONFIRMATION CARD */}
+            {(verificationsCompleted.aadhaar || showAadhaarSuccessCard) && (
+              <div className="p-4 bg-white rounded-xl border-2 border-emerald-300 shadow-2xs space-y-3 animate-fadeIn">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <strong className="text-xs text-emerald-950 font-black uppercase tracking-wider">
+                      Authoritative UIDAI e-KYC Data Fetched & Sealed into Master Profile
+                    </strong>
+                  </div>
+                  <span className="badge badge-emerald text-[9px]">100% Demographic Match</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <span className="text-[10px] text-slate-500 block font-bold">Fetched Full Name</span>
+                    <strong className="text-slate-900 font-bold">{fetchedAadhaarProfile?.name || candidate.name}</strong>
+                  </div>
+                  <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <span className="text-[10px] text-slate-500 block font-bold">Fetched Father's Name</span>
+                    <strong className="text-slate-900 font-bold">{fetchedAadhaarProfile?.fatherName || 'Suresh Kumar'}</strong>
+                  </div>
+                  <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <span className="text-[10px] text-slate-500 block font-bold">Date of Birth & Gender</span>
+                    <strong className="text-slate-900 font-bold">{fetchedAadhaarProfile?.dob || '1996-05-15'} ({fetchedAadhaarProfile?.gender || 'Male'})</strong>
+                  </div>
+                </div>
+
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                  <span className="text-[10px] text-slate-500 block font-bold">Verified UIDAI Registered Address</span>
+                  <p className="text-slate-900 font-medium mt-0.5">
+                    {fetchedAadhaarProfile?.address || '124, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103'}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 border-t border-slate-100 pt-2">
+                  <span>Txn ID: {fetchedAadhaarProfile?.uidaiTxnId || 'UIDAI-TXN-88129014'}</span>
+                  <span className="text-emerald-700 font-bold">Auto-Populated into Joining Form ✓</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* STEP 2: Mobile Number OTP */}
+        {/* STEP 2: Mobile Number SMS OTP */}
         {isMobileReq && (
           <div 
             data-tour-step="candidate-mobile-gate"
@@ -513,12 +730,12 @@ export const EmployeePortalView = () => {
                   📱
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-extrabold text-slate-900 text-base">Mobile Number SMS OTP</h4>
-                    <span className="badge badge-cyan text-[10px]">Multi-Carrier Gateway</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-slate-900 text-base">2. Mobile Number SMS OTP Verification</h4>
+                    <span className="badge badge-cyan text-[10px]">Requires 6-Digit SMS OTP</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                    Registered Mobile: <strong className="text-slate-900 font-mono">{candidate.mobile}</strong>
+                    Registered Mobile: <strong className="text-slate-900 font-mono">{candidate.mobile}</strong> • Telemetry Gateway
                   </p>
                 </div>
               </div>
@@ -526,12 +743,12 @@ export const EmployeePortalView = () => {
               {verificationsCompleted.mobile ? (
                 <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Mobile OTP Verified ✓</span>
+                  <span>Mobile SMS OTP Verified ✓</span>
                 </div>
               ) : (
                 <button 
                   onClick={handleSendMobileOtp}
-                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
                 >
                   <Smartphone className="w-4 h-4" />
                   <span>Send Mobile OTP</span>
@@ -540,6 +757,47 @@ export const EmployeePortalView = () => {
             </div>
           </div>
         )}
+
+        {/* STEP 3: Official Email Address OTP Verification */}
+        <div 
+          className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            (verificationsCompleted.email || isEmailVerified) ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                (verificationsCompleted.email || isEmailVerified) ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+              }`}>
+                ✉️
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-extrabold text-slate-900 text-base">3. Official Email Address OTP Verification</h4>
+                  <span className="badge badge-purple text-[10px]">Requires 6-Digit Email OTP</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                  Email Address: <strong className="text-slate-900 font-mono">{candidate.email}</strong> • SMTP Inbox Dispatch
+                </p>
+              </div>
+            </div>
+
+            {(verificationsCompleted.email || isEmailVerified) ? (
+              <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Email OTP Verified ✓</span>
+              </div>
+            ) : (
+              <button 
+                onClick={handleSendEmailOtp}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold shadow-md bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
+              >
+                <Mail className="w-4 h-4 text-purple-700" />
+                <span>Verify Email OTP</span>
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* STEP 3: Live Photo & Biometric Face Verification */}
         {isFaceReq && (
@@ -876,6 +1134,124 @@ export const EmployeePortalView = () => {
                 <button type="submit" className="btn btn-company text-xs font-bold shadow-md">Verify Mobile OTP</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✉️ EMAIL OTP VERIFICATION MODAL */}
+      {showEmailOtpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-extrabold flex items-center gap-2">
+                <Mail className="w-5 h-5 text-purple-600" />
+                <span>Official Email Address OTP Check</span>
+              </h3>
+              <button onClick={() => setShowEmailOtpModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+            </div>
+
+            <p className="text-xs text-slate-600 font-medium">
+              A 6-digit confirmation code was sent to your registered inbox at <strong className="text-slate-900 font-mono">{candidate.email}</strong>.
+            </p>
+
+            <div className="bg-purple-50 p-3 rounded-xl border border-purple-200 text-center text-xs text-purple-900 font-medium">
+              <span>💡 Test Sandbox Email OTP: </span>
+              <strong className="text-purple-900 font-mono text-sm tracking-wider font-bold">839102</strong>
+            </div>
+
+            <form onSubmit={handleVerifyEmailOtpSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Enter 6-Digit Email OTP *</label>
+                <input 
+                  type="text" 
+                  maxLength="6"
+                  required
+                  autoFocus
+                  placeholder="839102"
+                  value={emailInputOtp}
+                  onChange={(e) => setEmailInputOtp(e.target.value)}
+                  className="form-input text-center text-lg font-mono tracking-widest font-bold"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setShowEmailOtpModal(false)} className="btn btn-secondary text-xs cursor-pointer">Cancel</button>
+                <button type="submit" className="btn btn-secondary text-xs font-bold bg-purple-600 text-white hover:bg-purple-700 shadow-md cursor-pointer">Verify Email OTP</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 📡 ENGAGING REAL-TIME UIDAI e-KYC DATA FETCHING RADAR MODAL */}
+      {isFetchingAadhaarData && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg">
+          <div className="bg-slate-950 text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border-2 border-indigo-500/40 shadow-2xl space-y-6 relative overflow-hidden text-center animate-scaleIn">
+            
+            {/* Ambient Background Glow & Radar Pulse */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-600/30 rounded-full blur-3xl pointer-events-none" />
+
+            {/* High-Tech Animated Radar Scanner */}
+            <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-500/30 animate-ping" />
+              <div className="absolute inset-2 rounded-full border border-indigo-400/50 animate-pulse" />
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+                <Database className="w-8 h-8 text-white animate-bounce" />
+              </div>
+            </div>
+
+            {/* Title & Live Percentage */}
+            <div className="space-y-1">
+              <span className="badge badge-indigo text-[10px] uppercase font-mono tracking-widest">
+                UIDAI CIDR GATEWAY 256-BIT e-KYC
+              </span>
+              <h3 className="text-xl font-black text-white">Fetching Official Aadhaar Data...</h3>
+              <p className="text-xs text-slate-400 font-mono">
+                Demographic XML Decryption • {aadhaarFetchProgress}% Complete
+              </p>
+            </div>
+
+            {/* Glowing Active Progress Meter */}
+            <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800 p-0.5">
+              <div 
+                style={{ width: `${aadhaarFetchProgress}%` }}
+                className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-500"
+              />
+            </div>
+
+            {/* Engaging Telemetry Steps */}
+            <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800/80 text-left space-y-2.5 text-xs font-mono">
+              {[
+                { title: 'Connecting to UIDAI Central Data Repository (CIDR)', done: aadhaarFetchStep >= 1, active: aadhaarFetchStep === 0 },
+                { title: 'Validating 256-Bit e-KYC Session & OTP Signature', done: aadhaarFetchStep >= 2, active: aadhaarFetchStep === 1 },
+                { title: 'Extracting Demographic XML (Name, Father, DOB, Address)', done: aadhaarFetchStep >= 3, active: aadhaarFetchStep === 2 },
+                { title: 'Populating Employee Master Profile & Digital Seal', done: aadhaarFetchStep >= 3, active: aadhaarFetchStep === 3 }
+              ].map((step, idx) => (
+                <div key={idx} className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    {step.done ? (
+                      <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                    ) : step.active ? (
+                      <Loader2 className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                    ) : (
+                      <span className="w-3.5 h-3.5 rounded-full border border-slate-700 block" />
+                    )}
+                    <span className={step.done ? 'text-emerald-300 font-bold' : step.active ? 'text-white font-bold' : 'text-slate-500'}>
+                      {step.title}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-500">
+                    {step.done ? 'DONE' : step.active ? 'LIVE' : 'WAIT'}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-[11px] text-slate-400">
+              🔒 Encrypted under Section 29 of Aadhaar Act 2016
+            </div>
+
           </div>
         </div>
       )}

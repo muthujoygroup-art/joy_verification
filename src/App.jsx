@@ -9,6 +9,7 @@ import { CompanyAdminView } from './views/CompanyAdminView';
 import { HrExecutiveView } from './views/HrExecutiveView';
 import { EmployeePortalView } from './views/EmployeePortalView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
+import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { CheckCircle2 } from 'lucide-react';
 
@@ -68,16 +69,19 @@ const HrRoute = () => {
 
 // Wrapper for Candidate Verification Route (/verify or /candidate)
 const CandidateRoute = () => {
-  const { currentRole, currentUser, loginUser, candidates } = useApp();
+  const { currentRole, currentUser, loginUser, setSelectedCandidateToken, candidates } = useApp();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || 'tok_sunita_412';
+  const token = searchParams.get('token') || 'tok_karan_903';
 
   useEffect(() => {
+    if (token) {
+      setSelectedCandidateToken(token);
+    }
     // If token exists in URL and candidate not logged in, auto-login via magic token
     if (token && (!currentUser || currentRole !== 'employee_link')) {
       loginUser('employee_link', { token });
     }
-  }, [token, currentUser, currentRole, loginUser]);
+  }, [token, currentUser, currentRole, loginUser, setSelectedCandidateToken]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
@@ -147,6 +151,9 @@ const MainApp = () => {
         onStayLoggedIn={refreshUserSession}
         onLogoutNow={logoutUser}
       />
+
+      {/* Global Interactive Guided Tour Spotlight */}
+      <GuidedTourSpotlight />
 
       {/* Toast Notification */}
       {toastMessage && (

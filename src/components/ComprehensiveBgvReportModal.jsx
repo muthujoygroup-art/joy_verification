@@ -276,32 +276,48 @@ Digital Hash: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()
         </div>
 
         {/* Candidate Profile Summary Header Card */}
-        <div className="p-5 sm:px-8 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center font-black text-indigo-700 text-xl shrink-0 shadow-xs">
-              {candidate.name?.charAt(0) || 'E'}
+        <div className="p-5 sm:px-8 bg-slate-50 border-b border-slate-200 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center font-black text-indigo-700 text-xl shrink-0 shadow-xs">
+                {candidate.name?.charAt(0) || 'E'}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-slate-900 text-base">{candidate.name}</h3>
+                  <span className="badge badge-emerald text-[10px] font-bold">100% KYC PASSED</span>
+                  <span className="badge badge-indigo text-[10px] font-bold">Server 1 & 2 Audited</span>
+                </div>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  <strong className="text-slate-800">Emp ID:</strong> {candidate.empId || 'ACME-2026-88'} • <strong className="text-slate-800">Dept:</strong> {candidate.dept || 'Engineering'} • <strong className="text-slate-800">Company:</strong> {companyName}
+                </p>
+                <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                  📞 {candidate.mobile} • ✉️ {candidate.email} • 🛡️ UID: {apiData.aadhaar.maskedAadhaar}
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-slate-900 text-base">{candidate.name}</h3>
-                <span className="badge badge-emerald text-[10px] font-bold">100% KYC PASSED</span>
+
+            <div className="flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-200 pt-3 sm:pt-0">
+              <div className="text-[11px] text-slate-500 font-medium">Compliance Verification Score</div>
+              <div className="text-xl font-black text-emerald-700 flex items-center gap-1 font-mono">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <span>99.6 / 100</span>
               </div>
-              <p className="text-xs text-slate-600 mt-0.5">
-                <strong className="text-slate-800">Emp ID:</strong> {candidate.empId || 'ACME-2026-88'} • <strong className="text-slate-800">Dept:</strong> {candidate.dept || 'Engineering'} • <strong className="text-slate-800">Company:</strong> {companyName}
-              </p>
-              <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                📞 {candidate.mobile} • ✉️ {candidate.email} • 🛡️ UID: {apiData.aadhaar.maskedAadhaar}
-              </div>
+              <span className="text-[10px] font-bold text-slate-400">Audited by {hrName}</span>
             </div>
           </div>
 
-          <div className="flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-200 pt-3 sm:pt-0">
-            <div className="text-[11px] text-slate-500 font-medium">Compliance Verification Score</div>
-            <div className="text-xl font-black text-emerald-700 flex items-center gap-1 font-mono">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-              <span>99.6 / 100</span>
+          {/* ⚡ POINT-IN-TIME FORENSIC VERIFICATION DISCLAIMER */}
+          <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-2xl text-[11px] text-amber-950 flex items-start gap-3 leading-relaxed">
+            <span className="text-lg shrink-0">⚖️</span>
+            <div className="space-y-0.5">
+              <strong className="font-bold text-amber-900 block">
+                Point-in-Time Forensic Verification Clause & Historical Snapshot Awareness:
+              </strong>
+              <span>
+                All verification outputs recorded in this dossier represent official government repository data at the exact execution timestamp (<strong>{apiData.aadhaar.timestamp} IST</strong>). As upstream databases (UIDAI Aadhaar, NSDL PAN, EPFO UAN, MoRTH DL, NPCI Bank) are dynamically updated, any post-verification modifications made by the employee in original government records will require a fresh re-verification token cycle.
+              </span>
             </div>
-            <span className="text-[10px] font-bold text-slate-400">Audited by {hrName}</span>
           </div>
         </div>
 

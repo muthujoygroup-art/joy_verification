@@ -15,13 +15,22 @@ import {
   Save, 
   X,
   Sparkles,
-  Building2
+  Building2,
+  FolderDown,
+  FileText,
+  Eye,
+  Upload,
+  FileCheck,
+  Mail,
+  Database,
+  Loader2
 } from 'lucide-react';
 
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
-  const { updateCandidateVerification, showToast, masterDropdownOptions } = useApp();
+  const { updateCandidateVerification, submitCandidateJoiningForm, showToast, masterDropdownOptions } = useApp();
 
-  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'govt' | 'employment' | 'education' | 'bank' | 'nominee'
+  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'govt' | 'employment' | 'education' | 'bank' | 'nominee' | 'documents' | 'statutory_agreements'
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   const [formData, setFormData] = useState({
     // Section 1: Personal & Bio Demographics
@@ -81,11 +90,20 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   // OTP Verification States
   const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
+  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
+  
+  // Aadhaar Live Data Fetching & e-KYC telemetry states
+  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
+  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
+  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
+
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
+  const [emailInputOtp, setEmailInputOtp] = useState('');
 
   const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
   const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
+  const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
 
   const handleAadhaarOtpSubmit = (e) => {
     e.preventDefault();
@@ -93,10 +111,41 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       alert('Please enter valid 6-digit OTP code.');
       return;
     }
-    setAadhaarVerified(true);
     setShowAadhaarOtpModal(false);
-    if (candidate) updateCandidateVerification(candidate.token, 'aadhaar', true);
-    showToast('Aadhaar UIDAI OTP Verified successfully!');
+    setIsFetchingAadhaarData(true);
+    setAadhaarFetchProgress(15);
+    setAadhaarFetchStep(0);
+
+    setTimeout(() => {
+      setAadhaarFetchProgress(50);
+      setAadhaarFetchStep(1);
+    }, 600);
+
+    setTimeout(() => {
+      setAadhaarFetchProgress(85);
+      setAadhaarFetchStep(2);
+    }, 1200);
+
+    setTimeout(() => {
+      setAadhaarFetchProgress(100);
+      setAadhaarFetchStep(3);
+
+      // Auto-populate verified official UIDAI data into form fields
+      setFormData(prev => ({
+        ...prev,
+        fullName: candidate?.name || 'Rajesh Suresh Kumar',
+        fatherName: 'Suresh Kumar',
+        dob: '1996-05-15',
+        gender: 'Male',
+        presentAddress: '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103',
+        permanentAddress: '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103'
+      }));
+
+      setAadhaarVerified(true);
+      setIsFetchingAadhaarData(false);
+      if (candidate) updateCandidateVerification(candidate.token, 'aadhaar', true);
+      showToast('🎉 UIDAI e-KYC Data Fetched! Profile fields auto-populated and verified.');
+    }, 1800);
   };
 
   const handleMobileOtpSubmit = (e) => {
@@ -111,6 +160,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     showToast('Mobile Number SMS OTP Verified!');
   };
 
+  const handleEmailOtpSubmit = (e) => {
+    e.preventDefault();
+    if (emailInputOtp.length < 4) {
+      alert('Please enter valid 6-digit Email OTP.');
+      return;
+    }
+    setEmailVerified(true);
+    setShowEmailOtpModal(false);
+    if (candidate) updateCandidateVerification(candidate.token, 'email', true);
+    showToast('Official Email Address Verified!');
+  };
+
   const handleFinalFormSubmit = (e) => {
     e.preventDefault();
     if (!aadhaarVerified || !mobileVerified) {
@@ -118,10 +179,14 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       return;
     }
 
+    if (candidate?.token) {
+      submitCandidateJoiningForm(candidate.token, formData);
+    }
+
     if (onSubmitComplete) {
       onSubmitComplete(formData);
     }
-    showToast('Comprehensive Employee Joining Form Submitted & Profile Verified!');
+    
     if (onClose) onClose();
   };
 
@@ -148,21 +213,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             <span>Mandatory Verification Status:</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* Aadhaar Badge / Button */}
             {aadhaarVerified ? (
               <span className="badge badge-emerald text-[10px] flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Aadhaar OTP Verified ✅</span>
+                <span>Aadhaar e-KYC Fetched & Verified ✅</span>
               </span>
             ) : (
               <button 
                 type="button"
                 onClick={() => setShowAadhaarOtpModal(true)}
-                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1"
+                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer"
               >
                 <KeyRound className="w-3.5 h-3.5" />
-                <span>Verify Aadhaar OTP *</span>
+                <span>Verify Aadhaar OTP & Fetch Data *</span>
               </button>
             )}
 
@@ -170,16 +235,33 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             {mobileVerified ? (
               <span className="badge badge-emerald text-[10px] flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Mobile OTP Verified ✅</span>
+                <span>Mobile SMS OTP Verified ✅</span>
               </span>
             ) : (
               <button 
                 type="button"
                 onClick={() => setShowMobileOtpModal(true)}
-                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1"
+                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer"
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Verify Mobile OTP *</span>
+                <span>Verify Mobile SMS OTP *</span>
+              </button>
+            )}
+
+            {/* Email Badge / Button */}
+            {emailVerified ? (
+              <span className="badge badge-emerald text-[10px] flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Email OTP Verified ✅</span>
+              </span>
+            ) : (
+              <button 
+                type="button"
+                onClick={() => setShowEmailOtpModal(true)}
+                className="btn btn-secondary text-[11px] py-1 px-3 flex items-center gap-1 bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
+              >
+                <Mail className="w-3.5 h-3.5 text-purple-700" />
+                <span>Verify Email OTP</span>
               </button>
             )}
           </div>
@@ -256,12 +338,34 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('nominee')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeSection === 'nominee' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
             <span>7. Dependents</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSection('documents')}
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeSection === 'documents' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FolderDown className="w-3.5 h-3.5" />
+            <span>8. Upload Documents 📁</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSection('statutory_agreements')}
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeSection === 'statutory_agreements' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>9. Statutory Forms & Agreements ⚖️</span>
           </button>
         </div>
 
@@ -731,6 +835,165 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
           )}
 
+          {/* SECTION 8: UPLOAD REQUIRED ORIGINAL COMPLIANCE DOCUMENTS */}
+          {activeSection === 'documents' && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                    <FolderDown className="w-4 h-4 text-indigo-600" />
+                    <span>Section 8: Upload Original Compliance Documents & Proofs</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Upload clear scanned PDFs or high-resolution photos of your original government documents.
+                  </p>
+                </div>
+                <span className="badge badge-emerald text-[10px]">Vault AES-256 Encrypted</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                {[
+                  { id: 'u_aadhaar', name: '1. Government Aadhaar Card (Front & Back)', type: 'Identity Proof', size: '1.4 MB PDF', status: 'Uploaded & Verified ✓', masked: 'XXXX XXXX 9876' },
+                  { id: 'u_pan', name: '2. Income Tax PAN Card Copy', type: 'Tax Identification', size: '820 KB PNG', status: 'Uploaded & Verified ✓', masked: 'ABCDE1234F' },
+                  { id: 'u_bank', name: '3. Bank Passbook / Cancelled Cheque Leaf', type: 'Payroll & Banking', size: '950 KB PDF', status: 'Uploaded & Verified ✓', masked: 'HDFC Bank ...9845' },
+                  { id: 'u_degree', name: '4. Highest Degree Certificate / Marksheet', type: 'Academic Convocation', size: '2.1 MB PDF', status: 'Uploaded & Verified ✓', masked: 'B.Tech / 84.5%' },
+                  { id: 'u_relieving', name: '5. Previous Employer Relieving & Service Letter', type: 'Employment History', size: '1.8 MB PDF', status: 'Uploaded & Verified ✓', masked: 'Infosys Limited' },
+                  { id: 'u_nda', name: '6. Signed Non-Disclosure Agreement (NDA)', type: 'Executed Legal Copy', size: '1.1 MB PDF', status: 'Executed & Signed ✓', masked: 'Legal Covenant' },
+                  { id: 'u_passport', name: '7. Passport Bio-Data Page (if applicable)', type: 'Travel & Citizenship', size: '1.6 MB PDF', status: 'Uploaded & Stamped ✓', masked: 'Passport Seva' },
+                  { id: 'u_salary', name: '8. Last 3 Months Salary Slips', type: 'Income Proof', size: '1.2 MB PDF', status: 'Uploaded & Stamped ✓', masked: 'Pay Slips Attached' }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5 hover:border-indigo-300 transition-all flex flex-col justify-between">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-extrabold text-slate-900 text-xs block leading-tight">{item.name}</span>
+                        <span className="text-[10px] text-slate-500">{item.type} • {item.size}</span>
+                      </div>
+                      <span className="bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap border border-emerald-300">
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <div className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileCheck className="w-4 h-4 text-emerald-600" />
+                        <span className="font-mono text-[11px] font-bold text-slate-700">{item.masked}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewDoc(item)}
+                          className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Preview</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => showToast(`File re-uploaded for ${item.name}`)}
+                          className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold text-indigo-700 bg-indigo-50 border-indigo-200 cursor-pointer"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>Replace</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 9: STATUTORY COMPLIANCE FORMS & LEGAL AGREEMENTS */}
+          {activeSection === 'statutory_agreements' && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>Section 9: Statutory Compliance Forms & Legal Agreements</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Review and electronically sign official statutory compliance declarations required under Indian Labor Laws.
+                  </p>
+                </div>
+                <span className="badge badge-purple text-[10px]">Govt Approved Formats</span>
+              </div>
+
+              {/* Form 16 / 16A TDS Tax Declaration */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-indigo-600" />
+                    <span>1. Form 16 / 16A TDS Declaration (Income Tax Act 1961 • Sec 192)</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">CBDT Format</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  I confirm my tax regime choice under Section 115BAC (New Tax Regime) and declare that all tax deduction claims under Section 192 are accurate.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
+                  <div className="p-2 bg-white rounded border">PAN: <strong className="text-emerald-700">ABCDE1234F ✓</strong></div>
+                  <div className="p-2 bg-white rounded border">AY: <strong>2026-27</strong></div>
+                  <div className="p-2 bg-white rounded border">Regime: <strong>New (Sec 115BAC)</strong></div>
+                  <div className="p-2 bg-white rounded border">Form 12B: <strong className="text-emerald-700">Attached ✓</strong></div>
+                </div>
+              </div>
+
+              {/* Form 11 EPFO Declaration */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>2. Form 11 EPFO Statutory Declaration (EPF Scheme 1952)</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">EPFO Prescribed</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Declaration by a person taking up employment in an establishment in which Employees' Provident Fund Scheme applies.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
+                  <div className="p-2 bg-white rounded border">UAN No: <strong className="text-emerald-700">{formData.uanEpf || '100982341209'} ✓</strong></div>
+                  <div className="p-2 bg-white rounded border">Prev PF ID: <strong>BGBNG0012345...</strong></div>
+                  <div className="p-2 bg-white rounded border">Transfer Mode: <strong className="text-emerald-700">Auto Transfer Opted</strong></div>
+                </div>
+              </div>
+
+              {/* Form F Gratuity Nomination */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-indigo-600" />
+                    <span>3. Form 'F' Gratuity Nomination (Payment of Gratuity Act 1972 • Rule 6(1))</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Rule 6(1)</span>
+                </div>
+                <div className="p-2 bg-white rounded border text-[11px] flex justify-between">
+                  <span>Nominee: <strong>{formData.nomineeName} ({formData.nomineeRelation})</strong></span>
+                  <span className="text-emerald-700 font-bold">Proportion of Gratuity: 100%</span>
+                </div>
+              </div>
+
+              {/* Employee NDA & IP Assignment */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>4. Employee Non-Disclosure Agreement (NDA) & IP Assignment Covenant</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Indian Contract Act 1872</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  I agree to keep all proprietary information, algorithms, client lists, and confidential intellectual property of the employer secure and protected indefinitely.
+                </p>
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 text-[11px] flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Digitally Executed & Bound upon OTP submission.</span>
+                </div>
+              </div>
+
+            </div>
+          )}
+
           {/* Submit Footer Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
             <div className="text-[11px] text-slate-500 font-medium">
@@ -742,10 +1005,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
 
             <div className="flex items-center gap-2">
-              <button type="button" onClick={onClose} className="btn btn-secondary text-xs font-bold">Cancel</button>
+              <button type="button" onClick={onClose} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
               <button 
                 type="submit" 
-                className="btn btn-hrexecutive text-xs flex items-center gap-2 shadow-md"
+                className="btn btn-hrexecutive text-xs flex items-center gap-2 shadow-md cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>Save & Submit Joining Form</span>
@@ -754,6 +1017,46 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
 
         </form>
+
+        {/* 👁️ CANDIDATE DOCUMENT PREVIEW MODAL */}
+        {previewDoc && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn">
+              <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+                <div>
+                  <h4 className="font-extrabold text-sm text-white">{previewDoc.name}</h4>
+                  <p className="text-[10px] text-slate-400">{previewDoc.type} • {previewDoc.size}</p>
+                </div>
+                <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 bg-slate-100 space-y-4 text-xs font-mono">
+                <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm space-y-2">
+                  <div className="flex justify-between border-b pb-2 font-sans font-bold">
+                    <span>Uploaded Proof Record</span>
+                    <span className="badge badge-emerald">Verified ✓</span>
+                  </div>
+                  <div className="flex justify-between"><span>Subject Name:</span><strong className="text-slate-900">{formData.fullName}</strong></div>
+                  <div className="flex justify-between"><span>Proof Value:</span><strong>{previewDoc.masked}</strong></div>
+                  <div className="flex justify-between"><span>Storage Vault:</span><strong className="text-emerald-700">AES-256 Encrypted</strong></div>
+                </div>
+
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 text-[11px] font-sans flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Document securely verified against government database.</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-white border-t border-slate-200 flex justify-end">
+                <button onClick={() => setPreviewDoc(null)} className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mandatory Aadhaar OTP Modal */}
         {showAadhaarOtpModal && (
@@ -835,10 +1138,127 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
 
                 <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowMobileOtpModal(false)} className="btn btn-secondary text-xs font-bold">Cancel</button>
-                  <button type="submit" className="btn btn-company text-xs">Confirm Mobile OTP</button>
+                  <button type="button" onClick={() => setShowMobileOtpModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+                  <button type="submit" className="btn btn-company text-xs cursor-pointer">Confirm Mobile OTP</button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Mandatory Email OTP Modal */}
+        {showEmailOtpModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-base font-extrabold flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-purple-600" />
+                  <span>Official Email Address OTP Check</span>
+                </h3>
+                <button onClick={() => setShowEmailOtpModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+              </div>
+
+              <p className="text-xs text-slate-600 font-medium">
+                A 6-digit confirmation code was sent to <strong className="text-slate-900">{formData.email}</strong>.
+              </p>
+
+              <div className="bg-purple-50 p-3 rounded-xl border border-purple-200 text-center text-xs text-purple-900 font-medium">
+                <span>💡 Test OTP Code: </span>
+                <strong className="text-purple-900 font-mono text-sm tracking-wider font-bold">839102</strong>
+              </div>
+
+              <form onSubmit={handleEmailOtpSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Enter 6-Digit Email OTP *</label>
+                  <input 
+                    type="text" 
+                    maxLength="6"
+                    required
+                    placeholder="e.g. 839102"
+                    value={emailInputOtp}
+                    onChange={(e) => setEmailInputOtp(e.target.value)}
+                    className="form-input text-center text-lg font-mono tracking-widest font-bold"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowEmailOtpModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+                  <button type="submit" className="btn btn-secondary text-xs bg-purple-600 text-white hover:bg-purple-700 cursor-pointer">Confirm Email OTP</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 📡 ENGAGING REAL-TIME UIDAI e-KYC DATA FETCHING RADAR MODAL */}
+        {isFetchingAadhaarData && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg">
+            <div className="bg-slate-950 text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border-2 border-indigo-500/40 shadow-2xl space-y-6 relative overflow-hidden text-center animate-scaleIn">
+              
+              {/* Ambient Background Glow & Radar Pulse */}
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-600/30 rounded-full blur-3xl pointer-events-none" />
+
+              {/* High-Tech Animated Radar Scanner */}
+              <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-2 border-indigo-500/30 animate-ping" />
+                <div className="absolute inset-2 rounded-full border border-indigo-400/50 animate-pulse" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+                  <Database className="w-8 h-8 text-white animate-bounce" />
+                </div>
+              </div>
+
+              {/* Title & Live Percentage */}
+              <div className="space-y-1">
+                <span className="badge badge-indigo text-[10px] uppercase font-mono tracking-widest">
+                  UIDAI CIDR GATEWAY 256-BIT e-KYC
+                </span>
+                <h3 className="text-xl font-black text-white">Fetching Official Aadhaar Data...</h3>
+                <p className="text-xs text-slate-400 font-mono">
+                  Demographic XML Decryption • {aadhaarFetchProgress}% Complete
+                </p>
+              </div>
+
+              {/* Glowing Active Progress Meter */}
+              <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                <div 
+                  style={{ width: `${aadhaarFetchProgress}%` }}
+                  className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-500"
+                />
+              </div>
+
+              {/* Engaging Telemetry Steps */}
+              <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800/80 text-left space-y-2.5 text-xs font-mono">
+                {[
+                  { title: 'Connecting to UIDAI Central Data Repository (CIDR)', done: aadhaarFetchStep >= 1, active: aadhaarFetchStep === 0 },
+                  { title: 'Validating 256-Bit e-KYC Session & OTP Signature', done: aadhaarFetchStep >= 2, active: aadhaarFetchStep === 1 },
+                  { title: 'Extracting Demographic XML (Name, Father, DOB, Address)', done: aadhaarFetchStep >= 3, active: aadhaarFetchStep === 2 },
+                  { title: 'Populating Form Fields & Locking Verified Data', done: aadhaarFetchStep >= 3, active: aadhaarFetchStep === 3 }
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      {step.done ? (
+                        <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                      ) : step.active ? (
+                        <Loader2 className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                      ) : (
+                        <span className="w-3.5 h-3.5 rounded-full border border-slate-700 block" />
+                      )}
+                      <span className={step.done ? 'text-emerald-300 font-bold' : step.active ? 'text-white font-bold' : 'text-slate-500'}>
+                        {step.title}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-500">
+                      {step.done ? 'DONE' : step.active ? 'LIVE' : 'WAIT'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-[11px] text-slate-400">
+                🔒 Official UIDAI e-KYC Verified Record
+              </div>
+
             </div>
           </div>
         )}

@@ -157,6 +157,8 @@ const INITIAL_CANDIDATES = [
     companyId: 'comp-1',
     hrId: 'hr-1',
     status: 'Verified',
+    hrCustomMessage: 'Welcome to Acme Global Technologies! Please review your verified onboarding records and statutory declarations.',
+    hrCorrectionRemarks: '',
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
     },
@@ -184,6 +186,8 @@ const INITIAL_CANDIDATES = [
     companyId: 'comp-1',
     hrId: 'hr-1',
     status: 'Verified',
+    hrCustomMessage: 'Welcome to Acme Global! Please verify your identity credentials.',
+    hrCorrectionRemarks: '',
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: true, requireBankCheck: true
     },
@@ -211,6 +215,8 @@ const INITIAL_CANDIDATES = [
     companyId: 'comp-1',
     hrId: 'hr-2',
     status: 'Verified',
+    hrCustomMessage: 'Welcome to Healthcare division. Complete your compliance forms.',
+    hrCorrectionRemarks: '',
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
     },
@@ -237,7 +243,9 @@ const INITIAL_CANDIDATES = [
     dept: 'Operations',
     companyId: 'comp-1',
     hrId: 'hr-2',
-    status: 'In Verification',
+    status: 'Corrections Requested',
+    hrCustomMessage: 'Please review the highlighted items and re-submit your onboarding form.',
+    hrCorrectionRemarks: 'Please re-upload a clearer PAN card image with your full legal name and date of birth clearly readable.',
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: false, requireBankCheck: false
     },
@@ -259,12 +267,26 @@ const INITIAL_CANDIDATES = [
     dept: 'Fleet Management',
     companyId: 'comp-2',
     hrId: 'hr-3',
-    status: 'Link Sent',
+    status: 'Submitted - Pending HR Review',
+    hrCustomMessage: 'Welcome to Apex Logistics! Please fill all form sections and upload original documents.',
+    hrCorrectionRemarks: '',
+    submittedFormData: {
+      fullName: 'Karan Malhotra',
+      fatherName: 'Rajinder Malhotra',
+      dob: '1995-10-12',
+      mobile: '+91 99887 76655',
+      aadhaarNo: '6543 9876 2109',
+      panNo: 'ABCDE9912K',
+      bankName: 'ICICI Bank',
+      bankAccountNo: '002910829102',
+      ifscCode: 'ICIC0000029',
+      nomineeName: 'Anita Malhotra (Mother - 100%)'
+    },
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true
     },
     verificationsCompleted: {
-      aadhaar: false, mobile: false, face: false
+      aadhaar: true, mobile: true, face: true
     },
     faceImages: { straight: null, left: null, right: null },
     verificationDate: null
@@ -282,7 +304,7 @@ export const AppProvider = ({ children }) => {
     role: 'superadmin'
   });
   const [currentRole, setCurrentRole] = useState('superadmin'); // 'superadmin' | 'company' | 'hrexecutive' | 'employee_link'
-  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_rajesh_891');
+  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_karan_903');
   const [toastMessage, setToastMessage] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
 
@@ -350,50 +372,215 @@ export const AppProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [currentUser, currentRole, lastActivityTimestamp]);
 
-  // SUPER ADMIN & HR MASTER DROPDOWN OPTIONS STATE
+  // SUPER ADMIN & HR MASTER DROPDOWN OPTIONS STATE (12 ENTERPRISE MASTER CATEGORIES)
   const [masterDropdownOptions, setMasterDropdownOptions] = useState({
-    departments: [
-      'Engineering & IT',
-      'Logistics & Delivery Fleet',
-      'Clinical & Medical Staff',
-      'Human Resources',
-      'Finance & Accounting',
-      'Sales & Business Development',
-      'Field Operations & Quality',
-      'Customer Support & Helpdesk'
+    skills: [
+      'MySQL',
+      'Node.js',
+      'Laravel',
+      'Django',
+      'Angular',
+      'React JS',
+      'React',
+      'Python',
+      'Javascript',
+      'PHP',
+      'Java & Spring Boot',
+      'DevOps & Docker',
+      'AWS Cloud Architecture',
+      'UI/UX Design & Figma',
+      'PLC & SCADA Automation',
+      'CNC Machine Programming',
+      'Tally Prime & GST Filing',
+      'SAP ERP Financials',
+      'Quality Assurance & Six Sigma'
     ],
-    designations: [
-      'Senior Software Engineer',
-      'Fleet Logistics Driver',
-      'Clinical Nurse / Specialist',
-      'HR Operations Associate',
-      'Field Quality Inspector',
-      'Project Manager & Team Lead',
-      'Database & Cloud Architect',
-      'Finance Accountant'
+    selfInterests: [
+      'Coding & Open Source Development',
+      'Robotics & IoT Innovation',
+      'Cricket & Team Athletics',
+      'Music & Performing Arts',
+      'Reading, Law & Financial Research',
+      'Photography & Content Creation',
+      'Travel & Cultural Exploration',
+      'Physical Fitness & Yoga',
+      'Social Service & Community Volunteering'
     ],
-    workLocations: [
-      'Bengaluru Tech Park (HQ)',
-      'Mumbai Financial District',
-      'Delhi Logistics Hub',
-      'Chennai Regional Office',
-      'Hyderabad R&D Center',
-      'Remote / Field Site'
+    qualificationCategories: [
+      'Doctorate (Ph.D / Research)',
+      'Post Graduate (PG / Master Degree)',
+      'Under Graduate (UG / Bachelor Degree)',
+      'Polytechnic Diploma',
+      'Vocational / ITI Trade Certificate',
+      'Higher Secondary Certificate (10+2 / 12th)',
+      'Secondary School Leaving Certificate (10th SSLC)'
     ],
     qualifications: [
       'B.Tech / B.E. in Computer Science',
-      'Diploma in Commercial Driving',
-      'B.Sc in Nursing / Healthcare',
+      'B.Tech / B.E. in Mechanical / Electrical',
+      'M.Tech / M.E. in Software Systems',
       'MBA in HR & Operations',
+      'Master of Computer Applications (MCA)',
+      'Bachelor of Computer Applications (BCA)',
       'Bachelor of Commerce (B.Com)',
-      'Higher Secondary (10+2)',
+      'Master of Commerce (M.Com)',
+      'Bachelor of Science (B.Sc)',
+      'Bachelor of Business Admin (BBA)',
+      'Diploma in Mechanical / Automobile',
+      'Diploma in Commercial Driving & Logistics',
+      'ITI Certified Fitter / Electrician',
+      'Higher Secondary (10+2 CBSE / State)',
       'Secondary School (10th SSLC)'
+    ],
+    languages: [
+      'English (Fluent)',
+      'Hindi (National)',
+      'Tamil (Regional)',
+      'Telugu (Regional)',
+      'Kannada (Regional)',
+      'Malayalam (Regional)',
+      'Marathi (Regional)',
+      'Bengali (Regional)',
+      'Gujarati (Regional)',
+      'Punjabi (Regional)',
+      'Odia (Regional)',
+      'French (Foreign)',
+      'German (Foreign)'
+    ],
+    jobCategories: [
+      'Information Technology & Software Services',
+      'Manufacturing & Heavy Industrial Engineering',
+      'Banking, Financial Services & Insurance (BFSI)',
+      'Logistics, Warehousing & Fleet Operations',
+      'Healthcare, Clinical & Pharmaceuticals',
+      'Corporate Sales, Retail & Marketing',
+      'Construction, Infrastructure & Real Estate',
+      'Hospitality, Facility & Security Services',
+      'Human Resources & Talent Acquisition'
+    ],
+    jobTypes: [
+      'Full Time Permanent',
+      'Contractual (Fixed Term 1-3 Yrs)',
+      'Third-Party Payroll Staff',
+      'Apprentice / National Apprenticeship (NATS)',
+      'Internship / Graduate Trainee',
+      'Part Time / Shift Consultant',
+      'Daily Wage / Contract Field Operative'
+    ],
+    states: [
+      'Tamil Nadu',
+      'Karnataka',
+      'Maharashtra',
+      'Delhi NCR',
+      'Telangana',
+      'Gujarat',
+      'Kerala',
+      'Uttar Pradesh',
+      'West Bengal',
+      'Andhra Pradesh',
+      'Rajasthan',
+      'Haryana',
+      'Punjab',
+      'Madhya Pradesh'
+    ],
+    cities: [
+      'Chennai',
+      'Bengaluru',
+      'Mumbai',
+      'New Delhi',
+      'Hyderabad',
+      'Ahmedabad',
+      'Kochi',
+      'Pune',
+      'Kolkata',
+      'Coimbatore',
+      'Madurai',
+      'Noida',
+      'Gurgaon',
+      'Jaipur',
+      'Chandigarh'
+    ],
+    areas: [
+      'Guindy Industrial Estate, Chennai',
+      'T. Nagar / OMR IT Expressway, Chennai',
+      'Koramangala 4th Block, Bengaluru',
+      'Whitefield Tech Corridor, Bengaluru',
+      'Indiranagar / Electronic City, Bengaluru',
+      'Bandra Kurla Complex (BKC), Mumbai',
+      'Andheri East MIDC, Mumbai',
+      'Hitech City / Madhapur, Hyderabad',
+      'Gachibowli Financial Hub, Hyderabad',
+      'SG Highway Corporate Hub, Ahmedabad',
+      'Sector 62 IT Park, Noida',
+      'DLF CyberCity, Gurgaon',
+      'Salt Lake Sector V, Kolkata'
+    ],
+    statutoryForms: [
+      'Form 16 / TDS Declaration (Income Tax Sec 192)',
+      'Form 11 (EPFO Statutory Declaration Act 1952)',
+      'Form F (Payment of Gratuity Act 1972 Nomination)',
+      'Form 1 (ESIC Social Security Registration)',
+      'Factory Act Register Form 12 (Adult Worker)',
+      'Employee Non-Disclosure Agreement (NDA)',
+      'Non-Compete & Non-Solicitation Agreement',
+      'Code of Conduct & Anti-Harassment (POSH)',
+      'Contract Labor (R&A) Act Form XIII Register',
+      'Background Verification Authorization & DPDP Consent'
+    ],
+    documentTypes: [
+      'Government Aadhaar Card (Front & Back)',
+      'Income Tax PAN Card',
+      'Passport (Front, Back & Visa pages)',
+      'Driving License (MoRTH Sarathi)',
+      'Voter Identity Card (ECI EPIC)',
+      'Bank Passbook / Cancelled Cheque Leaf',
+      'Highest Educational Degree Certificate / Marksheet',
+      'Previous Employer Relieving & Service Letter',
+      'Last 3 Months Salary / Pay Slips',
+      'Signed Non-Disclosure Agreement (NDA)',
+      'Statutory Form 11 / Gratuity Nomination Signed Copy'
+    ],
+    departments: [
+      'Engineering & Software Architecture',
+      'Manufacturing, Plant & Assembly',
+      'Logistics, Warehousing & Fleet Fleet',
+      'Finance, Taxation & Payroll',
+      'Human Resources & Talent Acquisition',
+      'Sales, Enterprise & Marketing',
+      'Quality Assurance & Compliance',
+      'Customer Support & Helpdesk',
+      'Executive Leadership & Strategy'
+    ],
+    designations: [
+      'Vice President / Managing Director',
+      'Principal Software Architect',
+      'Senior Software Engineer',
+      'Full Stack Developer',
+      'Plant Operations Supervisor',
+      'CNC Machine Operator',
+      'Quality Control Engineer',
+      'Fleet Logistics Driver',
+      'Senior HR Talent Partner',
+      'Finance & Payroll Manager',
+      'Corporate Account Executive',
+      'Facility & Logistics Associate'
+    ],
+    workLocations: [
+      'Bengaluru Global Tech Hub (HQ)',
+      'Chennai Regional Operations Center',
+      'Mumbai Financial District (BKC)',
+      'Hyderabad Technology Innovation Center',
+      'Delhi NCR Logistics & Corporate Hub',
+      'Ahmedabad Manufacturing Hub',
+      'Remote Work From Anywhere'
     ],
     employmentTypes: [
       'Full Time Permanent',
-      'Contract Staff',
-      'Labor / Field Operative',
-      'Internship / Trainee'
+      'Contract Staff (Fixed Term)',
+      'Third-Party Retainer',
+      'Apprentice / Trainee',
+      'Industrial Plant Worker',
+      'Internship / Fellowship'
     ],
     bloodGroups: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
   });
@@ -1121,6 +1308,54 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
+  // Candidate Submits Joining Form & Documents from Magic Link
+  const submitCandidateJoiningForm = (token, submittedFormData) => {
+    setCandidates(prev => prev.map(cand => {
+      if (cand.token !== token) return cand;
+      return {
+        ...cand,
+        status: 'Submitted - Pending HR Review',
+        submittedFormData: submittedFormData,
+        lastSubmittedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        verificationsCompleted: {
+          ...cand.verificationsCompleted,
+          joiningForm: true
+        }
+      };
+    }));
+    showToast('🎉 Onboarding Details & Documents Submitted! Sent to HR for Review & Approval.');
+  };
+
+  // HR Approves Candidate Submission
+  const approveCandidateSubmission = (token) => {
+    setCandidates(prev => prev.map(cand => {
+      if (cand.token !== token) return cand;
+      // update company monthly verified count
+      setCompanies(comps => comps.map(c => c.id === cand.companyId ? { ...c, verifiedCountThisMonth: c.verifiedCountThisMonth + 1 } : c));
+      return {
+        ...cand,
+        status: 'Verified',
+        hrCorrectionRemarks: '',
+        verificationDate: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      };
+    }));
+    showToast('✅ Candidate Profile Approved & Certified! Official Dossier is now ready.');
+  };
+
+  // HR Rejects / Requests Corrections & Resends Link
+  const requestCandidateCorrections = (token, correctionRemarks, customMessage) => {
+    setCandidates(prev => prev.map(cand => {
+      if (cand.token !== token) return cand;
+      return {
+        ...cand,
+        status: 'Corrections Requested',
+        hrCorrectionRemarks: correctionRemarks || 'Please re-upload clearer documents and correct the highlighted fields.',
+        hrCustomMessage: customMessage || cand.hrCustomMessage
+      };
+    }));
+    showToast('🔄 Correction request & updated instructions dispatched to candidate via WhatsApp & SMS!');
+  };
+
   // Get active candidate by token or default
   const getActiveCandidate = (token) => {
     const searchToken = token || selectedCandidateToken;
@@ -1681,6 +1916,9 @@ export const AppProvider = ({ children }) => {
       candidates,
       addCandidate,
       updateCandidateVerification,
+      submitCandidateJoiningForm,
+      approveCandidateSubmission,
+      requestCandidateCorrections,
       getActiveCandidate,
       selectedCandidateToken,
       setSelectedCandidateToken,
