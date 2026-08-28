@@ -60,7 +60,7 @@ export const CompanyAdminView = () => {
     updateCompanyRoutingEngine,
     apiConfigurations
   } = useApp();
-  const [selectedCompanyId, setSelectedCompanyId] = useState('comp-1');
+  const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet'
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -178,69 +178,69 @@ export const CompanyAdminView = () => {
         </div>
 
         {/* Sub-Navigation Tabs Bar (Executive Telemetry Statistics is FIRST option) */}
-        <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1.5">
           <button
             onClick={() => setActiveTab('telemetry')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Executive Telemetry & TAT</span>
+            <BarChart3 className="w-4 h-4 shrink-0" />
+            <span className="truncate">Telemetry & TAT</span>
           </button>
 
           <button
             data-tour-step="company-registry-tab"
             onClick={() => setActiveTab('registry')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Master Employee Registry</span>
+            <ShieldCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate">Registry</span>
           </button>
 
           <button
             data-tour-step="company-hr-tab"
             onClick={() => setActiveTab('hrteam')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>HR Executive Team</span>
+            <Users className="w-4 h-4 shrink-0" />
+            <span className="truncate">HR Team</span>
           </button>
 
           <button
             data-tour-step="company-dochub-tab"
             onClick={() => setActiveTab('dochub')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <FolderDown className="w-4 h-4" />
-            <span>Compliance Document Hub</span>
+            <FolderDown className="w-4 h-4 shrink-0" />
+            <span className="truncate">Doc Hub</span>
           </button>
 
           <button
             onClick={() => setActiveTab('billing_wallet')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'billing_wallet' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'billing_wallet' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <CreditCard className="w-4 h-4" />
-            <span>Billing & Razorpay Wallet 💳</span>
+            <CreditCard className="w-4 h-4 shrink-0" />
+            <span className="truncate">Wallet 💳</span>
           </button>
 
           <button
             data-tour-step="company-settings-tab"
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
-            <Settings className="w-4 h-4" />
-            <span>Company Settings ⚙️</span>
+            <Settings className="w-4 h-4 shrink-0" />
+            <span className="truncate">Settings ⚙️</span>
           </button>
         </div>
       </div>

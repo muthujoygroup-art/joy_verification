@@ -432,47 +432,47 @@ export const HrExecutiveView = () => {
         </div>
 
         {/* Sub-Navigation Tabs Bar */}
-        <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1.5">
           <button
             data-tour-step="hr-pipeline-tab"
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
             }`}
           >
-            <Smartphone className="w-4 h-4" />
-            <span>Candidate Pipeline & Dispatcher</span>
+            <Smartphone className="w-4 h-4 shrink-0" />
+            <span className="truncate">Candidates 👥</span>
           </button>
 
           <button
             data-tour-step="hr-profiler-tab"
             onClick={() => setActiveTab('profiler')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
             }`}
           >
-            <Sliders className="w-4 h-4" />
-            <span>Create Profile & Form Templates</span>
+            <Sliders className="w-4 h-4 shrink-0" />
+            <span className="truncate">Add Profile ➕</span>
           </button>
 
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
             }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>HR Conversion Telemetry</span>
+            <BarChart3 className="w-4 h-4 shrink-0" />
+            <span className="truncate">Telemetry 📊</span>
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
             }`}
           >
-            <Settings className="w-4 h-4" />
-            <span>Station Settings ⚙️</span>
+            <Settings className="w-4 h-4 shrink-0" />
+            <span className="truncate">Settings ⚙️</span>
           </button>
         </div>
       </div>
@@ -651,19 +651,19 @@ export const HrExecutiveView = () => {
           })()}
 
           {/* ⚖️ Fair Hiring & DPDP Act 2023 Statutory Advisory Banner */}
-          <div className="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="p-4 bg-slate-950 text-white rounded-2xl border-2 border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-600/40 text-indigo-300 shrink-0">
-                <Scale className="w-5 h-5" />
+              <div className="p-2.5 rounded-xl bg-indigo-600/50 text-white shrink-0 border border-indigo-400/40">
+                <Scale className="w-5 h-5 text-indigo-200" />
               </div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded-full border border-indigo-400/30">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white px-2.5 py-0.5 rounded-full shadow-xs">
                     Statutory Fair Hiring Notice
                   </span>
-                  <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">DPDP Act 2023 Section 7(a)</span>
+                  <span className="text-[11px] text-indigo-300 font-mono font-bold">• DPDP Act 2023 Section 7(a)</span>
                 </div>
-                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                <p className="text-xs text-slate-100 font-medium leading-relaxed">
                   All verification queries are conducted pursuant to candidate digital consent gathered automatically on link dispatch. Masked Aadhaar and 60-day document lifecycle rules apply.
                 </p>
               </div>
@@ -671,9 +671,9 @@ export const HrExecutiveView = () => {
 
             <button
               onClick={() => setShowLegalHandbook(true)}
-              className="btn btn-secondary text-xs py-1.5 px-3 font-bold text-white bg-white/10 hover:bg-white/20 border-white/20 shrink-0 self-start sm:self-auto flex items-center gap-1.5 cursor-pointer"
+              className="btn text-xs py-2 px-3.5 font-bold text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-400/40 shrink-0 self-start sm:self-auto flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-300" />
               <span>Legal Guidelines 📖</span>
             </button>
           </div>
@@ -745,7 +745,194 @@ export const HrExecutiveView = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* 📱 ADAPTIVE MOBILE CANDIDATE CARDS (SHOWN ON MOBILE SCREENS < 640px) */}
+          <div className="block sm:hidden space-y-3.5">
+            {candidates
+              .filter(c => {
+                const matchesSearch = !searchQuery.trim() || 
+                  c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  c.empId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  c.mobile?.includes(searchQuery) ||
+                  c.aadhaarNo?.includes(searchQuery);
+                
+                const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+                return matchesSearch && matchesStatus;
+              })
+              .map((cand, index) => {
+                const lc = getCertificateLifecycle(cand);
+                return (
+                  <div 
+                    key={cand.id} 
+                    className="p-4 bg-white rounded-2xl border-2 border-slate-200/90 shadow-sm space-y-3 relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+
+                    {/* Card Header: Avatar, Name, Designation, and Status Badge */}
+                    <div className="flex items-start justify-between gap-2.5 pt-1">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-sm border border-emerald-200 shrink-0">
+                          {cand.name?.charAt(0) || 'C'}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-black text-slate-900 text-sm truncate">{cand.name}</h4>
+                          <p className="text-[11px] text-slate-500 font-medium truncate">
+                            {cand.designation || 'Specialist'} • #{cand.empId || 'EMP-2026-88'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className={`badge font-black text-[10px] shrink-0 ${
+                        cand.status === 'Verified' ? 'badge-emerald' : 
+                        cand.status === 'Submitted - Pending HR Review' ? 'badge-amber ring-2 ring-amber-400 animate-pulse' :
+                        cand.status === 'Corrections Requested' ? 'badge-rose' :
+                        cand.status === 'In Verification' ? 'badge-cyan' : 'badge-slate'
+                      }`}>
+                        {cand.status === 'Submitted - Pending HR Review' ? '⚡ Review' : cand.status}
+                      </span>
+                    </div>
+
+                    {/* Contact & Identity Details Chips */}
+                    <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+                      <div>
+                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Phone / Mobile</span>
+                        <span className="font-mono font-bold text-slate-900 text-[11px] truncate block">{cand.mobile || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Masked Aadhaar</span>
+                        <span className="font-mono font-bold text-slate-700 text-[11px] truncate block">
+                          {cand.aadhaarNo ? `XXXX XXXX ${cand.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Verification Checklist Badges */}
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Verification Gates</span>
+                      <div className="flex flex-wrap gap-1 text-[10px]">
+                        {cand.verificationConfig?.requireAadhaar && (
+                          <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
+                            cand.verificationsCompleted?.aadhaar ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            Aadhaar {cand.verificationsCompleted?.aadhaar ? '✓' : '⌛'}
+                          </span>
+                        )}
+                        {cand.verificationConfig?.requireMobileOtp && (
+                          <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
+                            cand.verificationsCompleted?.mobile ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            Mobile {cand.verificationsCompleted?.mobile ? '✓' : '⌛'}
+                          </span>
+                        )}
+                        {cand.verificationConfig?.requireFaceMatch && (
+                          <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
+                            cand.verificationsCompleted?.face ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            Face {cand.verificationsCompleted?.face ? '✓' : '⌛'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 60-Day Validity Bar if Verified */}
+                    {lc.isVerified && (
+                      <div className="p-2 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">
+                        <div className="flex justify-between text-[10px] font-bold">
+                          <span className="text-slate-500">60-Day Certificate Validity:</span>
+                          <span className={lc.badgeColor}>{lc.badgeLabel}</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                          <div 
+                            style={{ width: `${lc.progressPercent}%` }} 
+                            className={`h-full rounded-full ${lc.isExpired || lc.status === 'critical' ? 'bg-rose-500' : lc.isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* HR Review Action for Submitted Candidates */}
+                    {cand.status === 'Submitted - Pending HR Review' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReviewingCandidate(cand);
+                          setShowCorrectionInput(false);
+                          setCorrectionNotes('');
+                        }}
+                        className="w-full py-2 px-3 rounded-xl font-black text-xs bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 text-white shadow-md flex items-center justify-center gap-1.5 cursor-pointer animate-pulse"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>⚡ Review & Approve Submission</span>
+                      </button>
+                    )}
+
+                    {/* Mobile Touch Action Buttons Grid (2 Columns) */}
+                    <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-bold">
+                      <button
+                        type="button"
+                        onClick={() => setViewingBgvReportCandidate(cand)}
+                        className="p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                        <span className="truncate">360° Dossier</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setViewingDossierCandidate(cand)}
+                        className="p-2 rounded-xl bg-sky-50 text-sky-950 border border-sky-200 hover:bg-sky-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-sky-700 shrink-0" />
+                        <span className="truncate">Profile PDF</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setViewingUploadedDocsCandidate(cand)}
+                        className="p-2 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-200 hover:bg-emerald-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <FolderDown className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                        <span className="truncate">Vault Files (8)</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setViewingCertificateCandidate(cand)}
+                        className="p-2 rounded-xl bg-indigo-50 text-indigo-950 border border-indigo-200 hover:bg-indigo-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <Award className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
+                        <span className="truncate">Certificate</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setDispatchingCandidate(cand)}
+                        className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <QrCode className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Send Link 📲</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setRoleView('employee_link', cand.token)}
+                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                      >
+                        <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Test Portal 👁️</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            {candidates.length === 0 && (
+              <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-xs">
+                No candidates registered yet. Click "+ Add New Employee" to get started.
+              </div>
+            )}
+          </div>
+
+          {/* 🖥️ WIDESCREEN DESKTOP CANDIDATE TABLE (SHOWN ON TABLETS & DESKTOPS >= 640px) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">

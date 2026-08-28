@@ -235,7 +235,7 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Action Controls (< lg screens) */}
-          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex lg:hidden items-center gap-1.5 shrink-0">
             <ActiveSessionBadge />
             
             <button
@@ -251,9 +251,19 @@ export const Navbar = () => {
               )}
             </button>
 
+            {/* Prominent Mobile Logout Button */}
+            <button
+              onClick={logoutUser}
+              className="p-2 rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all cursor-pointer flex items-center gap-1 font-bold text-xs shrink-0"
+              title="Logout"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Logout</span>
+            </button>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer shrink-0"
               title="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -361,7 +371,7 @@ export const Navbar = () => {
             >
               {(candidates || []).map(c => (
                 <option key={c.id} value={c.token}>
-                  {c.name} ({c.companyId === 'comp-1' ? 'Acme Tech' : 'Apex Logistics'}) - [{c.status}]
+                  {c.name} ({c.companyName || 'JOY CORPORATE SOLUTIONS'}) - [{c.status}]
                 </option>
               ))}
             </select>

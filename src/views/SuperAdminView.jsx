@@ -343,7 +343,7 @@ export const SuperAdminView = () => {
         </div>
 
         {/* Sub-Navigation Tabs Bar */}
-        <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto">
+        <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar">
           
           {/* TAB 1: Analytics & Profit */}
           <button
