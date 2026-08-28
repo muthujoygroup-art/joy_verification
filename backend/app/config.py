@@ -32,10 +32,10 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------
     # 🌐 DOMAIN, APP & WEBHOOK CALLBACK URLS
     # -------------------------------------------------------------
-    APP_BASE_URL: str = os.getenv("APP_BASE_URL", "http://localhost:5173")
-    API_BASE_URL: str = os.getenv("API_BASE_URL", "http://localhost:8000")
-    CALLBACK_URL: str = os.getenv("CALLBACK_URL", "http://localhost:8000/api/verification/webhook/callback")
-    WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "http://localhost:8000/api/verification/webhook/callback")
+    APP_BASE_URL: str = os.getenv("APP_BASE_URL", "https://verification.joycorporatesolutions.com")
+    API_BASE_URL: str = os.getenv("API_BASE_URL", "https://verification.joycorporatesolutions.com")
+    CALLBACK_URL: str = os.getenv("CALLBACK_URL", "https://verification.joycorporatesolutions.com/api/verification/webhook/callback")
+    WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "https://verification.joycorporatesolutions.com/api/verification/webhook/callback")
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET", "joy_whsec_994281749102")
     
     # -------------------------------------------------------------
@@ -58,7 +58,8 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------
     # 🛡️ SERVER 2: CoinCircleTrust API Gateway (47+ Dual Employment & Compliance APIs)
     # -------------------------------------------------------------
-    COINCIRCLE_CLIENT_ID: str = os.getenv("COINCIRCLE_CLIENT_ID", "")
+    COINCIRCLE_API_KEY: str = os.getenv("COINCIRCLE_API_KEY", os.getenv("COINCIRCLE_CLIENT_ID", ""))
+    COINCIRCLE_CLIENT_ID: str = os.getenv("COINCIRCLE_CLIENT_ID", os.getenv("COINCIRCLE_API_KEY", ""))
     COINCIRCLE_SECRET_KEY: str = os.getenv("COINCIRCLE_SECRET_KEY", "")
     COINCIRCLE_BASE_URL: str = os.getenv("COINCIRCLE_BASE_URL", "https://api.coincircletrust.com")
     COINCIRCLE_MODE: str = os.getenv("COINCIRCLE_MODE", "production") # 'production' | 'staging'
