@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 import { DocumentDownloader } from '../components/DocumentDownloader';
 import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
@@ -79,12 +80,28 @@ export const EmployeePortalView = () => {
   // 🔒 Security Passcode & 15-Minute Link Expiry States
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passcodeDigits, setPasscodeDigits] = useState('');
+  const [loadedDbPassword, setLoadedDbPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [passcodeError, setPasscodeError] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 
   const isAllComplete = candidate?.status === 'Verified';
+
+  // Fetch freshest candidate password from PostgreSQL database on load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenToFetch = urlParams.get('token') || candidate?.token || selectedCandidateToken;
+    if (tokenToFetch) {
+      api.getCandidateByToken(tokenToFetch)
+        .then(data => {
+          if (data && data.portal_password) {
+            setLoadedDbPassword(data.portal_password);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [candidate?.token, selectedCandidateToken]);
 
   // 15-Minute Active Countdown Timer
   useEffect(() => {
@@ -119,19 +136,21 @@ export const EmployeePortalView = () => {
     setIsUnlocking(true);
     setPasscodeError('');
 
-    // 1. Check local/state candidate passcode
-    const localExpected = (candidate?.portalPassword || candidate?.portal_password || candidate?.securityPin || '').toString().trim();
-    if (localExpected && (entered === localExpected || entered === '1234')) {
+    // 1. Check local/state candidate passcode or DB-fetched password
+    const localExpected = (loadedDbPassword || candidate?.portalPassword || candidate?.portal_password || candidate?.securityPin || '').toString().trim();
+    if (localExpected && entered === localExpected) {
       setIsUnlocked(true);
       setIsUnlocking(false);
       showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
       return;
     }
 
-    // 2. Validate against PostgreSQL Database
+    // 2. Validate against PostgreSQL Database via /api/verification/unlock
     try {
-      if (candidate?.token) {
-        const res = await api.unlockPortal(candidate.token, entered);
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenToVerify = urlParams.get('token') || candidate?.token || selectedCandidateToken;
+      if (tokenToVerify) {
+        const res = await api.unlockPortal(tokenToVerify, entered);
         if (res && res.success) {
           setIsUnlocked(true);
           setIsUnlocking(false);

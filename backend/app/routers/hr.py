@@ -61,6 +61,7 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         dept=payload.dept or "General",
         company_id=payload.company_id,
         hr_id=payload.hr_id,
+        portal_password=payload.portal_password or "1234",
         status="Link Sent",
         verification_config=payload.verification_config or {
             "requireAadhaar": True,

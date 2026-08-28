@@ -857,6 +857,7 @@ export const AppProvider = ({ children }) => {
             companyId: c.company_id,
             hrId: c.hr_id,
             status: c.status,
+            portalPassword: c.portal_password || c.portalPassword || '1234',
             verificationConfig: c.verification_config || {},
             verificationsCompleted: c.verifications_completed || {},
             faceImages: c.face_images || { straight: null, left: null, right: null },
