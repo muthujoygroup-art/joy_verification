@@ -98,6 +98,7 @@ export const CompanyAdminView = () => {
   const [newHr, setNewHr] = useState({
     name: '',
     email: '',
+    password: 'Hr@Recruiter2026',
     dept: 'Engineering Recruitment'
   });
 
@@ -109,7 +110,8 @@ export const CompanyAdminView = () => {
       companyId: company.id
     });
     setShowAddHrModal(false);
-    setNewHr({ name: '', email: '', dept: 'Engineering Recruitment' });
+    showToast(`✅ Created HR Account for ${newHr.name} (${newHr.email})!`);
+    setNewHr({ name: '', email: '', password: 'Hr@Recruiter2026', dept: 'Engineering Recruitment' });
   };
 
   const handleToggleFeature = (featKey, val) => {
@@ -1762,7 +1764,7 @@ export const CompanyAdminView = () => {
               <button onClick={() => setShowAddHrModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
             </div>
 
-            <form onSubmit={handleAddHrSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleAddHrSubmit} className="space-y-3.5 text-xs">
               <div>
                 <label className="block text-slate-700 font-bold mb-1">HR Executive Name *</label>
                 <input 
@@ -1776,20 +1778,53 @@ export const CompanyAdminView = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Email Address *</label>
+                <label className="block text-slate-700 font-bold mb-1">Work Email Address *</label>
                 <input 
                   type="email"
                   required
-                  placeholder="priya@company.com"
+                  placeholder="priya.s@company.com"
                   value={newHr.email}
                   onChange={(e) => setNewHr({ ...newHr, email: e.target.value })}
                   className="form-input"
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Recruitment Department</label>
+                  <select 
+                    value={newHr.dept}
+                    onChange={(e) => setNewHr({ ...newHr, dept: e.target.value })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="Engineering Recruitment">Engineering Recruitment</option>
+                    <option value="Executive Talent Acquisition">Executive Talent Acquisition</option>
+                    <option value="Operations & Logistics Onboarding">Operations & Logistics Onboarding</option>
+                    <option value="General HR Operations">General HR Operations</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Initial Password *</label>
+                  <input 
+                    type="text"
+                    required
+                    placeholder="Hr@Recruiter2026"
+                    value={newHr.password}
+                    onChange={(e) => setNewHr({ ...newHr, password: e.target.value })}
+                    className="form-input font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 text-[11px] text-sky-900 font-medium flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0" />
+                <span>The HR Executive can sign in immediately at the HR Portal with these credentials.</span>
+              </div>
+
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button type="button" onClick={() => setShowAddHrModal(false)} className="btn btn-secondary text-xs font-bold">Cancel</button>
-                <button type="submit" className="btn btn-company text-xs">Create Account</button>
+                <button type="submit" className="btn btn-company text-xs font-bold">Provision HR Account</button>
               </div>
             </form>
           </div>

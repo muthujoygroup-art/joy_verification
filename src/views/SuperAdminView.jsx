@@ -170,6 +170,7 @@ export const SuperAdminView = () => {
     name: '',
     contactPerson: '',
     email: '',
+    password: 'Company@Admin2026',
     plan: 'Enterprise Premier',
     maxLimit: 500,
     termsAccepted: true,
@@ -2639,7 +2640,7 @@ export const SuperAdminView = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">Contact Person</label>
                   <input 
@@ -2651,7 +2652,7 @@ export const SuperAdminView = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Official Email *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Admin Email *</label>
                   <input 
                     type="email" 
                     required
@@ -2659,6 +2660,17 @@ export const SuperAdminView = () => {
                     value={newCompany.email}
                     onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
                     className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Admin Password *</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Company@Admin2026"
+                    value={newCompany.password}
+                    onChange={(e) => setNewCompany({ ...newCompany, password: e.target.value })}
+                    className="form-input font-mono font-bold"
                   />
                 </div>
               </div>
