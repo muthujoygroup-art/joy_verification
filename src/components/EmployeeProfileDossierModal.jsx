@@ -45,13 +45,18 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const companyName = c.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || '/joy_logo.png';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
-  const employeeTypeLabel = c.employeeCategory === 'high_profile' 
-    ? 'Type 1: High Profile / C-Suite Executive'
-    : c.employeeCategory === 'skilled'
-    ? 'Type 2: Skilled Technical & Professional Staff'
-    : c.employeeCategory === 'manufacturing'
-    ? 'Type 3: Manufacturing & Industrial Worker'
-    : 'Type 4: Unskilled & Contractual Labor';
+  const indMap = {
+    it_tech: '💻 IT, Software Engineering & AI Operations',
+    manufacturing: '🏭 Manufacturing & Heavy Plant Operations',
+    bfsi: '🏦 BFSI, Banking & Fintech Governance',
+    healthcare: '🏥 Healthcare, Pharma & Hospital Operations',
+    logistics: '🚚 Logistics, Fleet & Heavy Transport Operations',
+    retail_hospitality: '🛍️ Retail, Hospitality & Frontline Services',
+    contractual: '🏗️ Contract Labor Act (Form XIII) & Facility Workforce'
+  };
+  const spec = c.industrySpecialization || c.joiningFormData?.industrySpecialization || {};
+  const indKey = c.employeeCategory || spec.industryType || 'it_tech';
+  const employeeTypeLabel = indMap[indKey] || 'Standard Corporate Staff';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
@@ -99,44 +104,48 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrint}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
-              title="Print Full Dossier"
+            <button 
+              type="button" 
+              onClick={handlePrint} 
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer print:hidden"
             >
-              <Printer className="w-4 h-4" />
-              <span>Print</span>
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Official Packet</span>
             </button>
-            <button
-              onClick={handleDownloadPdf}
-              className="btn btn-company text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md"
+            <button 
+              type="button" 
+              onClick={handleDownloadPdf} 
+              className="btn btn-hrexecutive text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer print:hidden"
             >
-              <Download className="w-4 h-4" />
-              <span>Download 4-Page PDF</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Download 5-Page Dossier PDF</span>
             </button>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg cursor-pointer">✕</button>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer print:hidden"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
-        {/* Dossier Sheet Container */}
-        <div className="p-6 border border-slate-300 rounded-xl bg-white space-y-6">
+        {/* PRINTABLE DOSSIER MASTER CONTAINER */}
+        <div className="space-y-6 text-slate-900 print:text-[10pt] print:space-y-4">
           
-          {/* Header Banner with Employer Company Logo */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b-2 border-sky-700 pb-4">
+          {/* Header Banner on All Pages */}
+          <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3">
             <div className="flex items-center gap-3">
-              {/* Employer Company Logo Block */}
-              <div className="p-3 rounded-xl bg-sky-700 text-white flex flex-col items-center justify-center font-black shadow-md min-w-[120px]">
-                <Building2 className="w-6 h-6 mb-0.5" />
-                <span className="text-[10px] uppercase font-bold tracking-widest text-sky-200">EMPLOYER</span>
-                <span className="text-xs font-black text-white text-center leading-tight">{companyName.split(' ')[0]}</span>
+              <div className="w-12 h-12 rounded-xl bg-sky-700 text-white flex items-center justify-center font-black text-xl shadow-sm">
+                JOY
               </div>
-
               <div>
-                <h1 className="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-tight">{companyName}</h1>
-                <p className="text-xs font-bold text-sky-700 uppercase tracking-wider">Comprehensive Employee Onboarding & Compliance Dossier</p>
-                <p className="text-[10px] text-slate-500 font-medium">
-                  {employeeTypeLabel} • Generated on: <strong className="text-slate-800 font-mono">{generatedTimestamp}</strong>
-                </p>
+                <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">{companyName}</h1>
+                <p className="text-[11px] text-slate-600 font-medium">Corporate Human Resources & Statutory Labor Compliance Operations</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] bg-slate-100 border border-slate-300 font-bold px-1.5 py-0.5 rounded uppercase">{employeeTypeLabel}</span>
+                  <span className="text-[10px] text-slate-500 font-mono">CIN: U74999KA2026PTC192841</span>
+                </div>
               </div>
             </div>
 
@@ -176,17 +185,17 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
                   <div><span className="text-slate-400 block text-[11px]">Full Legal Name:</span><strong>{c.name}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Father's Name:</span><strong>Suresh Kumar</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Mother's Name:</span><strong>Kavitha Kumar</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Spouse Name:</span><strong>Sunita Kumar</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>15-May-1996 (Age: 30)</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Gender:</span><strong>Male</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Marital Status:</span><strong>Married</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Blood Group:</span><strong>O+ Positive</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Nationality:</span><strong>Indian</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Religion:</span><strong>Hindu / General</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Mother Tongue:</span><strong>Tamil / Hindi</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Identification Mark:</span><strong>Mole on right forearm</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Father's Name:</span><strong>{c.fatherName || 'Suresh Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Mother's Name:</span><strong>{c.motherName || 'Kavitha Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Spouse Name:</span><strong>{c.spouseName || 'Sunita Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>{c.dob || '1996-05-15'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Gender:</span><strong>{c.gender || 'Male'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Blood Group:</span><strong>{c.bloodGroup || 'O+'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Languages Known:</span><strong>{c.languagesKnown || 'English, Hindi'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Mobile Phone:</span><strong>{c.mobile}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Official Email:</span><strong>{c.email}</strong></div>
                 </div>
               </div>
 
@@ -199,12 +208,37 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
                   <div><span className="text-slate-400 block text-[11px]">Designation:</span><strong>{c.designation || 'Senior Specialist'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Department:</span><strong>{c.dept || 'Engineering'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Employment Type:</span><strong>Full Time Permanent</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Date of Joining (DOJ):</span><strong>25-Aug-2026</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Work Location:</span><strong>Bengaluru Tech Hub (HQ)</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Reporting Manager:</span><strong>Vikram Malhotra (VP)</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Probation Period:</span><strong>6 Months</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Notice Period:</span><strong>60 Days</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Employment Type:</span><strong>{c.jobType || 'Full Time Permanent'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Job Category:</span><strong>{c.jobCategory || 'IT & Services'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Work Location:</span><strong>{c.workLocation || 'Bengaluru Tech Hub (HQ)'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Previous Employer:</span><strong>{c.previousEmployer || 'Infosys Limited'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Experience:</span><strong>{c.experienceYears || '4.5'} Years</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Probation / Notice:</span><strong>6 Mos / 60 Days</strong></div>
+                </div>
+              </div>
+
+              {/* Section 2B: Industry Specialization Matrix */}
+              <div className="space-y-2">
+                <div className="bg-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-indigo-300" />
+                    <span>SECTION 2B: INDUSTRY & SPECIALIZED ROLE MATRIX ({employeeTypeLabel})</span>
+                  </div>
+                  <span className="text-[10px] bg-indigo-950 px-2 py-0.5 rounded text-indigo-300 font-mono">Sector Verified</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs p-3 bg-indigo-50/50 border border-indigo-200 rounded-lg">
+                  {spec.techStack && <div><span className="text-slate-400 block text-[10px]">Tech Stack:</span><strong className="text-purple-900">{spec.techStack}</strong></div>}
+                  {spec.laptopAssetTag && <div><span className="text-slate-400 block text-[10px]">Asset Provisioning:</span><strong className="font-mono">{spec.laptopAssetTag}</strong></div>}
+                  {spec.plantLocation && <div><span className="text-slate-400 block text-[10px]">Plant Unit:</span><strong className="text-emerald-900">{spec.plantLocation}</strong></div>}
+                  {spec.shiftRoster && <div><span className="text-slate-400 block text-[10px]">Shift Roster:</span><strong>{spec.shiftRoster}</strong></div>}
+                  {spec.safetyShoeSize && <div><span className="text-slate-400 block text-[10px]">Safety PPE Gear:</span><strong>{spec.safetyShoeSize}</strong></div>}
+                  {spec.cibilScoreRange && <div><span className="text-slate-400 block text-[10px]">CIBIL Standing:</span><strong className="text-cyan-900">{spec.cibilScoreRange}</strong></div>}
+                  {spec.fidelityBondLimit && <div><span className="text-slate-400 block text-[10px]">Fidelity Indemnity:</span><strong className="text-indigo-900">{spec.fidelityBondLimit}</strong></div>}
+                  {spec.medicalCouncilRegNo && <div><span className="text-slate-400 block text-[10px]">Medical Council Reg:</span><strong className="font-mono text-rose-900">{spec.medicalCouncilRegNo}</strong></div>}
+                  {spec.commercialDlBadgeNo && <div><span className="text-slate-400 block text-[10px]">Commercial DL Badge:</span><strong className="font-mono text-amber-900">{spec.commercialDlBadgeNo}</strong></div>}
+                  {spec.fssaiCertNo && <div><span className="text-slate-400 block text-[10px]">FSSAI Certificate:</span><strong className="font-mono text-orange-900">{spec.fssaiCertNo}</strong></div>}
+                  {spec.contractFormXIIIEnrollmentNo && <div><span className="text-slate-400 block text-[10px]">CLRA Form XIII Reg:</span><strong className="font-mono text-slate-900">{spec.contractFormXIIIEnrollmentNo}</strong></div>}
+                  {spec.dualEmploymentDisclosure && <div><span className="text-slate-400 block text-[10px]">Anti-Moonlighting:</span><strong className="text-emerald-800">{spec.dualEmploymentDisclosure}</strong></div>}
                 </div>
               </div>
 

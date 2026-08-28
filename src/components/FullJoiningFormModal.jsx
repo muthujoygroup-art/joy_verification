@@ -23,68 +23,126 @@ import {
   FileCheck,
   Mail,
   Database,
-  Loader2
+  Loader2,
+  Cpu,
+  Factory,
+  Landmark,
+  Stethoscope,
+  Truck,
+  ShoppingBag,
+  HardHat,
+  Layers
 } from 'lucide-react';
 
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
   const { updateCandidateVerification, submitCandidateJoiningForm, showToast, masterDropdownOptions } = useApp();
 
-  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'govt' | 'employment' | 'education' | 'bank' | 'nominee' | 'documents' | 'statutory_agreements'
+  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
   const [previewDoc, setPreviewDoc] = useState(null);
+
+  const jfd = candidate?.joiningFormData || {};
+  const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
 
   const [formData, setFormData] = useState({
     // Section 1: Personal & Bio Demographics
-    fullName: candidate?.name || 'Rajesh Kumar',
-    fatherName: 'Suresh Kumar',
-    dob: '1996-05-15',
-    gender: 'Male',
-    maritalStatus: 'Married',
-    bloodGroup: 'O+',
-    nationality: 'Indian',
-    religion: 'Hindu',
+    fullName: candidate?.name || jfd.fullName || 'Rajesh Kumar',
+    fatherName: candidate?.fatherName || jfd.fatherName || 'Suresh Kumar',
+    motherName: candidate?.motherName || jfd.motherName || 'Kavitha Kumar',
+    dob: candidate?.dob || jfd.dob || '1996-05-15',
+    gender: candidate?.gender || jfd.gender || 'Male',
+    maritalStatus: candidate?.maritalStatus || jfd.maritalStatus || 'Married',
+    bloodGroup: candidate?.bloodGroup || jfd.bloodGroup || 'O+',
+    nationality: candidate?.nationality || jfd.nationality || 'Indian',
+    religion: jfd.religion || 'Hindu',
+    languagesKnown: candidate?.languagesKnown || jfd.languagesKnown || 'English (Fluent), Hindi (National)',
+    selfInterests: candidate?.selfInterests || jfd.selfInterests || 'Coding & Open Source Development',
 
     // Section 2: Contact & Address
-    mobile: candidate?.mobile || '+91 98765 43210',
-    email: candidate?.email || 'rajesh.k@gmail.com',
-    presentAddress: '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103',
-    permanentAddress: '45, MG Road, Civil Lines, Jaipur, RJ - 302001',
-    emergencyContactName: 'Suresh Kumar (Father)',
-    emergencyContactPhone: '+91 98111 22334',
+    mobile: candidate?.mobile || jfd.mobile || '+91 98765 43210',
+    alternateMobile: candidate?.alternateMobile || jfd.alternateMobile || '+91 98111 22334',
+    email: candidate?.email || jfd.email || 'rajesh.k@gmail.com',
+    state: candidate?.state || jfd.state || 'Karnataka',
+    city: candidate?.city || jfd.city || 'Bengaluru',
+    area: candidate?.area || jfd.area || 'Koramangala 4th Block, Bengaluru',
+    pincode: candidate?.pincode || jfd.pincode || '560103',
+    presentAddress: candidate?.presentAddress || jfd.presentAddress || '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103',
+    permanentAddress: candidate?.permanentAddress || jfd.permanentAddress || '45, MG Road, Civil Lines, Jaipur, RJ - 302001',
+    emergencyContactName: candidate?.emergencyContactName || jfd.emergencyContactName || 'Suresh Kumar (Father)',
+    emergencyContactPhone: candidate?.emergencyContactPhone || jfd.emergencyContactPhone || '+91 98111 22334',
 
-    // Section 3: Government Identifiers
-    aadhaarNo: candidate?.aadhaarNo || '5489 1234 9876',
-    panNo: 'ABCDE1234F',
-    drivingLicense: 'RJ-14201800912',
-    passportNo: 'Z9812401',
-    uanEpf: '100982341209',
+    // Section 3: Education & Academic
+    qualificationCategory: candidate?.qualificationCategory || jfd.qualificationCategory || 'Under Graduate (UG / Bachelor Degree)',
+    highestQualification: candidate?.highestQualification || jfd.highestQualification || 'B.Tech / B.E. in Computer Science',
+    primarySkill: candidate?.primarySkill || jfd.primarySkill || 'React JS, Node.js, Python',
+    college: candidate?.college || jfd.college || 'BMS College of Engineering',
+    university: candidate?.university || jfd.university || 'VTU Technological University',
+    passingYear: candidate?.passingYear || jfd.passingYear || '2020',
+    percentage: candidate?.percentage || jfd.percentage || '84.5%',
 
-    // Section 4: Employment Position
-    empId: candidate?.empId || 'EMP-2026-88',
-    designation: candidate?.designation || 'Senior Software Engineer',
-    dept: candidate?.dept || 'Engineering',
-    doj: '2026-08-25',
-    employmentType: 'Full Time Permanent',
-    workLocation: 'Bengaluru HQ',
-    managerName: 'Vikram Malhotra',
+    // Section 4: Employment Position & Experience
+    empId: candidate?.empId || jfd.empId || 'EMP-2026-88',
+    designation: candidate?.designation || jfd.designation || 'Senior Software Engineer',
+    dept: candidate?.dept || jfd.dept || 'Engineering & Software Architecture',
+    jobCategory: candidate?.jobCategory || jfd.jobCategory || 'Information Technology & Software Services',
+    jobType: candidate?.jobType || jfd.jobType || 'Full Time Permanent',
+    workLocation: candidate?.workLocation || jfd.workLocation || 'Bengaluru Global Tech Hub (HQ)',
+    previousEmployer: candidate?.previousEmployer || jfd.previousEmployer || 'Infosys Limited',
+    experienceYears: candidate?.experienceYears || jfd.experienceYears || '4.5',
+    doj: jfd.doj || '2026-09-01',
 
-    // Section 5: Education
-    highestQualification: 'B.Tech in Computer Science',
-    university: 'VTU Technological University',
-    passingYear: '2018',
-    percentage: '82.4%',
+    // Section 5: Government Identifiers
+    aadhaarNo: candidate?.aadhaarNo || jfd.aadhaarNo || '5489 1234 9876',
+    panNo: candidate?.panNo || jfd.panNo || 'ABCDE1234F',
+    drivingLicense: candidate?.drivingLicense || jfd.drivingLicense || 'KA-01201900124',
+    passportNo: candidate?.passportNo || jfd.passportNo || 'J8912401',
+    voterId: candidate?.voterId || jfd.voterId || 'WZK8912301',
+    uanEpf: candidate?.uanEpf || jfd.uanEpf || '100982341209',
+    esicNo: candidate?.esicNo || jfd.esicNo || '310082910291',
 
     // Section 6: Bank Payroll Details
-    accountHolderName: candidate?.name || 'Rajesh Kumar',
-    bankName: 'HDFC Bank',
-    bankAccountNo: '50100234129845',
-    ifscCode: 'HDFC0001234',
-    bankBranch: 'Koramangala Branch',
+    accountHolderName: candidate?.name || jfd.accountHolderName || 'Rajesh Kumar',
+    bankName: candidate?.bankName || jfd.bankName || 'HDFC Bank',
+    bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || '50100234129845',
+    ifscCode: candidate?.ifscCode || jfd.ifscCode || 'HDFC0001234',
+    bankBranch: jfd.bankBranch || 'Koramangala Branch',
 
     // Section 7: Nominee Dependents
-    nomineeName: 'Sunita Kumar',
-    nomineeRelation: 'Spouse',
-    nomineeDob: '1998-11-20',
-    nomineeAadhaar: '9812 3456 7890'
+    nomineeName: candidate?.nomineeName || jfd.nomineeName || 'Sunita Kumar',
+    nomineeRelation: candidate?.nomineeRelation || jfd.nomineeRelation || 'Spouse (100% Share)',
+    nomineeDob: jfd.nomineeDob || '1998-11-20',
+    nomineeAadhaar: jfd.nomineeAadhaar || '9812 3456 7890',
+    insuranceDependents: candidate?.insuranceDependents || jfd.insuranceDependents || 'Spouse + Dependent Parents',
+
+    // Section 8: Industry Specialization
+    employeeCategory: candidate?.employeeCategory || jfd.employeeCategory || candSpec.industryType || 'it_tech',
+    industrySpecialization: {
+      industryType: candidate?.employeeCategory || jfd.employeeCategory || candSpec.industryType || 'it_tech',
+      techStack: candSpec.techStack || 'React, Node.js, Python, PostgreSQL, AWS',
+      githubUrl: candSpec.githubUrl || 'https://github.com/developer-profile',
+      portfolioUrl: candSpec.portfolioUrl || 'https://portfolio-showcase.dev',
+      laptopAssetTag: candSpec.laptopAssetTag || 'ASSET-LT-2026-088 (MacBook Pro)',
+      dualEmploymentDisclosure: candSpec.dualEmploymentDisclosure || 'No Dual Employment / 100% Exclusive Commitment',
+      plantLocation: candSpec.plantLocation || 'Chennai Automotive Assembly Plant - Unit 3',
+      shiftRoster: candSpec.shiftRoster || 'General Shift (9:00 AM - 5:30 PM)',
+      safetyShoeSize: candSpec.safetyShoeSize || 'UK 9 / EUR 43 (Steel Toe)',
+      occupationalHealthCertNo: candSpec.occupationalHealthCertNo || 'MED-FIT-CHN-2026-912',
+      gatePassId: candSpec.gatePassId || 'GATE-PASS-PL3-8812',
+      cibilScoreRange: candSpec.cibilScoreRange || '795 - 830 (Prime Credit Standing)',
+      certificationsBfsi: candSpec.certificationsBfsi || 'NISM Series VIII Equity Derivatives',
+      fidelityBondLimit: candSpec.fidelityBondLimit || '₹10,00,000 (Ten Lakhs Indemnity)',
+      medicalCouncilRegNo: candSpec.medicalCouncilRegNo || 'MCI-2018-091823',
+      departmentWard: candSpec.departmentWard || 'Intensive Care Unit (ICU) & Trauma',
+      immunizationStatus: candSpec.immunizationStatus || 'Hepatitis B (3 Doses Complete), Tetanus Toxoid 2026',
+      commercialDlBadgeNo: candSpec.commercialDlBadgeNo || 'TN-01-TR-2018-98412',
+      forkliftLicenseNo: candSpec.forkliftLicenseNo || 'MHE-FL-TN-2022-881',
+      policeNocNumber: candSpec.policeNocNumber || 'POL-TN-CHN-2026-9041',
+      fssaiCertNo: candSpec.fssaiCertNo || 'FSSAI-FOSTAC-2025-9921',
+      uniformShirtSize: candSpec.uniformShirtSize || 'M (38 cm Shirt)',
+      assignedStoreCode: candSpec.assignedStoreCode || 'RET-BLR-PHOENIX-04',
+      contractFormXIIIEnrollmentNo: candSpec.contractFormXIIIEnrollmentNo || 'CL-RA-2026-FORM-XIII-912',
+      contractorAgencyName: candSpec.contractorAgencyName || 'First Choice Manpower Solutions Pvt Ltd',
+      workOrderPoNumber: candSpec.workOrderPoNumber || 'PO-JOY-2026-CW-410'
+    }
   });
 
   // OTP Verification States
@@ -267,7 +325,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
         </div>
 
-        {/* Form Section Navigation Tabs (7 Sections) */}
+        {/* Form Section Navigation Tabs (10 Sections) */}
         <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto no-scrollbar text-xs font-bold gap-1">
           <button
             type="button"
@@ -293,13 +351,13 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           <button
             type="button"
-            onClick={() => setActiveSection('govt')}
+            onClick={() => setActiveSection('education')}
             className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'govt' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              activeSection === 'education' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>3. Govt Proofs</span>
+            <GraduationCap className="w-3.5 h-3.5" />
+            <span>3. Education</span>
           </button>
 
           <button
@@ -315,13 +373,13 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           <button
             type="button"
-            onClick={() => setActiveSection('education')}
+            onClick={() => setActiveSection('govt')}
             className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'education' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              activeSection === 'govt' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <GraduationCap className="w-3.5 h-3.5" />
-            <span>5. Education</span>
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>5. Govt IDs</span>
           </button>
 
           <button
@@ -348,13 +406,24 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           <button
             type="button"
+            onClick={() => setActiveSection('industry')}
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
+              activeSection === 'industry' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Cpu className="w-3.5 h-3.5" />
+            <span>8. Industry Matrix 🌟</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveSection('documents')}
             className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
               activeSection === 'documents' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <FolderDown className="w-3.5 h-3.5" />
-            <span>8. Upload Documents 📁</span>
+            <span>9. Upload Documents 📁</span>
           </button>
 
           <button
@@ -365,7 +434,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>9. Statutory Agmts ⚖️</span>
+            <span>10. Statutory Agmts ⚖️</span>
           </button>
         </div>
 
@@ -835,14 +904,353 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
           )}
 
-          {/* SECTION 8: UPLOAD REQUIRED ORIGINAL COMPLIANCE DOCUMENTS */}
+          {/* SECTION 8: DYNAMIC INDUSTRY & ROLE SPECIALIZATION MATRIX */}
+          {activeSection === 'industry' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                    <Cpu className="w-4 h-4 text-indigo-600" />
+                    <span>Section 8: Industry & Specialized Role Matrix</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Operational and regulatory particulars specific to your industry vertical: <strong className="text-indigo-900 uppercase">{(formData.employeeCategory || 'it_tech').replace('_', ' ')}</strong>
+                  </p>
+                </div>
+                <span className="badge badge-indigo text-[10px]">Sector Specific</span>
+              </div>
+
+              {/* IT & Software */}
+              {(formData.employeeCategory === 'it_tech' || !formData.employeeCategory) && (
+                <div className="p-4 bg-purple-50/50 border border-purple-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs">
+                    <span>💻</span>
+                    <span>IT, Software Engineering & AI Operations</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Core Tech Stack & Frameworks</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.techStack || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, techStack: e.target.value } })}
+                        className="form-input font-bold"
+                        placeholder="React, Node.js, Python, PostgreSQL, AWS"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">GitHub / Code Repository URL</label>
+                      <input 
+                        type="url"
+                        value={formData.industrySpecialization?.githubUrl || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, githubUrl: e.target.value } })}
+                        className="form-input font-mono"
+                        placeholder="https://github.com/username"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Laptop Asset Tag Number</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.laptopAssetTag || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, laptopAssetTag: e.target.value } })}
+                        className="form-input font-mono"
+                        placeholder="JOY-ASSET-LT-2026-088"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Anti-Moonlighting / Dual Employment Disclosure</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.dualEmploymentDisclosure || 'No Dual Employment / 100% Exclusive Commitment'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, dualEmploymentDisclosure: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Manufacturing & Plant */}
+              {formData.employeeCategory === 'manufacturing' && (
+                <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                    <span>🏭</span>
+                    <span>Manufacturing & Plant Operations</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Plant Location & Unit</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.plantLocation || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, plantLocation: e.target.value } })}
+                        className="form-input font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Shift Duty Roster</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.shiftRoster || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, shiftRoster: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Safety Shoe Size (UK/EUR)</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.safetyShoeSize || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, safetyShoeSize: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Occupational Medical Fitness Cert No</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.occupationalHealthCertNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, occupationalHealthCertNo: e.target.value } })}
+                        className="form-input font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* BFSI & Banking */}
+              {formData.employeeCategory === 'bfsi' && (
+                <div className="p-4 bg-cyan-50/50 border border-cyan-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-cyan-900 font-extrabold text-xs">
+                    <span>🏦</span>
+                    <span>BFSI, Banking & Fintech Governance</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">CIBIL Score Range Standing</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.cibilScoreRange || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, cibilScoreRange: e.target.value } })}
+                        className="form-input font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Finance & Investment Certifications (NISM/IRDA/CA)</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.certificationsBfsi || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, certificationsBfsi: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Corporate Fidelity Bond Indemnity Limit</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.fidelityBondLimit || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, fidelityBondLimit: e.target.value } })}
+                        className="form-input font-bold text-indigo-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">SEBI Insider Trading Compliance</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.sebiInsiderTradingClearance || 'Cleared - Zero Adverse SEBI Trading Flags'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, sebiInsiderTradingClearance: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Healthcare & Pharma */}
+              {formData.employeeCategory === 'healthcare' && (
+                <div className="p-4 bg-rose-50/50 border border-rose-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-rose-900 font-extrabold text-xs">
+                    <span>🏥</span>
+                    <span>Healthcare, Hospital & Clinical Practice</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Medical / Nursing Council Registration No</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.medicalCouncilRegNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, medicalCouncilRegNo: e.target.value } })}
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Assigned Clinical Department / Ward</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.departmentWard || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, departmentWard: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-slate-700 font-bold mb-1">Mandatory Immunization & Life Support Protocol</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.immunizationStatus || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, immunizationStatus: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Logistics & Fleet */}
+              {formData.employeeCategory === 'logistics' && (
+                <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs">
+                    <span>🚚</span>
+                    <span>Logistics, Heavy Transport & Fleet Operations</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Commercial Transport DL Badge No</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.commercialDlBadgeNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, commercialDlBadgeNo: e.target.value } })}
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Forklift / MHE License Number</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.forkliftLicenseNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, forkliftLicenseNo: e.target.value } })}
+                        className="form-input font-mono"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-slate-700 font-bold mb-1">Police Character NOC & Route Telematics Consent</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.policeNocNumber || 'POL-TN-CHN-2026-9041 (Cleared)'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, policeNocNumber: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Retail & Hospitality */}
+              {formData.employeeCategory === 'retail_hospitality' && (
+                <div className="p-4 bg-orange-50/50 border border-orange-200 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-orange-900 font-extrabold text-xs">
+                    <span>🛍️</span>
+                    <span>Retail Operations, Hospitality & F&B Frontline</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">FSSAI FoSTaC Training Certificate No</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.fssaiCertNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, fssaiCertNo: e.target.value } })}
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Uniform Shirt & Pant Size</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.uniformShirtSize || 'M (38 cm Shirt)'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, uniformShirtSize: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Assigned Retail Outlet Code</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.assignedStoreCode || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, assignedStoreCode: e.target.value } })}
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">POS Cash Reconciliation & Shifts Agreement</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.storeShiftPreference || 'Weekend Peak Shifts Available'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, storeShiftPreference: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Contract Labor */}
+              {formData.employeeCategory === 'contractual' && (
+                <div className="p-4 bg-slate-100 border border-slate-300 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-slate-900 font-extrabold text-xs">
+                    <span>🏗️</span>
+                    <span>Contract Labor Act (Form XIII) & Facility Workforce</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Contract Labor Act Form XIII Enrollment No</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.contractFormXIIIEnrollmentNo || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, contractFormXIIIEnrollmentNo: e.target.value } })}
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Manpower Agency Contractor Name</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.contractorAgencyName || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, contractorAgencyName: e.target.value } })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Principal Employer PO / Work Order</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.workOrderPoNumber || ''}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, workOrderPoNumber: e.target.value } })}
+                        className="form-input font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Wage Rate Classification</label>
+                      <input 
+                        type="text"
+                        value={formData.industrySpecialization?.wageRateClassification || 'Skilled Grade Rate (₹950/Day)'}
+                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, wageRateClassification: e.target.value } })}
+                        className="form-input text-emerald-800 font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SECTION 9: UPLOAD REQUIRED ORIGINAL COMPLIANCE DOCUMENTS */}
           {activeSection === 'documents' && (
             <div className="space-y-4 animate-tab-switch">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
                     <FolderDown className="w-4 h-4 text-indigo-600" />
-                    <span>Section 8: Upload Original Compliance Documents & Proofs</span>
+                    <span>Section 9: Upload Original Compliance Documents & Proofs</span>
                   </h3>
                   <p className="text-[11px] text-slate-500 font-medium">
                     Upload clear scanned PDFs or high-resolution photos of your original government documents.
@@ -903,14 +1311,14 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
           )}
 
-          {/* SECTION 9: STATUTORY COMPLIANCE FORMS & LEGAL AGREEMENTS */}
+          {/* SECTION 10: STATUTORY COMPLIANCE FORMS & LEGAL AGREEMENTS */}
           {activeSection === 'statutory_agreements' && (
             <div className="space-y-4 animate-tab-switch">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>Section 9: Statutory Compliance Forms & Legal Agreements</span>
+                    <span>Section 10: Statutory Compliance Forms & Legal Agreements</span>
                   </h3>
                   <p className="text-[11px] text-slate-500 font-medium">
                     Review and electronically sign official statutory compliance declarations required under Indian Labor Laws.
@@ -932,7 +1340,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   I confirm my tax regime choice under Section 115BAC (New Tax Regime) and declare that all tax deduction claims under Section 192 are accurate.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
-                  <div className="p-2 bg-white rounded border">PAN: <strong className="text-emerald-700">ABCDE1234F ✓</strong></div>
+                  <div className="p-2 bg-white rounded border">PAN: <strong className="text-emerald-700">{formData.panNo || 'ABCDE1234F'} ✓</strong></div>
                   <div className="p-2 bg-white rounded border">AY: <strong>2026-27</strong></div>
                   <div className="p-2 bg-white rounded border">Regime: <strong>New (Sec 115BAC)</strong></div>
                   <div className="p-2 bg-white rounded border">Form 12B: <strong className="text-emerald-700">Attached ✓</strong></div>
@@ -973,12 +1381,28 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
               </div>
 
+              {/* ESIC Form 1 Registration */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>4. ESIC Form 1 Declaration (Employees' State Insurance Act 1948)</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">ESIC Medical</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
+                  <div className="p-2 bg-white rounded border">ESIC IP Number: <strong>{formData.esicNo || '310082910291'}</strong></div>
+                  <div className="p-2 bg-white rounded border">Dispensary: <strong>State ESIC Hospital Unit</strong></div>
+                  <div className="p-2 bg-white rounded border">Coverage: <strong className="text-emerald-700">Self + Dependents ✓</strong></div>
+                </div>
+              </div>
+
               {/* Employee NDA & IP Assignment */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
                   <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>4. Employee Non-Disclosure Agreement (NDA) & IP Assignment Covenant</span>
+                    <span>5. Employee Non-Disclosure Agreement (NDA) & IP Assignment Covenant</span>
                   </strong>
                   <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Indian Contract Act 1872</span>
                 </div>
@@ -988,6 +1412,49 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 text-[11px] flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Digitally Executed & Bound upon OTP submission.</span>
+                </div>
+              </div>
+
+              {/* POSH Workplace Harassment Policy */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>6. POSH Policy Acknowledgement (POSH Act 2013)</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">HR Governance</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  I confirm that I have received, read, and understood the Prevention of Sexual Harassment (POSH) workplace policy and agree to adhere strictly to all zero-tolerance workplace standards.
+                </p>
+              </div>
+
+              {/* Non-Compete & Non-Solicitation */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>7. Non-Compete & Non-Solicitation Undertaking</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Corporate Covenant</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  I covenant that during my tenure and for 12 months post-cessation, I shall not solicit employer clients, poach colleagues, or utilize proprietary trade secrets in competing businesses.
+                </p>
+              </div>
+
+              {/* Contract Labor Act Form XIII */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>8. Contract Labor Register Entry (Contract Labor Regulation & Abolition Act 1970 • Form XIII)</span>
+                  </strong>
+                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">CLRA Statutory</span>
+                </div>
+                <div className="p-2 bg-white rounded border font-mono text-[11px] flex justify-between">
+                  <span>Register Reg No: <strong>{formData.industrySpecialization?.contractFormXIIIEnrollmentNo || 'CL-RA-2026-FORM-XIII-912'}</strong></span>
+                  <span className="text-emerald-700 font-bold">Principal Employer Work Order Verified ✓</span>
                 </div>
               </div>
 

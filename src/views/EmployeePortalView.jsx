@@ -763,13 +763,13 @@ export const EmployeePortalView = () => {
               <span className="bg-amber-400 text-amber-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
                 Step 1 of 2: Master Profile
               </span>
-              <span className="text-indigo-200 text-xs font-bold">• 9 Comprehensive Sections</span>
+              <span className="text-indigo-200 text-xs font-bold">• 10 Comprehensive Industry Sections</span>
             </div>
             <h3 className="text-base sm:text-lg font-black text-white">
               Candidate Onboarding Joining Form & Document Vault
             </h3>
             <p className="text-xs text-indigo-100 font-medium">
-              Fill Personal Details, Address, Govt Proofs, Education, Bank Payroll, Upload Original Files with Live Previews & Sign Form 16A/11/F/NDA.
+              Fill Personal Details, Address, Education, Employment, Govt Proofs, Bank Payroll, Industry Matrix, Upload Original Files with Live Previews & Sign Statutory Declarations.
             </p>
           </div>
 
