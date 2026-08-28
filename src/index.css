@@ -244,6 +244,14 @@ body[data-role="employee_link"] {
   color: #94a3b8;
 }
 
+.form-input-with-icon {
+  padding-left: 2.75rem !important;
+}
+
+.form-input-with-icon-right {
+  padding-right: 2.75rem !important;
+}
+
 /* INNOVATIVE KEYFRAME ANIMATIONS */
 @keyframes fadeIn {
   from {
