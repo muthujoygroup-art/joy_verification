@@ -57,8 +57,8 @@ const INITIAL_COMPANIES = [
     features: {
       // Communication Gateways
       whatsappGateway: true,
-      emailGateway: true,
-      smsGateway: true,
+      emailGateway: false,
+      smsGateway: false,
       // Portal Access Controls
       allowCompanyAdminLogin: true,
       allowHrLogin: true,
@@ -66,12 +66,22 @@ const INITIAL_COMPANIES = [
       // Document & Compliance Protocols
       documentVaultVerification: true,
       statutoryAgreements: true,
-      // Biometrics & AI Engine
-      aiFaceBiometrics: true,
-      // Government Verification APIs
-      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
-      pan: true, uan: true, education: true, criminalCheck: true,
-      addressCheck: true, bankCheck: true, passport: true, directorship: true, voterId: true
+      // Biometrics & AI Engine (Paused for now)
+      aiFaceBiometrics: false,
+      // Government Verification APIs (Aadhaar active; SMS, Face, PAN, Bank paused/off by default)
+      aadhaar: true, 
+      mobileOtp: false, 
+      faceCapture: false, 
+      drivingLicense: false,
+      pan: false, 
+      uan: false, 
+      education: false, 
+      criminalCheck: false,
+      addressCheck: false, 
+      bankCheck: false, 
+      passport: false, 
+      directorship: false, 
+      voterId: false
     },
     hrPermissions: {
       allowProfileCreation: true,

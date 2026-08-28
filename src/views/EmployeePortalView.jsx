@@ -42,6 +42,7 @@ import {
 
 export const EmployeePortalView = () => {
   const { 
+    companies,
     candidates, 
     selectedCandidateToken, 
     setSelectedCandidateToken, 
@@ -383,19 +384,25 @@ export const EmployeePortalView = () => {
   }
 
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate;
+  const company = companies.find(c => c.id === candidate?.companyId) || companies[0] || {};
+  const companyFeatures = company.features || {};
 
-  const isAadhaarReq = verificationConfig.aadhaar ?? verificationConfig.requireAadhaar ?? true;
-  const isMobileReq = verificationConfig.mobileOtp ?? verificationConfig.requireMobileOtp ?? true;
-  const isFaceReq = verificationConfig.faceCapture ?? verificationConfig.requireFaceMatch ?? true;
-  const isPanReq = verificationConfig.pan ?? verificationConfig.requirePAN ?? false;
-  const isBankReq = verificationConfig.bankCheck ?? verificationConfig.requireBankCheck ?? false;
-  const isDlReq = verificationConfig.drivingLicense ?? verificationConfig.requireDL ?? false;
-  const isPassportReq = verificationConfig.passport ?? false;
-  const isUanReq = verificationConfig.uan ?? false;
+  // Dynamically resolve verification requirement based on Company features and Candidate config
+  // Aadhaar is active by default; SMS, Email, Face, PAN, Bank are disabled/paused unless enabled by Company Admin
+  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar ?? verificationConfig.requireAadhaar ?? true);
+  const isMobileReq = (companyFeatures.mobileOtp === true) && (verificationConfig.mobileOtp ?? verificationConfig.requireMobileOtp ?? false);
+  const isEmailReq = (companyFeatures.emailGateway === true);
+  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) && (verificationConfig.faceCapture ?? verificationConfig.requireFaceMatch ?? false);
+  const isPanReq = (companyFeatures.pan === true) && (verificationConfig.pan ?? verificationConfig.requirePAN ?? false);
+  const isBankReq = (companyFeatures.bankCheck === true) && (verificationConfig.bankCheck ?? verificationConfig.requireBankCheck ?? false);
+  const isDlReq = (companyFeatures.drivingLicense === true) && (verificationConfig.drivingLicense ?? verificationConfig.requireDL ?? false);
+  const isPassportReq = (companyFeatures.passport === true) && (verificationConfig.passport ?? false);
+  const isUanReq = (companyFeatures.uan === true) && (verificationConfig.uan ?? false);
 
   const requiredStepKeys = [
     isAadhaarReq && 'aadhaar',
     isMobileReq && 'mobile',
+    isEmailReq && 'email',
     isFaceReq && 'face',
     isPanReq && 'pan',
     isBankReq && 'bankCheck',
@@ -404,9 +411,9 @@ export const EmployeePortalView = () => {
     isUanReq && 'uan'
   ].filter(Boolean);
 
-  const totalConfiguredSteps = requiredStepKeys.length || 3;
+  const totalConfiguredSteps = requiredStepKeys.length || 1;
   const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
-  const progressPercentage = Math.round((completedStepsCount / totalConfiguredSteps) * 100);
+  const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
 
   // ⚡ 1-Click Quick Mock Verification (Simulate Passing All HR-Configured Steps)
   const handleQuickMockVerifyAll = () => {
@@ -1067,45 +1074,47 @@ export const EmployeePortalView = () => {
         )}
 
         {/* STEP 3: Official Email Address OTP Verification */}
-        <div 
-          className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
-            (verificationsCompleted.email || isEmailVerified) ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
-          }`}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
-                (verificationsCompleted.email || isEmailVerified) ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
-              }`}>
-                ✉️
-              </div>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-extrabold text-slate-900 text-base">3. Official Email Address OTP Verification</h4>
-                  <span className="badge badge-purple text-[10px]">Requires 6-Digit Email OTP</span>
+        {isEmailReq && (
+          <div 
+            className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+              (verificationsCompleted.email || isEmailVerified) ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  (verificationsCompleted.email || isEmailVerified) ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+                }`}>
+                  ✉️
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                  Email Address: <strong className="text-slate-900 font-mono">{candidate.email}</strong> • SMTP Inbox Dispatch
-                </p>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-slate-900 text-base">3. Official Email Address OTP Verification</h4>
+                    <span className="badge badge-purple text-[10px]">Requires 6-Digit Email OTP</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    Email Address: <strong className="text-slate-900 font-mono">{candidate.email}</strong> • SMTP Inbox Dispatch
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {(verificationsCompleted.email || isEmailVerified) ? (
-              <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Email OTP Verified ✓</span>
-              </div>
-            ) : (
-              <button 
-                onClick={handleSendEmailOtp}
-                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold shadow-md bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
-              >
-                <Mail className="w-4 h-4 text-purple-700" />
-                <span>Verify Email OTP</span>
-              </button>
-            )}
+              {(verificationsCompleted.email || isEmailVerified) ? (
+                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Email OTP Verified ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={handleSendEmailOtp}
+                  className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold shadow-md bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
+                >
+                  <Mail className="w-4 h-4 text-purple-700" />
+                  <span>Verify Email OTP</span>
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* STEP 3: Live Photo & Biometric Face Verification */}
         {isFaceReq && (

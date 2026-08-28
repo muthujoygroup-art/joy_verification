@@ -61,6 +61,7 @@ export const CompanyAdminView = () => {
     rechargeCompanyWallet,
     updateCompanyRoutingEngine,
     updateCompanyHrPermissions,
+    updateCompanyFeatures,
     apiConfigurations
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
@@ -749,6 +750,274 @@ export const CompanyAdminView = () => {
             }} 
             className="space-y-6 text-xs"
           >
+            {/* 🏢 VERIFICATION MODULES & PIPELINE TOGGLES (ACTIVE CHECKS FOR EMPLOYEE LINK) */}
+            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/70 space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-sm">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-900 text-base">
+                      Verification Pipeline & Feature Modules (Company Controls)
+                    </h4>
+                    <p className="text-slate-500 text-[11px]">
+                      Enable or disable verification checks required for your candidates on their onboarding link
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const aadhaarOnly = {
+                        ...(company.features || {}),
+                        aadhaar: true,
+                        mobileOtp: false,
+                        emailGateway: false,
+                        aiFaceBiometrics: false,
+                        faceCapture: false,
+                        pan: false,
+                        bankCheck: false,
+                        uan: false,
+                        drivingLicense: false,
+                        passport: false
+                      };
+                      updateCompanyFeatures(company.id, aadhaarOnly);
+                    }}
+                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-black text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 cursor-pointer"
+                  >
+                    ⚡ Aadhaar Only Mode
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allStandard = {
+                        ...(company.features || {}),
+                        aadhaar: true,
+                        mobileOtp: true,
+                        emailGateway: true,
+                        aiFaceBiometrics: true,
+                        faceCapture: true,
+                        pan: true,
+                        bankCheck: true,
+                        uan: true,
+                        drivingLicense: true,
+                        passport: true
+                      };
+                      updateCompanyFeatures(company.id, allStandard);
+                    }}
+                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold text-indigo-900 bg-indigo-50 border-indigo-300 hover:bg-indigo-100 cursor-pointer"
+                  >
+                    🌟 Enable All Modules
+                  </button>
+                </div>
+              </div>
+
+              {/* Module Toggle Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                
+                {/* 1. Aadhaar */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.aadhaar !== false ? 'bg-emerald-50/60 border-emerald-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🪪</span>
+                      <strong className="text-slate-900 font-black">Aadhaar UIDAI Live e-KYC</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">OTP & Demographics data fetching</p>
+                    <span className="badge badge-emerald text-[9px] font-black">PRIMARY GOVT ID</span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={company.features?.aadhaar !== false}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), aadhaar: e.target.checked })}
+                    className="w-4 h-4 text-emerald-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 2. Mobile SMS OTP */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.mobileOtp ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">📱</span>
+                      <strong className="text-slate-900 font-black">Mobile SMS OTP</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Carrier SMS 6-digit OTP code</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.mobileOtp ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.mobileOtp ? 'ACTIVE' : 'PAUSED / OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.mobileOtp}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), mobileOtp: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 3. Official Email */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.emailGateway ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">📧</span>
+                      <strong className="text-slate-900 font-black">Email OTP Verification</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Official inbox confirmation code</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.emailGateway ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.emailGateway ? 'ACTIVE' : 'PAUSED / OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.emailGateway}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), emailGateway: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 4. AI Live Face Biometrics */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.aiFaceBiometrics ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🤳</span>
+                      <strong className="text-slate-900 font-black">AI Live Face Match</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">3D Liveness & photo match</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.aiFaceBiometrics ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.aiFaceBiometrics ? 'ACTIVE' : 'PAUSED / OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.aiFaceBiometrics}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), aiFaceBiometrics: e.target.checked, faceCapture: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 5. PAN Card */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.pan ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">💳</span>
+                      <strong className="text-slate-900 font-black">PAN Card (NSDL)</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Tax ID & Aadhaar Link audit</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.pan ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.pan ? 'ACTIVE' : 'REMOVED / OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.pan}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), pan: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 6. Bank Penny Drop */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.bankCheck ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🏦</span>
+                      <strong className="text-slate-900 font-black">Bank Penny Drop</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">IMPS Account Holder match</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.bankCheck ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.bankCheck ? 'ACTIVE' : 'REMOVED / OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.bankCheck}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), bankCheck: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 7. EPFO UAN */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.uan ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🏢</span>
+                      <strong className="text-slate-900 font-black">EPFO UAN Dual Employment</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Service history & passbook</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.uan ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.uan ? 'ACTIVE' : 'OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.uan}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), uan: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 8. Driving License */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.drivingLicense ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🚗</span>
+                      <strong className="text-slate-900 font-black">Driving License (MoRTH)</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Sarathi DL status verification</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.drivingLicense ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.drivingLicense ? 'ACTIVE' : 'OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.drivingLicense}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), drivingLicense: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+                {/* 9. Passport */}
+                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
+                  company.features?.passport ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
+                }`}>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🛂</span>
+                      <strong className="text-slate-900 font-black">MEA Passport Direct</strong>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">Ministry of External Affairs check</p>
+                    <span className={`badge text-[9px] font-black ${company.features?.passport ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
+                      {company.features?.passport ? 'ACTIVE' : 'OFF'}
+                    </span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={!!company.features?.passport}
+                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), passport: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
+                  />
+                </div>
+
+              </div>
+            </div>
+
             {/* ⚡ MASTER API ROUTING ENGINE SELECTOR (SERVER 1 SANDBOX vs SERVER 2 COINCIRCLE) */}
             <div className="p-6 rounded-2xl border-2 border-teal-300 bg-gradient-to-br from-teal-50/80 via-white to-sky-50/80 space-y-4 shadow-sm relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-teal-200 pb-3">
