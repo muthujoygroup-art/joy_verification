@@ -42,7 +42,8 @@ import {
   SendHorizontal,
   Server,
   Sparkles,
-  KeyRound
+  KeyRound,
+  FileText
 } from 'lucide-react';
 
 export const CompanyAdminView = () => {
