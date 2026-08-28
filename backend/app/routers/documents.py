@@ -4,13 +4,14 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 
 from backend.app.database import get_db
-from backend.app.models import Candidate, CandidateDocument, Company
+from backend.app.models import Candidate, CandidateDocument, Company, Invoice
 from backend.app.services.report_generator import (
     generate_pdf_report,
     generate_excel_report,
     generate_word_report,
     generate_official_certificate_pdf,
-    generate_employee_profile_dossier_pdf
+    generate_employee_profile_dossier_pdf,
+    generate_tax_invoice_pdf
 )
 
 router = APIRouter(prefix="/documents", tags=["Document Management & Exporter"])
@@ -191,4 +192,37 @@ def export_word_report(company_id: str = None, db: Session = Depends(get_db)):
         word_buffer,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": 'attachment; filename="JOY_Verification_Summary.docx"'}
+    )
+
+@router.get("/invoice/{invoice_id}")
+def export_tax_invoice_pdf(invoice_id: str, db: Session = Depends(get_db)):
+    """Export official GST Tax Invoice as PDF"""
+    inv = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+        
+    comp = db.query(Company).filter(Company.id == inv.company_id).first()
+    company_data = {
+        "name": comp.name if comp else "Acme Global Technologies Pvt Ltd",
+        "code": comp.code if comp else "ACME"
+    }
+    
+    invoice_data = {
+        "id": inv.id,
+        "month": inv.month,
+        "year": inv.year,
+        "verifications_count": inv.verifications_count,
+        "unit_price": inv.unit_price,
+        "subtotal": inv.subtotal,
+        "tax_amount": inv.tax_amount,
+        "total_amount": inv.total_amount
+    }
+    
+    pdf_buffer = generate_tax_invoice_pdf(invoice_data, company_data)
+    filename = f"JOY_Tax_Invoice_{inv.id}.pdf"
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
     )

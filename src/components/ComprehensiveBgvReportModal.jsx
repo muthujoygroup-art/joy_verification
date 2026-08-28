@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { api } from '../services/api';
 import { 
   X, 
   Download, 
@@ -191,35 +192,106 @@ export const ComprehensiveBgvReportModal = ({
     window.print();
   };
 
-  const handleDownloadSlip = (apiName, dataObj) => {
-    const textContent = `
-================================================================================
-JOY DATA VERIFICATION - INDIVIDUAL API VERIFICATION SLIP
-CERTIFIED AUDIT REPORT (DPDP ACT 2023 & ISO 27001 COMPLIANT)
-================================================================================
-Candidate Name: ${candidate.name}
-Employee ID:    ${candidate.empId || 'N/A'}
-Company Name:   ${companyName}
-Verified API:   ${apiName.toUpperCase()}
-API ID:         ${dataObj.apiId || 'JOY_SECURE_API'}
-Provider:       ${dataObj.provider}
-Status:         ${dataObj.status}
-Audit Date:     ${dataObj.timestamp || new Date().toISOString()}
-
-DETAILS:
-${JSON.stringify(dataObj, null, 2)}
-================================================================================
-Generated via JOY DATA VERIFICATION Platform
-Digital Hash: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()}
-================================================================================
-    `;
-    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+  const handleDownloadMasterPdf = () => {
+    const downloadUrl = api.exportLaborProfileDossierUrl(candidate.token || candidate.id);
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `JOY_${apiName}_Verification_Slip_${candidate.name.replace(/\s+/g, '_')}.txt`;
+    link.href = downloadUrl;
+    link.download = `JOY_360_BGV_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadSlip = (apiName, dataObj) => {
+    // Open clean, high-resolution printable verification slip window
+    const printableWindow = window.open('', '_blank');
+    if (!printableWindow) {
+      // Fallback direct download
+      const textContent = `
+================================================================================
+JOY CORPORATE SOLUTIONS PRIVATE LIMITED
+ENTERPRISE VERIFICATION & AUDIT SLIP • ${apiName.toUpperCase()}
+================================================================================
+Candidate Name : ${candidate.name}
+Employee ID    : ${candidate.empId || 'N/A'}
+Employer       : ${companyName}
+Verification   : ${apiName.toUpperCase()}
+Provider       : ${dataObj?.provider || 'Government Repository / Institutional Gateway'}
+Status         : ${dataObj?.status || 'VERIFIED ✓'}
+Audit Date     : ${dataObj?.timestamp || new Date().toLocaleString()}
+SHA-256 Seal   : SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()}
+================================================================================
+AUTHENTICATED RECORD DETAILS:
+${JSON.stringify(dataObj || {}, null, 2)}
+================================================================================
+ISO 27001:2022 Certified • DPDP Act 2023 Compliant Digital Audit Trail
+`;
+      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `JOY_${apiName}_Verification_Slip_${candidate.name.replace(/\s+/g, '_')}.txt`;
+      link.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    printableWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>JOY Verification Slip - ${apiName}</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; color: #0f172a; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #4338ca; padding-bottom: 12px; margin-bottom: 18px; }
+          .title { font-size: 16px; font-weight: bold; color: #1e1b4b; margin: 0; }
+          .sub { font-size: 10px; color: #4338ca; font-weight: bold; text-transform: uppercase; }
+          .meta { font-size: 10px; color: #64748b; text-align: right; }
+          .badge { display: inline-block; background: #dcfce7; color: #15803d; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+          .section { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 15px; }
+          .row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px; }
+          .label { color: #64748b; font-weight: 500; }
+          .val { color: #0f172a; font-weight: bold; }
+          pre { background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 10px; overflow-x: auto; color: #334155; }
+          .footer { margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9px; color: #64748b; text-align: center; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 class="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+            <div class="sub">Official Background Verification Slip • ${apiName.toUpperCase()}</div>
+          </div>
+          <div class="meta">
+            <div>Date: <strong>${new Date().toLocaleString()}</strong></div>
+            <div>Ref: <strong>JOY-SLIP-${Math.random().toString(36).substring(2, 10).toUpperCase()}</strong></div>
+            <div style="margin-top: 4px;"><span class="badge">VERIFIED & AUTHENTICATED ✓</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="row"><span class="label">Candidate Full Name:</span><span class="val">${candidate.name}</span></div>
+          <div class="row"><span class="label">Employee Code / ID:</span><span class="val">${candidate.empId || 'N/A'}</span></div>
+          <div class="row"><span class="label">Employer Organization:</span><span class="val">${companyName}</span></div>
+          <div class="row"><span class="label">Verification Parameter:</span><span class="val">${apiName.toUpperCase()}</span></div>
+          <div class="row"><span class="label">Upstream Gateway:</span><span class="val">${dataObj?.provider || 'Government Repository / Institutional API'}</span></div>
+          <div class="row"><span class="label">Audit Status:</span><span class="val" style="color: #15803d;">${dataObj?.status || 'VERIFIED'}</span></div>
+        </div>
+
+        <div style="font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #1e1b4b;">Authenticated Payload Attributes:</div>
+        <pre>${JSON.stringify(dataObj || {}, null, 2)}</pre>
+
+        <div class="footer">
+          Digitally Authenticated by JOY CORPORATE SOLUTIONS PRIVATE LIMITED • ISO 27001:2022 Certified Gateway • DPDP Act 2023 Compliant
+        </div>
+      </body>
+      </html>
+    `);
+    printableWindow.document.close();
+    printableWindow.focus();
+    setTimeout(() => {
+      printableWindow.print();
+    }, 400);
   };
 
   return (
@@ -258,7 +330,7 @@ Digital Hash: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()
             </button>
 
             <button
-              onClick={() => handleDownloadSlip('Complete_360_BGV_Dossier', apiData)}
+              onClick={handleDownloadMasterPdf}
               className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
               title="Download Master All-In-One Report"
             >

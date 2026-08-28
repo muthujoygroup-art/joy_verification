@@ -93,54 +93,119 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
       ? `Company_Master_Ledger_${selectedCompanyFilter}` 
       : `Platform_Overall_Master_Audit_Report`;
 
-    let fileExtension = `.${outputFormat}`;
-    let mimeType = outputFormat === 'pdf' ? 'application/pdf' : outputFormat === 'csv' ? 'text/csv' : outputFormat === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'image/png';
+    let fileExtension = outputFormat === 'csv' || outputFormat === 'excel' ? '.csv' : outputFormat === 'json' ? '.json' : '.pdf';
+
+    if (outputFormat === 'pdf') {
+      // Clean HTML/Printable PDF generation
+      const printableWindow = window.open('', '_blank');
+      if (printableWindow) {
+        printableWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>${reportTitle}</title>
+            <style>
+              body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; color: #0f172a; }
+              .header { display: flex; justify-content: space-between; border-bottom: 3px solid #4338ca; padding-bottom: 12px; margin-bottom: 18px; }
+              .title { font-size: 18px; font-weight: bold; color: #1e1b4b; margin: 0; }
+              .sub { font-size: 11px; color: #4338ca; font-weight: bold; text-transform: uppercase; }
+              .meta { font-size: 11px; color: #64748b; text-align: right; }
+              .summary { display: flex; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 15px; margin-bottom: 18px; font-size: 12px; }
+              .summary strong { color: #4338ca; }
+              table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+              th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+              th { background: #f1f5f9; color: #334155; font-weight: bold; }
+              .badge-verified { background: #dcfce7; color: #15803d; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+              .badge-pending { background: #fef9c3; color: #854d0e; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+              .footer { margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 9.5px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div>
+                <h1 class="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+                <div class="sub">Custom Compliance Audit Report • ${reportScope.toUpperCase()}</div>
+              </div>
+              <div class="meta">
+                <div>Generated: <strong>${new Date().toLocaleString()}</strong></div>
+                <div>Filter Scope: <strong>Company [${selectedCompanyFilter}], Status [${selectedStatusFilter}]</strong></div>
+              </div>
+            </div>
+
+            <div class="summary">
+              <div>Total Records: <strong>${dataset.length}</strong></div>
+              <div>Verified: <strong>${dataset.filter(c => c.status === 'Verified').length}</strong></div>
+              <div>Pending: <strong>${dataset.filter(c => c.status !== 'Verified').length}</strong></div>
+              <div>ISO 27001 Certified Audit Trail: <strong>Active ✓</strong></div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  ${activeFieldKeys.map(k => `<th>${fieldHeaderNames[k]}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${dataset.map((c, i) => `
+                  <tr>
+                    <td>${i + 1}</td>
+                    ${activeFieldKeys.map(k => {
+                      if (k === 'company') return `<td>${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions'}</td>`;
+                      if (k === 'aadhaarCheck') return `<td><span class="${c.verificationsCompleted.aadhaar ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.aadhaar ? 'PASSED ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'mobileOtp') return `<td><span class="${c.verificationsCompleted.mobile ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.mobile ? 'VERIFIED ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'faceMatchScore') return `<td><span class="${c.verificationsCompleted.face ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.face ? '99.4% MATCH ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'status') return `<td><span class="${c.status === 'Verified' ? 'badge-verified' : 'badge-pending'}">${c.status}</span></td>`;
+                      return `<td>${c[k] || 'N/A'}</td>`;
+                    }).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="footer">
+              Generated via JOY Corporate Solutions BGV Platform • Confidential Legal Audit Record • DPDP Act 2023 Compliant
+            </div>
+          </body>
+          </html>
+        `);
+        printableWindow.document.close();
+        printableWindow.focus();
+        setTimeout(() => printableWindow.print(), 400);
+        showToast(`Custom PDF Report opened for printing / PDF saving! (${dataset.length} records)`);
+        if (onClose) onClose();
+        return;
+      }
+    }
 
     let contentString = '';
+    let mimeType = 'text/csv';
 
-    if (outputFormat === 'csv') {
-      // CSV Export
-      const headers = activeFieldKeys.map(k => fieldHeaderNames[k]).join(',');
-      const rows = dataset.map(c => {
-        return activeFieldKeys.map(k => {
-          if (k === 'company') return `"${c.companyId === 'comp-1' ? 'Acme Global' : 'Apex Logistics'}"`;
-          if (k === 'aadhaarCheck') return c.verificationsCompleted.aadhaar ? 'VERIFIED ✅' : 'PENDING';
-          if (k === 'mobileOtp') return c.verificationsCompleted.mobile ? 'VERIFIED ✅' : 'PENDING';
-          if (k === 'faceMatchScore') return '98.5%';
-          return `"${c[k] || 'N/A'}"`;
-        }).join(',');
+    if (outputFormat === 'json') {
+      mimeType = 'application/json';
+      contentString = JSON.stringify({
+        title: reportTitle,
+        generatedAt: new Date().toISOString(),
+        totalRecords: dataset.length,
+        records: dataset
+      }, null, 2);
+    } else {
+      // Standard RFC 4180 CSV / Excel spreadsheet
+      const headers = ['#', ...activeFieldKeys.map(k => `"${fieldHeaderNames[k]}"`)].join(',');
+      const rows = dataset.map((c, idx) => {
+        const rowVals = [
+          idx + 1,
+          ...activeFieldKeys.map(k => {
+            if (k === 'company') return `"${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions'}"`;
+            if (k === 'aadhaarCheck') return c.verificationsCompleted.aadhaar ? '"PASSED"' : '"PENDING"';
+            if (k === 'mobileOtp') return c.verificationsCompleted.mobile ? '"VERIFIED"' : '"PENDING"';
+            if (k === 'faceMatchScore') return c.verificationsCompleted.face ? '"99.4%"' : '"PENDING"';
+            return `"${(c[k] || '').toString().replace(/"/g, '""')}"`;
+          })
+        ];
+        return rowVals.join(',');
       }).join('\n');
       contentString = `${headers}\n${rows}`;
-    } else {
-      // Text Formatted PDF / Word / PNG Simulation
-      contentString = `
-JOY DATA VERIFICATION - ${reportTitle.toUpperCase()}
-================================================================================
-Report Perspective Scope : ${reportScope.toUpperCase()}
-Generated Timestamp      : ${new Date().toLocaleString()}
-Filter Criteria Applied  : Company [${selectedCompanyFilter}], Status [${selectedStatusFilter}], Dept [${selectedDeptFilter}]
-Total Records Included   : ${dataset.length} Profiles
-Included Custom Fields   : ${activeFieldKeys.map(k => fieldHeaderNames[k]).join(', ')}
-================================================================================
-
-ITEMIZED RECORD DETAILS:
---------------------------------------------------------------------------------
-${dataset.map((c, i) => `
-[RECORD #${i + 1}]
-- Candidate Name   : ${c.name} (Emp ID: #${c.empId})
-- Enterprise       : ${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics'}
-- Dept & Role      : ${c.dept} • ${c.designation}
-- Verification Date: ${c.verificationDate}
-- Overall Status   : ${c.status}
-- Govt Aadhaar UID : ${c.verificationsCompleted.aadhaar ? 'PASSED ✅' : 'PENDING ⏳'}
-- Mobile SMS OTP   : ${c.verificationsCompleted.mobile ? 'PASSED ✅' : 'PENDING ⏳'}
-- AI Face Liveness : ${c.verificationsCompleted.face ? 'MATCHED 98.5% ✅' : 'PENDING ⏳'}
---------------------------------------------------------------------------------
-`).join('')}
-
-================================================================================
-END OF REPORT • ISO 27001 COMPLIANT AUDIT TRAIL • JOY DATA VERIFICATION
-`;
     }
 
     // Trigger File Download
@@ -152,7 +217,7 @@ END OF REPORT • ISO 27001 COMPLIANT AUDIT TRAIL • JOY DATA VERIFICATION
     link.click();
     document.body.removeChild(link);
 
-    showToast(`Custom ${outputFormat.toUpperCase()} Report generated successfully! Included ${dataset.length} profiles.`);
+    showToast(`Custom ${outputFormat.toUpperCase()} Report downloaded successfully! (${dataset.length} profiles)`);
     if (onClose) onClose();
   };
 

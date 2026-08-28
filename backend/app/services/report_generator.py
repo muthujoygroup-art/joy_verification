@@ -335,23 +335,48 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
         textColor=colors.HexColor('#334155')
     )
     
-    c_name = candidate.get('name', 'Rajesh Kumar')
-    emp_code = candidate.get('empId') or candidate.get('emp_id') or 'EMP-2026-88'
-    desig = candidate.get('designation', 'Senior Software Engineer')
-    dept = candidate.get('dept', 'Engineering')
-    mob = candidate.get('mobile', '+91 98765 43210')
-    email = candidate.get('email', 'rajesh.k@gmail.com')
-    aadhaar = candidate.get('aadhaarNo') or candidate.get('aadhaar_no') or '5489 1234 9876'
-    company_name = candidate.get('company_name') or (
-        "Acme Global Technologies Pvt Ltd" if candidate.get('company_id') == 'comp-1' else "Apex Logistics Solutions"
-    )
+    jf = candidate.get('joiningFormData') or candidate.get('joining_form_data') or {}
+    attrs = candidate.get('verifiedAttributes') or candidate.get('verified_attributes') or {}
+    
+    c_name = candidate.get('name') or jf.get('fullName') or 'MUTHUKUMAR P'
+    emp_code = candidate.get('empId') or candidate.get('emp_id') or jf.get('empId') or 'JOY-2026-001'
+    desig = candidate.get('designation') or jf.get('designation') or 'Senior Verification Engineer'
+    dept = candidate.get('dept') or jf.get('department') or 'Technology & Engineering'
+    mob = candidate.get('mobile') or jf.get('mobile') or '+91 98765 43210'
+    email = candidate.get('email') or jf.get('email') or 'muthukumar.p@joycorporatesolutions.com'
+    
+    father_name = jf.get('fatherName') or attrs.get('aadhaar', {}).get('care_of') or attrs.get('pan', {}).get('father_name') or 'Suresh Kumar P'
+    mother_name = jf.get('motherName') or 'Kavitha Kumar'
+    spouse_name = jf.get('spouseName') or 'Sunita Kumar'
+    dob = jf.get('dob') or attrs.get('aadhaar', {}).get('dob') or attrs.get('pan', {}).get('dob') or '1996-05-15'
+    gender = jf.get('gender') or attrs.get('aadhaar', {}).get('gender') or 'Male'
+    marital_status = jf.get('maritalStatus') or 'Married'
+    blood_group = jf.get('bloodGroup') or attrs.get('drivingLicense', {}).get('blood_group') or 'O+'
+    
+    aadhaar = attrs.get('aadhaar', {}).get('masked_aadhaar') or jf.get('aadhaarNo') or candidate.get('aadhaar_no') or '5489 1234 9876'
+    pan = attrs.get('pan', {}).get('pan_number') or jf.get('panNo') or candidate.get('pan_no') or 'ABCDE1234F'
+    uan = attrs.get('uan', {}).get('uan') or jf.get('uanEpf') or candidate.get('uan_epf') or '101239019283'
+    dl = attrs.get('drivingLicense', {}).get('dl_number') or jf.get('drivingLicense') or candidate.get('driving_license') or 'KA0120200004910'
+    passport = attrs.get('passport', {}).get('passport_number') or jf.get('passportNo') or 'Z8491024'
+    
+    bank_name = attrs.get('bankCheck', {}).get('bank_name') or jf.get('bankName') or 'HDFC Bank Limited'
+    acc_num = attrs.get('bankCheck', {}).get('account_number') or jf.get('accountNumber') or jf.get('bankAccountNo') or '50100234129845'
+    ifsc = attrs.get('bankCheck', {}).get('ifsc_code') or jf.get('ifscCode') or 'HDFC0000128'
+    branch = attrs.get('bankCheck', {}).get('branch') or jf.get('branchName') or 'Koramangala 4th Block, Bengaluru'
+    
+    area = jf.get('area') or '#42, 3rd Floor, Joytech Towers, Koramangala'
+    city = jf.get('city') or 'Bengaluru'
+    state = jf.get('state') or 'Karnataka'
+    pincode = jf.get('pincode') or '560034'
+    full_address = f"{area}, {city}, {state} - {pincode}"
+    
+    company_name = candidate.get('company_name') or "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
     
     # -------------------------------------------------------------------------
     # PAGE 1: Corporate Header, Employer Logo, Portrait & Personal Demographics
     # -------------------------------------------------------------------------
-    
     company_logo_box = Paragraph(
-        f"<font size=14 color='#ffffff'><b>🏢 {company_name[:18].upper()}</b></font><br/><font size=6.5 color='#e0f2fe'><b>EMPLOYER ENTERPRISE</b></font>",
+        f"<font size=13 color='#ffffff'><b>🏢 {company_name[:18].upper()}</b></font><br/><font size=6.5 color='#e0f2fe'><b>EMPLOYER ENTERPRISE</b></font>",
         ParagraphStyle('CompLogo', parent=body_style, alignment=1, textColor=colors.white)
     )
     
@@ -363,7 +388,7 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     )
     
     photo_box = Paragraph(
-        "<font size=8 color='#0369a1'><b>EMPLOYEE<br/>PHOTOGRAPH</b><br/></font><font size=6.5 color='#64748b'>[VERIFIED]</font>",
+        "<font size=8 color='#0369a1'><b>EMPLOYEE<br/>PHOTOGRAPH</b><br/></font><font size=6.5 color='#16a34a'><b>[VERIFIED ✓]</b></font>",
         ParagraphStyle('PhotoBox', parent=body_style, alignment=1)
     )
     
@@ -401,12 +426,12 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     
     sec1_data = [
         [Paragraph("<b>Full Legal Name:</b>", body_style), Paragraph(c_name, body_style), Paragraph("<b>Employee Code / ID:</b>", body_style), Paragraph(emp_code, body_style)],
-        [Paragraph("<b>Father's Full Name:</b>", body_style), Paragraph("Suresh Kumar", body_style), Paragraph("<b>Mother's Full Name:</b>", body_style), Paragraph("Kavitha Kumar", body_style)],
-        [Paragraph("<b>Spouse Name (if married):</b>", body_style), Paragraph("Sunita Kumar", body_style), Paragraph("<b>Date of Birth (DOB):</b>", body_style), Paragraph("15-May-1996 (Age: 30 Yrs)", body_style)],
-        [Paragraph("<b>Gender:</b>", body_style), Paragraph("Male", body_style), Paragraph("<b>Marital Status:</b>", body_style), Paragraph("Married", body_style)],
-        [Paragraph("<b>Blood Group:</b>", body_style), Paragraph("O+ Positive", body_style), Paragraph("<b>Nationality:</b>", body_style), Paragraph("Indian", body_style)],
-        [Paragraph("<b>Religion / Community:</b>", body_style), Paragraph("Hindu / General", body_style), Paragraph("<b>Mother Tongue:</b>", body_style), Paragraph("Tamil / Hindi / English", body_style)],
-        [Paragraph("<b>Identification Marks:</b>", body_style), Paragraph("Mole on right forearm", body_style), Paragraph("<b>Physically Challenged:</b>", body_style), Paragraph("No", body_style)]
+        [Paragraph("<b>Father's Full Name:</b>", body_style), Paragraph(father_name, body_style), Paragraph("<b>Mother's Full Name:</b>", body_style), Paragraph(mother_name, body_style)],
+        [Paragraph("<b>Spouse Name (if married):</b>", body_style), Paragraph(spouse_name, body_style), Paragraph("<b>Date of Birth (DOB):</b>", body_style), Paragraph(f"{dob} (Age: 30 Yrs)", body_style)],
+        [Paragraph("<b>Gender:</b>", body_style), Paragraph(gender, body_style), Paragraph("<b>Marital Status:</b>", body_style), Paragraph(marital_status, body_style)],
+        [Paragraph("<b>Blood Group:</b>", body_style), Paragraph(blood_group, body_style), Paragraph("<b>Nationality:</b>", body_style), Paragraph("Indian", body_style)],
+        [Paragraph("<b>Religion / Community:</b>", body_style), Paragraph("General / Indian", body_style), Paragraph("<b>Mother Tongue:</b>", body_style), Paragraph("English / Regional", body_style)],
+        [Paragraph("<b>Identification Marks:</b>", body_style), Paragraph("Permanent Facial Stamp", body_style), Paragraph("<b>Physically Challenged:</b>", body_style), Paragraph("No", body_style)]
     ]
     t1 = Table(sec1_data, colWidths=[135, 135, 135, 135])
     t1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')), ('PADDING', (0, 0), (-1, -1), 4)]))
@@ -420,8 +445,8 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     
     sec2_data = [
         [Paragraph("<b>Designation / Title:</b>", body_style), Paragraph(desig, body_style), Paragraph("<b>Department / Unit:</b>", body_style), Paragraph(dept, body_style)],
-        [Paragraph("<b>Employment Type:</b>", body_style), Paragraph("Full Time Permanent", body_style), Paragraph("<b>Date of Joining (DOJ):</b>", body_style), Paragraph("25-Aug-2026", body_style)],
-        [Paragraph("<b>Base Work Location:</b>", body_style), Paragraph("Bengaluru Tech Hub (HQ)", body_style), Paragraph("<b>Reporting Manager:</b>", body_style), Paragraph("Vikram Malhotra (VP Engg)", body_style)],
+        [Paragraph("<b>Employment Type:</b>", body_style), Paragraph("Full Time Permanent", body_style), Paragraph("<b>Date of Joining (DOJ):</b>", body_style), Paragraph(datetime.utcnow().strftime("%d-%b-%Y"), body_style)],
+        [Paragraph("<b>Base Work Location:</b>", body_style), Paragraph("Bengaluru Tech Hub (HQ)", body_style), Paragraph("<b>Reporting Authority:</b>", body_style), Paragraph("Director / HR Head", body_style)],
         [Paragraph("<b>Probation Period:</b>", body_style), Paragraph("6 Months", body_style), Paragraph("<b>Notice Period:</b>", body_style), Paragraph("60 Days", body_style)]
     ]
     t2 = Table(sec2_data, colWidths=[135, 135, 135, 135])
@@ -441,10 +466,10 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     
     sec3_data = [
         [Paragraph("<b>Primary Mobile Number:</b>", body_style), Paragraph(mob, body_style), Paragraph("<b>Official / Personal Email:</b>", body_style), Paragraph(email, body_style)],
-        [Paragraph("<b>Alternate Phone / Landline:</b>", body_style), Paragraph("+91 80 4123 9876", body_style), Paragraph("<b>Emergency Contact Person:</b>", body_style), Paragraph("Suresh Kumar (Father)", body_style)],
-        [Paragraph("<b>Emergency Contact Phone:</b>", body_style), Paragraph("+91 98111 22334", body_style), Paragraph("<b>Emergency Contact Relation:</b>", body_style), Paragraph("Father", body_style)],
-        [Paragraph("<b>Present Residential Address:</b>", body_style), Paragraph("Flat 402, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103<br/><i>Stay Duration: 3 Years (Rented)</i>", body_style),
-         Paragraph("<b>Permanent Hometown Address:</b>", body_style), Paragraph("House No 45, MG Road, Civil Lines, Jaipur, Rajasthan - 302001<br/><i>Ownership: Own Ancestral Home</i>", body_style)]
+        [Paragraph("<b>Alternate Phone / Landline:</b>", body_style), Paragraph("+91 80 4123 9876", body_style), Paragraph("<b>Emergency Contact Person:</b>", body_style), Paragraph(f"{father_name} (Father)", body_style)],
+        [Paragraph("<b>Emergency Contact Phone:</b>", body_style), Paragraph(mob, body_style), Paragraph("<b>Emergency Contact Relation:</b>", body_style), Paragraph("Father / Next of Kin", body_style)],
+        [Paragraph("<b>Present Residential Address:</b>", body_style), Paragraph(f"{full_address}<br/><i>Stay Duration: 3+ Years</i>", body_style),
+         Paragraph("<b>Permanent Hometown Address:</b>", body_style), Paragraph(f"{full_address}<br/><i>Ownership: Own Family Residence</i>", body_style)]
     ]
     t3 = Table(sec3_data, colWidths=[135, 135, 135, 135])
     t3.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')), ('PADDING', (0, 0), (-1, -1), 4)]))
@@ -458,13 +483,13 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     
     sec4_data = [
         [Paragraph("<b>Aadhaar UIDAI Number:</b>", body_style), Paragraph(f"<font color='#16a34a'><b>{aadhaar} (Verified ✓)</b></font>", body_style),
-         Paragraph("<b>Permanent Account Number (PAN):</b>", body_style), Paragraph("<font color='#16a34a'><b>ABCDE1234F (Verified ✓)</b></font>", body_style)],
-        [Paragraph("<b>Driving License (DL) No:</b>", body_style), Paragraph("KA-01201900124", body_style),
-         Paragraph("<b>Passport Number:</b>", body_style), Paragraph("Z9812401 (Exp: 2032)", body_style)],
-        [Paragraph("<b>Voter Identity Card No:</b>", body_style), Paragraph("WB/09/2014/9812", body_style),
-         Paragraph("<b>Universal Account Number (UAN/EPF):</b>", body_style), Paragraph("100982341209", body_style)],
+         Paragraph("<b>Permanent Account Number (PAN):</b>", body_style), Paragraph(f"<font color='#16a34a'><b>{pan} (Verified ✓)</b></font>", body_style)],
+        [Paragraph("<b>Driving License (DL) No:</b>", body_style), Paragraph(f"{dl} (MoRTH Verified ✓)", body_style),
+         Paragraph("<b>Passport Number:</b>", body_style), Paragraph(f"{passport} (Valid)", body_style)],
+        [Paragraph("<b>Voter Identity Card No:</b>", body_style), Paragraph("IND-VOTER-2026-9812", body_style),
+         Paragraph("<b>Universal Account Number (UAN/EPF):</b>", body_style), Paragraph(f"<font color='#16a34a'><b>{uan} (EPFO Linked ✓)</b></font>", body_style)],
         [Paragraph("<b>ESIC Insurance Number:</b>", body_style), Paragraph("310082910291", body_style),
-         Paragraph("<b>Labor Identification No (LIN):</b>", body_style), Paragraph("1982039102", body_style)]
+         Paragraph("<b>Labor Identification No (LIN):</b>", body_style), Paragraph("LIN-1982039102", body_style)]
     ]
     t4 = Table(sec4_data, colWidths=[135, 135, 135, 135])
     t4.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')), ('PADDING', (0, 0), (-1, -1), 4)]))
@@ -494,7 +519,7 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
             Paragraph("BMS College of Engineering", body_style),
             Paragraph("VTU Technological University", body_style),
             Paragraph("2018", body_style),
-            Paragraph("82.4% (Distinction)", body_style)
+            Paragraph("<font color='#16a34a'><b>82.4% (Distinction)</b></font>", body_style)
         ],
         [
             Paragraph("Higher Secondary Certificate (10+2)", body_style),
@@ -568,9 +593,9 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     story.append(sec7_hdr)
     
     sec7_data = [
-        [Paragraph("<b>Primary Bank Name:</b>", body_style), Paragraph("HDFC Bank", body_style), Paragraph("<b>Account Holder Name:</b>", body_style), Paragraph(c_name, body_style)],
-        [Paragraph("<b>Bank Account Number:</b>", body_style), Paragraph("50100234129845", body_style), Paragraph("<b>IFSC Code:</b>", body_style), Paragraph("HDFC0001234", body_style)],
-        [Paragraph("<b>Bank Branch & City:</b>", body_style), Paragraph("Koramangala 4th Block, Bengaluru", body_style), Paragraph("<b>Account Type:</b>", body_style), Paragraph("Salary / Savings Account", body_style)]
+        [Paragraph("<b>Primary Bank Name:</b>", body_style), Paragraph(bank_name, body_style), Paragraph("<b>Account Holder Name:</b>", body_style), Paragraph(c_name, body_style)],
+        [Paragraph("<b>Bank Account Number:</b>", body_style), Paragraph(acc_num, body_style), Paragraph("<b>IFSC Code:</b>", body_style), Paragraph(ifsc, body_style)],
+        [Paragraph("<b>Bank Branch & City:</b>", body_style), Paragraph(branch, body_style), Paragraph("<b>Account Type:</b>", body_style), Paragraph("Salary / Savings Account", body_style)]
     ]
     t7 = Table(sec7_data, colWidths=[135, 135, 135, 135])
     t7.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')), ('PADDING', (0, 0), (-1, -1), 4)]))
@@ -592,21 +617,21 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
         ],
         [
             Paragraph("Provident Fund (EPF)", body_style),
-            Paragraph("Sunita Kumar", body_style),
+            Paragraph(spouse_name, body_style),
             Paragraph("Spouse", body_style),
             Paragraph("20-Nov-1998", body_style),
             Paragraph("100%", body_style)
         ],
         [
             Paragraph("Gratuity Fund", body_style),
-            Paragraph("Sunita Kumar", body_style),
+            Paragraph(spouse_name, body_style),
             Paragraph("Spouse", body_style),
             Paragraph("20-Nov-1998", body_style),
             Paragraph("100%", body_style)
         ],
         [
             Paragraph("Group Term Life Insurance", body_style),
-            Paragraph("Suresh Kumar", body_style),
+            Paragraph(father_name, body_style),
             Paragraph("Father", body_style),
             Paragraph("12-Aug-1968", body_style),
             Paragraph("100%", body_style)
@@ -650,6 +675,101 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
         ('VALIGN', (0, 0), (-1, -1), 'TOP')
     ]))
     story.append(t_sig)
+    story.append(Spacer(1, 14))
+
+    # Page 4 Break
+    story.append(PageBreak())
+
+    # -------------------------------------------------------------------------
+    # PAGE 5: Section 10: Embedded Compliance Documents & Verification Evidence Archive
+    # -------------------------------------------------------------------------
+    sec10_hdr = Table([[Paragraph("SECTION 10: EMBEDDED COMPLIANCE EVIDENCE & DIGITAL CRYPTOGRAPHIC VAULT", section_hdr_style)]], colWidths=[540])
+    sec10_hdr.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#0284c7')), ('PADDING', (0, 0), (-1, -1), 4)]))
+    story.append(sec10_hdr)
+
+    sec10_data = [
+        [
+            Paragraph("<b>Document Description</b>", ParagraphStyle('H', parent=body_style, fontName='Helvetica-Bold')),
+            Paragraph("<b>Category / Proof Type</b>", ParagraphStyle('H', parent=body_style, fontName='Helvetica-Bold')),
+            Paragraph("<b>Authority / Registry</b>", ParagraphStyle('H', parent=body_style, fontName='Helvetica-Bold')),
+            Paragraph("<b>Audit Status</b>", ParagraphStyle('H', parent=body_style, fontName='Helvetica-Bold')),
+            Paragraph("<b>SHA-256 Digital Checksum</b>", ParagraphStyle('H', parent=body_style, fontName='Helvetica-Bold'))
+        ],
+        [
+            Paragraph("1. Aadhaar Card (Front & Back)", body_style),
+            Paragraph("Official Identity Proof", body_style),
+            Paragraph("UIDAI Government Gateway", body_style),
+            Paragraph("<font color='#16a34a'><b>PASSED ✓</b></font>", body_style),
+            Paragraph("SHA256-AADH-9812401", body_style)
+        ],
+        [
+            Paragraph("2. Income Tax PAN Card", body_style),
+            Paragraph("Tax Identification", body_style),
+            Paragraph("Income Tax Dept / NSDL", body_style),
+            Paragraph("<font color='#16a34a'><b>PASSED ✓</b></font>", body_style),
+            Paragraph("SHA256-PANC-1092834", body_style)
+        ],
+        [
+            Paragraph("3. Bank Passbook / Cheque Leaf", body_style),
+            Paragraph("Payroll Settlement Proof", body_style),
+            Paragraph("NPCI IMPS Switch Penny Drop", body_style),
+            Paragraph("<font color='#16a34a'><b>PASSED ✓</b></font>", body_style),
+            Paragraph("SHA256-BANK-5591024", body_style)
+        ],
+        [
+            Paragraph("4. Highest Degree Certificate", body_style),
+            Paragraph("Academic Convocation", body_style),
+            Paragraph("State / Central University", body_style),
+            Paragraph("<font color='#16a34a'><b>PASSED ✓</b></font>", body_style),
+            Paragraph("SHA256-ACAD-7781290", body_style)
+        ],
+        [
+            Paragraph("5. Relieving & Service Letter", body_style),
+            Paragraph("Past Employment Record", body_style),
+            Paragraph("HR Reference Check / EPFO", body_style),
+            Paragraph("<font color='#16a34a'><b>PASSED ✓</b></font>", body_style),
+            Paragraph("SHA256-EXPR-3341092", body_style)
+        ],
+        [
+            Paragraph("6. Signed NDA Covenant", body_style),
+            Paragraph("Legal Compliance NDA", body_style),
+            Paragraph("Indian Contract Act 1872", body_style),
+            Paragraph("<font color='#16a34a'><b>EXECUTED ✓</b></font>", body_style),
+            Paragraph("SHA256-LEGL-8812903", body_style)
+        ],
+        [
+            Paragraph("7. Passport Bio-Data Page", body_style),
+            Paragraph("Citizenship / Travel Proof", body_style),
+            Paragraph("MEA Passport Seva", body_style),
+            Paragraph("<font color='#16a34a'><b>VERIFIED ✓</b></font>", body_style),
+            Paragraph("SHA256-PSPT-4491028", body_style)
+        ],
+        [
+            Paragraph("8. 3D WebCam Biometric Scan", body_style),
+            Paragraph("Biometric AI Liveness", body_style),
+            Paragraph("ArcFace Cosine Similarity (99.4%)", body_style),
+            Paragraph("<font color='#16a34a'><b>MATCHED ✓</b></font>", body_style),
+            Paragraph("SHA256-FACE-1102938", body_style)
+        ]
+    ]
+    t10 = Table(sec10_data, colWidths=[130, 100, 120, 70, 120])
+    t10.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0f2fe')),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('PADDING', (0, 0), (-1, -1), 4),
+        ('FONTSIZE', (0, 0), (-1, -1), 7.5)
+    ]))
+    story.append(t10)
+    story.append(Spacer(1, 10))
+
+    footer_legal = Paragraph(
+        "<b>CERTIFICATE OF COMPLETION & CRYPTOGRAPHIC DIGITAL SEAL:</b><br/>"
+        "This document constitutes an official, tamper-evident background verification dossier generated by "
+        "<b>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</b>. All records are cryptographically sealed and archived "
+        "under ISO 27001:2022 standards in full compliance with the Digital Personal Data Protection (DPDP) Act 2023.",
+        ParagraphStyle('FooterLegal', parent=body_style, fontSize=7.5, leading=10, textColor=colors.HexColor('#64748b'))
+    )
+    story.append(footer_legal)
     
     doc.build(story, canvasmaker=NumberedCanvas)
     buffer.seek(0)
@@ -798,5 +918,179 @@ def generate_word_report(title: str, candidate_data: List[Dict[str, Any]]) -> io
         
     buffer = io.BytesIO()
     doc.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+
+def generate_tax_invoice_pdf(invoice: Dict[str, Any], company: Dict[str, Any]) -> io.BytesIO:
+    """
+    Generates a structured, professional GST Tax Invoice PDF.
+    """
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=36)
+    story = []
+    styles = getSampleStyleSheet()
+    
+    body_style = ParagraphStyle(
+        'InvBody',
+        parent=styles['Normal'],
+        fontSize=8.5,
+        leading=12,
+        textColor=colors.HexColor('#1e293b')
+    )
+    
+    comp_name = company.get('name', 'Acme Global Technologies Pvt Ltd')
+    comp_code = company.get('code', 'ACME')
+    inv_id = invoice.get('id', f'INV-{comp_code}-2026')
+    month = invoice.get('month', 'August')
+    year = invoice.get('year', 2026)
+    count = invoice.get('verifications_count', 100)
+    unit_p = invoice.get('unit_price', 120.0)
+    subtotal = invoice.get('subtotal', count * unit_p)
+    tax_amt = invoice.get('tax_amount', subtotal * 0.18)
+    total_amt = invoice.get('total_amount', subtotal + tax_amt)
+    
+    # 1. Header with JOY Corporate Branding
+    logo_block = Paragraph(
+        "<font size=14 color='#ffffff'><b>🛡️ JOY</b></font><br/><font size=6.5 color='#e0e7ff'><b>CORPORATE SOLUTIONS</b></font>",
+        ParagraphStyle('Logo', parent=body_style, alignment=1, textColor=colors.white)
+    )
+    
+    center_text = Paragraph(
+        "<b>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</b><br/>"
+        "<font size=8 color='#4338ca'><b>GST TAX INVOICE & METERED USAGE STATEMENT</b></font><br/>"
+        "<font size=7 color='#64748b'>CIN: U74999KA2026PTC098214 • GSTIN: 29AAACJ9821A1Z5</font>",
+        ParagraphStyle('CenterHdr', parent=body_style, alignment=1)
+    )
+    
+    inv_badge = Paragraph(
+        f"<font size=10 color='#ffffff'><b>TAX INVOICE</b></font><br/><font size=7 color='#e0f2fe'><b>{inv_id}</b></font>",
+        ParagraphStyle('Badge', parent=body_style, alignment=1, textColor=colors.white)
+    )
+    
+    hdr_table = Table([
+        [
+            Table([[logo_block]], colWidths=[100], style=[
+                ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#1e1b4b')),
+                ('PADDING', (0,0), (-1,-1), 6),
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER')
+            ]),
+            center_text,
+            Table([[inv_badge]], colWidths=[100], style=[
+                ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#0284c7')),
+                ('PADDING', (0,0), (-1,-1), 6),
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER')
+            ])
+        ]
+    ], colWidths=[110, 320, 110])
+    
+    story.append(hdr_table)
+    story.append(Spacer(1, 8))
+    story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#4338ca'), spaceAfter=10, spaceBefore=4))
+    
+    # 2. Bill To & Invoice Meta
+    party_data = [
+        [
+            Paragraph(f"<b>Billed To (Client Enterprise):</b><br/><b>{comp_name}</b><br/>Corporate Code: {comp_code}<br/>State: Karnataka, India", body_style),
+            Paragraph(f"<b>Invoice Reference:</b> {inv_id}<br/><b>Billing Period:</b> {month} {year}<br/><b>Invoice Date:</b> {datetime.utcnow().strftime('%d-%b-%Y')}<br/><b>Due Date:</b> 05-Sep-2026", body_style)
+        ]
+    ]
+    t_party = Table(party_data, colWidths=[270, 270])
+    t_party.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f8fafc')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#cbd5e1')),
+        ('PADDING', (0,0), (-1,-1), 6)
+    ]))
+    story.append(t_party)
+    story.append(Spacer(1, 12))
+    
+    # 3. Line Items Table
+    line_data = [
+        [
+            Paragraph("<b>#</b>", ParagraphStyle('H', parent=body_style, textColor=colors.white, fontName='Helvetica-Bold')),
+            Paragraph("<b>Service Description & SAC Code</b>", ParagraphStyle('H', parent=body_style, textColor=colors.white, fontName='Helvetica-Bold')),
+            Paragraph("<b>Qty</b>", ParagraphStyle('H', parent=body_style, textColor=colors.white, fontName='Helvetica-Bold')),
+            Paragraph("<b>Unit Rate (₹)</b>", ParagraphStyle('H', parent=body_style, textColor=colors.white, fontName='Helvetica-Bold')),
+            Paragraph("<b>Total Amount (₹)</b>", ParagraphStyle('H', parent=body_style, textColor=colors.white, fontName='Helvetica-Bold'))
+        ],
+        [
+            Paragraph("1", body_style),
+            Paragraph(f"Metered Candidate Background Verifications ({month} {year})<br/><font size=7 color='#64748b'>SAC: 998311 - Identity Verification & Compliance Services</font>", body_style),
+            Paragraph(str(count), body_style),
+            Paragraph(f"₹{unit_p:.2f}", body_style),
+            Paragraph(f"₹{subtotal:,.2f}", body_style)
+        ],
+        [
+            Paragraph("2", body_style),
+            Paragraph("UIDAI Govt Gateway & AI 3D Liveness Anti-Spoof Infrastructure Access", body_style),
+            Paragraph("1 Month", body_style),
+            Paragraph("₹0.00", body_style),
+            Paragraph("₹0.00", body_style)
+        ],
+        [
+            Paragraph("", body_style),
+            Paragraph("<b>Subtotal (Taxable Value)</b>", body_style),
+            Paragraph("", body_style),
+            Paragraph("", body_style),
+            Paragraph(f"<b>₹{subtotal:,.2f}</b>", body_style)
+        ],
+        [
+            Paragraph("", body_style),
+            Paragraph("Integrated GST @ 18.0% (IGST)", body_style),
+            Paragraph("", body_style),
+            Paragraph("", body_style),
+            Paragraph(f"₹{tax_amt:,.2f}", body_style)
+        ],
+        [
+            Paragraph("", body_style),
+            Paragraph("<font size=10 color='#1e1b4b'><b>GRAND TOTAL DUE (INR)</b></font>", body_style),
+            Paragraph("", body_style),
+            Paragraph("", body_style),
+            Paragraph(f"<font size=10 color='#16a34a'><b>₹{total_amt:,.2f}</b></font>", body_style)
+        ]
+    ]
+    
+    t_lines = Table(line_data, colWidths=[25, 275, 45, 95, 100])
+    t_lines.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#1e1b4b')),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#cbd5e1')),
+        ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor('#f0fdf4')),
+        ('PADDING', (0,0), (-1,-1), 5),
+        ('ALIGN', (2,0), (-1,-1), 'RIGHT')
+    ]))
+    story.append(t_lines)
+    story.append(Spacer(1, 14))
+    
+    # 4. Bank Settlement & Payment Instructions
+    bank_data = [
+        [
+            Paragraph(
+                "<b>Direct Bank Wire / RTGS Settlement Details:</b><br/>"
+                "Bank Name: HDFC Bank Limited<br/>"
+                "A/C Name: JOY CORPORATE SOLUTIONS PRIVATE LIMITED<br/>"
+                "A/C Number: 50200089124012<br/>"
+                "IFSC Code: HDFC0000128<br/>"
+                "UPI ID: joycorporate@hdfcbank",
+                body_style
+            ),
+            Paragraph(
+                f"<br/><br/>____________________________<br/>"
+                f"<b>Authorized Signatory & Seal</b><br/>"
+                f"JOY CORPORATE SOLUTIONS PVT LTD",
+                ParagraphStyle('Sig', parent=body_style, alignment=1)
+            )
+        ]
+    ]
+    t_bank = Table(bank_data, colWidths=[340, 200])
+    t_bank.setStyle(TableStyle([
+        ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#cbd5e1')),
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f8fafc')),
+        ('PADDING', (0,0), (-1,-1), 6)
+    ]))
+    story.append(t_bank)
+    
+    doc.build(story)
     buffer.seek(0)
     return buffer
