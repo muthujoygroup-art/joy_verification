@@ -347,12 +347,12 @@ export const EmployeePortalView = () => {
           <div className="flex items-center justify-between font-extrabold text-indigo-900">
             <div className="flex items-center gap-2">
               <span className="text-base">💬</span>
-              <span className="text-xs uppercase tracking-wider">Instructions from HR Department (Priya Sundaram):</span>
+              <span className="text-xs uppercase tracking-wider">Instructions from HR Department ({candidate.hrName || 'PRAVEEN B'}):</span>
             </div>
             <span className="badge badge-indigo text-[9px]">HR Direct Message</span>
           </div>
           <p className="text-indigo-950 font-semibold pl-6 leading-relaxed text-[12px]">
-            "{candidate.hrCustomMessage || 'Welcome to our organization! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}"
+            "{candidate.hrCustomMessage || 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}"
           </p>
         </div>
 
@@ -457,7 +457,7 @@ export const EmployeePortalView = () => {
             <span className="text-[10px] text-slate-500 font-bold uppercase block">Requesting Organization</span>
             <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Acme Global Technologies</span>
+              <span>{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
             </div>
           </div>
 
@@ -520,7 +520,7 @@ export const EmployeePortalView = () => {
 
           <button
             onClick={() => setShowLegalHandbook(true)}
-            className="text-xs font-bold text-indigo-200 hover:text-white flex items-center gap-1.5 cursor-pointer bg-white/10 px-3 py-1.5 rounded-xl hover:bg-white/20 transition-all self-start sm:self-auto border border-white/10"
+            className="btn bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer"
           >
             <Scale className="w-3.5 h-3.5" />
             <span>Read Privacy Handbook 📖</span>
@@ -530,7 +530,7 @@ export const EmployeePortalView = () => {
         {/* Transparency Explanation Cards */}
         <div className="text-xs text-slate-200 space-y-3 leading-relaxed">
           <p>
-            Your prospective employer (<strong>Acme Global Technologies</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
+            Your prospective employer (<strong>{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] font-medium text-slate-200 pt-1">

@@ -36,8 +36,8 @@ export const DocumentStorageHub = () => {
 
   // Generate complete document storage vault items from candidates
   const allStoredDocuments = candidates.flatMap(cand => {
-    const comp = companies.find(c => c.id === cand.companyId) || { name: 'Acme Global' };
-    const dateStr = cand.verificationDate || '2026-08-20 12:30';
+    const comp = companies.find(c => c.id === cand.companyId) || { name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' };
+    const dateStr = cand.verificationDate || '2026-08-28 12:30';
 
     return [
       {

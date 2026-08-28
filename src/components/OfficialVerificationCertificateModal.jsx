@@ -18,8 +18,8 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   if (!candidate) return null;
 
   const certId = `JCS-VERIF-2026-${candidate.id?.replace('emp-', '') || '101'}-889`;
-  const verifDate = candidate.verificationDate || '2026-08-24 10:30 UTC';
-  const companyName = candidate.companyId === 'comp-2' ? 'Apex Logistics Solutions' : 'Acme Global Technologies Pvt Ltd';
+  const verifDate = candidate.verificationDate || '2026-08-28 10:30 IST';
+  const companyName = candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
 
   const handleDownloadPdf = () => {
     const downloadUrl = api.exportCertificatePdfUrl(candidate.token || candidate.id);
@@ -37,7 +37,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border-4 border-double border-indigo-200 p-6 sm:p-8 space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
+      <div className="bg-white w-full max-w-3xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
         
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">

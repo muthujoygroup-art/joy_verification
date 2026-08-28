@@ -223,7 +223,7 @@ export const UniversalDocumentExportModal = ({
                 <td>${i + 1}</td>
                 <td><strong>${c.name}</strong></td>
                 <td>${c.empId || 'EMP-' + (400 + i)}</td>
-                <td>${companies.find(comp => comp.id === c.companyId)?.name || 'Acme Global Technologies'}</td>
+                <td>${companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</td>
                 <td>${c.designation || 'Specialist'}</td>
                 <td>XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}</td>
                 <td>${c.bankDetails?.nameMatchStatus || 'Matched 100% (Penny Drop)'}</td>
@@ -278,7 +278,7 @@ export const UniversalDocumentExportModal = ({
       c.id,
       `"${c.name}"`,
       c.empId || `EMP-${400 + i}`,
-      `"${companies.find(comp => comp.id === c.companyId)?.name || 'Acme Global Technologies'}"`,
+      `"${companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}"`,
       `"${c.department || c.dept || 'Engineering'}"`,
       `"${c.designation || 'Associate'}"`,
       c.email,
@@ -327,7 +327,7 @@ export const UniversalDocumentExportModal = ({
         token: c.token,
         name: c.name,
         empId: c.empId,
-        companyName: companies.find(comp => comp.id === c.companyId)?.name || 'Acme Global Technologies',
+        companyName: companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
         status: c.status,
         maskedAadhaar: `XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}`,
         verificationDate: c.verificationDate || '2026-08-26',

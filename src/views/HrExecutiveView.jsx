@@ -148,7 +148,7 @@ export const HrExecutiveView = () => {
     companyId: currentCompany.id,
     hrId: activeHr.id,
     employeeCategory: 'skilled',
-    hrCustomMessage: 'Welcome to Acme Global! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
+    hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
     statutoryFormsConfig: {
       form16: true,
       form11: true,
@@ -1032,7 +1032,7 @@ export const HrExecutiveView = () => {
               rows="2"
               value={formData.hrCustomMessage}
               onChange={(e) => setFormData({ ...formData, hrCustomMessage: e.target.value })}
-              placeholder="e.g. Welcome to Acme Global! Please fill all form sections, upload your educational & KYC documents, and complete your verification by Friday."
+              placeholder="e.g. Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill all form sections, upload your educational & KYC documents, and complete your verification by Friday."
               className="form-input text-xs font-medium bg-white"
             />
 
@@ -1043,7 +1043,7 @@ export const HrExecutiveView = () => {
                 type="button"
                 onClick={() => setFormData({
                   ...formData,
-                  hrCustomMessage: 'Welcome to Acme Global! Please complete all 9 profile sections, upload your original KYC & academic certificates, and execute the statutory declarations by Friday.'
+                  hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please complete all 9 profile sections, upload your original KYC & academic certificates, and execute the statutory declarations by Friday.'
                 })}
                 className="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-800 font-bold hover:bg-indigo-100 cursor-pointer"
               >
@@ -2076,8 +2076,8 @@ export const HrExecutiveView = () => {
       {viewingBgvReportCandidate && (
         <ComprehensiveBgvReportModal
           candidate={viewingBgvReportCandidate}
-          companyName={currentCompany?.name || "Acme Global Technologies"}
-          hrName={activeHr?.name || "Priya Sundaram"}
+          companyName={currentCompany?.name || "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"}
+          hrName={activeHr?.name || "PRAVEEN B"}
           onClose={() => setViewingBgvReportCandidate(null)}
         />
       )}

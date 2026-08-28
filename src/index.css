@@ -555,3 +555,64 @@ body[data-role="employee_link"] {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* ==============================================================================
+ * UNIVERSAL RESPONSIVE UTILITIES & SAFE-AREA SUPPORT (ALL VIEWPORTS 320px - 4K)
+ * ============================================================================== */
+
+/* Safe area padding for notched mobile phones (iOS / Android) */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Minimum 44px touch target for mobile usability (WCAG 2.1 AA standard) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fluid responsive typography */
+@layer utilities {
+  .text-fluid-xs {
+    font-size: clamp(0.7rem, 0.65rem + 0.25vw, 0.75rem);
+  }
+  .text-fluid-sm {
+    font-size: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
+  }
+  .text-fluid-base {
+    font-size: clamp(0.9rem, 0.85rem + 0.35vw, 1rem);
+  }
+  .text-fluid-lg {
+    font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem);
+  }
+  .text-fluid-xl {
+    font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  }
+  .text-fluid-2xl {
+    font-size: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  }
+}
+
+/* Dynamic text truncation & multi-line clamp */
+.break-word-safe {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Mobile full-width modal drawer */
+@media (max-width: 640px) {
+  .modal-mobile-bottom-sheet {
+    align-self: flex-end;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 94vh;
+    margin-bottom: 0;
+  }
+}
+
+

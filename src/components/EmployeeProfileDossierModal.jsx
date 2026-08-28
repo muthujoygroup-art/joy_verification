@@ -42,8 +42,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   };
 
   const c = candidate;
-  const companyName = c.companyId === 'comp-2' ? 'Apex Logistics Solutions' : 'Acme Global Technologies Pvt Ltd';
-  const facePhoto = c.faceImages?.straight || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200';
+  const companyName = c.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || '/joy_logo.png';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
   const employeeTypeLabel = c.employeeCategory === 'high_profile' 
     ? 'Type 1: High Profile / C-Suite Executive'
@@ -55,7 +55,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 p-6 sm:p-8 space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
+      <div className="bg-white w-full max-w-4xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
         
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 print:hidden">

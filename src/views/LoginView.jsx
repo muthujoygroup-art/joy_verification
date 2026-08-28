@@ -472,7 +472,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                             const comp = companies.find(c => c.id === h.companyId);
                             return (
                               <option key={h.id} value={h.id}>
-                                👩‍💼 {h.name} — {h.dept} ({comp?.name || 'Acme Global'}) — {h.email}
+                                👩‍💼 {h.name} — {h.dept} ({comp?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}) — {h.email}
                               </option>
                             );
                           })}
@@ -488,7 +488,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           <input 
                             type="email" 
                             required
-                            value={emailInput || hrUsers.find(h => h.id === selectedHrId)?.email || 'priya.s@acmeglobal.com'}
+                            value={emailInput || hrUsers.find(h => h.id === selectedHrId)?.email || 'praveen.b@joycorporatesolutions.com'}
                             onChange={(e) => setEmailInput(e.target.value)}
                             className="form-input pl-9.5 py-2.5 font-semibold text-slate-900"
                           />
@@ -534,7 +534,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                         >
                           {candidates.map(c => (
                             <option key={c.id} value={c.token}>
-                              📱 {c.name} ({c.companyId === 'comp-1' ? 'Acme Tech' : 'Apex Logistics'}) — Token: {c.token} [{c.status}]
+                              📱 {c.name} ({c.companyName || 'JOY CORPORATE SOLUTIONS'}) — Token: {c.token} [{c.status}]
                             </option>
                           ))}
                         </select>

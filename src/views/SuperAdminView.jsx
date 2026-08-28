@@ -2054,8 +2054,8 @@ export const SuperAdminView = () => {
             </div>
 
             {/* Calculations Table */}
-            <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-white">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="border border-slate-200 rounded-2xl overflow-x-auto no-scrollbar shadow-xs bg-white">
+              <table className="w-full text-left text-xs border-collapse min-w-[700px]">
                 <thead className="bg-slate-50 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider font-mono">
                   <tr>
                     <th className="p-3.5">Enterprise Client</th>

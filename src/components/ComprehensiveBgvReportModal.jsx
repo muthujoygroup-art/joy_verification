@@ -35,8 +35,8 @@ import {
 export const ComprehensiveBgvReportModal = ({ 
   candidate, 
   onClose, 
-  companyName = "Acme Global Technologies", 
-  hrName = "Priya Sundaram" 
+  companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED", 
+  hrName = "PRAVEEN B" 
 }) => {
   const [activeApiTab, setActiveApiTab] = useState('all'); // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
   const [copiedLink, setCopiedLink] = useState(false);

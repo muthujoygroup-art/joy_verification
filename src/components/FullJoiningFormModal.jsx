@@ -192,7 +192,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
-      <div className="glass-panel w-full max-w-4xl p-4 sm:p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl my-auto">
+      <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -201,15 +201,15 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <span className="badge badge-purple text-[10px]">CiteHR Enterprise Format</span>
               <span className="text-xs text-slate-500 font-bold">• {isHrMode ? 'HR Manual Entry & Station Verification' : 'Candidate Joining Form'}</span>
             </div>
-            <h2 className="text-xl font-black text-slate-900 mt-1">Exhaustive Employee / Labor Profile Joining Form</h2>
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">Exhaustive Employee / Labor Profile Joining Form</h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg p-1 cursor-pointer">✕</button>
         </div>
 
         {/* Mandatory OTP Verification Status Bar */}
         <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 font-bold text-slate-800">
-            <ShieldCheck className="w-5 h-5 text-indigo-600" />
+            <ShieldCheck className="w-5 h-5 text-indigo-600 shrink-0" />
             <span>Mandatory Verification Status:</span>
           </div>
 
@@ -268,7 +268,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
         </div>
 
         {/* Form Section Navigation Tabs (7 Sections) */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto text-xs font-bold">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto no-scrollbar text-xs font-bold gap-1">
           <button
             type="button"
             onClick={() => setActiveSection('personal')}

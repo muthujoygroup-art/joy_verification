@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -358,8 +358,8 @@ export const AiFaceMatchModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="glass-panel w-full max-w-3xl p-5 sm:p-7 space-y-5 border-2 border-indigo-500/40 bg-white text-slate-900 shadow-2xl rounded-3xl my-auto relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
+      <div className="glass-panel w-full max-w-3xl max-h-[94vh] overflow-y-auto p-4 sm:p-7 space-y-4 sm:space-y-5 border-2 border-indigo-500/40 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto relative">
         
         {/* Top Gradient Ribbon */}
         <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${isPassed ? 'from-indigo-600 via-sky-500 to-emerald-500' : 'from-rose-600 via-amber-500 to-rose-600'}`} />

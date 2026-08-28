@@ -32,9 +32,9 @@ export const RazorpayPaymentModal = ({
   const { companies, rechargeCompanyWallet, paymentGatewayConfig, showToast } = useApp();
 
   const company = (companies || []).find(c => c.id === targetCompanyId) || (companies && companies[0]) || {
-    id: 'comp-1',
-    name: 'Acme Global Technologies',
-    walletBalance: 42500,
+    id: 'comp-joy',
+    name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    walletBalance: 100000,
     pricePerVerification: 120
   };
 

@@ -39,7 +39,7 @@ export const SupportTicketModal = ({ onClose }) => {
       return;
     }
 
-    const targetCompany = companies.find(c => c.id === selectedCompanyId) || { name: 'Acme Global' };
+    const targetCompany = companies.find(c => c.id === selectedCompanyId) || { name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' };
 
     addSupportTicket({
       companyName: targetCompany.name,
