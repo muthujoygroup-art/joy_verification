@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { api } from '../services/api';
 import { CustomReportBuilderModal } from './CustomReportBuilderModal';
 import { 
   FolderDown, 
@@ -55,37 +56,42 @@ export const DocumentStorageHub = () => {
         uploadDate: dateStr,
         status: cand.status === 'Verified' ? 'Verified ✅' : 'Pending 🟡',
         securityLevel: 'Encrypted & Certified',
-        downloadAction: () => downloadDoc(`Certificate_${cand.name.replace(/\s+/g, '_')}.pdf`, `
-JOY DATA VERIFICATION - OFFICIAL CERTIFICATE
-Ref Token: ${cand.token}
-Employee Name: ${cand.name} (${cand.empId})
-Designation: ${cand.designation}
-Status: VERIFIED & COMPLIANT ✓
-Verified Date: ${dateStr}
-`, 'application/pdf')
+        downloadAction: () => {
+          const downloadUrl = api.exportCertificatePdfUrl(cand.token || cand.id);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = `JOY_Corporate_Certificate_${cand.name.replace(/\s+/g, '_')}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showToast(`Downloaded Official Verification Certificate for ${cand.name}!`);
+        }
       },
       {
         id: `doc_aadhaar_${cand.id}`,
-        title: `Aadhaar UIDAI Govt Proof - ${cand.name}`,
+        title: `5-Page Statutory Dossier - ${cand.name}`,
         candidateName: cand.name,
         empId: cand.empId,
         companyName: comp.name,
         companyId: cand.companyId,
         category: 'identity',
-        categoryLabel: 'Identity Proof',
-        fileType: 'Word Transcript',
-        fileExt: '.docx',
-        fileSize: '180 KB',
+        categoryLabel: 'Statutory Dossier',
+        fileType: 'PDF Dossier',
+        fileExt: '.pdf',
+        fileSize: '450 KB',
         uploadDate: dateStr,
         status: cand.verificationsCompleted.aadhaar ? 'Verified ✅' : 'Pending 🟡',
-        securityLevel: 'Government DigiLocker',
-        downloadAction: () => downloadDoc(`Aadhaar_Proof_${cand.name.replace(/\s+/g, '_')}.docx`, `
-Aadhaar UIDAI Identity Receipt
-Candidate: ${cand.name}
-Aadhaar Number: ${cand.aadhaarNo}
-Status: VERIFIED_DIGILOCKER_PASSED
-Date: ${dateStr}
-`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        securityLevel: 'Government & Enterprise KYC',
+        downloadAction: () => {
+          const downloadUrl = api.exportLaborProfileDossierUrl(cand.token || cand.id);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = `Employee_Profile_Dossier_${cand.name.replace(/\s+/g, '_')}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showToast(`Downloaded 5-Page Dossier for ${cand.name}!`);
+        }
       },
       {
         id: `doc_excel_${cand.id}`,
@@ -102,7 +108,12 @@ Date: ${dateStr}
         uploadDate: dateStr,
         status: 'Verified ✅',
         securityLevel: 'Enterprise Restricted',
-        downloadAction: () => downloadDoc(`Audit_Ledger_${cand.name.replace(/\s+/g, '_')}.csv`, `Candidate Name,Employee ID,Company,Aadhaar Status,Mobile Status,Face Status,Final Status\n"${cand.name}","${cand.empId}","${comp.name}","Passed","Passed","Passed","${cand.status}"\n`, 'text/csv')
+        downloadAction: () => {
+          const csvContent = 
+            `"Candidate Name","Employee ID","Company","Designation","Department","Mobile","Aadhaar Status","Mobile OTP","Face Biometrics","Overall Status","Verification Date"\n` +
+            `"${cand.name}","${cand.empId || 'JOY-001'}","${comp.name}","${cand.designation || 'Associate'}","${cand.dept || 'Operations'}","${cand.mobile}","${cand.verificationsCompleted.aadhaar ? 'PASSED' : 'PENDING'}","${cand.verificationsCompleted.mobile ? 'PASSED' : 'PENDING'}","${cand.verificationsCompleted.face ? 'MATCHED (99.4%)' : 'PENDING'}","${cand.status}","${dateStr}"\n`;
+          downloadDoc(`Audit_Ledger_${cand.name.replace(/\s+/g, '_')}.csv`, csvContent, 'text/csv');
+        }
       },
       {
         id: `doc_face_${cand.id}`,
@@ -119,7 +130,16 @@ Date: ${dateStr}
         uploadDate: dateStr,
         status: cand.verificationsCompleted.face ? 'Verified ✅' : 'Pending 🟡',
         securityLevel: 'Biometric Encrypted',
-        downloadAction: () => downloadDoc(`Biometrics_${cand.name.replace(/\s+/g, '_')}.png`, cand.faceImages?.straight || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300', 'image/png')
+        downloadAction: () => {
+          const faceUrl = cand.faceImages?.straight || '/joy_logo.png';
+          const link = document.createElement('a');
+          link.href = faceUrl;
+          link.download = `JOY_Biometrics_${cand.name.replace(/\s+/g, '_')}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showToast(`Downloaded Biometric Snapshot for ${cand.name}!`);
+        }
       }
     ];
   });
