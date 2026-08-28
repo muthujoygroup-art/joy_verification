@@ -38,7 +38,12 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
 
   // Copy ONLY the pure, clean verification link (without password attached)
-  const handleCopyCleanLink = () => {
+  const handleCopyCleanLink = async () => {
+    const clean = (passcodeText || '1234').trim();
+    if (updateCandidatePassword) {
+      await updateCandidatePassword(candidate.token, clean);
+    }
+    candidate.portalPassword = clean;
     navigator.clipboard.writeText(verifyUrl);
     setCopiedInternal(true);
     if (showToast) showToast('📋 Direct verification link copied to clipboard!');
@@ -46,30 +51,35 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   };
 
   // Open the portal directly in a new tab
-  const handleOpenDirectly = () => {
+  const handleOpenDirectly = async () => {
+    const clean = (passcodeText || '1234').trim();
+    if (updateCandidatePassword) {
+      await updateCandidatePassword(candidate.token, clean);
+    }
+    candidate.portalPassword = clean;
     window.open(verifyUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Save / Update HR configured passcode on the spot
-  const handleSavePasscode = (e) => {
+  const handleSavePasscode = async (e) => {
     if (e) e.preventDefault();
     const clean = passcodeText.trim() || '1234';
-    if (updateCandidatePassword) {
-      updateCandidatePassword(candidate.token, clean);
-    }
     candidate.portalPassword = clean;
+    if (updateCandidatePassword) {
+      await updateCandidatePassword(candidate.token, clean);
+    }
     setIsPasscodeSaved(true);
     if (showToast) showToast(`🔐 Passcode set to "${clean}" for ${candidate.name}!`);
     setTimeout(() => setIsPasscodeSaved(false), 2000);
   };
 
-  const handleGenerateRandomPin = () => {
+  const handleGenerateRandomPin = async () => {
     const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
     setPasscodeText(randomPin);
-    if (updateCandidatePassword) {
-      updateCandidatePassword(candidate.token, randomPin);
-    }
     candidate.portalPassword = randomPin;
+    if (updateCandidatePassword) {
+      await updateCandidatePassword(candidate.token, randomPin);
+    }
     if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 

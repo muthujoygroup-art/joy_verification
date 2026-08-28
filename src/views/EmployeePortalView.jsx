@@ -50,8 +50,8 @@ export const EmployeePortalView = () => {
     showToast, 
     setRoleView 
   } = useApp();
-  const candidate = getActiveCandidate();
-
+  
+  const [directCandidate, setDirectCandidate] = useState(null);
   const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
@@ -73,7 +73,6 @@ export const EmployeePortalView = () => {
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
   const [emailInputOtp, setEmailInputOtp] = useState('');
-  const [isEmailVerified, setIsEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
   const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
@@ -86,22 +85,57 @@ export const EmployeePortalView = () => {
   const [passcodeError, setPasscodeError] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 
-  const isAllComplete = candidate?.status === 'Verified';
-
-  // Fetch freshest candidate password from PostgreSQL database on load
+  // Fetch freshest candidate profile & password from PostgreSQL database on load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenToFetch = urlParams.get('token') || candidate?.token || selectedCandidateToken;
+    const tokenToFetch = urlParams.get('token') || selectedCandidateToken;
     if (tokenToFetch) {
+      // Check local list first
+      const localCand = candidates.find(c => c.token === tokenToFetch);
+      if (localCand) {
+        setDirectCandidate(localCand);
+        setLoadedDbPassword(localCand.portalPassword || localCand.portal_password || '');
+      }
+
+      // Fetch authoritative DB record
       api.getCandidateByToken(tokenToFetch)
         .then(data => {
-          if (data && data.portal_password) {
-            setLoadedDbPassword(data.portal_password);
+          if (data) {
+            const formatted = {
+              id: data.id,
+              token: data.token,
+              name: data.name,
+              empId: data.emp_id,
+              email: data.email,
+              mobile: data.mobile,
+              aadhaarNo: data.aadhaar_no,
+              designation: data.designation,
+              dept: data.dept,
+              companyId: data.company_id,
+              companyName: data.company_name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+              hrId: data.hr_id,
+              status: data.status,
+              portalPassword: data.portal_password || '1234',
+              verificationConfig: data.verification_config || {},
+              verificationsCompleted: data.verifications_completed || {},
+              faceImages: data.face_images || { straight: null, left: null, right: null },
+              manualChecks: data.manual_checks || {},
+              joiningFormData: data.joining_form_data || {},
+              verificationDate: data.verification_date
+            };
+            setDirectCandidate(formatted);
+            setLoadedDbPassword(data.portal_password || '1234');
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.warn('Could not fetch candidate from API directly:', err);
+        });
     }
-  }, [candidate?.token, selectedCandidateToken]);
+  }, [selectedCandidateToken, candidates]);
+
+  const candidate = directCandidate || getActiveCandidate();
+  const [isEmailVerified, setIsEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+  const isAllComplete = candidate?.status === 'Verified';
 
   // 15-Minute Active Countdown Timer
   useEffect(() => {
@@ -136,8 +170,10 @@ export const EmployeePortalView = () => {
     setIsUnlocking(true);
     setPasscodeError('');
 
-    // 1. Check local/state candidate passcode or DB-fetched password
-    const localExpected = (loadedDbPassword || candidate?.portalPassword || candidate?.portal_password || candidate?.securityPin || '').toString().trim();
+    const tokenToVerify = new URLSearchParams(window.location.search).get('token') || candidate?.token || selectedCandidateToken;
+
+    // 1. Direct local password check against database fetched value
+    const localExpected = (loadedDbPassword || candidate?.portalPassword || candidate?.portal_password || '').toString().trim();
     if (localExpected && entered === localExpected) {
       setIsUnlocked(true);
       setIsUnlocking(false);
@@ -147,11 +183,22 @@ export const EmployeePortalView = () => {
 
     // 2. Validate against PostgreSQL Database via /api/verification/unlock
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const tokenToVerify = urlParams.get('token') || candidate?.token || selectedCandidateToken;
       if (tokenToVerify) {
         const res = await api.unlockPortal(tokenToVerify, entered);
         if (res && res.success) {
+          if (res.candidate) {
+            setDirectCandidate({
+              ...res.candidate,
+              empId: res.candidate.emp_id,
+              aadhaarNo: res.candidate.aadhaar_no,
+              portalPassword: res.candidate.portal_password,
+              verificationConfig: res.candidate.verification_config || {},
+              verificationsCompleted: res.candidate.verifications_completed || {},
+              faceImages: res.candidate.face_images || { straight: null, left: null, right: null },
+              manualChecks: res.candidate.manual_checks || {},
+              joiningFormData: res.candidate.joining_form_data || {}
+            });
+          }
           setIsUnlocked(true);
           setIsUnlocking(false);
           showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
