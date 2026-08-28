@@ -112,6 +112,60 @@ export const CompanyAdminView = () => {
     setNewHr({ name: '', email: '', dept: 'Engineering Recruitment' });
   };
 
+  const handleToggleFeature = (featKey, val) => {
+    const updated = {
+      ...(company.features || {}),
+      [featKey]: val
+    };
+    if (featKey === 'aiFaceBiometrics') {
+      updated.faceCapture = val;
+    }
+    try {
+      localStorage.setItem('joy_company_features', JSON.stringify(updated));
+    } catch (e) {}
+    updateCompanyFeatures(company.id, updated);
+  };
+
+  const handleAadhaarOnlyMode = () => {
+    const aadhaarOnly = {
+      ...(company.features || {}),
+      aadhaar: true,
+      mobileOtp: false,
+      emailGateway: false,
+      aiFaceBiometrics: false,
+      faceCapture: false,
+      pan: false,
+      bankCheck: false,
+      uan: false,
+      drivingLicense: false,
+      passport: false
+    };
+    try {
+      localStorage.setItem('joy_company_features', JSON.stringify(aadhaarOnly));
+    } catch (e) {}
+    updateCompanyFeatures(company.id, aadhaarOnly);
+  };
+
+  const handleEnableAllModules = () => {
+    const allStandard = {
+      ...(company.features || {}),
+      aadhaar: true,
+      mobileOtp: true,
+      emailGateway: true,
+      aiFaceBiometrics: true,
+      faceCapture: true,
+      pan: true,
+      bankCheck: true,
+      uan: true,
+      drivingLicense: true,
+      passport: true
+    };
+    try {
+      localStorage.setItem('joy_company_features', JSON.stringify(allStandard));
+    } catch (e) {}
+    updateCompanyFeatures(company.id, allStandard);
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
@@ -771,22 +825,7 @@ export const CompanyAdminView = () => {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      const aadhaarOnly = {
-                        ...(company.features || {}),
-                        aadhaar: true,
-                        mobileOtp: false,
-                        emailGateway: false,
-                        aiFaceBiometrics: false,
-                        faceCapture: false,
-                        pan: false,
-                        bankCheck: false,
-                        uan: false,
-                        drivingLicense: false,
-                        passport: false
-                      };
-                      updateCompanyFeatures(company.id, aadhaarOnly);
-                    }}
+                    onClick={handleAadhaarOnlyMode}
                     className="btn btn-secondary text-[11px] py-1.5 px-3 font-black text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 cursor-pointer"
                   >
                     ⚡ Aadhaar Only Mode
@@ -794,22 +833,7 @@ export const CompanyAdminView = () => {
 
                   <button
                     type="button"
-                    onClick={() => {
-                      const allStandard = {
-                        ...(company.features || {}),
-                        aadhaar: true,
-                        mobileOtp: true,
-                        emailGateway: true,
-                        aiFaceBiometrics: true,
-                        faceCapture: true,
-                        pan: true,
-                        bankCheck: true,
-                        uan: true,
-                        drivingLicense: true,
-                        passport: true
-                      };
-                      updateCompanyFeatures(company.id, allStandard);
-                    }}
+                    onClick={handleEnableAllModules}
                     className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold text-indigo-900 bg-indigo-50 border-indigo-300 hover:bg-indigo-100 cursor-pointer"
                   >
                     🌟 Enable All Modules
@@ -835,7 +859,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={company.features?.aadhaar !== false}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), aadhaar: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('aadhaar', e.target.checked)}
                     className="w-4 h-4 text-emerald-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -857,7 +881,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.mobileOtp}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), mobileOtp: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('mobileOtp', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -879,7 +903,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.emailGateway}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), emailGateway: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('emailGateway', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -901,7 +925,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.aiFaceBiometrics}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), aiFaceBiometrics: e.target.checked, faceCapture: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('aiFaceBiometrics', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -923,7 +947,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.pan}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), pan: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('pan', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -945,7 +969,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.bankCheck}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), bankCheck: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('bankCheck', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -967,7 +991,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.uan}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), uan: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('uan', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -989,7 +1013,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.drivingLicense}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), drivingLicense: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('drivingLicense', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>
@@ -1011,7 +1035,7 @@ export const CompanyAdminView = () => {
                   <input 
                     type="checkbox" 
                     checked={!!company.features?.passport}
-                    onChange={(e) => updateCompanyFeatures(company.id, { ...(company.features || {}), passport: e.target.checked })}
+                    onChange={(e) => handleToggleFeature('passport', e.target.checked)}
                     className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
                   />
                 </div>

@@ -86,6 +86,26 @@ export const EmployeePortalView = () => {
   const [passcodeError, setPasscodeError] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 
+  const [activeCompanyFeatures, setActiveCompanyFeatures] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_company_features');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'joy_company_features' && e.newValue) {
+        try {
+          setActiveCompanyFeatures(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   // Fetch freshest candidate profile & password from PostgreSQL database on load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -386,7 +406,7 @@ export const EmployeePortalView = () => {
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate;
   const candidateCompanyId = candidate?.companyId || candidate?.company_id;
   const company = companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName) || companies[0] || {};
-  const companyFeatures = company.features || {};
+  const companyFeatures = activeCompanyFeatures || company.features || {};
 
   // Dynamically resolve verification requirement based on Company features and Candidate config
   // Enabling from Company side immediately activates the check for the employee link
@@ -1376,6 +1396,50 @@ export const EmployeePortalView = () => {
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify EPFO History (Server 2)</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 8: Driving License (MoRTH) */}
+        {isDlReq && (
+          <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
+            verificationsCompleted.drivingLicense ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm ${
+                  verificationsCompleted.drivingLicense ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                }`}>
+                  🚗
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-slate-900 text-base">Driving License Verification (MoRTH)</h4>
+                    <span className="badge badge-indigo text-[10px]">Sarathi MoRTH</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    DL Number: <code className="text-slate-900 font-mono font-bold">{candidate.dlNo || 'DL-0420110012345'}</code> • MoRTH Sarathi Registry Status
+                  </p>
+                </div>
+              </div>
+
+              {verificationsCompleted.drivingLicense ? (
+                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Driving License Verified ✓</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    updateCandidateVerification(candidate.token, 'drivingLicense', true);
+                    showToast('🚗 Driving License Verified via MoRTH Sarathi Registry!');
+                  }}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify Driving License</span>
                 </button>
               )}
             </div>
