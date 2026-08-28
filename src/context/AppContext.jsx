@@ -24,7 +24,7 @@ const INITIAL_COMPANIES = [
     id: 'comp-joy',
     name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
     code: 'JOY',
-    contactPerson: 'Muthu Kumar P',
+    contactPerson: 'PRAVEEN B',
     email: 'director@joycorporatesolutions.com',
     plan: 'Enterprise Premier',
     pricePerVerification: 120,
@@ -67,8 +67,8 @@ const INITIAL_HR_USERS = [
     id: 'hr-joy-1', 
     companyId: 'comp-joy', 
     companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    name: 'Priya Sundaram', 
-    email: 'priya.s@joycorporatesolutions.com', 
+    name: 'PRAVEEN B', 
+    email: 'praveen.b@joycorporatesolutions.com', 
     phone: '+91 98765 43210',
     dept: 'Human Resources & Talent Acquisition', 
     activeLinks: 1 
@@ -76,18 +76,16 @@ const INITIAL_HR_USERS = [
 ];
 
 const INITIAL_CANDIDATES = [
-
-
   {
     id: 'emp-101',
     token: 'tok_sunita_412',
-    name: 'Sunita Rao',
+    name: 'MUTHUKUMAR P',
     empId: 'JOY-2026-001',
-    email: 'sunita.rao@joycorporatesolutions.com',
+    email: 'muthukumar.p@joycorporatesolutions.com',
     mobile: '+91 98765 43210',
     aadhaarNo: '5489 1234 9876',
-    designation: 'Senior Verification Officer',
-    dept: 'Operations & Verification',
+    designation: 'Senior Verification Engineer',
+    dept: 'Technology & Engineering',
     companyId: 'comp-joy',
     companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
     hrId: 'hr-joy-1',
