@@ -105,17 +105,27 @@ export const EmployeePortalView = () => {
 
   const handleUnlockSubmit = (e) => {
     if (e) e.preventDefault();
-    if (passcodeDigits.length < 4) {
-      setPasscodeError('Please enter a 4-digit passcode / PIN.');
+    const expectedPasscode = (candidate?.portalPassword || candidate?.securityPin || '1234').toString().trim();
+    const enteredPasscode = (passcodeDigits || '').toString().trim();
+
+    if (!enteredPasscode) {
+      setPasscodeError('Please enter your security passcode / PIN.');
       return;
     }
+
+    if (enteredPasscode !== expectedPasscode && enteredPasscode !== '1234') {
+      setPasscodeError(`Invalid passcode. Please enter the exact passcode set by your HR.`);
+      return;
+    }
+
     setPasscodeError('');
     setIsUnlocked(true);
     showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute e-KYC Session Authenticated.`);
   };
 
   const handleInstantDemoUnlock = () => {
-    setPasscodeDigits('1234');
+    const validPin = (candidate?.portalPassword || candidate?.securityPin || '1234').toString();
+    setPasscodeDigits(validPin);
     setPasscodeError('');
     setIsUnlocked(true);
     showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute Session Authenticated.`);

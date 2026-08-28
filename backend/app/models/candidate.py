@@ -18,6 +18,7 @@ class Candidate(Base):
     company_id = Column(String(50), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
     hr_id = Column(String(50), ForeignKey("hr_users.id", ondelete="SET NULL"), nullable=True)
     status = Column(String(50), default="Link Sent")  # 'Link Sent' | 'In Verification' | 'Verified' | 'Rejected'
+    portal_password = Column(String(50), default="1234")  # HR-configured unlock passcode for verification portal
     
     # Granular verification flags & completion results
     verification_config = Column(JSON, default=dict)

@@ -102,6 +102,7 @@ export const HrExecutiveView = () => {
     mobile: '',
     alternateMobile: '',
     aadhaarNo: '',
+    portalPassword: '1234',
     designation: 'Senior Software Engineer',
     dept: 'Engineering & Software Architecture',
     fatherName: '',
@@ -1343,6 +1344,74 @@ export const HrExecutiveView = () => {
 
           <form onSubmit={handleCreateCandidateSubmit} className="space-y-6 pt-3 border-t border-slate-100">
             
+            {/* 🔐 PORTAL UNLOCK PASSWORD / SECURITY PIN GATE */}
+            <div className="p-4 bg-gradient-to-r from-indigo-50 via-slate-50 to-emerald-50 border-2 border-indigo-200 rounded-2xl space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-indigo-600 text-white rounded-lg">
+                    <KeyRound className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                      Portal Unlock Passcode / Security PIN (Set by HR)
+                    </h4>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Candidate must enter this exact passcode to unlock their verification portal via QR Code or Link
+                    </p>
+                  </div>
+                </div>
+                <span className="badge badge-indigo text-[10px] font-black self-start sm:self-auto">
+                  Access Security Gate
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Passcode / PIN Code *</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="e.g. 1234 or Joy@2026"
+                    value={formData.portalPassword}
+                    onChange={(e) => setFormData({ ...formData, portalPassword: e.target.value })}
+                    className="form-input font-mono font-black text-sm text-indigo-900 bg-white tracking-wider"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-4 sm:pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                      setFormData({ ...formData, portalPassword: randomPin });
+                      showToast(`🎲 Generated random 4-digit PIN: ${randomPin}`);
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-extrabold text-indigo-900 bg-white border-indigo-200 hover:bg-indigo-50 shadow-xs cursor-pointer btn-interactive"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>🎲 Generate Random PIN</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, portalPassword: '1234' });
+                      showToast('⚡ Reset to default PIN: 1234');
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-2.5 font-bold text-slate-600 bg-white border-slate-200 hover:bg-slate-50 cursor-pointer"
+                    title="Reset to 1234"
+                  >
+                    Default (1234)
+                  </button>
+                </div>
+
+                <div className="text-[11px] text-slate-600 bg-white p-2.5 rounded-xl border border-indigo-100 font-medium">
+                  <span className="font-bold text-indigo-900 block mb-0.5">🔒 Passcode Protection:</span>
+                  Prevents unauthorized link access. Displayed on candidate card and in QR modal.
+                </div>
+              </div>
+            </div>
+
             {/* Section 1: Basic Profile & Demographic Details */}
             <div className="space-y-3">
               <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">

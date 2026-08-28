@@ -115,6 +115,7 @@ const INITIAL_CANDIDATES = [
     companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
     hrId: 'hr-joy-1',
     status: 'Pending',
+    portalPassword: '1234',
     hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please complete your official background verification and e-KYC onboarding process.',
     hrCorrectionRemarks: '',
     verificationConfig: {
@@ -1069,6 +1070,7 @@ export const AppProvider = ({ children }) => {
 
   // Add Candidate (Persists to PostgreSQL)
   const addCandidate = async (candidateData) => {
+    const candidatePin = candidateData.portalPassword || candidateData.securityPin || '1234';
     try {
       const created = await api.createCandidate({
         name: candidateData.name,
@@ -1080,6 +1082,7 @@ export const AppProvider = ({ children }) => {
         dept: candidateData.dept,
         company_id: candidateData.companyId,
         hr_id: candidateData.hrId,
+        portal_password: candidatePin,
         verification_config: candidateData.verificationConfig,
         manual_checks: candidateData.manualChecks
       });
@@ -1097,6 +1100,7 @@ export const AppProvider = ({ children }) => {
         companyId: created.company_id,
         hrId: created.hr_id,
         status: created.status,
+        portalPassword: created.portal_password || candidatePin,
         verificationConfig: created.verification_config || {},
         verificationsCompleted: created.verifications_completed || {},
         faceImages: created.face_images || { straight: null, left: null, right: null },
@@ -1114,6 +1118,7 @@ export const AppProvider = ({ children }) => {
         id: `emp-${Date.now()}`,
         token: newToken,
         status: 'Link Sent',
+        portalPassword: candidatePin,
         verificationsCompleted: { aadhaar: false, mobile: false, face: false },
         faceImages: { straight: null, left: null, right: null },
         verificationDate: null,

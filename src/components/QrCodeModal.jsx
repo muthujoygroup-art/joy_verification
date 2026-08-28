@@ -86,9 +86,9 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[10px] font-bold text-slate-400 block uppercase">PIN Gate</span>
-            <span className="text-xs font-mono font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
-              1234
+            <span className="text-[10px] font-bold text-indigo-900 block uppercase">Unlock Passcode</span>
+            <span className="text-xs font-mono font-black text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-300 shadow-2xs inline-block">
+              {candidate.portalPassword || candidate.securityPin || '1234'}
             </span>
           </div>
         </div>
@@ -125,28 +125,37 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             <span>Open Employee Portal Now 🚀</span>
           </button>
 
-          {/* Action 2: Copy Direct Token Link */}
-          <button
-            type="button"
-            onClick={handleCopy}
-            className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-2xl border transition-all cursor-pointer btn-interactive ${
-              copiedState 
-                ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
-                : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
-            }`}
-          >
-            {copiedState ? (
-              <>
-                <Check className="w-4 h-4 text-emerald-600" />
-                <span>Link Copied to Clipboard! ✓</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4 text-slate-600" />
-                <span>Copy Direct Verification Link 📋</span>
-              </>
-            )}
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* Action 2: Copy Link + Passcode */}
+            <button
+              type="button"
+              onClick={() => {
+                const fullText = `Employee Verification Portal for ${candidate.name}:\nLink: ${verifyUrl}\nSecurity Unlock Passcode: ${candidate.portalPassword || '1234'}\n(Session valid for 15 minutes once unlocked)`;
+                navigator.clipboard.writeText(fullText);
+                setCopiedInternal(true);
+                if (showToast) showToast('📋 Link + Passcode copied to clipboard!');
+                setTimeout(() => setCopiedInternal(false), 2500);
+              }}
+              className="btn btn-secondary py-2.5 px-3 flex items-center justify-center gap-1.5 font-black text-xs rounded-xl border border-indigo-200 text-indigo-900 bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer btn-interactive"
+            >
+              <Copy className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Copy Link + Passcode 📋</span>
+            </button>
+
+            {/* Action 3: Copy Passcode Only */}
+            <button
+              type="button"
+              onClick={() => {
+                const pin = candidate.portalPassword || '1234';
+                navigator.clipboard.writeText(pin);
+                if (showToast) showToast(`🔑 Passcode (${pin}) copied to clipboard!`);
+              }}
+              className="btn btn-secondary py-2.5 px-3 flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-slate-500" />
+              <span>Copy Passcode ({candidate.portalPassword || '1234'})</span>
+            </button>
+          </div>
         </div>
 
         {/* 💬 Gateway Channels (Disabled for Now / Coming in Next Phase) */}
