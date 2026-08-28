@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../context/AppContext';
 import { 
@@ -15,31 +15,62 @@ import {
   Lock,
   Sparkles,
   Info,
-  KeyRound
+  KeyRound,
+  Save,
+  RefreshCw
 } from 'lucide-react';
 
 export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
-  const { companies, showToast } = useApp();
+  const { companies, showToast, updateCandidatePassword } = useApp();
   const [copiedInternal, setCopiedInternal] = useState(false);
+  const [passcodeText, setPasscodeText] = useState('1234');
+  const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
+
+  useEffect(() => {
+    if (candidate) {
+      setPasscodeText(candidate.portalPassword || candidate.securityPin || '1234');
+    }
+  }, [candidate]);
 
   if (!candidate) return null;
 
   const company = companies.find(c => c.id === candidate.companyId) || companies[0];
   const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
 
-  const handleCopy = () => {
-    if (onCopyLink) {
-      onCopyLink(candidate.token);
-    } else {
-      navigator.clipboard.writeText(verifyUrl);
-    }
+  // Copy ONLY the pure, clean verification link (without password attached)
+  const handleCopyCleanLink = () => {
+    navigator.clipboard.writeText(verifyUrl);
     setCopiedInternal(true);
-    if (showToast) showToast('📋 Employee verification link copied to clipboard!');
+    if (showToast) showToast('📋 Direct verification link copied to clipboard!');
     setTimeout(() => setCopiedInternal(false), 2500);
   };
 
+  // Open the portal directly in a new tab
   const handleOpenDirectly = () => {
     window.open(verifyUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  // Save / Update HR configured passcode on the spot
+  const handleSavePasscode = (e) => {
+    if (e) e.preventDefault();
+    const clean = passcodeText.trim() || '1234';
+    if (updateCandidatePassword) {
+      updateCandidatePassword(candidate.token, clean);
+    }
+    candidate.portalPassword = clean;
+    setIsPasscodeSaved(true);
+    if (showToast) showToast(`🔐 Passcode set to "${clean}" for ${candidate.name}!`);
+    setTimeout(() => setIsPasscodeSaved(false), 2000);
+  };
+
+  const handleGenerateRandomPin = () => {
+    const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+    setPasscodeText(randomPin);
+    if (updateCandidatePassword) {
+      updateCandidatePassword(candidate.token, randomPin);
+    }
+    candidate.portalPassword = randomPin;
+    if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 
   const handleGatewayDisabledClick = (channelName) => {
@@ -54,7 +85,7 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="glass-panel w-full max-w-md p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-scaleUp relative">
+      <div className="glass-panel w-full max-w-md p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-scaleUp relative max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -64,7 +95,7 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             </div>
             <div>
               <h3 className="text-base font-black text-slate-900">Employee Verification Link & QR</h3>
-              <p className="text-xs text-slate-500 font-medium">Instant scannable QR Code & direct token link</p>
+              <p className="text-xs text-slate-500 font-medium">Configure unlock passcode & share onboarding access</p>
             </div>
           </div>
           <button 
@@ -76,30 +107,74 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
         </div>
 
         {/* Candidate Info Card */}
-        <div className="p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+        <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
           <div>
             <div className="text-sm font-black text-slate-900 flex items-center gap-1.5">
               <span>{candidate.name}</span>
-              <span className="badge badge-emerald text-[9px] py-0.5 px-1.5 font-bold">READY TO VERIFY</span>
+              <span className="badge badge-emerald text-[9px] py-0.5 px-1.5 font-bold">ACTIVE</span>
             </div>
             <div className="text-[11px] text-slate-600 font-medium mt-0.5">
               {candidate.designation || 'Candidate'} • <span className="font-mono text-emerald-800 font-bold">#{candidate.empId}</span>
             </div>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] font-bold text-indigo-900 block uppercase">Unlock Passcode</span>
-            <span className="text-xs font-mono font-black text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-300 shadow-2xs inline-block">
-              {candidate.portalPassword || candidate.securityPin || '1234'}
+          <span className="text-[10px] font-mono bg-white px-2 py-1 rounded-lg border border-emerald-200 font-bold text-emerald-800">
+            {company.name}
+          </span>
+        </div>
+
+        {/* 🔐 Interactive HR Passcode Typing & Setting Box */}
+        <div className="p-3.5 bg-indigo-50/70 border-2 border-indigo-200 rounded-2xl space-y-2.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Set Portal Unlock Password / PIN</span>
+            </label>
+            <span className="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200">
+              Required by Candidate
             </span>
           </div>
+
+          <div className="flex items-center gap-2">
+            <input 
+              type="text" 
+              value={passcodeText}
+              onChange={(e) => setPasscodeText(e.target.value)}
+              placeholder="e.g. 1234 or Joy@2026"
+              className="flex-1 bg-white border-2 border-indigo-300 focus:border-indigo-600 text-indigo-950 font-mono font-black text-sm py-2 px-3 rounded-xl outline-none"
+            />
+
+            <button
+              type="button"
+              onClick={handleSavePasscode}
+              className="btn btn-superadmin text-xs py-2 px-3 font-bold flex items-center gap-1 shadow-xs cursor-pointer btn-interactive"
+              title="Save Passcode"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{isPasscodeSaved ? 'Saved ✓' : 'Save'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGenerateRandomPin}
+              className="btn btn-secondary text-xs py-2 px-2.5 font-bold text-indigo-900 bg-white border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+              title="Generate Random PIN"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span>PIN</span>
+            </button>
+          </div>
+
+          <p className="text-[10px] text-indigo-800/80 font-medium">
+            Type any passcode above and click <strong>Save</strong>. The candidate will enter this exact passcode to unlock their verification session.
+          </p>
         </div>
 
         {/* 📱 Real Scannable High-Resolution QR Code */}
         <div className="text-center space-y-2 py-1">
-          <div className="w-52 h-52 mx-auto bg-white p-3.5 border-2 border-emerald-400/80 rounded-3xl shadow-lg flex flex-col items-center justify-center relative hover:scale-102 transition-transform">
+          <div className="w-48 h-48 mx-auto bg-white p-3 border-2 border-emerald-400/80 rounded-3xl shadow-md flex flex-col items-center justify-center relative hover:scale-102 transition-transform">
             <QRCodeSVG 
               value={verifyUrl}
-              size={180}
+              size={160}
               level="H"
               includeMargin={false}
               className="rounded-lg"
@@ -108,55 +183,46 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
               Live Scannable QR
             </div>
           </div>
-          <p className="text-[11px] text-slate-500 font-bold pt-2">
+          <p className="text-[11px] text-slate-500 font-bold pt-1">
             Scan with smartphone camera to open candidate portal
           </p>
         </div>
 
-        {/* 🚀 Primary Action Buttons (Direct Open & 1-Click Copy) */}
-        <div className="space-y-2.5">
+        {/* 🚀 Primary Action Buttons (Direct Open & Clean Copy Link) */}
+        <div className="space-y-2">
           
           {/* Action 1: Open Employee Portal Directly */}
           <button
             type="button"
             onClick={handleOpenDirectly}
-            className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 px-4 flex items-center justify-center gap-2 rounded-2xl shadow-md transition-all cursor-pointer btn-interactive text-sm"
+            className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-4 flex items-center justify-center gap-2 rounded-2xl shadow-md transition-all cursor-pointer btn-interactive text-xs"
           >
             <ExternalLink className="w-4 h-4" />
             <span>Open Employee Portal Now 🚀</span>
           </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {/* Action 2: Copy Link + Passcode */}
-            <button
-              type="button"
-              onClick={() => {
-                const fullText = `Employee Verification Portal for ${candidate.name}:\nLink: ${verifyUrl}\nSecurity Unlock Passcode: ${candidate.portalPassword || '1234'}\n(Session valid for 15 minutes once unlocked)`;
-                navigator.clipboard.writeText(fullText);
-                setCopiedInternal(true);
-                if (showToast) showToast('📋 Link + Passcode copied to clipboard!');
-                setTimeout(() => setCopiedInternal(false), 2500);
-              }}
-              className="btn btn-secondary py-2.5 px-3 flex items-center justify-center gap-1.5 font-black text-xs rounded-xl border border-indigo-200 text-indigo-900 bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer btn-interactive"
-            >
-              <Copy className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Copy Link + Passcode 📋</span>
-            </button>
-
-            {/* Action 3: Copy Passcode Only */}
-            <button
-              type="button"
-              onClick={() => {
-                const pin = candidate.portalPassword || '1234';
-                navigator.clipboard.writeText(pin);
-                if (showToast) showToast(`🔑 Passcode (${pin}) copied to clipboard!`);
-              }}
-              className="btn btn-secondary py-2.5 px-3 flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer"
-            >
-              <KeyRound className="w-3.5 h-3.5 text-slate-500" />
-              <span>Copy Passcode ({candidate.portalPassword || '1234'})</span>
-            </button>
-          </div>
+          {/* Action 2: Copy Pure Clean Verification Link (Without Password in Link) */}
+          <button
+            type="button"
+            onClick={handleCopyCleanLink}
+            className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-2xl border transition-all cursor-pointer btn-interactive ${
+              copiedState 
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
+                : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
+            }`}
+          >
+            {copiedState ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>Link Copied to Clipboard! ✓</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-slate-600" />
+                <span>Copy Direct Verification Link 📋</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* 💬 Gateway Channels (Disabled for Now / Coming in Next Phase) */}

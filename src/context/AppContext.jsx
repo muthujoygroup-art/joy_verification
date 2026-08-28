@@ -1057,6 +1057,13 @@ export const AppProvider = ({ children }) => {
     showToast('👥 Candidate Verification Checklist Updated!');
   };
 
+  // Update Candidate Security Passcode / Password
+  const updateCandidatePassword = (token, newPassword) => {
+    const cleanPin = (newPassword || '1234').toString().trim();
+    setCandidates(prev => prev.map(c => c.token === token ? { ...c, portalPassword: cleanPin } : c));
+    showToast(`🔐 Unlock passcode updated to: ${cleanPin}`);
+  };
+
   // Update Company API Server Engine Routing (Hybrid / Server 1 Sandbox / Server 2 CoinCircle)
   const updateCompanyRoutingEngine = (companyId, engine) => {
     setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, apiRoutingEngine: engine } : c));
@@ -1775,6 +1782,7 @@ export const AppProvider = ({ children }) => {
       addHrUser,
       candidates,
       addCandidate,
+      updateCandidatePassword,
       updateCandidateVerification,
       submitCandidateJoiningForm,
       approveCandidateSubmission,
