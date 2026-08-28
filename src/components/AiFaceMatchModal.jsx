@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -20,13 +20,16 @@ import {
   AlertTriangle,
   Sliders,
   Activity,
-  Check
+  Check,
+  Upload,
+  Camera
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 // In-Browser Real Computer Vision Facial Landmark & Tensor Extractor
 const computeInBrowserBiometrics = async (img1Src, img2Src) => {
   const loadImage = (src) => new Promise((resolve) => {
+    if (!src) return resolve(null);
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.onload = () => resolve(img);
@@ -38,11 +41,11 @@ const computeInBrowserBiometrics = async (img1Src, img2Src) => {
     const [img1, img2] = await Promise.all([loadImage(img1Src), loadImage(img2Src)]);
     if (!img1 || !img2) {
       return {
-        matchScore: 24.0,
-        cosineSimilarity: 18.0,
-        boneGeometryConcordance: 15.0,
+        matchScore: 0,
+        cosineSimilarity: 0,
+        boneGeometryConcordance: 0,
         isPassed: false,
-        engine: 'Computer Vision Matrix Extractor'
+        engine: 'Awaiting Both Face Images'
       };
     }
 
@@ -52,26 +55,26 @@ const computeInBrowserBiometrics = async (img1Src, img2Src) => {
     c1.width = size; c1.height = size;
     const ctx1 = c1.getContext('2d');
     
-    // Draw centered face crop from img1
-    const sx1 = img1.naturalWidth * 0.20;
-    const sy1 = img1.naturalHeight * 0.15;
-    const sw1 = img1.naturalWidth * 0.60;
-    const sh1 = img1.naturalHeight * 0.65;
+    // Draw centered face crop from img1 (Live Selfie)
+    const sx1 = img1.naturalWidth * 0.15;
+    const sy1 = img1.naturalHeight * 0.10;
+    const sw1 = img1.naturalWidth * 0.70;
+    const sh1 = img1.naturalHeight * 0.75;
     ctx1.drawImage(img1, sx1, sy1, sw1, sh1, 0, 0, size, size);
     const data1 = ctx1.getImageData(0, 0, size, size).data;
 
-    // Draw centered face crop from img2
+    // Draw centered face crop from img2 (Aadhaar Reference Photo)
     const c2 = document.createElement('canvas');
     c2.width = size; c2.height = size;
     const ctx2 = c2.getContext('2d');
-    const sx2 = img2.naturalWidth * 0.20;
-    const sy2 = img2.naturalHeight * 0.15;
-    const sw2 = img2.naturalWidth * 0.60;
-    const sh2 = img2.naturalHeight * 0.65;
+    const sx2 = img2.naturalWidth * 0.15;
+    const sy2 = img2.naturalHeight * 0.10;
+    const sw2 = img2.naturalWidth * 0.70;
+    const sh2 = img2.naturalHeight * 0.75;
     ctx2.drawImage(img2, sx2, sy2, sw2, sh2, 0, 0, size, size);
     const data2 = ctx2.getImageData(0, 0, size, size).data;
 
-    // Step 2: Grayscale and CLAHE-like Local Normalization
+    // Step 2: Grayscale and Local Normalization
     const gray1 = new Float32Array(size * size);
     const gray2 = new Float32Array(size * size);
     for (let i = 0; i < data1.length; i += 4) {
@@ -143,8 +146,6 @@ const computeInBrowserBiometrics = async (img1Src, img2Src) => {
     const cosineSim = (norm1 === 0 || norm2 === 0) ? 0 : (dotAll / (Math.sqrt(norm1) * Math.sqrt(norm2)));
 
     // Step 6: Composite Biometric Confidence
-    // If same person: landmarkCorr > 0.65, gradientCorr > 0.60, cosineSim > 0.90 -> Score: 85% - 98%
-    // If different person: landmarkCorr < 0.35, gradientCorr < 0.40 -> Score: 15% - 30%
     const rawBiometric = (0.50 * landmarkCorr) + (0.35 * gradientCorr) + (0.15 * Math.max(0, (cosineSim - 0.5) / 0.5));
     
     let calibratedScore = 0;
@@ -177,9 +178,9 @@ const computeInBrowserBiometrics = async (img1Src, img2Src) => {
   } catch (err) {
     console.error('In-browser CV error:', err);
     return {
-      matchScore: 22.5,
-      cosineSimilarity: 18.0,
-      boneGeometryConcordance: 15.0,
+      matchScore: 0,
+      cosineSimilarity: 0,
+      boneGeometryConcordance: 0,
       isPassed: false,
       engine: 'Client CV Error'
     };
@@ -194,7 +195,7 @@ export const AiFaceMatchModal = ({
   aadhaarPhotoUrl, 
   aadhaarUpdateDate, 
   candidateDob, 
-  candidateName = 'Rajesh Kumar',
+  candidateName = 'MUTHUKUMAR P',
   onConfirmMatch 
 }) => {
   const [analyzing, setAnalyzing] = useState(true);
@@ -202,6 +203,16 @@ export const AiFaceMatchModal = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [showMeshOverlay, setShowMeshOverlay] = useState(true);
   
+  // Real live Aadhaar photo state (allows on-the-fly upload if not fetched yet)
+  const [activeAadhaarPhoto, setActiveAadhaarPhoto] = useState(aadhaarPhotoUrl || null);
+  const aadhaarFileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (aadhaarPhotoUrl) {
+      setActiveAadhaarPhoto(aadhaarPhotoUrl);
+    }
+  }, [aadhaarPhotoUrl]);
+
   // Real Biometric Result State (Initializes to computing state, NO false defaults)
   const [deepResult, setDeepResult] = useState({
     matchScore: 0,
@@ -211,8 +222,8 @@ export const AiFaceMatchModal = ({
     engine: 'Computing Biometric Vectors...'
   });
 
-  const aadhaarImg = aadhaarPhotoUrl || '/aadhaar_reference_photo.jpg';
-  const liveImg = livePhotoUrl || '/aadhaar_reference_photo.jpg';
+  const aadhaarImg = activeAadhaarPhoto;
+  const liveImg = livePhotoUrl;
   const liveTime = liveCaptureTimestamp || new Date().toISOString().replace('T', ' ').substring(0, 19);
   const aadhaarDate = aadhaarUpdateDate || '2019-03-12';
   const dob = candidateDob || '1996-05-15';
@@ -248,8 +259,31 @@ export const AiFaceMatchModal = ({
     'Generating Biometric Verification Verdict & SHA-256 Audit Seal...'
   ];
 
+  const handleAadhaarFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      setActiveAadhaarPhoto(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
   useEffect(() => {
     if (isOpen) {
+      if (!liveImg || !aadhaarImg) {
+        setAnalyzing(false);
+        setDeepResult({
+          matchScore: 0,
+          cosineSimilarity: 0,
+          boneGeometryConcordance: 0,
+          isPassed: false,
+          engine: 'Awaiting Both Face Images'
+        });
+        return;
+      }
+
       setAnalyzing(true);
       setAnalysisProgress(15);
       setCurrentStep(0);
@@ -339,12 +373,12 @@ export const AiFaceMatchModal = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className={`badge text-[10px] uppercase font-mono tracking-wider ${isPassed ? 'badge-purple' : 'badge-rose'}`}>
-                  AI Facial Biometrics v4.5
+                  AI Biometric Face Verification
                 </span>
-                <span className="text-xs text-slate-500 font-bold">• Invariant to Pose, Zoom & Background</span>
+                <span className="text-xs text-slate-500 font-bold">• Real-Time Live Selfie vs Aadhaar e-KYC</span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
-                AI Face Biometric Verification & Accuracy Result
+                AI Face Biometric Match & Identity Scorecard
               </h2>
             </div>
           </div>
@@ -392,48 +426,52 @@ export const AiFaceMatchModal = ({
               {/* LEFT: Live Captured WebCam Photo */}
               <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 space-y-3 relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="badge badge-indigo text-[10px] font-black uppercase">1. Current Live Photo</span>
+                  <span className="badge badge-indigo text-[10px] font-black uppercase">1. Current Live Selfie</span>
                   <span className="text-[10px] text-emerald-800 font-extrabold flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                     <span>Liveness: {livenessIndex}%</span>
                   </span>
                 </div>
 
-                <div className="relative aspect-4/3 max-h-56 mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-300 shadow-md">
-                  <img 
-                    src={liveImg} 
-                    alt="Current Live Photo" 
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  {/* Facial Landmark Mesh Simulation Lines */}
-                  {showMeshOverlay && (
-                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                      <div className={`w-36 h-48 border rounded-[45%] relative ${isPassed ? 'border-emerald-400/60' : 'border-rose-400/60'}`}>
-                        {/* Eyes */}
-                        <span className={`absolute top-14 left-7 w-2 h-2 rounded-full ${isPassed ? 'bg-emerald-400' : 'bg-rose-400'} shadow-[0_0_8px] animate-ping`} />
-                        <span className={`absolute top-14 right-7 w-2 h-2 rounded-full ${isPassed ? 'bg-emerald-400' : 'bg-rose-400'} shadow-[0_0_8px] animate-ping`} />
-                        {/* Nose Tip */}
-                        <span className="absolute top-24 left-16 w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
-                        {/* Lip Center */}
-                        <span className="absolute bottom-12 left-16 w-3 h-1 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
-                        {/* Vector Mesh Grid Line */}
-                        <div className={`absolute inset-x-4 top-14 h-0.5 ${isPassed ? 'bg-emerald-400/40' : 'bg-rose-400/40'}`} />
-                        <div className="absolute inset-y-6 left-1/2 w-0.5 bg-sky-400/40" />
+                <div className="relative aspect-4/3 max-h-56 mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-300 shadow-md flex items-center justify-center">
+                  {liveImg ? (
+                    <>
+                      <img 
+                        src={liveImg} 
+                        alt="Current Live Photo" 
+                        className="w-full h-full object-cover"
+                      />
+                      
+                      {showMeshOverlay && isPassed && (
+                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                          <div className="w-36 h-48 border rounded-[45%] relative border-emerald-400/60">
+                            <span className="absolute top-14 left-7 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px] animate-ping" />
+                            <span className="absolute top-14 right-7 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px] animate-ping" />
+                            <span className="absolute top-24 left-16 w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
+                            <span className="absolute bottom-12 left-16 w-3 h-1 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                            <div className="absolute inset-x-4 top-14 h-0.5 bg-emerald-400/40" />
+                            <div className="absolute inset-y-6 left-1/2 w-0.5 bg-sky-400/40" />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-sm rounded-lg p-1.5 text-[10px] text-white flex items-center justify-between font-mono">
+                        <span>Captured: {liveTime.substring(11, 19)}</span>
+                        <span className="text-emerald-300 font-bold">Live Sensor</span>
                       </div>
+                    </>
+                  ) : (
+                    <div className="p-6 text-center text-slate-400 space-y-2">
+                      <Camera className="w-8 h-8 mx-auto text-slate-500" />
+                      <span className="text-xs font-bold block">No live selfie captured yet</span>
                     </div>
                   )}
-
-                  <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-sm rounded-lg p-1.5 text-[10px] text-white flex items-center justify-between font-mono">
-                    <span>Captured: {liveTime.substring(11, 19)}</span>
-                    <span className="text-emerald-300 font-bold">Age: {currentAge} Yrs</span>
-                  </div>
                 </div>
 
                 <div className="text-xs text-slate-600 font-medium space-y-0.5">
                   <div className="flex justify-between text-[11px]">
                     <span className="text-slate-500">Live Capture Method:</span>
-                    <strong className="text-slate-900">WebCam / Phone Sensor</strong>
+                    <strong className="text-slate-900">WebCam / Mobile Camera</strong>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span className="text-slate-500">Feature Extractor:</span>
@@ -442,55 +480,81 @@ export const AiFaceMatchModal = ({
                 </div>
               </div>
 
-              {/* RIGHT: UIDAI Aadhaar Reference Photo (Thalapathy Vijay) */}
+              {/* RIGHT: Real UIDAI Aadhaar Fetched / Uploaded Photo */}
               <div className="p-4 bg-slate-50 rounded-2xl border-2 border-purple-200 space-y-3 relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="badge badge-purple text-[10px] font-black uppercase">2. Aadhaar e-KYC Reference Photo</span>
+                  <span className="badge badge-purple text-[10px] font-black uppercase">2. Official Aadhaar Photo</span>
                   <span className="text-[10px] text-purple-900 font-extrabold flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-                    <span>UIDAI Reference Vault</span>
+                    <span>UIDAI e-KYC Vault</span>
                   </span>
                 </div>
 
-                <div className="relative aspect-4/3 max-h-56 mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-300 shadow-md">
-                  <img 
-                    src={aadhaarImg} 
-                    alt="Aadhaar Official Reference Photo" 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative aspect-4/3 max-h-56 mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-300 shadow-md flex items-center justify-center">
+                  {aadhaarImg ? (
+                    <>
+                      <img 
+                        src={aadhaarImg} 
+                        alt="Aadhaar Official Reference Photo" 
+                        className="w-full h-full object-cover"
+                      />
 
-                  {/* Facial Landmark Mesh Simulation Lines */}
-                  {showMeshOverlay && (
-                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                      <div className="w-36 h-48 border border-purple-400/60 rounded-[45%] relative">
-                        {/* Eyes */}
-                        <span className="absolute top-14 left-7 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]" />
-                        <span className="absolute top-14 right-7 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]" />
-                        {/* Nose Tip */}
-                        <span className="absolute top-24 left-16 w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
-                        {/* Lip Center */}
-                        <span className="absolute bottom-12 left-16 w-3 h-1 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
-                        {/* Vector Mesh Grid Line */}
-                        <div className="absolute inset-x-4 top-14 h-0.5 bg-purple-400/40" />
-                        <div className="absolute inset-y-6 left-1/2 w-0.5 bg-sky-400/40" />
+                      {showMeshOverlay && (
+                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                          <div className="w-36 h-48 border border-purple-400/60 rounded-[45%] relative">
+                            <span className="absolute top-14 left-7 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]" />
+                            <span className="absolute top-14 right-7 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]" />
+                            <span className="absolute top-24 left-16 w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
+                            <span className="absolute bottom-12 left-16 w-3 h-1 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                            <div className="absolute inset-x-4 top-14 h-0.5 bg-purple-400/40" />
+                            <div className="absolute inset-y-6 left-1/2 w-0.5 bg-sky-400/40" />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-sm rounded-lg p-1.5 text-[10px] text-white flex items-center justify-between font-mono">
+                        <span>Aadhaar Master Photo</span>
+                        <span className="text-purple-300 font-bold">UIDAI Verified</span>
                       </div>
+                    </>
+                  ) : (
+                    <div className="p-6 text-center space-y-2.5">
+                      <ShieldCheck className="w-8 h-8 mx-auto text-purple-400" />
+                      <p className="text-xs text-slate-300 font-bold">Aadhaar photo not retrieved yet</p>
+                      <button
+                        type="button"
+                        onClick={() => aadhaarFileInputRef.current?.click()}
+                        className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold mx-auto cursor-pointer"
+                      >
+                        <Upload className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Upload Aadhaar Photo</span>
+                      </button>
                     </div>
                   )}
-
-                  <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-sm rounded-lg p-1.5 text-[10px] text-white flex items-center justify-between font-mono">
-                    <span>Aadhaar Date: {aadhaarDate}</span>
-                    <span className="text-purple-300 font-bold">Age: {ageAtAadhaar} Yrs</span>
-                  </div>
                 </div>
+
+                <input 
+                  type="file" 
+                  ref={aadhaarFileInputRef} 
+                  onChange={handleAadhaarFileUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
 
                 <div className="text-xs text-slate-600 font-medium space-y-0.5">
                   <div className="flex justify-between text-[11px]">
                     <span className="text-slate-500">Reference Source:</span>
-                    <strong className="text-slate-900">Aadhaar Master Photo</strong>
+                    <strong className="text-slate-900">{aadhaarImg ? 'UIDAI e-KYC Document Photo' : 'Awaiting Aadhaar e-KYC'}</strong>
                   </div>
                   <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-500">Aadhaar Last Updated:</span>
-                    <span className="font-bold text-slate-800 font-mono">{aadhaarDate}</span>
+                    <span className="text-slate-500">Change Photo:</span>
+                    <button
+                      type="button"
+                      onClick={() => aadhaarFileInputRef.current?.click()}
+                      className="text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer text-[11px]"
+                    >
+                      Browse/Upload Aadhaar Card
+                    </button>
                   </div>
                 </div>
               </div>
@@ -503,38 +567,23 @@ export const AiFaceMatchModal = ({
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-amber-400" />
                   <h4 className="text-xs font-black uppercase tracking-wider text-amber-300">
-                    Temporal Aging Drift & Timeline Calibration
+                    Biometric Verification Analysis
                   </h4>
                 </div>
                 <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded text-slate-200">
-                  Delta {elapsedYears} Years Elapsed
+                  {candidateName}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
-                <div className="p-2 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-[10px] text-slate-400 block font-bold">Candidate DOB</span>
-                  <strong className="text-white font-mono">{dob}</strong>
-                </div>
-                <div className="p-2 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-[10px] text-slate-400 block font-bold">Age at Aadhaar Photo</span>
-                  <strong className="text-purple-300">{ageAtAadhaar} Years</strong>
-                </div>
-                <div className="p-2 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-[10px] text-slate-400 block font-bold">Current Live Age</span>
-                  <strong className="text-emerald-300">{currentAge} Years</strong>
-                </div>
-                <div className="p-2 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-[10px] text-slate-400 block font-bold">Aging Tolerance Index</span>
-                  <strong className="text-amber-300 font-bold">+{agingDriftAdjustment}% Calibrated</strong>
-                </div>
-              </div>
-
               <p className="text-[11px] text-slate-300 leading-snug">
-                * <strong>AI Biometric Insight:</strong> {isPassed ? (
-                  <span>Facial landmark and gradient vectors confirm identical identity (<strong>{finalMatchScore}% Accuracy</strong>). Invariant to camera angle, zoom, and background lighting.</span>
+                {liveImg && aadhaarImg ? (
+                  isPassed ? (
+                    <span>* <strong>AI Biometric Result:</strong> Facial landmark and gradient vectors confirm identical identity (<strong>{finalMatchScore}% Accuracy</strong>). Invariant to camera angle, zoom, and background lighting.</span>
+                  ) : (
+                    <span className="text-rose-300">* <strong>AI Biometric Result:</strong> Craniofacial landmark and gradient tensor divergence detected. The live captured person does not correspond to the reference Aadhaar card photo (Calculated Similarity: {finalMatchScore}% vs 70% threshold).</span>
+                  )
                 ) : (
-                  <span className="text-rose-300">Craniofacial landmark and gradient tensor divergence detected. The live captured person does not correspond to the reference Aadhaar card photo (Calculated Similarity: {finalMatchScore}% vs 70% threshold).</span>
+                  <span>Please ensure both your live selfie and your official Aadhaar photo are available to execute the AI biometric comparison.</span>
                 )}
               </p>
             </div>

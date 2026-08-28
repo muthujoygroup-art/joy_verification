@@ -1293,16 +1293,16 @@ export const EmployeePortalView = () => {
           onClose={() => setShowAiFaceMatchModal(false)}
           livePhotoUrl={currentCapturedPhoto}
           liveCaptureTimestamp={candidate.faceImages?.capturedAt}
-          aadhaarPhotoUrl="/aadhaar_reference_photo.jpg"
-          aadhaarUpdateDate="2019-03-12"
-          candidateDob={candidate.dob || "1996-05-15"}
+          aadhaarPhotoUrl={fetchedAadhaarProfile?.photo || candidate.faceImages?.aadhaarRef || null}
+          aadhaarUpdateDate={fetchedAadhaarProfile?.lastUpdated || "2019-03-12"}
+          candidateDob={fetchedAadhaarProfile?.dob || candidate.dob || "1996-05-15"}
           candidateName={candidate.name}
           onConfirmMatch={(matchResult) => {
             setAiFaceMatchData(matchResult);
             if (matchResult.isPassed) {
-              showToast('✅ AI Biometric Face Match Verified (97.6% Concordance)!');
+              showToast(`✅ AI Biometric Face Match Verified (${matchResult.matchScore}% Concordance)!`);
             } else {
-              showToast('⚠️ Face Biometric Mismatch (35.8%): Live selfie does not match Aadhaar Profile Photo!');
+              showToast(`⚠️ Face Biometric Mismatch (${matchResult.matchScore}%): Live selfie does not match Aadhaar Photo!`);
             }
           }}
         />

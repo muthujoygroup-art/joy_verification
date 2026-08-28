@@ -99,11 +99,11 @@ const INITIAL_CANDIDATES = [
       aadhaar: false, mobile: false, face: false, pan: false, bankCheck: false
     },
     faceImages: {
-      straight: '/aadhaar_reference_photo.jpg',
-      livePhoto: '/aadhaar_reference_photo.jpg',
-      aadhaarRef: '/aadhaar_reference_photo.jpg',
-      left: '/aadhaar_reference_photo.jpg',
-      right: '/aadhaar_reference_photo.jpg'
+      straight: null,
+      livePhoto: null,
+      aadhaarRef: null,
+      left: null,
+      right: null
     },
     verificationDate: ''
   }
