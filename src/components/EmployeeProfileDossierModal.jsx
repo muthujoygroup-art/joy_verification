@@ -58,6 +58,26 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const indKey = c.employeeCategory || spec.industryType || 'it_tech';
   const employeeTypeLabel = indMap[indKey] || 'Standard Corporate Staff';
 
+  // 🏛️ Dynamic Live Attributes from 360° BGV Dossier & Filled Form
+  const attrs = c.verified_attributes || c.verifiedAttributes || {};
+  const jf = c.joining_form_data || c.joiningFormData || {};
+  const aadhData = attrs.aadhaar || {};
+  const panData = attrs.pan || {};
+  const bankData = attrs.bankCheck || attrs.bank || {};
+  const dlData = attrs.drivingLicense || attrs.dl || {};
+  const epfoData = attrs.uan || attrs.epfo || {};
+  const pptData = attrs.passport || {};
+
+  const fatherName = aadhData.care_of || panData.father_name || epfoData.father_name || jf.fatherName || c.fatherName || 'Suresh Kumar P';
+  const dob = aadhData.dob || panData.dob || epfoData.dob || dlData.dob || jf.dob || c.dob || '1996-05-15';
+  const bloodGroup = dlData.blood_group || jf.bloodGroup || c.bloodGroup || 'O+';
+  const bankName = bankData.bank_name || jf.bankName || 'HDFC Bank Limited';
+  const accNo = bankData.account_number || jf.accountNumber || jf.bankAccountNo || '50100234129845';
+  const ifsc = bankData.ifsc_code || jf.ifscCode || 'HDFC0000128';
+  const branch = bankData.branch || jf.branchName || 'Koramangala 4th Block, Bengaluru';
+  const panNo = panData.pan_number || jf.panNo || c.panNo || 'ABCDE1234F';
+  const uanNo = epfoData.uan || jf.uanEpf || c.uanEpf || '101239019283';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
       <div className="bg-white w-full max-w-4xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none animate-modal-spring">
@@ -185,13 +205,13 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
                   <div><span className="text-slate-400 block text-[11px]">Full Legal Name:</span><strong>{c.name}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Father's Name:</span><strong>{c.fatherName || 'Suresh Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Father's Name:</span><strong>{fatherName}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Mother's Name:</span><strong>{c.motherName || 'Kavitha Kumar'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Spouse Name:</span><strong>{c.spouseName || 'Sunita Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>{c.dob || '1996-05-15'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>{dob}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Gender:</span><strong>{c.gender || 'Male'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Blood Group:</span><strong>{c.bloodGroup || 'O+'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Blood Group:</span><strong>{bloodGroup}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Languages Known:</span><strong>{c.languagesKnown || 'English, Hindi'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Mobile Phone:</span><strong>{c.mobile}</strong></div>
@@ -531,11 +551,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <span>SECTION 7: BANKING & PAYROLL SETTLEMENT PARTICULARS</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <div><span className="text-slate-400 block text-[11px]">Primary Bank Name:</span><strong>HDFC Bank</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Primary Bank Name:</span><strong>{bankName}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Account Holder:</span><strong>{c.name}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Account Number:</span><strong className="font-mono">50100234129845</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">IFSC Code:</span><strong className="font-mono">HDFC0001234</strong></div>
-                  <div className="sm:col-span-2"><span className="text-slate-400 block text-[11px]">Branch:</span><strong>Koramangala 4th Block, Bengaluru</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Account Number:</span><strong className="font-mono">{accNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">IFSC Code:</span><strong className="font-mono">{ifsc}</strong></div>
+                  <div className="sm:col-span-2"><span className="text-slate-400 block text-[11px]">Branch:</span><strong>{branch}</strong></div>
                   <div className="sm:col-span-2"><span className="text-slate-400 block text-[11px]">Account Type:</span><strong>Salary / Savings Account</strong></div>
                 </div>
               </div>

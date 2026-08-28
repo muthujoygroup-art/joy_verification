@@ -48,9 +48,14 @@ CREATE TABLE IF NOT EXISTS candidates (
     company_id VARCHAR(50) REFERENCES companies(id) ON DELETE SET NULL,
     hr_id VARCHAR(50) REFERENCES hr_users(id) ON DELETE SET NULL,
     status VARCHAR(50) DEFAULT 'Draft',
+    portal_password VARCHAR(50) DEFAULT '1234',
     verification_config JSONB DEFAULT '{}',
     verifications_completed JSONB DEFAULT '{}',
+    verified_attributes JSONB DEFAULT '{}',
     face_images JSONB DEFAULT '{}',
+    manual_checks JSONB DEFAULT '{}',
+    joining_form_data JSONB DEFAULT '{}',
+    industry_specialization JSONB DEFAULT '{}',
     verification_date TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -156,6 +161,59 @@ CREATE TABLE IF NOT EXISTS communication_gateways (
     is_active BOOLEAN DEFAULT TRUE,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 12. PERMANENT VERIFICATION RECORDS (360° Dossier & Audit Ledger)
+CREATE TABLE IF NOT EXISTS verification_records (
+    id VARCHAR(50) PRIMARY KEY,
+    candidate_id VARCHAR(50) NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
+    token VARCHAR(100) NOT NULL,
+    verification_type VARCHAR(50) NOT NULL, -- 'aadhaar', 'pan', 'bankCheck', 'drivingLicense', 'passport', 'uan', 'face'
+    status VARCHAR(50) DEFAULT 'VERIFIED',
+    provider VARCHAR(100) DEFAULT 'Server 1: Sandbox.co.in',
+    transaction_ref VARCHAR(100),
+    fetched_data JSONB DEFAULT '{}',
+    raw_payload JSONB DEFAULT '{}',
+    confidence_score NUMERIC(5,2) DEFAULT 1.00,
+    sha256_seal VARCHAR(100),
+    verified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 13. CANDIDATE ORIGINAL UPLOADED DOCUMENTS
+CREATE TABLE IF NOT EXISTS candidate_documents (
+    id VARCHAR(50) PRIMARY KEY,
+    candidate_id VARCHAR(50) NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL,
+    doc_type VARCHAR(50),
+    file_format VARCHAR(20),
+    file_path TEXT,
+    file_size_kb NUMERIC(10,2) DEFAULT 0.00,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 14. SYSTEM SETTINGS & GUIDELINES
+CREATE TABLE IF NOT EXISTS system_settings (
+    id VARCHAR(50) PRIMARY KEY,
+    role VARCHAR(50) NOT NULL UNIQUE,
+    settings JSONB DEFAULT '{}',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS platform_guidelines (
+    id VARCHAR(50) PRIMARY KEY,
+    role VARCHAR(50) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    guidelines JSONB DEFAULT '[]',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CREATE INDEXES FOR ULTRA-FAST QUERY PERFORMANCE
+CREATE INDEX IF NOT EXISTS idx_candidates_token ON candidates(token);
+CREATE INDEX IF NOT EXISTS idx_candidates_company ON candidates(company_id);
+CREATE INDEX IF NOT EXISTS idx_candidates_hr ON candidates(hr_id);
+CREATE INDEX IF NOT EXISTS idx_verification_records_cand ON verification_records(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_verification_records_token ON verification_records(token);
+CREATE INDEX IF NOT EXISTS idx_verification_records_type ON verification_records(verification_type);
 
 -- ====================================================================
 -- INITIAL PRODUCTION SEED DATA

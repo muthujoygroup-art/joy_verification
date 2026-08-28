@@ -100,22 +100,40 @@ def save_and_enrich_candidate_verification(
     tx_ref = raw_payload.get("transaction_id") or raw_payload.get("reference_id") or f"TXN-JOY-{uuid.uuid4().hex[:8].upper()}"
     sha_seal = compute_record_hash(fetched_data)
     
-    # 1. Create Permanent VerificationRecord
-    record = VerificationRecord(
-        id=record_id,
-        candidate_id=candidate.id,
-        token=candidate.token,
-        verification_type=verification_type,
-        status=status,
-        provider=provider,
-        transaction_ref=tx_ref,
-        fetched_data=fetched_data,
-        raw_payload=raw_payload,
-        confidence_score=confidence_score,
-        sha256_seal=sha_seal,
-        verified_at=datetime.utcnow()
-    )
-    db.add(record)
+    # 1. Check for existing record to prevent duplicate entries
+    existing_record = db.query(VerificationRecord).filter(
+        VerificationRecord.candidate_id == candidate.id,
+        VerificationRecord.verification_type == verification_type
+    ).first()
+
+    if existing_record:
+        # Update existing record cleanly without creating duplicate rows
+        existing_record.status = status
+        existing_record.provider = provider
+        existing_record.transaction_ref = tx_ref
+        existing_record.fetched_data = fetched_data
+        existing_record.raw_payload = raw_payload
+        existing_record.confidence_score = confidence_score
+        existing_record.sha256_seal = sha_seal
+        existing_record.verified_at = datetime.utcnow()
+        record = existing_record
+    else:
+        # Create new permanent VerificationRecord
+        record = VerificationRecord(
+            id=record_id,
+            candidate_id=candidate.id,
+            token=candidate.token,
+            verification_type=verification_type,
+            status=status,
+            provider=provider,
+            transaction_ref=tx_ref,
+            fetched_data=fetched_data,
+            raw_payload=raw_payload,
+            confidence_score=confidence_score,
+            sha256_seal=sha_seal,
+            verified_at=datetime.utcnow()
+        )
+        db.add(record)
     
     # 2. Update Candidate verifications_completed & verified_attributes
     verifs = dict(candidate.verifications_completed or {})

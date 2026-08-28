@@ -224,6 +224,33 @@ export const api = {
     });
   },
 
+  // 🏛️ Upstream Government & Institutional Verification APIs
+  verifyAadhaarLive: (token, aadhaarNumber, otp) => request('/verification/verify-aadhaar', {
+    method: 'POST',
+    body: JSON.stringify({ token, aadhaar_number: aadhaarNumber, otp }),
+  }),
+  verifyPanLive: (token, panNumber) => request('/verification/verify-pan', {
+    method: 'POST',
+    body: JSON.stringify({ token, pan_number: panNumber }),
+  }),
+  verifyBankLive: (token, accountNumber, ifscCode) => request('/verification/verify-bank', {
+    method: 'POST',
+    body: JSON.stringify({ token, account_number: accountNumber, ifsc_code: ifscCode }),
+  }),
+  verifyDlLive: (token, dlNumber, dob = '1996-05-15') => request('/verification/verify-dl', {
+    method: 'POST',
+    body: JSON.stringify({ token, dl_number: dlNumber, dob }),
+  }),
+  verifyEpfoLive: (token, uanNumber) => request('/verification/verify-epfo', {
+    method: 'POST',
+    body: JSON.stringify({ token, uan_number: uanNumber }),
+  }),
+  verifyPassportLive: (token, passportNumber, dob = '1996-05-15') => request('/verification/verify-passport', {
+    method: 'POST',
+    body: JSON.stringify({ token, passport_number: passportNumber, dob }),
+  }),
+  getVerificationRecords: (token) => request(`/verification/candidate/${token}/records`),
+
   // Master Data & Custom Form Fields
   getMasterDropdowns: () => request('/master-data/dropdowns', {}, true),
   addMasterDropdownOption: (category, optionValue) => {
