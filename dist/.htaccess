@@ -7,6 +7,14 @@
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+  # Pass API, Health, and Documentation requests directly to Python backend
+  RewriteCond %{REQUEST_URI} ^/api [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/health [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/docs [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/openapi.json [NC]
+  RewriteRule ^ - [L]
+
+  # React SPA Static Routing
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
