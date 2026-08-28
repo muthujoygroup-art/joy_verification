@@ -236,12 +236,14 @@ export const CompanyAdminView = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Tabs Bar (Executive Telemetry Statistics is FIRST option) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1.5">
+        {/* Sub-Navigation Tabs Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 gap-1.5 shadow-2xs">
           <button
             onClick={() => setActiveTab('telemetry')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'telemetry' 
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <BarChart3 className="w-4 h-4 shrink-0" />
@@ -251,65 +253,87 @@ export const CompanyAdminView = () => {
           <button
             data-tour-step="company-registry-tab"
             onClick={() => setActiveTab('registry')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'registry' 
+                ? 'bg-sky-600 text-white shadow-md shadow-sky-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <ShieldCheck className="w-4 h-4 shrink-0" />
             <span className="truncate">Registry</span>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+              activeTab === 'registry' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              {candidates.length}
+            </span>
           </button>
 
           <button
             data-tour-step="company-hr-tab"
             onClick={() => setActiveTab('hrteam')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'hrteam' 
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Users className="w-4 h-4 shrink-0" />
             <span className="truncate">HR Team</span>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+              activeTab === 'hrteam' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              {hrUsers.length}
+            </span>
           </button>
 
           <button
             data-tour-step="company-dochub-tab"
             onClick={() => setActiveTab('dochub')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'dochub' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'dochub' 
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <FolderDown className="w-4 h-4 shrink-0" />
-            <span className="truncate">Doc Hub</span>
+            <span className="truncate">Doc Vault</span>
           </button>
 
           <button
             onClick={() => setActiveTab('billing_wallet')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
-              activeTab === 'billing_wallet' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'billing_wallet' 
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <CreditCard className="w-4 h-4 shrink-0" />
-            <span className="truncate">Wallet 💳</span>
+            <span className="truncate">Wallet & Billing</span>
           </button>
 
           <button
             onClick={() => setActiveTab('hr_permissions')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
-              activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'hr_permissions' 
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span className="truncate">HR Governance 🛡️</span>
+            <span className="truncate">Governance</span>
           </button>
 
           <button
             data-tour-step="company-settings-tab"
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'settings' 
+                ? 'bg-indigo-700 text-white shadow-md shadow-indigo-600/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Settings className="w-4 h-4 shrink-0" />
-            <span className="truncate">Settings ⚙️</span>
+            <span className="truncate">Settings</span>
           </button>
         </div>
       </div>

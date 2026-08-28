@@ -915,47 +915,63 @@ export const HrExecutiveView = () => {
         </div>
 
         {/* Sub-Navigation Tabs Bar */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-row items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1.5">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row items-center bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 gap-1.5 shadow-2xs">
           <button
             data-tour-step="hr-pipeline-tab"
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
+            className={`flex items-center justify-center sm:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'pipeline' 
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Smartphone className="w-4 h-4 shrink-0" />
-            <span className="truncate">Candidates 👥</span>
+            <span className="truncate">Candidates</span>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+              activeTab === 'pipeline' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              {candidates.length}
+            </span>
           </button>
 
           <button
             data-tour-step="hr-profiler-tab"
             onClick={() => setActiveTab('profiler')}
-            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
+            className={`flex items-center justify-center sm:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'profiler' 
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Sliders className="w-4 h-4 shrink-0" />
-            <span className="truncate">Add Profile ➕</span>
+            <span className="truncate">Add Profile</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black">
+              NEW
+            </span>
           </button>
 
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
+            className={`flex items-center justify-center sm:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'analytics' 
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <BarChart3 className="w-4 h-4 shrink-0" />
-            <span className="truncate">Telemetry 📊</span>
+            <span className="truncate">Telemetry & Metrics</span>
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
-              activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 sm:bg-transparent'
+            className={`flex items-center justify-center sm:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
+              activeTab === 'settings' 
+                ? 'bg-indigo-700 text-white shadow-md shadow-indigo-600/20 scale-[1.02]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
             }`}
           >
             <Settings className="w-4 h-4 shrink-0" />
-            <span className="truncate">Settings ⚙️</span>
+            <span className="truncate">Settings & Policy</span>
           </button>
         </div>
       </div>
