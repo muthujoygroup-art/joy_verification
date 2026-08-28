@@ -40,7 +40,9 @@ import {
   Zap,
   Copy,
   SendHorizontal,
-  Server
+  Server,
+  Sparkles,
+  KeyRound
 } from 'lucide-react';
 
 export const CompanyAdminView = () => {
