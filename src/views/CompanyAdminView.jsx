@@ -58,10 +58,11 @@ export const CompanyAdminView = () => {
     getCertificateLifecycle,
     rechargeCompanyWallet,
     updateCompanyRoutingEngine,
+    updateCompanyHrPermissions,
     apiConfigurations
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
-  const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet'
+  const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showRazorpayModal, setShowRazorpayModal] = useState(false);
@@ -224,7 +225,7 @@ export const CompanyAdminView = () => {
 
           <button
             onClick={() => setActiveTab('billing_wallet')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
               activeTab === 'billing_wallet' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
@@ -233,9 +234,19 @@ export const CompanyAdminView = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('hr_permissions')}
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
+              activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate">HR Governance 🛡️</span>
+          </button>
+
+          <button
             data-tour-step="company-settings-tab"
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center ${
+            className={`flex items-center justify-center lg:justify-start gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all text-center btn-interactive tab-interactive ${
               activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 bg-white/60 lg:bg-transparent'
             }`}
           >
@@ -1201,6 +1212,182 @@ export const CompanyAdminView = () => {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* TAB: HR GOVERNANCE & FEATURE CONTROLS */}
+      {activeTab === 'hr_permissions' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="badge badge-purple text-[10px]">Company Admin HR Policy Matrix</span>
+                <span className="text-xs text-slate-500 font-bold">• Enterprise Governance Controls</span>
+              </div>
+              <h3 className="text-lg font-black text-slate-900 mt-1">
+                HR Staff Feature Permissions & Verification Policies
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Configure allowed communication channels, candidate ingestion methods, and mandatory compliance gates for HR staff.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                const fullPermissions = {
+                  allowProfileCreation: true,
+                  allowBulkExcelUpload: true,
+                  allowWhatsAppDispatch: true,
+                  allowEmailDispatch: true,
+                  allowSmsDispatch: true,
+                  requireOriginalDocumentVault: true,
+                  requireAiFaceBiometrics: true,
+                  allow360DossierExport: true,
+                  allowCertificateGeneration: true
+                };
+                updateCompanyHrPermissions(company.id, fullPermissions);
+              }}
+              className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold cursor-pointer btn-interactive self-start sm:self-auto"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Enable All HR Features</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            
+            {/* Category 1: Candidate Profiling & Ingestion */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5">
+              <h4 className="font-extrabold text-xs text-indigo-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <Users className="w-4 h-4" />
+                <span>1. Candidate Profiling & Ingestion Rights</span>
+              </h4>
+
+              <div className="space-y-2.5">
+                {[
+                  { id: 'allowProfileCreation', title: 'Single Profile Creation', desc: 'Allow HR to manually add new candidate profiles' },
+                  { id: 'allowBulkExcelUpload', title: 'Bulk Excel (.xlsx / .csv) Ingestion', desc: 'Allow HR to batch upload multiple candidates via spreadsheet' }
+                ].map(item => {
+                  const isChecked = company.hrPermissions?.[item.id] ?? true;
+                  return (
+                    <label key={item.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 cursor-pointer hover:border-indigo-300 transition-all btn-interactive">
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 block">{item.title}</span>
+                        <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={isChecked}
+                        onChange={(e) => updateCompanyHrPermissions(company.id, { [item.id]: e.target.checked })}
+                        className="accent-indigo-600 w-4 h-4 shrink-0 cursor-pointer"
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category 2: Communication Channels Dispatch Rights */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5">
+              <h4 className="font-extrabold text-xs text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <MessageSquare className="w-4 h-4" />
+                <span>2. Candidate Communication Dispatch Channels</span>
+              </h4>
+
+              <div className="space-y-2.5">
+                {[
+                  { id: 'allowWhatsAppDispatch', title: 'WhatsApp Cloud API Dispatch 💬', desc: 'Allow HR to send magic verification links via WhatsApp' },
+                  { id: 'allowEmailDispatch', title: 'Email Magic Link & OTP Dispatch 📧', desc: 'Allow HR to send automated invitation emails & OTP codes' },
+                  { id: 'allowSmsDispatch', title: 'Carrier SMS Notification Dispatch 📱', desc: 'Allow HR to send direct SMS OTP and notification alerts' }
+                ].map(item => {
+                  const isChecked = company.hrPermissions?.[item.id] ?? true;
+                  return (
+                    <label key={item.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 cursor-pointer hover:border-emerald-300 transition-all btn-interactive">
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 block">{item.title}</span>
+                        <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={isChecked}
+                        onChange={(e) => updateCompanyHrPermissions(company.id, { [item.id]: e.target.checked })}
+                        className="accent-emerald-600 w-4 h-4 shrink-0 cursor-pointer"
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category 3: Mandatory Candidate Evidence Policies */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5">
+              <h4 className="font-extrabold text-xs text-purple-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <ShieldCheck className="w-4 h-4" />
+                <span>3. Mandatory Candidate Verification Policies</span>
+              </h4>
+
+              <div className="space-y-2.5">
+                {[
+                  { id: 'requireOriginalDocumentVault', title: 'Enforce Original Document Evidence (8 Files) 📁', desc: 'Candidates must upload original PAN, Aadhaar, Degree & Bank files' },
+                  { id: 'requireAiFaceBiometrics', title: 'Enforce AI 3-Pose Face Biometric Match 👤', desc: 'Candidates must pass 3D live webcam liveness verification' }
+                ].map(item => {
+                  const isChecked = company.hrPermissions?.[item.id] ?? true;
+                  return (
+                    <label key={item.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 cursor-pointer hover:border-purple-300 transition-all btn-interactive">
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 block">{item.title}</span>
+                        <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={isChecked}
+                        onChange={(e) => updateCompanyHrPermissions(company.id, { [item.id]: e.target.checked })}
+                        className="accent-purple-600 w-4 h-4 shrink-0 cursor-pointer"
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category 4: Report Export & Compliance Authority */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5">
+              <h4 className="font-extrabold text-xs text-sky-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <FileCheck className="w-4 h-4" />
+                <span>4. Report Export & Certification Authority</span>
+              </h4>
+
+              <div className="space-y-2.5">
+                {[
+                  { id: 'allow360DossierExport', title: '360° Multi-API PDF Dossier Export 📄', desc: 'Allow HR to generate & export full candidate 360° dossiers' },
+                  { id: 'allowCertificateGeneration', title: 'ISO 27001 Official Certificate Generation 🎖️', desc: 'Allow HR to issue official digital verification certificates' }
+                ].map(item => {
+                  const isChecked = company.hrPermissions?.[item.id] ?? true;
+                  return (
+                    <label key={item.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 cursor-pointer hover:border-sky-300 transition-all btn-interactive">
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 block">{item.title}</span>
+                        <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={isChecked}
+                        onChange={(e) => updateCompanyHrPermissions(company.id, { [item.id]: e.target.checked })}
+                        className="accent-sky-600 w-4 h-4 shrink-0 cursor-pointer"
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-2xl text-xs text-indigo-950 flex items-center justify-between">
+            <span className="font-bold">🔒 Changes apply instantly to all HR staff accounts under {company.name}</span>
+            <span className="badge badge-indigo text-[9px] font-mono">Real-time Policy Enforcement</span>
+          </div>
         </div>
       )}
 

@@ -55,9 +55,34 @@ const INITIAL_COMPANIES = [
       }
     ],
     features: {
+      // Communication Gateways
+      whatsappGateway: true,
+      emailGateway: true,
+      smsGateway: true,
+      // Portal Access Controls
+      allowCompanyAdminLogin: true,
+      allowHrLogin: true,
+      allowEmployeePortalAccess: true,
+      // Document & Compliance Protocols
+      documentVaultVerification: true,
+      statutoryAgreements: true,
+      // Biometrics & AI Engine
+      aiFaceBiometrics: true,
+      // Government Verification APIs
       aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
       pan: true, uan: true, education: true, criminalCheck: true,
       addressCheck: true, bankCheck: true, passport: true, directorship: true, voterId: true
+    },
+    hrPermissions: {
+      allowProfileCreation: true,
+      allowBulkExcelUpload: true,
+      allowWhatsAppDispatch: true,
+      allowEmailDispatch: true,
+      allowSmsDispatch: true,
+      requireOriginalDocumentVault: true,
+      requireAiFaceBiometrics: true,
+      allow360DossierExport: true,
+      allowCertificateGeneration: true
     }
   }
 ];
@@ -1019,6 +1044,18 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Update Company HR Governance Permissions (Configured by Company Admin)
+  const updateCompanyHrPermissions = (companyId, newPermissions) => {
+    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, hrPermissions: { ...(c.hrPermissions || {}), ...newPermissions } } : c));
+    showToast('🏢 HR Staff Permissions & Policies Updated Successfully!');
+  };
+
+  // Update Candidate-Specific Verification Checklist & Configuration (Configured by HR)
+  const updateCandidateVerificationConfig = (candidateToken, newConfig) => {
+    setCandidates(prev => prev.map(c => c.token === candidateToken ? { ...c, verificationConfig: { ...(c.verificationConfig || {}), ...newConfig } } : c));
+    showToast('👥 Candidate Verification Checklist Updated!');
+  };
+
   // Update Company API Server Engine Routing (Hybrid / Server 1 Sandbox / Server 2 CoinCircle)
   const updateCompanyRoutingEngine = (companyId, engine) => {
     setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, apiRoutingEngine: engine } : c));
@@ -1726,6 +1763,8 @@ export const AppProvider = ({ children }) => {
       companies,
       addCompany,
       updateCompanyFeatures,
+      updateCompanyHrPermissions,
+      updateCandidateVerificationConfig,
       updateCompanyRoutingEngine,
       hrUsers,
       addHrUser,

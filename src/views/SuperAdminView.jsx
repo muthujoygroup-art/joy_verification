@@ -2724,60 +2724,256 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* Edit 10 Feature Flags Modal */}
+      {/* 🛠️ COMPREHENSIVE COMPANY FEATURE FLAGS & GATEWAY GOVERNANCE MODAL */}
       {editingFeaturesCompany && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="glass-panel w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 border-2 border-indigo-500/30 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring my-auto">
+            
+            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="badge badge-indigo text-[10px]">Super Admin Feature Flags</span>
-                <h3 className="text-base font-extrabold text-slate-900 mt-1">Configure 10 Verification Modules: {editingFeaturesCompany.name}</h3>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-purple text-[10px]">Super Admin Master Governance</span>
+                  <span className="text-xs text-slate-500 font-bold">• Plan: {editingFeaturesCompany.plan}</span>
+                </div>
+                <h3 className="text-lg font-black text-slate-900 mt-1">
+                  Feature Flags & Gateway Matrix: {editingFeaturesCompany.name}
+                </h3>
               </div>
-              <button onClick={() => setEditingFeaturesCompany(null)} className="text-slate-400 hover:text-slate-700">✕</button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1 text-xs">
-              {featureList.map((feat) => {
-                const isChecked = editingFeaturesCompany.features[feat.id] ?? false;
-                return (
-                  <label 
-                    key={feat.id}
-                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-3 ${
-                      isChecked ? 'bg-indigo-50 border-indigo-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-bold text-xs">{feat.name}</div>
-                      <div className="text-[10px] text-slate-500 font-medium">{feat.category}</div>
-                    </div>
-                    <input 
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={(e) => {
-                        const updated = {
-                          ...editingFeaturesCompany.features,
-                          [feat.id]: e.target.checked
-                        };
-                        setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
-                      }}
-                      className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
-                    />
-                  </label>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-              <button onClick={() => setEditingFeaturesCompany(null)} className="btn btn-secondary text-xs">Cancel</button>
               <button 
-                onClick={() => {
-                  updateCompanyFeatures(editingFeaturesCompany.id, editingFeaturesCompany.features, editingFeaturesCompany.plan);
-                  setEditingFeaturesCompany(null);
-                }} 
-                className="btn btn-superadmin text-xs font-bold shadow-md"
+                onClick={() => setEditingFeaturesCompany(null)} 
+                className="text-slate-400 hover:text-slate-700 text-lg p-1 rounded-lg hover:bg-slate-100 cursor-pointer btn-interactive"
               >
-                Save Feature Flags
+                ✕
               </button>
+            </div>
+
+            {/* 1-Click Plan-Based Quick Presets Bar */}
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="font-extrabold text-slate-700 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span>1-Click Plan Presets:</span>
+              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const preset = {
+                      ...editingFeaturesCompany.features,
+                      whatsappGateway: true, emailGateway: true, smsGateway: true,
+                      allowCompanyAdminLogin: true, allowHrLogin: true, allowEmployeePortalAccess: true,
+                      documentVaultVerification: true, statutoryAgreements: true, aiFaceBiometrics: true,
+                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, uan: false, drivingLicense: false
+                    };
+                    setEditingFeaturesCompany({ ...editingFeaturesCompany, features: preset });
+                    showToast('Standard Plan Preset Loaded');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-indigo-50 text-indigo-700 font-bold border border-slate-200 hover:border-indigo-300 transition-all btn-interactive"
+                >
+                  Standard Preset
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const preset = {
+                      ...editingFeaturesCompany.features,
+                      whatsappGateway: true, emailGateway: true, smsGateway: true,
+                      allowCompanyAdminLogin: true, allowHrLogin: true, allowEmployeePortalAccess: true,
+                      documentVaultVerification: true, statutoryAgreements: true, aiFaceBiometrics: true,
+                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, uan: true, drivingLicense: true,
+                      passport: true, criminalCheck: true, education: true, directorship: true, voterId: true, addressCheck: true
+                    };
+                    setEditingFeaturesCompany({ ...editingFeaturesCompany, features: preset });
+                    showToast('Full-Stack Enterprise Preset Loaded');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-xs transition-all btn-interactive"
+                >
+                  ⚡ Full Enterprise (All ON)
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4 max-h-[55vh] overflow-y-auto pr-1 text-xs">
+              
+              {/* Category 1: Login & Portal Access Controls */}
+              <div className="space-y-2">
+                <h4 className="font-extrabold text-xs text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>1. Login & Portal Access Gateways</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    { id: 'allowCompanyAdminLogin', name: 'Company Admin Portal', desc: 'Enable executive dashboard login' },
+                    { id: 'allowHrLogin', name: 'HR Workstation Login', desc: 'Enable recruiter workstation access' },
+                    { id: 'allowEmployeePortalAccess', name: 'Employee Portal Magic Link', desc: 'Enable self-service e-KYC link' }
+                  ].map(gate => {
+                    const isChecked = editingFeaturesCompany.features[gate.id] ?? true;
+                    return (
+                      <label 
+                        key={gate.id}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-2 btn-interactive ${
+                          isChecked ? 'bg-indigo-50/70 border-indigo-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs">{gate.name}</div>
+                          <div className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">{gate.desc}</div>
+                        </div>
+                        <input 
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const updated = { ...editingFeaturesCompany.features, [gate.id]: e.target.checked };
+                            setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
+                          }}
+                          className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Category 2: Communication Gateways */}
+              <div className="space-y-2">
+                <h4 className="font-extrabold text-xs text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5" />
+                  <span>2. Communication Dispatch Gateways</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    { id: 'whatsappGateway', name: 'WhatsApp Meta API 💬', desc: 'Automated candidate WhatsApp link dispatch' },
+                    { id: 'emailGateway', name: 'Email SMTP / Postmark 📧', desc: 'Magic link & OTP verification emails' },
+                    { id: 'smsGateway', name: 'Carrier SMS Fast2SMS 📱', desc: 'Direct carrier SMS OTP & notifications' }
+                  ].map(gate => {
+                    const isChecked = editingFeaturesCompany.features[gate.id] ?? true;
+                    return (
+                      <label 
+                        key={gate.id}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-2 btn-interactive ${
+                          isChecked ? 'bg-emerald-50/70 border-emerald-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs">{gate.name}</div>
+                          <div className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">{gate.desc}</div>
+                        </div>
+                        <input 
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const updated = { ...editingFeaturesCompany.features, [gate.id]: e.target.checked };
+                            setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
+                          }}
+                          className="accent-emerald-600 w-4 h-4 mt-0.5 shrink-0"
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Category 3: Document & Statutory Compliance */}
+              <div className="space-y-2">
+                <h4 className="font-extrabold text-xs text-purple-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>3. Document Evidence & Compliance</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {[
+                    { id: 'documentVaultVerification', name: 'Original Document Vault (8 Files) 📁', desc: 'Candidate uploads sharp original scans for verification' },
+                    { id: 'statutoryAgreements', name: 'Statutory Agreements (Form 16A/11/F/NDA) ⚖️', desc: 'Mandatory digital compliance declarations & signing' }
+                  ].map(gate => {
+                    const isChecked = editingFeaturesCompany.features[gate.id] ?? true;
+                    return (
+                      <label 
+                        key={gate.id}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-2 btn-interactive ${
+                          isChecked ? 'bg-purple-50/70 border-purple-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs">{gate.name}</div>
+                          <div className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">{gate.desc}</div>
+                        </div>
+                        <input 
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const updated = { ...editingFeaturesCompany.features, [gate.id]: e.target.checked };
+                            setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
+                          }}
+                          className="accent-purple-600 w-4 h-4 mt-0.5 shrink-0"
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Category 4: 10+ Government API Modules */}
+              <div className="space-y-2">
+                <h4 className="font-extrabold text-xs text-sky-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Cpu className="w-3.5 h-3.5" />
+                  <span>4. Government Verification APIs (10+ Modules)</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {featureList.map((feat) => {
+                    const isChecked = editingFeaturesCompany.features[feat.id] ?? false;
+                    return (
+                      <label 
+                        key={feat.id}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-3 btn-interactive ${
+                          isChecked ? 'bg-sky-50/70 border-sky-300 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-400'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs">{feat.name}</div>
+                          <div className="text-[10px] text-slate-500 font-medium">{feat.category} • {feat.serverTag}</div>
+                        </div>
+                        <input 
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const updated = {
+                              ...editingFeaturesCompany.features,
+                              [feat.id]: e.target.checked
+                            };
+                            setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
+                          }}
+                          className="accent-sky-600 w-4 h-4 mt-0.5 shrink-0"
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span className="text-[11px] text-slate-500 font-mono">
+                Changes cascade down to Company Admin & HR
+              </span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setEditingFeaturesCompany(null)} 
+                  className="btn btn-secondary text-xs py-2 px-3 font-bold cursor-pointer btn-interactive"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    updateCompanyFeatures(editingFeaturesCompany.id, editingFeaturesCompany.features, editingFeaturesCompany.plan);
+                    setEditingFeaturesCompany(null);
+                  }} 
+                  className="btn btn-superadmin text-xs py-2 px-4 font-black shadow-md cursor-pointer btn-interactive"
+                >
+                  Save Feature & Gateway Matrix ✓
+                </button>
+              </div>
             </div>
           </div>
         </div>
