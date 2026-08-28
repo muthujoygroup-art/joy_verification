@@ -177,17 +177,17 @@ export const HrExecutiveView = () => {
     },
     verificationConfig: {
       aadhaar: true,
-      pan: true,
-      bankCheck: true,
+      pan: false,
+      bankCheck: false,
       drivingLicense: false,
       voterId: false,
-      mobileOtp: true,
+      mobileOtp: false,
       passport: false,
-      uan: true,
+      uan: false,
       criminalCheck: false,
       education: false,
       directorship: false,
-      faceCapture: true
+      faceCapture: false
     },
     manualChecks: {
       hrReferenceCompleted: true,
@@ -279,17 +279,17 @@ export const HrExecutiveView = () => {
       },
       verificationConfig: {
         aadhaar: true,
-        pan: true,
-        bankCheck: true,
+        pan: false,
+        bankCheck: false,
         drivingLicense: false,
         voterId: false,
-        mobileOtp: true,
-        passport: true,
-        uan: true,
+        mobileOtp: false,
+        passport: false,
+        uan: false,
         criminalCheck: false,
-        education: true,
+        education: false,
         directorship: false,
-        faceCapture: true
+        faceCapture: false
       },
       manualChecks: {
         hrReferenceCompleted: true,
@@ -2040,25 +2040,25 @@ export const HrExecutiveView = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const allOn = {};
-                      featureList.forEach(f => { allOn[f.id] = true; });
-                      setFormData({ ...formData, verificationConfig: allOn });
+                      setFormData({ 
+                        ...formData, 
+                        verificationConfig: { aadhaar: true, mobileOtp: false, pan: false, bankCheck: false, faceCapture: false } 
+                      });
                     }}
                     className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer"
                   >
-                    Select All Checks ✓
+                    ⚡ Aadhaar Only (Active)
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setFormData({ 
-                        ...formData, 
-                        verificationConfig: { aadhaar: true, mobileOtp: true, pan: true, bankCheck: true, faceCapture: true } 
-                      });
+                      const allOn = {};
+                      featureList.forEach(f => { allOn[f.id] = true; });
+                      setFormData({ ...formData, verificationConfig: allOn });
                     }}
                     className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer"
                   >
-                    Reset to Standard
+                    Select All Checks
                   </button>
                 </div>
               </div>

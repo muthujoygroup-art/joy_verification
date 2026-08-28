@@ -922,14 +922,16 @@ export const EmployeePortalView = () => {
           </span>
         </div>
 
-        {/* 🔑 OTP VS AUTOMATED API NOTICE STRIP */}
-        <div className="p-3 bg-slate-100 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+        {/* 🔑 ACTIVE CHECKS NOTICE STRIP */}
+        <div className="p-3 bg-emerald-50/80 rounded-2xl border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded-md bg-indigo-600 text-white font-black text-[10px]">OTP GATES</span>
-            <span className="font-bold text-slate-800">Only 3 Items Require OTP: Aadhaar UIDAI, Mobile Number & Official Email</span>
+            <span className="p-1 rounded-md bg-emerald-600 text-white font-black text-[10px]">ACTIVE CHECK</span>
+            <span className="font-bold text-emerald-950">
+              {isAadhaarReq ? '🪪 Aadhaar UIDAI Live e-KYC Verification' : 'Onboarding Verification Active'}
+            </span>
           </div>
-          <span className="text-[10px] text-slate-500 font-bold bg-white px-2 py-0.5 rounded border">
-            All other checks are verified via automated government database lookups
+          <span className="text-[10px] text-slate-500 font-bold bg-white px-2 py-0.5 rounded border border-emerald-200">
+            {totalConfiguredSteps === 1 ? '1 Verification Step Required' : `${totalConfiguredSteps} Verification Steps Required`}
           </span>
         </div>
 
