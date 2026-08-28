@@ -358,6 +358,7 @@ ON CONFLICT DO NOTHING;
 CREATE TABLE IF NOT EXISTS communication_gateways (
     id VARCHAR(50) PRIMARY KEY,
     gateway_type VARCHAR(50) NOT NULL,
+    provider_name VARCHAR(100) DEFAULT 'Default Gateway',
     company_id VARCHAR(50) NULL,
     settings_data JSON DEFAULT '{}',
     is_active BOOLEAN DEFAULT TRUE,
@@ -366,15 +367,18 @@ CREATE TABLE IF NOT EXISTS communication_gateways (
 
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS gateway_type VARCHAR(50);
+ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS provider_name VARCHAR(100) DEFAULT 'Default Gateway';
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO communication_gateways (id, gateway_type, settings_data, is_active, updated_at)
+ALTER TABLE communication_gateways ALTER COLUMN provider_name DROP NOT NULL;
+
+INSERT INTO communication_gateways (id, gateway_type, provider_name, settings_data, is_active, updated_at)
 VALUES
-('gw-wa-01', 'whatsapp', '{"senderPhoneId": "WA-JOY-9912", "templateName": "candidate_verification_link_v2"}'::json, TRUE, CURRENT_TIMESTAMP),
-('gw-smtp-01', 'email_smtp', '{"host": "smtp.sendgrid.net", "port": 587, "fromEmail": "verify@joyverification.com"}'::json, TRUE, CURRENT_TIMESTAMP)
+('gw-wa-01', 'whatsapp', 'WhatsApp Cloud API', '{"senderPhoneId": "WA-JOY-9912", "templateName": "candidate_verification_link_v2"}'::json, TRUE, CURRENT_TIMESTAMP),
+('gw-smtp-01', 'email_smtp', 'SendGrid SMTP Mailer', '{"host": "smtp.sendgrid.net", "port": 587, "fromEmail": "verify@joyverification.com"}'::json, TRUE, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 
