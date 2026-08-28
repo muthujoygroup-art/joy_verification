@@ -1,6 +1,6 @@
 -- ============================================================================
 -- JOY DATA VERIFICATION - 100% PURE POSTGRESQL (cPanel phpPgAdmin) SCHEMA & DATA
--- Compatible with PostgreSQL 12+, 13+, 14+, 15+, 16+ in cPanel phpPgAdmin
+-- Fully compatible with PostgreSQL 12+, 13+, 14+, 15+, 16+ in cPanel phpPgAdmin
 -- Total Tables: 20
 -- ============================================================================
 
@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS companies (
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) DEFAULT 'Company@Admin2026';
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS wallet_balance DOUBLE PRECISION DEFAULT 50000.0;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted VARCHAR(50) DEFAULT 'true';
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_by VARCHAR(100);
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_version VARCHAR(50) DEFAULT 'v2.4-2026';
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;
 
 INSERT INTO companies (id, name, code, contact_person, email, password_hash, plan, price_per_verification, verified_count_this_month, max_limit, wallet_balance, status, is_active, features, terms_accepted, terms_version, created_at)
@@ -111,6 +115,9 @@ ALTER TABLE candidates ADD COLUMN IF NOT EXISTS joining_form_data JSON DEFAULT '
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verified_attributes JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS manual_checks JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS industry_specialization JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS face_images JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_config JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verifications_completed JSON DEFAULT '{}';
 
 INSERT INTO candidates (id, token, name, emp_id, email, mobile, aadhaar_no, designation, dept, company_id, hr_id, status, verification_config, verifications_completed, verified_attributes, created_at)
 VALUES ('cand-1', 'tok_sunita_412', 'Sunita Mehra', 'EMP-2026-8812', 'sunita.mehra@example.com', '+91 9876543210', '541289123412', 'Senior Frontend Engineer', 'Engineering & UI/UX', 'comp-1', 'hr-1', 'Verified', '{"aadhaar": true, "pan": true, "bankCheck": true, "aiFaceBiometrics": true}'::json, '{"aadhaar": true, "pan": true, "bankCheck": true, "aiFaceBiometrics": true}'::json, '{"fullName": "Sunita Mehra", "fatherName": "Rajesh Mehra", "dob": "1995-08-14", "gender": "Female", "panNumber": "ABCDE1234F", "bankAccountNo": "100239102931", "ifscCode": "HDFC0001234", "bankName": "HDFC Bank Ltd", "bloodGroup": "B+"}'::json, CURRENT_TIMESTAMP)
@@ -209,6 +216,11 @@ CREATE TABLE IF NOT EXISTS api_configurations (
     last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE;
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120;
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 5000;
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;
+
 INSERT INTO api_configurations (provider_key, display_name, endpoint_url, api_key, secret_key, sandbox_mode, rate_limit_per_min, status, monthly_quota, monthly_used, last_synced)
 VALUES 
 ('server1_sandbox', 'Server 1: Sandbox.co.in (Fast2SMS / UIDAI)', 'https://api.sandbox.co.in/v2', 'sb_live_key_9942a1bc88', 'sb_sec_JoyCorp2026_m89', FALSE, 120, 'CONNECTED', 5000, 312, CURRENT_TIMESTAMP),
@@ -225,6 +237,8 @@ CREATE TABLE IF NOT EXISTS feature_items (
     default_on BOOLEAN DEFAULT TRUE,
     cost_per_verification DOUBLE PRECISION DEFAULT 25.0
 );
+
+ALTER TABLE feature_items ADD COLUMN IF NOT EXISTS cost_per_verification DOUBLE PRECISION DEFAULT 25.0;
 
 INSERT INTO feature_items (id, name, provider, category, default_on, cost_per_verification)
 VALUES
@@ -246,6 +260,8 @@ CREATE TABLE IF NOT EXISTS communication_gateways (
 );
 
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';
+ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
 
 INSERT INTO communication_gateways (id, gateway_type, settings_data, is_active, updated_at)
 VALUES
@@ -272,6 +288,9 @@ CREATE TABLE IF NOT EXISTS invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS line_items JSON DEFAULT '[]';
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS due_date VARCHAR(50);
+
 INSERT INTO invoices (id, company_id, month, year, verifications_count, unit_price, subtotal, tax_rate, tax_amount, total_amount, status, due_date, line_items, created_at)
 VALUES ('inv-2026-01', 'comp-1', 'August', 2026, 142, 120.0, 17040.0, 18.0, 3067.2, 20107.2, 'PENDING', '2026-09-15', '[{"item": "Aadhaar e-KYC Verifications", "qty": 142, "unit": 60.0, "total": 8520.0}, {"item": "PAN + Bank Account Verifications", "qty": 142, "unit": 60.0, "total": 8520.0}]'::json, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
@@ -288,6 +307,8 @@ CREATE TABLE IF NOT EXISTS payment_records (
     notes TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE payment_records ADD COLUMN IF NOT EXISTS notes TEXT;
 
 INSERT INTO payment_records (id, company_id, amount, payment_method, transaction_ref, status, notes, created_at)
 VALUES ('pay-01', 'comp-1', 50000.0, 'Razorpay UPI Auto-Recharge', 'pay_rzp_live_9912401', 'SUCCESS', 'Enterprise Credit Wallet Recharge (416 checks)', CURRENT_TIMESTAMP)
