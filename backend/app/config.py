@@ -24,6 +24,19 @@ class Settings(BaseSettings):
     FALLBACK_DATABASE_URL: str = "sqlite:///./joy_verification.db"
     
     SECRET_KEY: str = os.getenv("SECRET_KEY", "joy_verification_super_secret_jwt_key_2026")
+    
+    # Server 1: Sandbox.co.in API Gateway (Primary for Core Govt IDs & Banking)
+    SANDBOX_API_KEY: str = os.getenv("SANDBOX_API_KEY", "")
+    SANDBOX_SECRET_KEY: str = os.getenv("SANDBOX_SECRET_KEY", "")
+    SANDBOX_BASE_URL: str = os.getenv("SANDBOX_BASE_URL", "https://api.sandbox.co.in")
+    SANDBOX_MODE: str = os.getenv("SANDBOX_MODE", "production") # 'production' | 'sandbox'
+    
+    # Server 2: CoinCircleTrust API Gateway (47+ Advanced Enterprise & Dual Employment APIs)
+    COINCIRCLE_CLIENT_ID: str = os.getenv("COINCIRCLE_CLIENT_ID", "")
+    COINCIRCLE_SECRET_KEY: str = os.getenv("COINCIRCLE_SECRET_KEY", "")
+    COINCIRCLE_BASE_URL: str = os.getenv("COINCIRCLE_BASE_URL", "https://api.coincircletrust.com")
+    COINCIRCLE_MODE: str = os.getenv("COINCIRCLE_MODE", "production") # 'production' | 'staging'
+    
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",

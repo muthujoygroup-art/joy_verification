@@ -21,149 +21,84 @@ const INITIAL_FEATURE_LIST = [
 
 const INITIAL_COMPANIES = [
   {
-    id: 'comp-1',
-    name: 'Acme Global Technologies',
-    code: 'ACME',
-    contactPerson: 'Vikram Malhotra',
-    email: 'admin@acmeglobal.com',
+    id: 'comp-joy',
+    name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    code: 'JOY',
+    contactPerson: 'Muthu Kumar P',
+    email: 'director@joycorporatesolutions.com',
     plan: 'Enterprise Premier',
     pricePerVerification: 120,
-    walletBalance: 42500,
-    verifiedCountThisMonth: 142,
-    maxLimit: 500,
+    walletBalance: 100000,
+    verifiedCountThisMonth: 1,
+    maxLimit: 5000,
     status: 'Active',
     apiRoutingEngine: 'hybrid', // 'hybrid' | 'server1' | 'server2'
+    apiStats: {
+      server1_sandbox_calls: 12,
+      server2_coincircle_calls: 4,
+      total_spent: 46.00,
+      billable_revenue: 120.00
+    },
     rechargeTransactions: [
       {
         id: 'PAY-RZP-981241',
         paymentId: 'pay_Nq98xK1982',
         orderId: 'order_Nq98xK1982',
-        date: '2026-08-22 11:30 AM',
-        baseAmount: 25000,
-        gstAmount: 4500,
-        totalAmount: 29500,
-        creditsAdded: 208,
-        method: 'Razorpay UPI (Google Pay)',
+        date: '2026-08-28 10:00 AM',
+        baseAmount: 100000,
+        gstAmount: 18000,
+        totalAmount: 118000,
+        creditsAdded: 833,
+        method: 'Razorpay Corporate Banking',
         status: 'Success 🟢',
-        invoiceNumber: 'INV-2026-AUG-781'
-      },
-      {
-        id: 'PAY-RZP-871239',
-        paymentId: 'pay_Mp77xL9821',
-        orderId: 'order_Mp77xL9821',
-        date: '2026-08-10 03:15 PM',
-        baseAmount: 15000,
-        gstAmount: 2700,
-        totalAmount: 17700,
-        creditsAdded: 125,
-        method: 'Razorpay NetBanking (HDFC)',
-        status: 'Success 🟢',
-        invoiceNumber: 'INV-2026-AUG-542'
+        invoiceNumber: 'INV-2026-AUG-001'
       }
     ],
     features: {
       aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
-      pan: true, uan: true, education: true, criminalCheck: false,
-      addressCheck: false, bankCheck: true, passport: true, directorship: false, voterId: false
-    }
-  },
-  {
-    id: 'comp-2',
-    name: 'Apex Logistics & Freight',
-    code: 'APEX',
-    contactPerson: 'Ananya Sharma',
-    email: 'hr-head@apexlogistics.in',
-    plan: 'Standard Tier',
-    pricePerVerification: 100,
-    walletBalance: 15000,
-    verifiedCountThisMonth: 88,
-    maxLimit: 250,
-    status: 'Active',
-    apiRoutingEngine: 'hybrid',
-    rechargeTransactions: [
-      {
-        id: 'PAY-RZP-761920',
-        paymentId: 'pay_Lx66xM9123',
-        orderId: 'order_Lx66xM9123',
-        date: '2026-08-15 02:00 PM',
-        baseAmount: 15000,
-        gstAmount: 2700,
-        totalAmount: 17700,
-        creditsAdded: 150,
-        method: 'Razorpay Corporate Card',
-        status: 'Success 🟢',
-        invoiceNumber: 'INV-2026-AUG-612'
-      }
-    ],
-    features: {
-      aadhaar: true, mobileOtp: true, faceCapture: true, drivingLicense: true,
-      pan: true, uan: false, education: false, criminalCheck: false,
-      addressCheck: true, bankCheck: false, passport: false, directorship: false, voterId: true
-    }
-  },
-  {
-    id: 'comp-3',
-    name: 'Starlight Healthcare Solutions',
-    code: 'SHS',
-    contactPerson: 'Dr. Ramesh Iyer',
-    email: 'operations@starlighthealth.org',
-    plan: 'Basic Tier',
-    pricePerVerification: 80,
-    walletBalance: 8500,
-    verifiedCountThisMonth: 34,
-    maxLimit: 100,
-    status: 'Active',
-    apiRoutingEngine: 'hybrid',
-    rechargeTransactions: [
-      {
-        id: 'PAY-RZP-651811',
-        paymentId: 'pay_Kw55xN8102',
-        orderId: 'order_Kw55xN8102',
-        date: '2026-08-05 10:45 AM',
-        baseAmount: 10000,
-        gstAmount: 1800,
-        totalAmount: 11800,
-        creditsAdded: 125,
-        method: 'Razorpay UPI (PhonePe)',
-        status: 'Success 🟢',
-        invoiceNumber: 'INV-2026-AUG-421'
-      }
-    ],
-    features: {
-      aadhaar: true, mobileOtp: true, faceCapture: false, drivingLicense: false,
-      pan: true, uan: false, education: false, criminalCheck: false,
-      addressCheck: false, bankCheck: false, passport: false, directorship: false, voterId: false
+      pan: true, uan: true, education: true, criminalCheck: true,
+      addressCheck: true, bankCheck: true, passport: true, directorship: true, voterId: true
     }
   }
 ];
 
 const INITIAL_HR_USERS = [
-  { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', email: 'priya.s@acmeglobal.com', dept: 'Engineering Recruitment', activeLinks: 12 },
-  { id: 'hr-2', companyId: 'comp-1', name: 'Rahul Verma', email: 'rahul.v@acmeglobal.com', dept: 'Operations & Field Staff', activeLinks: 8 },
-  { id: 'hr-3', companyId: 'comp-2', name: 'Sneha Patel', email: 'sneha.p@apexlogistics.in', dept: 'Logistics Drivers & Fleet', activeLinks: 15 }
+  { 
+    id: 'hr-joy-1', 
+    companyId: 'comp-joy', 
+    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    name: 'Priya Sundaram', 
+    email: 'priya.s@joycorporatesolutions.com', 
+    phone: '+91 98765 43210',
+    dept: 'Human Resources & Talent Acquisition', 
+    activeLinks: 1 
+  }
 ];
 
 const INITIAL_CANDIDATES = [
+
+
   {
     id: 'emp-101',
-    token: 'tok_rajesh_891',
-    name: 'Rajesh Kumar',
-    empId: 'ACME-2026-88',
-    email: 'rajesh.k@gmail.com',
+    token: 'tok_sunita_412',
+    name: 'Sunita Rao',
+    empId: 'JOY-2026-001',
+    email: 'sunita.rao@joycorporatesolutions.com',
     mobile: '+91 98765 43210',
     aadhaarNo: '5489 1234 9876',
-    designation: 'Senior Software Engineer',
-    dept: 'Engineering',
-    companyId: 'comp-1',
-    hrId: 'hr-1',
-    status: 'Verified',
-    hrCustomMessage: 'Welcome to Acme Global Technologies! Please review your verified onboarding records and statutory declarations.',
+    designation: 'Senior Verification Officer',
+    dept: 'Operations & Verification',
+    companyId: 'comp-joy',
+    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    hrId: 'hr-joy-1',
+    status: 'Pending',
+    hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please complete your official background verification and e-KYC onboarding process.',
     hrCorrectionRemarks: '',
     verificationConfig: {
       requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
     },
     verificationsCompleted: {
-      aadhaar: true, mobile: true, face: true, pan: true, bankCheck: true
+      aadhaar: false, mobile: false, face: false, pan: false, bankCheck: false
     },
     faceImages: {
       straight: '/aadhaar_reference_photo.jpg',
@@ -172,125 +107,7 @@ const INITIAL_CANDIDATES = [
       left: '/aadhaar_reference_photo.jpg',
       right: '/aadhaar_reference_photo.jpg'
     },
-    verificationDate: '2026-08-19 14:32'
-  },
-  {
-    id: 'emp-104',
-    token: 'tok_vikram_771',
-    name: 'Vikram Sethi',
-    empId: 'ACME-2026-92',
-    email: 'vikram.sethi@gmail.com',
-    mobile: '+91 98112 33445',
-    aadhaarNo: '4455 6677 8899',
-    designation: 'Fleet Logistics Driver',
-    dept: 'Operations',
-    companyId: 'comp-1',
-    hrId: 'hr-1',
-    status: 'Verified',
-    hrCustomMessage: 'Welcome to Acme Global! Please verify your identity credentials.',
-    hrCorrectionRemarks: '',
-    verificationConfig: {
-      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: true, requireBankCheck: true
-    },
-    verificationsCompleted: {
-      aadhaar: true, mobile: true, face: true, dl: true, pan: true, bankCheck: true
-    },
-    faceImages: {
-      straight: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      livePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      left: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      right: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
-    },
-    verificationDate: '2026-07-02 10:15'
-  },
-  {
-    id: 'emp-105',
-    token: 'tok_pooja_229',
-    name: 'Pooja Sharma',
-    empId: 'ACME-2026-95',
-    email: 'pooja.sharma@health.in',
-    mobile: '+91 97766 55443',
-    aadhaarNo: '9988 7766 5544',
-    designation: 'Clinical Nurse Specialist',
-    dept: 'Healthcare',
-    companyId: 'comp-1',
-    hrId: 'hr-2',
-    status: 'Verified',
-    hrCustomMessage: 'Welcome to Healthcare division. Complete your compliance forms.',
-    hrCorrectionRemarks: '',
-    verificationConfig: {
-      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
-    },
-    verificationsCompleted: {
-      aadhaar: true, mobile: true, face: true, pan: true, bankCheck: true
-    },
-    faceImages: {
-      straight: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-      livePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-      left: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-      right: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
-    },
-    verificationDate: '2026-06-27 16:45'
-  },
-  {
-    id: 'emp-102',
-    token: 'tok_sunita_412',
-    name: 'Sunita Mehra',
-    empId: 'ACME-2026-89',
-    email: 'sunita.mehra@outlook.com',
-    mobile: '+91 91234 56789',
-    aadhaarNo: '7812 3456 0192',
-    designation: 'Fleet Operations Supervisor',
-    dept: 'Operations',
-    companyId: 'comp-1',
-    hrId: 'hr-2',
-    status: 'Corrections Requested',
-    hrCustomMessage: 'Please review the highlighted items and re-submit your onboarding form.',
-    hrCorrectionRemarks: 'Please re-upload a clearer PAN card image with your full legal name and date of birth clearly readable.',
-    verificationConfig: {
-      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: true, requirePAN: false, requireBankCheck: false
-    },
-    verificationsCompleted: {
-      aadhaar: true, mobile: false, face: false
-    },
-    faceImages: { straight: null, left: null, right: null },
-    verificationDate: null
-  },
-  {
-    id: 'emp-103',
-    token: 'tok_karan_903',
-    name: 'Karan Malhotra',
-    empId: 'APEX-2026-14',
-    email: 'karan.m@yahoo.com',
-    mobile: '+91 99887 76655',
-    aadhaarNo: '6543 9876 2109',
-    designation: 'Logistics Coordinator',
-    dept: 'Fleet Management',
-    companyId: 'comp-2',
-    hrId: 'hr-3',
-    status: 'Submitted - Pending HR Review',
-    hrCustomMessage: 'Welcome to Apex Logistics! Please fill all form sections and upload original documents.',
-    hrCorrectionRemarks: '',
-    submittedFormData: {
-      fullName: 'Karan Malhotra',
-      fatherName: 'Rajinder Malhotra',
-      dob: '1995-10-12',
-      mobile: '+91 99887 76655',
-      aadhaarNo: '6543 9876 2109',
-      panNo: 'ABCDE9912K',
-      bankName: 'ICICI Bank',
-      bankAccountNo: '002910829102',
-      ifscCode: 'ICIC0000029',
-      nomineeName: 'Anita Malhotra (Mother - 100%)'
-    },
-    verificationConfig: {
-      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true
-    },
-    verificationsCompleted: {
-      aadhaar: true, mobile: true, face: true
-    },
-    faceImages: { straight: null, left: null, right: null },
-    verificationDate: null
+    verificationDate: ''
   }
 ];
 
@@ -301,11 +118,11 @@ export const AppProvider = ({ children }) => {
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
   const [currentUser, setCurrentUser] = useState({
     name: 'Super Administrator',
-    email: 'superadmin@joyverification.com',
+    email: 'superadmin@joycorporatesolutions.com',
     role: 'superadmin'
   });
   const [currentRole, setCurrentRole] = useState('superadmin'); // 'superadmin' | 'company' | 'hrexecutive' | 'employee_link'
-  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_karan_903');
+  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_sunita_412');
   const [toastMessage, setToastMessage] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
 
