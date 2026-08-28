@@ -170,11 +170,23 @@ export const EmployeePortalView = () => {
     setIsUnlocking(true);
     setPasscodeError('');
 
-    const tokenToVerify = new URLSearchParams(window.location.search).get('token') || candidate?.token || selectedCandidateToken;
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenToVerify = urlParams.get('token') || candidate?.token || selectedCandidateToken;
+    const urlEncodedPin = urlParams.get('p');
 
-    // 1. Direct local password check against database fetched value
+    let urlExpectedPin = '';
+    if (urlEncodedPin) {
+      try {
+        urlExpectedPin = decodeURIComponent(atob(urlEncodedPin)).trim();
+      } catch (err) {
+        console.warn('Could not decode URL pin param:', err);
+      }
+    }
+
     const localExpected = (loadedDbPassword || candidate?.portalPassword || candidate?.portal_password || '').toString().trim();
-    if (localExpected && entered === localExpected) {
+
+    // 1. Direct validation with URL param or local state
+    if ((urlExpectedPin && entered === urlExpectedPin) || (localExpected && entered === localExpected)) {
       setIsUnlocked(true);
       setIsUnlocking(false);
       showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
@@ -209,7 +221,19 @@ export const EmployeePortalView = () => {
       console.warn('Backend unlock validation error:', err);
     }
 
-    // 3. If neither matched
+    // 3. Fallback check in localStorage
+    try {
+      const stored = JSON.parse(localStorage.getItem('joy_candidates_v1') || '[]');
+      const match = stored.find(c => c.token === tokenToVerify);
+      if (match && (match.portalPassword === entered || match.portal_password === entered)) {
+        setIsUnlocked(true);
+        setIsUnlocking(false);
+        showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
+        return;
+      }
+    } catch (err) {}
+
+    // 4. Invalid passcode
     setIsUnlocking(false);
     setPasscodeError('Invalid passcode. Please enter the exact passcode set by your HR.');
   };

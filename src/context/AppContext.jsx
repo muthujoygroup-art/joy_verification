@@ -138,7 +138,16 @@ const INITIAL_CANDIDATES = [
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState(INITIAL_COMPANIES);
   const [hrUsers, setHrUsers] = useState(INITIAL_HR_USERS);
-  const [candidates, setCandidates] = useState(INITIAL_CANDIDATES);
+  const [candidates, setCandidates] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_candidates_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_CANDIDATES;
+  });
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
   const [currentUser, setCurrentUser] = useState({
     name: 'Super Administrator',
@@ -912,6 +921,31 @@ export const AppProvider = ({ children }) => {
     };
 
     fetchBackendData();
+  }, []);
+
+  // Sync candidates to localStorage for cross-tab persistence
+  useEffect(() => {
+    try {
+      if (candidates && candidates.length > 0) {
+        localStorage.setItem('joy_candidates_v1', JSON.stringify(candidates));
+      }
+    } catch (e) {}
+  }, [candidates]);
+
+  // Listen to cross-tab storage changes
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'joy_candidates_v1' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCandidates(parsed);
+          }
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   // Login handler with JWT Session Generation

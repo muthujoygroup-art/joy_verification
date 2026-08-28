@@ -35,9 +35,11 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   if (!candidate) return null;
 
   const company = companies.find(c => c.id === candidate.companyId) || companies[0];
-  const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
+  const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
+  const encodedPin = btoa(encodeURIComponent(activePin));
+  const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}&p=${encodedPin}`;
 
-  // Copy ONLY the pure, clean verification link (without password attached)
+  // Copy ONLY the pure, clean verification link (with encoded security token)
   const handleCopyCleanLink = async () => {
     const clean = (passcodeText || '1234').trim();
     if (updateCandidatePassword) {
@@ -71,6 +73,17 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
     setIsPasscodeSaved(true);
     if (showToast) showToast(`🔐 Passcode set to "${clean}" for ${candidate.name}!`);
     setTimeout(() => setIsPasscodeSaved(false), 2000);
+  };
+
+  const handlePasscodeChange = (newVal) => {
+    setPasscodeText(newVal);
+    const clean = newVal.trim();
+    if (clean) {
+      candidate.portalPassword = clean;
+      if (updateCandidatePassword) {
+        updateCandidatePassword(candidate.token, clean);
+      }
+    }
   };
 
   const handleGenerateRandomPin = async () => {
@@ -148,7 +161,7 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             <input 
               type="text" 
               value={passcodeText}
-              onChange={(e) => setPasscodeText(e.target.value)}
+              onChange={(e) => handlePasscodeChange(e.target.value)}
               placeholder="e.g. 1234 or Joy@2026"
               className="flex-1 bg-white border-2 border-indigo-300 focus:border-indigo-600 text-indigo-950 font-mono font-black text-sm py-2 px-3 rounded-xl outline-none"
             />
