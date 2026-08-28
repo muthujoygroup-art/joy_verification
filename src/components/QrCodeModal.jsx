@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   Lock,
   Sparkles,
-  Info
+  Info,
+  KeyRound
 } from 'lucide-react';
 
 export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {

@@ -47,7 +47,11 @@ import {
   Briefcase,
   CreditCard,
   FolderDown,
-  Building2
+  Building2,
+  KeyRound,
+  X,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 
 export const HrExecutiveView = () => {

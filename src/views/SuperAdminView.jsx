@@ -58,7 +58,15 @@ import {
   FileCode,
   BookOpen,
   MessageSquare,
-  Trash2
+  Trash2,
+  Receipt,
+  ExternalLink,
+  Edit,
+  Copy,
+  Calculator,
+  Sparkles,
+  KeyRound,
+  Cpu
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
