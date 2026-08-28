@@ -60,9 +60,16 @@ class VerifyPassportRequest(BaseModel):
     passport_number: str
     dob: Optional[str] = "1996-05-15"
 
+class SetPasswordRequest(BaseModel):
+    password: str
+
+class UnlockPortalRequest(BaseModel):
+    token: str
+    password: str
+
 
 # -----------------------------------------------------------------------------
-# 1. Resolves Candidate Token for e-KYC Portal
+# 1. Resolves Candidate Token & Updates Passcode for e-KYC Portal
 # -----------------------------------------------------------------------------
 @router.get("/candidate/{token}", response_model=CandidateResponse)
 def get_candidate_by_token(token: str, db: Session = Depends(get_db)):
@@ -71,6 +78,49 @@ def get_candidate_by_token(token: str, db: Session = Depends(get_db)):
     if not candidate:
         raise HTTPException(status_code=404, detail="Invalid or expired verification token")
     return candidate
+
+@router.post("/candidate/{token}/set-password")
+def set_candidate_password(token: str, payload: SetPasswordRequest, db: Session = Depends(get_db)):
+    """Updates candidate portal unlock password in PostgreSQL database"""
+    candidate = db.query(Candidate).filter(Candidate.token == token).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    clean_pass = payload.password.strip()
+    if not clean_pass:
+        raise HTTPException(status_code=400, detail="Password cannot be empty")
+        
+    candidate.portal_password = clean_pass
+    db.commit()
+    db.refresh(candidate)
+    
+    return {
+        "success": True,
+        "message": f"Unlock password updated successfully for {candidate.name}",
+        "portal_password": candidate.portal_password
+    }
+
+@router.post("/unlock")
+def unlock_employee_portal(payload: UnlockPortalRequest, db: Session = Depends(get_db)):
+    """Validates entered password against candidate.portal_password in database"""
+    candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+        
+    expected = (candidate.portal_password or "1234").strip()
+    entered = payload.password.strip()
+    
+    if entered != expected:
+        return {
+            "success": False,
+            "message": "Invalid unlock password. Please enter the passcode provided by your HR."
+        }
+        
+    return {
+        "success": True,
+        "message": f"Welcome {candidate.name}! Verification session unlocked.",
+        "candidate": candidate
+    }
 
 
 # -----------------------------------------------------------------------------

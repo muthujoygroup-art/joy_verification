@@ -1057,11 +1057,16 @@ export const AppProvider = ({ children }) => {
     showToast('👥 Candidate Verification Checklist Updated!');
   };
 
-  // Update Candidate Security Passcode / Password
-  const updateCandidatePassword = (token, newPassword) => {
+  // Update Candidate Security Passcode / Password (Persists in PostgreSQL)
+  const updateCandidatePassword = async (token, newPassword) => {
     const cleanPin = (newPassword || '1234').toString().trim();
     setCandidates(prev => prev.map(c => c.token === token ? { ...c, portalPassword: cleanPin } : c));
-    showToast(`🔐 Unlock passcode updated to: ${cleanPin}`);
+    try {
+      await api.setCandidatePassword(token, cleanPin);
+    } catch (e) {
+      console.warn('Backend set-password sync failed, kept in local state:', e);
+    }
+    showToast(`🔐 Unlock passcode saved: ${cleanPin}`);
   };
 
   // Update Company API Server Engine Routing (Hybrid / Server 1 Sandbox / Server 2 CoinCircle)

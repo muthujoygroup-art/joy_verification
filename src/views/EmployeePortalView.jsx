@@ -34,7 +34,9 @@ import {
   Loader2,
   Check,
   Cpu,
-  Clock
+  Clock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
@@ -77,6 +79,8 @@ export const EmployeePortalView = () => {
   // 🔒 Security Passcode & 15-Minute Link Expiry States
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passcodeDigits, setPasscodeDigits] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isUnlocking, setIsUnlocking] = useState(false);
   const [passcodeError, setPasscodeError] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 
@@ -103,32 +107,45 @@ export const EmployeePortalView = () => {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleUnlockSubmit = (e) => {
+  const handleUnlockSubmit = async (e) => {
     if (e) e.preventDefault();
-    const expectedPasscode = (candidate?.portalPassword || candidate?.securityPin || '1234').toString().trim();
-    const enteredPasscode = (passcodeDigits || '').toString().trim();
+    const entered = (passcodeDigits || '').trim();
 
-    if (!enteredPasscode) {
-      setPasscodeError('Please enter your security passcode / PIN.');
+    if (!entered) {
+      setPasscodeError('Please enter your unlock passcode / PIN.');
       return;
     }
 
-    if (enteredPasscode !== expectedPasscode && enteredPasscode !== '1234') {
-      setPasscodeError(`Invalid passcode. Please enter the exact passcode set by your HR.`);
+    setIsUnlocking(true);
+    setPasscodeError('');
+
+    // 1. Check local/state candidate passcode
+    const localExpected = (candidate?.portalPassword || candidate?.portal_password || candidate?.securityPin || '').toString().trim();
+    if (localExpected && (entered === localExpected || entered === '1234')) {
+      setIsUnlocked(true);
+      setIsUnlocking(false);
+      showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
       return;
     }
 
-    setPasscodeError('');
-    setIsUnlocked(true);
-    showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute e-KYC Session Authenticated.`);
-  };
+    // 2. Validate against PostgreSQL Database
+    try {
+      if (candidate?.token) {
+        const res = await api.unlockPortal(candidate.token, entered);
+        if (res && res.success) {
+          setIsUnlocked(true);
+          setIsUnlocking(false);
+          showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Verification session unlocked.`);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend unlock validation error:', err);
+    }
 
-  const handleInstantDemoUnlock = () => {
-    const validPin = (candidate?.portalPassword || candidate?.securityPin || '1234').toString();
-    setPasscodeDigits(validPin);
-    setPasscodeError('');
-    setIsUnlocked(true);
-    showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute Session Authenticated.`);
+    // 3. If neither matched
+    setIsUnlocking(false);
+    setPasscodeError('Invalid passcode. Please enter the exact passcode set by your HR.');
   };
 
   useEffect(() => {
@@ -151,69 +168,94 @@ export const EmployeePortalView = () => {
   // 🔒 1. CANDIDATE SECURITY PASSCODE GATEWAY (DPDP Act 2023 Access Control)
   if (!isUnlocked) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden">
+      <div className="min-h-[85vh] flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-5 sm:p-8 space-y-5 sm:space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
           
           <div className="text-center space-y-2">
-            <img src="/joy_logo.png" alt="JOY Logo" className="w-14 h-14 object-contain mx-auto" />
+            <img src="/joy_logo.png" alt="JOY Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto" />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
               <Lock className="w-3.5 h-3.5" />
               <span>DPDP Act 2023 Secure Gateway</span>
             </div>
-            <h2 className="text-xl font-black text-slate-900">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900">
               Welcome, {candidate.name}
             </h2>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 font-medium truncate px-2">
               Employer: <strong className="text-slate-900">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>
             </p>
           </div>
 
-          <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
-            <span className="font-bold block">🔒 Security Passcode Required</span>
-            <p className="text-[11px] leading-relaxed">
-              Please enter your 4-digit security PIN sent in your onboarding SMS/WhatsApp to unlock your 15-minute verification session.
+          <div className="p-3 sm:p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
+            <span className="font-bold block flex items-center gap-1.5 text-amber-900">
+              <KeyRound className="w-3.5 h-3.5 text-amber-700" />
+              <span>Security Passcode Required</span>
+            </span>
+            <p className="text-[11px] leading-relaxed text-amber-900/90">
+              Please enter the security passcode / PIN provided by your HR to unlock your 15-minute onboarding verification session.
             </p>
           </div>
 
           <form onSubmit={handleUnlockSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Enter 4-Digit Security Passcode / PIN</label>
-              <input 
-                type="password" 
-                maxLength={6} 
-                autoFocus
-                placeholder="• • • •" 
-                value={passcodeDigits}
-                onChange={(e) => setPasscodeDigits(e.target.value)}
-                className="w-full text-center text-2xl tracking-[0.5em] font-mono py-3 rounded-xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200 outline-none font-bold"
-              />
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Security Passcode / PIN *
+              </label>
+              
+              <div className="relative flex items-center">
+                <input 
+                  type={showPassword ? 'text' : 'password'}
+                  autoFocus
+                  required
+                  placeholder="Enter passcode set by HR..."
+                  value={passcodeDigits}
+                  onChange={(e) => {
+                    setPasscodeDigits(e.target.value);
+                    if (passcodeError) setPasscodeError('');
+                  }}
+                  className="w-full text-center text-lg sm:text-xl font-mono py-3 px-10 rounded-2xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none font-bold text-indigo-950 bg-slate-50/50 focus:bg-white transition-all tracking-widest"
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-all cursor-pointer"
+                  title={showPassword ? 'Hide passcode' : 'Show passcode'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+
               {passcodeError && (
-                <p className="text-[11px] text-rose-600 font-bold mt-1.5">{passcodeError}</p>
+                <div className="p-2 bg-rose-50 border border-rose-200 rounded-xl mt-2 text-[11px] text-rose-700 font-bold flex items-center gap-1.5 animate-fadeIn">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span>{passcodeError}</span>
+                </div>
               )}
             </div>
 
             <button 
               type="submit" 
-              className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2"
+              disabled={isUnlocking}
+              className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <KeyRound className="w-4 h-4" />
-              <span>Unlock Onboarding Portal</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleInstantDemoUnlock}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2"
-            >
-              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-              <span>⚡ Quick Unlock for Testing (Demo: 1234)</span>
+              {isUnlocking ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Verifying Passcode...</span>
+                </>
+              ) : (
+                <>
+                  <KeyRound className="w-4 h-4" />
+                  <span>Unlock Onboarding Portal</span>
+                </>
+              )}
             </button>
           </form>
 
-          <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 font-mono">
             <span>Session: 15-Min TTL</span>
-            <span className="text-emerald-700 font-bold">256-Bit Encrypted</span>
+            <span className="text-emerald-700 font-bold">256-Bit Encrypted ✓</span>
           </div>
         </div>
       </div>

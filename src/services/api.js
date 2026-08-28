@@ -191,6 +191,19 @@ export const api = {
 
   // Employee Link Portal & Verifications
   getCandidateByToken: (token) => request(`/verification/candidate/${token}`),
+  setCandidatePassword: (token, password) => {
+    requestCache.clear();
+    return request(`/verification/candidate/${token}/set-password`, {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    });
+  },
+  unlockPortal: (token, password) => {
+    return request('/verification/unlock', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    });
+  },
   sendOtp: (otpData) => request('/verification/otp/send', {
     method: 'POST',
     body: JSON.stringify(otpData),
