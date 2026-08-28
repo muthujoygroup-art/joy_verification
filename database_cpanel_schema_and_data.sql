@@ -1,10 +1,12 @@
 -- ============================================================================
--- JOY DATA VERIFICATION - ULTRA COMPLETE POSTGRESQL (cPanel phpPgAdmin)
--- Fully compatible with PostgreSQL 12+, 13+, 14+, 15+, 16+ in cPanel phpPgAdmin
--- Total Tables: 20
+-- JOY DATA VERIFICATION - 100% COMPLETE HARMONIZED POSTGRESQL PRODUCTION DUMP
+-- Compatible with PostgreSQL 12+, 13+, 14+, 15+, 16+ & cPanel phpPgAdmin
+-- Harmonizes initial schema.sql with all enterprise extensions (20 Tables)
 -- ============================================================================
 
+-- ----------------------------------------------------------------------------
 -- 1. super_admin_users (Master Platform Admin Accounts)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS super_admin_users (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL DEFAULT 'Super Administrator',
@@ -32,13 +34,15 @@ VALUES ('superadmin-01', 'Super Administrator', 'superadmin@joyverification.com'
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 2. companies (Enterprise Accounts)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS companies (
     id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(200) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     code VARCHAR(50) NOT NULL UNIQUE,
-    contact_person VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    contact_person VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) DEFAULT 'Company@Admin2026',
     plan VARCHAR(100) DEFAULT 'Enterprise Premier',
     price_per_verification DOUBLE PRECISION DEFAULT 120.0,
@@ -53,14 +57,15 @@ CREATE TABLE IF NOT EXISTS companies (
     terms_accepted_by VARCHAR(100) NULL,
     terms_version VARCHAR(50) DEFAULT 'v2.4-2026',
     last_login_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS id VARCHAR(50);
-ALTER TABLE companies ADD COLUMN IF NOT EXISTS name VARCHAR(200);
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS name VARCHAR(255);
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS code VARCHAR(50);
-ALTER TABLE companies ADD COLUMN IF NOT EXISTS contact_person VARCHAR(100);
-ALTER TABLE companies ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS contact_person VARCHAR(255);
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) DEFAULT 'Company@Admin2026';
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS plan VARCHAR(100) DEFAULT 'Enterprise Premier';
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS price_per_verification DOUBLE PRECISION DEFAULT 120.0;
@@ -76,20 +81,23 @@ ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_by VARCHAR(100);
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_version VARCHAR(50) DEFAULT 'v2.4-2026';
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO companies (id, name, code, contact_person, email, password_hash, plan, price_per_verification, verified_count_this_month, max_limit, wallet_balance, status, is_active, features, terms_accepted, terms_version, created_at)
 VALUES ('comp-1', 'Acme Global Technologies', 'ACME-CORP', 'Vikram Malhotra', 'admin@acmeglobal.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 142, 500, 50000.0, 'Active', TRUE, '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 3. hr_users (HR Recruiter Accounts)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS hr_users (
     id VARCHAR(50) PRIMARY KEY,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) DEFAULT 'Hr@Recruiter2026',
-    dept VARCHAR(100) DEFAULT 'Human Resources',
+    dept VARCHAR(255) DEFAULT 'Human Resources',
     active_links INTEGER DEFAULT 0,
     permissions JSON DEFAULT '{"can_create": true, "can_verify": true, "can_export": true}',
     status VARCHAR(50) DEFAULT 'Active',
@@ -99,9 +107,9 @@ CREATE TABLE IF NOT EXISTS hr_users (
 
 ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
-ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS name VARCHAR(100);
-ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS email VARCHAR(150);
-ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS dept VARCHAR(100) DEFAULT 'Human Resources';
+ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS name VARCHAR(255);
+ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS dept VARCHAR(255) DEFAULT 'Human Resources';
 ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS active_links INTEGER DEFAULT 0;
 ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active';
 ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS permissions JSON DEFAULT '{"can_create": true, "can_verify": true, "can_export": true}';
@@ -114,17 +122,22 @@ VALUES ('hr-1', 'comp-1', 'Priya Sundaram', 'priya.s@acmeglobal.com', 'Hr@Recrui
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 4. candidates (Candidate Master Profiles & Token Access)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS candidates (
     id VARCHAR(50) PRIMARY KEY,
     token VARCHAR(100) NOT NULL UNIQUE,
-    name VARCHAR(150) NOT NULL,
-    emp_id VARCHAR(50) NULL,
-    email VARCHAR(150) NULL,
+    name VARCHAR(255) NOT NULL,
+    emp_id VARCHAR(100) NULL,
+    email VARCHAR(255) NULL,
     mobile VARCHAR(50) NOT NULL,
     aadhaar_no VARCHAR(50) NULL,
-    designation VARCHAR(100) NULL,
-    dept VARCHAR(100) NULL,
+    pan_no VARCHAR(50) NULL,
+    driving_license VARCHAR(100) NULL,
+    uan_epf VARCHAR(100) NULL,
+    designation VARCHAR(255) NULL,
+    dept VARCHAR(255) NULL,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     hr_id VARCHAR(50) NULL REFERENCES hr_users(id) ON DELETE SET NULL,
     status VARCHAR(50) DEFAULT 'Link Sent',
@@ -137,18 +150,22 @@ CREATE TABLE IF NOT EXISTS candidates (
     joining_form_data JSON DEFAULT '{}',
     verification_date TIMESTAMP NULL,
     industry_specialization JSON DEFAULT '{}',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS token VARCHAR(100);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS name VARCHAR(150);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS emp_id VARCHAR(50);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS name VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS emp_id VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mobile VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS designation VARCHAR(100);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dept VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pan_no VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS driving_license VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS uan_epf VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS designation VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dept VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS hr_id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Link Sent';
@@ -162,13 +179,16 @@ ALTER TABLE candidates ADD COLUMN IF NOT EXISTS joining_form_data JSON DEFAULT '
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_date TIMESTAMP;
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS industry_specialization JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO candidates (id, token, name, emp_id, email, mobile, aadhaar_no, designation, dept, company_id, hr_id, status, verification_config, verifications_completed, verified_attributes, created_at)
 VALUES ('cand-1', 'tok_sunita_412', 'Sunita Mehra', 'EMP-2026-8812', 'sunita.mehra@example.com', '+91 9876543210', '541289123412', 'Senior Frontend Engineer', 'Engineering & UI/UX', 'comp-1', 'hr-1', 'Verified', '{"aadhaar": true, "pan": true, "bankCheck": true, "aiFaceBiometrics": true}'::json, '{"aadhaar": true, "pan": true, "bankCheck": true, "aiFaceBiometrics": true}'::json, '{"fullName": "Sunita Mehra", "fatherName": "Rajesh Mehra", "dob": "1995-08-14", "gender": "Female", "panNumber": "ABCDE1234F", "bankAccountNo": "100239102931", "ifscCode": "HDFC0001234", "bankName": "HDFC Bank Ltd", "bloodGroup": "B+"}'::json, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 5. verification_records (360° Government API Evidence Vault)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS verification_records (
     id VARCHAR(50) PRIMARY KEY,
     candidate_id VARCHAR(50) NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
@@ -205,7 +225,9 @@ FROM candidates WHERE token = 'tok_sunita_412'
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 6. candidate_documents (KYC File Attachments & Biometrics)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS candidate_documents (
     id VARCHAR(50) PRIMARY KEY,
     candidate_id VARCHAR(50) NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
@@ -232,7 +254,9 @@ FROM candidates WHERE token = 'tok_sunita_412'
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 7. active_sessions (JWT Telemetry)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS active_sessions (
     id VARCHAR(50) PRIMARY KEY,
     user_id VARCHAR(50) NOT NULL,
@@ -258,7 +282,9 @@ ALTER TABLE active_sessions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP;
 ALTER TABLE active_sessions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 
+-- ----------------------------------------------------------------------------
 -- 8. audit_trail_logs (DPDP Act 2023 SHA-256 Chained Ledger)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS audit_trail_logs (
     id VARCHAR(50) PRIMARY KEY,
     actor_role VARCHAR(50) NOT NULL,
@@ -290,29 +316,32 @@ VALUES ('audit-01', 'superadmin', 'superadmin@joyverification.com', 'INITIAL_DAT
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 9. api_configurations (API Gateways & Secret Keys)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS api_configurations (
     provider_key VARCHAR(50) PRIMARY KEY,
-    display_name VARCHAR(100) NOT NULL,
-    endpoint_url VARCHAR(255) NOT NULL,
-    api_key VARCHAR(255) NOT NULL,
-    secret_key VARCHAR(255) NOT NULL,
-    webhook_url VARCHAR(255) NULL,
+    display_name VARCHAR(255) NOT NULL,
+    endpoint_url VARCHAR(500) NULL,
+    api_key VARCHAR(500) NULL,
+    secret_key VARCHAR(500) NULL,
+    webhook_url VARCHAR(500) NULL,
     sandbox_mode BOOLEAN DEFAULT FALSE,
     rate_limit_per_min INTEGER DEFAULT 120,
     status VARCHAR(50) DEFAULT 'CONNECTED',
     monthly_quota INTEGER DEFAULT 5000,
     monthly_used INTEGER DEFAULT 0,
     ping_latency_ms INTEGER DEFAULT 120,
-    last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_key VARCHAR(50);
-ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
-ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS endpoint_url VARCHAR(255);
-ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS api_key VARCHAR(255);
-ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255);
-ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255);
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS display_name VARCHAR(255);
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS endpoint_url VARCHAR(500);
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS api_key VARCHAR(500);
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(500);
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(500);
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE;
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120;
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED';
@@ -320,6 +349,7 @@ ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DE
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 120;
 ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO api_configurations (provider_key, display_name, endpoint_url, api_key, secret_key, sandbox_mode, rate_limit_per_min, status, monthly_quota, monthly_used, last_synced)
 VALUES 
@@ -328,7 +358,9 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 10. feature_items (Verification Feature Items)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS feature_items (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
@@ -354,39 +386,45 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 11. communication_gateways (WhatsApp, SMS & Email SMTP)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS communication_gateways (
     id VARCHAR(50) PRIMARY KEY,
     gateway_type VARCHAR(50) NOT NULL,
-    provider_name VARCHAR(100) DEFAULT 'Default Gateway',
+    provider_name VARCHAR(255) DEFAULT 'Default Gateway',
     company_id VARCHAR(50) NULL,
     settings_data JSON DEFAULT '{}',
+    credentials JSON DEFAULT '{}',
     is_active BOOLEAN DEFAULT TRUE,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS gateway_type VARCHAR(50);
-ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS provider_name VARCHAR(100) DEFAULT 'Default Gateway';
+ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS provider_name VARCHAR(255) DEFAULT 'Default Gateway';
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';
+ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS credentials JSON DEFAULT '{}';
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE communication_gateways ALTER COLUMN provider_name DROP NOT NULL;
 
-INSERT INTO communication_gateways (id, gateway_type, provider_name, settings_data, is_active, updated_at)
+INSERT INTO communication_gateways (id, gateway_type, provider_name, settings_data, credentials, is_active, updated_at)
 VALUES
-('gw-wa-01', 'whatsapp', 'WhatsApp Cloud API', '{"senderPhoneId": "WA-JOY-9912", "templateName": "candidate_verification_link_v2"}'::json, TRUE, CURRENT_TIMESTAMP),
-('gw-smtp-01', 'email_smtp', 'SendGrid SMTP Mailer', '{"host": "smtp.sendgrid.net", "port": 587, "fromEmail": "verify@joyverification.com"}'::json, TRUE, CURRENT_TIMESTAMP)
+('gw-wa-01', 'whatsapp', 'WhatsApp Cloud API', '{"senderPhoneId": "WA-JOY-9912", "templateName": "candidate_verification_link_v2"}'::json, '{"senderPhoneId": "WA-JOY-9912", "templateName": "candidate_verification_link_v2"}'::json, TRUE, CURRENT_TIMESTAMP),
+('gw-smtp-01', 'email_smtp', 'SendGrid SMTP Mailer', '{"host": "smtp.sendgrid.net", "port": 587, "fromEmail": "verify@joyverification.com"}'::json, '{"host": "smtp.sendgrid.net", "port": 587, "fromEmail": "verify@joyverification.com"}'::json, TRUE, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 12. invoices (Monthly GST Tax Invoices)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS invoices (
     id VARCHAR(50) PRIMARY KEY,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    month VARCHAR(20) DEFAULT 'August',
+    month VARCHAR(50) DEFAULT 'August',
     year INTEGER DEFAULT 2026,
     verifications_count INTEGER DEFAULT 0,
     unit_price DOUBLE PRECISION DEFAULT 120.0,
@@ -402,7 +440,7 @@ CREATE TABLE IF NOT EXISTS invoices (
 
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
-ALTER TABLE invoices ADD COLUMN IF NOT EXISTS month VARCHAR(20) DEFAULT 'August';
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS month VARCHAR(50) DEFAULT 'August';
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS year INTEGER DEFAULT 2026;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS verifications_count INTEGER DEFAULT 0;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS unit_price DOUBLE PRECISION DEFAULT 120.0;
@@ -420,7 +458,9 @@ VALUES ('inv-2026-01', 'comp-1', 'August', 2026, 142, 120.0, 17040.0, 18.0, 3067
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 13. payment_records (Wallet Recharges & UPI)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS payment_records (
     id VARCHAR(50) PRIMARY KEY,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
@@ -446,17 +486,19 @@ VALUES ('pay-01', 'comp-1', 50000.0, 'Razorpay UPI Auto-Recharge', 'pay_rzp_live
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 14. master_data_options (Custom Dropdown Lists)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS master_data_options (
     id SERIAL PRIMARY KEY,
     category VARCHAR(100) NOT NULL,
-    option_value VARCHAR(200) NOT NULL,
+    option_value VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE master_data_options ADD COLUMN IF NOT EXISTS category VARCHAR(100);
-ALTER TABLE master_data_options ADD COLUMN IF NOT EXISTS option_value VARCHAR(200);
+ALTER TABLE master_data_options ADD COLUMN IF NOT EXISTS option_value VARCHAR(255);
 ALTER TABLE master_data_options ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE master_data_options ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
@@ -470,21 +512,25 @@ VALUES
 ('relation', 'Spouse', TRUE, CURRENT_TIMESTAMP);
 
 
+-- ----------------------------------------------------------------------------
 -- 15. master_form_fields (Candidate Joining Form Fields)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS master_form_fields (
     id VARCHAR(50) PRIMARY KEY,
-    label VARCHAR(150) NOT NULL,
-    field_type VARCHAR(50) NOT NULL,
-    category VARCHAR(100) NOT NULL,
+    label VARCHAR(255) NOT NULL,
+    field_type VARCHAR(50) DEFAULT 'text',
+    category VARCHAR(100) DEFAULT 'Personal Info',
     default_mandatory BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS id VARCHAR(50);
-ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS label VARCHAR(150);
-ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS field_type VARCHAR(50);
-ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS category VARCHAR(100);
+ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS label VARCHAR(255);
+ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS field_type VARCHAR(50) DEFAULT 'text';
+ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'Personal Info';
 ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS default_mandatory BOOLEAN DEFAULT TRUE;
+ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE master_form_fields ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO master_form_fields (id, label, field_type, category, default_mandatory, created_at)
@@ -496,12 +542,15 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 16. support_tickets (Enterprise Helpdesk Tickets)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS support_tickets (
     id VARCHAR(50) PRIMARY KEY,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    company_name VARCHAR(200) NOT NULL,
-    subject VARCHAR(255) NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    reporter_name VARCHAR(255) DEFAULT 'System Administrator',
+    subject VARCHAR(500) NOT NULL,
     category VARCHAR(100) DEFAULT 'Technical API',
     priority VARCHAR(50) DEFAULT 'High',
     status VARCHAR(50) DEFAULT 'Open',
@@ -511,25 +560,30 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
-ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS company_name VARCHAR(200);
-ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS subject VARCHAR(255);
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS company_name VARCHAR(255);
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS reporter_name VARCHAR(255) DEFAULT 'System Administrator';
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS subject VARCHAR(500);
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'Technical API';
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS priority VARCHAR(50) DEFAULT 'High';
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Open';
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO support_tickets (id, company_id, company_name, subject, category, priority, status, created_at)
-VALUES ('tkt-01', 'comp-1', 'Acme Global Technologies', 'Webhook response delay during peak traffic', 'Technical API', 'High', 'Open', CURRENT_TIMESTAMP)
+ALTER TABLE support_tickets ALTER COLUMN reporter_name DROP NOT NULL;
+
+INSERT INTO support_tickets (id, company_id, company_name, reporter_name, subject, category, priority, status, created_at)
+VALUES ('tkt-01', 'comp-1', 'Acme Global Technologies', 'System Administrator', 'Webhook response delay during peak traffic', 'Technical API', 'High', 'Open', CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 17. ticket_replies (Ticket Conversation Threads)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS ticket_replies (
     id VARCHAR(50) PRIMARY KEY,
     ticket_id VARCHAR(50) NOT NULL REFERENCES support_tickets(id) ON DELETE CASCADE,
     sender_role VARCHAR(50) NOT NULL,
-    sender_name VARCHAR(100) NOT NULL,
+    sender_name VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -537,7 +591,7 @@ CREATE TABLE IF NOT EXISTS ticket_replies (
 ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS ticket_id VARCHAR(50);
 ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS sender_role VARCHAR(50) DEFAULT 'user';
-ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS sender_name VARCHAR(100);
+ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS sender_name VARCHAR(255);
 ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS message TEXT;
 ALTER TABLE ticket_replies ADD COLUMN IF NOT EXISTS timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
@@ -546,61 +600,84 @@ VALUES ('rep-01', 'tkt-01', 'superadmin', 'Master Tech Support', 'We have alloca
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 18. system_error_logs (Production Exception Tracker)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS system_error_logs (
     id VARCHAR(50) PRIMARY KEY,
     timestamp VARCHAR(50) NOT NULL,
-    section VARCHAR(100) NOT NULL,
-    error_code VARCHAR(50) NOT NULL,
+    section VARCHAR(255) NOT NULL,
+    error_code VARCHAR(100) NULL,
     message TEXT NOT NULL,
     severity VARCHAR(50) DEFAULT 'Warning',
     solved BOOLEAN DEFAULT FALSE,
     resolved_at TIMESTAMP NULL,
-    resolved_by VARCHAR(100) NULL
+    resolved_by VARCHAR(255) NULL,
+    company VARCHAR(255) NULL
 );
 
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS timestamp VARCHAR(50);
-ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS section VARCHAR(100);
-ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS error_code VARCHAR(50);
+ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS section VARCHAR(255);
+ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS error_code VARCHAR(100);
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS message TEXT;
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS severity VARCHAR(50) DEFAULT 'Warning';
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS solved BOOLEAN DEFAULT FALSE;
 ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP;
-ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS resolved_by VARCHAR(100);
+ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS resolved_by VARCHAR(255);
+ALTER TABLE system_error_logs ADD COLUMN IF NOT EXISTS company VARCHAR(255);
 
 INSERT INTO system_error_logs (id, timestamp, section, error_code, message, severity, solved)
 VALUES ('log-901', '2026-08-28 17:00:00', 'Gateway Router', 'WARN_LATENCY_200MS', 'UIDAI primary gateway latency normalized at 114ms.', 'Info', TRUE)
 ON CONFLICT DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 19. system_settings (Role Config & Session Timeouts)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS system_settings (
+    id VARCHAR(50) NULL,
     role VARCHAR(50) PRIMARY KEY,
     settings_data JSON DEFAULT '{}',
+    settings JSON DEFAULT '{}',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS role VARCHAR(50);
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS settings JSON DEFAULT '{}';
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO system_settings (role, settings_data, updated_at)
-VALUES ('superadmin', '{"platformName": "JOY DATA VERIFICATION", "autoInvoiceDispatch": true, "defaultGstRate": 18, "sessionTimeoutMinutes": 30}'::json, CURRENT_TIMESTAMP)
-ON CONFLICT DO NOTHING;
+ALTER TABLE system_settings ALTER COLUMN id DROP NOT NULL;
+
+INSERT INTO system_settings (id, role, settings_data, settings, updated_at)
+VALUES ('sys-01', 'superadmin', '{"platformName": "JOY DATA VERIFICATION", "autoInvoiceDispatch": true, "defaultGstRate": 18, "sessionTimeoutMinutes": 30}'::json, '{"platformName": "JOY DATA VERIFICATION", "autoInvoiceDispatch": true, "defaultGstRate": 18, "sessionTimeoutMinutes": 30}'::json, CURRENT_TIMESTAMP)
+ON CONFLICT (role) DO NOTHING;
 
 
+-- ----------------------------------------------------------------------------
 -- 20. platform_guidelines (Role Manuals & SOPs)
+-- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS platform_guidelines (
+    id VARCHAR(50) NULL,
     role VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(255) DEFAULT 'Master Platform Guidelines',
     guidelines_data JSON DEFAULT '[]',
+    guidelines JSON DEFAULT '[]',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS role VARCHAR(50);
+ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS title VARCHAR(255) DEFAULT 'Master Platform Guidelines';
 ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS guidelines_data JSON DEFAULT '[]';
+ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS guidelines JSON DEFAULT '[]';
 ALTER TABLE platform_guidelines ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO platform_guidelines (role, guidelines_data, updated_at)
-VALUES ('superadmin', '[{"title": "DPDP Act 2023 Consent Audit", "desc": "Ensure all candidate checks possess digital consent signatures."}, {"title": "API Gateway Quota Balancing", "desc": "Monitor Sandbox.co.in vs CoinCircleTrust failover quotas."}]'::json, CURRENT_TIMESTAMP)
-ON CONFLICT DO NOTHING;
+ALTER TABLE platform_guidelines ALTER COLUMN id DROP NOT NULL;
+ALTER TABLE platform_guidelines ALTER COLUMN title DROP NOT NULL;
+
+INSERT INTO platform_guidelines (id, role, title, guidelines_data, guidelines, updated_at)
+VALUES ('guide-01', 'superadmin', 'Master Platform Guidelines', '[{"title": "DPDP Act 2023 Consent Audit", "desc": "Ensure all candidate checks possess digital consent signatures."}, {"title": "API Gateway Quota Balancing", "desc": "Monitor Sandbox.co.in vs CoinCircleTrust failover quotas."}]'::json, '[{"title": "DPDP Act 2023 Consent Audit", "desc": "Ensure all candidate checks possess digital consent signatures."}, {"title": "API Gateway Quota Balancing", "desc": "Monitor Sandbox.co.in vs CoinCircleTrust failover quotas."}]'::json, CURRENT_TIMESTAMP)
+ON CONFLICT (role) DO NOTHING;
