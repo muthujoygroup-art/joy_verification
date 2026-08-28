@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
+import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
 import { DocumentDownloader } from '../components/DocumentDownloader';
 import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
@@ -436,6 +437,17 @@ export const EmployeePortalView = () => {
   const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
   const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
 
+  const portalReadiness = useMemo(() => {
+    const jfd = candidate?.joiningFormData || {};
+    return evaluateVerificationReadiness({
+      ...candidate,
+      ...jfd,
+      name: candidate?.name || jfd.fullName,
+      accountNo: candidate?.bankAccountNo || jfd.accountNo,
+      ifscCode: candidate?.ifscCode || jfd.ifscCode
+    });
+  }, [candidate]);
+
   // ⚡ 1-Click Quick Mock Verification (Simulate Passing All HR-Configured Steps)
   const handleQuickMockVerifyAll = () => {
     const samplePortrait = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400';
@@ -753,6 +765,90 @@ export const EmployeePortalView = () => {
               <strong className="text-white block font-bold">3. Review Statutory Declarations</strong>
               <p className="text-slate-300 leading-snug">Check your Form 16A TDS, Form 11 EPFO, and Form F Gratuity nominations before digital sign-off.</p>
             </div>
+          </div>
+        </div>
+
+        {/* 🎯 GUIDED CANDIDATE ACTION ITEMS & REMAINING FORM FIELDS CHECKLIST */}
+        <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-2xl border border-indigo-500/30 shadow-md space-y-3 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-amber-500 text-slate-950 rounded-lg">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                  Candidate Verification Action Items & Prerequisites
+                </h4>
+                <p className="text-[11px] text-slate-300 font-medium">
+                  Your employer requires these fields to execute document verification and payroll activation.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-800/90 px-3 py-1 rounded-xl border border-slate-700 self-start sm:self-auto">
+              <span className="text-[10px] text-slate-400 font-bold">Document Readiness:</span>
+              <span className="text-xs font-mono font-black text-emerald-400">
+                {portalReadiness.readyChecks.length} / {portalReadiness.totalChecks} Ready ({portalReadiness.completionScore}%)
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            {/* Box 1: Ready to Verify */}
+            <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-emerald-300 flex items-center gap-1 text-[11px]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Ready for Instant Verification ({portalReadiness.readyChecks.length})</span>
+                </span>
+                <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.2 rounded font-mono">
+                  All Data Present ✓
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {portalReadiness.readyChecks.map(c => (
+                  <span key={c.id} className="px-2 py-0.5 bg-emerald-900/60 text-emerald-200 border border-emerald-500/40 rounded-md text-[10px] font-bold">
+                    {c.icon} {c.shortName} ✓
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Box 2: Pending Mandatory Fields */}
+            <div className="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-amber-300 flex items-center gap-1 text-[11px]">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Action Required: Fill Remaining Fields ({portalReadiness.pendingChecks.length})</span>
+                </span>
+                <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.2 rounded font-mono">
+                  Needs Attention
+                </span>
+              </div>
+              <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+                {portalReadiness.pendingChecks.map(c => (
+                  <div key={c.id} className="text-[10px] text-slate-300 flex items-center justify-between bg-slate-900/80 p-1 px-2 rounded border border-amber-500/20">
+                    <span className="font-bold text-amber-200">{c.icon} {c.name}:</span>
+                    <span className="text-[9px] text-amber-300 font-medium">
+                      Fill: {c.missingFields.map(f => f.label).join(', ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] bg-slate-900/80 p-2 rounded-xl border border-slate-800 flex-wrap gap-2">
+            <span className="text-slate-300">
+              💡 <strong>Tip for Candidate:</strong> Click below to open the joining form. Pre-filled items from HR are marked in green 🏢, while items you need to complete are highlighted in amber 📱.
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowFullJoiningModal(true)}
+              className="text-amber-400 font-black hover:underline cursor-pointer flex items-center gap-1 text-[11px]"
+            >
+              <span>Complete Remaining Fields →</span>
+            </button>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
 import { 
   User, 
   MapPin, 
@@ -13,25 +14,26 @@ import {
   CheckCircle2, 
   Send, 
   Save, 
-  X,
-  Sparkles,
-  Building2,
-  FolderDown,
-  FileText,
-  Eye,
-  Upload,
-  FileCheck,
-  Mail,
-  Database,
-  Loader2,
-  Cpu,
-  Factory,
-  Landmark,
-  Stethoscope,
-  Truck,
-  ShoppingBag,
-  HardHat,
-  Layers
+  X, 
+  Sparkles, 
+  Building2, 
+  FolderDown, 
+  FileText, 
+  Eye, 
+  Upload, 
+  FileCheck, 
+  Mail, 
+  Database, 
+  Loader2, 
+  Cpu, 
+  Factory, 
+  Landmark, 
+  Stethoscope, 
+  Truck, 
+  ShoppingBag, 
+  HardHat, 
+  Layers,
+  AlertCircle
 } from 'lucide-react';
 
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
@@ -248,6 +250,55 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     if (onClose) onClose();
   };
 
+  const candidateReadiness = useMemo(() => {
+    return evaluateVerificationReadiness({
+      ...formData,
+      fullName: formData.fullName,
+      accountNo: formData.accountNo
+    });
+  }, [formData]);
+
+  const renderCandidateFieldLabel = (label, fieldKey, isRequired = false) => {
+    const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
+    const currentVal = formData[fieldKey];
+    const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
+
+    return (
+      <div className="flex items-center justify-between gap-1 mb-1">
+        <span className="text-slate-700 font-bold leading-tight">
+          {label} {isRequired && <span className="text-rose-500">*</span>}
+        </span>
+        {hasPreFilledVal ? (
+          <span className="text-[8px] font-black px-1.5 py-0.2 rounded border bg-emerald-50 text-emerald-800 border-emerald-300">
+            Pre-filled by HR 🏢 ✓
+          </span>
+        ) : isFilled ? (
+          <span className="text-[8px] font-black px-1.5 py-0.2 rounded border bg-indigo-50 text-indigo-800 border-indigo-300">
+            Filled by You ✓
+          </span>
+        ) : (
+          <span className="text-[8px] font-black px-1.5 py-0.2 rounded border bg-amber-100 text-amber-900 border-amber-300 animate-pulse">
+            Required 📱 ⚠️
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  const getCandidateFieldInputClass = (fieldKey, baseClass = 'form-input') => {
+    const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
+    const currentVal = formData[fieldKey];
+    const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
+
+    if (!isFilled && !hasPreFilledVal) {
+      return `${baseClass} border-amber-300 bg-amber-50/20 focus:border-amber-500 focus:bg-white`;
+    }
+    if (hasPreFilledVal) {
+      return `${baseClass} border-emerald-300 bg-emerald-50/10 focus:border-emerald-500`;
+    }
+    return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
       <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
@@ -322,6 +373,49 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 <span>Verify Email OTP</span>
               </button>
             )}
+          </div>
+        </div>
+
+        {/* 🎯 CANDIDATE GUIDED ACTION & VERIFICATION READINESS NOTIFICATION BANNER */}
+        <div className="p-3.5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-xl border border-indigo-500/30 text-xs space-y-2.5 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <strong className="text-white text-xs">Employee Action Checklist & Document Readiness Guide:</strong>
+            </div>
+            <span className="text-[9px] bg-indigo-800/80 text-indigo-200 px-2 py-0.5 rounded font-mono font-bold self-start sm:self-auto">
+              {candidateReadiness.readyChecks.length} / {candidateReadiness.totalChecks} Checks Ready ({candidateReadiness.completionScore}%)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+            {/* Ready */}
+            <div className="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded-lg space-y-1">
+              <span className="text-emerald-300 font-bold block text-[10px] uppercase tracking-wider">
+                ✅ Ready for Instant Verification ({candidateReadiness.readyChecks.length}):
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {candidateReadiness.readyChecks.map(c => (
+                  <span key={c.id} className="px-1.5 py-0.5 bg-emerald-900/60 text-emerald-200 border border-emerald-500/40 rounded text-[9px] font-bold">
+                    {c.icon} {c.shortName}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Pending */}
+            <div className="p-2 bg-amber-950/40 border border-amber-500/30 rounded-lg space-y-1">
+              <span className="text-amber-300 font-bold block text-[10px] uppercase tracking-wider">
+                ⚠️ Complete These Remaining Fields for Full Verification ({candidateReadiness.pendingChecks.length}):
+              </span>
+              <div className="space-y-1 max-h-20 overflow-y-auto pr-1">
+                {candidateReadiness.pendingChecks.map(c => (
+                  <div key={c.id} className="text-[10px] text-slate-300 leading-tight">
+                    <strong className="text-amber-200">{c.shortName}:</strong> Fill {c.missingFields.map(f => f.label).join(', ')}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -448,44 +542,44 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Full Candidate Name *</label>
+                  {renderCandidateFieldLabel('Full Candidate Name', 'fullName', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.fullName} 
                     onChange={e => setFormData({ ...formData, fullName: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('fullName', 'form-input font-bold')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Father's / Husband's Name *</label>
+                  {renderCandidateFieldLabel("Father's / Husband's Name", 'fatherName', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.fatherName} 
                     onChange={e => setFormData({ ...formData, fatherName: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('fatherName')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Date of Birth (DOB) *</label>
+                  {renderCandidateFieldLabel('Date of Birth (DOB)', 'dob', true)}
                   <input 
                     type="date" 
                     required 
                     value={formData.dob} 
                     onChange={e => setFormData({ ...formData, dob: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('dob')} 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Gender *</label>
+                  {renderCandidateFieldLabel('Gender', 'gender', true)}
                   <select 
                     value={formData.gender} 
                     onChange={e => setFormData({ ...formData, gender: e.target.value })}
-                    className="form-select text-xs"
+                    className={getCandidateFieldInputClass('gender', 'form-select text-xs')}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -494,11 +588,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Marital Status</label>
+                  {renderCandidateFieldLabel('Marital Status', 'maritalStatus')}
                   <select 
                     value={formData.maritalStatus} 
                     onChange={e => setFormData({ ...formData, maritalStatus: e.target.value })}
-                    className="form-select text-xs"
+                    className={getCandidateFieldInputClass('maritalStatus', 'form-select text-xs')}
                   >
                     <option value="Single">Single</option>
                     <option value="Married">Married</option>
@@ -506,11 +600,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Blood Group *</label>
+                  {renderCandidateFieldLabel('Blood Group', 'bloodGroup', true)}
                   <select 
                     value={formData.bloodGroup} 
                     onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('bloodGroup', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.bloodGroups || ['O+', 'A+', 'B+', 'AB+']).map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
@@ -519,12 +613,12 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Nationality</label>
+                  {renderCandidateFieldLabel('Nationality', 'nationality')}
                   <input 
                     type="text" 
                     value={formData.nationality} 
                     onChange={e => setFormData({ ...formData, nationality: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('nationality')} 
                   />
                 </div>
               </div>
@@ -538,68 +632,68 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Mobile Number (SMS & WhatsApp) *</label>
+                  {renderCandidateFieldLabel('Mobile Number (SMS & WhatsApp)', 'mobile', true)}
                   <input 
                     type="tel" 
                     required 
                     value={formData.mobile} 
                     onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('mobile', 'form-input font-bold')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Email Address *</label>
+                  {renderCandidateFieldLabel('Email Address', 'email', true)}
                   <input 
                     type="email" 
                     required 
                     value={formData.email} 
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('email')} 
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Present Residential Address *</label>
+                {renderCandidateFieldLabel('Present Residential Address', 'presentAddress', true)}
                 <textarea 
                   rows="2" 
                   required 
                   value={formData.presentAddress} 
                   onChange={e => setFormData({ ...formData, presentAddress: e.target.value })}
-                  className="form-textarea text-xs" 
+                  className={getCandidateFieldInputClass('presentAddress', 'form-textarea text-xs')} 
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Permanent Residential Address *</label>
+                {renderCandidateFieldLabel('Permanent Residential Address', 'permanentAddress', true)}
                 <textarea 
                   rows="2" 
                   required 
                   value={formData.permanentAddress} 
                   onChange={e => setFormData({ ...formData, permanentAddress: e.target.value })}
-                  className="form-textarea text-xs" 
+                  className={getCandidateFieldInputClass('permanentAddress', 'form-textarea text-xs')} 
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Emergency Contact Person & Relationship *</label>
+                  {renderCandidateFieldLabel('Emergency Contact Person & Relationship', 'emergencyContactName', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.emergencyContactName} 
                     onChange={e => setFormData({ ...formData, emergencyContactName: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('emergencyContactName')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Emergency Phone Number *</label>
+                  {renderCandidateFieldLabel('Emergency Phone Number', 'emergencyContactPhone', true)}
                   <input 
                     type="tel" 
                     required 
                     value={formData.emergencyContactPhone} 
                     onChange={e => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('emergencyContactPhone')} 
                   />
                 </div>
               </div>
@@ -613,53 +707,53 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Aadhaar UIDAI Number (12 Digits) *</label>
+                  {renderCandidateFieldLabel('Aadhaar UIDAI Number (12 Digits)', 'aadhaarNo', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.aadhaarNo} 
                     onChange={e => setFormData({ ...formData, aadhaarNo: e.target.value })}
-                    className="form-input font-mono font-bold" 
+                    className={getCandidateFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Tax PAN Card Number *</label>
+                  {renderCandidateFieldLabel('Tax PAN Card Number', 'panNo', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.panNo} 
                     onChange={e => setFormData({ ...formData, panNo: e.target.value })}
-                    className="form-input font-mono" 
+                    className={getCandidateFieldInputClass('panNo', 'form-input font-mono')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Driving License (DL) Number</label>
+                  {renderCandidateFieldLabel('Driving License (DL) Number', 'drivingLicense')}
                   <input 
                     type="text" 
                     value={formData.drivingLicense} 
                     onChange={e => setFormData({ ...formData, drivingLicense: e.target.value })}
-                    className="form-input font-mono" 
+                    className={getCandidateFieldInputClass('drivingLicense', 'form-input font-mono')} 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Passport Number</label>
+                  {renderCandidateFieldLabel('Passport Number', 'passportNo')}
                   <input 
                     type="text" 
                     value={formData.passportNo} 
                     onChange={e => setFormData({ ...formData, passportNo: e.target.value })}
-                    className="form-input font-mono" 
+                    className={getCandidateFieldInputClass('passportNo', 'form-input font-mono')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">UAN / EPF Universal Account Number</label>
+                  {renderCandidateFieldLabel('UAN / EPF Universal Account Number', 'uanEpf')}
                   <input 
                     type="text" 
                     value={formData.uanEpf} 
                     onChange={e => setFormData({ ...formData, uanEpf: e.target.value })}
-                    className="form-input font-mono" 
+                    className={getCandidateFieldInputClass('uanEpf', 'form-input font-mono')} 
                   />
                 </div>
               </div>
@@ -673,21 +767,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Employee Code / ID *</label>
+                  {renderCandidateFieldLabel('Employee Code / ID', 'empId', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.empId} 
                     onChange={e => setFormData({ ...formData, empId: e.target.value })}
-                    className="form-input font-bold" 
+                    className={getCandidateFieldInputClass('empId', 'form-input font-bold')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Job Designation *</label>
+                  {renderCandidateFieldLabel('Job Designation', 'designation', true)}
                   <select 
                     value={formData.designation} 
                     onChange={e => setFormData({ ...formData, designation: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('designation', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.designations || []).map(desig => (
                       <option key={desig} value={desig}>{desig}</option>
@@ -695,11 +789,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Department *</label>
+                  {renderCandidateFieldLabel('Department', 'dept', true)}
                   <select 
                     value={formData.dept} 
                     onChange={e => setFormData({ ...formData, dept: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('dept', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.departments || []).map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
@@ -710,21 +804,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Date of Joining (DOJ) *</label>
+                  {renderCandidateFieldLabel('Date of Joining (DOJ)', 'doj', true)}
                   <input 
                     type="date" 
                     required 
                     value={formData.doj} 
                     onChange={e => setFormData({ ...formData, doj: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('doj')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Employment Type *</label>
+                  {renderCandidateFieldLabel('Employment Type', 'employmentType', true)}
                   <select 
                     value={formData.employmentType} 
                     onChange={e => setFormData({ ...formData, employmentType: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('employmentType', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.employmentTypes || []).map(empType => (
                       <option key={empType} value={empType}>{empType}</option>
@@ -732,11 +826,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Work Location / Branch *</label>
+                  {renderCandidateFieldLabel('Work Location / Branch', 'workLocation', true)}
                   <select 
                     value={formData.workLocation} 
                     onChange={e => setFormData({ ...formData, workLocation: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('workLocation', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.workLocations || []).map(loc => (
                       <option key={loc} value={loc}>{loc}</option>
@@ -754,11 +848,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Highest Degree / Qualification *</label>
+                  {renderCandidateFieldLabel('Highest Degree / Qualification', 'highestQualification', true)}
                   <select 
                     value={formData.highestQualification} 
                     onChange={e => setFormData({ ...formData, highestQualification: e.target.value })}
-                    className="form-select text-xs font-bold"
+                    className={getCandidateFieldInputClass('highestQualification', 'form-select text-xs font-bold')}
                   >
                     {(masterDropdownOptions?.qualifications || []).map(qual => (
                       <option key={qual} value={qual}>{qual}</option>
@@ -766,34 +860,34 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">University / Board / Institute *</label>
+                  {renderCandidateFieldLabel('University / Board / Institute', 'university', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.university} 
                     onChange={e => setFormData({ ...formData, university: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('university')} 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Year of Passing</label>
+                  {renderCandidateFieldLabel('Year of Passing', 'passingYear')}
                   <input 
                     type="text" 
                     value={formData.passingYear} 
                     onChange={e => setFormData({ ...formData, passingYear: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('passingYear')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Aggregate Percentage / Grade</label>
+                  {renderCandidateFieldLabel('Aggregate Percentage / Grade', 'percentage')}
                   <input 
                     type="text" 
                     value={formData.percentage} 
                     onChange={e => setFormData({ ...formData, percentage: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('percentage')} 
                   />
                 </div>
               </div>
@@ -807,46 +901,46 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Account Holder Name *</label>
+                  {renderCandidateFieldLabel('Account Holder Name', 'accountHolderName', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.accountHolderName} 
                     onChange={e => setFormData({ ...formData, accountHolderName: e.target.value })}
-                    className="form-input font-bold" 
+                    className={getCandidateFieldInputClass('accountHolderName', 'form-input font-bold')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank Name *</label>
+                  {renderCandidateFieldLabel('Bank Name', 'bankName', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.bankName} 
                     onChange={e => setFormData({ ...formData, bankName: e.target.value })}
-                    className="form-input" 
+                    className={getCandidateFieldInputClass('bankName')} 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank Account Number *</label>
+                  {renderCandidateFieldLabel('Bank Account Number', 'accountNo', true)}
                   <input 
                     type="text" 
                     required 
-                    value={formData.bankAccountNo} 
-                    onChange={e => setFormData({ ...formData, bankAccountNo: e.target.value })}
-                    className="form-input font-mono font-bold" 
+                    value={formData.accountNo} 
+                    onChange={e => setFormData({ ...formData, accountNo: e.target.value })}
+                    className={getCandidateFieldInputClass('accountNo', 'form-input font-mono')} 
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank IFSC Code *</label>
+                  {renderCandidateFieldLabel('Bank IFSC Code', 'ifscCode', true)}
                   <input 
                     type="text" 
                     required 
                     value={formData.ifscCode} 
                     onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
-                    className="form-input font-mono uppercase" 
+                    className={getCandidateFieldInputClass('ifscCode', 'form-input font-mono uppercase')} 
                   />
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
 import { DocumentDownloader } from '../components/DocumentDownloader';
@@ -11,6 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
+import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
 import { 
   User,
   UserCheck, 
@@ -268,6 +269,24 @@ export const HrExecutiveView = () => {
       addressVerifiedPhysically: false
     }
   });
+
+  const [delegatedFieldsMap, setDelegatedFieldsMap] = useState({});
+
+  // Dynamic Upstream Verification & Data-Fetching Dependency Evaluator
+  const readiness = useMemo(() => {
+    return evaluateVerificationReadiness({
+      ...formData,
+      fullName: formData.name,
+      accountNo: formData.bankAccountNo
+    });
+  }, [formData]);
+
+  const toggleFieldDelegation = (fieldName) => {
+    setDelegatedFieldsMap(prev => ({
+      ...prev,
+      [fieldName]: !prev[fieldName]
+    }));
+  };
 
   // 1-Click Multi-Industry Mock / Demo Profile Auto-Fill Engine
   const handleAutoFillMockData = (targetIndustry = 'it_tech') => {
@@ -797,6 +816,32 @@ export const HrExecutiveView = () => {
     handleAutoFillMockData(categoryKey);
   };
 
+  const renderFieldLabel = (label, fieldKey, isRequired = false) => {
+    const ownership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
+    return (
+      <div className="flex items-center justify-between gap-1 mb-1">
+        <span className="text-slate-700 font-bold leading-tight">
+          {label} {isRequired && <span className="text-rose-500">*</span>}
+        </span>
+        <span 
+          onClick={() => toggleFieldDelegation(fieldKey)}
+          title="Click to toggle HR-filled vs Candidate Link-delegated"
+          className={`text-[8px] font-black px-1.5 py-0.2 rounded border cursor-pointer select-none transition-all ${ownership.badgeClass}`}
+        >
+          {ownership.status === 'hr' ? 'HR 🏢' : 'Link 📱'}
+        </span>
+      </div>
+    );
+  };
+
+  const getFieldInputClass = (fieldKey, baseClass = 'form-input') => {
+    const ownership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
+    if (ownership.status === 'employee') {
+      return `${baseClass} border-amber-300 bg-amber-50/20 focus:border-amber-500 focus:bg-white`;
+    }
+    return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
+  };
+
   const handleCreateCandidateSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.mobile || !formData.aadhaarNo) {
@@ -804,7 +849,11 @@ export const HrExecutiveView = () => {
       return;
     }
 
-    addCandidate(formData);
+    addCandidate({
+      ...formData,
+      delegatedFieldsMap,
+      verificationReadiness: readiness
+    });
     setShowAddForm(false);
     setActiveTab('pipeline');
   };
@@ -1829,6 +1878,133 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
+            {/* 🎯 SMART REAL-TIME VERIFICATION & DATA-FETCHING READINESS DIAGNOSTICS HUD */}
+            <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-2xl shadow-md border border-indigo-500/30 space-y-3.5 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-indigo-600/80 rounded-xl text-white shadow-xs">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                        Smart Verification & Data-Fetching Readiness Engine
+                      </h4>
+                      <span className="text-[9px] bg-emerald-400/20 text-emerald-300 font-bold px-2 py-0.5 rounded border border-emerald-400/30">
+                        Live Dependency Diagnostics
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-medium">
+                      Evaluates mandatory prerequisite fields in real-time. Highlights what can be verified immediately vs what the candidate will fill.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Completion Metric */}
+                <div className="flex items-center gap-2.5 self-start sm:self-auto bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-400 block font-bold">Readiness Score</span>
+                    <span className="text-xs font-black text-emerald-400 font-mono">
+                      {readiness.readyChecks.length} / {readiness.totalChecks} Checks Ready ({readiness.completionScore}%)
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-black text-xs text-white">
+                    {readiness.completionScore}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Split: Ready Checks (Green) & Missing Dependencies (Amber) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                {/* Box 1: Ready to Verify & Fetch Upstream Data Now */}
+                <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-emerald-300 flex items-center gap-1.5 text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Ready to Verify & Fetch Data ({readiness.readyChecks.length})</span>
+                    </span>
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-mono px-1.5 py-0.5 rounded font-bold">
+                      All Inputs Present ✓
+                    </span>
+                  </div>
+
+                  {readiness.readyChecks.length === 0 ? (
+                    <p className="text-[11px] text-slate-400 italic">No verification checks fully satisfied yet. Fill candidate details below.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {readiness.readyChecks.map(check => (
+                        <div key={check.id} className="p-1.5 px-2 bg-emerald-900/60 border border-emerald-500/50 rounded-lg flex items-center gap-1.5 text-[11px]">
+                          <span>{check.icon}</span>
+                          <strong className="text-white font-bold">{check.shortName}</strong>
+                          <span className="text-emerald-300 text-[10px]">✓</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-emerald-200/80 leading-snug">
+                    💡 These upstream API checks have all mandatory parameters and can be executed synchronously or verified upon link creation.
+                  </p>
+                </div>
+
+                {/* Box 2: Missing Fields to Unlock Upstream Verification */}
+                <div className="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-amber-300 flex items-center gap-1.5 text-xs">
+                      <AlertCircle className="w-4 h-4 text-amber-400" />
+                      <span>Pending Requirements ({readiness.pendingChecks.length})</span>
+                    </span>
+                    <span className="text-[9px] bg-amber-500/20 text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
+                      Needs Missing Fields
+                    </span>
+                  </div>
+
+                  {readiness.pendingChecks.length === 0 ? (
+                    <p className="text-[11px] text-emerald-300 font-bold">🎉 All 9 Core Verification checks have prerequisite data populated!</p>
+                  ) : (
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      {readiness.pendingChecks.map(check => (
+                        <div key={check.id} className="p-1.5 px-2 bg-slate-900/80 border border-amber-500/30 rounded-lg text-[11px] space-y-0.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-amber-200 flex items-center gap-1">
+                              <span>{check.icon}</span>
+                              <span>{check.name}</span>
+                            </span>
+                            <span className="text-[9px] text-slate-400">Section: {check.requiredFields[0]?.section}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-300 flex items-center gap-1 flex-wrap">
+                            <span className="text-amber-400 font-medium">To verify, fill:</span>
+                            {check.missingFields.map((f, i) => (
+                              <span key={i} className="px-1.5 py-0.2 bg-amber-500/20 text-amber-200 border border-amber-400/40 rounded text-[9px] font-bold">
+                                {f.label}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-amber-200/80 leading-snug">
+                    📱 Any fields left unentered by HR will be highlighted with amber badges for the candidate to fill on their Magic Link.
+                  </p>
+                </div>
+              </div>
+
+              {/* Visual Field Ownership Legend */}
+              <div className="p-2 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center justify-between text-[10px] flex-wrap gap-2">
+                <span className="text-slate-400 font-bold">🎨 Form Field Ownership Demarcation:</span>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <strong className="text-slate-200">Filled by HR 🏢 (Pre-filled for Candidate)</strong>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <strong className="text-amber-300">To be filled by Candidate 📱 (Required via Link)</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* SECTION 1: Personal & Demographic Particulars */}
             <div className="space-y-3">
               <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
@@ -1838,64 +2014,64 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Candidate Full Name *</label>
+                  {renderFieldLabel('Candidate Full Name', 'name', true)}
                   <input 
                     type="text" 
                     required
                     placeholder="e.g. Ramesh Chandra"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="form-input font-bold"
+                    className={getFieldInputClass('name', 'form-input font-bold')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Employee Code / ID</label>
+                  {renderFieldLabel('Employee Code / ID', 'empId')}
                   <input 
                     type="text" 
                     placeholder="e.g. EMP-2026-99"
                     value={formData.empId}
                     onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('empId', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Father's Name</label>
+                  {renderFieldLabel("Father's Name", 'fatherName')}
                   <input 
                     type="text" 
                     placeholder="e.g. Suresh Chandra"
                     value={formData.fatherName}
                     onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('fatherName')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Mother's Name</label>
+                  {renderFieldLabel("Mother's Name", 'motherName')}
                   <input 
                     type="text" 
                     placeholder="e.g. Kavitha Chandra"
                     value={formData.motherName}
                     onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('motherName')}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Date of Birth (DOB)</label>
+                  {renderFieldLabel('Date of Birth (DOB)', 'dob')}
                   <input 
                     type="date" 
                     value={formData.dob}
                     onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('dob')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Gender</label>
+                  {renderFieldLabel('Gender', 'gender')}
                   <select 
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('gender', 'form-select font-medium')}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -1903,11 +2079,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Marital Status</label>
+                  {renderFieldLabel('Marital Status', 'maritalStatus')}
                   <select 
                     value={formData.maritalStatus}
                     onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('maritalStatus', 'form-select font-medium')}
                   >
                     <option value="Single">Single / Unmarried</option>
                     <option value="Married">Married</option>
@@ -1916,11 +2092,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Blood Group</label>
+                  {renderFieldLabel('Blood Group', 'bloodGroup')}
                   <select 
                     value={formData.bloodGroup}
                     onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('bloodGroup', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.bloodGroups || ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']).map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
@@ -1931,21 +2107,21 @@ export const HrExecutiveView = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Spouse Name (if married)</label>
+                  {renderFieldLabel('Spouse Name (if married)', 'spouseName')}
                   <input 
                     type="text" 
                     placeholder="e.g. Sunita Chandra"
                     value={formData.spouseName}
                     onChange={(e) => setFormData({ ...formData, spouseName: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('spouseName')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Languages Known (Master)</label>
+                  {renderFieldLabel('Languages Known (Master)', 'languagesKnown')}
                   <select 
                     value={formData.languagesKnown}
                     onChange={(e) => setFormData({ ...formData, languagesKnown: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('languagesKnown', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.languages || ['English (Fluent)', 'Hindi (National)', 'Tamil (Regional)', 'Telugu (Regional)']).map(lang => (
                       <option key={lang} value={lang}>{lang}</option>
@@ -1953,11 +2129,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Self Interest / Activities (Master)</label>
+                  {renderFieldLabel('Self Interest / Activities (Master)', 'selfInterests')}
                   <select 
                     value={formData.selfInterests}
                     onChange={(e) => setFormData({ ...formData, selfInterests: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('selfInterests', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.selfInterests || ['Coding & Open Source Development', 'Cricket & Team Athletics', 'Reading, Law & Financial Research']).map(interest => (
                       <option key={interest} value={interest}>{interest}</option>
@@ -1976,39 +2152,39 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Primary Mobile (WhatsApp/SMS) *</label>
+                  {renderFieldLabel('Primary Mobile (WhatsApp/SMS)', 'mobile', true)}
                   <input 
                     type="tel" 
                     required
                     placeholder="+91 98765 43210"
                     value={formData.mobile}
                     onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                    className="form-input font-bold"
+                    className={getFieldInputClass('mobile', 'form-input font-bold')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Alternate Phone / Emergency</label>
+                  {renderFieldLabel('Alternate Phone / Emergency', 'alternateMobile')}
                   <input 
                     type="tel" 
                     placeholder="+91 98111 22334"
                     value={formData.alternateMobile}
                     onChange={(e) => setFormData({ ...formData, alternateMobile: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('alternateMobile')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Official / Personal Email *</label>
+                  {renderFieldLabel('Official / Personal Email', 'email', true)}
                   <input 
                     type="email" 
                     required
                     placeholder="candidate@gmail.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('email')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Aadhaar Identity Number *</label>
+                  {renderFieldLabel('Aadhaar Identity Number', 'aadhaarNo', true)}
                   <input 
                     type="text" 
                     required
@@ -2016,18 +2192,18 @@ export const HrExecutiveView = () => {
                     placeholder="XXXX XXXX XXXX"
                     value={formData.aadhaarNo}
                     onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
-                    className="form-input font-mono font-bold"
+                    className={getFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">State (Master)</label>
+                  {renderFieldLabel('State (Master)', 'state')}
                   <select 
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('state', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.states || ['Karnataka', 'Tamil Nadu', 'Maharashtra', 'Delhi NCR']).map(st => (
                       <option key={st} value={st}>{st}</option>
@@ -2035,11 +2211,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">City (Master)</label>
+                  {renderFieldLabel('City (Master)', 'city')}
                   <select 
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('city', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.cities || ['Bengaluru', 'Chennai', 'Mumbai', 'New Delhi']).map(ct => (
                       <option key={ct} value={ct}>{ct}</option>
@@ -2047,11 +2223,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Area / Locality (Master)</label>
+                  {renderFieldLabel('Area / Locality (Master)', 'area')}
                   <select 
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('area', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.areas || ['Koramangala 4th Block, Bengaluru', 'Whitefield Tech Corridor, Bengaluru', 'Guindy Industrial Estate, Chennai']).map(ar => (
                       <option key={ar} value={ar}>{ar}</option>
@@ -2059,36 +2235,36 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">PIN / Postal Code</label>
+                  {renderFieldLabel('PIN / Postal Code', 'pincode')}
                   <input 
                     type="text" 
                     placeholder="560103"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('pincode', 'form-input font-mono')}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Present Residential Address</label>
+                  {renderFieldLabel('Present Residential Address', 'presentAddress')}
                   <textarea 
                     rows="2"
                     placeholder="Flat 402, Green Glen Layout, Bellandur, Bengaluru, KA - 560103"
                     value={formData.presentAddress}
                     onChange={(e) => setFormData({ ...formData, presentAddress: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('presentAddress')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Permanent Home Town Address</label>
+                  {renderFieldLabel('Permanent Home Town Address', 'permanentAddress')}
                   <textarea 
                     rows="2"
                     placeholder="House No 45, MG Road, Civil Lines, Jaipur, RJ - 302001"
                     value={formData.permanentAddress}
                     onChange={(e) => setFormData({ ...formData, permanentAddress: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('permanentAddress')}
                   />
                 </div>
               </div>
@@ -2103,11 +2279,11 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Qualification Category (Master)</label>
+                  {renderFieldLabel('Qualification Category (Master)', 'qualificationCategory')}
                   <select 
                     value={formData.qualificationCategory}
                     onChange={(e) => setFormData({ ...formData, qualificationCategory: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('qualificationCategory', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.qualificationCategories || ['Under Graduate (UG / Bachelor Degree)', 'Post Graduate (PG / Master Degree)', 'Polytechnic Diploma', 'Vocational / ITI Trade Certificate']).map(qc => (
                       <option key={qc} value={qc}>{qc}</option>
@@ -2115,11 +2291,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Highest Degree / Diploma (Master)</label>
+                  {renderFieldLabel('Highest Degree / Diploma (Master)', 'highestQualification')}
                   <select 
                     value={formData.highestQualification}
                     onChange={(e) => setFormData({ ...formData, highestQualification: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('highestQualification', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.qualifications || ['B.Tech / B.E. in Computer Science', 'MBA in HR & Operations', 'Diploma in Mechanical Engineering', 'MBBS / Medical Degree']).map(deg => (
                       <option key={deg} value={deg}>{deg}</option>
@@ -2127,31 +2303,31 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Primary Skill / Core Specialization</label>
+                  {renderFieldLabel('Primary Skill / Core Specialization', 'primarySkill')}
                   <input 
                     type="text"
                     placeholder="e.g. React JS, Python, Robotic Welding"
                     value={formData.primarySkill}
                     onChange={(e) => setFormData({ ...formData, primarySkill: e.target.value })}
-                    className="form-input font-bold"
+                    className={getFieldInputClass('primarySkill', 'form-input font-bold')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Passing Year & Score (%)</label>
+                  {renderFieldLabel('Passing Year & Score (%)', 'passingYear')}
                   <div className="flex gap-2">
                     <input 
                       type="text" 
                       placeholder="2020"
                       value={formData.passingYear}
                       onChange={(e) => setFormData({ ...formData, passingYear: e.target.value })}
-                      className="form-input w-24 font-mono"
+                      className={getFieldInputClass('passingYear', 'form-input w-24 font-mono')}
                     />
                     <input 
                       type="text" 
                       placeholder="84.5%"
                       value={formData.percentage}
                       onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
-                      className="form-input flex-1 font-mono"
+                      className={getFieldInputClass('percentage', 'form-input flex-1 font-mono')}
                     />
                   </div>
                 </div>
@@ -2167,11 +2343,11 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Job Category (Master)</label>
+                  {renderFieldLabel('Job Category (Master)', 'jobCategory')}
                   <select 
                     value={formData.jobCategory}
                     onChange={(e) => setFormData({ ...formData, jobCategory: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('jobCategory', 'form-select font-medium')}
                   >
                     {(masterDropdownOptions?.jobCategories || ['Information Technology & Software Services', 'Manufacturing & Heavy Industrial Engineering', 'Banking, Financial Services & Insurance (BFSI)', 'Logistics, Warehousing & Fleet Operations']).map(jc => (
                       <option key={jc} value={jc}>{jc}</option>
@@ -2179,11 +2355,11 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Job Employment Type</label>
+                  {renderFieldLabel('Job Employment Type', 'jobType')}
                   <select 
                     value={formData.jobType}
                     onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}
-                    className="form-select font-medium"
+                    className={getFieldInputClass('jobType', 'form-select font-medium')}
                   >
                     <option value="Full Time Permanent">Full Time Permanent</option>
                     <option value="Contractual (Fixed Term 1-3 Yrs)">Contractual (Fixed Term 1-3 Yrs)</option>
@@ -2192,58 +2368,58 @@ export const HrExecutiveView = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Department *</label>
+                  {renderFieldLabel('Department', 'dept', true)}
                   <input 
                     type="text" 
                     required
                     placeholder="e.g. Engineering & Cloud Architecture"
                     value={formData.dept}
                     onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('dept')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Designation *</label>
+                  {renderFieldLabel('Designation', 'designation', true)}
                   <input 
                     type="text" 
                     required
                     placeholder="e.g. Senior Software Engineer"
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                    className="form-input font-bold"
+                    className={getFieldInputClass('designation', 'form-input font-bold')}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Work Location</label>
+                  {renderFieldLabel('Work Location', 'workLocation')}
                   <input 
                     type="text" 
                     placeholder="e.g. Bengaluru Global Tech Hub (HQ)"
                     value={formData.workLocation}
                     onChange={(e) => setFormData({ ...formData, workLocation: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('workLocation')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Previous Employer Name</label>
+                  {renderFieldLabel('Previous Employer Name', 'previousEmployer')}
                   <input 
                     type="text" 
                     placeholder="e.g. Infosys Technologies Ltd"
                     value={formData.previousEmployer}
                     onChange={(e) => setFormData({ ...formData, previousEmployer: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('previousEmployer')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Total Experience (Years)</label>
+                  {renderFieldLabel('Total Experience (Years)', 'experienceYears')}
                   <input 
                     type="text" 
                     placeholder="e.g. 4.5 Years"
                     value={formData.experienceYears}
                     onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('experienceYears', 'form-input font-mono')}
                   />
                 </div>
               </div>
@@ -2258,63 +2434,63 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">PAN Card Number</label>
+                  {renderFieldLabel('PAN Card Number', 'panNo')}
                   <input 
                     type="text" 
                     placeholder="ABCDE1234F"
                     value={formData.panNo}
                     onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('panNo', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Passport Number</label>
+                  {renderFieldLabel('Passport Number', 'passportNo')}
                   <input 
                     type="text" 
                     placeholder="J8912401"
                     value={formData.passportNo || ''}
                     onChange={(e) => setFormData({ ...formData, passportNo: e.target.value.toUpperCase() })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('passportNo', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">EPFO UAN Number</label>
+                  {renderFieldLabel('EPFO UAN Number', 'uanEpf')}
                   <input 
                     type="text" 
                     placeholder="100982341209"
                     value={formData.uanEpf}
                     onChange={(e) => setFormData({ ...formData, uanEpf: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('uanEpf', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Driving License (DL)</label>
+                  {renderFieldLabel('Driving License (DL)', 'drivingLicense')}
                   <input 
                     type="text" 
                     placeholder="KA-01201900124"
                     value={formData.drivingLicense}
                     onChange={(e) => setFormData({ ...formData, drivingLicense: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('drivingLicense', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank Name</label>
+                  {renderFieldLabel('Bank Name', 'bankName')}
                   <input 
                     type="text" 
                     placeholder="HDFC Bank"
                     value={formData.bankName}
                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('bankName')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Bank Account No</label>
+                  {renderFieldLabel('Bank Account No', 'bankAccountNo')}
                   <input 
                     type="text" 
                     placeholder="50100234129845"
                     value={formData.bankAccountNo}
                     onChange={(e) => setFormData({ ...formData, bankAccountNo: e.target.value })}
-                    className="form-input font-mono"
+                    className={getFieldInputClass('bankAccountNo', 'form-input font-mono')}
                   />
                 </div>
               </div>
@@ -2329,33 +2505,33 @@ export const HrExecutiveView = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Primary Nominee Full Name</label>
+                  {renderFieldLabel('Primary Nominee Full Name', 'nomineeName')}
                   <input 
                     type="text" 
                     placeholder="e.g. Sunita Ramanathan"
                     value={formData.nomineeName}
                     onChange={(e) => setFormData({ ...formData, nomineeName: e.target.value })}
-                    className="form-input font-bold"
+                    className={getFieldInputClass('nomineeName', 'form-input font-bold')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Nominee Relationship & Share</label>
+                  {renderFieldLabel('Nominee Relationship & Share', 'nomineeRelation')}
                   <input 
                     type="text" 
                     placeholder="e.g. Spouse (100% Gratuity & PF Share)"
                     value={formData.nomineeRelation}
                     onChange={(e) => setFormData({ ...formData, nomineeRelation: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('nomineeRelation')}
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Mediclaim Group Insurance Dependents</label>
+                  {renderFieldLabel('Mediclaim Dependents', 'insuranceDependents')}
                   <input 
                     type="text" 
                     placeholder="e.g. Spouse + 2 Children + Dependent Parents"
                     value={formData.insuranceDependents || 'Spouse + Dependent Parents'}
                     onChange={(e) => setFormData({ ...formData, insuranceDependents: e.target.value })}
-                    className="form-input"
+                    className={getFieldInputClass('insuranceDependents')}
                   />
                 </div>
               </div>
