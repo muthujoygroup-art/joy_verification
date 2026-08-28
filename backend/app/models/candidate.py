@@ -22,6 +22,7 @@ class Candidate(Base):
     # Granular verification flags & completion results
     verification_config = Column(JSON, default=dict)
     verifications_completed = Column(JSON, default=dict)
+    verified_attributes = Column(JSON, default=dict) # Consolidated live-fetched verified data across all APIs
     face_images = Column(JSON, default=dict)  # { straight: url/base64, left: url/base64, right: url/base64 }
     manual_checks = Column(JSON, default=dict) # { hrReferenceCompleted: true, addressVerifiedPhysically: false }
     joining_form_data = Column(JSON, default=dict) # Full CiteHR 6-tab joining form data
@@ -33,6 +34,7 @@ class Candidate(Base):
     company = relationship("Company", back_populates="candidates")
     hr_user = relationship("HrUser", back_populates="candidates")
     documents = relationship("CandidateDocument", back_populates="candidate", cascade="all, delete-orphan")
+    verification_records = relationship("VerificationRecord", back_populates="candidate", cascade="all, delete-orphan")
 
 
 class CandidateDocument(Base):
