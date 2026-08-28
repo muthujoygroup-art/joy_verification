@@ -33,7 +33,8 @@ import {
   Database,
   Loader2,
   Check,
-  Cpu
+  Cpu,
+  Clock
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
