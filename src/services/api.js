@@ -59,30 +59,53 @@ async function request(endpoint, options = {}, useCache = false) {
   }
 
   const fetchPromise = (async () => {
-    try {
-      const res = await fetch(url, config);
-      if (!res.ok) {
-        if (res.status === 401 && endpoint !== '/auth/login') {
-          // Token expired or invalid
-          sessionStorage.removeItem('joy_auth_token');
+    let attempts = 0;
+    const maxAttempts = method === 'GET' ? 2 : 1; // Retry idempotent GET requests on network glitches
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s safety timeout
+
+        const res = await fetch(url, { ...config, signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          if (res.status === 401 && endpoint !== '/auth/login') {
+            // Token expired or invalid
+            sessionStorage.removeItem('joy_auth_token');
+          }
+          if (res.status === 429) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Rate limit exceeded. Please slow down.');
+          }
+          if (res.status >= 500 && attempts < maxAttempts) {
+            // Retry on server glitches with backoff
+            await new Promise(r => setTimeout(r, 600 * attempts));
+            continue;
+          }
+          const errorData = await res.json().catch(() => ({}));
+          const errorMessage = errorData.detail || errorData.message || `Request failed with status ${res.status}`;
+          throw new Error(errorMessage);
         }
-        const errorData = await res.json().catch(() => ({}));
-        const errorMessage = errorData.detail || errorData.message || `Request failed with status ${res.status}`;
-        throw new Error(errorMessage);
-      }
-      const data = await res.json();
+        const data = await res.json();
 
-      if (method === 'GET' && useCache) {
-        requestCache.set(endpoint, { data, timestamp: Date.now() });
-      }
+        if (method === 'GET' && useCache) {
+          requestCache.set(endpoint, { data, timestamp: Date.now() });
+        }
 
-      return data;
-    } catch (error) {
-      console.warn(`API Error [${endpoint}]:`, error.message);
-      throw error;
-    } finally {
-      if (method === 'GET' && useCache) {
-        inFlightRequests.delete(endpoint);
+        return data;
+      } catch (error) {
+        if (attempts >= maxAttempts) {
+          console.warn(`API Error [${endpoint}]:`, error.message);
+          throw error;
+        }
+        await new Promise(r => setTimeout(r, 600 * attempts));
+      } finally {
+        if (method === 'GET' && useCache) {
+          inFlightRequests.delete(endpoint);
+        }
       }
     }
   })();
@@ -357,4 +380,7 @@ export const api = {
   exportWordUrl: (companyId) => {
     return `${API_BASE_URL}/documents/export/word${companyId ? `?company_id=${companyId}` : ''}`;
   },
+
+  // System & Security Telemetry
+  getSecurityMetrics: () => request('/system/security-metrics', {}, true),
 };
