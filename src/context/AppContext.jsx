@@ -146,7 +146,16 @@ const INITIAL_CANDIDATES = [
 ];
 
 export const AppProvider = ({ children }) => {
-  const [companies, setCompanies] = useState(INITIAL_COMPANIES);
+  const [companies, setCompanies] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_companies_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_COMPANIES;
+  });
   const [hrUsers, setHrUsers] = useState(INITIAL_HR_USERS);
   const [candidates, setCandidates] = useState(() => {
     try {
@@ -942,6 +951,15 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
   }, [candidates]);
 
+  // Sync companies to localStorage for cross-tab persistence
+  useEffect(() => {
+    try {
+      if (companies && companies.length > 0) {
+        localStorage.setItem('joy_companies_v1', JSON.stringify(companies));
+      }
+    } catch (e) {}
+  }, [companies]);
+
   // Listen to cross-tab storage changes
   useEffect(() => {
     const handleStorage = (e) => {
@@ -950,6 +968,14 @@ export const AppProvider = ({ children }) => {
           const parsed = JSON.parse(e.newValue);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setCandidates(parsed);
+          }
+        } catch (err) {}
+      }
+      if (e.key === 'joy_companies_v1' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCompanies(parsed);
           }
         } catch (err) {}
       }

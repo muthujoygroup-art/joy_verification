@@ -384,20 +384,21 @@ export const EmployeePortalView = () => {
   }
 
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate;
-  const company = companies.find(c => c.id === candidate?.companyId) || companies[0] || {};
+  const candidateCompanyId = candidate?.companyId || candidate?.company_id;
+  const company = companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName) || companies[0] || {};
   const companyFeatures = company.features || {};
 
   // Dynamically resolve verification requirement based on Company features and Candidate config
-  // Aadhaar is active by default; SMS, Email, Face, PAN, Bank are disabled/paused unless enabled by Company Admin
-  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar ?? verificationConfig.requireAadhaar ?? true);
-  const isMobileReq = (companyFeatures.mobileOtp === true) && (verificationConfig.mobileOtp ?? verificationConfig.requireMobileOtp ?? false);
-  const isEmailReq = (companyFeatures.emailGateway === true);
-  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) && (verificationConfig.faceCapture ?? verificationConfig.requireFaceMatch ?? false);
-  const isPanReq = (companyFeatures.pan === true) && (verificationConfig.pan ?? verificationConfig.requirePAN ?? false);
-  const isBankReq = (companyFeatures.bankCheck === true) && (verificationConfig.bankCheck ?? verificationConfig.requireBankCheck ?? false);
-  const isDlReq = (companyFeatures.drivingLicense === true) && (verificationConfig.drivingLicense ?? verificationConfig.requireDL ?? false);
-  const isPassportReq = (companyFeatures.passport === true) && (verificationConfig.passport ?? false);
-  const isUanReq = (companyFeatures.uan === true) && (verificationConfig.uan ?? false);
+  // Enabling from Company side immediately activates the check for the employee link
+  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
+  const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
+  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
+  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
+  const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
+  const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
+  const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);
+  const isPassportReq = (companyFeatures.passport === true) || (verificationConfig.passport === true);
+  const isUanReq = (companyFeatures.uan === true) || (verificationConfig.uan === true);
 
   const requiredStepKeys = [
     isAadhaarReq && 'aadhaar',
