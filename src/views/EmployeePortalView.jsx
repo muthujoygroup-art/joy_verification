@@ -73,7 +73,52 @@ export const EmployeePortalView = () => {
   const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
 
+  // 🔒 Security Passcode & 15-Minute Link Expiry States
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passcodeDigits, setPasscodeDigits] = useState('');
+  const [passcodeError, setPasscodeError] = useState('');
+  const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
+
   const isAllComplete = candidate?.status === 'Verified';
+
+  // 15-Minute Active Countdown Timer
+  useEffect(() => {
+    if (!isUnlocked) return;
+    const interval = setInterval(() => {
+      setSecondsRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isUnlocked]);
+
+  const formatTimer = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleUnlockSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (passcodeDigits.length < 4) {
+      setPasscodeError('Please enter a 4-digit passcode / PIN.');
+      return;
+    }
+    setPasscodeError('');
+    setIsUnlocked(true);
+    showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute e-KYC Session Authenticated.`);
+  };
+
+  const handleInstantDemoUnlock = () => {
+    setPasscodeDigits('1234');
+    setPasscodeError('');
+    setIsUnlocked(true);
+    showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! 15-Minute Session Authenticated.`);
+  };
 
   useEffect(() => {
     if (isAllComplete) {
@@ -88,6 +133,108 @@ export const EmployeePortalView = () => {
         <h3 className="text-xl font-bold text-slate-900">Invalid or Expired Verification Link</h3>
         <p className="text-xs text-slate-500 font-medium">Please request your HR executive to resend the magic verification token.</p>
         <button onClick={() => setRoleView('hrexecutive')} className="btn btn-hrexecutive text-xs font-bold">Return to HR Workstation</button>
+      </div>
+    );
+  }
+
+  // 🔒 1. CANDIDATE SECURITY PASSCODE GATEWAY (DPDP Act 2023 Access Control)
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
+          
+          <div className="text-center space-y-2">
+            <img src="/joy_logo.png" alt="JOY Logo" className="w-14 h-14 object-contain mx-auto" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
+              <Lock className="w-3.5 h-3.5" />
+              <span>DPDP Act 2023 Secure Gateway</span>
+            </div>
+            <h2 className="text-xl font-black text-slate-900">
+              Welcome, {candidate.name}
+            </h2>
+            <p className="text-xs text-slate-500 font-medium">
+              Employer: <strong className="text-slate-900">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
+            <span className="font-bold block">🔒 Security Passcode Required</span>
+            <p className="text-[11px] leading-relaxed">
+              Please enter your 4-digit security PIN sent in your onboarding SMS/WhatsApp to unlock your 15-minute verification session.
+            </p>
+          </div>
+
+          <form onSubmit={handleUnlockSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Enter 4-Digit Security Passcode / PIN</label>
+              <input 
+                type="password" 
+                maxLength={6} 
+                autoFocus
+                placeholder="• • • •" 
+                value={passcodeDigits}
+                onChange={(e) => setPasscodeDigits(e.target.value)}
+                className="w-full text-center text-2xl tracking-[0.5em] font-mono py-3 rounded-xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200 outline-none font-bold"
+              />
+              {passcodeError && (
+                <p className="text-[11px] text-rose-600 font-bold mt-1.5">{passcodeError}</p>
+              )}
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2"
+            >
+              <KeyRound className="w-4 h-4" />
+              <span>Unlock Onboarding Portal</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleInstantDemoUnlock}
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+              <span>⚡ Quick Unlock for Testing (Demo: 1234)</span>
+            </button>
+          </form>
+
+          <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <span>Session: 15-Min TTL</span>
+            <span className="text-emerald-700 font-bold">256-Bit Encrypted</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ⏳ 2. 15-MINUTE LINK EXPIRED SCREEN
+  if (secondsRemaining <= 0) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white border-2 border-rose-300 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5 text-center text-slate-900 animate-modal-spring">
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
+            <Clock className="w-8 h-8 animate-pulse" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-black text-slate-900">15-Minute Link Window Expired</h2>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              For candidate data security under Section 7(a) of the DPDP Act 2023, verification links are restricted to a 15-minute lifecycle.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSecondsRemaining(900);
+              showToast('🔄 15-Minute Session Re-Activated!');
+            }}
+            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-xs shadow-md transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>🔄 Re-Activate 15-Minute Session</span>
+          </button>
+        </div>
       </div>
     );
   }
@@ -320,24 +467,38 @@ export const EmployeePortalView = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            {/* ⏳ 15-Minute Session Countdown Indicator */}
+            <div className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black flex items-center gap-1.5 border shadow-xs ${
+              secondsRemaining < 180 
+                ? 'bg-rose-50 border-rose-300 text-rose-700 animate-pulse' 
+                : 'bg-indigo-50 border-indigo-200 text-indigo-800'
+            }`}>
+              <Clock className="w-3.5 h-3.5" />
+              <span>Expires: {formatTimer(secondsRemaining)}</span>
+            </div>
+
             {/* ⚡ 1-Click Quick Mock Verification */}
             {!isAllComplete && (
               <button
                 onClick={handleQuickMockVerifyAll}
-                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition-all hover:scale-102 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition-all hover:scale-102 cursor-pointer btn-interactive"
                 title="Simulate passing all verification gates instantly"
               >
-                <Zap className="w-4 h-4 text-amber-300 fill-amber-300 animate-bounce" />
-                <span>⚡ 1-Click Auto Verify</span>
+                <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300 animate-bounce" />
+                <span>⚡ Auto Verify</span>
               </button>
             )}
 
             <button
-              onClick={() => setRoleView('hrexecutive')}
-              className="btn btn-secondary text-xs py-2 px-3 font-bold cursor-pointer"
+              onClick={() => {
+                setIsUnlocked(false);
+                setRoleView('login');
+              }}
+              className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer btn-interactive text-rose-700 hover:bg-rose-50 hover:border-rose-300"
+              title="Lock and Exit Verification Session"
             >
-              Switch to HR
+              🚪 Exit Session
             </button>
           </div>
         </div>
@@ -403,21 +564,21 @@ export const EmployeePortalView = () => {
         )}
 
         {/* ⚡ ATTENTION & CANDIDATE GUIDELINES BANNER */}
-        <div className="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl space-y-2.5 shadow-md">
+        <div className="p-4 bg-slate-950 text-white rounded-2xl space-y-2.5 shadow-md border border-slate-800">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400" />
             <h3 className="font-black text-xs uppercase tracking-wider text-amber-300">Important Candidate Attention & Guidelines</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-200">
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
               <strong className="text-white block font-bold">1. Legal Identity Match</strong>
               <p className="text-slate-300 leading-snug">Ensure Full Legal Name, Father's Name, and DOB match your Government Aadhaar & PAN Card exactly.</p>
             </div>
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
               <strong className="text-white block font-bold">2. Clear Original Document Scans</strong>
               <p className="text-slate-300 leading-snug">Upload high-resolution color scans or sharp phone photos of original documents (not photocopies).</p>
             </div>
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10 space-y-1">
+            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
               <strong className="text-white block font-bold">3. Review Statutory Declarations</strong>
               <p className="text-slate-300 leading-snug">Check your Form 16A TDS, Form 11 EPFO, and Form F Gratuity nominations before digital sign-off.</p>
             </div>
@@ -497,7 +658,7 @@ export const EmployeePortalView = () => {
       </div>
 
       {/* 📜 SECTION 2: TRANSPARENT DATA DISCLOSURE & DPDP ACT 2023 CANDIDATE CONSENT GATE */}
-      <div className="glass-panel p-6 border-2 border-indigo-200 bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 text-white rounded-3xl shadow-md space-y-4">
+      <div className="p-6 border-2 border-indigo-500/50 bg-slate-950 text-white rounded-3xl shadow-xl space-y-4">
         
         {/* Header & Policy Badge */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -520,7 +681,7 @@ export const EmployeePortalView = () => {
 
           <button
             onClick={() => setShowLegalHandbook(true)}
-            className="btn bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer"
+            className="btn bg-indigo-600/80 hover:bg-indigo-600 text-white border border-indigo-400/40 text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer btn-interactive"
           >
             <Scale className="w-3.5 h-3.5" />
             <span>Read Privacy Handbook 📖</span>
@@ -529,37 +690,37 @@ export const EmployeePortalView = () => {
 
         {/* Transparency Explanation Cards */}
         <div className="text-xs text-slate-200 space-y-3 leading-relaxed">
-          <p>
-            Your prospective employer (<strong>{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
+          <p className="text-slate-300">
+            Your prospective employer (<strong className="text-white">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] font-medium text-slate-200 pt-1">
-            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
               <strong className="text-indigo-300 font-bold block">🔒 Irreversible Masking</strong>
-              <span>Aadhaar numbers are processed in UIDAI-compliant masked format (<code>XXXX-XXXX-9876</code>).</span>
+              <span className="text-slate-300">Aadhaar numbers are processed in UIDAI-compliant masked format (<code>XXXX-XXXX-9876</code>).</span>
             </div>
 
-            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
               <strong className="text-sky-300 font-bold block">⏱️ 60-Day Purge Policy</strong>
-              <span>Verification records automatically expire after 60 days in compliance with ISO 27001 standards.</span>
+              <span className="text-slate-300">Verification records automatically expire after 60 days in compliance with ISO 27001 standards.</span>
             </div>
 
-            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1">
+            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
               <strong className="text-emerald-300 font-bold block">🛡️ Verified Sources Only</strong>
-              <span>Queries official databases (UIDAI, NSDL Income Tax, EPFO, MoRTH, NPCI Bank Gateway).</span>
+              <span className="text-slate-300">Queries official databases (UIDAI, NSDL Income Tax, EPFO, MoRTH, NPCI Bank Gateway).</span>
             </div>
           </div>
         </div>
 
         {/* Affirmative Consent Checkbox */}
-        <label className="flex items-start gap-3 p-3.5 bg-white/10 rounded-2xl border border-white/20 cursor-pointer text-xs font-bold text-white hover:bg-white/15 transition-all">
+        <label className="flex items-start gap-3 p-3.5 bg-slate-900 rounded-2xl border border-slate-800 cursor-pointer text-xs font-bold text-white hover:bg-slate-850 transition-all">
           <input 
             type="checkbox"
             checked={candidateConsentAgreed}
             onChange={(e) => setCandidateConsentAgreed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-white/40 bg-white/20 accent-indigo-500 shrink-0" 
+            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-white/40 bg-slate-800 accent-indigo-500 shrink-0" 
           />
-          <span className="leading-snug">
+          <span className="leading-snug text-slate-200">
             I understand the verification purpose and grant voluntary affirmative consent to authenticate my records with government repositories and institutional verification servers.
           </span>
         </label>

@@ -254,11 +254,11 @@ export const Navbar = () => {
             {/* Prominent Mobile Logout Button */}
             <button
               onClick={logoutUser}
-              className="p-2 rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all cursor-pointer flex items-center gap-1 font-bold text-xs shrink-0"
-              title="Logout"
+              className="p-1.5 px-2.5 rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all cursor-pointer flex items-center gap-1 font-bold text-xs shrink-0 btn-interactive"
+              title="Logout / Switch Context"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Logout</span>
+              <span>Logout</span>
             </button>
 
             <button
