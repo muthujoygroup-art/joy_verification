@@ -359,7 +359,7 @@ export const AiFaceMatchModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="glass-panel w-full max-w-3xl max-h-[94vh] overflow-y-auto p-4 sm:p-7 space-y-4 sm:space-y-5 border-2 border-indigo-500/40 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto relative">
+      <div className="glass-panel w-full max-w-3xl max-h-[94vh] overflow-y-auto p-4 sm:p-7 space-y-4 sm:space-y-5 border-2 border-indigo-500/40 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto relative animate-modal-spring">
         
         {/* Top Gradient Ribbon */}
         <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${isPassed ? 'from-indigo-600 via-sky-500 to-emerald-500' : 'from-rose-600 via-amber-500 to-rose-600'}`} />
@@ -384,7 +384,7 @@ export const AiFaceMatchModal = ({
           </div>
           <button 
             onClick={onClose} 
-            className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 rounded-lg hover:bg-slate-100 cursor-pointer btn-interactive"
           >
             ✕
           </button>
@@ -410,23 +410,21 @@ export const AiFaceMatchModal = ({
             <div className="w-full max-w-md mx-auto h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
               <div 
                 style={{ width: `${analysisProgress}%` }}
-                className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-300"
               />
             </div>
             
             <span className="text-xs font-mono text-slate-400">{analysisProgress}% Complete</span>
           </div>
         ) : (
-          /* MATCH RESULT & SIDE-BY-SIDE VISUAL COMPARISON */
-          <div className="space-y-5 animate-fadeIn">
-            
-            {/* SIDE-BY-SIDE FACE COMPARISON BOX */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-5 animate-tab-switch">
+            {/* Real Comparison Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
-              {/* LEFT: Live Captured WebCam Photo */}
-              <div className="p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 space-y-3 relative overflow-hidden">
+              {/* Card 1: Candidate Live Captured Photo */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 shadow-2xs relative">
                 <div className="flex items-center justify-between">
-                  <span className="badge badge-indigo text-[10px] font-black uppercase">1. Current Live Selfie</span>
+                  <span className="badge badge-emerald text-[9px] font-black">Live Capture 📸</span>
                   <span className="text-[10px] text-emerald-800 font-extrabold flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                     <span>Liveness: {livenessIndex}%</span>
@@ -442,6 +440,9 @@ export const AiFaceMatchModal = ({
                         className="w-full h-full object-cover"
                       />
                       
+                      {/* Interactive Biometric Radar Scan Beam */}
+                      <div className="biometric-radar-scan" />
+
                       {showMeshOverlay && isPassed && (
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                           <div className="w-36 h-48 border rounded-[45%] relative border-emerald-400/60">

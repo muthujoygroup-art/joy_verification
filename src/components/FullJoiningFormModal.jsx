@@ -192,7 +192,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
-      <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto">
+      <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -203,7 +203,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
             <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">Exhaustive Employee / Labor Profile Joining Form</h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg p-1 cursor-pointer">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg p-1 cursor-pointer btn-interactive">✕</button>
         </div>
 
         {/* Mandatory OTP Verification Status Bar */}
@@ -224,7 +224,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <button 
                 type="button"
                 onClick={() => setShowAadhaarOtpModal(true)}
-                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer"
+                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive"
               >
                 <KeyRound className="w-3.5 h-3.5" />
                 <span>Verify Aadhaar OTP & Fetch Data *</span>
@@ -241,7 +241,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <button 
                 type="button"
                 onClick={() => setShowMobileOtpModal(true)}
-                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer"
+                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive"
               >
                 <Smartphone className="w-3.5 h-3.5" />
                 <span>Verify Mobile SMS OTP *</span>
@@ -258,7 +258,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <button 
                 type="button"
                 onClick={() => setShowEmailOtpModal(true)}
-                className="btn btn-secondary text-[11px] py-1 px-3 flex items-center gap-1 bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
+                className="btn btn-secondary text-[11px] py-1 px-3 flex items-center gap-1 bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer btn-interactive"
               >
                 <Mail className="w-3.5 h-3.5 text-purple-700" />
                 <span>Verify Email OTP</span>
@@ -272,7 +272,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('personal')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'personal' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -283,7 +283,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('address')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'address' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -294,7 +294,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('govt')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'govt' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -305,7 +305,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('employment')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'employment' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -316,7 +316,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('education')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'education' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -327,7 +327,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('bank')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
               activeSection === 'bank' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -338,7 +338,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('nominee')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
               activeSection === 'nominee' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -349,7 +349,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('documents')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
               activeSection === 'documents' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -360,12 +360,12 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           <button
             type="button"
             onClick={() => setActiveSection('statutory_agreements')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
               activeSection === 'statutory_agreements' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>9. Statutory Forms & Agreements ⚖️</span>
+            <FileText className="w-3.5 h-3.5" />
+            <span>9. Statutory Agmts ⚖️</span>
           </button>
         </div>
 
@@ -374,7 +374,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           
           {/* SECTION 1: PERSONAL & BIO DEMOGRAPHICS */}
           {activeSection === 'personal' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 1: Personal & Bio Demographics</h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -464,7 +464,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 2: CONTACT & ADDRESS INFORMATION */}
           {activeSection === 'address' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 2: Contact & Address Information</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -539,7 +539,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 3: GOVERNMENT IDENTIFIERS */}
           {activeSection === 'govt' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 3: Government Identifiers & Statutory Proofs</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -599,7 +599,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 4: EMPLOYMENT ASSIGNMENT */}
           {activeSection === 'employment' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 4: Employment & Job Assignment</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -680,7 +680,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 5: EDUCATION QUALIFICATIONS */}
           {activeSection === 'education' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 5: Educational & Professional Qualifications</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -733,7 +733,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 6: BANK PAYROLL DETAILS */}
           {activeSection === 'bank' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 6: Bank Account & Salary Payroll Details</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -786,7 +786,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 7: NOMINEE DEPENDENTS */}
           {activeSection === 'nominee' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 7: Nominee & Family Dependents</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -837,7 +837,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 8: UPLOAD REQUIRED ORIGINAL COMPLIANCE DOCUMENTS */}
           {activeSection === 'documents' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
@@ -905,7 +905,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 9: STATUTORY COMPLIANCE FORMS & LEGAL AGREEMENTS */}
           {activeSection === 'statutory_agreements' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-4 animate-tab-switch">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">

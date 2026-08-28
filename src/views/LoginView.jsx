@@ -228,7 +228,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                     setEmailInput('');
                     setPasswordInput('');
                   }}
-                  className={`glass-panel p-5 cursor-pointer transition-all relative overflow-hidden flex flex-col justify-between space-y-4 rounded-2xl ${
+                  className={`glass-panel p-5 cursor-pointer transition-all relative overflow-hidden flex flex-col justify-between space-y-4 rounded-2xl card-interactive btn-interactive ${
                     isSelected 
                       ? `bg-white ${rInfo.borderClass} border-2 shadow-xl scale-[1.02]` 
                       : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
@@ -264,7 +264,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         </div>
 
         {/* Selected Portal Login Card Form & Interactive Options */}
-        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl">
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl animate-tab-switch">
           
           <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: currentDetail.headerGradient }} />
 

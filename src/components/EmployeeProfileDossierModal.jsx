@@ -54,8 +54,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     : 'Type 4: Unskilled & Contractual Labor';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white">
-      <div className="bg-white w-full max-w-4xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
+      <div className="bg-white w-full max-w-4xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none animate-modal-spring">
         
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 print:hidden">

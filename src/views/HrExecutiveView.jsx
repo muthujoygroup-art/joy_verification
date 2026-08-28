@@ -578,7 +578,7 @@ export const HrExecutiveView = () => {
 
       {/* TAB 1: CANDIDATE PIPELINE & MULTI-CHANNEL DISPATCHER */}
       {activeTab === 'pipeline' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 shadow-sm rounded-2xl">
+        <div className="glass-panel p-4 sm:p-6 border-slate-200 bg-white space-y-4 shadow-sm rounded-2xl animate-tab-switch">
           
           {/* ⏳ JCS CERTIFICATE 60-DAY EXPIRY NOTICE BOARD BANNER */}
           {(() => {
@@ -1116,7 +1116,7 @@ export const HrExecutiveView = () => {
 
       {/* TAB 2: CANDIDATE PROFILER & JOINING FORM TEMPLATES */}
       {(activeTab === 'profiler' || showAddForm) && (
-        <div className="glass-panel p-6 border-emerald-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="glass-panel p-4 sm:p-6 border-emerald-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <span className="badge badge-emerald text-[10px] mb-1">Candidate Profiler</span>
@@ -2058,7 +2058,7 @@ export const HrExecutiveView = () => {
 
       {/* TAB 3: HR CONVERSION ANALYTICS */}
       {activeTab === 'analytics' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+        <div className="glass-panel p-4 sm:p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm animate-tab-switch">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-emerald-600" />
@@ -2094,7 +2094,7 @@ export const HrExecutiveView = () => {
 
       {/* TAB: HR EXECUTIVE WORKSTATION SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+        <div className="glass-panel p-4 sm:p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
             <div>
               <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">

@@ -339,7 +339,7 @@ export const CompanyAdminView = () => {
 
       {/* TAB: MASTER EMPLOYEE REGISTRY */}
       {activeTab === 'registry' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4">
+        <div className="glass-panel p-4 sm:p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm animate-tab-switch">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -348,10 +348,9 @@ export const CompanyAdminView = () => {
               </h3>
               <p className="text-xs text-slate-500 font-medium">Search, inspect, and download audit documents for all candidate records</p>
             </div>
-
             <div className="relative w-full sm:w-64">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              <input 
+              <input
                 type="text"
                 placeholder="Search candidate name, ID..."
                 value={searchQuery}
@@ -369,13 +368,111 @@ export const CompanyAdminView = () => {
             </div>
             <button 
               onClick={() => setShowTermsModal(true)} 
-              className="text-amber-900 font-bold hover:underline shrink-0 text-[11px] flex items-center gap-1 self-start sm:self-auto"
+              className="text-amber-900 font-bold hover:underline shrink-0 text-[11px] flex items-center gap-1 self-start sm:self-auto cursor-pointer"
             >
               <span>Legal Disclosures & Terms 📄</span>
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* 📱 ADAPTIVE MOBILE CANDIDATE CARDS (< 640px) */}
+          <div className="block sm:hidden space-y-3.5">
+            {filteredCandidates.map(cand => {
+              const lc = getCertificateLifecycle(cand);
+              return (
+                <div key={cand.id} className="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-teal-500" />
+                  
+                  <div className="flex items-start justify-between gap-2.5 pt-1">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center font-black text-sm border border-sky-200 shrink-0">
+                        {cand.name?.charAt(0) || 'C'}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-black text-slate-900 text-sm truncate">{cand.name}</h4>
+                        <p className="text-[11px] text-slate-500 font-medium truncate">
+                          {cand.designation || 'Specialist'} • #{cand.empId || 'EMP-2026'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className={`badge font-black text-[10px] shrink-0 ${
+                      cand.status === 'Verified' ? 'badge-emerald' : cand.status === 'In Verification' ? 'badge-cyan' : 'badge-amber'
+                    }`}>
+                      {cand.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-500 uppercase block">Department</span>
+                      <span className="font-bold text-slate-900 text-[11px] truncate block">{cand.dept || 'Engineering'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-500 uppercase block">Email Address</span>
+                      <span className="font-mono text-slate-700 text-[11px] truncate block">{cand.email}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Verification Checks</span>
+                    <div className="flex flex-wrap gap-1 text-[10px]">
+                      <span className={`px-2 py-0.5 rounded-md border font-bold ${cand.verificationsCompleted?.aadhaar ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                        Aadhaar {cand.verificationsCompleted?.aadhaar ? '✓' : '⌛'}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-md border font-bold ${cand.verificationsCompleted?.mobile ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                        Mobile {cand.verificationsCompleted?.mobile ? '✓' : '⌛'}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-md border font-bold ${cand.verificationsCompleted?.face ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                        Face {cand.verificationsCompleted?.face ? '✓' : '⌛'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {lc.isVerified && (
+                    <div className="p-2 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">
+                      <div className="flex justify-between text-[10px] font-bold">
+                        <span className="text-slate-500">60-Day Validity:</span>
+                        <span className={lc.badgeColor}>{lc.badgeLabel}</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          style={{ width: `${lc.progressPercent}%` }} 
+                          className={`h-full rounded-full ${lc.isExpired || lc.status === 'critical' ? 'bg-rose-500' : lc.isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-3 gap-2 pt-1 text-xs font-bold">
+                    <button 
+                      onClick={() => setViewingBgvReportCandidate(cand)}
+                      className="p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                      <span className="truncate">360° Dossier</span>
+                    </button>
+                    <button 
+                      onClick={() => setInspectCandidate(cand)}
+                      className="p-2 rounded-xl bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                      <span className="truncate">Inspect</span>
+                    </button>
+                    <button 
+                      onClick={() => setDownloadingCandidate(cand)}
+                      className="p-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center shadow-xs"
+                    >
+                      <Download className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Docs</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 🖥️ WIDESCREEN DESKTOP TABLE (>= 640px) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold">
@@ -455,7 +552,7 @@ export const CompanyAdminView = () => {
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
                           <button 
                             onClick={() => setViewingBgvReportCandidate(cand)}
-                            className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100"
+                            className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 btn-interactive"
                             title="View 10+ Multi-API Background Verification Dossier"
                           >
                             <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
@@ -463,14 +560,14 @@ export const CompanyAdminView = () => {
                           </button>
                           <button 
                             onClick={() => setInspectCandidate(cand)}
-                            className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold"
+                            className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold btn-interactive"
                           >
                             <Eye className="w-3.5 h-3.5 text-sky-600" />
                             <span>Inspect</span>
                           </button>
                           <button 
                             onClick={() => setDownloadingCandidate(cand)}
-                            className="btn btn-company text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold"
+                            className="btn btn-company text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold btn-interactive"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Docs</span>
