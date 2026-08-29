@@ -23,15 +23,17 @@ import {
   Sparkles,
   Layers,
   HeartPulse,
-  Scale
+  Scale,
+  Loader2
 } from 'lucide-react';
 import { api } from '../services/api';
+import { exportElementToPdf } from '../services/pdfExporter';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState(1); // 1: Bio, 2: Role, 3: Edu & Exp, 4: Statutory & Health, 5: Attached Exhibits, 6: Complete All-in-One
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
-  const [selectedDocForPreview, setSelectedDocForPreview] = useState(null);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   if (!candidate) return null;
 
@@ -111,20 +113,32 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   ];
 
   const handleDownloadPdf = async () => {
-    const filename = `Employee_Master_Profile_Dossier_${c.name?.replace(/\s+/g, '_')}.pdf`;
+    setIsExporting(true);
+    const filename = `Employee_Master_Profile_Dossier_${(c.name || 'Employee').replace(/\s+/g, '_')}.pdf`;
+    
     try {
-      await api.downloadDocument(api.exportLaborProfileDossierUrl(c.token || c.id), filename);
-      setDownloadSuccess('Complete Master Dossier PDF downloaded successfully!');
-      setTimeout(() => setDownloadSuccess(null), 4000);
-    } catch (e) {
-      console.warn("Direct blob download failed, falling back to print-to-PDF...", e);
+      // 1. Temporarily activate complete view to ensure all pages and exhibits are captured
       setActiveTab(6);
-      setTimeout(() => window.print(), 300);
+      await new Promise(r => setTimeout(r, 200));
+
+      const el = document.getElementById('printable-employee-master-dossier');
+      if (el) {
+        await exportElementToPdf(el, filename);
+        setDownloadSuccess('Complete Master Dossier PDF downloaded successfully!');
+        setTimeout(() => setDownloadSuccess(null), 4000);
+      } else {
+        // Fallback to backend streaming endpoint
+        await api.downloadDocument(api.exportLaborProfileDossierUrl(c.token || c.id), filename);
+      }
+    } catch (e) {
+      console.warn("Client PDF compilation fallback to print:", e);
+      window.print();
+    } finally {
+      setIsExporting(false);
     }
   };
 
   const handlePrint = () => {
-    // Set to all-in-one view before triggering print
     setActiveTab(6);
     setTimeout(() => {
       window.print();
@@ -155,10 +169,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
             <button 
               type="button" 
               onClick={handleDownloadPdf} 
-              className="btn btn-hrexecutive text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer print:hidden"
+              disabled={isExporting}
+              className="btn btn-hrexecutive text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer print:hidden disabled:opacity-75"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Master Dossier PDF</span>
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              <span>{isExporting ? "Compiling Master PDF..." : "Download Master Dossier PDF"}</span>
             </button>
             <button 
               type="button" 
@@ -219,19 +234,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           </div>
         )}
 
-        {/* PRINTABLE MASTER DOSSIER CONTAINER */}
-        <div className="space-y-8 text-slate-900 print:space-y-6">
+        {/* ========================================================================= */}
+        {/* PRINTABLE MASTER DOSSIER ROOT CONTAINER */}
+        {/* ========================================================================= */}
+        <div id="printable-employee-master-dossier" className="space-y-8 text-slate-900 bg-white p-2 sm:p-4">
           
-          {/* ========================================================================= */}
-          {/* SECTION A: MAIN EMPLOYEE DOSSIER (Pages 1 to 4) */}
-          {/* ========================================================================= */}
-          {(activeTab === 1 || activeTab === 6 || typeof window !== 'undefined' && window.matchMedia('print').matches) && (
-            <div className="space-y-5 print:break-after-page">
+          {/* SECTION 1: BIO & DEMOGRAPHICS */}
+          {(activeTab === 1 || activeTab === 6 || isExporting) && (
+            <div className="space-y-5 pdf-avoid-break">
               
-              {/* Header Banner */}
+              {/* Master Corporate Header */}
               <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-sky-700 text-white flex items-center justify-center font-black text-xl shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-sky-800 text-white flex items-center justify-center font-black text-xl shadow-sm">
                     JOY
                   </div>
                   <div>
@@ -271,7 +286,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
               {/* Section 1: Demographics & Personal Attributes (17 Fields) */}
               <div className="space-y-2">
-                <div className="bg-sky-700 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+                <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
                     <span>SECTION 1: PERSONAL & STATUTORY DEMOGRAPHIC PARTICULARS</span>
@@ -279,25 +294,25 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <span className="text-[10px] font-mono">17 Core Attributes</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                  <div><span className="text-slate-400 block text-[10.5px]">Full Legal Name:</span><strong className="text-slate-900 font-black">{c.name}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Employee Code / ID:</span><strong className="font-mono text-sky-800">{c.employeeNumber || c.empId || 'JOY-2026-001'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Date of Joining (DOJ):</span><strong>{doj}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Date of Birth (DOB):</span><strong>{dob} (Age: {age})</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Father's Full Name:</span><strong>{fatherName}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Mother's Full Name:</span><strong>{c.motherName || jf.motherName || 'Kavitha Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Spouse Name:</span><strong>{c.spouseName || jf.spouseName || 'Sunita Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Gender / Blood Group:</span><strong>{c.gender || 'Male'} • {bloodGroup}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Mother Tongue:</span><strong>{motherTongue}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Languages Known:</span><strong>{languagesKnown}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Religion / Caste / Cat:</span><strong>{religion} • {caste} ({category})</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Native State & District:</span><strong>{nativeState}, {nativeDistrict}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Identification Marks:</span><strong className="text-slate-800">{identificationMarks}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Official Mobile:</span><strong className="font-mono">{c.mobile}</strong></div>
-                  <div><span className="text-slate-400 block text-[10.5px]">Official Email:</span><strong>{c.email}</strong></div>
-                  <div className="sm:col-span-3"><span className="text-slate-400 block text-[10.5px]">Residential Address:</span><strong>{jf.presentAddress || `${jf.area || '#42 Koramangala'}, ${jf.city || 'Bengaluru'}, ${jf.state || 'Karnataka'} - ${jf.pincode || '560103'}`}</strong></div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+                  <div><span className="text-slate-400 block text-[10px]">Full Legal Name:</span><strong className="text-slate-900 font-black">{c.name}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Employee Code / ID:</span><strong className="font-mono text-sky-800">{c.employeeNumber || c.empId || 'JOY-2026-001'}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Date of Joining (DOJ):</span><strong>{doj}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Date of Birth (DOB):</span><strong>{dob} (Age: {age})</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Father's Full Name:</span><strong>{fatherName}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Mother's Full Name:</span><strong>{c.motherName || jf.motherName || 'Kavitha Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Spouse Name:</span><strong>{c.spouseName || jf.spouseName || 'Sunita Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Gender / Blood Group:</span><strong>{c.gender || 'Male'} • {bloodGroup}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Mother Tongue:</span><strong>{motherTongue}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Languages Known:</span><strong>{languagesKnown}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Religion / Caste / Cat:</span><strong>{religion} • {caste} ({category})</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Native State & District:</span><strong>{nativeState}, {nativeDistrict}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Identification Marks:</span><strong className="text-slate-800">{identificationMarks}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Official Mobile:</span><strong className="font-mono">{c.mobile}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Official Email:</span><strong>{c.email}</strong></div>
+                  <div className="sm:col-span-3"><span className="text-slate-400 block text-[10px]">Residential Address:</span><strong>{jf.presentAddress || `${jf.area || '#42 Koramangala'}, ${jf.city || 'Bengaluru'}, ${jf.state || 'Karnataka'} - ${jf.pincode || '560103'}`}</strong></div>
                 </div>
               </div>
 
@@ -305,29 +320,29 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           )}
 
           {/* SECTION 2: APPOINTMENT & ROLE MATRIX */}
-          {(activeTab === 2 || activeTab === 6 || typeof window !== 'undefined' && window.matchMedia('print').matches) && (
-            <div className="space-y-4 print:break-after-page">
-              <div className="bg-sky-700 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+          {(activeTab === 2 || activeTab === 6 || isExporting) && (
+            <div className="space-y-4 pdf-avoid-break">
+              <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Briefcase className="w-4 h-4" />
                   <span>SECTION 2: APPOINTMENT, ROLE & INDUSTRY SPECIALIZATION MATRIX</span>
                 </div>
-                <span className="text-[10px] bg-sky-900 px-2 py-0.5 rounded font-mono">Role Architecture</span>
+                <span className="text-[10px] bg-sky-950 px-2 py-0.5 rounded font-mono">Role Architecture</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div><span className="text-slate-400 block text-[10.5px]">Designation:</span><strong className="text-slate-900 font-extrabold">{c.designation || 'Senior Verification Engineer'}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Department:</span><strong className="text-slate-900">{c.dept || 'Engineering'}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Employment Type:</span><strong>{c.jobType || 'Full Time Permanent'}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Work Location:</span><strong>{c.workLocation || 'Bengaluru Global Tech Hub (HQ)'}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Previous Employer:</span><strong>{c.previousEmployer || 'Infosys Limited'}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Total Experience:</span><strong>{c.experienceYears || '4.5'} Years</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Probation Period:</span><strong>6 Months</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Notice Period:</span><strong>60 Days</strong></div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <div><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900 font-extrabold">{c.designation || 'Senior Verification Engineer'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900">{c.dept || 'Engineering'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Employment Type:</span><strong>{c.jobType || 'Full Time Permanent'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Work Location:</span><strong>{c.workLocation || 'Bengaluru Global Tech Hub (HQ)'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Previous Employer:</span><strong>{c.previousEmployer || 'Infosys Limited'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Total Experience:</span><strong>{c.experienceYears || '4.5'} Years</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Probation Period:</span><strong>6 Months</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Notice Period:</span><strong>60 Days</strong></div>
               </div>
 
               {/* Industry Specialization Parameters */}
-              <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-lg space-y-1.5 text-xs">
+              <div className="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-lg space-y-1.5 text-xs">
                 <span className="font-extrabold text-indigo-950 text-[11px] block">Sector-Specific Parameters ({employeeTypeLabel}):</span>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   <div><span className="text-slate-500 text-[10px] block">Tech Stack / Tools:</span><strong className="text-indigo-900 font-mono">{spec.techStack || 'React, Node, Python, AWS'}</strong></div>
@@ -335,16 +350,16 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <div><span className="text-slate-500 text-[10px] block">Anti-Moonlighting:</span><strong className="text-emerald-800">Executed & Consented ✓</strong></div>
                   <div><span className="text-slate-500 text-[10px] block">Shift Availability:</span><strong>General Day Rotation</strong></div>
                   <div><span className="text-slate-500 text-[10px] block">CIBIL Standing:</span><strong className="text-emerald-700 font-mono">785 (Excellent)</strong></div>
-                  <div><span className="text-slate-500 text-[10px] block">Corporate Fidelity:</span><strong>₹15,000,000 Bond</strong></div>
+                  <div><span className="text-slate-500 text-[10px] block">Corporate Fidelity:</span><strong>Rs. 1,50,00,000 Bond</strong></div>
                 </div>
               </div>
             </div>
           )}
 
           {/* SECTION 3: EDU & EXPERIENCE TABLES */}
-          {(activeTab === 3 || activeTab === 6 || typeof window !== 'undefined' && window.matchMedia('print').matches) && (
-            <div className="space-y-4 print:break-after-page">
-              <div className="bg-sky-700 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+          {(activeTab === 3 || activeTab === 6 || isExporting) && (
+            <div className="space-y-4 pdf-avoid-break">
+              <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4" />
                   <span>SECTION 3: ACADEMIC CREDENTIALS & PREVIOUS EMPLOYMENT HISTORY</span>
@@ -357,34 +372,34 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <table className="w-full text-left">
                   <thead className="bg-sky-950 text-white font-bold text-[11px]">
                     <tr>
-                      <th className="p-2">Qualification</th>
-                      <th className="p-2">College / Institution</th>
-                      <th className="p-2">University / Board</th>
-                      <th className="p-2">Year</th>
-                      <th className="p-2 text-right">Percentage / CGPA</th>
+                      <th className="p-2.5">Qualification</th>
+                      <th className="p-2.5">College / Institution</th>
+                      <th className="p-2.5">University / Board</th>
+                      <th className="p-2.5">Year</th>
+                      <th className="p-2.5 text-right">Percentage / CGPA</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2 font-bold text-slate-900">Under Graduate (UG)</td>
-                      <td className="p-2 text-slate-700">BMS College of Engineering</td>
-                      <td className="p-2 text-slate-600">VTU Technological University</td>
-                      <td className="p-2 font-mono">2020</td>
-                      <td className="p-2 text-right font-bold text-emerald-800">84.5% (Distinction)</td>
+                      <td className="p-2.5 font-bold text-slate-900">Under Graduate (UG)</td>
+                      <td className="p-2.5 text-slate-700">BMS College of Engineering</td>
+                      <td className="p-2.5 text-slate-600">VTU Technological University</td>
+                      <td className="p-2.5 font-mono">2020</td>
+                      <td className="p-2.5 text-right font-bold text-emerald-800">84.5% (Distinction)</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2 font-bold text-slate-900">Higher Secondary (12th / HSC)</td>
-                      <td className="p-2 text-slate-700">National Public School</td>
-                      <td className="p-2 text-slate-600">CBSE Board</td>
-                      <td className="p-2 font-mono">2016</td>
-                      <td className="p-2 text-right font-bold text-emerald-800">88.2%</td>
+                      <td className="p-2.5 font-bold text-slate-900">Higher Secondary (12th / HSC)</td>
+                      <td className="p-2.5 text-slate-700">National Public School</td>
+                      <td className="p-2.5 text-slate-600">CBSE Board</td>
+                      <td className="p-2.5 font-mono">2016</td>
+                      <td className="p-2.5 text-right font-bold text-emerald-800">88.2%</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2 font-bold text-slate-900">Secondary School (10th / SSLC)</td>
-                      <td className="p-2 text-slate-700">St. Joseph High School</td>
-                      <td className="p-2 text-slate-600">State Board</td>
-                      <td className="p-2 font-mono">2014</td>
-                      <td className="p-2 text-right font-bold text-emerald-800">91.0%</td>
+                      <td className="p-2.5 font-bold text-slate-900">Secondary School (10th / SSLC)</td>
+                      <td className="p-2.5 text-slate-700">St. Joseph High School</td>
+                      <td className="p-2.5 text-slate-600">State Board</td>
+                      <td className="p-2.5 font-mono">2014</td>
+                      <td className="p-2.5 text-right font-bold text-emerald-800">91.0%</td>
                     </tr>
                   </tbody>
                 </table>
@@ -395,27 +410,27 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <table className="w-full text-left">
                   <thead className="bg-indigo-950 text-white font-bold text-[11px]">
                     <tr>
-                      <th className="p-2">Company Name</th>
-                      <th className="p-2">Designation</th>
-                      <th className="p-2">Tenure (From - To)</th>
-                      <th className="p-2">Last Drawn CTC</th>
-                      <th className="p-2 text-right">Relieving Status</th>
+                      <th className="p-2.5">Company Name</th>
+                      <th className="p-2.5">Designation</th>
+                      <th className="p-2.5">Tenure (From - To)</th>
+                      <th className="p-2.5">Last Drawn CTC</th>
+                      <th className="p-2.5 text-right">Relieving Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2 font-bold text-slate-900">Infosys Limited</td>
-                      <td className="p-2 text-slate-700">Software Engineer</td>
-                      <td className="p-2 text-slate-600 font-mono text-[11px]">01-Jul-2021 to 30-Nov-2023</td>
-                      <td className="p-2 font-mono">₹6,80,000 PA</td>
-                      <td className="p-2 text-right"><span className="badge badge-emerald text-[9px]">Relieved with Full Notice ✓</span></td>
+                      <td className="p-2.5 font-bold text-slate-900">Infosys Limited</td>
+                      <td className="p-2.5 text-slate-700">Software Engineer</td>
+                      <td className="p-2.5 text-slate-600 font-mono text-[11px]">01-Jul-2021 to 30-Nov-2023</td>
+                      <td className="p-2.5 font-mono">Rs. 6,80,000 PA</td>
+                      <td className="p-2.5 text-right"><span className="badge badge-emerald text-[9px]">Relieved with Full Notice ✓</span></td>
                     </tr>
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2 font-bold text-slate-900">Wipro Enterprises Pvt Ltd</td>
-                      <td className="p-2 text-slate-700">Senior Software Engineer</td>
-                      <td className="p-2 text-slate-600 font-mono text-[11px]">15-Dec-2023 to 31-Jul-2026</td>
-                      <td className="p-2 font-mono">₹11,50,000 PA</td>
-                      <td className="p-2 text-right"><span className="badge badge-emerald text-[9px]">Service Certificate Verified ✓</span></td>
+                      <td className="p-2.5 font-bold text-slate-900">Wipro Enterprises Pvt Ltd</td>
+                      <td className="p-2.5 text-slate-700">Senior Software Engineer</td>
+                      <td className="p-2.5 text-slate-600 font-mono text-[11px]">15-Dec-2023 to 31-Jul-2026</td>
+                      <td className="p-2.5 font-mono">Rs. 11,50,000 PA</td>
+                      <td className="p-2.5 text-right"><span className="badge badge-emerald text-[9px]">Service Certificate Verified ✓</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -424,9 +439,9 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           )}
 
           {/* SECTION 4: STATUTORY ACCOUNTS, HEALTH & LEGAL DECLARATION */}
-          {(activeTab === 4 || activeTab === 6 || typeof window !== 'undefined' && window.matchMedia('print').matches) && (
-            <div className="space-y-4 print:break-after-page">
-              <div className="bg-sky-700 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
+          {(activeTab === 4 || activeTab === 6 || isExporting) && (
+            <div className="space-y-4 pdf-avoid-break">
+              <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CreditCard className="w-4 h-4" />
                   <span>SECTION 4: BANKING, STATUTORY ACCOUNTS & HEALTH DISCLOSURES</span>
@@ -434,19 +449,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <span className="text-[10px] font-mono">Statutory Proofs</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                <div><span className="text-slate-400 block text-[10.5px]">Primary Bank:</span><strong>{bankName}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Account Number:</span><strong className="font-mono text-slate-900 font-black">{accNo}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">IFSC & Branch:</span><strong className="font-mono">{ifsc} ({branch})</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Income Tax PAN:</span><strong className="font-mono text-indigo-900 font-bold">{panNo}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">Aadhaar Identity Ref:</span><strong className="font-mono text-indigo-900 font-bold">{aadhaarNo}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">EPFO UAN Number:</span><strong className="font-mono">{uanNo}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">PF Member ID:</span><strong className="font-mono text-[11px]">{pfNum}</strong></div>
-                <div><span className="text-slate-400 block text-[10.5px]">ESIC Insurance No:</span><strong className="font-mono text-[11px]">{esiNum}</strong></div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <div><span className="text-slate-400 block text-[10px]">Primary Bank:</span><strong>{bankName}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Account Number:</span><strong className="font-mono text-slate-900 font-black">{accNo}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">IFSC & Branch:</span><strong className="font-mono">{ifsc} ({branch})</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Income Tax PAN:</span><strong className="font-mono text-indigo-900 font-bold">{panNo}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Aadhaar Identity Ref:</span><strong className="font-mono text-indigo-900 font-bold">{aadhaarNo}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">EPFO UAN Number:</span><strong className="font-mono">{uanNo}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">PF Member ID:</span><strong className="font-mono text-[11px]">{pfNum}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">ESIC Insurance No:</span><strong className="font-mono text-[11px]">{esiNum}</strong></div>
               </div>
 
               {/* Health & Lifestyle Questionnaire */}
-              <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1.5">
+              <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1.5">
                 <span className="font-black text-emerald-950 text-[11px] block flex items-center gap-1.5">
                   <HeartPulse className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Health, Lifestyle & Integrity Disclosures:</span>
@@ -462,7 +477,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               </div>
 
               {/* Formal Legal Declaration & Signatures */}
-              <div className="p-3.5 bg-slate-900 text-white rounded-xl space-y-3 text-xs">
+              <div className="p-4 bg-slate-900 text-white rounded-xl space-y-3 text-xs">
                 <p className="text-[11px] leading-relaxed text-slate-300">
                   <strong>EMPLOYEE STATUTORY SOLEMN DECLARATION:</strong> I hereby declare that all statements, academic qualifications, previous service records, and attached verification documents in this master onboarding profile are authentic, true, and correct. I authorize <strong>{companyName}</strong> and <strong>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</strong> to verify all particulars against government and institutional repositories.
                 </p>
@@ -488,11 +503,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           {/* ========================================================================= */}
           {/* SECTION B: CONSECUTIVE FULL-PAGE ATTACHED DOCUMENT EXHIBITS (ANNEXURES) */}
           {/* ========================================================================= */}
-          {(activeTab === 5 || activeTab === 6 || typeof window !== 'undefined' && window.matchMedia('print').matches) && (
+          {(activeTab === 5 || activeTab === 6 || isExporting) && (
             <div className="space-y-6">
               
               {/* If in Tab 5 (Interactive Preview), show annexure selector bar */}
-              {activeTab === 5 && (
+              {activeTab === 5 && !isExporting && (
                 <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl space-y-2 print:hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-indigo-950 uppercase tracking-wider">
@@ -522,15 +537,15 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
               )}
 
-              {/* Render either the selected annexure (Tab 5) or ALL annexures consecutively (Tab 6 & Print Mode) */}
-              {(activeTab === 5 ? [attachedExhibits[selectedAnnexureIdx]] : attachedExhibits).map((doc, idx) => {
-                const actualIdx = activeTab === 5 ? selectedAnnexureIdx + 1 : idx + 1;
+              {/* Render either the selected annexure (Tab 5) or ALL annexures consecutively (Tab 6 & Export Mode) */}
+              {(activeTab === 5 && !isExporting ? [attachedExhibits[selectedAnnexureIdx]] : attachedExhibits).map((doc, idx) => {
+                const actualIdx = activeTab === 5 && !isExporting ? selectedAnnexureIdx + 1 : idx + 1;
                 const docHash = `SHA256-VAULT-${(doc.doc_type || 'DOC').toUpperCase().substring(0, 4)}-${actualIdx * 8129 + 1092}`;
 
                 return (
                   <div 
                     key={doc.id || idx}
-                    className="p-6 sm:p-8 bg-white border-2 border-sky-300 rounded-2xl sm:rounded-3xl shadow-sm space-y-4 print:border-none print:shadow-none print:p-0 print:m-0 print:break-before-page"
+                    className="p-6 sm:p-8 bg-white border-2 border-sky-300 rounded-2xl shadow-sm space-y-4 pdf-page-break-before"
                   >
                     {/* Top Annexure Header */}
                     <div className="flex items-start justify-between border-b-2 border-sky-600 pb-3">

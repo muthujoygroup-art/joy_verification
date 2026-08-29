@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
+import { exportElementToPdf } from '../services/pdfExporter';
 import { 
   X, 
   Download, 
@@ -192,13 +193,23 @@ export const ComprehensiveBgvReportModal = ({
     window.print();
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+
   const handleDownloadMasterPdf = async () => {
-    const filename = `JOY_360_BGV_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    setIsExporting(true);
+    const filename = `JOY_360_BGV_Dossier_${(candidate.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
     try {
-      await api.downloadDocument(api.exportBgvDossierPdfUrl(candidate.token || candidate.id), filename);
+      const el = document.getElementById('printable-360-bgv-dossier');
+      if (el) {
+        await exportElementToPdf(el, filename);
+      } else {
+        await api.downloadDocument(api.exportBgvDossierPdfUrl(candidate.token || candidate.id), filename);
+      }
     } catch (e) {
-      console.warn("Backend BGV download failed, opening print view...", e);
+      console.warn("BGV PDF export fallback to print:", e);
       window.print();
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -335,7 +346,7 @@ ISO 27001:2022 Certified • DPDP Act 2023 Compliant Digital Audit Trail
               title="Download Master All-In-One Report"
             >
               <Download className="w-4 h-4 text-white" />
-              <span>Download Master PDF</span>
+              <span>{isExporting ? "Compiling 360° PDF..." : "Download Master PDF"}</span>
             </button>
 
             <button

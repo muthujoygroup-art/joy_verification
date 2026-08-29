@@ -15,6 +15,7 @@ import {
   Clock
 } from 'lucide-react';
 import { api } from '../services/api';
+import { exportElementToPdf } from '../services/pdfExporter';
 
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
   if (!candidate) return null;
@@ -33,13 +34,23 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const panPassed = !!verifs.pan;
   const bankPassed = !!verifs.bank || !!verifs.bankCheck;
 
+  const [isExporting, setIsExporting] = useState(false);
+
   const handleDownloadPdf = async () => {
-    const filename = `JOY_Corporate_Certificate_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    setIsExporting(true);
+    const filename = `JOY_Corporate_Certificate_${(candidate.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
     try {
-      await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
+      const el = document.getElementById('printable-official-certificate');
+      if (el) {
+        await exportElementToPdf(el, filename);
+      } else {
+        await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
+      }
     } catch (e) {
-      console.warn("Backend streaming download failed, opening print dialog...", e);
+      console.warn("Client PDF generation fallback to print:", e);
       window.print();
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -73,14 +84,14 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>Download PDF</span>
+              <span>{isExporting ? "Compiling PDF..." : "Download Official PDF"}</span>
             </button>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg cursor-pointer">✕</button>
           </div>
         </div>
 
         {/* Certificate Decorative Border Container */}
-        <div className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden ${
+        <div id="printable-official-certificate" className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden bg-white ${
           isFullyVerified 
             ? 'border-indigo-600/30 bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30' 
             : 'border-amber-400/50 bg-gradient-to-b from-amber-50/30 via-white to-slate-50/40'
