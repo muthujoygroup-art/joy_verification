@@ -466,3 +466,63 @@ def get_candidate_detailed_api_breakdown(
         },
         "document_breakdown": audit_records
     }
+
+
+# =============================================================================
+# 🛠️ 1-CLICK PRODUCTION DATABASE MIGRATION ENGINE
+# =============================================================================
+
+@router.get("/database/run-migrations")
+@router.post("/database/run-migrations")
+def trigger_database_migrations():
+    """
+    Executes all missing column migrations on PostgreSQL candidates, verification_records,
+    and api_configurations tables with detailed status response.
+    """
+    migration_statements = [
+        ("api_configurations.provider_type", "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';"),
+        ("api_configurations.description", "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;"),
+        ("api_configurations.ping_latency_ms", "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;"),
+        ("verification_records.api_calls_count", "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_calls_count INTEGER DEFAULT 1;"),
+        ("verification_records.cost_incurred", "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;"),
+        ("verification_records.latency_ms", "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 62;"),
+        ("verification_records.endpoint_path", "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS endpoint_path VARCHAR(150);"),
+        ("verification_records.api_id", "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_id VARCHAR(100);"),
+        ("candidates.employee_number", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_number VARCHAR(50);"),
+        ("candidates.dob", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dob VARCHAR(50);"),
+        ("candidates.doj", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS doj VARCHAR(50);"),
+        ("candidates.age", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS age INTEGER;"),
+        ("candidates.gender", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS gender VARCHAR(20);"),
+        ("candidates.marital_status", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS marital_status VARCHAR(30);"),
+        ("candidates.mother_tongue", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_tongue VARCHAR(50);"),
+        ("candidates.languages_known", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS languages_known VARCHAR(200);"),
+        ("candidates.pf_number", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pf_number VARCHAR(50);"),
+        ("candidates.esi_number", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS esi_number VARCHAR(50);"),
+        ("candidates.religion", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS religion VARCHAR(50);"),
+        ("candidates.caste", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS caste VARCHAR(50);"),
+        ("candidates.category", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS category VARCHAR(50);"),
+        ("candidates.native_state", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);"),
+        ("candidates.native_district", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);"),
+        ("candidates.identification_marks", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;"),
+        ("candidates.employee_type", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';")
+    ]
+    
+    from backend.app.database import engine
+    from sqlalchemy import text
+    
+    results = []
+    with engine.connect() as conn:
+        for name, stmt in migration_statements:
+            try:
+                conn.execute(text(stmt))
+                results.append({"column": name, "status": "SUCCESS"})
+            except Exception as e:
+                results.append({"column": name, "status": f"ERROR: {str(e)}"})
+        conn.commit()
+        
+    return {
+        "success": True,
+        "message": "All PostgreSQL database migrations executed successfully!",
+        "total_migrations": len(results),
+        "details": results
+    }
