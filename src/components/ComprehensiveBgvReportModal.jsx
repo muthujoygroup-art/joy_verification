@@ -193,7 +193,7 @@ export const ComprehensiveBgvReportModal = ({
     window.print();
   };
 
-  const [isExporting, setIsExporting] = useState(false);
+
 
   const handleDownloadMasterPdf = async () => {
     setIsExporting(true);

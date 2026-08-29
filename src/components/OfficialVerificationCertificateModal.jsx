@@ -18,6 +18,7 @@ import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
+
   if (!candidate) return null;
 
   const isFullyVerified = candidate.status === 'Verified' || candidate.status === 'VERIFIED';
@@ -34,7 +35,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const panPassed = !!verifs.pan;
   const bankPassed = !!verifs.bank || !!verifs.bankCheck;
 
-  const [isExporting, setIsExporting] = useState(false);
+
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);

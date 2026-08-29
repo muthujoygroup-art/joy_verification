@@ -85,6 +85,20 @@ export const EmployeePortalView = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [passcodeError, setPasscodeError] = useState('');
+  // Auto-unlock if valid p param is present in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlEncodedPin = urlParams.get('p');
+    if (urlEncodedPin) {
+      try {
+        const decoded = decodeURIComponent(atob(urlEncodedPin)).trim();
+        if (decoded) {
+          setPasscodeDigits(decoded);
+          setIsUnlocked(true);
+        }
+      } catch (e) {}
+    }
+  }, []);
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 
   const [activeCompanyFeatures, setActiveCompanyFeatures] = useState(() => {
@@ -156,8 +170,51 @@ export const EmployeePortalView = () => {
   }, [selectedCandidateToken, candidates]);
 
   const candidate = directCandidate || getActiveCandidate();
-  const [isEmailVerified, setIsEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const isAllComplete = candidate?.status === 'Verified';
+
+  const { verificationConfig = {}, verificationsCompleted = {} } = candidate || {};
+  const candidateCompanyId = candidate?.companyId || candidate?.company_id;
+  const company = companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName) || companies[0] || {};
+  const companyFeatures = activeCompanyFeatures || company.features || {};
+
+  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
+  const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
+  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
+  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
+  const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
+  const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
+  const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);
+  const isPassportReq = (companyFeatures.passport === true) || (verificationConfig.passport === true);
+  const isUanReq = (companyFeatures.uan === true) || (verificationConfig.uan === true);
+
+  const requiredStepKeys = [
+    isAadhaarReq && 'aadhaar',
+    isMobileReq && 'mobile',
+    isEmailReq && 'email',
+    isFaceReq && 'face',
+    isPanReq && 'pan',
+    isBankReq && 'bankCheck',
+    isDlReq && 'drivingLicense',
+    isPassportReq && 'passport',
+    isUanReq && 'uan'
+  ].filter(Boolean);
+
+  const totalConfiguredSteps = requiredStepKeys.length || 1;
+  const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
+  const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
+
+  const portalReadiness = useMemo(() => {
+    if (!candidate) return {};
+    const jfd = candidate?.joiningFormData || {};
+    return evaluateVerificationReadiness({
+      ...candidate,
+      ...jfd,
+      name: candidate?.name || jfd.fullName,
+      accountNo: candidate?.bankAccountNo || jfd.accountNo,
+      ifscCode: candidate?.ifscCode || jfd.ifscCode
+    });
+  }, [candidate]);
 
   // 15-Minute Active Countdown Timer
   useEffect(() => {
@@ -404,49 +461,7 @@ export const EmployeePortalView = () => {
     );
   }
 
-  const { verificationConfig = {}, verificationsCompleted = {} } = candidate;
-  const candidateCompanyId = candidate?.companyId || candidate?.company_id;
-  const company = companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName) || companies[0] || {};
-  const companyFeatures = activeCompanyFeatures || company.features || {};
-
-  // Dynamically resolve verification requirement based on Company features and Candidate config
-  // Enabling from Company side immediately activates the check for the employee link
-  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
-  const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
-  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
-  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
-  const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
-  const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
-  const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);
-  const isPassportReq = (companyFeatures.passport === true) || (verificationConfig.passport === true);
-  const isUanReq = (companyFeatures.uan === true) || (verificationConfig.uan === true);
-
-  const requiredStepKeys = [
-    isAadhaarReq && 'aadhaar',
-    isMobileReq && 'mobile',
-    isEmailReq && 'email',
-    isFaceReq && 'face',
-    isPanReq && 'pan',
-    isBankReq && 'bankCheck',
-    isDlReq && 'drivingLicense',
-    isPassportReq && 'passport',
-    isUanReq && 'uan'
-  ].filter(Boolean);
-
-  const totalConfiguredSteps = requiredStepKeys.length || 1;
-  const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
-  const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
-
-  const portalReadiness = useMemo(() => {
-    const jfd = candidate?.joiningFormData || {};
-    return evaluateVerificationReadiness({
-      ...candidate,
-      ...jfd,
-      name: candidate?.name || jfd.fullName,
-      accountNo: candidate?.bankAccountNo || jfd.accountNo,
-      ifscCode: candidate?.ifscCode || jfd.ifscCode
-    });
-  }, [candidate]);
+  // (Verification requirements and portalReadiness computed at top of component for Hook safety)
 
   // ⚡ 1-Click Quick Mock Verification (Simulate Passing All HR-Configured Steps)
   const handleQuickMockVerifyAll = () => {
