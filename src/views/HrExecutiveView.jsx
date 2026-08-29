@@ -64,7 +64,8 @@ import {
   Layers,
   Users,
   CheckSquare,
-  FileCode
+  FileCode,
+  Upload
 } from 'lucide-react';
 
 export const HrExecutiveView = () => {
