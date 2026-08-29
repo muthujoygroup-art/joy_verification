@@ -205,15 +205,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg">
                   <div><span className="text-slate-400 block text-[11px]">Full Legal Name:</span><strong>{c.name}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Employee No / ID:</span><strong className="font-mono text-sky-800">{c.employeeNumber || c.empId || 'EMP-2026-88'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Date of Joining (DOJ):</span><strong>{c.doj || jf.doj || '2026-09-01'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>{c.dob || dob} (Age: {c.age || jf.age || '30'})</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Father's Name:</span><strong>{fatherName}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Mother's Name:</span><strong>{c.motherName || 'Kavitha Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Spouse Name:</span><strong>{c.spouseName || 'Sunita Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Date of Birth (DOB):</span><strong>{dob}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Gender:</span><strong>{c.gender || 'Male'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Mother's Name:</span><strong>{c.motherName || jf.motherName || 'Kavitha Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Spouse Name:</span><strong>{c.spouseName || jf.spouseName || 'Sunita Kumar'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Gender / Blood Group:</span><strong>{c.gender || 'Male'} • {bloodGroup}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Blood Group:</span><strong>{bloodGroup}</strong></div>
-                  <div><span className="text-slate-400 block text-[11px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Mother Tongue:</span><strong>{c.motherTongue || jf.motherTongue || 'Tamil / Kannada'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Languages Known:</span><strong>{c.languagesKnown || 'English, Hindi'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Religion / Caste / Cat:</span><strong>{c.religion || jf.religion || 'Hindu'} • {c.caste || jf.caste || 'General'} ({c.category || jf.category || 'Gen'})</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Native State & District:</span><strong>{c.nativeState || jf.nativeState || 'Karnataka'}, {c.nativeDistrict || jf.nativeDistrict || 'Bengaluru Urban'}</strong></div>
+                  <div><span className="text-slate-400 block text-[11px]">Identification Marks:</span><strong className="text-slate-800 text-[10.5px]">{c.identificationMarks || jf.identificationMarks || 'Mole on right forearm'}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Mobile Phone:</span><strong>{c.mobile}</strong></div>
                   <div><span className="text-slate-400 block text-[11px]">Official Email:</span><strong>{c.email}</strong></div>
                 </div>

@@ -10,16 +10,28 @@ import {
   Building2,
   FileCheck2,
   Lock,
-  Sparkles
+  Sparkles,
+  AlertTriangle,
+  Clock
 } from 'lucide-react';
 import { api } from '../services/api';
 
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
   if (!candidate) return null;
 
-  const certId = `JCS-VERIF-2026-${candidate.id?.replace('emp-', '') || '101'}-889`;
-  const verifDate = candidate.verificationDate || '2026-08-28 10:30 IST';
-  const companyName = candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const isFullyVerified = candidate.status === 'Verified' || candidate.status === 'VERIFIED';
+  const certId = `JCS-VERIF-2026-${candidate.id?.replace('emp-', '') || '101'}-${isFullyVerified ? '889' : 'DRAFT'}`;
+  const verifDate = isFullyVerified 
+    ? (candidate.verificationDate || '2026-08-28 10:30 IST') 
+    : 'Pending Final Verification';
+  const companyName = candidate.companyName || candidate.joiningFormData?.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+
+  const verifs = candidate.verificationsCompleted || {};
+  const aadhaarPassed = !!verifs.aadhaar;
+  const mobilePassed = !!verifs.mobile;
+  const facePassed = !!verifs.face;
+  const panPassed = !!verifs.pan;
+  const bankPassed = !!verifs.bank || !!verifs.bankCheck;
 
   const handleDownloadPdf = () => {
     const downloadUrl = api.exportCertificatePdfUrl(candidate.token || candidate.id);
@@ -42,13 +54,15 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">
           <div className="flex items-center gap-2">
-            <span className="badge badge-purple text-[10px]">Official Compliance Certificate</span>
+            <span className={`badge text-[10px] ${isFullyVerified ? 'badge-purple' : 'badge-amber'}`}>
+              {isFullyVerified ? 'Official Compliance Certificate' : 'Provisional Certificate (Pending Verification)'}
+            </span>
             <span className="text-xs text-slate-500 font-bold">• JOY CORPORATE SOLUTIONS PVT LTD</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
               title="Print Certificate"
             >
               <Printer className="w-4 h-4" />
@@ -56,17 +70,21 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </button>
             <button
               onClick={handleDownloadPdf}
-              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md"
+              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>Download Official PDF</span>
+              <span>Download PDF</span>
             </button>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg">✕</button>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg cursor-pointer">✕</button>
           </div>
         </div>
 
         {/* Certificate Decorative Border Container */}
-        <div className="p-6 sm:p-8 border-2 border-indigo-600/30 rounded-xl bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30 space-y-6 relative overflow-hidden">
+        <div className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden ${
+          isFullyVerified 
+            ? 'border-indigo-600/30 bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30' 
+            : 'border-amber-400/50 bg-gradient-to-b from-amber-50/30 via-white to-slate-50/40'
+        }`}>
           
           {/* Subtle Background Watermark */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
@@ -106,7 +124,11 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           </div>
 
           {/* Certificate Identification Banner */}
-          <div className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 flex flex-wrap items-center justify-between text-xs font-semibold text-indigo-900 gap-2 relative z-10">
+          <div className={`border rounded-xl p-3 flex flex-wrap items-center justify-between text-xs font-semibold gap-2 relative z-10 ${
+            isFullyVerified 
+              ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900' 
+              : 'bg-amber-50/90 border-amber-300 text-amber-950'
+          }`}>
             <div>
               <span className="text-slate-500 font-medium">Certificate Ref: </span>
               <strong className="font-mono text-indigo-700">{certId}</strong>
@@ -115,16 +137,31 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               <span className="text-slate-500 font-medium">Verification Timestamp: </span>
               <strong>{verifDate}</strong>
             </div>
-            <div className="badge badge-emerald flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>VERIFIED & COMPLIANT ✓</span>
+            <div className={`badge flex items-center gap-1 ${isFullyVerified ? 'badge-emerald' : 'badge-amber'}`}>
+              {isFullyVerified ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>VERIFIED & COMPLIANT ✓</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                  <span>PROVISIONAL • PENDING GATES ⌛</span>
+                </>
+              )}
             </div>
           </div>
 
           {/* The Mandated Formal Certification Text */}
-          <div className="text-center py-2.5 px-4 bg-indigo-950 text-white rounded-xl shadow-sm relative z-10">
+          <div className={`text-center py-2.5 px-4 rounded-xl shadow-sm relative z-10 ${
+            isFullyVerified ? 'bg-indigo-950 text-white' : 'bg-slate-900 text-amber-200'
+          }`}>
             <p className="text-xs sm:text-sm font-black tracking-wide leading-relaxed">
-              THIS IS TO CERTIFY THAT THE DOCUMENT NUMBERS AND EMPLOYEE DETAILS SPECIFIED BELOW HAVE BEEN THOROUGHLY VERIFIED AND AUTHENTICATED USING <span className="underline decoration-amber-400">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</span> COMPLIANCE ENGINE.
+              {isFullyVerified ? (
+                <>THIS IS TO CERTIFY THAT THE DOCUMENT NUMBERS AND EMPLOYEE DETAILS SPECIFIED BELOW HAVE BEEN THOROUGHLY VERIFIED AND AUTHENTICATED USING <span className="underline decoration-amber-400">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</span> COMPLIANCE ENGINE.</>
+              ) : (
+                <>⚠️ PROVISIONAL AUDIT NOTICE: THIS RECORD HAS BEEN REGISTERED UNDER <span className="underline decoration-amber-400">JOY CORPORATE SOLUTIONS</span> AND IS CURRENTLY UNDERGOING GOVERNMENT GATEWAY & BIOMETRIC VERIFICATION AUDIT.</>
+              )}
             </p>
           </div>
 
@@ -136,7 +173,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Employee Code / ID</span>
-              <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || 'EMP-2026-88'}</strong>
+              <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || candidate.employeeNumber || 'EMP-2026-88'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Designation</span>
@@ -147,20 +184,24 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               <strong className="text-sky-700 font-bold">{companyName}</strong>
             </div>
             <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Verified Mobile Number</span>
+              <span className="text-[11px] text-slate-400 font-medium block">Mobile Number</span>
               <strong className="text-slate-900 font-bold font-mono">{candidate.mobile}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Aadhaar Identity Ref</span>
-              <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo || '5489 1234 9876'}</strong>
+              <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Token Link Reference</span>
-              <strong className="text-indigo-600 font-mono text-[11px]">{candidate.token}</strong>
+              <strong className="text-indigo-600 font-mono text-[11px] truncate block">{candidate.token}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Biometrics Liveness Score</span>
-              <span className="badge badge-emerald text-[10px]">99.4% Match ✓</span>
+              {facePassed ? (
+                <span className="badge badge-emerald text-[10px]">99.4% Match ✓</span>
+              ) : (
+                <span className="badge badge-amber text-[10px]">Pending Liveness ⌛</span>
+              )}
             </div>
           </div>
 
@@ -178,35 +219,85 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
+                  
+                  {/* Check 1: Aadhaar */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">1. Aadhaar UIDAI Check</td>
                     <td className="p-2 text-slate-600">Govt API SETU DigiLocker Gateway</td>
-                    <td className="p-2 text-slate-500 font-mono text-[11px]">256-Bit SHA Match</td>
-                    <td className="p-2 text-right"><span className="badge badge-emerald text-[10px]">PASSED ✓</span></td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {aadhaarPassed ? '256-Bit SHA Match' : 'Awaiting DigiLocker OTP'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {aadhaarPassed ? (
+                        <span className="badge badge-emerald text-[10px]">PASSED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
                   </tr>
+
+                  {/* Check 2: Mobile */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">2. Mobile OTP Validation</td>
                     <td className="p-2 text-slate-600">Carrier SMS Gateway (Sandbox API)</td>
-                    <td className="p-2 text-slate-500 font-mono text-[11px]">OTP Authenticated</td>
-                    <td className="p-2 text-right"><span className="badge badge-emerald text-[10px]">PASSED ✓</span></td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {mobilePassed ? 'OTP Authenticated' : 'Awaiting SMS OTP Verification'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {mobilePassed ? (
+                        <span className="badge badge-emerald text-[10px]">PASSED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
                   </tr>
+
+                  {/* Check 3: Face Liveness */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">3. AI Face Liveness Match</td>
                     <td className="p-2 text-slate-600">Coincircletrust 3-Pose Engine</td>
-                    <td className="p-2 text-slate-500 font-mono text-[11px]">99.4% Liveness Score</td>
-                    <td className="p-2 text-right"><span className="badge badge-emerald text-[10px]">PASSED ✓</span></td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {facePassed ? '99.4% Liveness Score' : 'Awaiting WebCam Face Scan'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {facePassed ? (
+                        <span className="badge badge-emerald text-[10px]">PASSED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
                   </tr>
+
+                  {/* Check 4: PAN Tax Identity */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">4. PAN Tax Identity Check</td>
                     <td className="p-2 text-slate-600">Income Tax Dept NSDL Repository</td>
-                    <td className="p-2 text-slate-500 font-mono text-[11px]">Active PAN Holder</td>
-                    <td className="p-2 text-right"><span className="badge badge-emerald text-[10px]">AUTHENTICATED ✓</span></td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {panPassed ? 'Active PAN Holder Linked' : 'Pending NSDL Gateway Query'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {panPassed ? (
+                        <span className="badge badge-emerald text-[10px]">AUTHENTICATED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
                   </tr>
+
+                  {/* Check 5: Bank Penny Drop */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">5. Bank Penny Drop Check</td>
                     <td className="p-2 text-slate-600">NPCI / IMPS Banking API</td>
-                    <td className="p-2 text-slate-500 font-mono text-[11px]">Beneficiary Name Match</td>
-                    <td className="p-2 text-right"><span className="badge badge-emerald text-[10px]">AUTHENTICATED ✓</span></td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {bankPassed ? 'Beneficiary Name Match' : 'Pending Penny Drop Deposit'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {bankPassed ? (
+                        <span className="badge badge-emerald text-[10px]">AUTHENTICATED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -221,12 +312,18 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               <p className="text-[11px] text-slate-500">Bangalore Tech Hub, KA - 560103</p>
             </div>
 
-            <div className="text-center p-2 rounded-xl bg-indigo-50 border border-indigo-200">
+            <div className={`text-center p-2 rounded-xl border ${
+              isFullyVerified ? 'bg-indigo-50 border-indigo-200' : 'bg-amber-50 border-amber-300'
+            }`}>
               <div className="w-7 h-7 mx-auto text-indigo-700 mb-1 flex items-center justify-center">
                 <Award className="w-6 h-6" />
               </div>
-              <p className="text-[11px] font-black text-indigo-900">DIGITALLY VERIFIED SEAL</p>
-              <p className="text-[9px] text-indigo-600 font-mono">RSA-2048 / 8fa9-22b1-098e</p>
+              <p className="text-[11px] font-black text-indigo-900">
+                {isFullyVerified ? 'DIGITALLY VERIFIED SEAL' : 'PROVISIONAL AUDIT SEAL'}
+              </p>
+              <p className="text-[9px] text-indigo-600 font-mono">
+                {isFullyVerified ? 'RSA-2048 / 8fa9-22b1-098e' : 'AUDIT-PENDING / GATE-AUTH'}
+              </p>
             </div>
 
             <div className="text-right space-y-1">
