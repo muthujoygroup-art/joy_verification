@@ -385,9 +385,14 @@ export const HrExecutiveView = () => {
           pan: { title: 'Income Tax PAN Card', name: 'PAN_Card_Front_Copy.pdf', type: 'pan', file_format: 'pdf', file_size_kb: 310.2, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
           experience: { title: 'Relieving & Experience Letter', name: 'Infosys_Relieving_Experience_Letter.pdf', type: 'experience_letter', file_format: 'pdf', file_size_kb: 750.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
           salary: { title: 'Last 3 Months Salary Slips', name: 'Payslips_Q1_2026.pdf', type: 'salary_slips', file_format: 'pdf', file_size_kb: 890.4, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
-          degree: { title: 'Degree Marksheet & Certificate', name: 'BE_Computer_Science_Degree.pdf', type: 'education_certificate', file_format: 'pdf', file_size_kb: 1200.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          degree: { title: 'Highest Degree Marksheet', name: 'BE_Computer_Science_Degree.pdf', type: 'education_certificate', file_format: 'pdf', file_size_kb: 1200.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
           bank: { title: 'Bank Cancelled Cheque', name: 'HDFC_Bank_Cancelled_Cheque.pdf', type: 'bank_proof', file_format: 'pdf', file_size_kb: 280.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
-          resume: { title: 'Candidate Resume / CV', name: 'Karthik_Ramanathan_Resume.pdf', type: 'resume', file_format: 'pdf', file_size_kb: 520.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' }
+          resume: { title: 'Candidate Resume / CV', name: 'Karthik_Ramanathan_Resume.pdf', type: 'resume', file_format: 'pdf', file_size_kb: 520.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          passportPhoto: { title: 'Passport Size Photograph', name: 'Recent_Color_Photo.jpg', type: 'passport_photo', file_format: 'jpg', file_size_kb: 140.0, file_path: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...' },
+          signedNda: { title: 'Signed Employer NDA', name: 'Executed_NDA_Confidentiality.pdf', type: 'signed_contract', file_format: 'pdf', file_size_kb: 640.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          medicalCert: { title: 'Medical Fitness Certificate', name: 'Medical_Fitness_Declaration.pdf', type: 'medical_fitness', file_format: 'pdf', file_size_kb: 310.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          sector_spec_1: { title: 'Anti-Moonlighting Declaration', name: 'IT_Moonlighting_Exclusivity_Undertaking.pdf', type: 'sector_specific', file_format: 'pdf', file_size_kb: 380.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          sector_spec_2: { title: 'WFH Asset Security Policy', name: 'Remote_IT_Asset_Policy.pdf', type: 'sector_specific', file_format: 'pdf', file_size_kb: 490.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' }
         }
       });
       showToast('💻 Auto-filled complete IT / Software Engineering Profile!');
@@ -3106,114 +3111,269 @@ export const HrExecutiveView = () => {
               )}
             </div>
 
-            {/* 📁 SECTION 8: DIRECT EMPLOYEE DOCUMENT UPLOADS & ATTACHMENTS (PRE-ATTACHED BY HR) */}
-            <div className="p-4 bg-gradient-to-br from-sky-50/60 via-slate-50 to-indigo-50/40 border-2 border-sky-200 rounded-2xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sky-100 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-sky-600 text-white rounded-lg">
-                    <FolderDown className="w-4 h-4" />
+            {/* 📁 SECTION 8: COMPREHENSIVE EMPLOYEE DOCUMENT UPLOADS (UNIVERSAL KYC + SECTOR SPECIALIZED) */}
+            <div className="p-4 bg-gradient-to-br from-sky-50/70 via-slate-50 to-indigo-50/50 border-2 border-sky-200 rounded-2xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-sky-600 text-white rounded-xl shadow-xs">
+                    <FolderDown className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black text-sky-950 uppercase tracking-wider flex items-center gap-2">
-                      <span>8. Direct Employee Document Uploads & Verification Attachments</span>
-                      <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-md">
-                        {Object.keys(formData.uploadedDocuments || {}).length} Attached
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-black text-sky-950 uppercase tracking-wider">
+                        8. Employee Document Uploads & Verification Attachments
+                      </h4>
+                      <span className="text-[10px] bg-sky-100 text-sky-800 font-extrabold px-2 py-0.5 rounded-md border border-sky-200">
+                        {Object.keys(formData.uploadedDocuments || {}).length} Total Documents Attached
                       </span>
-                    </h4>
+                    </div>
                     <p className="text-[11px] text-slate-500 font-medium">
-                      HR can attach verified candidate documents (Aadhaar, PAN, Experience Letter, Salary Slips, Degree, Bank Proof, Resume). Automatically stored in PostgreSQL.
+                      Upload candidate documents before generating verification token. Covers universal standard KYC for all employees + specialized documents for {formData.employeeCategory?.replace('_', ' ').toUpperCase() || 'IT'}.
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-white border border-sky-200 text-sky-900 font-bold px-2 py-1 rounded-lg">
-                    PDF, JPG, PNG up to 10MB
+
+                <div className="flex items-center gap-2 self-start sm:self-auto text-[10px]">
+                  <span className="bg-white border border-sky-200 text-sky-900 font-bold px-2.5 py-1 rounded-lg">
+                    ⚡ PDF, PNG, JPG up to 10MB
                   </span>
                 </div>
               </div>
 
-              {/* Grid of Document Upload Slots */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                {[
-                  { key: 'aadhaar', title: 'Aadhaar Card Copy', icon: '🪪', type: 'aadhaar', desc: 'UIDAI e-Aadhaar or clear scanned copy' },
-                  { key: 'pan', title: 'Income Tax PAN Card', icon: '💳', type: 'pan', desc: 'NSDL / UTI permanent account card' },
-                  { key: 'experience', title: 'Experience / Relieving Letter', icon: '📜', type: 'experience_letter', desc: 'Relieving & service certificate from past employer' },
-                  { key: 'salary', title: 'Last 3 Months Salary Slips', icon: '💰', type: 'salary_slips', desc: 'Payslips / Form 16 showing earnings breakdown' },
-                  { key: 'degree', title: 'Highest Degree / Marksheet', icon: '🎓', type: 'education_certificate', desc: 'Graduation / PG marksheet or convocation degree' },
-                  { key: 'bank', title: 'Bank Cancelled Cheque / Passbook', icon: '🏦', type: 'bank_proof', desc: 'Pre-printed cancelled cheque showing IFSC & Account No' },
-                  { key: 'resume', title: 'Candidate Resume / CV', icon: '📄', type: 'resume', desc: 'Updated professional curriculum vitae' },
-                  { key: 'signedNda', title: 'Signed NDA / Employment Contract', icon: '✍️', type: 'signed_contract', desc: 'Company confidential agreement copy' },
-                  { key: 'passportDl', title: 'Passport / Driving License', icon: '🌐', type: 'id_proof', desc: 'Government photo passport or DL copy' }
-                ].map((doc) => {
-                  const uploaded = (formData.uploadedDocuments || {})[doc.key];
-                  return (
-                    <div 
-                      key={doc.key}
-                      className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
-                        uploaded 
-                          ? 'bg-emerald-50/80 border-emerald-400 shadow-xs' 
-                          : 'bg-white border-slate-200 hover:border-sky-300'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{doc.icon}</span>
-                          <div>
-                            <strong className="text-slate-900 font-extrabold text-xs block leading-tight">{doc.title}</strong>
-                            <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">{doc.desc}</p>
+              {/* 🌟 SUB-SECTION A: UNIVERSAL CORE DOCUMENTS (MANDATORY FOR ALL EMPLOYEES) */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <UserCheck className="w-4 h-4 text-emerald-600" />
+                    <span>A. Standard KYC & Employment Documents (Common for All Employees)</span>
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    Standard Across All Sectors
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  {[
+                    { key: 'aadhaar', title: 'Aadhaar Card (Front & Back)', icon: '🪪', type: 'aadhaar', desc: 'UIDAI official e-Aadhaar or scanned copy' },
+                    { key: 'pan', title: 'Income Tax PAN Card', icon: '💳', type: 'pan', desc: 'NSDL / UTI permanent account card copy' },
+                    { key: 'passportPhoto', title: 'Passport Size Photograph', icon: '📸', type: 'passport_photo', desc: 'Recent professional color portrait' },
+                    { key: 'degree', title: 'Highest Degree / Marksheet', icon: '🎓', type: 'education_certificate', desc: 'Graduation / PG degree marksheet copy' },
+                    { key: 'experience', title: 'Relieving & Service Certificate', icon: '📜', type: 'experience_letter', desc: 'Relieving / experience letter from previous employer' },
+                    { key: 'salary', title: 'Last 3 Months Salary Slips', icon: '💰', type: 'salary_slips', desc: 'Recent payslips or Form 16 showing earnings' },
+                    { key: 'bank', title: 'Bank Cancelled Cheque / Passbook', icon: '🏦', type: 'bank_proof', desc: 'Pre-printed cancelled cheque with IFSC & Account No' },
+                    { key: 'resume', title: 'Updated Resume / CV', icon: '📄', type: 'resume', desc: 'Latest curriculum vitae of the candidate' },
+                    { key: 'signedNda', title: 'Signed Employer NDA & Code', icon: '✍️', type: 'signed_contract', desc: 'Executed confidentiality & integrity agreement' },
+                    { key: 'medicalCert', title: 'Medical Fitness Certificate', icon: '🏥', type: 'medical_fitness', desc: 'General medical fitness & health declaration' },
+                    { key: 'passportDl', title: 'Passport / Driving License', icon: '🌐', type: 'id_proof', desc: 'Government photo passport or DL copy' }
+                  ].map((doc) => {
+                    const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                    return (
+                      <div 
+                        key={doc.key}
+                        className={`p-3 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2 ${
+                          uploaded 
+                            ? 'bg-emerald-50/80 border-emerald-400 shadow-2xs' 
+                            : 'bg-white border-slate-200 hover:border-sky-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl shrink-0">{doc.icon}</span>
+                            <div className="min-w-0">
+                              <strong className="text-slate-900 font-extrabold text-xs block leading-tight truncate">{doc.title}</strong>
+                              <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{doc.desc}</p>
+                            </div>
                           </div>
+                          {uploaded && (
+                            <span className="text-[9px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
+                              Attached ✓
+                            </span>
+                          )}
                         </div>
-                        {uploaded && (
-                          <span className="text-[9px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
-                            Attached ✓
-                          </span>
+
+                        {uploaded ? (
+                          <div className="bg-white p-2 rounded-xl border border-emerald-200 space-y-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-mono text-[10px] font-bold text-emerald-950 truncate block flex-1" title={uploaded.name}>
+                                📄 {uploaded.name}
+                              </span>
+                              <span className="text-[9px] font-bold text-slate-500 shrink-0 font-mono">
+                                {uploaded.file_size_kb} KB
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                              <label className="text-[10px] text-sky-700 hover:text-sky-900 font-bold cursor-pointer underline">
+                                Replace
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                  onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => removeUploadedDoc(doc.key)}
+                                className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                              >
+                                ✕ Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <label className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center justify-center gap-1.5 font-bold text-sky-900 bg-sky-50/70 border-sky-300 hover:bg-sky-100 cursor-pointer">
+                            <Upload className="w-3 h-3 text-sky-600" />
+                            <span>Upload Document</span>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                              onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                            />
+                          </label>
                         )}
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-                      {uploaded ? (
-                        <div className="bg-white p-2.5 rounded-xl border border-emerald-200 space-y-1.5">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-mono text-[11px] font-bold text-emerald-950 truncate block flex-1" title={uploaded.name}>
-                              📄 {uploaded.name}
-                            </span>
-                            <span className="text-[10px] font-bold text-slate-500 shrink-0 font-mono">
-                              {uploaded.file_size_kb} KB
-                            </span>
+              {/* 🌟 SUB-SECTION B: SPECIALIZED SECTOR / ROLE DOCUMENTS */}
+              <div className="space-y-2.5 pt-3 border-t border-sky-200/80">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-indigo-950 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-4 h-4 text-indigo-600" />
+                    <span>B. Specialized Sector Compliance Documents ({formData.employeeCategory?.replace('_', ' ').toUpperCase() || 'IT & SOFTWARE'})</span>
+                  </span>
+                  <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                    Role-Specific Mandate
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  {/* Dynamic Sector Document Slots based on active category */}
+                  {((category) => {
+                    switch (category) {
+                      case 'it_tech':
+                      default:
+                        return [
+                          { key: 'sec_moonlighting', title: 'Anti-Moonlighting Undertaking', icon: '💻', type: 'sector_doc', desc: 'Exclusivity & zero dual employment commitment letter' },
+                          { key: 'sec_assetPolicy', title: 'Remote IT Asset Policy Copy', icon: '🖥️', type: 'sector_doc', desc: 'Laptop & cybersecurity device handling policy sign-off' },
+                          { key: 'sec_githubContrib', title: 'Open Source IP Declaration', icon: '🔗', type: 'sector_doc', desc: 'Code repository & personal IP assignment statement' }
+                        ];
+                      case 'manufacturing':
+                        return [
+                          { key: 'sec_safetyProtocol', title: 'Plant Safety & PPE Undertaking', icon: '🥾', type: 'sector_doc', desc: 'Factory safety protocol & PPE gear acknowledgment' },
+                          { key: 'sec_gatePass', title: 'Hazard Machinery Safety Cert', icon: '⚠️', type: 'sector_doc', desc: 'Shop floor machinery & arc welding hazard safety certificate' },
+                          { key: 'sec_form32Health', title: 'Form 32 Factory Fitness Card', icon: '🩺', type: 'sector_doc', desc: 'Factories Act 1948 occupational health examination card' },
+                          { key: 'sec_tradeCert', title: 'ITI / Trade Trade Certificate', icon: '🛠️', type: 'sector_doc', desc: 'National Trade Certificate / Apprenticeship diploma' }
+                        ];
+                      case 'bfsi':
+                        return [
+                          { key: 'sec_cibilConsent', title: 'CIBIL Credit Standing Consent', icon: '📊', type: 'sector_doc', desc: 'Signed consent letter for comprehensive credit history audit' },
+                          { key: 'sec_nismCert', title: 'NISM / IRDA Certificates', icon: '📜', type: 'sector_doc', desc: 'Series VIII equity derivatives / composite broker certification' },
+                          { key: 'sec_sebiClearance', title: 'SEBI Insider Trading Undertaking', icon: '⚖️', type: 'sector_doc', desc: 'Zero personal trading in client scrips & AML clearance' },
+                          { key: 'sec_fidelityBond', title: 'Corporate Fidelity Indemnity Bond', icon: '🛡️', type: 'sector_doc', desc: 'Fifteen lakhs corporate financial fidelity agreement' }
+                        ];
+                      case 'healthcare':
+                        return [
+                          { key: 'sec_medicalCouncil', title: 'Medical / Nursing Council Reg', icon: '🩺', type: 'sector_doc', desc: 'State Medical Council / MCI valid license certificate' },
+                          { key: 'sec_immunization', title: 'Mandatory Immunization Record', icon: '💉', type: 'sector_doc', desc: 'Hepatitis B, Tetanus Toxoid & COVID vaccination card' },
+                          { key: 'sec_lifeSupport', title: 'ACLS / BLS Life Support Cert', icon: '🧫', type: 'sector_doc', desc: 'AHA certified advanced cardiac life support credential' },
+                          { key: 'sec_cleanroomGmp', title: 'Cleanroom Bio-Safety Clearance', icon: '🧪', type: 'sector_doc', desc: 'Sterile class 100 GMP cleanroom handling clearance' }
+                        ];
+                      case 'logistics':
+                        return [
+                          { key: 'sec_hmvBadge', title: 'Commercial Transport HMV Badge', icon: '🚚', type: 'sector_doc', desc: 'Heavy commercial transport driving license badge' },
+                          { key: 'sec_forkliftLic', title: 'Forklift / MHE Equipment License', icon: '🚜', type: 'sector_doc', desc: 'Certified material handling equipment operator license' },
+                          { key: 'sec_policeNoc', title: 'Police Character Certificate', icon: '👮', type: 'sector_doc', desc: 'State police department verification NOC' },
+                          { key: 'sec_gpsConsent', title: 'Vehicle Telematics GPS Consent', icon: '🗺️', type: 'sector_doc', desc: '24/7 route navigation & fleet telematics tracking consent' }
+                        ];
+                      case 'retail_hospitality':
+                        return [
+                          { key: 'sec_fssaiCert', title: 'FSSAI FoSTaC Training Cert', icon: '🥗', type: 'sector_doc', desc: 'Food Safety Training & Certification certificate' },
+                          { key: 'sec_foodHealthCard', title: 'Food Handler Medical Health Card', icon: '🩺', type: 'sector_doc', desc: 'Annual medical certificate of fitness for food handlers' },
+                          { key: 'sec_posCashIndemnity', title: 'POS Cash Register Indemnity', icon: '💳', type: 'sector_doc', desc: 'Cash drawer balancing & register reconciliation agreement' }
+                        ];
+                      case 'contractual':
+                        return [
+                          { key: 'sec_formXIII', title: 'Contract Labor Act Form XIII', icon: '📜', type: 'sector_doc', desc: 'Contract Labor Register enrollment card copy' },
+                          { key: 'sec_agencyAgreement', title: 'Manpower Agency Deployment Letter', icon: '🏢', type: 'sector_doc', desc: 'Authorized contractor deployment & wage rate letter' },
+                          { key: 'sec_workOrderPo', title: 'Principal Employer Work Order', icon: '📄', type: 'sector_doc', desc: 'Assigned company PO & contract tenure document' },
+                          { key: 'sec_esicCard', title: 'ESIC Pehchan Temporary Card', icon: '🏥', type: 'sector_doc', desc: 'ESIC Form 1 insurance temporary identity certificate' }
+                        ];
+                    }
+                  })(formData.employeeCategory || 'it_tech').map((doc) => {
+                    const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                    return (
+                      <div 
+                        key={doc.key}
+                        className={`p-3 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2 ${
+                          uploaded 
+                            ? 'bg-indigo-50/80 border-indigo-400 shadow-2xs' 
+                            : 'bg-white border-slate-200 hover:border-indigo-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl shrink-0">{doc.icon}</span>
+                            <div className="min-w-0">
+                              <strong className="text-slate-900 font-extrabold text-xs block leading-tight truncate">{doc.title}</strong>
+                              <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{doc.desc}</p>
+                            </div>
                           </div>
-                          <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                            <label className="text-[10px] text-sky-700 hover:text-sky-900 font-bold cursor-pointer underline">
-                              Replace
-                              <input 
-                                type="file" 
-                                className="hidden" 
-                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
-                                onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
-                              />
-                            </label>
-                            <button
-                              type="button"
-                              onClick={() => removeUploadedDoc(doc.key)}
-                              className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
-                            >
-                              ✕ Remove
-                            </button>
-                          </div>
+                          {uploaded && (
+                            <span className="text-[9px] bg-indigo-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
+                              Attached ✓
+                            </span>
+                          )}
                         </div>
-                      ) : (
-                        <label className="btn btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5 font-bold text-sky-900 bg-sky-50/80 border-sky-300 hover:bg-sky-100 cursor-pointer shadow-2xs">
-                          <Upload className="w-3.5 h-3.5 text-sky-600" />
-                          <span>Upload {doc.title.split(' ')[0]}</span>
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept=".pdf,.png,.jpg,.jpeg,.docx" 
-                            onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
-                          />
-                        </label>
-                      )}
-                    </div>
-                  );
-                })}
+
+                        {uploaded ? (
+                          <div className="bg-white p-2 rounded-xl border border-indigo-200 space-y-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-mono text-[10px] font-bold text-indigo-950 truncate block flex-1" title={uploaded.name}>
+                                📄 {uploaded.name}
+                              </span>
+                              <span className="text-[9px] font-bold text-slate-500 shrink-0 font-mono">
+                                {uploaded.file_size_kb} KB
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                              <label className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold cursor-pointer underline">
+                                Replace
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                  onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => removeUploadedDoc(doc.key)}
+                                className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                              >
+                                ✕ Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <label className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center justify-center gap-1.5 font-bold text-indigo-900 bg-indigo-50/70 border-indigo-300 hover:bg-indigo-100 cursor-pointer">
+                            <Upload className="w-3 h-3 text-indigo-600" />
+                            <span>Upload Sector Doc</span>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                              onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
