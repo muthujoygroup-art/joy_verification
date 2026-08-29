@@ -3203,41 +3203,74 @@ export const HrExecutiveView = () => {
               )}
             </div>
 
-            {/* 📁 SECTION 8: COMPREHENSIVE EMPLOYEE DOCUMENT UPLOADS (UNIVERSAL KYC + SECTOR SPECIALIZED) */}
-            <div className="p-4 bg-gradient-to-br from-sky-50/70 via-slate-50 to-indigo-50/50 border-2 border-sky-200 rounded-2xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-sky-600 text-white rounded-xl shadow-xs">
+            {/* 📁 SECTION 8: EMPLOYEE REQUIRED DOCUMENTS CHECKLIST & DIRECT UPLOADS (UNIFIED HR GATING) */}
+            <div className="p-4 sm:p-5 bg-gradient-to-br from-sky-50/80 via-slate-50 to-indigo-50/60 border-2 border-sky-300 rounded-2xl space-y-4 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-200 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-sky-600 text-white rounded-xl shadow-xs">
                     <FolderDown className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-xs font-black text-sky-950 uppercase tracking-wider">
-                        8. Employee Document Uploads & Verification Attachments
+                        8. Required Documents Checklist & Direct Uploads
                       </h4>
                       <span className="text-[10px] bg-sky-100 text-sky-800 font-extrabold px-2 py-0.5 rounded-md border border-sky-200">
-                        {Object.keys(formData.uploadedDocuments || {}).length} Total Documents Attached
+                        {Object.values(formData.requiredDocumentsConfig || {}).filter(Boolean).length} Mandatory • {Object.keys(formData.uploadedDocuments || {}).length} Uploaded by HR
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 font-medium">
-                      Upload candidate documents before generating verification token. Covers universal standard KYC for all employees + specialized documents for {formData.employeeCategory?.replace('_', ' ').toUpperCase() || 'IT'}.
+                      Check the box to make a document <strong>Mandatory</strong> for the candidate. HR can also attach available files directly (PDF, PNG, JPG up to 10MB).
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-start sm:self-auto text-[10px]">
-                  <span className="bg-white border border-sky-200 text-sky-900 font-bold px-2.5 py-1 rounded-lg">
-                    ⚡ PDF, PNG, JPG up to 10MB
-                  </span>
+                {/* Quick Preset Buttons */}
+                <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto text-[10px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allReq = {
+                        aadhaar: true, pan: true, passportPhoto: true, degree: true,
+                        experience: true, salary: true, bank: true, resume: true,
+                        signedNda: true, medicalCert: true, passportDl: false,
+                        sec_moonlighting: true, sec_assetPolicy: true, sec_githubContrib: false,
+                        sec_safetyProtocol: true, sec_gatePass: true, sec_form32Health: true, sec_tradeCert: true,
+                        sec_cibilConsent: true, sec_nismCert: true, sec_sebiClearance: true, sec_fidelityBond: true,
+                        sec_medicalCouncil: true, sec_immunization: true, sec_lifeSupport: true, sec_cleanroomGmp: true,
+                        sec_hmvBadge: true, sec_forkliftLic: true, sec_policeNoc: true, sec_gpsConsent: true,
+                        sec_fssaiCert: true, sec_foodHealthCard: true, sec_posCashIndemnity: true,
+                        sec_formXIII: true, sec_agencyAgreement: true, sec_workOrderPo: true, sec_esicCard: true
+                      };
+                      setFormData(prev => ({ ...prev, requiredDocumentsConfig: allReq }));
+                      showToast('✓ Marked all key documents as Mandatory!');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold border border-sky-300 cursor-pointer"
+                  >
+                    Select All Mandatory
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        requiredDocumentsConfig: { aadhaar: true, pan: true, bank: true, degree: true, resume: true }
+                      }));
+                      showToast('⚡ Reset to Standard Core KYC (5 docs)');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-bold border border-slate-300 cursor-pointer"
+                  >
+                    Standard Only (5)
+                  </button>
                 </div>
               </div>
 
-              {/* 🌟 SUB-SECTION A: UNIVERSAL CORE DOCUMENTS (MANDATORY FOR ALL EMPLOYEES) */}
+              {/* 🌟 SUB-SECTION A: UNIVERSAL KYC & EMPLOYMENT DOCUMENTS */}
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
                     <UserCheck className="w-4 h-4 text-emerald-600" />
-                    <span>A. Standard KYC & Employment Documents (Common for All Employees)</span>
+                    <span>A. Universal Standard KYC Documents (All Employees)</span>
                   </span>
                   <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                     Standard Across All Sectors
@@ -3246,55 +3279,75 @@ export const HrExecutiveView = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                   {[
-                    { key: 'aadhaar', title: 'Aadhaar Card (Front & Back)', icon: '🪪', type: 'aadhaar', desc: 'UIDAI official e-Aadhaar or scanned copy' },
-                    { key: 'pan', title: 'Income Tax PAN Card', icon: '💳', type: 'pan', desc: 'NSDL / UTI permanent account card copy' },
+                    { key: 'aadhaar', title: 'Government Aadhaar Card', icon: '🪪', type: 'aadhaar', desc: 'UIDAI official masked e-Aadhaar or color scan' },
+                    { key: 'pan', title: 'Income Tax PAN Card', icon: '💳', type: 'pan', desc: 'NSDL / UTI permanent account card' },
                     { key: 'passportPhoto', title: 'Passport Size Photograph', icon: '📸', type: 'passport_photo', desc: 'Recent professional color portrait' },
-                    { key: 'degree', title: 'Highest Degree / Marksheet', icon: '🎓', type: 'education_certificate', desc: 'Graduation / PG degree marksheet copy' },
-                    { key: 'experience', title: 'Relieving & Service Certificate', icon: '📜', type: 'experience_letter', desc: 'Relieving / experience letter from previous employer' },
-                    { key: 'salary', title: 'Last 3 Months Salary Slips', icon: '💰', type: 'salary_slips', desc: 'Recent payslips or Form 16 showing earnings' },
-                    { key: 'bank', title: 'Bank Cancelled Cheque / Passbook', icon: '🏦', type: 'bank_proof', desc: 'Pre-printed cancelled cheque with IFSC & Account No' },
-                    { key: 'resume', title: 'Updated Resume / CV', icon: '📄', type: 'resume', desc: 'Latest curriculum vitae of the candidate' },
-                    { key: 'signedNda', title: 'Signed Employer NDA & Code', icon: '✍️', type: 'signed_contract', desc: 'Executed confidentiality & integrity agreement' },
-                    { key: 'medicalCert', title: 'Medical Fitness Certificate', icon: '🏥', type: 'medical_fitness', desc: 'General medical fitness & health declaration' },
-                    { key: 'passportDl', title: 'Passport / Driving License', icon: '🌐', type: 'id_proof', desc: 'Government photo passport or DL copy' }
+                    { key: 'degree', title: 'Degree Marksheet / Certificate', icon: '🎓', type: 'education_certificate', desc: 'Convocation degree or cumulative marksheet' },
+                    { key: 'experience', title: 'Previous Relieving Letter', icon: '📜', type: 'experience_letter', desc: 'Formal relieving / service certificate' },
+                    { key: 'salary', title: 'Last 3 Months Salary Slips', icon: '💰', type: 'salary_slips', desc: 'Recent payslips or Form 16 breakdown' },
+                    { key: 'bank', title: 'Bank Passbook / Cheque Leaf', icon: '🏦', type: 'bank_proof', desc: 'Pre-printed cancelled cheque with IFSC & Name' },
+                    { key: 'resume', title: 'Updated Resume / CV', icon: '📄', type: 'resume', desc: 'Latest curriculum vitae of candidate' },
+                    { key: 'signedNda', title: 'Signed Employer NDA Copy', icon: '✍️', type: 'signed_contract', desc: 'Executed employee confidentiality agreement' },
+                    { key: 'medicalCert', title: 'Medical Fitness Certificate', icon: '🏥', type: 'medical_fitness', desc: 'General health & medical declaration' },
+                    { key: 'passportDl', title: 'Passport / Driving License', icon: '🌐', type: 'id_proof', desc: 'Valid passport or MoRTH driving license' }
                   ].map((doc) => {
+                    const isMandatory = formData.requiredDocumentsConfig?.[doc.key] ?? true;
                     const uploaded = (formData.uploadedDocuments || {})[doc.key];
+
                     return (
                       <div 
                         key={doc.key}
-                        className={`p-3 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2 ${
+                        className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
                           uploaded 
-                            ? 'bg-emerald-50/80 border-emerald-400 shadow-2xs' 
-                            : 'bg-white border-slate-200 hover:border-sky-300'
+                            ? 'bg-emerald-50/90 border-emerald-500 shadow-2xs' 
+                            : isMandatory 
+                              ? 'bg-white border-sky-300 shadow-2xs' 
+                              : 'bg-slate-50/70 border-slate-200 opacity-75'
                         }`}
                       >
+                        {/* Header: Icon, Title, and Mandatory Checkbox */}
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
                             <span className="text-xl shrink-0">{doc.icon}</span>
                             <div className="min-w-0">
                               <strong className="text-slate-900 font-extrabold text-xs block leading-tight truncate">{doc.title}</strong>
                               <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{doc.desc}</p>
                             </div>
                           </div>
-                          {uploaded && (
-                            <span className="text-[9px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
-                              Attached ✓
+
+                          {/* Mandatory Checklist Checkbox */}
+                          <label className="flex items-center gap-1 shrink-0 cursor-pointer bg-slate-100 hover:bg-sky-100 px-1.5 py-0.5 rounded-md border border-slate-200" title="Check to make mandatory for candidate">
+                            <input 
+                              type="checkbox"
+                              checked={isMandatory}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                requiredDocumentsConfig: {
+                                  ...(prev.requiredDocumentsConfig || {}),
+                                  [doc.key]: e.target.checked
+                                }
+                              }))}
+                              className="accent-sky-600 w-3.5 h-3.5"
+                            />
+                            <span className={`text-[9px] font-black uppercase ${isMandatory ? 'text-sky-900' : 'text-slate-500'}`}>
+                              {isMandatory ? 'Required *' : 'Optional'}
                             </span>
-                          )}
+                          </label>
                         </div>
 
+                        {/* Upload Status / Upload Button */}
                         {uploaded ? (
-                          <div className="bg-white p-2 rounded-xl border border-emerald-200 space-y-1">
+                          <div className="bg-white p-2 rounded-xl border border-emerald-300 space-y-1">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-[10px] font-bold text-emerald-950 truncate block flex-1" title={uploaded.name}>
                                 📄 {uploaded.name}
                               </span>
-                              <span className="text-[9px] font-bold text-slate-500 shrink-0 font-mono">
+                              <span className="text-[9px] font-bold text-emerald-700 shrink-0 font-mono">
                                 {uploaded.file_size_kb} KB
                               </span>
                             </div>
-                            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                              <label className="text-[10px] text-sky-700 hover:text-sky-900 font-bold cursor-pointer underline">
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
+                              <label className="text-sky-700 hover:text-sky-900 font-bold cursor-pointer underline">
                                 Replace
                                 <input 
                                   type="file" 
@@ -3306,23 +3359,28 @@ export const HrExecutiveView = () => {
                               <button
                                 type="button"
                                 onClick={() => removeUploadedDoc(doc.key)}
-                                className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                                className="text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
                               >
                                 ✕ Remove
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <label className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center justify-center gap-1.5 font-bold text-sky-900 bg-sky-50/70 border-sky-300 hover:bg-sky-100 cursor-pointer">
-                            <Upload className="w-3 h-3 text-sky-600" />
-                            <span>Upload Document</span>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept=".pdf,.png,.jpg,.jpeg,.docx" 
-                              onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
-                            />
-                          </label>
+                          <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                            <span className="text-[10px] text-slate-500 italic">
+                              {isMandatory ? 'Candidate must upload on link 📱' : 'Not attached'}
+                            </span>
+                            <label className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 cursor-pointer shrink-0">
+                              <Upload className="w-3 h-3 text-sky-600" />
+                              <span>HR Upload</span>
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                              />
+                            </label>
+                          </div>
                         )}
                       </div>
                     );
@@ -3330,8 +3388,8 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              {/* 🌟 SUB-SECTION B: SPECIALIZED SECTOR / ROLE DOCUMENTS */}
-              <div className="space-y-2.5 pt-3 border-t border-sky-200/80">
+              {/* 🌟 SUB-SECTION B: SPECIALIZED SECTOR / ROLE COMPLIANCE DOCUMENTS */}
+              <div className="space-y-2.5 pt-3 border-t border-sky-200">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-indigo-950 uppercase tracking-wide flex items-center gap-1.5">
                     <Layers className="w-4 h-4 text-indigo-600" />
@@ -3343,7 +3401,6 @@ export const HrExecutiveView = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                  {/* Dynamic Sector Document Slots based on active category */}
                   {((category) => {
                     switch (category) {
                       case 'it_tech':
@@ -3358,14 +3415,14 @@ export const HrExecutiveView = () => {
                           { key: 'sec_safetyProtocol', title: 'Plant Safety & PPE Undertaking', icon: '🥾', type: 'sector_doc', desc: 'Factory safety protocol & PPE gear acknowledgment' },
                           { key: 'sec_gatePass', title: 'Hazard Machinery Safety Cert', icon: '⚠️', type: 'sector_doc', desc: 'Shop floor machinery & arc welding hazard safety certificate' },
                           { key: 'sec_form32Health', title: 'Form 32 Factory Fitness Card', icon: '🩺', type: 'sector_doc', desc: 'Factories Act 1948 occupational health examination card' },
-                          { key: 'sec_tradeCert', title: 'ITI / Trade Trade Certificate', icon: '🛠️', type: 'sector_doc', desc: 'National Trade Certificate / Apprenticeship diploma' }
+                          { key: 'sec_tradeCert', title: 'ITI / Trade Certificate', icon: '🛠️', type: 'sector_doc', desc: 'National Trade Certificate / Apprenticeship diploma' }
                         ];
                       case 'bfsi':
                         return [
                           { key: 'sec_cibilConsent', title: 'CIBIL Credit Standing Consent', icon: '📊', type: 'sector_doc', desc: 'Signed consent letter for comprehensive credit history audit' },
                           { key: 'sec_nismCert', title: 'NISM / IRDA Certificates', icon: '📜', type: 'sector_doc', desc: 'Series VIII equity derivatives / composite broker certification' },
                           { key: 'sec_sebiClearance', title: 'SEBI Insider Trading Undertaking', icon: '⚖️', type: 'sector_doc', desc: 'Zero personal trading in client scrips & AML clearance' },
-                          { key: 'sec_fidelityBond', title: 'Corporate Fidelity Indemnity Bond', icon: '🛡️', type: 'sector_doc', desc: 'Fifteen lakhs corporate financial fidelity agreement' }
+                          { key: 'sec_fidelityBond', title: 'Corporate Fidelity Indemnity Bond', icon: '🛡️', type: 'sector_doc', desc: 'Corporate financial fidelity agreement copy' }
                         ];
                       case 'healthcare':
                         return [
@@ -3396,43 +3453,63 @@ export const HrExecutiveView = () => {
                         ];
                     }
                   })(formData.employeeCategory || 'it_tech').map((doc) => {
+                    const isMandatory = formData.requiredDocumentsConfig?.[doc.key] ?? true;
                     const uploaded = (formData.uploadedDocuments || {})[doc.key];
+
                     return (
                       <div 
                         key={doc.key}
-                        className={`p-3 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2 ${
+                        className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
                           uploaded 
-                            ? 'bg-indigo-50/80 border-indigo-400 shadow-2xs' 
-                            : 'bg-white border-slate-200 hover:border-indigo-300'
+                            ? 'bg-indigo-50/90 border-indigo-500 shadow-2xs' 
+                            : isMandatory 
+                              ? 'bg-white border-indigo-300 shadow-2xs' 
+                              : 'bg-slate-50/70 border-slate-200 opacity-75'
                         }`}
                       >
+                        {/* Header: Icon, Title, and Mandatory Checkbox */}
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
                             <span className="text-xl shrink-0">{doc.icon}</span>
                             <div className="min-w-0">
                               <strong className="text-slate-900 font-extrabold text-xs block leading-tight truncate">{doc.title}</strong>
                               <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{doc.desc}</p>
                             </div>
                           </div>
-                          {uploaded && (
-                            <span className="text-[9px] bg-indigo-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
-                              Attached ✓
+
+                          {/* Mandatory Checklist Checkbox */}
+                          <label className="flex items-center gap-1 shrink-0 cursor-pointer bg-indigo-50 hover:bg-indigo-100 px-1.5 py-0.5 rounded-md border border-indigo-200" title="Check to make mandatory for candidate">
+                            <input 
+                              type="checkbox"
+                              checked={isMandatory}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                requiredDocumentsConfig: {
+                                  ...(prev.requiredDocumentsConfig || {}),
+                                  [doc.key]: e.target.checked
+                                }
+                              }))}
+                              className="accent-indigo-600 w-3.5 h-3.5"
+                            />
+                            <span className={`text-[9px] font-black uppercase ${isMandatory ? 'text-indigo-900' : 'text-slate-500'}`}>
+                              {isMandatory ? 'Required *' : 'Optional'}
                             </span>
-                          )}
+                          </label>
                         </div>
 
+                        {/* Upload Status / Upload Button */}
                         {uploaded ? (
-                          <div className="bg-white p-2 rounded-xl border border-indigo-200 space-y-1">
+                          <div className="bg-white p-2 rounded-xl border border-indigo-300 space-y-1">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-[10px] font-bold text-indigo-950 truncate block flex-1" title={uploaded.name}>
                                 📄 {uploaded.name}
                               </span>
-                              <span className="text-[9px] font-bold text-slate-500 shrink-0 font-mono">
+                              <span className="text-[9px] font-bold text-indigo-700 shrink-0 font-mono">
                                 {uploaded.file_size_kb} KB
                               </span>
                             </div>
-                            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                              <label className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold cursor-pointer underline">
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
+                              <label className="text-indigo-700 hover:text-indigo-900 font-bold cursor-pointer underline">
                                 Replace
                                 <input 
                                   type="file" 
@@ -3444,23 +3521,28 @@ export const HrExecutiveView = () => {
                               <button
                                 type="button"
                                 onClick={() => removeUploadedDoc(doc.key)}
-                                className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                                className="text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
                               >
                                 ✕ Remove
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <label className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center justify-center gap-1.5 font-bold text-indigo-900 bg-indigo-50/70 border-indigo-300 hover:bg-indigo-100 cursor-pointer">
-                            <Upload className="w-3 h-3 text-indigo-600" />
-                            <span>Upload Sector Doc</span>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept=".pdf,.png,.jpg,.jpeg,.docx" 
-                              onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
-                            />
-                          </label>
+                          <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                            <span className="text-[10px] text-slate-500 italic">
+                              {isMandatory ? 'Candidate must upload on link 📱' : 'Not attached'}
+                            </span>
+                            <label className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold text-indigo-900 bg-indigo-50 border-indigo-300 hover:bg-indigo-100 cursor-pointer shrink-0">
+                              <Upload className="w-3 h-3 text-indigo-600" />
+                              <span>HR Upload</span>
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                              />
+                            </label>
+                          </div>
                         )}
                       </div>
                     );
@@ -3469,416 +3551,7 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            {/* ⚡ SECTION 9: DYNAMIC CUSTOM ATTRIBUTES & CUSTOM DOCUMENT BUILDER (HR EXTENSIBILITY) */}
-            <div className="p-4 bg-gradient-to-br from-purple-50/70 via-slate-50 to-indigo-50/60 border-2 border-purple-300/80 rounded-2xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-purple-600 text-white rounded-xl shadow-xs">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">
-                        9. Dynamic Custom Fields & Custom Document Slots Builder
-                      </h4>
-                      <span className="text-[10px] bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-md border border-purple-200">
-                        {(formData.customFields || []).length} Custom Fields • {(formData.customDocSlots || []).length} Custom Doc Slots
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      Add any company-specific text attributes (Grade, Project Code, Manager Email) or custom document upload slots on the fly!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-start sm:self-auto">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddCustomFieldModal(true)}
-                    className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-purple-900 bg-white border-purple-300 hover:bg-purple-50 shadow-xs cursor-pointer"
-                  >
-                    <span>+ Add Custom Text Field</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowAddCustomDocModal(true)}
-                    className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-white border-indigo-300 hover:bg-indigo-50 shadow-xs cursor-pointer"
-                  >
-                    <span>+ Add Custom Doc Slot</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Dynamic Custom Text/Number/Date Fields List */}
-              {(formData.customFields || []).length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-[11px] font-black text-purple-900 uppercase tracking-wider block">
-                    Custom Attribute Fields ({(formData.customFields || []).length}):
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                    {(formData.customFields || []).map((f) => (
-                      <div key={f.id} className="p-3 bg-white rounded-xl border border-purple-200 shadow-2xs space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <label className="font-extrabold text-slate-900 text-xs truncate">
-                            {f.label} {f.required && <span className="text-rose-500">*</span>}
-                          </label>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[9px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded uppercase">
-                              {f.type}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveCustomField(f.id)}
-                              className="text-rose-500 hover:text-rose-700 font-bold text-xs p-1"
-                              title="Delete Field"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                        {f.type === 'textarea' ? (
-                          <textarea
-                            rows="2"
-                            value={f.value}
-                            onChange={(e) => handleUpdateCustomFieldValue(f.id, e.target.value)}
-                            placeholder={`Enter ${f.label}...`}
-                            className="form-input text-xs"
-                          />
-                        ) : (
-                          <input
-                            type={f.type}
-                            value={f.value}
-                            onChange={(e) => handleUpdateCustomFieldValue(f.id, e.target.value)}
-                            placeholder={`Enter ${f.label}...`}
-                            className="form-input text-xs font-medium"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Dynamic Custom Document Slots List */}
-              {(formData.customDocSlots || []).length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-purple-100">
-                  <span className="text-[11px] font-black text-indigo-900 uppercase tracking-wider block">
-                    Custom Document Upload Slots ({(formData.customDocSlots || []).length}):
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                    {(formData.customDocSlots || []).map((slot) => {
-                      const uploaded = (formData.uploadedDocuments || {})[slot.key];
-                      return (
-                        <div key={slot.id} className="p-3 bg-white rounded-xl border border-indigo-200 shadow-2xs space-y-2">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <strong className="text-slate-900 font-extrabold text-xs block leading-tight">{slot.title}</strong>
-                              <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{slot.desc}</p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveCustomDocSlot(slot.id)}
-                              className="text-rose-500 hover:text-rose-700 font-bold text-xs p-1 shrink-0"
-                              title="Delete Slot"
-                            >
-                              ✕
-                            </button>
-                          </div>
-
-                          {uploaded ? (
-                            <div className="bg-emerald-50/80 p-2 rounded-lg border border-emerald-300 flex items-center justify-between text-[10px]">
-                              <span className="font-mono font-bold text-emerald-950 truncate flex-1">
-                                📄 {uploaded.name} ({uploaded.file_size_kb} KB)
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeUploadedDoc(slot.key)}
-                                className="text-rose-600 font-bold hover:underline ml-2"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          ) : (
-                            <label className="btn btn-secondary text-[11px] py-1 px-2 flex items-center justify-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-300 hover:bg-indigo-100 cursor-pointer">
-                              <Upload className="w-3 h-3 text-indigo-600" />
-                              <span>Attach {slot.title.split(' ')[0]}</span>
-                              <input 
-                                type="file" 
-                                className="hidden" 
-                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
-                                onChange={(e) => handleDocFileUpload(slot.key, e.target.files[0], slot.title, 'custom_doc')} 
-                              />
-                            </label>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Inline Quick Field Adder Modal / Popup */}
-              {showAddCustomFieldModal && (
-                <div className="p-3.5 bg-white rounded-xl border-2 border-purple-400 shadow-md space-y-3 animate-fadeIn">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-purple-950 uppercase tracking-wider">
-                      ✨ Create New Custom Attribute Field
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCustomFieldModal(false)}
-                      className="text-slate-400 hover:text-slate-700 font-bold"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Field Label / Name *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Internal Project Code"
-                        value={newFieldLabel}
-                        onChange={(e) => setNewFieldLabel(e.target.value)}
-                        className="form-input text-xs font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Widget Input Type</label>
-                      <select
-                        value={newFieldType}
-                        onChange={(e) => setNewFieldType(e.target.value)}
-                        className="form-select text-xs font-medium"
-                      >
-                        <option value="text">Text Input</option>
-                        <option value="number">Numeric (Number)</option>
-                        <option value="date">Date Picker</option>
-                        <option value="textarea">Multi-line Textarea</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center gap-3 pt-4 sm:pt-5">
-                      <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={newFieldRequired}
-                          onChange={(e) => setNewFieldRequired(e.target.checked)}
-                          className="accent-purple-600 w-4 h-4"
-                        />
-                        <span>Mandatory *</span>
-                      </label>
-                      <button
-                        type="button"
-                        onClick={handleAddCustomField}
-                        className="btn btn-primary text-xs py-1.5 px-3 font-extrabold bg-purple-600 hover:bg-purple-700 text-white shadow-xs"
-                      >
-                        Add Field
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Inline Quick Doc Slot Adder Modal / Popup */}
-              {showAddCustomDocModal && (
-                <div className="p-3.5 bg-white rounded-xl border-2 border-indigo-400 shadow-md space-y-3 animate-fadeIn">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-indigo-950 uppercase tracking-wider">
-                      📄 Create New Custom Document Slot
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCustomDocModal(false)}
-                      className="text-slate-400 hover:text-slate-700 font-bold"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Document Title *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Relocation Agreement"
-                        value={newDocTitle}
-                        onChange={(e) => setNewDocTitle(e.target.value)}
-                        className="form-input text-xs font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Description / Purpose</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Executed relocation allowance covenant"
-                        value={newDocDesc}
-                        onChange={(e) => setNewDocDesc(e.target.value)}
-                        className="form-input text-xs"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 pt-4 sm:pt-5">
-                      <button
-                        type="button"
-                        onClick={handleAddCustomDocSlot}
-                        className="btn btn-primary text-xs py-1.5 px-3 font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
-                      >
-                        Add Document Slot
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* SECTION 10: Mandatory Upstream Verification Requirements Selector */}
-            <div className="space-y-4 pt-3 border-t border-slate-100">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>8. Select Mandatory Upstream API Identity Verification Checks</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Pick which documents and background records are mandatory for this candidate. Checks are processed via Server 1 (Sandbox) or Server 2 (CoinCircleTrust 47+ APIs).
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 self-start sm:self-auto">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({ 
-                        ...formData, 
-                        verificationConfig: { aadhaar: true, mobileOtp: false, pan: false, bankCheck: false, faceCapture: false } 
-                      });
-                    }}
-                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer"
-                  >
-                    ⚡ Aadhaar Only (Active)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const allOn = {};
-                      featureList.forEach(f => { allOn[f.id] = true; });
-                      setFormData({ ...formData, verificationConfig: allOn });
-                    }}
-                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer"
-                  >
-                    Select All Checks
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {featureList.map((feat) => {
-                  const isEnabledBySuperAdmin = currentCompany.features?.[feat.id] ?? true;
-                  const isChecked = !!formData.verificationConfig?.[feat.id];
-
-                  if (!isEnabledBySuperAdmin) {
-                    return (
-                      <div key={feat.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-xs opacity-60 flex items-center justify-between">
-                        <div>
-                          <div className="font-semibold">{feat.name}</div>
-                          <div className="text-[10px]">Disabled in Company Plan</div>
-                        </div>
-                        <Lock className="w-3.5 h-3.5" />
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <label 
-                      key={feat.id}
-                      className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
-                        isChecked 
-                          ? 'bg-emerald-50/70 border-emerald-400 text-slate-900 shadow-2xs' 
-                          : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                      }`}
-                    >
-                      <input 
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          verificationConfig: { ...formData.verificationConfig, [feat.id]: e.target.checked }
-                        })}
-                        className="accent-emerald-600 mt-1 w-4 h-4 shrink-0"
-                      />
-                      <div className="space-y-1 flex-1">
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="font-black text-xs text-slate-900 leading-tight">{feat.name}</span>
-                          <span className={`text-[8px] px-1.5 py-0.5 rounded font-black uppercase whitespace-nowrap ${
-                            feat.serverMode === 'server2_only' 
-                              ? 'bg-purple-100 text-purple-800 border border-purple-200' 
-                              : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-                          }`}>
-                            {feat.serverMode === 'server2_only' ? 'Server 2 ⚡' : 'Server 1/2'}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-500 leading-relaxed">{feat.description || feat.category}</div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* SECTION 9: Required Documents Upload Checklist */}
-            <div className="space-y-3 pt-3 border-t border-slate-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs uppercase font-extrabold text-sky-700 tracking-wider flex items-center gap-2">
-                    <FolderDown className="w-4 h-4 text-sky-600" />
-                    <span>9. Required Documents Upload Checklist (Selectable by HR)</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Selected documents must be uploaded by the candidate and will be permanently embedded in the final Complete Profile PDF.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                {[
-                  { key: 'aadhaarCard', title: 'Government Aadhaar Card', desc: 'UIDAI official masked e-Aadhaar or clear color photo' },
-                  { key: 'panCard', title: 'Income Tax PAN Card', desc: 'NSDL / UTI official PAN card front copy' },
-                  { key: 'passport', title: 'Passport (First & Last Page)', desc: 'Valid Indian passport showing address & validity' },
-                  { key: 'drivingLicense', title: 'MoRTH Driving License (DL)', desc: 'Valid smart card DL with transport / non-transport classes' },
-                  { key: 'bankProof', title: 'Bank Passbook / Cheque Leaf', desc: 'Pre-printed cancelled cheque or passbook with IFSC & Name' },
-                  { key: 'degreeMarksheet', title: 'Degree Certificate / Marksheet', desc: 'Convocation degree or final semester cumulative marksheet' },
-                  { key: 'relievingLetter', title: 'Previous Relieving Letter', desc: 'Official formal relieving certificate from immediate past employer' },
-                  { key: 'salarySlips', title: 'Last 3 Months Salary Slips', desc: 'Payslips showing basic, PF deductions, and gross earnings' },
-                  { key: 'signedNda', title: 'Signed Employer NDA Copy', desc: 'Executed copy of employee confidentiality agreement' }
-                ].map((docItem) => {
-                  const isChecked = !!formData.requiredDocumentsConfig?.[docItem.key];
-                  return (
-                    <label
-                      key={docItem.key}
-                      className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-2.5 ${
-                        isChecked 
-                          ? 'bg-sky-50/70 border-sky-400 text-slate-900 shadow-2xs' 
-                          : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                      }`}
-                    >
-                      <input 
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          requiredDocumentsConfig: { ...formData.requiredDocumentsConfig, [docItem.key]: e.target.checked }
-                        })}
-                        className="accent-sky-600 mt-0.5 w-4 h-4 shrink-0"
-                      />
-                      <div className="space-y-0.5 flex-1">
-                        <span className="font-extrabold text-xs text-slate-900 leading-tight block">{docItem.title}</span>
-                        <p className="text-[10px] text-slate-500 leading-snug">{docItem.desc}</p>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
+            {/* SECTION 9: Mandatory Upstream API Identity Verification Checks */}
 
             {/* SECTION 10: Statutory Compliance Forms & Legal Agreements Assignment */}
             <div className="space-y-3 pt-3 border-t border-slate-100">
