@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 
 from backend.app.database import get_db
-from backend.app.models import Candidate, Company, HrUser
+from backend.app.models import Candidate, Company, HrUser, CandidateDocument
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
 
 router = APIRouter(prefix="/hr", tags=["HR Executive"])
@@ -49,6 +49,10 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         "right": None
     }
     
+    joining_data = payload.joining_form_data or {}
+    if payload.documents:
+        joining_data["uploadedDocuments"] = payload.documents
+
     new_candidate = Candidate(
         id=candidate_id,
         token=token,
@@ -94,12 +98,28 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
             "hrReferenceCompleted": True,
             "addressVerifiedPhysically": False
         },
-        joining_form_data=payload.joining_form_data or {},
+        joining_form_data=joining_data,
         created_at=datetime.utcnow()
     )
     
     db.add(new_candidate)
     
+    # Save any attached candidate documents to candidate_documents table
+    if payload.documents:
+        for doc in payload.documents:
+            doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+            cand_doc = CandidateDocument(
+                id=doc_id,
+                candidate_id=candidate_id,
+                title=doc.get("title") or doc.get("name") or "Candidate Verification Document",
+                doc_type=doc.get("doc_type") or doc.get("type") or "aadhaar",
+                file_format=doc.get("file_format") or doc.get("format") or "pdf",
+                file_path=doc.get("file_path") or doc.get("data") or doc.get("url") or "",
+                file_size_kb=float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0),
+                created_at=datetime.utcnow()
+            )
+            db.add(cand_doc)
+
     # Increment active links on HR user
     if payload.hr_id:
         hr = db.query(HrUser).filter(HrUser.id == payload.hr_id).first()

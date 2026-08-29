@@ -92,7 +92,10 @@ def on_startup():
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);",
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);",
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';"
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';",
+            "CREATE TABLE IF NOT EXISTS candidate_documents (id VARCHAR(50) PRIMARY KEY, candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE CASCADE, title VARCHAR(200) NOT NULL, doc_type VARCHAR(50), file_format VARCHAR(20), file_path TEXT, file_size_kb FLOAT DEFAULT 0.0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+            "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_path TEXT;",
+            "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_size_kb FLOAT DEFAULT 0.0;" 
         ]
         with engine.connect() as conn:
             for stmt in migration_statements:

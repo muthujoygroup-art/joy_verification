@@ -280,7 +280,8 @@ export const HrExecutiveView = () => {
     manualChecks: {
       hrReferenceCompleted: true,
       addressVerifiedPhysically: false
-    }
+    },
+    uploadedDocuments: {}
   });
 
   const [delegatedFieldsMap, setDelegatedFieldsMap] = useState({});
@@ -377,7 +378,16 @@ export const HrExecutiveView = () => {
         statutoryFormsConfig: { form16: true, form11: true, formF: true, esicForm1: false, nda: true, posh: true, nonCompete: true, contractFormXIII: false },
         requiredDocumentsConfig: { aadhaarCard: true, panCard: true, passport: true, drivingLicense: false, bankProof: true, degreeMarksheet: true, relievingLetter: true, salarySlips: true, signedNda: true },
         verificationConfig: { aadhaar: true, pan: false, bankCheck: false, drivingLicense: false, voterId: false, mobileOtp: false, passport: false, uan: false, criminalCheck: false, education: false, directorship: false, faceCapture: false },
-        manualChecks: { hrReferenceCompleted: true, addressVerifiedPhysically: false }
+        manualChecks: { hrReferenceCompleted: true, addressVerifiedPhysically: false },
+        uploadedDocuments: {
+          aadhaar: { title: 'Aadhaar Card Copy', name: 'Aadhaar_Card_Verified_Copy.pdf', type: 'aadhaar', file_format: 'pdf', file_size_kb: 420.5, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          pan: { title: 'Income Tax PAN Card', name: 'PAN_Card_Front_Copy.pdf', type: 'pan', file_format: 'pdf', file_size_kb: 310.2, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          experience: { title: 'Relieving & Experience Letter', name: 'Infosys_Relieving_Experience_Letter.pdf', type: 'experience_letter', file_format: 'pdf', file_size_kb: 750.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          salary: { title: 'Last 3 Months Salary Slips', name: 'Payslips_Q1_2026.pdf', type: 'salary_slips', file_format: 'pdf', file_size_kb: 890.4, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          degree: { title: 'Degree Marksheet & Certificate', name: 'BE_Computer_Science_Degree.pdf', type: 'education_certificate', file_format: 'pdf', file_size_kb: 1200.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          bank: { title: 'Bank Cancelled Cheque', name: 'HDFC_Bank_Cancelled_Cheque.pdf', type: 'bank_proof', file_format: 'pdf', file_size_kb: 280.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' },
+          resume: { title: 'Candidate Resume / CV', name: 'Karthik_Ramanathan_Resume.pdf', type: 'resume', file_format: 'pdf', file_size_kb: 520.0, file_path: 'data:application/pdf;base64,JVBERi0xLjQKJ...' }
+        }
       });
       showToast('💻 Auto-filled complete IT / Software Engineering Profile!');
     } else if (targetIndustry === 'manufacturing') {
@@ -855,6 +865,37 @@ export const HrExecutiveView = () => {
     return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
   };
 
+  const handleDocFileUpload = (docKey, file, docTitle, docType) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData(prev => ({
+        ...prev,
+        uploadedDocuments: {
+          ...(prev.uploadedDocuments || {}),
+          [docKey]: {
+            title: docTitle,
+            name: file.name,
+            type: docType,
+            file_format: file.name.split('.').pop().toLowerCase(),
+            file_size_kb: parseFloat((file.size / 1024).toFixed(1)),
+            file_path: reader.result
+          }
+        }
+      }));
+      showToast(`📎 Attached ${docTitle} (${file.name})!`);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeUploadedDoc = (docKey) => {
+    setFormData(prev => {
+      const updated = { ...(prev.uploadedDocuments || {}) };
+      delete updated[docKey];
+      return { ...prev, uploadedDocuments: updated };
+    });
+  };
+
   const handleCreateCandidateSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.mobile || !formData.aadhaarNo) {
@@ -862,8 +903,12 @@ export const HrExecutiveView = () => {
       return;
     }
 
+    const docsList = Object.values(formData.uploadedDocuments || {});
+
     addCandidate({
       ...formData,
+      documents: docsList,
+      uploadedDocumentsList: docsList,
       delegatedFieldsMap,
       verificationReadiness: readiness
     });
@@ -3060,7 +3105,118 @@ export const HrExecutiveView = () => {
               )}
             </div>
 
-            {/* SECTION 8: Mandatory Upstream Verification Requirements Selector */}
+            {/* 📁 SECTION 8: DIRECT EMPLOYEE DOCUMENT UPLOADS & ATTACHMENTS (PRE-ATTACHED BY HR) */}
+            <div className="p-4 bg-gradient-to-br from-sky-50/60 via-slate-50 to-indigo-50/40 border-2 border-sky-200 rounded-2xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sky-100 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-sky-600 text-white rounded-lg">
+                    <FolderDown className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-sky-950 uppercase tracking-wider flex items-center gap-2">
+                      <span>8. Direct Employee Document Uploads & Verification Attachments</span>
+                      <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-md">
+                        {Object.keys(formData.uploadedDocuments || {}).length} Attached
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      HR can attach verified candidate documents (Aadhaar, PAN, Experience Letter, Salary Slips, Degree, Bank Proof, Resume). Automatically stored in PostgreSQL.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] bg-white border border-sky-200 text-sky-900 font-bold px-2 py-1 rounded-lg">
+                    PDF, JPG, PNG up to 10MB
+                  </span>
+                </div>
+              </div>
+
+              {/* Grid of Document Upload Slots */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                {[
+                  { key: 'aadhaar', title: 'Aadhaar Card Copy', icon: '🪪', type: 'aadhaar', desc: 'UIDAI e-Aadhaar or clear scanned copy' },
+                  { key: 'pan', title: 'Income Tax PAN Card', icon: '💳', type: 'pan', desc: 'NSDL / UTI permanent account card' },
+                  { key: 'experience', title: 'Experience / Relieving Letter', icon: '📜', type: 'experience_letter', desc: 'Relieving & service certificate from past employer' },
+                  { key: 'salary', title: 'Last 3 Months Salary Slips', icon: '💰', type: 'salary_slips', desc: 'Payslips / Form 16 showing earnings breakdown' },
+                  { key: 'degree', title: 'Highest Degree / Marksheet', icon: '🎓', type: 'education_certificate', desc: 'Graduation / PG marksheet or convocation degree' },
+                  { key: 'bank', title: 'Bank Cancelled Cheque / Passbook', icon: '🏦', type: 'bank_proof', desc: 'Pre-printed cancelled cheque showing IFSC & Account No' },
+                  { key: 'resume', title: 'Candidate Resume / CV', icon: '📄', type: 'resume', desc: 'Updated professional curriculum vitae' },
+                  { key: 'signedNda', title: 'Signed NDA / Employment Contract', icon: '✍️', type: 'signed_contract', desc: 'Company confidential agreement copy' },
+                  { key: 'passportDl', title: 'Passport / Driving License', icon: '🌐', type: 'id_proof', desc: 'Government photo passport or DL copy' }
+                ].map((doc) => {
+                  const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                  return (
+                    <div 
+                      key={doc.key}
+                      className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
+                        uploaded 
+                          ? 'bg-emerald-50/80 border-emerald-400 shadow-xs' 
+                          : 'bg-white border-slate-200 hover:border-sky-300'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{doc.icon}</span>
+                          <div>
+                            <strong className="text-slate-900 font-extrabold text-xs block leading-tight">{doc.title}</strong>
+                            <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">{doc.desc}</p>
+                          </div>
+                        </div>
+                        {uploaded && (
+                          <span className="text-[9px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded shrink-0">
+                            Attached ✓
+                          </span>
+                        )}
+                      </div>
+
+                      {uploaded ? (
+                        <div className="bg-white p-2.5 rounded-xl border border-emerald-200 space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-mono text-[11px] font-bold text-emerald-950 truncate block flex-1" title={uploaded.name}>
+                              📄 {uploaded.name}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-500 shrink-0 font-mono">
+                              {uploaded.file_size_kb} KB
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                            <label className="text-[10px] text-sky-700 hover:text-sky-900 font-bold cursor-pointer underline">
+                              Replace
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => removeUploadedDoc(doc.key)}
+                              className="text-[10px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                            >
+                              ✕ Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className="btn btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5 font-bold text-sky-900 bg-sky-50/80 border-sky-300 hover:bg-sky-100 cursor-pointer shadow-2xs">
+                          <Upload className="w-3.5 h-3.5 text-sky-600" />
+                          <span>Upload {doc.title.split(' ')[0]}</span>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                            onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
+                          />
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* SECTION 9: Mandatory Upstream Verification Requirements Selector */}
             <div className="space-y-4 pt-3 border-t border-slate-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
