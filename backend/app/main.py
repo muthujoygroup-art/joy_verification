@@ -24,8 +24,9 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description="Enterprise Employee Identity & Profile Verification Platform Backend API",
-    docs_url="/docs",
-    redoc_url="/redoc"
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
 )
 
 # 1. Enterprise Security, Rate Limiting & Anti-DDoS Middleware
