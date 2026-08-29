@@ -54,10 +54,33 @@ async def add_performance_headers(request: Request, call_next):
     response.headers["X-Active-Cluster-Region"] = "ap-south-1"
     return response
 
-# Startup event to ensure database tables and initial seed data are populated
+# Startup event to ensure database tables, column extensions, and initial seed data are populated
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
+    
+    # Auto-execute PostgreSQL column migrations if needed
+    try:
+        from sqlalchemy import text
+        migration_statements = [
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[\"aadhaar\", \"pan\", \"bank\", \"dl\", \"passport\", \"uan\", \"face\"]'::json;",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
+            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE WHERE provider_key = 'server2_coincircle';"
+        ]
+        with engine.connect() as conn:
+            for stmt in migration_statements:
+                try:
+                    conn.execute(text(stmt))
+                except Exception:
+                    pass
+            conn.commit()
+    except Exception:
+        pass
+
     seed_database()
 
 # Mount all API Routers under /api prefix
