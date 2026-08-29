@@ -139,7 +139,6 @@ export const HrExecutiveView = () => {
     fatherName: '',
     motherName: '',
     spouseName: '',
-    dob: '',
     gender: 'Male',
     bloodGroup: 'O+',
     maritalStatus: 'Married',

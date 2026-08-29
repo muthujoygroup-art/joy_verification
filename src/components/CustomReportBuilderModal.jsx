@@ -121,18 +121,18 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
             </style>
           </head>
           <body>
-            <div class="header">
+            <div className="header">
               <div>
-                <h1 class="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
-                <div class="sub">Custom Compliance Audit Report • ${reportScope.toUpperCase()}</div>
+                <h1 className="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+                <div className="sub">Custom Compliance Audit Report • ${reportScope.toUpperCase()}</div>
               </div>
-              <div class="meta">
+              <div className="meta">
                 <div>Generated: <strong>${new Date().toLocaleString()}</strong></div>
                 <div>Filter Scope: <strong>Company [${selectedCompanyFilter}], Status [${selectedStatusFilter}]</strong></div>
               </div>
             </div>
 
-            <div class="summary">
+            <div className="summary">
               <div>Total Records: <strong>${dataset.length}</strong></div>
               <div>Verified: <strong>${dataset.filter(c => c.status === 'Verified').length}</strong></div>
               <div>Pending: <strong>${dataset.filter(c => c.status !== 'Verified').length}</strong></div>
@@ -152,10 +152,10 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
                     <td>${i + 1}</td>
                     ${activeFieldKeys.map(k => {
                       if (k === 'company') return `<td>${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions'}</td>`;
-                      if (k === 'aadhaarCheck') return `<td><span class="${c.verificationsCompleted.aadhaar ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.aadhaar ? 'PASSED ✓' : 'PENDING'}</span></td>`;
-                      if (k === 'mobileOtp') return `<td><span class="${c.verificationsCompleted.mobile ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.mobile ? 'VERIFIED ✓' : 'PENDING'}</span></td>`;
-                      if (k === 'faceMatchScore') return `<td><span class="${c.verificationsCompleted.face ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.face ? '99.4% MATCH ✓' : 'PENDING'}</span></td>`;
-                      if (k === 'status') return `<td><span class="${c.status === 'Verified' ? 'badge-verified' : 'badge-pending'}">${c.status}</span></td>`;
+                      if (k === 'aadhaarCheck') return `<td><span className="${c.verificationsCompleted.aadhaar ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.aadhaar ? 'PASSED ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'mobileOtp') return `<td><span className="${c.verificationsCompleted.mobile ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.mobile ? 'VERIFIED ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'faceMatchScore') return `<td><span className="${c.verificationsCompleted.face ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.face ? '99.4% MATCH ✓' : 'PENDING'}</span></td>`;
+                      if (k === 'status') return `<td><span className="${c.status === 'Verified' ? 'badge-verified' : 'badge-pending'}">${c.status}</span></td>`;
                       return `<td>${c[k] || 'N/A'}</td>`;
                     }).join('')}
                   </tr>
@@ -163,7 +163,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
               </tbody>
             </table>
 
-            <div class="footer">
+            <div className="footer">
               Generated via JOY Corporate Solutions BGV Platform • Confidential Legal Audit Record • DPDP Act 2023 Compliant
             </div>
           </body>

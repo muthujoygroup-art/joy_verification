@@ -98,7 +98,10 @@ async function request(endpoint, options = {}, useCache = false) {
         return data;
       } catch (error) {
         if (attempts >= maxAttempts) {
-          console.warn(`API Error [${endpoint}]:`, error.message);
+          // Only log relevant API errors, suppress noisy background sync 401/404 pings
+          if (!endpoint.startsWith('/system/') && endpoint !== '/companies' && endpoint !== '/candidates') {
+            console.warn(`API [${endpoint}]:`, error.message);
+          }
           throw error;
         }
         await new Promise(r => setTimeout(r, 600 * attempts));

@@ -268,31 +268,31 @@ ISO 27001:2022 Certified • DPDP Act 2023 Compliant Digital Audit Trail
         </style>
       </head>
       <body>
-        <div class="header">
+        <div className="header">
           <div>
-            <h1 class="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
-            <div class="sub">Official Background Verification Slip • ${apiName.toUpperCase()}</div>
+            <h1 className="title">JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+            <div className="sub">Official Background Verification Slip • ${apiName.toUpperCase()}</div>
           </div>
-          <div class="meta">
+          <div className="meta">
             <div>Date: <strong>${new Date().toLocaleString()}</strong></div>
             <div>Ref: <strong>JOY-SLIP-${Math.random().toString(36).substring(2, 10).toUpperCase()}</strong></div>
-            <div style="margin-top: 4px;"><span class="badge">VERIFIED & AUTHENTICATED ✓</span></div>
+            <div style="margin-top: 4px;"><span className="badge">VERIFIED & AUTHENTICATED ✓</span></div>
           </div>
         </div>
 
-        <div class="section">
-          <div class="row"><span class="label">Candidate Full Name:</span><span class="val">${candidate.name}</span></div>
-          <div class="row"><span class="label">Employee Code / ID:</span><span class="val">${candidate.empId || 'N/A'}</span></div>
-          <div class="row"><span class="label">Employer Organization:</span><span class="val">${companyName}</span></div>
-          <div class="row"><span class="label">Verification Parameter:</span><span class="val">${apiName.toUpperCase()}</span></div>
-          <div class="row"><span class="label">Upstream Gateway:</span><span class="val">${dataObj?.provider || 'Government Repository / Institutional API'}</span></div>
-          <div class="row"><span class="label">Audit Status:</span><span class="val" style="color: #15803d;">${dataObj?.status || 'VERIFIED'}</span></div>
+        <div className="section">
+          <div className="row"><span className="label">Candidate Full Name:</span><span className="val">${candidate.name}</span></div>
+          <div className="row"><span className="label">Employee Code / ID:</span><span className="val">${candidate.empId || 'N/A'}</span></div>
+          <div className="row"><span className="label">Employer Organization:</span><span className="val">${companyName}</span></div>
+          <div className="row"><span className="label">Verification Parameter:</span><span className="val">${apiName.toUpperCase()}</span></div>
+          <div className="row"><span className="label">Upstream Gateway:</span><span className="val">${dataObj?.provider || 'Government Repository / Institutional API'}</span></div>
+          <div className="row"><span className="label">Audit Status:</span><span className="val" style="color: #15803d;">${dataObj?.status || 'VERIFIED'}</span></div>
         </div>
 
         <div style="font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #1e1b4b;">Authenticated Payload Attributes:</div>
         <pre>${JSON.stringify(dataObj || {}, null, 2)}</pre>
 
-        <div class="footer">
+        <div className="footer">
           Digitally Authenticated by JOY CORPORATE SOLUTIONS PRIVATE LIMITED • ISO 27001:2022 Certified Gateway • DPDP Act 2023 Compliant
         </div>
       </body>

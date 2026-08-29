@@ -172,32 +172,32 @@ export const UniversalDocumentExportModal = ({
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="logo-box">
+        <div className="header">
+          <div className="logo-box">
             <h1>JOY CORPORATE SOLUTIONS PVT LTD</h1>
             <p>Master Candidate Background Verification Dossier</p>
           </div>
-          <div class="meta-box">
+          <div className="meta-box">
             <p>Report Period: <strong>${isSingleDayMode ? singleDate : `${startDate} to ${endDate}`}</strong></p>
             <p>Generated: <strong>${new Date().toLocaleString()}</strong></p>
             <p>Compliance: <strong>DPDP Act 2023 & ISO 27001</strong></p>
           </div>
         </div>
 
-        <div class="summary-card">
-          <div class="summary-item">
+        <div className="summary-card">
+          <div className="summary-item">
             <span>Total Candidates Filtered</span>
             <strong>${selectedList.length}</strong>
           </div>
-          <div class="summary-item">
+          <div className="summary-item">
             <span>Verified Status</span>
             <strong>${selectedList.filter(c => c.status === 'Verified').length}</strong>
           </div>
-          <div class="summary-item">
+          <div className="summary-item">
             <span>Pending / In-Progress</span>
             <strong>${selectedList.filter(c => c.status !== 'Verified').length}</strong>
           </div>
-          <div class="summary-item">
+          <div className="summary-item">
             <span>UIDAI Aadhaar Integrity</span>
             <strong>100% Masked</strong>
           </div>
@@ -228,13 +228,13 @@ export const UniversalDocumentExportModal = ({
                 <td>XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}</td>
                 <td>${c.bankDetails?.nameMatchStatus || 'Matched 100% (Penny Drop)'}</td>
                 <td>${c.verificationDate || '2026-08-26'}</td>
-                <td><span class="${c.status === 'Verified' ? 'badge-verified' : 'badge-pending'}">${c.status}</span></td>
+                <td><span className="${c.status === 'Verified' ? 'badge-verified' : 'badge-pending'}">${c.status}</span></td>
               </tr>
             `).join('')}
           </tbody>
         </table>
 
-        <div class="footer">
+        <div className="footer">
           <p>© 2026 JOY CORPORATE SOLUTIONS PVT LTD. All rights reserved. This document contains confidential verification records for authorized employment purposes only under Section 7(a) of the DPDP Act 2023.</p>
         </div>
       </body>
