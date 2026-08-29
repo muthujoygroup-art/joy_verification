@@ -115,6 +115,19 @@ export const HrExecutiveView = () => {
   const [formData, setFormData] = useState({
     name: '',
     empId: '',
+    employeeNumber: '',
+    dob: '',
+    age: '',
+    doj: '',
+    motherTongue: '',
+    religion: 'Hindu',
+    caste: '',
+    category: 'General',
+    nativeState: '',
+    nativeDistrict: '',
+    identificationMarks: '',
+    pfNumber: '',
+    esiNumber: '',
     email: '',
     mobile: '',
     alternateMobile: '',
@@ -2025,9 +2038,10 @@ export const HrExecutiveView = () => {
             <div className="space-y-3">
               <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
                 <User className="w-4 h-4 text-emerald-600" />
-                <span>1. Personal & Demographic Particulars</span>
+                <span>1. Personal, Demographic & Application Form Particulars</span>
               </h4>
               
+              {/* Row 1: Names & Codes */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
                   {renderFieldLabel('Candidate Full Name', 'name', true)}
@@ -2047,9 +2061,32 @@ export const HrExecutiveView = () => {
                     placeholder="e.g. EMP-2026-99"
                     value={formData.empId}
                     onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
-                    className={getFieldInputClass('empId', 'form-input font-mono')}
+                    className={getFieldInputClass('empId', 'form-input font-mono font-bold')}
                   />
                 </div>
+                <div>
+                  {renderFieldLabel('Employee Number (Payroll)', 'employeeNumber')}
+                  <input 
+                    type="text" 
+                    placeholder="e.g. EN-884912"
+                    value={formData.employeeNumber}
+                    onChange={(e) => setFormData({ ...formData, employeeNumber: e.target.value })}
+                    className={getFieldInputClass('employeeNumber', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Date of Joining (DOJ)', 'doj')}
+                  <input 
+                    type="date" 
+                    value={formData.doj}
+                    onChange={(e) => setFormData({ ...formData, doj: e.target.value })}
+                    className={getFieldInputClass('doj')}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Parents & Age */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
                   {renderFieldLabel("Father's Name", 'fatherName')}
                   <input 
@@ -2070,9 +2107,6 @@ export const HrExecutiveView = () => {
                     className={getFieldInputClass('motherName')}
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
                   {renderFieldLabel('Date of Birth (DOB)', 'dob')}
                   <input 
@@ -2083,6 +2117,20 @@ export const HrExecutiveView = () => {
                   />
                 </div>
                 <div>
+                  {renderFieldLabel('Age (Years)', 'age')}
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 28"
+                    value={formData.age}
+                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                    className={getFieldInputClass('age', 'form-input font-bold')}
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Gender, Marital, Blood Group, Mother Language */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
                   {renderFieldLabel('Gender', 'gender')}
                   <select 
                     value={formData.gender}
@@ -2091,11 +2139,12 @@ export const HrExecutiveView = () => {
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                    <option value="Non-Binary">Non-Binary</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
                 <div>
-                  {renderFieldLabel('Marital Status', 'maritalStatus')}
+                  {renderFieldLabel('Status Married / Unmarried', 'maritalStatus')}
                   <select 
                     value={formData.maritalStatus}
                     onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
@@ -2118,6 +2167,70 @@ export const HrExecutiveView = () => {
                       <option key={bg} value={bg}>{bg}</option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  {renderFieldLabel('Mother Language (Mother Tongue)', 'motherTongue')}
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Tamil, Hindi, Telugu"
+                    value={formData.motherTongue}
+                    onChange={(e) => setFormData({ ...formData, motherTongue: e.target.value })}
+                    className={getFieldInputClass('motherTongue')}
+                  />
+                </div>
+              </div>
+
+              {/* Row 4: Religion, Caste, Category, Identification Marks */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  {renderFieldLabel('Religion', 'religion')}
+                  <select 
+                    value={formData.religion}
+                    onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
+                    className={getFieldInputClass('religion', 'form-select font-medium')}
+                  >
+                    <option value="Hindu">Hindu</option>
+                    <option value="Muslim">Muslim</option>
+                    <option value="Christian">Christian</option>
+                    <option value="Sikh">Sikh</option>
+                    <option value="Jain">Jain</option>
+                    <option value="Buddhist">Buddhist</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  {renderFieldLabel('Caste', 'caste')}
+                  <input 
+                    type="text" 
+                    placeholder="Optional Caste"
+                    value={formData.caste}
+                    onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
+                    className={getFieldInputClass('caste')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Category', 'category')}
+                  <select 
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className={getFieldInputClass('category', 'form-select font-bold')}
+                  >
+                    <option value="General">General (OC)</option>
+                    <option value="OBC">OBC (BC / MBC)</option>
+                    <option value="SC">SC (Scheduled Caste)</option>
+                    <option value="ST">ST (Scheduled Tribe)</option>
+                    <option value="EWS">EWS (Economically Weaker)</option>
+                  </select>
+                </div>
+                <div>
+                  {renderFieldLabel('Physical Identification Marks', 'identificationMarks')}
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Mole on right collar bone"
+                    value={formData.identificationMarks}
+                    onChange={(e) => setFormData({ ...formData, identificationMarks: e.target.value })}
+                    className={getFieldInputClass('identificationMarks')}
+                  />
                 </div>
               </div>
 
@@ -2209,6 +2322,29 @@ export const HrExecutiveView = () => {
                     value={formData.aadhaarNo}
                     onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
                     className={getFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-emerald-50/40 p-3 rounded-xl border border-emerald-200/60 mb-3">
+                <div>
+                  {renderFieldLabel('Native Hometown State', 'nativeState')}
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Tamil Nadu"
+                    value={formData.nativeState}
+                    onChange={(e) => setFormData({ ...formData, nativeState: e.target.value })}
+                    className={getFieldInputClass('nativeState', 'form-input font-bold')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Native Hometown District', 'nativeDistrict')}
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Madurai"
+                    value={formData.nativeDistrict}
+                    onChange={(e) => setFormData({ ...formData, nativeDistrict: e.target.value })}
+                    className={getFieldInputClass('nativeDistrict', 'form-input font-bold')}
                   />
                 </div>
               </div>
