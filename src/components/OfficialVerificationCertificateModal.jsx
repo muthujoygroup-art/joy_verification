@@ -33,14 +33,14 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const panPassed = !!verifs.pan;
   const bankPassed = !!verifs.bank || !!verifs.bankCheck;
 
-  const handleDownloadPdf = () => {
-    const downloadUrl = api.exportCertificatePdfUrl(candidate.token || candidate.id);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `JOY_Corporate_Certificate_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadPdf = async () => {
+    const filename = `JOY_Corporate_Certificate_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    try {
+      await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
+    } catch (e) {
+      console.warn("Backend streaming download failed, opening print dialog...", e);
+      window.print();
+    }
   };
 
   const handlePrint = () => {

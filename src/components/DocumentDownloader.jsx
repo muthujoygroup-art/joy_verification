@@ -58,28 +58,26 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   ];
 
   // Direct backend PDF downloads
-  const handleDownloadCertificatePdf = () => {
-    const url = api.exportCertificatePdfUrl(candidate.token || candidate.id);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `JOY_Corporate_Certificate_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setDownloadSuccess('JOY Corporate Verification Certificate (PDF)');
-    setTimeout(() => setDownloadSuccess(null), 3500);
+  const handleDownloadCertificatePdf = async () => {
+    const filename = `JOY_Corporate_Certificate_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    try {
+      await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
+      setDownloadSuccess('JOY Corporate Verification Certificate (PDF)');
+      setTimeout(() => setDownloadSuccess(null), 3500);
+    } catch (e) {
+      setShowCertPreview(true);
+    }
   };
 
-  const handleDownloadEmployeeDossierPdf = () => {
-    const url = api.exportLaborProfileDossierUrl(candidate.token || candidate.id);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Employee_Profile_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setDownloadSuccess('Employee Profile Dossier (5-Page PDF)');
-    setTimeout(() => setDownloadSuccess(null), 3500);
+  const handleDownloadEmployeeDossierPdf = async () => {
+    const filename = `Employee_Master_Profile_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    try {
+      await api.downloadDocument(api.exportLaborProfileDossierUrl(candidate.token || candidate.id), filename);
+      setDownloadSuccess('Employee Profile Dossier (Master PDF)');
+      setTimeout(() => setDownloadSuccess(null), 3500);
+    } catch (e) {
+      setShowDossierPreview(true);
+    }
   };
 
   const handleDownloadSingleAttachedDoc = (doc) => {

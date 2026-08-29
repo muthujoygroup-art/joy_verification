@@ -398,7 +398,30 @@ export const api = {
     });
   },
 
-  // Dedicated Document Exporters
+  // Dedicated Document Exporters & Robust Blob Downloader
+  downloadDocument: async (endpointOrUrl, defaultFilename = 'document.pdf') => {
+    const token = getAuthToken();
+    const url = endpointOrUrl.startsWith('http') || endpointOrUrl.startsWith('/api') 
+      ? endpointOrUrl 
+      : `${API_BASE_URL}${endpointOrUrl.startsWith('/') ? '' : '/'}${endpointOrUrl}`;
+      
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const res = await fetch(url, { headers });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Download failed (status ${res.status}): ${errText || res.statusText}`);
+    }
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = defaultFilename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 10000);
+    return true;
+  },
   exportCertificatePdfUrl: (identifier) => `${API_BASE_URL}/documents/certificate/${identifier}`,
   exportLaborProfileDossierUrl: (identifier) => `${API_BASE_URL}/documents/profile-dossier/${identifier}`,
   exportBgvDossierPdfUrl: (identifier) => `${API_BASE_URL}/documents/bgv-dossier/${identifier}`,

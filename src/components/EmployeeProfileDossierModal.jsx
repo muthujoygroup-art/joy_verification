@@ -110,17 +110,17 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     { id: 'annex-7', title: 'Signed Employer NDA & Confidentiality Covenant', name: 'Executed_NDA_Agreement.pdf', file_format: 'PDF', file_size_kb: 640.0, doc_type: 'nda', file_path: '' }
   ];
 
-  const handleDownloadPdf = () => {
-    // 1. Trigger backend streaming download
-    const downloadUrl = api.exportLaborProfileDossierUrl(c.token || c.id);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `Employee_Master_Profile_Dossier_${c.name?.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setDownloadSuccess('Complete Master Dossier PDF downloaded successfully!');
-    setTimeout(() => setDownloadSuccess(null), 4000);
+  const handleDownloadPdf = async () => {
+    const filename = `Employee_Master_Profile_Dossier_${c.name?.replace(/\s+/g, '_')}.pdf`;
+    try {
+      await api.downloadDocument(api.exportLaborProfileDossierUrl(c.token || c.id), filename);
+      setDownloadSuccess('Complete Master Dossier PDF downloaded successfully!');
+      setTimeout(() => setDownloadSuccess(null), 4000);
+    } catch (e) {
+      console.warn("Direct blob download failed, falling back to print-to-PDF...", e);
+      setActiveTab(6);
+      setTimeout(() => window.print(), 300);
+    }
   };
 
   const handlePrint = () => {

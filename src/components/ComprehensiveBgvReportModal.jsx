@@ -192,14 +192,14 @@ export const ComprehensiveBgvReportModal = ({
     window.print();
   };
 
-  const handleDownloadMasterPdf = () => {
-    const downloadUrl = api.exportBgvDossierPdfUrl(candidate.token || candidate.id);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `JOY_360_BGV_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadMasterPdf = async () => {
+    const filename = `JOY_360_BGV_Dossier_${candidate.name?.replace(/\s+/g, '_')}.pdf`;
+    try {
+      await api.downloadDocument(api.exportBgvDossierPdfUrl(candidate.token || candidate.id), filename);
+    } catch (e) {
+      console.warn("Backend BGV download failed, opening print view...", e);
+      window.print();
+    }
   };
 
   const handleDownloadSlip = (apiName, dataObj) => {
