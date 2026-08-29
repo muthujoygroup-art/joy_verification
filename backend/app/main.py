@@ -131,6 +131,41 @@ def health_check():
         "node": "joy-cluster-node-01"
     }
 
+@app.get("/system/db-status")
+@app.get(f"{settings.API_PREFIX}/system/db-status")
+def get_database_status():
+    """Diagnostic endpoint to inspect live database connection status and dialect"""
+    from backend.app.database import engine, get_engine
+    from sqlalchemy import inspect, text, create_engine
+    
+    current_dialect = engine.dialect.name
+    tables = []
+    try:
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+    except Exception as e:
+        tables = [f"Error: {str(e)}"]
+
+    # Test direct PostgreSQL connection
+    pg_test_result = "NOT TESTED"
+    pg_test_error = None
+    try:
+        test_engine = create_engine(settings.DATABASE_URL, connect_args={"connect_timeout": 3})
+        with test_engine.connect() as conn:
+            res = conn.execute(text("SELECT current_database(), current_user;")).fetchone()
+            pg_test_result = f"CONNECTED (DB: {res[0]}, User: {res[1]})"
+    except Exception as e:
+        pg_test_result = "FAILED"
+        pg_test_error = str(e)
+
+    return {
+        "active_engine_dialect": current_dialect,
+        "database_url_configured": f"postgresql://{settings.POSTGRES_USER}:***@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
+        "pg_connection_test": pg_test_result,
+        "pg_connection_error": pg_test_error,
+        "tables_in_active_db": tables
+    }
+
 @app.get("/run-migrations")
 @app.get("/api/run-migrations")
 @app.get("/api/database/run-migrations")
@@ -150,6 +185,8 @@ def run_migrations_direct():
             "success": False,
             "error": str(e)
         }
+
+
 
 
 @app.get(f"{settings.API_PREFIX}/system/security-metrics")
