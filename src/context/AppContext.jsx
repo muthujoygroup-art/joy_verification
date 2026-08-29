@@ -1234,6 +1234,7 @@ export const AppProvider = ({ children }) => {
         verification_config: candidateData.verificationConfig,
         manual_checks: candidateData.manualChecks,
         joining_form_data: candidateData.joiningFormData || candidateData,
+        custom_fields: candidateData.customFields || candidateData.custom_fields || {},
         documents: candidateData.documents || candidateData.uploadedDocumentsList || []
       });
 
@@ -1273,6 +1274,7 @@ export const AppProvider = ({ children }) => {
         faceImages: created.face_images || { straight: null, left: null, right: null },
         manualChecks: created.manual_checks || {},
         joiningFormData: created.joining_form_data || {},
+        customFields: created.custom_fields || candidateData.customFields || {},
         documents: candidateData.documents || candidateData.uploadedDocumentsList || [],
         verificationDate: created.verification_date
       };

@@ -282,7 +282,9 @@ export const HrExecutiveView = () => {
       hrReferenceCompleted: true,
       addressVerifiedPhysically: false
     },
-    uploadedDocuments: {}
+    uploadedDocuments: {},
+    customFields: [],
+    customDocSlots: []
   });
 
   const [delegatedFieldsMap, setDelegatedFieldsMap] = useState({});
@@ -871,6 +873,83 @@ export const HrExecutiveView = () => {
     return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
   };
 
+  // Dynamic Custom Fields State & Handlers
+  const [newFieldLabel, setNewFieldLabel] = useState('');
+  const [newFieldType, setNewFieldType] = useState('text');
+  const [newFieldRequired, setNewFieldRequired] = useState(false);
+  const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
+
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocDesc, setNewDocDesc] = useState('');
+  const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
+
+  const handleAddCustomField = () => {
+    if (!newFieldLabel.trim()) return;
+    const fieldId = `custom_${Date.now()}`;
+    const newField = {
+      id: fieldId,
+      key: newFieldLabel.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+      label: newFieldLabel.trim(),
+      type: newFieldType,
+      required: newFieldRequired,
+      value: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      customFields: [...(prev.customFields || []), newField]
+    }));
+    setNewFieldLabel('');
+    setShowAddCustomFieldModal(false);
+    showToast(`✨ Added custom field: "${newField.label}"!`);
+  };
+
+  const handleUpdateCustomFieldValue = (fieldId, val) => {
+    setFormData(prev => ({
+      ...prev,
+      customFields: (prev.customFields || []).map(f => f.id === fieldId ? { ...f, value: val } : f)
+    }));
+  };
+
+  const handleRemoveCustomField = (fieldId) => {
+    setFormData(prev => ({
+      ...prev,
+      customFields: (prev.customFields || []).filter(f => f.id !== fieldId)
+    }));
+  };
+
+  const handleAddCustomDocSlot = () => {
+    if (!newDocTitle.trim()) return;
+    const slotId = `custom_doc_${Date.now()}`;
+    const newSlot = {
+      id: slotId,
+      key: slotId,
+      title: newDocTitle.trim(),
+      desc: newDocDesc.trim() || 'Company specific specialized document attachment',
+      type: 'custom_doc'
+    };
+    setFormData(prev => ({
+      ...prev,
+      customDocSlots: [...(prev.customDocSlots || []), newSlot]
+    }));
+    setNewDocTitle('');
+    setNewDocDesc('');
+    setShowAddCustomDocModal(false);
+    showToast(`📄 Added custom document slot: "${newSlot.title}"!`);
+  };
+
+  const handleRemoveCustomDocSlot = (slotId) => {
+    setFormData(prev => {
+      const updatedSlots = (prev.customDocSlots || []).filter(s => s.id !== slotId);
+      const updatedDocs = { ...(prev.uploadedDocuments || {}) };
+      delete updatedDocs[slotId];
+      return {
+        ...prev,
+        customDocSlots: updatedSlots,
+        uploadedDocuments: updatedDocs
+      };
+    });
+  };
+
   const handleDocFileUpload = (docKey, file, docTitle, docType) => {
     if (!file) return;
     const reader = new FileReader();
@@ -910,9 +989,22 @@ export const HrExecutiveView = () => {
     }
 
     const docsList = Object.values(formData.uploadedDocuments || {});
+    
+    // Convert customFields array into key-value map
+    const customFieldsMap = {};
+    (formData.customFields || []).forEach(f => {
+      customFieldsMap[f.key || f.id] = {
+        label: f.label,
+        type: f.type,
+        required: f.required,
+        value: f.value
+      };
+    });
 
     addCandidate({
       ...formData,
+      customFields: customFieldsMap,
+      custom_fields: customFieldsMap,
       documents: docsList,
       uploadedDocumentsList: docsList,
       delegatedFieldsMap,
@@ -3377,7 +3469,269 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            {/* SECTION 9: Mandatory Upstream Verification Requirements Selector */}
+            {/* ⚡ SECTION 9: DYNAMIC CUSTOM ATTRIBUTES & CUSTOM DOCUMENT BUILDER (HR EXTENSIBILITY) */}
+            <div className="p-4 bg-gradient-to-br from-purple-50/70 via-slate-50 to-indigo-50/60 border-2 border-purple-300/80 rounded-2xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-purple-600 text-white rounded-xl shadow-xs">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">
+                        9. Dynamic Custom Fields & Custom Document Slots Builder
+                      </h4>
+                      <span className="text-[10px] bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-md border border-purple-200">
+                        {(formData.customFields || []).length} Custom Fields • {(formData.customDocSlots || []).length} Custom Doc Slots
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Add any company-specific text attributes (Grade, Project Code, Manager Email) or custom document upload slots on the fly!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCustomFieldModal(true)}
+                    className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-purple-900 bg-white border-purple-300 hover:bg-purple-50 shadow-xs cursor-pointer"
+                  >
+                    <span>+ Add Custom Text Field</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCustomDocModal(true)}
+                    className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-white border-indigo-300 hover:bg-indigo-50 shadow-xs cursor-pointer"
+                  >
+                    <span>+ Add Custom Doc Slot</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Dynamic Custom Text/Number/Date Fields List */}
+              {(formData.customFields || []).length > 0 && (
+                <div className="space-y-2">
+                  <span className="text-[11px] font-black text-purple-900 uppercase tracking-wider block">
+                    Custom Attribute Fields ({(formData.customFields || []).length}):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    {(formData.customFields || []).map((f) => (
+                      <div key={f.id} className="p-3 bg-white rounded-xl border border-purple-200 shadow-2xs space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="font-extrabold text-slate-900 text-xs truncate">
+                            {f.label} {f.required && <span className="text-rose-500">*</span>}
+                          </label>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded uppercase">
+                              {f.type}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomField(f.id)}
+                              className="text-rose-500 hover:text-rose-700 font-bold text-xs p-1"
+                              title="Delete Field"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                        {f.type === 'textarea' ? (
+                          <textarea
+                            rows="2"
+                            value={f.value}
+                            onChange={(e) => handleUpdateCustomFieldValue(f.id, e.target.value)}
+                            placeholder={`Enter ${f.label}...`}
+                            className="form-input text-xs"
+                          />
+                        ) : (
+                          <input
+                            type={f.type}
+                            value={f.value}
+                            onChange={(e) => handleUpdateCustomFieldValue(f.id, e.target.value)}
+                            placeholder={`Enter ${f.label}...`}
+                            className="form-input text-xs font-medium"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Dynamic Custom Document Slots List */}
+              {(formData.customDocSlots || []).length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-purple-100">
+                  <span className="text-[11px] font-black text-indigo-900 uppercase tracking-wider block">
+                    Custom Document Upload Slots ({(formData.customDocSlots || []).length}):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    {(formData.customDocSlots || []).map((slot) => {
+                      const uploaded = (formData.uploadedDocuments || {})[slot.key];
+                      return (
+                        <div key={slot.id} className="p-3 bg-white rounded-xl border border-indigo-200 shadow-2xs space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <strong className="text-slate-900 font-extrabold text-xs block leading-tight">{slot.title}</strong>
+                              <p className="text-[10px] text-slate-500 mt-0.5 leading-snug line-clamp-1">{slot.desc}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomDocSlot(slot.id)}
+                              className="text-rose-500 hover:text-rose-700 font-bold text-xs p-1 shrink-0"
+                              title="Delete Slot"
+                            >
+                              ✕
+                            </button>
+                          </div>
+
+                          {uploaded ? (
+                            <div className="bg-emerald-50/80 p-2 rounded-lg border border-emerald-300 flex items-center justify-between text-[10px]">
+                              <span className="font-mono font-bold text-emerald-950 truncate flex-1">
+                                📄 {uploaded.name} ({uploaded.file_size_kb} KB)
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeUploadedDoc(slot.key)}
+                                className="text-rose-600 font-bold hover:underline ml-2"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="btn btn-secondary text-[11px] py-1 px-2 flex items-center justify-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-300 hover:bg-indigo-100 cursor-pointer">
+                              <Upload className="w-3 h-3 text-indigo-600" />
+                              <span>Attach {slot.title.split(' ')[0]}</span>
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                onChange={(e) => handleDocFileUpload(slot.key, e.target.files[0], slot.title, 'custom_doc')} 
+                              />
+                            </label>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Inline Quick Field Adder Modal / Popup */}
+              {showAddCustomFieldModal && (
+                <div className="p-3.5 bg-white rounded-xl border-2 border-purple-400 shadow-md space-y-3 animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-purple-950 uppercase tracking-wider">
+                      ✨ Create New Custom Attribute Field
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCustomFieldModal(false)}
+                      className="text-slate-400 hover:text-slate-700 font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Field Label / Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Internal Project Code"
+                        value={newFieldLabel}
+                        onChange={(e) => setNewFieldLabel(e.target.value)}
+                        className="form-input text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Widget Input Type</label>
+                      <select
+                        value={newFieldType}
+                        onChange={(e) => setNewFieldType(e.target.value)}
+                        className="form-select text-xs font-medium"
+                      >
+                        <option value="text">Text Input</option>
+                        <option value="number">Numeric (Number)</option>
+                        <option value="date">Date Picker</option>
+                        <option value="textarea">Multi-line Textarea</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-3 pt-4 sm:pt-5">
+                      <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={newFieldRequired}
+                          onChange={(e) => setNewFieldRequired(e.target.checked)}
+                          className="accent-purple-600 w-4 h-4"
+                        />
+                        <span>Mandatory *</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleAddCustomField}
+                        className="btn btn-primary text-xs py-1.5 px-3 font-extrabold bg-purple-600 hover:bg-purple-700 text-white shadow-xs"
+                      >
+                        Add Field
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Inline Quick Doc Slot Adder Modal / Popup */}
+              {showAddCustomDocModal && (
+                <div className="p-3.5 bg-white rounded-xl border-2 border-indigo-400 shadow-md space-y-3 animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-indigo-950 uppercase tracking-wider">
+                      📄 Create New Custom Document Slot
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCustomDocModal(false)}
+                      className="text-slate-400 hover:text-slate-700 font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Document Title *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Relocation Agreement"
+                        value={newDocTitle}
+                        onChange={(e) => setNewDocTitle(e.target.value)}
+                        className="form-input text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Description / Purpose</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Executed relocation allowance covenant"
+                        value={newDocDesc}
+                        onChange={(e) => setNewDocDesc(e.target.value)}
+                        className="form-input text-xs"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 pt-4 sm:pt-5">
+                      <button
+                        type="button"
+                        onClick={handleAddCustomDocSlot}
+                        className="btn btn-primary text-xs py-1.5 px-3 font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
+                      >
+                        Add Document Slot
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* SECTION 10: Mandatory Upstream Verification Requirements Selector */}
             <div className="space-y-4 pt-3 border-t border-slate-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>

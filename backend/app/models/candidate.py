@@ -45,6 +45,7 @@ class Candidate(Base):
     face_images = Column(JSON, default=dict)  # { straight: url/base64, left: url/base64, right: url/base64 }
     manual_checks = Column(JSON, default=dict) # { hrReferenceCompleted: true, addressVerifiedPhysically: false }
     joining_form_data = Column(JSON, default=dict) # Full CiteHR 6-tab joining form data
+    custom_fields = Column(JSON, default=dict) # Dynamic custom attributes configured on the fly by HR
     
     verification_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

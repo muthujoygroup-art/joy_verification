@@ -99,6 +99,7 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
             "addressVerifiedPhysically": False
         },
         joining_form_data=joining_data,
+        custom_fields=payload.custom_fields or {},
         created_at=datetime.utcnow()
     )
     

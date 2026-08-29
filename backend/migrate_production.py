@@ -46,7 +46,8 @@ def run_migrations():
         ("candidates.employee_type", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';"),
         ("candidate_documents.table", "CREATE TABLE IF NOT EXISTS candidate_documents (id VARCHAR(50) PRIMARY KEY, candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE CASCADE, title VARCHAR(200) NOT NULL, doc_type VARCHAR(50), file_format VARCHAR(20), file_path TEXT, file_size_kb FLOAT DEFAULT 0.0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"),
         ("candidate_documents.file_path", "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_path TEXT;"),
-        ("candidate_documents.file_size_kb", "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_size_kb FLOAT DEFAULT 0.0;")
+        ("candidate_documents.file_size_kb", "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_size_kb FLOAT DEFAULT 0.0;"),
+        ("candidates.custom_fields", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS custom_fields JSON DEFAULT '{}';")
     ]
     
     with engine.connect() as conn:
