@@ -69,7 +69,8 @@ def on_startup():
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
-            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE WHERE provider_key = 'server2_coincircle';"
+            "UPDATE api_configurations SET is_active = FALSE, is_primary = FALSE, status = 'DISABLED' WHERE provider_key IN ('server1_sandbox', 'sandbox');",
+            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', endpoint_url = 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct' WHERE provider_key = 'server2_coincircle';"
         ]
         with engine.connect() as conn:
             for stmt in migration_statements:
