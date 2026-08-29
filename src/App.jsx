@@ -21,7 +21,7 @@ const SuperAdminRoute = () => {
       <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
+          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
             <SuperAdminView />
           </main>
         </div>
@@ -39,7 +39,7 @@ const CompanyRoute = () => {
       <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
+          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
             <CompanyAdminView />
           </main>
         </div>
@@ -57,7 +57,7 @@ const HrRoute = () => {
       <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
         <div>
           <Navbar />
-          <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
+          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
             <HrExecutiveView />
           </main>
         </div>
@@ -87,7 +87,7 @@ const CandidateRoute = () => {
     <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
       <div>
         <Navbar />
-        <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full overflow-x-hidden">
+        <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
           <EmployeePortalView />
         </main>
       </div>

@@ -850,3 +850,169 @@ body[data-role="employee_link"] {
 .shadow-2xs {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
 }
+
+
+/* ========================================================================= */
+/* 🚀 RESPONSIVE DESIGN, ICON ALIGNMENT & INNOVATIVE ANIMATIONS               */
+/* ========================================================================= */
+
+/* Unified Pixel-Perfect Form Input System */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #94a3b8;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  z-index: 2;
+}
+
+.input-icon-right {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.input-field-styled {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.75rem;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 0.875rem;
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+.input-field-styled:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.input-field-styled::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.input-wrapper:focus-within .input-icon-left {
+  color: #4f46e5;
+}
+
+/* Touch-optimized responsive buttons */
+.btn-touch-action {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-touch-action:active {
+  transform: scale(0.96);
+}
+
+/* High-Tech Radar Scanner Animation */
+@keyframes radarSweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes holographicPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-radar-sweep {
+  animation: radarSweep 3s linear infinite;
+}
+
+.animate-holographic-pulse {
+  animation: holographicPulse 2s ease-in-out infinite;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmerWave 1.8s infinite;
+}
+
+/* Smooth modal spring entrance */
+@keyframes modalSpring {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-spring {
+  animation: modalSpring 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom horizontal scroll bar for responsive tables */
+.custom-horizontal-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.custom-horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.custom-horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}

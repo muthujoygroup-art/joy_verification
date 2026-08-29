@@ -384,35 +384,35 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Super Admin Official Email *</label>
-                        <div className="relative flex items-center">
-                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <Mail className="input-icon-left" />
                           <input 
                             type="email" 
                             required
                             placeholder="superadmin@joyverification.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
-                            className="form-input form-input-with-icon py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled"
                           />
                         </div>
                       </div>
 
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Master Password *</label>
-                        <div className="relative flex items-center">
-                          <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <KeyRound className="input-icon-left" />
                           <input 
                             type={showPassword ? 'text' : 'password'} 
                             required
                             placeholder="Enter master password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
-                            className="form-input form-input-with-icon form-input-with-icon-right py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled pr-10"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                            className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -442,35 +442,35 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Company Administrator Email *</label>
-                        <div className="relative flex items-center">
-                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <Mail className="input-icon-left" />
                           <input 
                             type="email" 
                             required
                             placeholder="admin@acmeglobal.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
-                            className="form-input form-input-with-icon py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled"
                           />
                         </div>
                       </div>
 
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Corporate Account Password *</label>
-                        <div className="relative flex items-center">
-                          <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <KeyRound className="input-icon-left" />
                           <input 
                             type={showPassword ? 'text' : 'password'} 
                             required
                             placeholder="Enter company password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
-                            className="form-input form-input-with-icon form-input-with-icon-right py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled pr-10"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                            className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -500,35 +500,35 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">HR Executive Corporate Email *</label>
-                        <div className="relative flex items-center">
-                          <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <Mail className="input-icon-left" />
                           <input 
                             type="email" 
                             required
                             placeholder="priya.s@acmeglobal.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
-                            className="form-input form-input-with-icon py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled"
                           />
                         </div>
                       </div>
 
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">HR Workstation Password *</label>
-                        <div className="relative flex items-center">
-                          <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <div className="input-wrapper">
+                          <KeyRound className="input-icon-left" />
                           <input 
                             type={showPassword ? 'text' : 'password'} 
                             required
                             placeholder="Enter HR password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
-                            className="form-input form-input-with-icon form-input-with-icon-right py-2.5 font-semibold text-slate-900"
+                            className="input-field-styled pr-10"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                            className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -569,14 +569,14 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       <label className="block text-slate-700 font-bold mb-1">
                         Have a Magic Link Token? Enter Token to Open Portal:
                       </label>
-                      <div className="relative flex items-center">
-                        <KeyRound className="w-4 h-4 text-amber-600 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <div className="input-wrapper">
+                        <KeyRound className="input-icon-left text-amber-600" />
                         <input 
                           type="text" 
                           placeholder="e.g. tok_sunita_412"
                           value={candidateTokenInput}
                           onChange={(e) => setCandidateTokenInput(e.target.value)}
-                          className="form-input form-input-with-icon py-2.5 font-mono font-bold text-slate-900"
+                          className="input-field-styled font-mono font-bold"
                         />
                       </div>
                       <p className="text-[10px] text-slate-500 mt-1 font-medium">
