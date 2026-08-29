@@ -235,8 +235,11 @@ export const GuidedTourSpotlight = () => {
         </div>
       )}
 
-      {/* Floating Guided Tour Card (Bottom Right / Mobile Centered) */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 bg-white/95 backdrop-blur-xl border-2 border-indigo-500/40 rounded-3xl shadow-2xl p-5 pointer-events-auto text-slate-900 z-50 space-y-4 animate-slideUp">
+      {/* Ambient Dark Dimmer to highlight feature on screen */}
+      <div className="fixed inset-0 bg-slate-950/30 backdrop-blur-xs pointer-events-auto z-40 transition-opacity" onClick={handleComplete} />
+
+      {/* Floating Guided Tour Card (Top on Mobile to avoid Bottom Nav overlap, Bottom-Right on Desktop) */}
+      <div className="fixed top-4 left-3 right-3 max-w-sm mx-auto sm:max-w-none sm:top-auto sm:bottom-8 sm:right-8 sm:left-auto sm:w-[420px] bg-white border-2 border-indigo-600 rounded-3xl shadow-2xl p-5 pointer-events-auto text-slate-900 z-50 space-y-4 animate-modal-spring">
         
         {/* Card Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
