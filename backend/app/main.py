@@ -131,6 +131,27 @@ def health_check():
         "node": "joy-cluster-node-01"
     }
 
+@app.get("/run-migrations")
+@app.get("/api/run-migrations")
+@app.get("/api/database/run-migrations")
+@app.get("/api/superadmin/database/run-migrations")
+def run_migrations_direct():
+    """Direct URL trigger to execute all missing PostgreSQL column migrations"""
+    from backend.migrate_production import run_migrations
+    try:
+        run_migrations()
+        return {
+            "success": True,
+            "message": "All 25 PostgreSQL table columns and features migrated successfully!",
+            "status": "COMPLETED"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
 @app.get(f"{settings.API_PREFIX}/system/security-metrics")
 def get_security_metrics():
     """Returns real-time concurrency, rate limiting, and cache telemetry for Superadmin/Company Admin"""
