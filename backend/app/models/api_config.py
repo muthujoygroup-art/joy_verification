@@ -11,9 +11,15 @@ class ApiConfiguration(Base):
     api_key = Column(String(255), nullable=False)
     secret_key = Column(String(255), nullable=True)
     webhook_url = Column(String(255), nullable=True)
-    sandbox_mode = Column(Boolean, default=True)
-    rate_limit_per_min = Column(Integer, default=60)
-    status = Column(String(50), default="Operational") # 'Operational' | 'Degraded' | 'Offline'
+    sandbox_mode = Column(Boolean, default=False)
+    rate_limit_per_min = Column(Integer, default=120)
+    status = Column(String(50), default="CONNECTED") # 'CONNECTED' | 'DISABLED' | 'OFFLINE' | 'DEGRADED'
+    is_active = Column(Boolean, default=True)
+    is_primary = Column(Boolean, default=False)
+    supported_services = Column(JSON, default=list)
+    provider_type = Column(String(100), default="Institutional Gateway")
+    description = Column(Text, nullable=True)
+    ping_latency_ms = Column(Integer, default=62)
     monthly_quota = Column(Integer, default=10000)
     monthly_used = Column(Integer, default=0)
     last_synced = Column(DateTime, default=datetime.utcnow)

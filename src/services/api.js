@@ -165,11 +165,37 @@ export const api = {
     });
   },
   getApiConfigs: () => request('/superadmin/api-configs', {}, true),
+  createApiConfig: (configData) => {
+    requestCache.clear();
+    return request('/superadmin/api-configs', {
+      method: 'POST',
+      body: JSON.stringify(configData),
+    });
+  },
   updateApiConfig: (providerKey, configData) => {
     requestCache.clear();
     return request(`/superadmin/api-configs/${providerKey}`, {
       method: 'PUT',
       body: JSON.stringify(configData),
+    });
+  },
+  toggleApiConfig: (providerKey, isActive) => {
+    requestCache.clear();
+    return request(`/superadmin/api-configs/${providerKey}/toggle`, {
+      method: 'PUT',
+      body: JSON.stringify({ is_active: isActive }),
+    });
+  },
+  setPrimaryApiConfig: (providerKey) => {
+    requestCache.clear();
+    return request(`/superadmin/api-configs/${providerKey}/primary`, {
+      method: 'PUT',
+    });
+  },
+  deleteApiConfig: (providerKey) => {
+    requestCache.clear();
+    return request(`/superadmin/api-configs/${providerKey}`, {
+      method: 'DELETE',
     });
   },
   getLogs: () => request('/superadmin/logs', {}, true),

@@ -846,12 +846,13 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchBackendData = async () => {
       try {
-        const [comps, cands, dropdowns, logs, tickets] = await Promise.all([
+        const [comps, cands, dropdowns, logs, tickets, apiCfgs] = await Promise.all([
           api.getCompanies().catch(() => null),
           api.getCandidates().catch(() => null),
           api.getMasterDropdowns().catch(() => null),
           api.getLogs().catch(() => null),
           api.getTickets().catch(() => null),
+          api.getApiConfigs().catch(() => null),
         ]);
 
         if (comps && Array.isArray(comps)) {
@@ -933,6 +934,47 @@ export const AppProvider = ({ children }) => {
               type: r.sender_role === 'superadmin' ? 'admin_reply' : 'user_ticket'
             }))
           })));
+        }
+
+        if (apiCfgs && Array.isArray(apiCfgs) && apiCfgs.length > 0) {
+          setApiConfigurations(prev => {
+            const updated = { ...prev };
+            apiCfgs.forEach(cfg => {
+              const k = cfg.provider_key;
+              const existing = updated[k] || {};
+              updated[k] = {
+                ...existing,
+                id: k,
+                providerKey: k,
+                name: cfg.display_name,
+                shortName: cfg.display_name,
+                provider: cfg.provider_type || cfg.display_name,
+                apiKey: cfg.api_key,
+                clientId: cfg.api_key,
+                secretKey: cfg.secret_key,
+                clientSecret: cfg.secret_key,
+                endpointUrl: cfg.endpoint_url,
+                webhookUrl: cfg.webhook_url,
+                status: cfg.is_active ? (cfg.status || 'Online') : 'Disabled',
+                enabled: cfg.is_active !== false,
+                is_active: cfg.is_active !== false,
+                isPrimary: cfg.is_primary || false,
+                is_primary: cfg.is_primary || false,
+                mode: cfg.sandbox_mode ? 'Sandbox / Staging' : 'Production (Live Mode)',
+                rateLimitPerMin: cfg.rate_limit_per_min || 120,
+                monthlyCallCount: cfg.monthly_used || 0,
+                monthlyQuota: cfg.monthly_quota || 10000,
+                latency: `${cfg.ping_latency_ms || 62} ms`,
+                supportedDocs: cfg.supported_services || existing.supportedDocs || [
+                  'Aadhaar UIDAI OTP',
+                  'PAN Card Basic (NSDL)',
+                  'Bank Account IMPS Penny Drop (₹1)',
+                  'Driving License (MoRTH)'
+                ]
+              };
+            });
+            return updated;
+          });
         }
       } catch (err) {
         console.warn('Backend sync in background:', err.message);
@@ -1557,12 +1599,163 @@ export const AppProvider = ({ children }) => {
     showToast(`Operational Guidelines for ${targetRole.toUpperCase()} updated!`);
   };
 
+  const addApiProvider = async (providerData) => {
+    const key = providerData.id || providerData.providerKey || `custom_${Date.now()}`;
+    const name = providerData.name || providerData.displayName || 'Custom API Provider';
+    
+    try {
+      if (isBackendConnected) {
+        await api.createApiConfig({
+          provider_key: key,
+          display_name: name,
+          endpoint_url: providerData.endpointUrl,
+          api_key: providerData.apiKey || providerData.clientId || 'key_placeholder',
+          secret_key: providerData.secretKey || providerData.clientSecret,
+          webhook_url: providerData.webhookUrl,
+          sandbox_mode: providerData.mode?.includes('Sandbox') || false,
+          rate_limit_per_min: providerData.rateLimitPerMin || 120,
+          status: 'CONNECTED',
+          is_active: true,
+          is_primary: providerData.isPrimary || false,
+          supported_services: providerData.supportedDocs || ['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)'],
+          provider_type: providerData.providerType || 'Custom Gateway',
+          description: providerData.description,
+          monthly_quota: providerData.monthlyQuota || 10000
+        });
+      }
+      
+      setApiConfigurations(prev => ({
+        ...prev,
+        [key]: {
+          ...providerData,
+          id: key,
+          providerKey: key,
+          name: name,
+          shortName: name,
+          provider: providerData.providerType || name,
+          apiKey: providerData.apiKey,
+          clientId: providerData.apiKey,
+          secretKey: providerData.secretKey,
+          clientSecret: providerData.secretKey,
+          endpointUrl: providerData.endpointUrl,
+          webhookUrl: providerData.webhookUrl,
+          status: 'Online',
+          enabled: true,
+          is_active: true,
+          isPrimary: providerData.isPrimary || false,
+          latency: '55 ms',
+          rateLimitPerMin: providerData.rateLimitPerMin || 120,
+          monthlyCallCount: 0,
+          monthlyQuota: providerData.monthlyQuota || 10000,
+          supportedDocs: providerData.supportedDocs || ['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)']
+        }
+      }));
+      showToast(`API Provider "${name}" added successfully!`);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      showToast(`Failed to add provider: ${e.message}`, 'error');
+      return { success: false, error: e.message };
+    }
+  };
+
   const updateApiConfig = async (gatewayKey, newConfig) => {
-    setApiConfigurations(prev => ({
-      ...prev,
-      [gatewayKey]: { ...prev[gatewayKey], ...newConfig }
-    }));
-    showToast(`API Configuration for ${apiConfigurations[gatewayKey]?.name || gatewayKey} updated!`);
+    try {
+      if (isBackendConnected) {
+        await api.updateApiConfig(gatewayKey, {
+          display_name: newConfig.name || newConfig.displayName,
+          endpoint_url: newConfig.endpointUrl,
+          api_key: newConfig.apiKey || newConfig.clientId,
+          secret_key: newConfig.secretKey || newConfig.clientSecret,
+          webhook_url: newConfig.webhookUrl,
+          sandbox_mode: newConfig.mode?.includes('Sandbox') || false,
+          rate_limit_per_min: newConfig.rateLimitPerMin,
+          status: newConfig.status
+        });
+      }
+      setApiConfigurations(prev => ({
+        ...prev,
+        [gatewayKey]: { ...prev[gatewayKey], ...newConfig }
+      }));
+      showToast(`API Configuration for ${apiConfigurations[gatewayKey]?.name || gatewayKey} updated!`);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      showToast(`Failed to update config: ${e.message}`, 'error');
+      return { success: false, error: e.message };
+    }
+  };
+
+  const toggleApiProvider = async (gatewayKey, isEnabled) => {
+    try {
+      if (isBackendConnected) {
+        await api.toggleApiConfig(gatewayKey, isEnabled);
+      }
+      setApiConfigurations(prev => ({
+        ...prev,
+        [gatewayKey]: {
+          ...prev[gatewayKey],
+          enabled: isEnabled,
+          is_active: isEnabled,
+          status: isEnabled ? 'Online' : 'Disabled'
+        }
+      }));
+      const name = apiConfigurations[gatewayKey]?.name || gatewayKey;
+      showToast(`${name} is now ${isEnabled ? 'ENABLED (Online)' : 'DISABLED (Offline / Maintenance)'}`);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      showToast(`Failed to toggle provider: ${e.message}`, 'error');
+      return { success: false, error: e.message };
+    }
+  };
+
+  const setPrimaryApiProvider = async (gatewayKey) => {
+    try {
+      if (isBackendConnected) {
+        await api.setPrimaryApiConfig(gatewayKey);
+      }
+      setApiConfigurations(prev => {
+        const next = { ...prev };
+        Object.keys(next).forEach(k => {
+          if (next[k] && typeof next[k] === 'object') {
+            next[k] = { 
+              ...next[k], 
+              isPrimary: k === gatewayKey, 
+              is_primary: k === gatewayKey,
+              ...(k === gatewayKey ? { enabled: true, is_active: true, status: 'Online' } : {})
+            };
+          }
+        });
+        return next;
+      });
+      const name = apiConfigurations[gatewayKey]?.name || gatewayKey;
+      showToast(`⭐ ${name} is now set as PRIMARY Verification Engine!`);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      showToast(`Failed to set primary provider: ${e.message}`, 'error');
+      return { success: false, error: e.message };
+    }
+  };
+
+  const deleteApiProvider = async (gatewayKey) => {
+    try {
+      if (isBackendConnected) {
+        await api.deleteApiConfig(gatewayKey);
+      }
+      setApiConfigurations(prev => {
+        const next = { ...prev };
+        delete next[gatewayKey];
+        return next;
+      });
+      showToast(`API Provider removed.`);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      showToast(`Failed to delete provider: ${e.message}`, 'error');
+      return { success: false, error: e.message };
+    }
   };
 
   const markNotificationAsRead = (id) => {
@@ -1921,6 +2114,10 @@ export const AppProvider = ({ children }) => {
       rechargeCompanyWallet,
       apiConfigurations,
       updateApiConfig,
+      addApiProvider,
+      toggleApiProvider,
+      setPrimaryApiProvider,
+      deleteApiProvider,
       masterFormFields,
       addMasterFormField,
       masterDropdownOptions,

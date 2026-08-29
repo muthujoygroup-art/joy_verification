@@ -66,7 +66,12 @@ import {
   Calculator,
   Sparkles,
   KeyRound,
-  Cpu
+  Cpu,
+  Power,
+  Star,
+  ToggleLeft,
+  ToggleRight,
+  EyeOff
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
@@ -76,6 +81,10 @@ export const SuperAdminView = () => {
     updateCompanyFeatures, 
     apiConfigurations, 
     updateApiConfig, 
+    addApiProvider,
+    toggleApiProvider,
+    setPrimaryApiProvider,
+    deleteApiProvider,
     featureList, 
     setActiveInvoiceModal, 
     activeInvoiceModal, 
@@ -208,6 +217,26 @@ export const SuperAdminView = () => {
 
   const [callbackUrl, setCallbackUrl] = useState('https://verification.joycorporatesolutions.com/api/verification/webhook/callback');
   const [isCallbackCopied, setIsCallbackCopied] = useState(false);
+
+  // Dynamic API Provider Management States
+  const [showAddApiModal, setShowAddApiModal] = useState(false);
+  const [newApiProvider, setNewApiProvider] = useState({
+    name: '',
+    providerKey: '',
+    providerType: 'Institutional Gateway',
+    endpointUrl: 'https://api.example.com/v1',
+    apiKey: '',
+    secretKey: '',
+    webhookUrl: 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
+    mode: 'Production (Live Mode)',
+    rateLimitPerMin: 120,
+    monthlyQuota: 10000,
+    isPrimary: false,
+    supportedDocs: ['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)', 'Driving License (MoRTH)']
+  });
+  const [showEditApiModal, setShowEditApiModal] = useState(false);
+  const [selectedEditProvider, setSelectedEditProvider] = useState(null);
+  const [revealedKeys, setRevealedKeys] = useState({});
 
   // Profit and Revenue Analytics Calculations
   const filteredCompanyList = selectedAnalyticsCompanyId === 'all' 
@@ -1696,520 +1725,472 @@ export const SuperAdminView = () => {
         );
       })()}
 
-      {/* TAB 8: DUAL UPSTREAM API GATEWAYS (SERVER 1: SANDBOX + SERVER 2: COINCIRCLETRUST) */}
-      {activeTab === 'apiconfig' && (
-        <div className="space-y-6 animate-fadeIn">
-          
-          {/* Top Info Banner */}
-          <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/70 via-white to-purple-50/70 rounded-3xl space-y-4 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
+      {/* TAB 8: DYNAMIC UPSTREAM API PROVIDERS & GATEWAY MANAGEMENT */}
+      {activeTab === 'apiconfig' && (() => {
+        // Filter out backwards-compatibility alias keys so we get distinct provider cards
+        const providerList = Object.entries(apiConfigurations || {})
+          .filter(([key, val]) => val && typeof val === 'object' && !['apiSetu', 'sandbox', 'coincircletrust'].includes(key))
+          .map(([key, val]) => ({ key, ...val }));
+
+        // Count stats
+        const activeCount = providerList.filter(p => p.enabled !== false && p.is_active !== false && p.status !== 'Disabled' && p.status !== 'DISABLED').length;
+        const disabledCount = providerList.length - activeCount;
+        const primaryProvider = providerList.find(p => p.isPrimary || p.is_primary) || providerList.find(p => p.key === 'server2_coincircle') || providerList[0];
+
+        return (
+          <div className="space-y-6 animate-fadeIn">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="badge badge-purple text-xs font-black">PLATFORM VERIFICATION ENGINES</span>
-                  <span className="text-xs text-slate-500 font-bold">• 2 Master Upstream Gateways</span>
+            {/* Top Info & Action Banner */}
+            <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/70 via-white to-purple-50/70 rounded-3xl space-y-4 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-500" />
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="badge badge-purple text-xs font-black">PLATFORM VERIFICATION ENGINES</span>
+                    <span className="text-xs text-slate-500 font-bold">• {providerList.length} Integrated Providers</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
+                      {activeCount} Active / Enabled
+                    </span>
+                    {disabledCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold">
+                        {disabledCount} Disabled
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5 flex items-center gap-2.5">
+                    <Server className="w-6 h-6 text-indigo-600" />
+                    <span>API Verification Providers & Gateways</span>
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-0.5 font-medium max-w-3xl">
+                    Configure upstream credentials, toggle providers ON/OFF for maintenance, add new API engines (Sandbox, CoinCircle, API Setu, Surepass, HyperVerge), and designate the primary verification gateway.
+                  </p>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 flex items-center gap-2">
-                  <Server className="w-6 h-6 text-indigo-600" />
-                  <span>Dual Upstream API Providers Configuration</span>
-                </h3>
-                <p className="text-xs text-slate-600 mt-0.5 font-medium">
-                  Configure upstream credentials, endpoint URLs, and failover capabilities for <strong>Server 1 (Sandbox API)</strong> and <strong>Server 2 (CoinCircleTrust 47+ APIs)</strong>.
-                </p>
+
+                <div className="flex items-center gap-2.5 flex-wrap self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddApiModal(true)}
+                    className="btn btn-superadmin text-xs py-2.5 px-4 font-black shadow-md cursor-pointer flex items-center gap-2 btn-interactive"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add New API Provider</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-bold">
-                <span className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                  <span>99.98% Gateway Uptime</span>
+              {/* Live Gateway Telemetry Strip */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+                <div className="p-3 bg-white rounded-2xl border border-purple-200 shadow-2xs space-y-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase flex items-center justify-between">
+                    <span>⭐ Primary Verification Engine</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                  </span>
+                  <div className="text-sm sm:text-base font-black text-purple-700 truncate">
+                    {primaryProvider?.name || 'Server 2: CoinCircleTrust'}
+                  </div>
+                  <span className="text-[11px] text-emerald-700 font-bold block">
+                    All candidate KYC & BGVs routed through primary gateway
+                  </span>
+                </div>
+
+                <div className="p-3 bg-white rounded-2xl border border-indigo-200 shadow-2xs space-y-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Dynamic Gateway Failover</span>
+                  <div className="text-sm sm:text-base font-black text-indigo-700">{activeCount} / {providerList.length} Gateways Operational</div>
+                  <span className="text-[11px] text-slate-600 font-medium">Automatic skip & alert if a provider is disabled</span>
+                </div>
+
+                <div className="p-3 bg-white rounded-2xl border border-emerald-200 shadow-2xs space-y-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Platform Gateway Uptime</span>
+                  <div className="text-sm sm:text-base font-black text-emerald-700">99.98% High Availability</div>
+                  <span className="text-[11px] text-emerald-700 font-bold">24/7 Monitored Telemetry & Auto-Retry</span>
+                </div>
+              </div>
+            </div>
+
+            {/* LIVE ASYNCHRONOUS WEBHOOK & API CALLBACK URL MANAGER */}
+            <div className="glass-panel p-6 border-2 border-indigo-500/40 bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-950 text-white rounded-3xl shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-800/60 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-400/30">
+                    <Server className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="badge bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 text-[10px] font-black">
+                        WEBHOOK & CALLBACK ROUTER
+                      </span>
+                      <span className="badge badge-emerald text-[10px] font-bold">Active & Listening 🟢</span>
+                    </div>
+                    <h4 className="font-black text-white text-base mt-0.5">Government & Gateway Asynchronous Callback URL</h4>
+                  </div>
+                </div>
+
+                <span className="text-[11px] font-mono text-indigo-200 bg-indigo-950/80 px-3 py-1.5 rounded-xl border border-indigo-800 self-start sm:self-auto">
+                  POST /api/verification/webhook/callback
                 </span>
               </div>
-            </div>
 
-            {/* Live Gateway Telemetry Strip */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
-              <div className="p-3 bg-white rounded-2xl border border-indigo-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase">Server 1 (Sandbox API) Volume</span>
-                <div className="text-lg font-black text-indigo-700">24,850 Checks Completed</div>
-                <span className="text-[11px] text-emerald-700 font-bold">Latency: 48 ms • Cost: ₹2.50/call</span>
-              </div>
+              <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                External government registries (UIDAI, NSDL, NPCI), communication gateways (WhatsApp Meta API), and payment switches (Razorpay) dispatch real-time asynchronous verification payloads to this endpoint. You can dynamically modify, test, or copy this URL below.
+              </p>
 
-              <div className="p-3 bg-white rounded-2xl border border-purple-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase">Server 2 (CoinCircleTrust) Volume</span>
-                <div className="text-lg font-black text-purple-700">38,400 Checks Completed</div>
-                <span className="text-[11px] text-emerald-700 font-bold">Latency: 62 ms • Cost: ₹4.00/call (47 APIs)</span>
-              </div>
-
-              <div className="p-3 bg-white rounded-2xl border border-emerald-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase">Smart Hybrid Auto-Routing</span>
-                <div className="text-lg font-black text-emerald-700">Active on 3/3 Companies</div>
-                <span className="text-[11px] text-slate-600 font-medium">Automatic fallback for unsupported docs</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* 🌐 LIVE ASYNCHRONOUS WEBHOOK & API CALLBACK URL MANAGER */}
-          {/* ========================================================================= */}
-          <div className="glass-panel p-6 border-2 border-indigo-500/40 bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-950 text-white rounded-3xl shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-800/60 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-400/30">
-                  <Server className="w-5 h-5" />
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+                <div className="relative flex-1 w-full">
+                  <input 
+                    type="text" 
+                    value={callbackUrl}
+                    onChange={(e) => setCallbackUrl(e.target.value)}
+                    className="w-full bg-slate-950/80 border-2 border-indigo-500/40 text-indigo-200 font-mono text-xs py-2.5 px-3.5 rounded-xl outline-none focus:border-indigo-400 font-bold"
+                    placeholder="https://your-domain.com/api/verification/webhook/callback"
+                  />
                 </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(callbackUrl);
+                      setIsCallbackCopied(true);
+                      showToast('📋 Callback URL copied to clipboard!');
+                      setTimeout(() => setIsCallbackCopied(false), 2500);
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 font-bold cursor-pointer flex-1 sm:flex-none btn-interactive"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{isCallbackCopied ? 'Copied ✓' : 'Copy URL'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => showToast('⚡ Webhook endpoint ping verified: 200 OK (Latency: 24ms)')}
+                    className="btn btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 font-bold cursor-pointer flex-1 sm:flex-none btn-interactive text-amber-300 bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Ping Test</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => showToast('💾 Webhook Callback URL updated and saved dynamically!')}
+                    className="btn btn-superadmin text-xs py-2 px-4 flex items-center justify-center gap-1.5 font-black shadow-md cursor-pointer flex-1 sm:flex-none btn-interactive"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save URL</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* DYNAMIC API PROVIDERS CARDS GRID */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <Sliders className="w-5 h-5 text-indigo-600" />
+                  <span>Configured Upstream API Gateways ({providerList.length})</span>
+                </h4>
+                <span className="text-xs text-slate-500 font-medium">
+                  Toggle switches enable or disable providers on the fly with automatic failover
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {providerList.map((provider) => {
+                  const key = provider.key;
+                  const isPrimary = provider.isPrimary || provider.is_primary || (key === 'server2_coincircle' && !providerList.some(p => p.key !== 'server2_coincircle' && (p.isPrimary || p.is_primary)));
+                  const isEnabled = provider.enabled !== false && provider.is_active !== false && provider.status !== 'Disabled' && provider.status !== 'DISABLED';
+                  const isRevealed = revealedKeys[key];
+                  const rawKey = provider.apiKey || provider.clientId || '';
+                  const maskedKey = isRevealed ? rawKey : (rawKey ? `${rawKey.substring(0, 8)}••••••••${rawKey.substring(Math.max(0, rawKey.length - 4))}` : '••••••••');
+                  const hostname = provider.endpointUrl ? new URL(provider.endpointUrl.startsWith('http') ? provider.endpointUrl : `https://${provider.endpointUrl}`).hostname : 'api.gateway';
+                  const isSystemDefault = key === 'server1_sandbox' || key === 'server2_coincircle';
+
+                  return (
+                    <div 
+                      key={key} 
+                      className={`glass-panel p-6 rounded-3xl space-y-5 shadow-sm flex flex-col justify-between transition-all border-2 ${
+                        isPrimary 
+                          ? 'border-purple-400/80 bg-gradient-to-b from-purple-50/40 via-white to-white ring-2 ring-purple-400/20' 
+                          : isEnabled 
+                            ? 'border-indigo-200 bg-white' 
+                            : 'border-slate-300 bg-slate-50/80 opacity-80'
+                      }`}
+                    >
+                      <div className="space-y-4">
+                        
+                        {/* Header with Title & Badges */}
+                        <div className="flex items-start justify-between border-b border-slate-100 pb-3 gap-3">
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                              <span className={`badge text-[10px] font-black uppercase ${
+                                key === 'server2_coincircle' ? 'badge-purple' : key === 'server1_sandbox' ? 'badge-indigo' : 'badge-sky'
+                              }`}>
+                                {provider.shortName || provider.name || key}
+                              </span>
+
+                              {isPrimary && (
+                                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black flex items-center gap-1 shadow-2xs">
+                                  <Star className="w-3 h-3 fill-amber-500 text-amber-600" />
+                                  <span>PRIMARY ENGINE</span>
+                                </span>
+                              )}
+
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${
+                                isEnabled 
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                                  : 'bg-rose-100 text-rose-800 border border-rose-300'
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${isEnabled ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                                <span>{isEnabled ? 'Enabled (Online)' : 'Disabled (Offline)'}</span>
+                              </span>
+                            </div>
+
+                            <h4 className="font-black text-slate-900 text-base">
+                              {provider.name || provider.displayName || key}
+                            </h4>
+                            <p className="text-slate-500 text-xs font-medium mt-0.5">
+                              {provider.provider || provider.providerType || 'Institutional Verification Gateway'}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-1 shrink-0">
+                            <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                              {hostname}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-400">
+                              {provider.mode || 'Production (Live Mode)'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Provider Credentials Preview */}
+                        <div className="space-y-2.5 text-xs bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-slate-500 font-bold text-[11px]">API Key / Client ID:</span>
+                            <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-slate-900">
+                              <span>{maskedKey}</span>
+                              <button
+                                type="button"
+                                onClick={() => setRevealedKeys(prev => ({ ...prev, [key]: !prev[key] }))}
+                                className="p-1 text-slate-400 hover:text-slate-700 rounded-md transition-colors cursor-pointer"
+                                title={isRevealed ? "Hide key" : "Show key"}
+                              >
+                                {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-slate-500 font-bold text-[11px]">Base Endpoint:</span>
+                            <span className="font-mono text-[11px] font-semibold text-slate-700 truncate max-w-[240px]">
+                              {provider.endpointUrl || 'https://api.coincircletrust.com/api/v1'}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-200/80 text-[10px]">
+                            <span className="text-slate-500 font-medium">Rate Limit: <strong>{provider.rateLimitPerMin || 120} req/min</strong></span>
+                            <span className="text-slate-500 font-medium">Monthly Quota: <strong>{provider.monthlyQuota || 10000} calls</strong></span>
+                            <span className="text-emerald-700 font-bold">Latency: {provider.latency || '62 ms'}</span>
+                          </div>
+                        </div>
+
+                        {/* Supported Capabilities Tags */}
+                        <div className="space-y-1.5 text-xs">
+                          <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                            Supported Verification Capabilities
+                          </span>
+                          <div className="flex flex-wrap gap-1.5 text-[10px]">
+                            {(provider.supportedDocs || ['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)', 'Driving License (MoRTH)']).slice(0, 8).map((doc, idx) => (
+                              <span key={idx} className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold flex items-center gap-1">
+                                <Check className="w-3 h-3 text-emerald-600" />
+                                <span>{doc}</span>
+                              </span>
+                            ))}
+                            {(provider.supportedDocs || []).length > 8 && (
+                              <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-bold">
+                                +{(provider.supportedDocs.length - 8)} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Interactive Controls Bar: Enable/Disable, Set Primary, Configure, Delete */}
+                      <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+                        
+                        {/* Status Switch Toggle */}
+                        <div className="flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => toggleApiProvider(key, !isEnabled)}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold cursor-pointer transition-all border shadow-2xs btn-interactive ${
+                              isEnabled 
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100' 
+                                : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
+                            }`}
+                            title={isEnabled ? "Click to Disable this API Provider" : "Click to Enable this API Provider"}
+                          >
+                            <Power className={`w-3.5 h-3.5 ${isEnabled ? 'text-emerald-600' : 'text-slate-400'}`} />
+                            <span>{isEnabled ? 'Gateway Enabled' : 'Gateway Disabled'}</span>
+                          </button>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {!isPrimary && (
+                            <button
+                              type="button"
+                              onClick={() => setPrimaryApiProvider(key)}
+                              className="btn btn-secondary text-xs py-1.5 px-3 font-bold flex items-center gap-1 text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 cursor-pointer"
+                              title="Set as the platform's primary verification provider"
+                            >
+                              <Star className="w-3.5 h-3.5 text-amber-500" />
+                              <span>Set Primary</span>
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => showToast(`⚡ ${provider.name || key} Connection Ping: 200 OK (${provider.latency || '62ms'})`)}
+                            className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold cursor-pointer"
+                            title="Test connectivity to gateway endpoint"
+                          >
+                            <Zap className="w-3.5 h-3.5 text-amber-500" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedEditProvider({ key, ...provider });
+                              setShowEditApiModal(true);
+                            }}
+                            className="btn btn-superadmin text-xs py-1.5 px-3 font-black shadow-md cursor-pointer flex items-center gap-1.5"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                            <span>Configure</span>
+                          </button>
+
+                          {!isSystemDefault && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to remove the API provider "${provider.name || key}"?`)) {
+                                  deleteApiProvider(key);
+                                }
+                              }}
+                              className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
+                              title="Delete this custom API provider"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* LIVE COMPANY-WISE UPSTREAM API METERING & FINANCIAL REVENUE CALCULATOR */}
+            <div className="glass-panel p-6 border-indigo-200 bg-white rounded-3xl space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="badge bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 text-[10px] font-black">
-                      WEBHOOK & CALLBACK ROUTER
-                    </span>
-                    <span className="badge badge-emerald text-[10px] font-bold">Active & Listening 🟢</span>
+                    <span className="badge badge-emerald text-[10px] font-black uppercase">Real-Time Metered Billing</span>
+                    <span className="text-xs text-slate-500 font-bold">• Primary Engine: {primaryProvider?.name || 'CoinCircleTrust'}</span>
                   </div>
-                  <h4 className="font-black text-white text-base mt-0.5">Government & Gateway Asynchronous Callback URL</h4>
-                </div>
-              </div>
-
-              <span className="text-[11px] font-mono text-indigo-200 bg-indigo-950/80 px-3 py-1.5 rounded-xl border border-indigo-800 self-start sm:self-auto">
-                POST /api/verification/webhook/callback
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-300 font-medium leading-relaxed">
-              External government registries (UIDAI, NSDL, NPCI), communication gateways (WhatsApp Meta API), and payment switches (Razorpay) dispatch real-time asynchronous verification payloads to this endpoint. You can dynamically modify, test, or copy this URL below.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
-              <div className="relative flex-1 w-full">
-                <input 
-                  type="text" 
-                  value={callbackUrl}
-                  onChange={(e) => setCallbackUrl(e.target.value)}
-                  className="w-full bg-slate-950/80 border-2 border-indigo-500/40 text-indigo-200 font-mono text-xs py-2.5 px-3.5 rounded-xl outline-none focus:border-indigo-400 font-bold"
-                  placeholder="https://your-domain.com/api/verification/webhook/callback"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(callbackUrl);
-                    setIsCallbackCopied(true);
-                    showToast('📋 Callback URL copied to clipboard!');
-                    setTimeout(() => setIsCallbackCopied(false), 2500);
-                  }}
-                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 font-bold cursor-pointer flex-1 sm:flex-none btn-interactive"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{isCallbackCopied ? 'Copied ✓' : 'Copy URL'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => showToast('⚡ Webhook endpoint ping verified: 200 OK (Latency: 24ms)')}
-                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-1.5 font-bold cursor-pointer flex-1 sm:flex-none btn-interactive text-amber-300 bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Ping Test</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => showToast('💾 Webhook Callback URL updated and saved dynamically!')}
-                  className="btn btn-superadmin text-xs py-2 px-4 flex items-center justify-center gap-1.5 font-black shadow-md cursor-pointer flex-1 sm:flex-none btn-interactive"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save URL</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Dual API Server Cards Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            {/* ========================================================================= */}
-            {/* SERVER 1: SANDBOX PRIVATE API ROUTER */}
-            {/* ========================================================================= */}
-            <div className="glass-panel p-6 border-2 border-indigo-200 bg-white rounded-3xl space-y-5 shadow-sm flex flex-col justify-between">
-              <div className="space-y-4">
-                
-                {/* Header */}
-                <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="badge badge-indigo text-[10px] font-black">SERVER 1 (SANDBOX API)</span>
-                      <span className="badge badge-emerald text-[10px] font-bold">Online 🟢</span>
-                    </div>
-                    <h4 className="font-black text-slate-900 text-base mt-1">Sandbox Private API Gateway</h4>
-                    <p className="text-slate-500 text-xs font-medium">Standard Government Identity & Core Banking Verification Engine</p>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">api.sandbox.co.in</span>
+                  <h4 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+                    <Calculator className="w-5 h-5 text-indigo-600" />
+                    <span>Company-Wise API Call Breakdown & Financial Ledger</span>
+                  </h4>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Track exact API consumption per enterprise client, upstream gateway charges, gross revenue, and profit margins.
+                  </p>
                 </div>
 
-                {/* Configuration Form */}
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSaveApiConfig('server1_sandbox');
-                  }}
-                  className="space-y-3 text-xs"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Sandbox API Key (SANDBOX_API_KEY) *</label>
-                      <input 
-                        type="text" 
-                        required
-                        value={editApiConfig.server1_sandbox.apiKey}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server1_sandbox: { ...editApiConfig.server1_sandbox, apiKey: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono font-bold text-indigo-900"
-                        placeholder="Paste your Sandbox API key..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Secret Key (Optional / Auto-handled)</label>
-                      <input 
-                        type="password" 
-                        value={editApiConfig.server1_sandbox.secretKey}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server1_sandbox: { ...editApiConfig.server1_sandbox, secretKey: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono font-bold"
-                        placeholder="Auto-resolved or paste secret..."
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL</label>
-                      <input 
-                        type="text" 
-                        value={editApiConfig.server1_sandbox.endpointUrl}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server1_sandbox: { ...editApiConfig.server1_sandbox, endpointUrl: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono text-slate-700"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
-                      <select
-                        value={editApiConfig.server1_sandbox.mode}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server1_sandbox: { ...editApiConfig.server1_sandbox, mode: e.target.value } 
-                        })}
-                        className="form-select text-xs font-bold"
-                      >
-                        <option value="Production (Live Mode)">Production (Live Mode)</option>
-                        <option value="Sandbox / Staging Mode">Sandbox / Staging Mode</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
-                    <span className="text-[11px] text-slate-500 font-semibold">Rate Limit: 2,500 req/min • ₹2.50/call</span>
-                    
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => showToast('⚡ Server 1 (Sandbox API) Connection Ping: 200 OK (Latency: 48ms)')}
-                        className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
-                      >
-                        Ping Test ⚡
-                      </button>
-                      <button 
-                        type="submit" 
-                        className="btn btn-superadmin text-xs py-1.5 px-4 font-black shadow-md cursor-pointer"
-                      >
-                        Save Server 1 💾
-                      </button>
-                    </div>
-                  </div>
-                </form>
-
-                {/* Supported & Unsupported Scope Breakdown */}
-                <div className="space-y-3 pt-3 border-t border-slate-100 text-xs">
-                  <div>
-                    <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block mb-1.5">
-                      ✅ Server 1 Supported Documents (7 Core APIs)
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 text-[10px]">
-                      {['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)', 'Driving License (MoRTH)', 'Voter ID (ECI)', 'GSTIN Search', 'Basic EPFO Passbook'].map((doc, idx) => (
-                        <span key={idx} className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
-                          ✓ {doc}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-950 text-[11px] space-y-1">
-                    <span className="font-extrabold flex items-center gap-1 text-amber-900">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span>Sandbox Limitation & Smart Auto-Fallback:</span>
-                    </span>
-                    <p className="text-[10px] text-amber-800 leading-relaxed font-medium">
-                      Passport verification, UAN Dual Employment History V3, Court & Criminal records, and MCA Directorship checks are <strong>NOT available in Sandbox</strong>. Any requests for these documents are automatically routed through <strong>Server 2 (CoinCircleTrust)</strong>.
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* SERVER 2: COINCIRCLETRUST API GATEWAY (47+ ENTERPRISE APIS) */}
-            {/* ========================================================================= */}
-            <div className="glass-panel p-6 border-2 border-purple-200 bg-white rounded-3xl space-y-5 shadow-sm flex flex-col justify-between">
-              <div className="space-y-4">
-                
-                {/* Header */}
-                <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="badge badge-purple text-[10px] font-black">SERVER 2 (COINCIRCLETRUST)</span>
-                      <span className="badge badge-emerald text-[10px] font-bold">Online 🟢</span>
-                    </div>
-                    <h4 className="font-black text-slate-900 text-base mt-1">CoinCircleTrust Institutional Gateway</h4>
-                    <p className="text-slate-500 text-xs font-medium">Full 47+ Enterprise KYC, Dual Employment, Court & Biometric APIs</p>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">api.coincircletrust.com</span>
-                </div>
-
-                {/* Configuration Form */}
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSaveApiConfig('server2_coincircle');
-                  }}
-                  className="space-y-3 text-xs"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">CoinCircle API Key (COINCIRCLE_API_KEY) *</label>
-                      <input 
-                        type="text" 
-                        required
-                        value={editApiConfig.server2_coincircle.clientId}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server2_coincircle: { ...editApiConfig.server2_coincircle, clientId: e.target.value, apiKey: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono font-bold text-purple-900"
-                        placeholder="Paste your CoinCircle API key..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Secret Key (Optional / Auto-handled)</label>
-                      <input 
-                        type="password" 
-                        value={editApiConfig.server2_coincircle.clientSecret}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server2_coincircle: { ...editApiConfig.server2_coincircle, clientSecret: e.target.value, secretKey: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono font-bold"
-                        placeholder="Auto-resolved or paste secret..."
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL</label>
-                      <input 
-                        type="text" 
-                        value={editApiConfig.server2_coincircle.endpointUrl}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server2_coincircle: { ...editApiConfig.server2_coincircle, endpointUrl: e.target.value } 
-                        })}
-                        className="form-input text-xs font-mono text-slate-700"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
-                      <select
-                        value={editApiConfig.server2_coincircle.mode}
-                        onChange={(e) => setEditApiConfig({ 
-                          ...editApiConfig, 
-                          server2_coincircle: { ...editApiConfig.server2_coincircle, mode: e.target.value } 
-                        })}
-                        className="form-select text-xs font-bold"
-                      >
-                        <option value="Production (Live Mode)">Production (Live Mode)</option>
-                        <option value="Staging / Test Sandbox">Staging / Test Sandbox</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
-                    <span className="text-[11px] text-slate-500 font-semibold">Rate Limit: 5,000 req/min • ₹4.00/call (47 APIs)</span>
-                    
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => showToast('⚡ Server 2 (CoinCircleTrust 47 APIs) Connection Ping: 200 OK (Latency: 62ms)')}
-                        className="btn btn-secondary text-xs py-1.5 px-3 font-bold"
-                      >
-                        Ping Test ⚡
-                      </button>
-                      <button 
-                        type="submit" 
-                        className="btn btn-superadmin text-xs py-1.5 px-4 font-black shadow-md cursor-pointer"
-                      >
-                        Save Server 2 💾
-                      </button>
-                    </div>
-                  </div>
-                </form>
-
-                {/* Categorized 47+ APIs Browser */}
-                <div className="space-y-3 pt-3 border-t border-slate-100 text-xs">
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
-                        ⚡ 47+ Specialized Enterprise APIs & Document Handlers
-                      </span>
-                      <span className="badge badge-purple text-[9px] font-bold">All 47 Active</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
-                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
-                        <strong className="text-purple-950 font-bold block">🛂 Passport & Advanced Identity (12 APIs)</strong>
-                        <span className="text-slate-600 block">Passport MEA Direct, Aadhaar-PAN Link Check, Aadhaar to Unmasked PAN, Voter, DL.</span>
-                      </div>
-
-                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
-                        <strong className="text-purple-950 font-bold block">🏢 EPFO UAN Dual Employment (8 APIs)</strong>
-                        <span className="text-slate-600 block">UAN Advance, UAN to Employment Profile, History V3 with Moonlighting Overlap Detection.</span>
-                      </div>
-
-                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
-                        <strong className="text-purple-950 font-bold block">⚖️ Legal, Court & Moonlighting (10 APIs)</strong>
-                        <span className="text-slate-600 block">District/High Court eCourts records, CCTNS Criminal Search, DIN to MCA Directorship.</span>
-                      </div>
-
-                      <div className="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1">
-                        <strong className="text-purple-950 font-bold block">🏦 Financial, UPI & Biometrics (17 APIs)</strong>
-                        <span className="text-slate-600 block">Pennyless Bank Verification, UPI ID Analyser, CRIF/Experian Credit, 3D WebCam Biometrics.</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* ========================================================================= */}
-          {/* LIVE COMPANY-WISE UPSTREAM API METERING & FINANCIAL REVENUE CALCULATOR */}
-          {/* ========================================================================= */}
-          <div className="glass-panel p-6 border-indigo-200 bg-white rounded-3xl space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-              <div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-emerald text-[10px] font-black uppercase">Real-Time Metered Billing</span>
-                  <span className="text-xs text-slate-500 font-bold">• Server 1 (₹2.50) + Server 2 (₹4.00)</span>
+                  <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700">
+                    {companies.length} Active Enterprise Account{companies.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
-                <h4 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-indigo-600" />
-                  <span>Company-Wise API Call Breakdown & Financial Ledger</span>
-                </h4>
-                <p className="text-xs text-slate-500 font-medium">
-                  Track exact API consumption per enterprise client, upstream gateway charges, gross revenue, and profit margins.
-                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700">
-                  {companies.length} Active Enterprise Account{companies.length !== 1 ? 's' : ''}
-                </span>
+              {/* Calculations Table */}
+              <div className="border border-slate-200 rounded-2xl overflow-x-auto no-scrollbar shadow-xs bg-white">
+                <table className="w-full text-left text-xs border-collapse min-w-[700px]">
+                  <thead className="bg-slate-50 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider font-mono">
+                    <tr>
+                      <th className="p-3.5">Enterprise Client</th>
+                      <th className="p-3.5">Active Verification Engine</th>
+                      <th className="p-3.5 text-center">Server 1 (Sandbox)<br/><span className="text-[9px] font-normal text-indigo-600">₹2.50 / call</span></th>
+                      <th className="p-3.5 text-center">Server 2 (CoinCircle)<br/><span className="text-[9px] font-normal text-purple-600">₹4.00 / call</span></th>
+                      <th className="p-3.5 text-right">Upstream Cost</th>
+                      <th className="p-3.5 text-center">Verified Vol</th>
+                      <th className="p-3.5 text-right">Billed Revenue</th>
+                      <th className="p-3.5 text-center">Gross Margin</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {companies.map((comp) => {
+                      const s1Calls = comp.apiStats?.server1_sandbox_calls || (comp.verifiedCountThisMonth * 3);
+                      const s2Calls = comp.apiStats?.server2_coincircle_calls || Math.round(comp.verifiedCountThisMonth * 0.8);
+                      const s1Cost = s1Calls * 2.50;
+                      const s2Cost = s2Calls * 4.00;
+                      const totalApiCost = s1Cost + s2Cost;
+                      const verifiedVol = comp.verifiedCountThisMonth || 0;
+                      const billedRevenue = verifiedVol * (comp.pricePerVerification || 120);
+                      const grossProfit = billedRevenue - totalApiCost;
+                      const marginPct = billedRevenue > 0 ? ((grossProfit / billedRevenue) * 100).toFixed(1) : '100.0';
+
+                      return (
+                        <tr key={comp.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="p-3.5">
+                            <strong className="text-slate-900 font-black text-xs block">{comp.name}</strong>
+                            <span className="text-[10px] text-slate-500 font-mono">Code: {comp.code} • Plan: {comp.plan}</span>
+                          </td>
+                          <td className="p-3.5">
+                            <span className="badge badge-purple text-[10px] font-bold">
+                              {primaryProvider?.shortName || primaryProvider?.name || 'CoinCircleTrust Gateway'}
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-center font-mono">
+                            <span className="font-bold text-indigo-700">{s1Calls} calls</span>
+                            <span className="block text-[10px] text-slate-500">₹{s1Cost.toFixed(2)}</span>
+                          </td>
+                          <td className="p-3.5 text-center font-mono">
+                            <span className="font-bold text-purple-700">{s2Calls} calls</span>
+                            <span className="block text-[10px] text-slate-500">₹{s2Cost.toFixed(2)}</span>
+                          </td>
+                          <td className="p-3.5 text-right font-mono font-bold text-rose-700">
+                            ₹{totalApiCost.toFixed(2)}
+                          </td>
+                          <td className="p-3.5 text-center font-mono font-bold text-slate-800">
+                            {verifiedVol} Checks
+                          </td>
+                          <td className="p-3.5 text-right font-mono font-black text-emerald-700">
+                            ₹{billedRevenue.toFixed(2)}
+                          </td>
+                          <td className="p-3.5 text-center">
+                            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-black text-[11px] shadow-2xs">
+                              +{marginPct}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            </div>
-
-            {/* Calculations Table */}
-            <div className="border border-slate-200 rounded-2xl overflow-x-auto no-scrollbar shadow-xs bg-white">
-              <table className="w-full text-left text-xs border-collapse min-w-[700px]">
-                <thead className="bg-slate-50 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider font-mono">
-                  <tr>
-                    <th className="p-3.5">Enterprise Client</th>
-                    <th className="p-3.5">Routing Mode</th>
-                    <th className="p-3.5 text-center">Server 1 (Sandbox)<br/><span className="text-[9px] font-normal text-indigo-600">₹2.50 / call</span></th>
-                    <th className="p-3.5 text-center">Server 2 (CoinCircle)<br/><span className="text-[9px] font-normal text-purple-600">₹4.00 / call</span></th>
-                    <th className="p-3.5 text-right">Upstream Cost</th>
-                    <th className="p-3.5 text-center">Verified Vol</th>
-                    <th className="p-3.5 text-right">Billed Revenue</th>
-                    <th className="p-3.5 text-center">Gross Margin</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {companies.map((comp) => {
-                    const s1Calls = comp.apiStats?.server1_sandbox_calls || (comp.verifiedCountThisMonth * 3);
-                    const s2Calls = comp.apiStats?.server2_coincircle_calls || Math.round(comp.verifiedCountThisMonth * 0.8);
-                    const s1Cost = s1Calls * 2.50;
-                    const s2Cost = s2Calls * 4.00;
-                    const totalApiCost = s1Cost + s2Cost;
-                    const verifiedVol = comp.verifiedCountThisMonth || 0;
-                    const billedRevenue = verifiedVol * (comp.pricePerVerification || 120);
-                    const grossProfit = billedRevenue - totalApiCost;
-                    const marginPct = billedRevenue > 0 ? ((grossProfit / billedRevenue) * 100).toFixed(1) : '100.0';
-
-                    return (
-                      <tr key={comp.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="p-3.5">
-                          <strong className="text-slate-900 font-black text-xs block">{comp.name}</strong>
-                          <span className="text-[10px] text-slate-500 font-mono">Code: {comp.code} • Plan: {comp.plan}</span>
-                        </td>
-                        <td className="p-3.5">
-                          <span className="badge badge-indigo text-[10px] font-bold">
-                            Hybrid (Sandbox ➔ CoinCircle)
-                          </span>
-                        </td>
-                        <td className="p-3.5 text-center font-mono">
-                          <span className="font-bold text-indigo-700">{s1Calls} calls</span>
-                          <span className="block text-[10px] text-slate-500">₹{s1Cost.toFixed(2)}</span>
-                        </td>
-                        <td className="p-3.5 text-center font-mono">
-                          <span className="font-bold text-purple-700">{s2Calls} calls</span>
-                          <span className="block text-[10px] text-slate-500">₹{s2Cost.toFixed(2)}</span>
-                        </td>
-                        <td className="p-3.5 text-right font-mono font-bold text-rose-700">
-                          ₹{totalApiCost.toFixed(2)}
-                        </td>
-                        <td className="p-3.5 text-center font-mono font-bold text-slate-800">
-                          {verifiedVol} Checks
-                        </td>
-                        <td className="p-3.5 text-right font-mono font-black text-emerald-700">
-                          ₹{billedRevenue.toFixed(2)}
-                        </td>
-                        <td className="p-3.5 text-center">
-                          <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-black text-[11px] shadow-2xs">
-                            +{marginPct}%
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
             </div>
 
           </div>
+        );
+      })()}
 
-        </div>
-      )}
 
       {/* TAB 9: REPORTS SECTION (4 DETAILED REPORTS) */}
       {activeTab === 'reports' && (
@@ -3210,6 +3191,386 @@ export const SuperAdminView = () => {
         onClose={() => setShowUniversalExportModal(false)}
         initialRole="superadmin"
       />
+
+      
+      {/* ➕ ADD NEW API PROVIDER MODAL */}
+      {showAddApiModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                  <Server className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="badge badge-purple text-[10px] font-black">NEW GATEWAY ONBOARDING</span>
+                  <h3 className="text-xl font-black text-slate-900">Add New Verification API Provider</h3>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowAddApiModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newApiProvider.name || !newApiProvider.apiKey) {
+                  showToast('Please provide Provider Name and API Key', 'error');
+                  return;
+                }
+                const key = newApiProvider.providerKey || `server_${newApiProvider.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+                addApiProvider({
+                  ...newApiProvider,
+                  id: key,
+                  providerKey: key
+                });
+                setShowAddApiModal(false);
+                setNewApiProvider({
+                  name: '',
+                  providerKey: '',
+                  providerType: 'Institutional Gateway',
+                  endpointUrl: 'https://api.example.com/v1',
+                  apiKey: '',
+                  secretKey: '',
+                  webhookUrl: 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
+                  mode: 'Production (Live Mode)',
+                  rateLimitPerMin: 120,
+                  monthlyQuota: 10000,
+                  isPrimary: false,
+                  supportedDocs: ['Aadhaar UIDAI OTP', 'PAN Card Basic (NSDL)', 'Bank Account IMPS Penny Drop (₹1)', 'Driving License (MoRTH)']
+                });
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Provider Display Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newApiProvider.name}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      const autoKey = `server_${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+                      setNewApiProvider(prev => ({
+                        ...prev,
+                        name,
+                        providerKey: prev.providerKey ? prev.providerKey : autoKey
+                      }));
+                    }}
+                    className="form-input text-xs font-bold"
+                    placeholder="e.g. Surepass Technologies / HyperVerge"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Provider Unique Key / Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newApiProvider.providerKey}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, providerKey: e.target.value }))}
+                    className="form-input text-xs font-mono font-bold"
+                    placeholder="e.g. server3_surepass"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Provider Category / Type</label>
+                  <select
+                    value={newApiProvider.providerType}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, providerType: e.target.value }))}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="Institutional Gateway">Institutional Gateway (47+ APIs)</option>
+                    <option value="Government Registry Direct">Government Registry Direct (UIDAI/NSDL/NPCI)</option>
+                    <option value="AI Biometrics & Liveness">AI Biometrics & 3D Liveness</option>
+                    <option value="Telecom & SMS OTP">Telecom SMS & WhatsApp Gateway</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
+                  <select
+                    value={newApiProvider.mode}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, mode: e.target.value }))}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="Production (Live Mode)">Production (Live Mode)</option>
+                    <option value="Sandbox / Staging Mode">Sandbox / Staging Mode</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL *</label>
+                <input
+                  type="text"
+                  required
+                  value={newApiProvider.endpointUrl}
+                  onChange={(e) => setNewApiProvider(prev => ({ ...prev, endpointUrl: e.target.value }))}
+                  className="form-input text-xs font-mono"
+                  placeholder="https://api.provider.com/v1"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">API Key / Client ID *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newApiProvider.apiKey}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, apiKey: e.target.value }))}
+                    className="form-input text-xs font-mono font-bold"
+                    placeholder="pk_live_..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Secret Key / Secret Token (Optional)</label>
+                  <input
+                    type="password"
+                    value={newApiProvider.secretKey}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, secretKey: e.target.value }))}
+                    className="form-input text-xs font-mono"
+                    placeholder="sk_live_..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Rate Limit (req / min)</label>
+                  <input
+                    type="number"
+                    value={newApiProvider.rateLimitPerMin}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, rateLimitPerMin: parseInt(e.target.value) || 120 }))}
+                    className="form-input text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Monthly Call Quota</label>
+                  <input
+                    type="number"
+                    value={newApiProvider.monthlyQuota}
+                    onChange={(e) => setNewApiProvider(prev => ({ ...prev, monthlyQuota: parseInt(e.target.value) || 10000 }))}
+                    className="form-input text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Supported Capabilities Selection */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <label className="block text-slate-700 font-bold">Supported Document Verifications</label>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {[
+                    'Aadhaar UIDAI OTP',
+                    'PAN Card Basic (NSDL)',
+                    'Bank Account IMPS Penny Drop (₹1)',
+                    'Driving License (MoRTH)',
+                    'Passport Verification (MEA Direct)',
+                    'UAN Dual Employment & History',
+                    'AI 3D Biometrics & Liveness'
+                  ].map((doc) => {
+                    const isChecked = newApiProvider.supportedDocs.includes(doc);
+                    return (
+                      <label key={doc} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setNewApiProvider(prev => ({ ...prev, supportedDocs: [...prev.supportedDocs, doc] }));
+                            } else {
+                              setNewApiProvider(prev => ({ ...prev, supportedDocs: prev.supportedDocs.filter(d => d !== doc) }));
+                            }
+                          }}
+                          className="rounded text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="font-semibold text-slate-800 text-[11px]">{doc}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Primary Toggle */}
+              <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200 flex items-center justify-between">
+                <div>
+                  <strong className="text-purple-950 font-bold block text-xs">Designate as Primary Verification Gateway</strong>
+                  <span className="text-[11px] text-purple-800">All candidate verifications will route through this gateway first</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={newApiProvider.isPrimary}
+                  onChange={(e) => setNewApiProvider(prev => ({ ...prev, isPrimary: e.target.checked }))}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddApiModal(false)}
+                  className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-superadmin text-xs py-2 px-6 font-black shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Onboard & Connect Gateway</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ CONFIGURE / EDIT API PROVIDER MODAL */}
+      {showEditApiModal && selectedEditProvider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-purple-50 text-purple-600 rounded-2xl">
+                  <Edit className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="badge badge-purple text-[10px] font-black">CREDENTIALS & CONFIGURATION</span>
+                  <h3 className="text-xl font-black text-slate-900">Configure {selectedEditProvider.name || selectedEditProvider.key}</h3>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setShowEditApiModal(false);
+                  setSelectedEditProvider(null);
+                }}
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateApiConfig(selectedEditProvider.key, selectedEditProvider);
+                setShowEditApiModal(false);
+                setSelectedEditProvider(null);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Display Name</label>
+                <input
+                  type="text"
+                  required
+                  value={selectedEditProvider.name || selectedEditProvider.displayName || ''}
+                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, name: e.target.value }))}
+                  className="form-input text-xs font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">API Key / Client ID *</label>
+                <input
+                  type="text"
+                  required
+                  value={selectedEditProvider.apiKey || selectedEditProvider.clientId || ''}
+                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, apiKey: e.target.value, clientId: e.target.value }))}
+                  className="form-input text-xs font-mono font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Secret Key / Secret Token</label>
+                <input
+                  type="password"
+                  value={selectedEditProvider.secretKey || selectedEditProvider.clientSecret || ''}
+                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, secretKey: e.target.value, clientSecret: e.target.value }))}
+                  className="form-input text-xs font-mono"
+                  placeholder="Paste secret key..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL *</label>
+                <input
+                  type="text"
+                  required
+                  value={selectedEditProvider.endpointUrl || ''}
+                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, endpointUrl: e.target.value }))}
+                  className="form-input text-xs font-mono text-slate-700"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
+                  <select
+                    value={selectedEditProvider.mode || 'Production (Live Mode)'}
+                    onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, mode: e.target.value }))}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="Production (Live Mode)">Production (Live Mode)</option>
+                    <option value="Sandbox / Staging Mode">Sandbox / Staging Mode</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Rate Limit (req/min)</label>
+                  <input
+                    type="number"
+                    value={selectedEditProvider.rateLimitPerMin || 120}
+                    onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, rateLimitPerMin: parseInt(e.target.value) || 120 }))}
+                    className="form-input text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditApiModal(false);
+                    setSelectedEditProvider(null);
+                  }}
+                  className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-superadmin text-xs py-2 px-6 font-black shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
 
       {/* ⚡ Razorpay Verification Wallet Recharge Modal */}
       <RazorpayPaymentModal

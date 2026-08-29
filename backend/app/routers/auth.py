@@ -39,7 +39,7 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         }
         return create_session(user_data, "superadmin", client_ip, user_agent)
         
-    elif role == "company":
+    elif role in ("company", "companyadmin"):
         comp = None
         if email:
             comp = db.query(Company).filter(Company.email.ilike(email)).first()
@@ -59,7 +59,7 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         }
         return create_session(user_data, "company", client_ip, user_agent)
         
-    elif role == "hrexecutive":
+    elif role in ("hrexecutive", "hr"):
         hr = None
         if email:
             hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()

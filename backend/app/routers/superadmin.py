@@ -8,7 +8,7 @@ from backend.app.database import get_db
 from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
 from backend.app.schemas import (
     CompanyCreate, CompanyResponse, CompanyUpdateFeatures,
-    ApiConfigResponse, ApiConfigUpdate,
+    ApiConfigCreate, ApiConfigResponse, ApiConfigUpdate, ApiConfigToggle,
     SystemErrorLogResponse, SystemErrorLogToggle
 )
 
@@ -72,7 +72,43 @@ def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db:
 @router.get("/api-configs", response_model=List[ApiConfigResponse])
 def get_api_configurations(db: Session = Depends(get_db)):
     """Telemetry & credentials for API SETU, Sandbox API, Coincircletrust, etc."""
-    return db.query(ApiConfiguration).all()
+    return db.query(ApiConfiguration).order_by(ApiConfiguration.is_primary.desc(), ApiConfiguration.provider_key.asc()).all()
+
+@router.post("/api-configs", response_model=ApiConfigResponse)
+def create_api_configuration(payload: ApiConfigCreate, db: Session = Depends(get_db)):
+    """Super Admin onboarding of a new third-party verification API provider"""
+    existing = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == payload.provider_key).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"API Provider with key '{payload.provider_key}' already exists.")
+    
+    if payload.is_primary:
+        # Reset other providers' primary status
+        db.query(ApiConfiguration).update({"is_primary": False})
+
+    new_cfg = ApiConfiguration(
+        provider_key=payload.provider_key,
+        display_name=payload.display_name,
+        endpoint_url=payload.endpoint_url,
+        api_key=payload.api_key,
+        secret_key=payload.secret_key,
+        webhook_url=payload.webhook_url,
+        sandbox_mode=payload.sandbox_mode or False,
+        rate_limit_per_min=payload.rate_limit_per_min or 120,
+        status=payload.status or "CONNECTED",
+        is_active=payload.is_active if payload.is_active is not None else True,
+        is_primary=payload.is_primary or False,
+        supported_services=payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"],
+        provider_type=payload.provider_type or "Institutional Gateway",
+        description=payload.description,
+        monthly_quota=payload.monthly_quota or 10000,
+        monthly_used=0,
+        ping_latency_ms=62,
+        last_synced=datetime.utcnow()
+    )
+    db.add(new_cfg)
+    db.commit()
+    db.refresh(new_cfg)
+    return new_cfg
 
 @router.put("/api-configs/{provider_key}")
 def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session = Depends(get_db)):
@@ -88,6 +124,52 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
     db.commit()
     db.refresh(cfg)
     return {"success": True, "message": f"Updated {cfg.display_name} credentials", "config": cfg}
+
+@router.put("/api-configs/{provider_key}/toggle")
+def toggle_api_config(provider_key: str, payload: ApiConfigToggle, db: Session = Depends(get_db)):
+    """Instantly Enable or Disable an API Provider (e.g. during maintenance or latency failover)"""
+    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
+    if not cfg:
+        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
+    
+    cfg.is_active = payload.is_active
+    cfg.status = "CONNECTED" if payload.is_active else "DISABLED"
+    cfg.last_synced = datetime.utcnow()
+    db.commit()
+    db.refresh(cfg)
+    status_str = "ENABLED (Active)" if cfg.is_active else "DISABLED (Offline)"
+    return {"success": True, "message": f"{cfg.display_name} is now {status_str}", "config": cfg}
+
+@router.put("/api-configs/{provider_key}/primary")
+def set_primary_api_config(provider_key: str, db: Session = Depends(get_db)):
+    """Set specified API provider as the Primary Active Verification Engine for all checks"""
+    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
+    if not cfg:
+        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
+    
+    # Demote all others
+    db.query(ApiConfiguration).update({"is_primary": False})
+    cfg.is_primary = True
+    cfg.is_active = True
+    cfg.status = "CONNECTED"
+    cfg.last_synced = datetime.utcnow()
+    db.commit()
+    db.refresh(cfg)
+    return {"success": True, "message": f"{cfg.display_name} is now the PRIMARY active verification engine.", "config": cfg}
+
+@router.delete("/api-configs/{provider_key}")
+def delete_api_config(provider_key: str, db: Session = Depends(get_db)):
+    """Delete a custom added API Provider"""
+    if provider_key in ("server1_sandbox", "server2_coincircle"):
+        raise HTTPException(status_code=400, detail="System default providers (Sandbox / CoinCircle) cannot be deleted. You can disable them instead.")
+    
+    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
+    if not cfg:
+        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
+    
+    db.delete(cfg)
+    db.commit()
+    return {"success": True, "message": f"API Provider '{cfg.display_name}' deleted successfully."}
 
 @router.get("/logs", response_model=List[SystemErrorLogResponse])
 def get_system_logs(db: Session = Depends(get_db)):
