@@ -413,7 +413,29 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
         raise HTTPException(status_code=404, detail="Candidate not found")
         
     if payload.joining_form_data:
-        candidate.joining_form_data = payload.joining_form_data
+        jfd = payload.joining_form_data
+        candidate.joining_form_data = jfd
+        
+        # Auto-sync top-level columns if present in joining form
+        if jfd.get("fullName"): candidate.name = jfd["fullName"]
+        if jfd.get("empId"): candidate.emp_id = jfd["empId"]
+        if jfd.get("employeeNumber"): candidate.employee_number = jfd["employeeNumber"]
+        if jfd.get("dob"): candidate.dob = jfd["dob"]
+        if jfd.get("doj"): candidate.doj = jfd["doj"]
+        if jfd.get("age"): candidate.age = int(jfd["age"]) if str(jfd["age"]).isdigit() else candidate.age
+        if jfd.get("gender"): candidate.gender = jfd["gender"]
+        if jfd.get("maritalStatus"): candidate.marital_status = jfd["maritalStatus"]
+        if jfd.get("motherTongue"): candidate.mother_tongue = jfd["motherTongue"]
+        if jfd.get("languagesKnown"): candidate.languages_known = jfd["languagesKnown"]
+        if jfd.get("pfNumber") or jfd.get("uanEpf"): candidate.pf_number = jfd.get("pfNumber") or jfd.get("uanEpf")
+        if jfd.get("esiNumber") or jfd.get("esicNo"): candidate.esi_number = jfd.get("esiNumber") or jfd.get("esicNo")
+        if jfd.get("religion"): candidate.religion = jfd["religion"]
+        if jfd.get("caste"): candidate.caste = jfd["caste"]
+        if jfd.get("category"): candidate.category = jfd["category"]
+        if jfd.get("nativeState") or jfd.get("state"): candidate.native_state = jfd.get("nativeState") or jfd.get("state")
+        if jfd.get("nativeDistrict") or jfd.get("city"): candidate.native_district = jfd.get("nativeDistrict") or jfd.get("city")
+        if jfd.get("identificationMarks"): candidate.identification_marks = jfd["identificationMarks"]
+        if jfd.get("employeeType"): candidate.employee_type = jfd["employeeType"]
         
     candidate.status = "Verified"
     candidate.verification_date = datetime.utcnow()

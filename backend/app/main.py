@@ -70,12 +70,28 @@ def on_startup():
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
             "UPDATE api_configurations SET is_active = FALSE, is_primary = FALSE, status = 'DISABLED' WHERE provider_key IN ('server1_sandbox', 'sandbox');",
-            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', endpoint_url = 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct' WHERE provider_key = 'server2_coincircle';",
             "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_calls_count INTEGER DEFAULT 1;",
             "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
             "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 62;",
             "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS endpoint_path VARCHAR(150);",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_id VARCHAR(100);"
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_id VARCHAR(100);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_number VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dob VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS doj VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS age INTEGER;",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS gender VARCHAR(20);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS marital_status VARCHAR(30);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_tongue VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS languages_known VARCHAR(200);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pf_number VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS esi_number VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS religion VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS caste VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS category VARCHAR(50);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';"
         ]
         with engine.connect() as conn:
             for stmt in migration_statements:

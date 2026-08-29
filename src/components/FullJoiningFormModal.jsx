@@ -33,7 +33,11 @@ import {
   ShoppingBag, 
   HardHat, 
   Layers,
-  AlertCircle
+  AlertCircle,
+  HeartPulse,
+  Award,
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
@@ -46,77 +50,115 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
 
   const [formData, setFormData] = useState({
-    // Section 1: Personal & Bio Demographics
-    fullName: candidate?.name || jfd.fullName || 'Rajesh Kumar',
-    fatherName: candidate?.fatherName || jfd.fatherName || 'Suresh Kumar',
-    motherName: candidate?.motherName || jfd.motherName || 'Kavitha Kumar',
-    dob: candidate?.dob || jfd.dob || '1996-05-15',
-    gender: candidate?.gender || jfd.gender || 'Male',
-    maritalStatus: candidate?.maritalStatus || jfd.maritalStatus || 'Married',
-    bloodGroup: candidate?.bloodGroup || jfd.bloodGroup || 'O+',
-    nationality: candidate?.nationality || jfd.nationality || 'Indian',
-    religion: jfd.religion || 'Hindu',
-    languagesKnown: candidate?.languagesKnown || jfd.languagesKnown || 'English (Fluent), Hindi (National)',
-    selfInterests: candidate?.selfInterests || jfd.selfInterests || 'Coding & Open Source Development',
-
-    // Section 2: Contact & Address
-    mobile: candidate?.mobile || jfd.mobile || '+91 98765 43210',
-    alternateMobile: candidate?.alternateMobile || jfd.alternateMobile || '+91 98111 22334',
-    email: candidate?.email || jfd.email || 'rajesh.k@gmail.com',
-    state: candidate?.state || jfd.state || 'Karnataka',
-    city: candidate?.city || jfd.city || 'Bengaluru',
-    area: candidate?.area || jfd.area || 'Koramangala 4th Block, Bengaluru',
-    pincode: candidate?.pincode || jfd.pincode || '560103',
-    presentAddress: candidate?.presentAddress || jfd.presentAddress || '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103',
-    permanentAddress: candidate?.permanentAddress || jfd.permanentAddress || '45, MG Road, Civil Lines, Jaipur, RJ - 302001',
-    emergencyContactName: candidate?.emergencyContactName || jfd.emergencyContactName || 'Suresh Kumar (Father)',
-    emergencyContactPhone: candidate?.emergencyContactPhone || jfd.emergencyContactPhone || '+91 98111 22334',
-
-    // Section 3: Education & Academic
-    qualificationCategory: candidate?.qualificationCategory || jfd.qualificationCategory || 'Under Graduate (UG / Bachelor Degree)',
-    highestQualification: candidate?.highestQualification || jfd.highestQualification || 'B.Tech / B.E. in Computer Science',
-    primarySkill: candidate?.primarySkill || jfd.primarySkill || 'React JS, Node.js, Python',
-    college: candidate?.college || jfd.college || 'BMS College of Engineering',
-    university: candidate?.university || jfd.university || 'VTU Technological University',
-    passingYear: candidate?.passingYear || jfd.passingYear || '2020',
-    percentage: candidate?.percentage || jfd.percentage || '84.5%',
-
-    // Section 4: Employment Position & Experience
-    empId: candidate?.empId || jfd.empId || 'EMP-2026-88',
-    designation: candidate?.designation || jfd.designation || 'Senior Software Engineer',
+    // Section 1: Basic Personal & Profile Identity
+    fullName: candidate?.name || jfd.fullName || 'Muthu Kumar P',
+    empId: candidate?.emp_id || candidate?.empId || jfd.empId || 'JOY-2026-001',
+    employeeNumber: candidate?.employee_number || jfd.employeeNumber || 'EN-884912',
+    status: candidate?.status || jfd.status || 'In Verification',
+    workingCompany: jfd.workingCompany || 'JOY CORPORATE SOLUTIONS PVT LTD',
     dept: candidate?.dept || jfd.dept || 'Engineering & Software Architecture',
-    jobCategory: candidate?.jobCategory || jfd.jobCategory || 'Information Technology & Software Services',
-    jobType: candidate?.jobType || jfd.jobType || 'Full Time Permanent',
-    workLocation: candidate?.workLocation || jfd.workLocation || 'Bengaluru Global Tech Hub (HQ)',
-    previousEmployer: candidate?.previousEmployer || jfd.previousEmployer || 'Infosys Limited',
-    experienceYears: candidate?.experienceYears || jfd.experienceYears || '4.5',
-    doj: jfd.doj || '2026-09-01',
+    designation: candidate?.designation || jfd.designation || 'Senior Software Engineer',
+    mobile: candidate?.mobile || jfd.mobile || '+91 98765 43210',
+    dob: candidate?.dob || jfd.dob || '1996-05-15',
+    age: candidate?.age || jfd.age || '30',
+    doj: candidate?.doj || jfd.doj || '2026-09-01',
+    motherTongue: candidate?.mother_tongue || jfd.motherTongue || 'Tamil',
+    languagesKnown: candidate?.languages_known || jfd.languagesKnown || 'English (Fluent), Tamil (Native), Hindi',
+    gender: candidate?.gender || jfd.gender || 'Male',
+    maritalStatus: candidate?.marital_status || jfd.maritalStatus || 'Single',
+    religion: candidate?.religion || jfd.religion || 'Hindu',
+    caste: candidate?.caste || jfd.caste || 'General',
+    category: candidate?.category || jfd.category || 'General',
+    identificationMarks: candidate?.identification_marks || jfd.identificationMarks || 'Mole on right collar bone, scar on left knee',
+    employeeCategory: candidate?.employee_type || candidate?.employeeCategory || jfd.employeeCategory || 'it_tech',
 
-    // Section 5: Government Identifiers
-    aadhaarNo: candidate?.aadhaarNo || jfd.aadhaarNo || '5489 1234 9876',
+    // Section 2: Contact, Native Domicile & Addresses
+    alternateMobile: candidate?.alternateMobile || jfd.alternateMobile || '+91 98111 22334',
+    email: candidate?.email || jfd.email || 'muthu.kumar@joycorporatesolutions.com',
+    state: candidate?.native_state || jfd.state || 'Tamil Nadu',
+    city: candidate?.native_district || jfd.city || 'Chennai',
+    area: candidate?.area || jfd.area || 'Koramangala 4th Block, Bengaluru',
+    pincode: candidate?.pincode || jfd.pincode || '560034',
+    presentAddress: candidate?.presentAddress || jfd.presentAddress || '#42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034',
+    permanentAddress: candidate?.permanentAddress || jfd.permanentAddress || 'No 15, North Car Street, Madurai, TN - 625001',
+    nativeState: candidate?.native_state || jfd.nativeState || 'Tamil Nadu',
+    nativeDistrict: candidate?.native_district || jfd.nativeDistrict || 'Madurai',
+    emergencyContactName: candidate?.emergencyContactName || jfd.emergencyContactName || 'Suresh Kumar (Father)',
+    emergencyContactPhone: candidate?.emergencyContactPhone || jfd.emergencyContactPhone || '+91 98765 43211',
+
+    // Section 3: Statutory Identifiers & Banking
+    aadhaarNo: candidate?.aadhaar_no || candidate?.aadhaarNo || jfd.aadhaarNo || '5489 1234 9876',
     panNo: candidate?.panNo || jfd.panNo || 'ABCDE1234F',
+    pfNumber: candidate?.pf_number || candidate?.uanEpf || jfd.pfNumber || jfd.uanEpf || '101239019283',
+    esiNumber: candidate?.esi_number || candidate?.esicNo || jfd.esiNumber || jfd.esicNo || '5300918239',
     drivingLicense: candidate?.drivingLicense || jfd.drivingLicense || 'KA-01201900124',
-    passportNo: candidate?.passportNo || jfd.passportNo || 'J8912401',
+    passportNo: candidate?.passportNo || jfd.passportNo || 'Z8491024',
     voterId: candidate?.voterId || jfd.voterId || 'WZK8912301',
-    uanEpf: candidate?.uanEpf || jfd.uanEpf || '100982341209',
-    esicNo: candidate?.esicNo || jfd.esicNo || '310082910291',
+    uanEpf: candidate?.pf_number || candidate?.uanEpf || jfd.uanEpf || '101239019283',
+    esicNo: candidate?.esi_number || candidate?.esicNo || jfd.esicNo || '5300918239',
 
-    // Section 6: Bank Payroll Details
-    accountHolderName: candidate?.name || jfd.accountHolderName || 'Rajesh Kumar',
-    bankName: candidate?.bankName || jfd.bankName || 'HDFC Bank',
-    bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || '50100234129845',
-    ifscCode: candidate?.ifscCode || jfd.ifscCode || 'HDFC0001234',
-    bankBranch: jfd.bankBranch || 'Koramangala Branch',
+    // Banking Details
+    bankName: candidate?.bankName || jfd.bankName || 'HDFC Bank Limited',
+    accountHolderName: candidate?.name || jfd.accountHolderName || 'Muthu Kumar P',
+    bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || '501002349845',
+    ifscCode: candidate?.ifscCode || jfd.ifscCode || 'HDFC0000128',
+    bankBranch: jfd.bankBranch || 'Koramangala 4th Block Branch, Bengaluru',
 
-    // Section 7: Nominee Dependents
-    nomineeName: candidate?.nomineeName || jfd.nomineeName || 'Sunita Kumar',
-    nomineeRelation: candidate?.nomineeRelation || jfd.nomineeRelation || 'Spouse (100% Share)',
-    nomineeDob: jfd.nomineeDob || '1998-11-20',
+    // Section 4: Education Details (Multi-Entry)
+    educationList: jfd.educationList || [
+      { institutionName: 'PSG College of Technology, Coimbatore', degreeName: 'B.Tech in Computer Science & Engg', yearOfJoining: '2014', yearOfEnd: '2018', grade: '8.75 CGPA (85.2%)' },
+      { institutionName: 'St. Joseph Higher Secondary School, Madurai', degreeName: 'Higher Secondary (12th Standard)', yearOfJoining: '2012', yearOfEnd: '2014', grade: '94.5% Distinction' }
+    ],
+
+    // Section 5: Family Member Particulars
+    fatherName: candidate?.fatherName || jfd.fatherName || 'Suresh Kumar P',
+    fatherAge: jfd.fatherAge || '58',
+    fatherMobile: jfd.fatherMobile || '+91 98765 43211',
+    fatherOccupation: jfd.fatherOccupation || 'Retired Govt Officer',
+    motherName: candidate?.motherName || jfd.motherName || 'Meenakshi S',
+    motherAge: jfd.motherAge || '54',
+    motherMobile: jfd.motherMobile || '+91 98765 43212',
+    motherOccupation: jfd.motherOccupation || 'Homemaker',
+    spouseDetails: jfd.spouseDetails || 'N/A (Single)',
+    childrenDetails: jfd.childrenDetails || 'N/A (None)',
+    nomineeName: candidate?.nomineeName || jfd.nomineeName || 'Meenakshi S',
+    nomineeRelation: candidate?.nomineeRelation || jfd.nomineeRelation || 'Mother (100% Share)',
+    nomineeDob: jfd.nomineeDob || '1970-08-12',
     nomineeAadhaar: jfd.nomineeAadhaar || '9812 3456 7890',
-    insuranceDependents: candidate?.insuranceDependents || jfd.insuranceDependents || 'Spouse + Dependent Parents',
+    insuranceDependents: candidate?.insuranceDependents || jfd.insuranceDependents || 'Dependent Parents',
 
-    // Section 8: Industry Specialization
-    employeeCategory: candidate?.employeeCategory || jfd.employeeCategory || candSpec.industryType || 'it_tech',
+    // Section 6: Personal Achievements & Extracurricular Activities
+    personalAchievements: jfd.personalAchievements || 'Winner of National Hackathon 2023, Published IEEE Research Paper on Distributed Systems Architecture',
+    extraCurricularActivities: jfd.extraCurricularActivities || 'State Level Badminton Player, Active Blood Donor with Red Cross Society',
+
+    // Section 7: Employment Experience (Multi-Entry)
+    experienceList: jfd.experienceList || [
+      { institutionName: 'Infosys Limited', institutionAddress: 'Electronics City, Phase 1, Hosur Road, Bengaluru', designation: 'Systems Engineer', periodOfService: '06/2021 - 07/2024 (3 Yrs 2 Mos)', salaryDrawn: '₹8,50,000 Per Annum (₹62,000/mo)', reasonForLeaving: 'Career advancement, higher architectural ownership, role alignment' }
+    ],
+
+    // Section 8: Health, Lifestyle & Background Disclosures (Conditional Yes/No)
+    isSmoker: jfd.isSmoker || 'No',
+    cigarettesPerDay: jfd.cigarettesPerDay || '0',
+    hasMajorSurgery: jfd.hasMajorSurgery || 'No',
+    surgeryDetails: jfd.surgeryDetails || '',
+    hasIllnessIssues: jfd.hasIllnessIssues || 'No',
+    illnessDetails: jfd.illnessDetails || '',
+    ownsHouse: jfd.ownsHouse || 'Yes',
+    houseCityTown: jfd.houseCityTown || 'Madurai, Tamil Nadu',
+    hasOtherIncome: jfd.hasOtherIncome || 'No',
+    otherIncomeDetails: jfd.otherIncomeDetails || '',
+    hasCriminalConviction: jfd.hasCriminalConviction || 'No',
+    convictionDetails: jfd.convictionDetails || '',
+
+    // Section 9: Group Relationship & Reference Liberty
+    relatedToGroupEmployee: jfd.relatedToGroupEmployee || 'No',
+    relatedEmployeeDetails: jfd.relatedEmployeeDetails || '',
+    previouslyInterviewedInGroup: jfd.previouslyInterviewedInGroup || 'No',
+    previousInterviewDetails: jfd.previousInterviewDetails || '',
+    contactPresentEmployerLiberty: jfd.contactPresentEmployerLiberty || 'Yes',
+    contactPreviousEmployerLiberty: jfd.contactPreviousEmployerLiberty || 'Yes',
+
+    // Section 10: Industry Specialization
     industrySpecialization: {
       industryType: candidate?.employeeCategory || jfd.employeeCategory || candSpec.industryType || 'it_tech',
       techStack: candSpec.techStack || 'React, Node.js, Python, PostgreSQL, AWS',
@@ -230,6 +272,52 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     setShowEmailOtpModal(false);
     if (candidate) updateCandidateVerification(candidate.token, 'email', true);
     showToast('Official Email Address Verified!');
+  };
+
+  // Multi-entry Education List handlers
+  const handleAddEducation = () => {
+    setFormData({
+      ...formData,
+      educationList: [
+        ...(formData.educationList || []),
+        { institutionName: '', degreeName: '', yearOfJoining: '', yearOfEnd: '', grade: '' }
+      ]
+    });
+  };
+
+  const handleUpdateEducation = (index, field, value) => {
+    const list = [...(formData.educationList || [])];
+    list[index] = { ...list[index], [field]: value };
+    setFormData({ ...formData, educationList: list });
+  };
+
+  const handleRemoveEducation = (index) => {
+    const list = [...(formData.educationList || [])];
+    list.splice(index, 1);
+    setFormData({ ...formData, educationList: list });
+  };
+
+  // Multi-entry Experience List handlers
+  const handleAddExperience = () => {
+    setFormData({
+      ...formData,
+      experienceList: [
+        ...(formData.experienceList || []),
+        { institutionName: '', institutionAddress: '', designation: '', periodOfService: '', salaryDrawn: '', reasonForLeaving: '' }
+      ]
+    });
+  };
+
+  const handleUpdateExperience = (index, field, value) => {
+    const list = [...(formData.experienceList || [])];
+    list[index] = { ...list[index], [field]: value };
+    setFormData({ ...formData, experienceList: list });
+  };
+
+  const handleRemoveExperience = (index) => {
+    const list = [...(formData.experienceList || [])];
+    list.splice(index, 1);
+    setFormData({ ...formData, experienceList: list });
   };
 
   const handleFinalFormSubmit = (e) => {
@@ -419,130 +507,56 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
         </div>
 
-        {/* Form Section Navigation Tabs (10 Sections) */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto no-scrollbar text-xs font-bold gap-1">
-          <button
-            type="button"
-            onClick={() => setActiveSection('personal')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'personal' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>1. Personal</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('address')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'address' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            <span>2. Address</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('education')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'education' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <GraduationCap className="w-3.5 h-3.5" />
-            <span>3. Education</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('employment')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'employment' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Briefcase className="w-3.5 h-3.5" />
-            <span>4. Employment</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('govt')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'govt' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>5. Govt IDs</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('bank')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap btn-interactive tab-interactive ${
-              activeSection === 'bank' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <CreditCard className="w-3.5 h-3.5" />
-            <span>6. Bank Payroll</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('nominee')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
-              activeSection === 'nominee' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>7. Dependents</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('industry')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
-              activeSection === 'industry' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Cpu className="w-3.5 h-3.5" />
-            <span>8. Industry Matrix 🌟</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('documents')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
-              activeSection === 'documents' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <FolderDown className="w-3.5 h-3.5" />
-            <span>9. Upload Documents 📁</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSection('statutory_agreements')}
-            className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive ${
-              activeSection === 'statutory_agreements' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>10. Statutory Agmts ⚖️</span>
-          </button>
+        {/* Form Section Navigation Tabs (11 Comprehensive Sections) */}
+        <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar text-xs font-bold gap-1 shadow-2xs">
+          {[
+            { id: 'personal', label: '1. Profile & Bio', icon: User },
+            { id: 'address', label: '2. Native & Address', icon: MapPin },
+            { id: 'govt', label: '3. Statutory & Bank', icon: CreditCard },
+            { id: 'education', label: '4. Education (Multi)', icon: GraduationCap },
+            { id: 'nominee', label: '5. Family & Nominee', icon: Users },
+            { id: 'employment', label: '6. Work Experience', icon: Briefcase },
+            { id: 'achievements', label: '7. Achievements', icon: Award },
+            { id: 'health_lifestyle', label: '8. Health & Background', icon: HeartPulse },
+            { id: 'group_relations', label: '9. Group Relations', icon: ShieldCheck },
+            { id: 'industry', label: '10. Industry Matrix', icon: Cpu },
+            { id: 'documents', label: '11. Documents & Sign', icon: FolderDown }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeSection === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveSection(tab.id)}
+                className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer btn-interactive tab-interactive font-bold ${
+                  isActive ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Master Joining Form Body */}
         <form onSubmit={handleFinalFormSubmit} className="space-y-4 text-xs max-h-[55vh] overflow-y-auto pr-1">
-          
           {/* SECTION 1: PERSONAL & BIO DEMOGRAPHICS */}
           {activeSection === 'personal' && (
             <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 1: Personal & Bio Demographics</h3>
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span>Section 1: Basic Personal Profile & Bio Demographics</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Standard Enterprise HR Application Form</span>
+              </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Row 1: Identification & Names */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
-                  {renderCandidateFieldLabel('Full Candidate Name', 'fullName', true)}
+                  {renderCandidateFieldLabel('Employee Name', 'fullName', true)}
                   <input 
                     type="text" 
                     required 
@@ -552,15 +566,90 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel("Father's / Husband's Name", 'fatherName', true)}
+                  {renderCandidateFieldLabel('Employee ID', 'empId', true)}
                   <input 
                     type="text" 
                     required 
-                    value={formData.fatherName} 
-                    onChange={e => setFormData({ ...formData, fatherName: e.target.value })}
-                    className={getCandidateFieldInputClass('fatherName')} 
+                    value={formData.empId} 
+                    onChange={e => setFormData({ ...formData, empId: e.target.value })}
+                    className={getCandidateFieldInputClass('empId', 'form-input font-mono font-bold')} 
                   />
                 </div>
+                <div>
+                  {renderCandidateFieldLabel('Employee Number', 'employeeNumber', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.employeeNumber} 
+                    onChange={e => setFormData({ ...formData, employeeNumber: e.target.value })}
+                    className={getCandidateFieldInputClass('employeeNumber', 'form-input font-mono')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Employment Status', 'status')}
+                  <select 
+                    value={formData.status} 
+                    onChange={e => setFormData({ ...formData, status: e.target.value })}
+                    className={getCandidateFieldInputClass('status', 'form-select text-xs font-bold text-indigo-700')}
+                  >
+                    <option value="In Verification">In Verification</option>
+                    <option value="Link Sent">Link Sent</option>
+                    <option value="Verified">Verified & Active</option>
+                    <option value="Probation">On Probation</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 2: Company, Dept, Designation, DOJ */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                  {renderCandidateFieldLabel('Working Company', 'workingCompany', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.workingCompany} 
+                    onChange={e => setFormData({ ...formData, workingCompany: e.target.value })}
+                    className={getCandidateFieldInputClass('workingCompany')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Department', 'dept', true)}
+                  <select 
+                    value={formData.dept} 
+                    onChange={e => setFormData({ ...formData, dept: e.target.value })}
+                    className={getCandidateFieldInputClass('dept', 'form-select text-xs font-bold')}
+                  >
+                    {(masterDropdownOptions?.departments || ['Engineering & Software Architecture', 'Operations', 'Finance & Accounts', 'Human Resources', 'Sales & Marketing', 'Quality Assurance']).map(dept => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Designation', 'designation', true)}
+                  <select 
+                    value={formData.designation} 
+                    onChange={e => setFormData({ ...formData, designation: e.target.value })}
+                    className={getCandidateFieldInputClass('designation', 'form-select text-xs font-bold')}
+                  >
+                    {(masterDropdownOptions?.designations || ['Senior Software Engineer', 'Software Architect', 'Product Specialist', 'Operations Lead', 'Branch Manager', 'Associate']).map(desig => (
+                      <option key={desig} value={desig}>{desig}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Date of Joining (DOJ)', 'doj', true)}
+                  <input 
+                    type="date" 
+                    required 
+                    value={formData.doj} 
+                    onChange={e => setFormData({ ...formData, doj: e.target.value })}
+                    className={getCandidateFieldInputClass('doj')} 
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: DOB, Age, Gender, Marital Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                   {renderCandidateFieldLabel('Date of Birth (DOB)', 'dob', true)}
                   <input 
@@ -571,9 +660,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     className={getCandidateFieldInputClass('dob')} 
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div>
+                  {renderCandidateFieldLabel('Age (Years)', 'age', true)}
+                  <input 
+                    type="number" 
+                    required 
+                    min="18"
+                    max="80"
+                    value={formData.age} 
+                    onChange={e => setFormData({ ...formData, age: e.target.value })}
+                    className={getCandidateFieldInputClass('age', 'form-input font-bold')} 
+                  />
+                </div>
                 <div>
                   {renderCandidateFieldLabel('Gender', 'gender', true)}
                   <select 
@@ -583,22 +681,104 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                    <option value="Non-Binary">Non-Binary</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
-
                 <div>
-                  {renderCandidateFieldLabel('Marital Status', 'maritalStatus')}
+                  {renderCandidateFieldLabel('Status Married / Unmarried', 'maritalStatus', true)}
                   <select 
                     value={formData.maritalStatus} 
                     onChange={e => setFormData({ ...formData, maritalStatus: e.target.value })}
                     className={getCandidateFieldInputClass('maritalStatus', 'form-select text-xs')}
                   >
-                    <option value="Single">Single</option>
+                    <option value="Single">Single / Unmarried</option>
                     <option value="Married">Married</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Widowed">Widowed</option>
                   </select>
                 </div>
+              </div>
 
+              {/* Row 4: Languages, Religion, Caste, Category */}
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                <div>
+                  {renderCandidateFieldLabel('Mother Language', 'motherTongue', true)}
+                  <input 
+                    type="text" 
+                    required
+                    value={formData.motherTongue} 
+                    onChange={e => setFormData({ ...formData, motherTongue: e.target.value })}
+                    placeholder="e.g. Tamil, Hindi, Telugu"
+                    className={getCandidateFieldInputClass('motherTongue')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Known Languages', 'languagesKnown', true)}
+                  <input 
+                    type="text" 
+                    required
+                    value={formData.languagesKnown} 
+                    onChange={e => setFormData({ ...formData, languagesKnown: e.target.value })}
+                    placeholder="e.g. English, Tamil, Hindi"
+                    className={getCandidateFieldInputClass('languagesKnown')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Religion', 'religion')}
+                  <select 
+                    value={formData.religion} 
+                    onChange={e => setFormData({ ...formData, religion: e.target.value })}
+                    className={getCandidateFieldInputClass('religion', 'form-select text-xs')}
+                  >
+                    <option value="Hindu">Hindu</option>
+                    <option value="Muslim">Muslim</option>
+                    <option value="Christian">Christian</option>
+                    <option value="Sikh">Sikh</option>
+                    <option value="Jain">Jain</option>
+                    <option value="Buddhist">Buddhist</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Caste', 'caste')}
+                  <input 
+                    type="text" 
+                    value={formData.caste} 
+                    onChange={e => setFormData({ ...formData, caste: e.target.value })}
+                    placeholder="Optional Caste"
+                    className={getCandidateFieldInputClass('caste')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Category', 'category', true)}
+                  <select 
+                    value={formData.category} 
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                    className={getCandidateFieldInputClass('category', 'form-select text-xs font-bold')}
+                  >
+                    <option value="General">General (OC)</option>
+                    <option value="OBC">OBC (BC / MBC)</option>
+                    <option value="SC">SC (Scheduled Caste)</option>
+                    <option value="ST">ST (Scheduled Tribe)</option>
+                    <option value="EWS">EWS (Economically Weaker)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 5: Identification Marks & Blood Group */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  {renderCandidateFieldLabel('Identification Marks (Physical Scars / Moles)', 'identificationMarks', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.identificationMarks} 
+                    onChange={e => setFormData({ ...formData, identificationMarks: e.target.value })}
+                    placeholder="e.g. Mole on right collar bone, scar on left knee"
+                    className={getCandidateFieldInputClass('identificationMarks')} 
+                  />
+                </div>
                 <div>
                   {renderCandidateFieldLabel('Blood Group', 'bloodGroup', true)}
                   <select 
@@ -606,20 +786,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })}
                     className={getCandidateFieldInputClass('bloodGroup', 'form-select text-xs font-bold')}
                   >
-                    {(masterDropdownOptions?.bloodGroups || ['O+', 'A+', 'B+', 'AB+']).map(bg => (
+                    {(masterDropdownOptions?.bloodGroups || ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-']).map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
                     ))}
                   </select>
-                </div>
-
-                <div>
-                  {renderCandidateFieldLabel('Nationality', 'nationality')}
-                  <input 
-                    type="text" 
-                    value={formData.nationality} 
-                    onChange={e => setFormData({ ...formData, nationality: e.target.value })}
-                    className={getCandidateFieldInputClass('nationality')} 
-                  />
                 </div>
               </div>
             </div>
@@ -628,7 +798,13 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           {/* SECTION 2: CONTACT & ADDRESS INFORMATION */}
           {activeSection === 'address' && (
             <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 2: Contact & Address Information</h3>
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>Section 2: Contact, Native Domicile & Address Information</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Courier & Statutory Police Jurisdiction</span>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -642,7 +818,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Email Address', 'email', true)}
+                  {renderCandidateFieldLabel('Official / Personal Email Address', 'email', true)}
                   <input 
                     type="email" 
                     required 
@@ -654,28 +830,78 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               </div>
 
               <div>
-                {renderCandidateFieldLabel('Present Residential Address', 'presentAddress', true)}
+                {renderCandidateFieldLabel('Residential Address (Present Physical Stay)', 'presentAddress', true)}
                 <textarea 
                   rows="2" 
                   required 
                   value={formData.presentAddress} 
                   onChange={e => setFormData({ ...formData, presentAddress: e.target.value })}
+                  placeholder="House / Flat No, Building Name, Street, Area, City, PIN"
                   className={getCandidateFieldInputClass('presentAddress', 'form-textarea text-xs')} 
                 />
               </div>
 
               <div>
-                {renderCandidateFieldLabel('Permanent Residential Address', 'permanentAddress', true)}
+                {renderCandidateFieldLabel('Permanent Address (Native Home / Aadhaar)', 'permanentAddress', true)}
                 <textarea 
                   rows="2" 
                   required 
                   value={formData.permanentAddress} 
                   onChange={e => setFormData({ ...formData, permanentAddress: e.target.value })}
+                  placeholder="Permanent village / hometown address as per sovereign records"
                   className={getCandidateFieldInputClass('permanentAddress', 'form-textarea text-xs')} 
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                  {renderCandidateFieldLabel('Native State', 'nativeState', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.nativeState} 
+                    onChange={e => setFormData({ ...formData, nativeState: e.target.value })}
+                    placeholder="e.g. Tamil Nadu"
+                    className={getCandidateFieldInputClass('nativeState')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Native District', 'nativeDistrict', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.nativeDistrict} 
+                    onChange={e => setFormData({ ...formData, nativeDistrict: e.target.value })}
+                    placeholder="e.g. Madurai"
+                    className={getCandidateFieldInputClass('nativeDistrict')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Current City & State', 'city', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.city} 
+                    onChange={e => setFormData({ ...formData, city: e.target.value })}
+                    placeholder="e.g. Bengaluru, KA"
+                    className={getCandidateFieldInputClass('city')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('Postal Pincode', 'pincode', true)}
+                  <input 
+                    type="text" 
+                    required 
+                    maxLength="6"
+                    value={formData.pincode} 
+                    onChange={e => setFormData({ ...formData, pincode: e.target.value })}
+                    placeholder="e.g. 560034"
+                    className={getCandidateFieldInputClass('pincode', 'form-input font-mono font-bold')} 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
                   {renderCandidateFieldLabel('Emergency Contact Person & Relationship', 'emergencyContactName', true)}
                   <input 
@@ -683,6 +909,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     required 
                     value={formData.emergencyContactName} 
                     onChange={e => setFormData({ ...formData, emergencyContactName: e.target.value })}
+                    placeholder="e.g. Suresh Kumar (Father)"
                     className={getCandidateFieldInputClass('emergencyContactName')} 
                   />
                 </div>
@@ -693,6 +920,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     required 
                     value={formData.emergencyContactPhone} 
                     onChange={e => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
+                    placeholder="e.g. +91 98765 43211"
                     className={getCandidateFieldInputClass('emergencyContactPhone')} 
                   />
                 </div>
@@ -700,14 +928,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
           )}
 
-          {/* SECTION 3: GOVERNMENT IDENTIFIERS */}
+          {/* SECTION 3: STATUTORY IDENTIFIERS & BANKING */}
           {activeSection === 'govt' && (
             <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 3: Government Identifiers & Statutory Proofs</h3>
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Section 3: Statutory Social Security & Banking Payroll Details</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Instant e-KYC Verification</span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Statutory Numbers */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
-                  {renderCandidateFieldLabel('Aadhaar UIDAI Number (12 Digits)', 'aadhaarNo', true)}
+                  {renderCandidateFieldLabel('Aadhaar Number (12 Digits)', 'aadhaarNo', true)}
                   <input 
                     type="text" 
                     required 
@@ -723,9 +958,33 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     required 
                     value={formData.panNo} 
                     onChange={e => setFormData({ ...formData, panNo: e.target.value })}
-                    className={getCandidateFieldInputClass('panNo', 'form-input font-mono')} 
+                    className={getCandidateFieldInputClass('panNo', 'form-input font-mono font-bold')} 
                   />
                 </div>
+                <div>
+                  {renderCandidateFieldLabel('PF Number / UAN (EPFO)', 'pfNumber', true)}
+                  <input 
+                    type="text" 
+                    required
+                    value={formData.pfNumber} 
+                    onChange={e => setFormData({ ...formData, pfNumber: e.target.value, uanEpf: e.target.value })}
+                    placeholder="12-digit UAN"
+                    className={getCandidateFieldInputClass('pfNumber', 'form-input font-mono')} 
+                  />
+                </div>
+                <div>
+                  {renderCandidateFieldLabel('ESI Number (IP Number)', 'esiNumber')}
+                  <input 
+                    type="text" 
+                    value={formData.esiNumber} 
+                    onChange={e => setFormData({ ...formData, esiNumber: e.target.value, esicNo: e.target.value })}
+                    placeholder="10-digit IP No"
+                    className={getCandidateFieldInputClass('esiNumber', 'form-input font-mono')} 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   {renderCandidateFieldLabel('Driving License (DL) Number', 'drivingLicense')}
                   <input 
@@ -735,9 +994,6 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     className={getCandidateFieldInputClass('drivingLicense', 'form-input font-mono')} 
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   {renderCandidateFieldLabel('Passport Number', 'passportNo')}
                   <input 
@@ -748,655 +1004,185 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('UAN / EPF Universal Account Number', 'uanEpf')}
+                  {renderCandidateFieldLabel('Voter ID Card Number', 'voterId')}
                   <input 
                     type="text" 
-                    value={formData.uanEpf} 
-                    onChange={e => setFormData({ ...formData, uanEpf: e.target.value })}
-                    className={getCandidateFieldInputClass('uanEpf', 'form-input font-mono')} 
+                    value={formData.voterId} 
+                    onChange={e => setFormData({ ...formData, voterId: e.target.value })}
+                    className={getCandidateFieldInputClass('voterId', 'form-input font-mono')} 
                   />
+                </div>
+              </div>
+
+              {/* Banking Details Header */}
+              <div className="pt-2 border-t border-slate-200">
+                <span className="text-xs font-black text-slate-800 uppercase tracking-wider block mb-2">
+                  🏦 Direct Salary Deposit & Banking Details:
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Bank Name', 'bankName', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.bankName} 
+                      onChange={e => setFormData({ ...formData, bankName: e.target.value })}
+                      placeholder="e.g. HDFC Bank Limited"
+                      className={getCandidateFieldInputClass('bankName', 'form-input font-bold')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Account Holder Name', 'accountHolderName', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.accountHolderName} 
+                      onChange={e => setFormData({ ...formData, accountHolderName: e.target.value })}
+                      className={getCandidateFieldInputClass('accountHolderName')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Bank Account Number', 'bankAccountNo', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.bankAccountNo} 
+                      onChange={e => setFormData({ ...formData, bankAccountNo: e.target.value })}
+                      className={getCandidateFieldInputClass('bankAccountNo', 'form-input font-mono font-bold')} 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div>
+                    {renderCandidateFieldLabel('Bank IFSC Code', 'ifscCode', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.ifscCode} 
+                      onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
+                      className={getCandidateFieldInputClass('ifscCode', 'form-input font-mono font-bold')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Bank Branch Name & Location', 'bankBranch', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.bankBranch} 
+                      onChange={e => setFormData({ ...formData, bankBranch: e.target.value })}
+                      placeholder="e.g. Koramangala 4th Block Branch"
+                      className={getCandidateFieldInputClass('bankBranch')} 
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* SECTION 4: EMPLOYMENT ASSIGNMENT */}
-          {activeSection === 'employment' && (
-            <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 4: Employment & Job Assignment</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Employee Code / ID', 'empId', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.empId} 
-                    onChange={e => setFormData({ ...formData, empId: e.target.value })}
-                    className={getCandidateFieldInputClass('empId', 'form-input font-bold')} 
-                  />
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Job Designation', 'designation', true)}
-                  <select 
-                    value={formData.designation} 
-                    onChange={e => setFormData({ ...formData, designation: e.target.value })}
-                    className={getCandidateFieldInputClass('designation', 'form-select text-xs font-bold')}
-                  >
-                    {(masterDropdownOptions?.designations || []).map(desig => (
-                      <option key={desig} value={desig}>{desig}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Department', 'dept', true)}
-                  <select 
-                    value={formData.dept} 
-                    onChange={e => setFormData({ ...formData, dept: e.target.value })}
-                    className={getCandidateFieldInputClass('dept', 'form-select text-xs font-bold')}
-                  >
-                    {(masterDropdownOptions?.departments || []).map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Date of Joining (DOJ)', 'doj', true)}
-                  <input 
-                    type="date" 
-                    required 
-                    value={formData.doj} 
-                    onChange={e => setFormData({ ...formData, doj: e.target.value })}
-                    className={getCandidateFieldInputClass('doj')} 
-                  />
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Employment Type', 'employmentType', true)}
-                  <select 
-                    value={formData.employmentType} 
-                    onChange={e => setFormData({ ...formData, employmentType: e.target.value })}
-                    className={getCandidateFieldInputClass('employmentType', 'form-select text-xs font-bold')}
-                  >
-                    {(masterDropdownOptions?.employmentTypes || []).map(empType => (
-                      <option key={empType} value={empType}>{empType}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Work Location / Branch', 'workLocation', true)}
-                  <select 
-                    value={formData.workLocation} 
-                    onChange={e => setFormData({ ...formData, workLocation: e.target.value })}
-                    className={getCandidateFieldInputClass('workLocation', 'form-select text-xs font-bold')}
-                  >
-                    {(masterDropdownOptions?.workLocations || []).map(loc => (
-                      <option key={loc} value={loc}>{loc}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECTION 5: EDUCATION QUALIFICATIONS */}
+          {/* SECTION 4: EDUCATION DETAILS MATRIX (MULTI-ENTRY) */}
           {activeSection === 'education' && (
             <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 5: Educational & Professional Qualifications</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Highest Degree / Qualification', 'highestQualification', true)}
-                  <select 
-                    value={formData.highestQualification} 
-                    onChange={e => setFormData({ ...formData, highestQualification: e.target.value })}
-                    className={getCandidateFieldInputClass('highestQualification', 'form-select text-xs font-bold')}
-                  >
-                    {(masterDropdownOptions?.qualifications || []).map(qual => (
-                      <option key={qual} value={qual}>{qual}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('University / Board / Institute', 'university', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.university} 
-                    onChange={e => setFormData({ ...formData, university: e.target.value })}
-                    className={getCandidateFieldInputClass('university')} 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Year of Passing', 'passingYear')}
-                  <input 
-                    type="text" 
-                    value={formData.passingYear} 
-                    onChange={e => setFormData({ ...formData, passingYear: e.target.value })}
-                    className={getCandidateFieldInputClass('passingYear')} 
-                  />
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Aggregate Percentage / Grade', 'percentage')}
-                  <input 
-                    type="text" 
-                    value={formData.percentage} 
-                    onChange={e => setFormData({ ...formData, percentage: e.target.value })}
-                    className={getCandidateFieldInputClass('percentage')} 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECTION 6: BANK PAYROLL DETAILS */}
-          {activeSection === 'bank' && (
-            <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 6: Bank Account & Salary Payroll Details</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Account Holder Name', 'accountHolderName', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.accountHolderName} 
-                    onChange={e => setFormData({ ...formData, accountHolderName: e.target.value })}
-                    className={getCandidateFieldInputClass('accountHolderName', 'form-input font-bold')} 
-                  />
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Bank Name', 'bankName', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.bankName} 
-                    onChange={e => setFormData({ ...formData, bankName: e.target.value })}
-                    className={getCandidateFieldInputClass('bankName')} 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  {renderCandidateFieldLabel('Bank Account Number', 'accountNo', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.accountNo} 
-                    onChange={e => setFormData({ ...formData, accountNo: e.target.value })}
-                    className={getCandidateFieldInputClass('accountNo', 'form-input font-mono')} 
-                  />
-                </div>
-                <div>
-                  {renderCandidateFieldLabel('Bank IFSC Code', 'ifscCode', true)}
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.ifscCode} 
-                    onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
-                    className={getCandidateFieldInputClass('ifscCode', 'form-input font-mono uppercase')} 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECTION 7: NOMINEE DEPENDENTS */}
-          {activeSection === 'nominee' && (
-            <div className="space-y-4 animate-tab-switch">
-              <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider">Section 7: Nominee & Family Dependents</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Nominee Full Name *</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.nomineeName} 
-                    onChange={e => setFormData({ ...formData, nomineeName: e.target.value })}
-                    className="form-input" 
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Relationship with Candidate *</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.nomineeRelation} 
-                    onChange={e => setFormData({ ...formData, nomineeRelation: e.target.value })}
-                    className="form-input" 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Nominee Date of Birth</label>
-                  <input 
-                    type="date" 
-                    value={formData.nomineeDob} 
-                    onChange={e => setFormData({ ...formData, nomineeDob: e.target.value })}
-                    className="form-input" 
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Nominee Aadhaar Number</label>
-                  <input 
-                    type="text" 
-                    value={formData.nomineeAadhaar} 
-                    onChange={e => setFormData({ ...formData, nomineeAadhaar: e.target.value })}
-                    className="form-input font-mono" 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECTION 8: DYNAMIC INDUSTRY & ROLE SPECIALIZATION MATRIX */}
-          {activeSection === 'industry' && (
-            <div className="space-y-4 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
                 <div>
                   <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-indigo-600" />
-                    <span>Section 8: Industry & Specialized Role Matrix</span>
+                    <GraduationCap className="w-4 h-4" />
+                    <span>Section 4: Educational Qualifications & Degrees (Multi-Entry)</span>
                   </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Operational and regulatory particulars specific to your industry vertical: <strong className="text-indigo-900 uppercase">{(formData.employeeCategory || 'it_tech').replace('_', ' ')}</strong>
-                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium">Add all educational degrees from 10th, 12th, Graduation to Post-Graduation</p>
                 </div>
-                <span className="badge badge-indigo text-[10px]">Sector Specific</span>
+                <button
+                  type="button"
+                  onClick={handleAddEducation}
+                  className="btn btn-superadmin text-xs py-1.5 px-3 font-bold flex items-center gap-1 cursor-pointer btn-interactive shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Qualification</span>
+                </button>
               </div>
 
-              {/* IT & Software */}
-              {(formData.employeeCategory === 'it_tech' || !formData.employeeCategory) && (
-                <div className="p-4 bg-purple-50/50 border border-purple-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs">
-                    <span>💻</span>
-                    <span>IT, Software Engineering & AI Operations</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Core Tech Stack & Frameworks</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.techStack || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, techStack: e.target.value } })}
-                        className="form-input font-bold"
-                        placeholder="React, Node.js, Python, PostgreSQL, AWS"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">GitHub / Code Repository URL</label>
-                      <input 
-                        type="url"
-                        value={formData.industrySpecialization?.githubUrl || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, githubUrl: e.target.value } })}
-                        className="form-input font-mono"
-                        placeholder="https://github.com/username"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Laptop Asset Tag Number</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.laptopAssetTag || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, laptopAssetTag: e.target.value } })}
-                        className="form-input font-mono"
-                        placeholder="JOY-ASSET-LT-2026-088"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Anti-Moonlighting / Dual Employment Disclosure</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.dualEmploymentDisclosure || 'No Dual Employment / 100% Exclusive Commitment'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, dualEmploymentDisclosure: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Manufacturing & Plant */}
-              {formData.employeeCategory === 'manufacturing' && (
-                <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
-                    <span>🏭</span>
-                    <span>Manufacturing & Plant Operations</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Plant Location & Unit</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.plantLocation || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, plantLocation: e.target.value } })}
-                        className="form-input font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Shift Duty Roster</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.shiftRoster || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, shiftRoster: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Safety Shoe Size (UK/EUR)</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.safetyShoeSize || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, safetyShoeSize: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Occupational Medical Fitness Cert No</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.occupationalHealthCertNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, occupationalHealthCertNo: e.target.value } })}
-                        className="form-input font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* BFSI & Banking */}
-              {formData.employeeCategory === 'bfsi' && (
-                <div className="p-4 bg-cyan-50/50 border border-cyan-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-cyan-900 font-extrabold text-xs">
-                    <span>🏦</span>
-                    <span>BFSI, Banking & Fintech Governance</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">CIBIL Score Range Standing</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.cibilScoreRange || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, cibilScoreRange: e.target.value } })}
-                        className="form-input font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Finance & Investment Certifications (NISM/IRDA/CA)</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.certificationsBfsi || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, certificationsBfsi: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Corporate Fidelity Bond Indemnity Limit</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.fidelityBondLimit || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, fidelityBondLimit: e.target.value } })}
-                        className="form-input font-bold text-indigo-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">SEBI Insider Trading Compliance</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.sebiInsiderTradingClearance || 'Cleared - Zero Adverse SEBI Trading Flags'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, sebiInsiderTradingClearance: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Healthcare & Pharma */}
-              {formData.employeeCategory === 'healthcare' && (
-                <div className="p-4 bg-rose-50/50 border border-rose-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-rose-900 font-extrabold text-xs">
-                    <span>🏥</span>
-                    <span>Healthcare, Hospital & Clinical Practice</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Medical / Nursing Council Registration No</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.medicalCouncilRegNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, medicalCouncilRegNo: e.target.value } })}
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Assigned Clinical Department / Ward</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.departmentWard || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, departmentWard: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-slate-700 font-bold mb-1">Mandatory Immunization & Life Support Protocol</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.immunizationStatus || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, immunizationStatus: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Logistics & Fleet */}
-              {formData.employeeCategory === 'logistics' && (
-                <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs">
-                    <span>🚚</span>
-                    <span>Logistics, Heavy Transport & Fleet Operations</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Commercial Transport DL Badge No</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.commercialDlBadgeNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, commercialDlBadgeNo: e.target.value } })}
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Forklift / MHE License Number</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.forkliftLicenseNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, forkliftLicenseNo: e.target.value } })}
-                        className="form-input font-mono"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-slate-700 font-bold mb-1">Police Character NOC & Route Telematics Consent</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.policeNocNumber || 'POL-TN-CHN-2026-9041 (Cleared)'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, policeNocNumber: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Retail & Hospitality */}
-              {formData.employeeCategory === 'retail_hospitality' && (
-                <div className="p-4 bg-orange-50/50 border border-orange-200 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-orange-900 font-extrabold text-xs">
-                    <span>🛍️</span>
-                    <span>Retail Operations, Hospitality & F&B Frontline</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">FSSAI FoSTaC Training Certificate No</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.fssaiCertNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, fssaiCertNo: e.target.value } })}
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Uniform Shirt & Pant Size</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.uniformShirtSize || 'M (38 cm Shirt)'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, uniformShirtSize: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Assigned Retail Outlet Code</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.assignedStoreCode || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, assignedStoreCode: e.target.value } })}
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">POS Cash Reconciliation & Shifts Agreement</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.storeShiftPreference || 'Weekend Peak Shifts Available'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, storeShiftPreference: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Contract Labor */}
-              {formData.employeeCategory === 'contractual' && (
-                <div className="p-4 bg-slate-100 border border-slate-300 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2 text-slate-900 font-extrabold text-xs">
-                    <span>🏗️</span>
-                    <span>Contract Labor Act (Form XIII) & Facility Workforce</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Contract Labor Act Form XIII Enrollment No</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.contractFormXIIIEnrollmentNo || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, contractFormXIIIEnrollmentNo: e.target.value } })}
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Manpower Agency Contractor Name</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.contractorAgencyName || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, contractorAgencyName: e.target.value } })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Principal Employer PO / Work Order</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.workOrderPoNumber || ''}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, workOrderPoNumber: e.target.value } })}
-                        className="form-input font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Wage Rate Classification</label>
-                      <input 
-                        type="text"
-                        value={formData.industrySpecialization?.wageRateClassification || 'Skilled Grade Rate (₹950/Day)'}
-                        onChange={e => setFormData({ ...formData, industrySpecialization: { ...formData.industrySpecialization, wageRateClassification: e.target.value } })}
-                        className="form-input text-emerald-800 font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* SECTION 9: UPLOAD REQUIRED ORIGINAL COMPLIANCE DOCUMENTS */}
-          {activeSection === 'documents' && (
-            <div className="space-y-4 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <div>
-                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
-                    <FolderDown className="w-4 h-4 text-indigo-600" />
-                    <span>Section 9: Upload Original Compliance Documents & Proofs</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Upload clear scanned PDFs or high-resolution photos of your original government documents.
-                  </p>
-                </div>
-                <span className="badge badge-emerald text-[10px]">Vault AES-256 Encrypted</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-                {[
-                  { id: 'u_aadhaar', name: '1. Government Aadhaar Card (Front & Back)', type: 'Identity Proof', size: '1.4 MB PDF', status: 'Uploaded & Verified ✓', masked: 'XXXX XXXX 9876' },
-                  { id: 'u_pan', name: '2. Income Tax PAN Card Copy', type: 'Tax Identification', size: '820 KB PNG', status: 'Uploaded & Verified ✓', masked: 'ABCDE1234F' },
-                  { id: 'u_bank', name: '3. Bank Passbook / Cancelled Cheque Leaf', type: 'Payroll & Banking', size: '950 KB PDF', status: 'Uploaded & Verified ✓', masked: 'HDFC Bank ...9845' },
-                  { id: 'u_degree', name: '4. Highest Degree Certificate / Marksheet', type: 'Academic Convocation', size: '2.1 MB PDF', status: 'Uploaded & Verified ✓', masked: 'B.Tech / 84.5%' },
-                  { id: 'u_relieving', name: '5. Previous Employer Relieving & Service Letter', type: 'Employment History', size: '1.8 MB PDF', status: 'Uploaded & Verified ✓', masked: 'Infosys Limited' },
-                  { id: 'u_nda', name: '6. Signed Non-Disclosure Agreement (NDA)', type: 'Executed Legal Copy', size: '1.1 MB PDF', status: 'Executed & Signed ✓', masked: 'Legal Covenant' },
-                  { id: 'u_passport', name: '7. Passport Bio-Data Page (if applicable)', type: 'Travel & Citizenship', size: '1.6 MB PDF', status: 'Uploaded & Stamped ✓', masked: 'Passport Seva' },
-                  { id: 'u_salary', name: '8. Last 3 Months Salary Slips', type: 'Income Proof', size: '1.2 MB PDF', status: 'Uploaded & Stamped ✓', masked: 'Pay Slips Attached' }
-                ].map((item, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5 hover:border-indigo-300 transition-all flex flex-col justify-between">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <span className="font-extrabold text-slate-900 text-xs block leading-tight">{item.name}</span>
-                        <span className="text-[10px] text-slate-500">{item.type} • {item.size}</span>
-                      </div>
-                      <span className="bg-emerald-100 text-emerald-800 font-bold text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap border border-emerald-300">
-                        {item.status}
+              <div className="space-y-3">
+                {(formData.educationList || []).map((edu, idx) => (
+                  <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 relative">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[10px]">
+                        Qualification #{idx + 1}
                       </span>
+                      {formData.educationList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveEducation(idx)}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      )}
                     </div>
 
-                    <div className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-emerald-600" />
-                        <span className="font-mono text-[11px] font-bold text-slate-700">{item.masked}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Name of the Institution / College *</label>
+                        <input
+                          type="text"
+                          required
+                          value={edu.institutionName}
+                          onChange={e => handleUpdateEducation(idx, 'institutionName', e.target.value)}
+                          placeholder="e.g. PSG College of Technology, Coimbatore"
+                          className="form-input font-bold"
+                        />
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewDoc(item)}
-                          className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Preview</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => showToast(`File re-uploaded for ${item.name}`)}
-                          className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold text-indigo-700 bg-indigo-50 border-indigo-200 cursor-pointer"
-                        >
-                          <Upload className="w-3 h-3" />
-                          <span>Replace</span>
-                        </button>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Degree Name / Specialization *</label>
+                        <input
+                          type="text"
+                          required
+                          value={edu.degreeName}
+                          onChange={e => handleUpdateEducation(idx, 'degreeName', e.target.value)}
+                          placeholder="e.g. B.Tech in Computer Science & Engg"
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Year of Joining *</label>
+                        <input
+                          type="number"
+                          required
+                          min="1980"
+                          max="2030"
+                          value={edu.yearOfJoining}
+                          onChange={e => handleUpdateEducation(idx, 'yearOfJoining', e.target.value)}
+                          placeholder="e.g. 2014"
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Year of End / Graduation *</label>
+                        <input
+                          type="number"
+                          required
+                          min="1980"
+                          max="2030"
+                          value={edu.yearOfEnd}
+                          onChange={e => handleUpdateEducation(idx, 'yearOfEnd', e.target.value)}
+                          placeholder="e.g. 2018"
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Grade / Percentage / CGPA *</label>
+                        <input
+                          type="text"
+                          required
+                          value={edu.grade}
+                          onChange={e => handleUpdateEducation(idx, 'grade', e.target.value)}
+                          placeholder="e.g. 8.75 CGPA (85.2%)"
+                          className="form-input font-bold"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1405,177 +1191,1028 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
           )}
 
-          {/* SECTION 10: STATUTORY COMPLIANCE FORMS & LEGAL AGREEMENTS */}
-          {activeSection === 'statutory_agreements' && (
+          {/* SECTION 5: FAMILY MEMBER PARTICULARS */}
+          {activeSection === 'nominee' && (
             <div className="space-y-4 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span>Section 5: Family Member Particulars & Nominee Record</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">EPFO Form 2 & Gratuity Form F</span>
+              </div>
+
+              {/* Father Details */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <span className="text-xs font-black text-slate-800 uppercase tracking-wider block">👨 Father Details:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Father Name', 'fatherName', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.fatherName} 
+                      onChange={e => setFormData({ ...formData, fatherName: e.target.value })}
+                      className={getCandidateFieldInputClass('fatherName')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Father Age', 'fatherAge', true)}
+                    <input 
+                      type="number" 
+                      required 
+                      value={formData.fatherAge} 
+                      onChange={e => setFormData({ ...formData, fatherAge: e.target.value })}
+                      className={getCandidateFieldInputClass('fatherAge')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Father Mobile Number', 'fatherMobile', true)}
+                    <input 
+                      type="tel" 
+                      required 
+                      value={formData.fatherMobile} 
+                      onChange={e => setFormData({ ...formData, fatherMobile: e.target.value })}
+                      className={getCandidateFieldInputClass('fatherMobile')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Father Occupation', 'fatherOccupation', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.fatherOccupation} 
+                      onChange={e => setFormData({ ...formData, fatherOccupation: e.target.value })}
+                      placeholder="e.g. Business / Service / Retired"
+                      className={getCandidateFieldInputClass('fatherOccupation')} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Mother Details */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <span className="text-xs font-black text-slate-800 uppercase tracking-wider block">👩 Mother Details:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Mother Name', 'motherName', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.motherName} 
+                      onChange={e => setFormData({ ...formData, motherName: e.target.value })}
+                      className={getCandidateFieldInputClass('motherName')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Mother Age', 'motherAge', true)}
+                    <input 
+                      type="number" 
+                      required 
+                      value={formData.motherAge} 
+                      onChange={e => setFormData({ ...formData, motherAge: e.target.value })}
+                      className={getCandidateFieldInputClass('motherAge')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Mother Mobile Number', 'motherMobile', true)}
+                    <input 
+                      type="tel" 
+                      required 
+                      value={formData.motherMobile} 
+                      onChange={e => setFormData({ ...formData, motherMobile: e.target.value })}
+                      className={getCandidateFieldInputClass('motherMobile')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Mother Occupation', 'motherOccupation', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.motherOccupation} 
+                      onChange={e => setFormData({ ...formData, motherOccupation: e.target.value })}
+                      placeholder="e.g. Homemaker / Teacher"
+                      className={getCandidateFieldInputClass('motherOccupation')} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Spouse & Children Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>Section 10: Statutory Compliance Forms & Legal Agreements</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Review and electronically sign official statutory compliance declarations required under Indian Labor Laws.
-                  </p>
+                  {renderCandidateFieldLabel('Wife or Husband Details (Name, Age, Mobile, Occupation)', 'spouseDetails')}
+                  <textarea 
+                    rows="2" 
+                    value={formData.spouseDetails} 
+                    onChange={e => setFormData({ ...formData, spouseDetails: e.target.value })}
+                    placeholder="Enter spouse name, age, mobile number, and occupation (or N/A if single)"
+                    className={getCandidateFieldInputClass('spouseDetails', 'form-textarea text-xs')} 
+                  />
                 </div>
-                <span className="badge badge-purple text-[10px]">Govt Approved Formats</span>
-              </div>
-
-              {/* Form 16 / 16A TDS Tax Declaration */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-indigo-600" />
-                    <span>1. Form 16 / 16A TDS Declaration (Income Tax Act 1961 • Sec 192)</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">CBDT Format</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
-                  I confirm my tax regime choice under Section 115BAC (New Tax Regime) and declare that all tax deduction claims under Section 192 are accurate.
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
-                  <div className="p-2 bg-white rounded border">PAN: <strong className="text-emerald-700">{formData.panNo || 'ABCDE1234F'} ✓</strong></div>
-                  <div className="p-2 bg-white rounded border">AY: <strong>2026-27</strong></div>
-                  <div className="p-2 bg-white rounded border">Regime: <strong>New (Sec 115BAC)</strong></div>
-                  <div className="p-2 bg-white rounded border">Form 12B: <strong className="text-emerald-700">Attached ✓</strong></div>
+                <div>
+                  {renderCandidateFieldLabel('Children Details (Name, Age, Gender, School/College)', 'childrenDetails')}
+                  <textarea 
+                    rows="2" 
+                    value={formData.childrenDetails} 
+                    onChange={e => setFormData({ ...formData, childrenDetails: e.target.value })}
+                    placeholder="Enter children names, ages, gender, and school details (or N/A if none)"
+                    className={getCandidateFieldInputClass('childrenDetails', 'form-textarea text-xs')} 
+                  />
                 </div>
               </div>
 
-              {/* Form 11 EPFO Declaration */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>2. Form 11 EPFO Statutory Declaration (EPF Scheme 1952)</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">EPFO Prescribed</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
-                  Declaration by a person taking up employment in an establishment in which Employees' Provident Fund Scheme applies.
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-                  <div className="p-2 bg-white rounded border">UAN No: <strong className="text-emerald-700">{formData.uanEpf || '100982341209'} ✓</strong></div>
-                  <div className="p-2 bg-white rounded border">Prev PF ID: <strong>BGBNG0012345...</strong></div>
-                  <div className="p-2 bg-white rounded border">Transfer Mode: <strong className="text-emerald-700">Auto Transfer Opted</strong></div>
-                </div>
-              </div>
-
-              {/* Form F Gratuity Nomination */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-indigo-600" />
-                    <span>3. Form 'F' Gratuity Nomination (Payment of Gratuity Act 1972 • Rule 6(1))</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Rule 6(1)</span>
-                </div>
-                <div className="p-2 bg-white rounded border text-[11px] flex justify-between">
-                  <span>Nominee: <strong>{formData.nomineeName} ({formData.nomineeRelation})</strong></span>
-                  <span className="text-emerald-700 font-bold">Proportion of Gratuity: 100%</span>
-                </div>
-              </div>
-
-              {/* ESIC Form 1 Registration */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>4. ESIC Form 1 Declaration (Employees' State Insurance Act 1948)</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">ESIC Medical</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-                  <div className="p-2 bg-white rounded border">ESIC IP Number: <strong>{formData.esicNo || '310082910291'}</strong></div>
-                  <div className="p-2 bg-white rounded border">Dispensary: <strong>State ESIC Hospital Unit</strong></div>
-                  <div className="p-2 bg-white rounded border">Coverage: <strong className="text-emerald-700">Self + Dependents ✓</strong></div>
-                </div>
-              </div>
-
-              {/* Employee NDA & IP Assignment */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>5. Employee Non-Disclosure Agreement (NDA) & IP Assignment Covenant</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Indian Contract Act 1872</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
-                  I agree to keep all proprietary information, algorithms, client lists, and confidential intellectual property of the employer secure and protected indefinitely.
-                </p>
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 text-[11px] flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Digitally Executed & Bound upon OTP submission.</span>
+              {/* Gratuity & PF Nominee */}
+              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-2xl space-y-2">
+                <span className="text-xs font-black text-purple-900 uppercase tracking-wider block">
+                  🛡️ Primary Statutory PF & Gratuity Nominee:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Nominee Full Name', 'nomineeName', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.nomineeName} 
+                      onChange={e => setFormData({ ...formData, nomineeName: e.target.value })}
+                      className={getCandidateFieldInputClass('nomineeName')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Relationship & % Share', 'nomineeRelation', true)}
+                    <input 
+                      type="text" 
+                      required 
+                      value={formData.nomineeRelation} 
+                      onChange={e => setFormData({ ...formData, nomineeRelation: e.target.value })}
+                      placeholder="e.g. Mother (100% Share)"
+                      className={getCandidateFieldInputClass('nomineeRelation')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Nominee Date of Birth', 'nomineeDob')}
+                    <input 
+                      type="date" 
+                      value={formData.nomineeDob} 
+                      onChange={e => setFormData({ ...formData, nomineeDob: e.target.value })}
+                      className={getCandidateFieldInputClass('nomineeDob')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Nominee Aadhaar Number', 'nomineeAadhaar')}
+                    <input 
+                      type="text" 
+                      value={formData.nomineeAadhaar} 
+                      onChange={e => setFormData({ ...formData, nomineeAadhaar: e.target.value })}
+                      placeholder="12-digit Aadhaar"
+                      className={getCandidateFieldInputClass('nomineeAadhaar', 'form-input font-mono')} 
+                    />
+                  </div>
                 </div>
               </div>
-
-              {/* POSH Workplace Harassment Policy */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>6. POSH Policy Acknowledgement (POSH Act 2013)</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">HR Governance</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
-                  I confirm that I have received, read, and understood the Prevention of Sexual Harassment (POSH) workplace policy and agree to adhere strictly to all zero-tolerance workplace standards.
-                </p>
-              </div>
-
-              {/* Non-Compete & Non-Solicitation */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>7. Non-Compete & Non-Solicitation Undertaking</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">Corporate Covenant</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed">
-                  I covenant that during my tenure and for 12 months post-cessation, I shall not solicit employer clients, poach colleagues, or utilize proprietary trade secrets in competing businesses.
-                </p>
-              </div>
-
-              {/* Contract Labor Act Form XIII */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-900 font-extrabold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>8. Contract Labor Register Entry (Contract Labor Regulation & Abolition Act 1970 • Form XIII)</span>
-                  </strong>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded">CLRA Statutory</span>
-                </div>
-                <div className="p-2 bg-white rounded border font-mono text-[11px] flex justify-between">
-                  <span>Register Reg No: <strong>{formData.industrySpecialization?.contractFormXIIIEnrollmentNo || 'CL-RA-2026-FORM-XIII-912'}</strong></span>
-                  <span className="text-emerald-700 font-bold">Principal Employer Work Order Verified ✓</span>
-                </div>
-              </div>
-
             </div>
           )}
 
-          {/* Submit Footer Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-            <div className="text-[11px] text-slate-500 font-medium">
-              {!aadhaarVerified || !mobileVerified ? (
-                <span className="text-rose-600 font-bold">⚠️ Both Aadhaar OTP and Mobile OTP are mandatory before submission.</span>
-              ) : (
-                <span className="text-emerald-700 font-bold">✅ Mandatory OTP Verifications Completed! Ready to submit profile.</span>
-              )}
-            </div>
+          {/* SECTION 6: EMPLOYMENT EXPERIENCE MATRIX (MULTI-ENTRY) */}
+          {activeSection === 'employment' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <div>
+                  <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                    <Briefcase className="w-4 h-4" />
+                    <span>Section 6: Previous Employment & Work Experience (Multi-Entry)</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">Record all previous companies, tenures, compensation, and reasons for leaving</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddExperience}
+                  className="btn btn-superadmin text-xs py-1.5 px-3 font-bold flex items-center gap-1 cursor-pointer btn-interactive shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Employer</span>
+                </button>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={onClose} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
-              <button 
-                type="submit" 
-                className="btn btn-hrexecutive text-xs flex items-center gap-2 shadow-md cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>Save & Submit Joining Form</span>
-              </button>
+              <div className="space-y-3">
+                {(formData.experienceList || []).map((exp, idx) => (
+                  <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 relative">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-black text-[10px]">
+                        Employment Record #{idx + 1}
+                      </span>
+                      {formData.experienceList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveExperience(idx)}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Company / Institution Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={exp.institutionName}
+                          onChange={e => handleUpdateExperience(idx, 'institutionName', e.target.value)}
+                          placeholder="e.g. Infosys Limited"
+                          className="form-input font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Job Designation *</label>
+                        <input
+                          type="text"
+                          required
+                          value={exp.designation}
+                          onChange={e => handleUpdateExperience(idx, 'designation', e.target.value)}
+                          placeholder="e.g. Senior Systems Engineer"
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Institution / Office Address *</label>
+                      <input
+                        type="text"
+                        required
+                        value={exp.institutionAddress}
+                        onChange={e => handleUpdateExperience(idx, 'institutionAddress', e.target.value)}
+                        placeholder="e.g. Electronics City, Phase 1, Hosur Road, Bengaluru, KA"
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Period of Service (From - To) *</label>
+                        <input
+                          type="text"
+                          required
+                          value={exp.periodOfService}
+                          onChange={e => handleUpdateExperience(idx, 'periodOfService', e.target.value)}
+                          placeholder="e.g. 06/2021 - 07/2024 (3 Yrs 2 Mos)"
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1">Salary Drawn (Last Drawn CTC) *</label>
+                        <input
+                          type="text"
+                          required
+                          value={exp.salaryDrawn}
+                          onChange={e => handleUpdateExperience(idx, 'salaryDrawn', e.target.value)}
+                          placeholder="e.g. ₹8,50,000 Per Annum (₹62,000/mo)"
+                          className="form-input font-bold text-emerald-800"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Reason for Leaving *</label>
+                      <textarea
+                        rows="2"
+                        required
+                        value={exp.reasonForLeaving}
+                        onChange={e => handleUpdateExperience(idx, 'reasonForLeaving', e.target.value)}
+                        placeholder="e.g. Seeking higher architectural ownership, technical career growth, role alignment"
+                        className="form-textarea text-xs"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* SECTION 7: PERSONAL ACHIEVEMENTS & EXTRACURRICULAR */}
+          {activeSection === 'achievements' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <Award className="w-4 h-4" />
+                  <span>Section 7: Personal Achievements & Extra-Curricular Activities</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Talent & Leadership Profile</span>
+              </div>
+
+              <div>
+                {renderCandidateFieldLabel('Personal Achievements (Awards, Honors, Certifications, Publications)', 'personalAchievements')}
+                <textarea 
+                  rows="3" 
+                  value={formData.personalAchievements} 
+                  onChange={e => setFormData({ ...formData, personalAchievements: e.target.value })}
+                  placeholder="Detail your professional achievements, hackathon wins, IEEE papers, patents, or industry recognition..."
+                  className={getCandidateFieldInputClass('personalAchievements', 'form-textarea text-xs font-medium')} 
+                />
+              </div>
+
+              <div>
+                {renderCandidateFieldLabel('Extra-Curricular Activities (Sports, Arts, Community Leadership)', 'extraCurricularActivities')}
+                <textarea 
+                  rows="3" 
+                  value={formData.extraCurricularActivities} 
+                  onChange={e => setFormData({ ...formData, extraCurricularActivities: e.target.value })}
+                  placeholder="Detail your involvement in sports, cultural arts, volunteering, community blood donation drives, etc..."
+                  className={getCandidateFieldInputClass('extraCurricularActivities', 'form-textarea text-xs font-medium')} 
+                />
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 8: HEALTH, LIFESTYLE & BACKGROUND DISCLOSURES (CONDITIONAL QUESTIONS) */}
+          {activeSection === 'health_lifestyle' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <HeartPulse className="w-4 h-4" />
+                  <span>Section 8: Health, Lifestyle, Asset & Background Disclosures</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Workplace Health & Integrity Compliance</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* 1. Smoking */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Do you smoke (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="isSmoker" 
+                        value="No" 
+                        checked={formData.isSmoker === 'No'} 
+                        onChange={() => setFormData({ ...formData, isSmoker: 'No', cigarettesPerDay: '0' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-amber-700">
+                      <input 
+                        type="radio" 
+                        name="isSmoker" 
+                        value="Yes" 
+                        checked={formData.isSmoker === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, isSmoker: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.isSmoker === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", how many cigarettes do you smoke per day?</label>
+                      <input 
+                        type="number" 
+                        min="1"
+                        value={formData.cigarettesPerDay} 
+                        onChange={e => setFormData({ ...formData, cigarettesPerDay: e.target.value })}
+                        className="form-input font-bold" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Major Surgery */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Have you had any major surgery (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="hasMajorSurgery" 
+                        value="No" 
+                        checked={formData.hasMajorSurgery === 'No'} 
+                        onChange={() => setFormData({ ...formData, hasMajorSurgery: 'No', surgeryDetails: '' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-amber-700">
+                      <input 
+                        type="radio" 
+                        name="hasMajorSurgery" 
+                        value="Yes" 
+                        checked={formData.hasMajorSurgery === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, hasMajorSurgery: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.hasMajorSurgery === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", enter surgery details (Type, Year, Hospital):</label>
+                      <textarea 
+                        rows="2"
+                        value={formData.surgeryDetails} 
+                        onChange={e => setFormData({ ...formData, surgeryDetails: e.target.value })}
+                        placeholder="e.g. Appendectomy in 2019, fully recovered"
+                        className="form-textarea text-xs" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Illness / Issues */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Do you have any ongoing illness or health issues (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="hasIllnessIssues" 
+                        value="No" 
+                        checked={formData.hasIllnessIssues === 'No'} 
+                        onChange={() => setFormData({ ...formData, hasIllnessIssues: 'No', illnessDetails: '' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-amber-700">
+                      <input 
+                        type="radio" 
+                        name="hasIllnessIssues" 
+                        value="Yes" 
+                        checked={formData.hasIllnessIssues === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, hasIllnessIssues: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.hasIllnessIssues === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", enter illness details & medication:</label>
+                      <textarea 
+                        rows="2"
+                        value={formData.illnessDetails} 
+                        onChange={e => setFormData({ ...formData, illnessDetails: e.target.value })}
+                        placeholder="e.g. Mild Hypertension, managed with regular medication"
+                        className="form-textarea text-xs" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Own House */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Do you own a house (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="ownsHouse" 
+                        value="No" 
+                        checked={formData.ownsHouse === 'No'} 
+                        onChange={() => setFormData({ ...formData, ownsHouse: 'No', houseCityTown: '' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-700">
+                      <input 
+                        type="radio" 
+                        name="ownsHouse" 
+                        value="Yes" 
+                        checked={formData.ownsHouse === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, ownsHouse: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.ownsHouse === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", in which city/town?</label>
+                      <input 
+                        type="text" 
+                        value={formData.houseCityTown} 
+                        onChange={e => setFormData({ ...formData, houseCityTown: e.target.value })}
+                        placeholder="e.g. Madurai, Tamil Nadu"
+                        className="form-input font-bold" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 5. Other Income */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Do you get any income other than employment (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="hasOtherIncome" 
+                        value="No" 
+                        checked={formData.hasOtherIncome === 'No'} 
+                        onChange={() => setFormData({ ...formData, hasOtherIncome: 'No', otherIncomeDetails: '' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-amber-700">
+                      <input 
+                        type="radio" 
+                        name="hasOtherIncome" 
+                        value="Yes" 
+                        checked={formData.hasOtherIncome === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, hasOtherIncome: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.hasOtherIncome === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", enter details of other income source:</label>
+                      <textarea 
+                        rows="2"
+                        value={formData.otherIncomeDetails} 
+                        onChange={e => setFormData({ ...formData, otherIncomeDetails: e.target.value })}
+                        placeholder="e.g. Rental income from ancestral commercial space"
+                        className="form-textarea text-xs" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 6. Criminal Conviction */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-slate-900 block text-xs">Have you ever been convicted in any court of law (Y/N)? *</span>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-700">
+                      <input 
+                        type="radio" 
+                        name="hasCriminalConviction" 
+                        value="No" 
+                        checked={formData.hasCriminalConviction === 'No'} 
+                        onChange={() => setFormData({ ...formData, hasCriminalConviction: 'No', convictionDetails: '' })} 
+                      />
+                      <span>No (Clean Record)</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-rose-700">
+                      <input 
+                        type="radio" 
+                        name="hasCriminalConviction" 
+                        value="Yes" 
+                        checked={formData.hasCriminalConviction === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, hasCriminalConviction: 'Yes' })} 
+                      />
+                      <span>Yes</span>
+                    </label>
+                  </div>
+                  {formData.hasCriminalConviction === 'Yes' && (
+                    <div className="pt-1 animate-fadeIn">
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", enter conviction details (Case No, Year, Court):</label>
+                      <textarea 
+                        rows="2"
+                        value={formData.convictionDetails} 
+                        onChange={e => setFormData({ ...formData, convictionDetails: e.target.value })}
+                        placeholder="Enter full legal particulars of conviction"
+                        className="form-textarea text-xs" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 9: GROUP RELATIONS & REFERENCE LIBERTY */}
+          {activeSection === 'group_relations' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Section 9: Group Relationship & HR Reference Check Liberty</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Anti-Nepotism & Ethics Governance</span>
+              </div>
+
+              {/* Group Employee Relative */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <span className="font-bold text-slate-900 block text-xs">Are you related to any employee in our group (Y/N)? *</span>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                    <input 
+                      type="radio" 
+                      name="relatedToGroupEmployee" 
+                      value="No" 
+                      checked={formData.relatedToGroupEmployee === 'No'} 
+                      onChange={() => setFormData({ ...formData, relatedToGroupEmployee: 'No', relatedEmployeeDetails: '' })} 
+                    />
+                    <span>No</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer font-bold text-indigo-700">
+                    <input 
+                      type="radio" 
+                      name="relatedToGroupEmployee" 
+                      value="Yes" 
+                      checked={formData.relatedToGroupEmployee === 'Yes'} 
+                      onChange={() => setFormData({ ...formData, relatedToGroupEmployee: 'Yes' })} 
+                    />
+                    <span>Yes</span>
+                  </label>
+                </div>
+                {formData.relatedToGroupEmployee === 'Yes' && (
+                  <div className="pt-1 animate-fadeIn">
+                    <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", enter details of that employee (Name, Position, Mobile number):</label>
+                    <textarea 
+                      rows="2"
+                      value={formData.relatedEmployeeDetails} 
+                      onChange={e => setFormData({ ...formData, relatedEmployeeDetails: e.target.value })}
+                      placeholder="e.g. Ramesh Kumar, Senior Manager Operations, +91 98401 22334"
+                      className="form-textarea text-xs" 
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Previously Interviewed in Group */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <span className="font-bold text-slate-900 block text-xs">Have you been previously interviewed for any position in our group (Y/N)? *</span>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                    <input 
+                      type="radio" 
+                      name="previouslyInterviewedInGroup" 
+                      value="No" 
+                      checked={formData.previouslyInterviewedInGroup === 'No'} 
+                      onChange={() => setFormData({ ...formData, previouslyInterviewedInGroup: 'No', previousInterviewDetails: '' })} 
+                    />
+                    <span>No</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer font-bold text-indigo-700">
+                    <input 
+                      type="radio" 
+                      name="previouslyInterviewedInGroup" 
+                      value="Yes" 
+                      checked={formData.previouslyInterviewedInGroup === 'Yes'} 
+                      onChange={() => setFormData({ ...formData, previouslyInterviewedInGroup: 'Yes' })} 
+                    />
+                    <span>Yes</span>
+                  </label>
+                </div>
+                {formData.previouslyInterviewedInGroup === 'Yes' && (
+                  <div className="pt-1 animate-fadeIn">
+                    <label className="text-[11px] font-bold text-slate-700 block mb-1">If "Yes", give particulars (Name of reference/employee, Position, Mobile number):</label>
+                    <textarea 
+                      rows="2"
+                      value={formData.previousInterviewDetails} 
+                      onChange={e => setFormData({ ...formData, previousInterviewDetails: e.target.value })}
+                      placeholder="e.g. Interviewed for Fullstack Lead role in Jan 2024, Ref: Priya Sharma"
+                      className="form-textarea text-xs" 
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Liberty to Contact Present & Previous Employer */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3.5 bg-indigo-50/60 border border-indigo-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-indigo-950 block text-xs">Are we at liberty to contact your present employer (Y/N)? *</span>
+                  <div className="flex items-center gap-4 pt-1">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-800">
+                      <input 
+                        type="radio" 
+                        name="contactPresentEmployerLiberty" 
+                        value="Yes" 
+                        checked={formData.contactPresentEmployerLiberty === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, contactPresentEmployerLiberty: 'Yes' })} 
+                      />
+                      <span>Yes (Authorized)</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-600">
+                      <input 
+                        type="radio" 
+                        name="contactPresentEmployerLiberty" 
+                        value="No" 
+                        checked={formData.contactPresentEmployerLiberty === 'No'} 
+                        onChange={() => setFormData({ ...formData, contactPresentEmployerLiberty: 'No' })} 
+                      />
+                      <span>No (Post-Offer Only)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-indigo-50/60 border border-indigo-200 rounded-2xl space-y-2">
+                  <span className="font-bold text-indigo-950 block text-xs">Are we at liberty to contact your previous employer (Y/N)? *</span>
+                  <div className="flex items-center gap-4 pt-1">
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-800">
+                      <input 
+                        type="radio" 
+                        name="contactPreviousEmployerLiberty" 
+                        value="Yes" 
+                        checked={formData.contactPreviousEmployerLiberty === 'Yes'} 
+                        onChange={() => setFormData({ ...formData, contactPreviousEmployerLiberty: 'Yes' })} 
+                      />
+                      <span>Yes (Authorized)</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-600">
+                      <input 
+                        type="radio" 
+                        name="contactPreviousEmployerLiberty" 
+                        value="No" 
+                        checked={formData.contactPreviousEmployerLiberty === 'No'} 
+                        onChange={() => setFormData({ ...formData, contactPreviousEmployerLiberty: 'No' })} 
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 10: INDUSTRY MATRIX SPECIALIZATION */}
+          {activeSection === 'industry' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <Cpu className="w-4 h-4" />
+                  <span>Section 10: Industry Matrix Specialization Particulars</span>
+                </h3>
+                <span className="text-[10px] text-slate-500 font-bold">Dynamic Sector Onboarding Profile</span>
+              </div>
+
+              <div>
+                <label className="text-slate-700 font-bold block mb-1">Select Employee Sector / Industry Category *</label>
+                <select
+                  value={formData.employeeCategory}
+                  onChange={e => setFormData({
+                    ...formData,
+                    employeeCategory: e.target.value,
+                    industrySpecialization: {
+                      ...formData.industrySpecialization,
+                      industryType: e.target.value
+                    }
+                  })}
+                  className="form-select text-xs font-black text-indigo-700 bg-indigo-50 border-indigo-200"
+                >
+                  <option value="it_tech">💻 Information Technology & Software Engineering</option>
+                  <option value="manufacturing">🏭 Manufacturing, Industrial & Assembly Plant</option>
+                  <option value="bfsi">🏦 Banking, Financial Services & Insurance (BFSI)</option>
+                  <option value="logistics">🚚 Logistics, Warehousing & Fleet Operations</option>
+                  <option value="healthcare">🩺 Healthcare, Clinical & Pharmaceuticals</option>
+                  <option value="sales_retail">🛍️ Corporate Sales, Retail & Marketing</option>
+                </select>
+              </div>
+
+              {/* Dynamic Industry Fields */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                {formData.employeeCategory === 'it_tech' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">GitHub / Code Portfolio Repository URL</label>
+                      <input
+                        type="url"
+                        value={formData.industrySpecialization?.githubUrl || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, githubUrl: e.target.value }
+                        })}
+                        placeholder="https://github.com/developer-profile"
+                        className="form-input font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">LinkedIn Profile URL</label>
+                      <input
+                        type="url"
+                        value={formData.industrySpecialization?.portfolioUrl || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, portfolioUrl: e.target.value }
+                        })}
+                        placeholder="https://linkedin.com/in/profile"
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.employeeCategory === 'manufacturing' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Plant Location / Unit</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.plantLocation || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, plantLocation: e.target.value }
+                        })}
+                        placeholder="e.g. Unit 3 Assembly Plant"
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Safety Shoe Size (Steel-Toe)</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.safetyShoeSize || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, safetyShoeSize: e.target.value }
+                        })}
+                        placeholder="e.g. UK 9 / EUR 43"
+                        className="form-input font-bold"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.employeeCategory === 'bfsi' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">CA / CFA / CS Membership Number</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.certificationsBfsi || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, certificationsBfsi: e.target.value }
+                        })}
+                        placeholder="e.g. ICAI-MRN-419820"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">CIBIL Credit Score Bracket</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.cibilScoreRange || '795 - 830'}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, cibilScoreRange: e.target.value }
+                        })}
+                        className="form-input font-bold text-emerald-800"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.employeeCategory === 'logistics' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Commercial DL Badge Number</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.commercialDlBadgeNo || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, commercialDlBadgeNo: e.target.value }
+                        })}
+                        placeholder="e.g. TN-01-TR-2020-98412"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Assigned Vehicle RC Number</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.forkliftLicenseNo || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, forkliftLicenseNo: e.target.value }
+                        })}
+                        placeholder="e.g. KA01MF4912"
+                        className="form-input font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.employeeCategory === 'healthcare' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Medical / Nursing Council Registration Number</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.medicalCouncilRegNo || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, medicalCouncilRegNo: e.target.value }
+                        })}
+                        placeholder="e.g. KMC-REG-2012-9942"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Immunization & Vaccination Status</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.immunizationStatus || 'Hepatitis B (3 Doses Complete)'}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, immunizationStatus: e.target.value }
+                        })}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.employeeCategory === 'sales_retail' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Assigned Retail Store / Territory Code</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.assignedStoreCode || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, assignedStoreCode: e.target.value }
+                        })}
+                        placeholder="e.g. RET-BLR-PHOENIX-04"
+                        className="form-input font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1">Field Two-Wheeler Driving License</label>
+                      <input
+                        type="text"
+                        value={formData.industrySpecialization?.fssaiCertNo || ''}
+                        onChange={e => setFormData({
+                          ...formData,
+                          industrySpecialization: { ...formData.industrySpecialization, fssaiCertNo: e.target.value }
+                        })}
+                        placeholder="e.g. TN0120180004918"
+                        className="form-input font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 11: DOCUMENTS & STATUTORY CONFIRMATION */}
+          {activeSection === 'documents' && (
+            <div className="space-y-4 animate-tab-switch">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                  <FolderDown className="w-4 h-4" />
+                  <span>Section 11: Document Uploads & Statutory Confirmation</span>
+                </h3>
+                <span className="badge badge-emerald text-[10px] font-bold">DPDP Act 2023 Compliant</span>
+              </div>
+
+              {/* Uploads List */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="font-bold text-slate-800 block">1. Aadhaar Card Copy (Front & Back) *</span>
+                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                </div>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="font-bold text-slate-800 block">2. PAN Card Copy *</span>
+                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                </div>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="font-bold text-slate-800 block">3. Highest Degree Certificate / Trade Marksheet *</span>
+                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                </div>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <span className="font-bold text-slate-800 block">4. Bank Passbook / Cancelled Cheque *</span>
+                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                </div>
+              </div>
+
+              {/* Legal Confirmation Declaration Box */}
+              <div className="p-4 rounded-2xl bg-indigo-900 text-white border border-indigo-700 space-y-3 shadow-md">
+                <div className="flex items-start gap-2.5">
+                  <input 
+                    type="checkbox" 
+                    id="legalConfirmCheck" 
+                    required 
+                    defaultChecked
+                    className="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                  />
+                  <label htmlFor="legalConfirmCheck" className="text-xs text-indigo-100 leading-relaxed cursor-pointer">
+                    <strong>Legal Declaration & Digital Confirmation:</strong> I hereby solemnly declare that all information furnished in this application form is true, complete, and correct to the best of my knowledge. I authorize Joy Corporate Solutions & client group companies to verify all my educational, employment, medical, financial, and criminal records via authorized statutory and third-party gateways in compliance with the Digital Personal Data Protection (DPDP) Act 2023.
+                  </label>
+                </div>
+
+                <div className="pt-2 border-t border-indigo-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <span className="text-indigo-300 font-mono text-[11px]">
+                    🔒 Cryptographic SHA-256 Digital Checksum & Verification Stamp will be generated upon confirmation.
+                  </span>
+
+                  <button
+                    type="submit"
+                    className="btn btn-superadmin py-2.5 px-6 font-black text-xs shadow-lg cursor-pointer flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl btn-interactive whitespace-nowrap"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Confirm & Submit Application Form</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
 
         </form>
 
