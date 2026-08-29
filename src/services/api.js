@@ -401,6 +401,7 @@ export const api = {
   // Dedicated Document Exporters
   exportCertificatePdfUrl: (identifier) => `${API_BASE_URL}/documents/certificate/${identifier}`,
   exportLaborProfileDossierUrl: (identifier) => `${API_BASE_URL}/documents/profile-dossier/${identifier}`,
+  exportBgvDossierPdfUrl: (identifier) => `${API_BASE_URL}/documents/bgv-dossier/${identifier}`,
   exportInvoicePdfUrl: (invoiceId) => `${API_BASE_URL}/documents/invoice/${invoiceId}`,
   exportPdfUrl: (companyId, candidateId) => {
     const params = new URLSearchParams();

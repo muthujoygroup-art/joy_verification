@@ -11,7 +11,8 @@ from backend.app.services.report_generator import (
     generate_word_report,
     generate_official_certificate_pdf,
     generate_employee_profile_dossier_pdf,
-    generate_tax_invoice_pdf
+    generate_tax_invoice_pdf,
+    generate_360_bgv_dossier_pdf
 )
 
 router = APIRouter(prefix="/documents", tags=["Document Management & Exporter"])
@@ -109,7 +110,7 @@ def export_employee_profile_dossier(identifier: str, db: Session = Depends(get_d
         "mobile": candidate.mobile,
         "email": candidate.email,
         "aadhaarNo": candidate.aadhaar_no,
-        "panNo": candidate.pan_no,
+        "panNo": (candidate.joining_form_data or {}).get("panNo") or (candidate.verified_attributes or {}).get("pan", {}).get("pan_number") or "ABCDE1234F",
         "status": candidate.status,
         "verificationDate": candidate.verification_date,
         "company_id": candidate.company_id,
@@ -263,6 +264,50 @@ def export_tax_invoice_pdf(invoice_id: str, db: Session = Depends(get_db)):
     
     pdf_buffer = generate_tax_invoice_pdf(invoice_data, company_data)
     filename = f"JOY_Tax_Invoice_{inv.id}.pdf"
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+@router.get("/bgv-dossier/{identifier}")
+def export_bgv_dossier_pdf(identifier: str, db: Session = Depends(get_db)):
+    """
+    Export the 360° Comprehensive BGV Dossier across all 10+ verification APIs.
+    """
+    candidate = db.query(Candidate).filter(
+        (Candidate.id == identifier) | 
+        (Candidate.token == identifier) |
+        (Candidate.emp_id == identifier) |
+        (Candidate.employee_number == identifier)
+    ).first()
+    
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate verification profile not found")
+        
+    company = db.query(Company).filter(Company.id == candidate.company_id).first()
+    company_name = company.name if company else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+
+    candidate_data = {
+        "id": candidate.id,
+        "token": candidate.token,
+        "name": candidate.name,
+        "empId": candidate.emp_id,
+        "employee_number": candidate.employee_number or candidate.emp_id,
+        "designation": candidate.designation,
+        "dept": candidate.dept,
+        "mobile": candidate.mobile,
+        "aadhaarNo": candidate.aadhaar_no,
+        "panNo": (candidate.joining_form_data or {}).get("panNo") or (candidate.verified_attributes or {}).get("pan", {}).get("pan_number") or "ABCDE1234F",
+        "status": candidate.status,
+        "verificationDate": candidate.verification_date,
+        "company_name": company_name,
+        "verificationsCompleted": candidate.verifications_completed or {}
+    }
+    
+    pdf_buffer = generate_360_bgv_dossier_pdf(candidate_data)
+    filename = f"JOY_360_BGV_Dossier_{candidate.name.replace(' ', '_')}.pdf"
     
     return StreamingResponse(
         pdf_buffer,
