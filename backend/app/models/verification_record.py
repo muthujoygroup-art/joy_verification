@@ -36,8 +36,15 @@ class VerificationRecord(Base):
     confidence_score = Column(Float, default=1.0) # e.g. 0.99 for Face Liveness, 1.0 for Govt Match
     sha256_seal = Column(String(100), nullable=True) # Cryptographic Digital Checksum Seal
     
-    verified_at = Column(DateTime, default=datetime.utcnow)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    # 📊 API Usage Telemetry & Ledger Fields
+    api_calls_count = Column(Integer, default=1) # Number of upstream API requests for this document
+    cost_incurred = Column(Float, default=4.0)   # Upstream cost in INR
+    latency_ms = Column(Integer, default=62)     # Turnaround roundtrip latency in ms
+    endpoint_path = Column(String(150), nullable=True) # e.g. /apiProduct/aadhaar-verify
+    api_id = Column(String(100), nullable=True)        # Official KYC API ID from guide
+    
+    verified_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
     # Relationships
     candidate = relationship("Candidate", back_populates="verification_records")

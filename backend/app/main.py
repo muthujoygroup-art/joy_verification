@@ -70,7 +70,12 @@ def on_startup():
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
             "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
             "UPDATE api_configurations SET is_active = FALSE, is_primary = FALSE, status = 'DISABLED' WHERE provider_key IN ('server1_sandbox', 'sandbox');",
-            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', endpoint_url = 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct' WHERE provider_key = 'server2_coincircle';"
+            "UPDATE api_configurations SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', endpoint_url = 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct' WHERE provider_key = 'server2_coincircle';",
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_calls_count INTEGER DEFAULT 1;",
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 62;",
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS endpoint_path VARCHAR(150);",
+            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_id VARCHAR(100);"
         ]
         with engine.connect() as conn:
             for stmt in migration_statements:

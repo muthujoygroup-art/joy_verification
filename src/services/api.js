@@ -207,6 +207,14 @@ export const api = {
     });
   },
   getSuperAdminStats: () => request('/superadmin/stats', {}, true),
+  
+  // Super Admin - API Telemetry & Candidate Document Ledger
+  getCompanyApiTelemetry: (timeRange = 'all') => request(`/superadmin/telemetry/company-stats?time_range=${timeRange}`, {}, false),
+  getCandidateApiLedger: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/superadmin/telemetry/candidate-ledger${query ? `?${query}` : ''}`, {}, false);
+  },
+  getCandidateDetailedApiBreakdown: (candidateId) => request(`/superadmin/telemetry/candidate-ledger/${candidateId}`, {}, false),
 
   // Company Admin
   getCompanyDetails: (companyId) => request(`/company/${companyId}`, {}, true),
