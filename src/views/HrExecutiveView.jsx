@@ -1031,9 +1031,11 @@ export const HrExecutiveView = () => {
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="badge badge-emerald font-bold">HR Executive Workstation</span>
-              <span className="text-xs text-slate-500 font-bold">• {activeHr.name} ({currentCompany.name})</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
+              <span className="text-[11px] sm:text-xs text-slate-500 font-bold truncate max-w-[260px] sm:max-w-none">
+                • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany.name})</span>
+              </span>
             </div>
             <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
             <p className="text-xs text-slate-600 mt-0.5 font-medium">Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.</p>

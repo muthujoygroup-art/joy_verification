@@ -146,8 +146,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
-      <div className="bg-white w-full max-w-5xl max-h-[95vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-8 space-y-5 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-6 flex justify-center items-start sm:items-center print:p-0 print:bg-white animate-fadeIn">
+      <div className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-7 space-y-5 text-slate-900 relative my-2 sm:my-auto print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring">
         
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 print:hidden">

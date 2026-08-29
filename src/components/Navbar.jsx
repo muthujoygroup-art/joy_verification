@@ -296,67 +296,69 @@ export const Navbar = () => {
       {/* ========================================================================= */}
       {/* 📱 INNOVATIVE FLOATING BOTTOM ISLAND DOCK (MOBILE & TABLET < 1024px)       */}
       {/* ========================================================================= */}
-      <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-40 select-none animate-fadeIn">
-        <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
-          
-          {/* 1. Dashboard / Home Tab */}
-          <Link
-            to="/"
-            className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
-            title="Dashboard"
-          >
-            <Home className="w-4 h-4" />
-            <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
-          </Link>
+      {currentRole !== 'employee_link' && (
+        <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
+          <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
+            
+            {/* 1. Dashboard / Home Tab */}
+            <Link
+              to="/"
+              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
+              title="Dashboard"
+            >
+              <Home className="w-4 h-4" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
+            </Link>
 
-          {/* 2. Universal Reports Hub */}
-          <button
-            onClick={() => setShowUniversalExportModal(true)}
-            className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
-            title="Download Reports"
-          >
-            <Download className="w-4 h-4" />
-            <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
-          </button>
+            {/* 2. Universal Reports Hub */}
+            <button
+              onClick={() => setShowUniversalExportModal(true)}
+              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
+              title="Download Reports"
+            >
+              <Download className="w-4 h-4" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
+            </button>
 
-          {/* 3. Center Vibrant Action Button */}
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
-            className="p-3 -mt-4 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white flex items-center justify-center"
-            title="Interactive Guided Tour"
-          >
-            <Compass className="w-5 h-5 animate-spin-slow" />
-          </button>
+            {/* 3. Center Vibrant Action Button */}
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
+              className="w-11 h-11 -mt-4 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-lg shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white flex items-center justify-center shrink-0"
+              title="Interactive Guided Tour"
+            >
+              <Compass className="w-5 h-5 animate-spin-slow text-amber-300" />
+            </button>
 
-          {/* 4. Real-time Alerts */}
-          <button
-            onClick={() => setShowNotificationsModal(true)}
-            className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
-            title="Notifications"
-          >
-            <div className="relative">
-              <Bell className="w-4 h-4" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-            <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
-          </button>
+            {/* 4. Real-time Alerts */}
+            <button
+              onClick={() => setShowNotificationsModal(true)}
+              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
+              title="Notifications"
+            >
+              <div className="relative">
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
+            </button>
 
-          {/* 5. More Menu Sheet Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
-            title="More Options"
-          >
-            <Sliders className="w-4 h-4" />
-            <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
-          </button>
+            {/* 5. More Menu Sheet Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
+              title="More Options"
+            >
+              <Sliders className="w-4 h-4" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
+            </button>
 
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 📱 SLIDE-UP MOBILE SHEET DRAWER (MODAL OVERLAY)                           */}

@@ -107,8 +107,8 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   const copiedState = isCopied || copiedInternal;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="glass-panel w-full max-w-md p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-scaleUp relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center animate-fadeIn">
+      <div className="glass-panel w-full max-w-md p-4 sm:p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-modal-spring relative max-h-[92vh] overflow-y-auto my-2 sm:my-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -157,19 +157,19 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <input 
               type="text" 
               value={passcodeText}
               onChange={(e) => handlePasscodeChange(e.target.value)}
               placeholder="e.g. 1234 or Joy@2026"
-              className="flex-1 bg-white border-2 border-indigo-300 focus:border-indigo-600 text-indigo-950 font-mono font-black text-sm py-2 px-3 rounded-xl outline-none"
+              className="flex-1 min-w-0 bg-white border-2 border-indigo-300 focus:border-indigo-600 text-indigo-950 font-mono font-bold text-xs sm:text-sm py-2 px-2.5 rounded-xl outline-none"
             />
 
             <button
               type="button"
               onClick={handleSavePasscode}
-              className="btn btn-superadmin text-xs py-2 px-3 font-bold flex items-center gap-1 shadow-xs cursor-pointer btn-interactive"
+              className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
               title="Save Passcode"
             >
               <Save className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             <button
               type="button"
               onClick={handleGenerateRandomPin}
-              className="btn btn-secondary text-xs py-2 px-2.5 font-bold text-indigo-900 bg-white border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+              className="py-2 px-2 bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-800 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
               title="Generate Random PIN"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
