@@ -24,7 +24,10 @@ def export_official_certificate(identifier: str, db: Session = Depends(get_db)):
     Includes Dual Logos (JOY Corporate Solutions + Employer Company).
     """
     candidate = db.query(Candidate).filter(
-        (Candidate.id == identifier) | (Candidate.token == identifier)
+        (Candidate.id == identifier) | 
+        (Candidate.token == identifier) |
+        (Candidate.emp_id == identifier) |
+        (Candidate.employee_number == identifier)
     ).first()
     
     if not candidate:
@@ -66,7 +69,10 @@ def export_employee_profile_dossier(identifier: str, db: Session = Depends(get_d
     Includes Employer Company Logo and complete demographic, academic, employment, banking & nominee records.
     """
     candidate = db.query(Candidate).filter(
-        (Candidate.id == identifier) | (Candidate.token == identifier)
+        (Candidate.id == identifier) | 
+        (Candidate.token == identifier) |
+        (Candidate.emp_id == identifier) |
+        (Candidate.employee_number == identifier)
     ).first()
     
     if not candidate:
@@ -75,21 +81,58 @@ def export_employee_profile_dossier(identifier: str, db: Session = Depends(get_d
     company = db.query(Company).filter(Company.id == candidate.company_id).first()
     company_name = company.name if company else "Acme Global Technologies Pvt Ltd"
 
+    # Query all candidate documents attached in database
+    docs_db = db.query(CandidateDocument).filter(CandidateDocument.candidate_id == candidate.id).all()
+    docs_list = [
+        {
+            "id": d.id,
+            "title": d.title,
+            "name": d.name,
+            "doc_type": d.doc_type,
+            "file_format": d.file_format,
+            "file_size_kb": d.file_size_kb,
+            "file_path": d.file_path,
+            "uploaded_at": str(d.uploaded_at)
+        }
+        for d in docs_db
+    ]
+
     candidate_data = {
         "id": candidate.id,
         "token": candidate.token,
         "name": candidate.name,
         "empId": candidate.emp_id,
+        "employee_number": candidate.employee_number or candidate.emp_id,
         "designation": candidate.designation,
         "dept": candidate.dept,
+        "employee_type": candidate.employee_type,
         "mobile": candidate.mobile,
         "email": candidate.email,
         "aadhaarNo": candidate.aadhaar_no,
+        "panNo": candidate.pan_no,
         "status": candidate.status,
         "verificationDate": candidate.verification_date,
         "company_id": candidate.company_id,
         "company_name": company_name,
+        "dob": candidate.dob,
+        "doj": candidate.doj,
+        "age": candidate.age,
+        "gender": candidate.gender,
+        "marital_status": candidate.marital_status,
+        "mother_tongue": candidate.mother_tongue,
+        "languages_known": candidate.languages_known,
+        "religion": candidate.religion,
+        "caste": candidate.caste,
+        "category": candidate.category,
+        "native_state": candidate.native_state,
+        "native_district": candidate.native_district,
+        "identification_marks": candidate.identification_marks,
+        "pf_number": candidate.pf_number,
+        "esi_number": candidate.esi_number,
+        "custom_fields": candidate.custom_fields or {},
+        "documents": docs_list,
         "verificationsCompleted": candidate.verifications_completed or {},
+        "faceImages": candidate.face_images or {},
         "joiningFormData": candidate.joining_form_data or {}
     }
     
