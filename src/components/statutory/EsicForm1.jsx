@@ -17,6 +17,7 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const branch = jf.branchName || 'Rajadhani';
   const insNo = c.esiNumber || jf.esiNumber || '5611450865';
   const doj = c.doj || jf.doj || '2026-04-13';
+  const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
     <div className="bg-white p-6 border-2 border-slate-800 rounded-xl text-slate-950 font-sans text-xs space-y-4 shadow-sm max-w-[840px] mx-auto pdf-avoid-break">
@@ -126,8 +127,12 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
           <div>
             <div>Date: <strong className="font-mono">{doj}</strong></div>
           </div>
-          <div className="text-center">
-            <div className="font-mono font-bold text-sky-900">✍️ {name}</div>
+          <div className="text-center min-w-[130px]">
+            {specimenSig ? (
+              <img src={specimenSig} alt="IP Signature" className="h-8 max-w-[120px] object-contain mx-auto" />
+            ) : (
+              <div className="font-serif italic font-bold text-sky-950 text-xs">✍️ {name}</div>
+            )}
             <div className="border-t border-slate-800 pt-0.5">Signature / T.I. of IP</div>
           </div>
           <div className="text-right">

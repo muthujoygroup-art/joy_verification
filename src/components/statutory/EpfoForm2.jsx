@@ -12,6 +12,7 @@ export const EpfoForm2 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const nomineeName = jf.nomineeName || c.spouseName || 'Siva Kumar';
   const nomineeRel = jf.nomineeRelation || 'Husband';
   const doj = c.doj || jf.doj || '2026-04-13';
+  const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
     <div className="bg-white p-6 border-2 border-slate-800 rounded-xl text-slate-950 font-sans text-xs space-y-5 shadow-sm max-w-[840px] mx-auto pdf-avoid-break">
@@ -101,8 +102,12 @@ export const EpfoForm2 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
       <div className="border-t-2 border-slate-800 pt-3 space-y-3 text-[10px]">
         <div className="flex items-end justify-between">
           <div>Date: <strong className="font-mono">{doj}</strong></div>
-          <div className="text-right">
-            <div className="font-mono font-bold text-sky-900">✍️ {name}</div>
+          <div className="text-right min-w-[140px]">
+            {specimenSig ? (
+              <img src={specimenSig} alt="Subscriber Signature" className="h-8 max-w-[130px] object-contain ml-auto" />
+            ) : (
+              <div className="font-serif italic font-bold text-sky-950 text-xs">✍️ {name}</div>
+            )}
             <div className="border-t border-slate-800 pt-0.5 text-[10px]">Signature/Thumb impression of subscriber</div>
           </div>
         </div>

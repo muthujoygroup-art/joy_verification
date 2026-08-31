@@ -1,3 +1,4 @@
+import { SignaturePadModal } from './SignaturePadModal';
 import { EpfoForm11 } from './statutory/EpfoForm11';
 import { EpfoForm2 } from './statutory/EpfoForm2';
 import { EsicForm1 } from './statutory/EsicForm1';
@@ -48,6 +49,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
   const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const jfd = candidate?.joiningFormData || {};
   const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
@@ -93,12 +95,33 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     aadhaarNo: candidate?.aadhaar_no || candidate?.aadhaarNo || jfd.aadhaarNo || '5489 1234 9876',
     panNo: candidate?.panNo || jfd.panNo || 'ABCDE1234F',
     pfNumber: candidate?.pf_number || candidate?.uanEpf || jfd.pfNumber || jfd.uanEpf || '101239019283',
-    esiNumber: candidate?.esi_number || candidate?.esicNo || jfd.esiNumber || jfd.esicNo || '5300918239',
+    esiNumber: candidate?.esi_number || candidate?.esicNo || jfd.esiNumber || jfd.esicNo || '5611450865',
     drivingLicense: candidate?.drivingLicense || jfd.drivingLicense || 'KA-01201900124',
     passportNo: candidate?.passportNo || jfd.passportNo || 'Z8491024',
     voterId: candidate?.voterId || jfd.voterId || 'WZK8912301',
-    uanEpf: candidate?.pf_number || candidate?.uanEpf || jfd.uanEpf || '101239019283',
-    esicNo: candidate?.esi_number || candidate?.esicNo || jfd.esicNo || '5300918239',
+    uanEpf: candidate?.pf_number || candidate?.uanEpf || jfd.uanEpf || '102266065538',
+    esicNo: candidate?.esi_number || candidate?.esicNo || jfd.esiNumber || jfd.esicNo || '5611450865',
+    
+    // Detailed EPFO Form 11 & Form 2 Fields
+    isPreviousEpfMember: jfd.isPreviousEpfMember || 'Yes',
+    isPreviousEpsMember: jfd.isPreviousEpsMember || 'Yes',
+    previousPfNumber: jfd.previousPfNumber || 'KN/BLR/0012345/000/0054321',
+    prevEmploymentExitDate: jfd.prevEmploymentExitDate || '2026-03-31',
+    schemeCertNo: jfd.schemeCertNo || '',
+    ppoNo: jfd.ppoNo || '',
+    isInternationalWorker: jfd.isInternationalWorker || 'No',
+    countryOfOrigin: jfd.countryOfOrigin || 'India',
+    passportValidFrom: jfd.passportValidFrom || '',
+    passportValidTo: jfd.passportValidTo || '',
+    parentOrSpouseType: jfd.parentOrSpouseType || (candidate?.spouseName ? 'Spouse' : 'Father'),
+
+    // Detailed ESIC Form 1 Fields
+    esicDispensary: jfd.esicDispensary || 'ESI Dispensary Coimbatore',
+    esicBranchOffice: jfd.esicBranchOffice || 'Branch Office Coimbatore',
+    esicPrevInsNo: jfd.esicPrevInsNo || '',
+    esicPrevEmployerCode: jfd.esicPrevEmployerCode || '',
+    factoryEmployerCode: jfd.factoryEmployerCode || '3251',
+    specimenSignature: jfd.specimenSignature || candidate?.specimenSignature || null,
 
     // Banking Details
     bankName: candidate?.bankName || jfd.bankName || 'HDFC Bank Limited',
@@ -3094,6 +3117,32 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
         )}
 
+        {/* Interactive Specimen Signature Modal */}
+        {showSignatureModal && (
+          <SignaturePadModal
+            initialSignature={formData.specimenSignature}
+            onSaveSignature={(sigUrl) => {
+              setFormData(prev => ({
+                ...prev,
+                specimenSignature: sigUrl,
+                uploadedDocuments: {
+                  ...(prev.uploadedDocuments || {}),
+                  docSpecimenSignature: {
+                    name: 'Official_Specimen_Signature.png',
+                    type: 'image/png',
+                    file_path: sigUrl,
+                    file_size_kb: 85,
+                    verified: true,
+                    uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+                  }
+                }
+              }));
+              setShowSignatureModal(false);
+              showToast('✍️ Specimen signature applied successfully!');
+            }}
+            onClose={() => setShowSignatureModal(false)}
+          />
+        )}
       </div>
     </div>
   );

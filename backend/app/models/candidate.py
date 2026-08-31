@@ -46,6 +46,8 @@ class Candidate(Base):
     manual_checks = Column(JSON, default=dict) # { hrReferenceCompleted: true, addressVerifiedPhysically: false }
     joining_form_data = Column(JSON, default=dict) # Full CiteHR 6-tab joining form data
     custom_fields = Column(JSON, default=dict) # Dynamic custom attributes configured on the fly by HR
+    specimen_signature = Column(Text, nullable=True)
+    statutory_details = Column(JSON, default=dict)
     
     verification_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
