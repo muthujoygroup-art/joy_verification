@@ -88,6 +88,33 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const pfNum = c.pfNumber || jf.pfNumber || 'KN/BLR/0012345/000/0054321';
   const esiNum = c.esiNumber || jf.esiNumber || '31001234560000001';
 
+  // Social Media & Online Professional Presence
+  const linkedIn = jf.linkedInUrl || c.linkedInUrl || candSpec.linkedInUrl || '';
+  const github = jf.githubUrl || c.githubUrl || candSpec.githubUrl || '';
+  const portfolio = jf.portfolioUrl || c.portfolioUrl || candSpec.portfolioUrl || '';
+  const twitter = jf.twitterUrl || c.twitterUrl || '';
+
+  // Dynamic Multi-Row Education Qualifications
+  const eduList = (Array.isArray(jf.educationList) && jf.educationList.length > 0)
+    ? jf.educationList
+    : (Array.isArray(c.educationList) && c.educationList.length > 0)
+      ? c.educationList
+      : [
+          { qualificationCategory: 'Under Graduate (UG / Bachelor)', degreeName: 'B.Tech in Computer Science & Engg', institutionName: 'PSG College of Technology, Coimbatore', university: 'Anna University', passingYear: '2020', grade: '84.5% (Distinction)' },
+          { qualificationCategory: 'Higher Secondary (12th / HSC)', degreeName: 'Higher Secondary (12th Science)', institutionName: 'St. Joseph Higher Secondary School', university: 'State Board', passingYear: '2016', grade: '88.2%' },
+          { qualificationCategory: 'Secondary School (10th / SSLC)', degreeName: 'Secondary School Leaving Certificate', institutionName: 'St. Joseph High School', university: 'State Board', passingYear: '2014', grade: '91.0%' }
+        ];
+
+  // Dynamic Multi-Row Previous Employment Experience
+  const expList = (Array.isArray(jf.experienceList) && jf.experienceList.length > 0)
+    ? jf.experienceList
+    : (Array.isArray(c.experienceList) && c.experienceList.length > 0)
+      ? c.experienceList
+      : [
+          { companyName: jf.previousEmployer || c.previousEmployer || 'Infosys Limited', designation: 'Senior Systems Engineer', periodOfService: '01-Jul-2021 to 30-Nov-2023', salaryDrawn: '₹6,80,000 PA', relievingStatus: 'Relieved with Full Notice ✓' },
+          { companyName: 'Wipro Enterprises Pvt Ltd', designation: 'Systems Architect', periodOfService: '15-Dec-2023 to 31-Jul-2026', salaryDrawn: '₹11,50,000 PA', relievingStatus: 'Service Certificate Verified ✓' }
+        ];
+
   // Construct attached documents list for exhibits
   const attachedDocsMap = jf.uploadedDocuments || c.uploadedDocuments || {};
   const rawList = Array.isArray(c.documents) && c.documents.length > 0
@@ -372,7 +399,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <table className="w-full text-left">
                   <thead className="bg-sky-950 text-white font-bold text-[11px]">
                     <tr>
-                      <th className="p-2.5">Qualification</th>
+                      <th className="p-2.5">Qualification Level & Degree</th>
                       <th className="p-2.5">College / Institution</th>
                       <th className="p-2.5">University / Board</th>
                       <th className="p-2.5">Year</th>
@@ -380,27 +407,20 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
-                    <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold text-slate-900">Under Graduate (UG)</td>
-                      <td className="p-2.5 text-slate-700">BMS College of Engineering</td>
-                      <td className="p-2.5 text-slate-600">VTU Technological University</td>
-                      <td className="p-2.5 font-mono">2020</td>
-                      <td className="p-2.5 text-right font-bold text-emerald-800">84.5% (Distinction)</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold text-slate-900">Higher Secondary (12th / HSC)</td>
-                      <td className="p-2.5 text-slate-700">National Public School</td>
-                      <td className="p-2.5 text-slate-600">CBSE Board</td>
-                      <td className="p-2.5 font-mono">2016</td>
-                      <td className="p-2.5 text-right font-bold text-emerald-800">88.2%</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold text-slate-900">Secondary School (10th / SSLC)</td>
-                      <td className="p-2.5 text-slate-700">St. Joseph High School</td>
-                      <td className="p-2.5 text-slate-600">State Board</td>
-                      <td className="p-2.5 font-mono">2014</td>
-                      <td className="p-2.5 text-right font-bold text-emerald-800">91.0%</td>
-                    </tr>
+                    {eduList.map((edu, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold text-slate-900">
+                          <div>{edu.degreeName || edu.qualificationCategory || `Qualification #${idx+1}`}</div>
+                          {edu.degreeName && edu.qualificationCategory && (
+                            <span className="text-[10px] text-slate-500 font-normal">{edu.qualificationCategory}</span>
+                          )}
+                        </td>
+                        <td className="p-2.5 text-slate-700">{edu.institutionName || 'PSG College of Technology'}</td>
+                        <td className="p-2.5 text-slate-600">{edu.university || 'State Board / University'}</td>
+                        <td className="p-2.5 font-mono">{edu.passingYear || edu.yearOfEnd || edu.yearOfJoining || '2020'}</td>
+                        <td className="p-2.5 text-right font-bold text-emerald-800 font-mono">{edu.grade || edu.percentage || '85%'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -410,28 +430,30 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <table className="w-full text-left">
                   <thead className="bg-indigo-950 text-white font-bold text-[11px]">
                     <tr>
-                      <th className="p-2.5">Company Name</th>
+                      <th className="p-2.5">Company Name & Location</th>
                       <th className="p-2.5">Designation</th>
-                      <th className="p-2.5">Tenure (From - To)</th>
+                      <th className="p-2.5">Tenure (Period of Service)</th>
                       <th className="p-2.5">Last Drawn CTC</th>
                       <th className="p-2.5 text-right">Relieving Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
-                    <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold text-slate-900">Infosys Limited</td>
-                      <td className="p-2.5 text-slate-700">Software Engineer</td>
-                      <td className="p-2.5 text-slate-600 font-mono text-[11px]">01-Jul-2021 to 30-Nov-2023</td>
-                      <td className="p-2.5 font-mono">Rs. 6,80,000 PA</td>
-                      <td className="p-2.5 text-right"><span className="badge badge-emerald text-[9px]">Relieved with Full Notice ✓</span></td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold text-slate-900">Wipro Enterprises Pvt Ltd</td>
-                      <td className="p-2.5 text-slate-700">Senior Software Engineer</td>
-                      <td className="p-2.5 text-slate-600 font-mono text-[11px]">15-Dec-2023 to 31-Jul-2026</td>
-                      <td className="p-2.5 font-mono">Rs. 11,50,000 PA</td>
-                      <td className="p-2.5 text-right"><span className="badge badge-emerald text-[9px]">Service Certificate Verified ✓</span></td>
-                    </tr>
+                    {expList.map((exp, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold text-slate-900">
+                          <div>{exp.companyName || exp.institutionName || `Company #${idx+1}`}</div>
+                          {(exp.address || exp.institutionAddress) && (
+                            <span className="text-[10px] text-slate-500 font-normal line-clamp-1">{exp.address || exp.institutionAddress}</span>
+                          )}
+                        </td>
+                        <td className="p-2.5 text-slate-700">{exp.designation || 'Software Engineer'}</td>
+                        <td className="p-2.5 text-slate-600 font-mono text-[11px]">{exp.periodOfService || '06/2021 - 07/2024'}</td>
+                        <td className="p-2.5 font-mono">{exp.salaryDrawn || '₹8,50,000 PA'}</td>
+                        <td className="p-2.5 text-right">
+                          <span className="badge badge-emerald text-[9px]">{exp.relievingStatus || 'Relieved with Full Notice ✓'}</span>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

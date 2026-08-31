@@ -486,24 +486,75 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     story.append(t2)
     story.append(Spacer(1, 8))
 
-    # Section 3: Academic Credentials Table
+    # Section 3: Academic Credentials & Multi-Row Qualifications Table
     sec3_hdr = Table([[Paragraph("SECTION 3: ACADEMIC QUALIFICATIONS & CREDENTIALS MATRIX", section_hdr_style)]], colWidths=[540])
     sec3_hdr.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#0284c7')), ('PADDING', (0, 0), (-1, -1), 3)]))
     story.append(sec3_hdr)
 
-    sec3_data = [
-        [Paragraph("<b>Qualification Level</b>", body_bold), Paragraph("<b>Institution / College</b>", body_bold), Paragraph("<b>Board / University</b>", body_bold), Paragraph("<b>Year</b>", body_bold), Paragraph("<b>Score %</b>", body_bold)],
-        [Paragraph("Under Graduate (UG)", body_style), Paragraph("BMS College of Engineering", body_style), Paragraph("VTU Technological University", body_style), Paragraph("2020", body_style), Paragraph("84.5%", body_style)],
-        [Paragraph("Higher Secondary (HSC)", body_style), Paragraph("National Public School", body_style), Paragraph("CBSE Board", body_style), Paragraph("2016", body_style), Paragraph("88.2%", body_style)],
-        [Paragraph("Secondary School (SSLC)", body_style), Paragraph("St. Joseph High School", body_style), Paragraph("State Board", body_style), Paragraph("2014", body_style), Paragraph("91.0%", body_style)]
+    edu_list = jf.get('educationList') or candidate.get('educationList') or [
+        {"qualificationCategory": "Under Graduate (UG / Bachelor)", "degreeName": "B.Tech in Computer Science & Engg", "institutionName": "PSG College of Technology, Coimbatore", "university": "Anna University", "passingYear": "2020", "grade": "84.5% Distinction"},
+        {"qualificationCategory": "Higher Secondary (12th / HSC)", "degreeName": "Higher Secondary (12th Science)", "institutionName": "St. Joseph Higher Secondary School", "university": "State Board", "passingYear": "2016", "grade": "88.2%"},
+        {"qualificationCategory": "Secondary School (10th / SSLC)", "degreeName": "Secondary School Leaving Certificate", "institutionName": "St. Joseph High School", "university": "State Board", "passingYear": "2014", "grade": "91.0%"}
     ]
-    t3 = Table(sec3_data, colWidths=[130, 150, 140, 60, 60])
+
+    sec3_data = [
+        [Paragraph("<b>Qualification Level & Degree</b>", body_bold), Paragraph("<b>Institution / College</b>", body_bold), Paragraph("<b>Board / University</b>", body_bold), Paragraph("<b>Year</b>", body_bold), Paragraph("<b>Score / Grade</b>", body_bold)]
+    ]
+    for edu in edu_list:
+        deg_str = f"<b>{edu.get('degreeName') or edu.get('qualificationCategory') or 'Degree'}</b>"
+        if edu.get('qualificationCategory') and edu.get('degreeName'):
+            deg_str += f"<br/><font size=6.5 color='#64748b'>{edu.get('qualificationCategory')}</font>"
+        sec3_data.append([
+            Paragraph(deg_str, body_style),
+            Paragraph(edu.get('institutionName', 'PSG College of Tech'), body_style),
+            Paragraph(edu.get('university', 'State University'), body_style),
+            Paragraph(str(edu.get('passingYear') or edu.get('yearOfEnd') or '2020'), body_style),
+            Paragraph(f"<font color='#065f46'><b>{edu.get('grade') or edu.get('percentage') or '85%'}</b></font>", body_style)
+        ])
+
+    t3 = Table(sec3_data, colWidths=[130, 150, 140, 50, 70])
     t3.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0f2fe')),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
-        ('PADDING', (0, 0), (-1, -1), 3)
+        ('PADDING', (0, 0), (-1, -1), 3),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
     ]))
     story.append(t3)
+    story.append(Spacer(1, 6))
+
+    # Section 3B: Previous Employment & Service Experience Table
+    sec3b_hdr = Table([[Paragraph("SECTION 3B: PRIOR EMPLOYMENT RECORD & SERVICE CONTINUITY", section_hdr_style)]], colWidths=[540])
+    sec3b_hdr.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#4338ca')), ('PADDING', (0, 0), (-1, -1), 3)]))
+    story.append(sec3b_hdr)
+
+    exp_list = jf.get('experienceList') or candidate.get('experienceList') or [
+        {"companyName": jf.get('previousEmployer') or candidate.get('previousEmployer') or "Infosys Limited", "designation": "Senior Systems Engineer", "periodOfService": "01-Jul-2021 to 30-Nov-2023", "salaryDrawn": "Rs. 8,50,000 PA", "relievingStatus": "Relieved with Full Notice ✓"},
+        {"companyName": "Wipro Enterprises Pvt Ltd", "designation": "Software Developer", "periodOfService": "15-Dec-2023 to 31-Jul-2026", "salaryDrawn": "Rs. 11,50,000 PA", "relievingStatus": "Service Certificate Verified ✓"}
+    ]
+
+    sec3b_data = [
+        [Paragraph("<b>Company / Organization</b>", body_bold), Paragraph("<b>Designation / Role</b>", body_bold), Paragraph("<b>Tenure (Period of Service)</b>", body_bold), Paragraph("<b>Last Drawn CTC</b>", body_bold), Paragraph("<b>Relieving Status</b>", body_bold)]
+    ]
+    for exp in exp_list:
+        comp_str = f"<b>{exp.get('companyName') or exp.get('institutionName') or 'Company'}</b>"
+        if exp.get('address') or exp.get('institutionAddress'):
+            comp_str += f"<br/><font size=6.5 color='#64748b'>{exp.get('address') or exp.get('institutionAddress')}</font>"
+        sec3b_data.append([
+            Paragraph(comp_str, body_style),
+            Paragraph(exp.get('designation', 'Software Engineer'), body_style),
+            Paragraph(exp.get('periodOfService', '06/2021 - 07/2024'), body_style),
+            Paragraph(exp.get('salaryDrawn', 'Rs. 8,50,000 PA'), body_style),
+            Paragraph(f"<font color='#065f46'><b>{exp.get('relievingStatus', 'Relieved ✓')}</b></font>", body_style)
+        ])
+
+    t3b = Table(sec3b_data, colWidths=[130, 120, 110, 80, 100])
+    t3b.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ede9fe')),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('PADDING', (0, 0), (-1, -1), 3),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
+    ]))
+    story.append(t3b)
     story.append(Spacer(1, 8))
 
     # Section 4: Banking, Tax & Statutory Accounts

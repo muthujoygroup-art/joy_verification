@@ -65,7 +65,10 @@ import {
   Users,
   CheckSquare,
   FileCode,
-  Upload
+  Upload,
+  Globe,
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 export const HrExecutiveView = () => {
@@ -180,6 +183,23 @@ export const HrExecutiveView = () => {
     hrId: activeHr.id,
     employeeCategory: 'it_tech',
     hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
+    
+    // Professional & Social Media Links
+    linkedInUrl: 'https://linkedin.com/in/muthukumar-dev',
+    githubUrl: 'https://github.com/muthukumar-dev',
+    portfolioUrl: 'https://muthukumar-portfolio.dev',
+    twitterUrl: '',
+
+    // Dynamic Multi-Entry Education Qualifications
+    educationList: [
+      { qualificationCategory: 'Under Graduate (UG / Bachelor Degree)', degreeName: 'B.Tech in Computer Science & Engineering', institutionName: 'PSG College of Technology, Coimbatore', university: 'Anna University', yearOfJoining: '2014', yearOfEnd: '2018', grade: '8.75 CGPA (85.2%)', passingYear: '2018' },
+      { qualificationCategory: 'Higher Secondary (12th / HSC)', degreeName: 'Higher Secondary (10+2 Science Stream)', institutionName: 'St. Joseph Higher Secondary School, Madurai', university: 'State Board', yearOfJoining: '2012', yearOfEnd: '2014', grade: '94.5% Distinction', passingYear: '2014' }
+    ],
+
+    // Dynamic Multi-Entry Prior Employment Experience
+    experienceList: [
+      { companyName: 'Infosys Limited', institutionName: 'Infosys Limited', address: 'Electronics City, Phase 1, Bengaluru', institutionAddress: 'Electronics City, Phase 1, Bengaluru', designation: 'Senior Software Engineer', periodOfService: '06/2021 - 07/2024 (3 Yrs 2 Mos)', salaryDrawn: '₹8,50,000 PA (₹62,000/mo)', reasonForLeaving: 'Career advancement & higher role scope', relievingStatus: 'Relieved with Full Notice ✓' }
+    ],
     
     // Dynamic Industry & Role-Specific Operational Details
     industrySpecialization: {
@@ -2566,78 +2586,205 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            {/* SECTION 3: Academic Qualifications & Skills */}
+            {/* 🌟 SOCIAL MEDIA & PROFESSIONAL WEB PRESENCE LINKS */}
             <div className="space-y-3 pt-3 border-t border-slate-100">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-emerald-600" />
-                <span>3. Academic Qualifications & Specialized Skills Matrix</span>
-              </h4>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-indigo-600" />
+                  <span>2B. Professional & Social Media Presence Links</span>
+                </h4>
+                <span className="badge badge-indigo text-[9px] font-bold">Auto-Bound to Profile Dossier</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                 <div>
-                  {renderFieldLabel('Qualification Category (Master)', 'qualificationCategory')}
-                  <select 
-                    value={formData.qualificationCategory}
-                    onChange={(e) => setFormData({ ...formData, qualificationCategory: e.target.value })}
-                    className={getFieldInputClass('qualificationCategory', 'form-select font-medium')}
-                  >
-                    {(masterDropdownOptions?.qualificationCategories || ['Under Graduate (UG / Bachelor Degree)', 'Post Graduate (PG / Master Degree)', 'Polytechnic Diploma', 'Vocational / ITI Trade Certificate']).map(qc => (
-                      <option key={qc} value={qc}>{qc}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  {renderFieldLabel('Highest Degree / Diploma (Master)', 'highestQualification')}
-                  <select 
-                    value={formData.highestQualification}
-                    onChange={(e) => setFormData({ ...formData, highestQualification: e.target.value })}
-                    className={getFieldInputClass('highestQualification', 'form-select font-medium')}
-                  >
-                    {(masterDropdownOptions?.qualifications || ['B.Tech / B.E. in Computer Science', 'MBA in HR & Operations', 'Diploma in Mechanical Engineering', 'MBBS / Medical Degree']).map(deg => (
-                      <option key={deg} value={deg}>{deg}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  {renderFieldLabel('Primary Skill / Core Specialization', 'primarySkill')}
+                  {renderFieldLabel('LinkedIn Profile URL', 'linkedInUrl')}
                   <input 
-                    type="text"
-                    placeholder="e.g. React JS, Python, Robotic Welding"
-                    value={formData.primarySkill}
-                    onChange={(e) => setFormData({ ...formData, primarySkill: e.target.value })}
-                    className={getFieldInputClass('primarySkill', 'form-input font-bold')}
+                    type="url"
+                    placeholder="https://linkedin.com/in/username"
+                    value={formData.linkedInUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, linkedInUrl: e.target.value })}
+                    className={getFieldInputClass('linkedInUrl', 'form-input font-mono')}
                   />
                 </div>
                 <div>
-                  {renderFieldLabel('Passing Year & Score (%)', 'passingYear')}
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="2020"
-                      value={formData.passingYear}
-                      onChange={(e) => setFormData({ ...formData, passingYear: e.target.value })}
-                      className={getFieldInputClass('passingYear', 'form-input w-24 font-mono')}
-                    />
-                    <input 
-                      type="text" 
-                      placeholder="84.5%"
-                      value={formData.percentage}
-                      onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
-                      className={getFieldInputClass('percentage', 'form-input flex-1 font-mono')}
-                    />
-                  </div>
+                  {renderFieldLabel('GitHub / Code Repository URL', 'githubUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://github.com/developer-profile"
+                    value={formData.githubUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+                    className={getFieldInputClass('githubUrl', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Portfolio / Live Project URL', 'portfolioUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://portfolio-showcase.dev"
+                    value={formData.portfolioUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
+                    className={getFieldInputClass('portfolioUrl', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Twitter (X) / Other Profile', 'twitterUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://x.com/handle"
+                    value={formData.twitterUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, twitterUrl: e.target.value })}
+                    className={getFieldInputClass('twitterUrl', 'form-input font-mono')}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* SECTION 4: Employment History & References */}
+            {/* SECTION 3: Dynamic Multi-Row Academic Qualifications */}
             <div className="space-y-3 pt-3 border-t border-slate-100">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-emerald-600" />
-                <span>4. Employment Position, Job Category & Work Role</span>
-              </h4>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4 text-emerald-600" />
+                  <span>3. Academic Qualifications & Degrees (Multi-Entry Matrix)</span>
+                </h4>
+                
+                <button
+                  type="button"
+                  onClick={handleHrAddEducation}
+                  className="px-3 py-1 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-black text-xs flex items-center gap-1.5 border border-emerald-300 shadow-2xs self-start sm:self-auto cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>+ Add Another Qualification</span>
+                </button>
+              </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+              <div className="space-y-3">
+                {(formData.educationList || []).map((edu, idx) => (
+                  <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 relative">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono font-black text-[10px]">
+                        Degree / Qualification #{idx + 1}
+                      </span>
+                      {formData.educationList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleHrRemoveEducation(idx)}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Qualification Level *</label>
+                        <select 
+                          value={edu.qualificationCategory}
+                          onChange={(e) => handleHrUpdateEducation(idx, 'qualificationCategory', e.target.value)}
+                          className="form-select text-xs font-medium"
+                        >
+                          {(masterDropdownOptions?.qualificationCategories || ['Under Graduate (UG / Bachelor Degree)', 'Post Graduate (PG / Master Degree)', 'Higher Secondary (12th / HSC)', 'Secondary / 10th Standard (SSLC)', 'Polytechnic Diploma', 'Vocational / ITI Trade Certificate', 'Doctorate / Ph.D']).map(qc => (
+                            <option key={qc} value={qc}>{qc}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Degree / Specialization Name *</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. B.Tech (Computer Science & Engg)"
+                          value={edu.degreeName}
+                          onChange={(e) => handleHrUpdateEducation(idx, 'degreeName', e.target.value)}
+                          className="form-input text-xs font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">College / School / Institution *</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. PSG College of Technology, Coimbatore"
+                          value={edu.institutionName}
+                          onChange={(e) => handleHrUpdateEducation(idx, 'institutionName', e.target.value)}
+                          className="form-input text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Board / University</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. Anna University / CBSE"
+                          value={edu.university || ''}
+                          onChange={(e) => handleHrUpdateEducation(idx, 'university', e.target.value)}
+                          className="form-input text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Tenure (Join - Passing Year)</label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="number"
+                            placeholder="Join (2014)"
+                            value={edu.yearOfJoining || ''}
+                            onChange={(e) => handleHrUpdateEducation(idx, 'yearOfJoining', e.target.value)}
+                            className="form-input text-xs font-mono w-24"
+                          />
+                          <input 
+                            type="number"
+                            placeholder="End (2018)"
+                            value={edu.yearOfEnd || edu.passingYear || ''}
+                            onChange={(e) => {
+                              handleHrUpdateEducation(idx, 'yearOfEnd', e.target.value);
+                              handleHrUpdateEducation(idx, 'passingYear', e.target.value);
+                            }}
+                            className="form-input text-xs font-mono flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Score / Percentage / CGPA *</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. 8.75 CGPA (85.2% Distinction)"
+                          value={edu.grade || ''}
+                          onChange={(e) => handleHrUpdateEducation(idx, 'grade', e.target.value)}
+                          className="form-input text-xs font-mono font-bold text-emerald-800"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SECTION 4: Dynamic Multi-Row Previous Employment Experience */}
+            <div className="space-y-3 pt-3 border-t border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-indigo-600" />
+                  <span>4. Employment Position, Job Band & Work History (Multi-Entry)</span>
+                </h4>
+
+                <button
+                  type="button"
+                  onClick={handleHrAddExperience}
+                  className="px-3 py-1 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-900 font-black text-xs flex items-center gap-1.5 border border-indigo-300 shadow-2xs self-start sm:self-auto cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-indigo-700" />
+                  <span>+ Add Prior Employer Record</span>
+                </button>
+              </div>
+
+              {/* Current Job Role Parameters */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div>
                   {renderFieldLabel('Job Category (Master)', 'jobCategory')}
                   <select 
@@ -2687,37 +2834,97 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div>
-                  {renderFieldLabel('Work Location', 'workLocation')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Bengaluru Global Tech Hub (HQ)"
-                    value={formData.workLocation}
-                    onChange={(e) => setFormData({ ...formData, workLocation: e.target.value })}
-                    className={getFieldInputClass('workLocation')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Previous Employer Name', 'previousEmployer')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Infosys Technologies Ltd"
-                    value={formData.previousEmployer}
-                    onChange={(e) => setFormData({ ...formData, previousEmployer: e.target.value })}
-                    className={getFieldInputClass('previousEmployer')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Total Experience (Years)', 'experienceYears')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. 4.5 Years"
-                    value={formData.experienceYears}
-                    onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
-                    className={getFieldInputClass('experienceYears', 'form-input font-mono')}
-                  />
-                </div>
+              {/* Multi-Employer Experience Rows */}
+              <div className="space-y-3">
+                {(formData.experienceList || []).map((exp, idx) => (
+                  <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 relative">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                      <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-black text-[10px]">
+                        Prior Employer #{idx + 1}
+                      </span>
+                      {formData.experienceList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleHrRemoveExperience(idx)}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Company / Organization Name *</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. Infosys Limited"
+                          value={exp.companyName || exp.institutionName || ''}
+                          onChange={(e) => handleHrUpdateExperience(idx, 'companyName', e.target.value)}
+                          className="form-input text-xs font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Designation / Job Role *</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. Systems Engineer / Consultant"
+                          value={exp.designation || ''}
+                          onChange={(e) => handleHrUpdateExperience(idx, 'designation', e.target.value)}
+                          className="form-input text-xs font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-slate-700 font-bold block mb-1 text-[11px]">Company Location / Address</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g. Electronics City, Phase 1, Hosur Road, Bengaluru, KA"
+                        value={exp.address || exp.institutionAddress || ''}
+                        onChange={(e) => handleHrUpdateExperience(idx, 'address', e.target.value)}
+                        className="form-input text-xs"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Period of Service (From - To) *</label>
+                        <input 
+                          type="text"
+                          placeholder="06/2021 - 07/2024 (3 Yrs)"
+                          value={exp.periodOfService || ''}
+                          onChange={(e) => handleHrUpdateExperience(idx, 'periodOfService', e.target.value)}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Last Drawn CTC / Salary *</label>
+                        <input 
+                          type="text"
+                          placeholder="₹8,50,000 PA"
+                          value={exp.salaryDrawn || ''}
+                          onChange={(e) => handleHrUpdateExperience(idx, 'salaryDrawn', e.target.value)}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-700 font-bold block mb-1 text-[11px]">Relieving & Service Status</label>
+                        <select 
+                          value={exp.relievingStatus || 'Relieved with Full Notice ✓'}
+                          onChange={(e) => handleHrUpdateExperience(idx, 'relievingStatus', e.target.value)}
+                          className="form-select text-xs font-bold text-emerald-800"
+                        >
+                          <option value="Relieved with Full Notice ✓">Relieved with Full Notice ✓</option>
+                          <option value="Service Certificate Verified ✓">Service Certificate Verified ✓</option>
+                          <option value="Currently Serving Notice Period">Currently Serving Notice Period</option>
+                          <option value="Direct Exit">Direct Exit</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
