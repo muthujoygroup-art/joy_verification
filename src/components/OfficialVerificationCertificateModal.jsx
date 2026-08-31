@@ -18,6 +18,7 @@ import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
+  const [isExporting, setIsExporting] = useState(false);
 
   if (!candidate) return null;
 

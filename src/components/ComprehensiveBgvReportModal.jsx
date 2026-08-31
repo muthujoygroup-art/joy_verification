@@ -42,6 +42,7 @@ export const ComprehensiveBgvReportModal = ({
 }) => {
   const [activeApiTab, setActiveApiTab] = useState('all'); // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   if (!candidate) return null;
 
