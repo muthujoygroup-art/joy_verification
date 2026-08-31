@@ -158,6 +158,9 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     contactPresentEmployerLiberty: jfd.contactPresentEmployerLiberty || 'Yes',
     contactPreviousEmployerLiberty: jfd.contactPreviousEmployerLiberty || 'Yes',
 
+    // Section 11: Uploaded Documents Map
+    uploadedDocuments: jfd.uploadedDocuments || candidate?.uploadedDocuments || {},
+
     // Section 10: Industry Specialization
     industrySpecialization: {
       industryType: candidate?.employeeCategory || jfd.employeeCategory || candSpec.industryType || 'it_tech',
@@ -206,6 +209,87 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
   const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
   const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+
+  // Universal Document File Upload Handler
+  const handleFileUpload = (docKey, file, customTitle = '') => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const fileData = {
+        name: file.name,
+        type: file.type.includes('pdf') ? 'application/pdf' : file.type.includes('png') ? 'image/png' : 'image/jpeg',
+        size: `${Math.round(file.size / 1024)} KB`,
+        file_size_kb: Math.round(file.size / 1024),
+        dataUrl: e.target.result,
+        title: customTitle || file.name,
+        uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        verified: true,
+        hash: `SHA256-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+      };
+
+      setFormData(prev => ({
+        ...prev,
+        uploadedDocuments: {
+          ...(prev.uploadedDocuments || {}),
+          [docKey]: fileData
+        }
+      }));
+      showToast(`✓ Uploaded ${file.name} successfully!`);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveUploadedDoc = (docKey) => {
+    setFormData(prev => {
+      const updated = { ...(prev.uploadedDocuments || {}) };
+      delete updated[docKey];
+      return { ...prev, uploadedDocuments: updated };
+    });
+  };
+
+  const handleAutoAttachMockDocs = () => {
+    const mockMap = {
+      docAadhaar: { name: 'Aadhaar_Card_Masked_Front_Back.pdf', type: 'application/pdf', size: '240 KB', file_size_kb: 240, verified: true, uploadedAt: '2026-08-30 10:15:00', hash: 'SHA256-AADH8891' },
+      docPan: { name: 'PAN_Card_NSDL_Verified.pdf', type: 'application/pdf', size: '185 KB', file_size_kb: 185, verified: true, uploadedAt: '2026-08-30 10:16:00', hash: 'SHA256-PAN9924' },
+      docPassportPhoto: { name: 'Passport_Size_Color_Photo.jpg', type: 'image/jpeg', size: '120 KB', file_size_kb: 120, verified: true, uploadedAt: '2026-08-30 10:17:00', hash: 'SHA256-PHT1029' },
+      docSpecimenSignature: { name: 'Official_Specimen_Signature.png', type: 'image/png', size: '85 KB', file_size_kb: 85, verified: true, uploadedAt: '2026-08-30 10:18:00', hash: 'SHA256-SIG7712' },
+      docDegreeCert: { name: 'BTech_Degree_Convocation_Cert.pdf', type: 'application/pdf', size: '420 KB', file_size_kb: 420, verified: true, uploadedAt: '2026-08-30 10:19:00', hash: 'SHA256-DEG5541' },
+      docConsolidatedMarksheet: { name: 'Consolidated_Semester_Marksheet.pdf', type: 'application/pdf', size: '510 KB', file_size_kb: 510, verified: true, uploadedAt: '2026-08-30 10:20:00', hash: 'SHA256-MRK8842' },
+      docHsc12thMarksheet: { name: 'HSC_12th_Marksheet_Board.pdf', type: 'application/pdf', size: '310 KB', file_size_kb: 310, verified: true, uploadedAt: '2026-08-30 10:21:00', hash: 'SHA256-HSC4412' },
+      docSslc10thMarksheet: { name: 'SSLC_10th_Standard_Certificate.pdf', type: 'application/pdf', size: '290 KB', file_size_kb: 290, verified: true, uploadedAt: '2026-08-30 10:22:00', hash: 'SHA256-SSL3319' },
+      docRelievingLetter: { name: 'Infosys_Official_Relieving_Letter.pdf', type: 'application/pdf', size: '380 KB', file_size_kb: 380, verified: true, uploadedAt: '2026-08-30 10:23:00', hash: 'SHA256-REL1192' },
+      docExperienceCertificate: { name: 'Formal_Service_Experience_Certificate.pdf', type: 'application/pdf', size: '340 KB', file_size_kb: 340, verified: true, uploadedAt: '2026-08-30 10:24:00', hash: 'SHA256-EXP8813' },
+      docSalarySlips3Months: { name: 'Last_3_Months_Payslips_Combined.pdf', type: 'application/pdf', size: '620 KB', file_size_kb: 620, verified: true, uploadedAt: '2026-08-30 10:25:00', hash: 'SHA256-SAL9941' },
+      docBankCancelledCheque: { name: 'HDFC_Preprinted_Cancelled_Cheque.jpg', type: 'image/jpeg', size: '195 KB', file_size_kb: 195, verified: true, uploadedAt: '2026-08-30 10:26:00', hash: 'SHA256-BNK3321' },
+      docMedicalFitnessCert: { name: 'Pre_Employment_Medical_Fitness_Certificate.pdf', type: 'application/pdf', size: '275 KB', file_size_kb: 275, verified: true, uploadedAt: '2026-08-30 10:27:00', hash: 'SHA256-MED7721' },
+      docSignedNda: { name: 'Executed_NDA_IP_Assignment_Signed.pdf', type: 'application/pdf', size: '480 KB', file_size_kb: 480, verified: true, uploadedAt: '2026-08-30 10:28:00', hash: 'SHA256-NDA6619' }
+    };
+
+    // Add sector specific mock
+    if (formData.employeeCategory === 'manufacturing') {
+      mockMap.docTradeCert = { name: 'NCVT_ITI_Machinist_Certificate.pdf', type: 'application/pdf', size: '310 KB', file_size_kb: 310, verified: true };
+      mockMap.docForm33 = { name: 'Factories_Act_Form33_Health_Report.pdf', type: 'application/pdf', size: '280 KB', file_size_kb: 280, verified: true };
+    } else if (formData.employeeCategory === 'bfsi') {
+      mockMap.docCaCfaMembership = { name: 'ICAI_Chartered_Accountant_Certificate.pdf', type: 'application/pdf', size: '390 KB', file_size_kb: 390, verified: true };
+      mockMap.docFidelityIndemnityBond = { name: 'Employee_Fidelity_Indemnity_Bond.pdf', type: 'application/pdf', size: '410 KB', file_size_kb: 410, verified: true };
+    } else if (formData.employeeCategory === 'logistics') {
+      mockMap.docCommercialDl = { name: 'Commercial_HMV_Transport_License.pdf', type: 'application/pdf', size: '220 KB', file_size_kb: 220, verified: true };
+      mockMap.docVisionForm1A = { name: 'Form1A_Night_Blindness_Fitness.pdf', type: 'application/pdf', size: '260 KB', file_size_kb: 260, verified: true };
+    } else if (formData.employeeCategory === 'healthcare') {
+      mockMap.docCouncilReg = { name: 'Medical_Nursing_Council_Registration.pdf', type: 'application/pdf', size: '340 KB', file_size_kb: 340, verified: true };
+      mockMap.docLifeSupportCert = { name: 'AHA_BLS_ACLS_Life_Support_Card.pdf', type: 'application/pdf', size: '290 KB', file_size_kb: 290, verified: true };
+      mockMap.docVaccinationRecord = { name: 'HepatitisB_Tetanus_Vaccination_Card.pdf', type: 'application/pdf', size: '210 KB', file_size_kb: 210, verified: true };
+    } else if (formData.employeeCategory === 'retail') {
+      mockMap.docFieldSalesDl = { name: 'Two_Wheeler_Driving_License.pdf', type: 'application/pdf', size: '190 KB', file_size_kb: 190, verified: true };
+      mockMap.docFssaiFoodCert = { name: 'FSSAI_FoSTaC_Food_Safety_Cert.pdf', type: 'application/pdf', size: '310 KB', file_size_kb: 310, verified: true };
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      uploadedDocuments: mockMap
+    }));
+    showToast('🚀 Auto-attached 14+ verified KYC & industry document proofs!');
+  };
 
   const handleAadhaarOtpSubmit = (e) => {
     e.preventDefault();
@@ -2149,35 +2233,332 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
           {/* SECTION 11: DOCUMENTS & STATUTORY CONFIRMATION */}
           {activeSection === 'documents' && (
-            <div className="space-y-4 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
-                <h3 className="font-extrabold text-sm text-indigo-700 uppercase tracking-wider flex items-center gap-2">
-                  <FolderDown className="w-4 h-4" />
-                  <span>Section 11: Document Uploads & Statutory Confirmation</span>
-                </h3>
-                <span className="badge badge-emerald text-[10px] font-bold">DPDP Act 2023 Compliant</span>
+            <div className="space-y-5 animate-tab-switch">
+              
+              {/* Header & Preset Actions */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+                <div>
+                  <h3 className="font-extrabold text-sm text-indigo-900 uppercase tracking-wider flex items-center gap-2">
+                    <FolderDown className="w-4 h-4 text-indigo-600" />
+                    <span>Section 11: Document Uploads & Annexure Exhibits</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                    Attach clear PDFs or high-resolution images (up to 15MB each). Documents are encrypted and bound to your official Profile Dossier.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleAutoAttachMockDocs}
+                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md hover:scale-102 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>⚡ Auto-Attach Mock Files</span>
+                  </button>
+                  <span className="badge badge-emerald text-[10px] font-bold">
+                    {Object.keys(formData.uploadedDocuments || {}).length} Attached
+                  </span>
+                </div>
               </div>
 
-              {/* Uploads List */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                  <span className="font-bold text-slate-800 block">1. Aadhaar Card Copy (Front & Back) *</span>
-                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+              {/* Sub-Group A: Sovereign KYC & Personal Proofs */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>A. Sovereign Identity, Tax & Financial Proofs</span>
+                  </h4>
+                  <span className="text-[10px] text-slate-400 font-bold">Mandatory for all employees</span>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                  <span className="font-bold text-slate-800 block">2. PAN Card Copy *</span>
-                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  {[
+                    { key: 'docAadhaar', title: 'Aadhaar Card (Front & Back)', icon: '🪪', req: 'Mandatory', desc: 'UIDAI masked e-Aadhaar PDF or color scan' },
+                    { key: 'docPan', title: 'Income Tax PAN Card Copy', icon: '💳', req: 'Mandatory', desc: 'NSDL / UTI permanent account number card' },
+                    { key: 'docPassportPhoto', title: 'Passport Size Photograph', icon: '📸', req: 'Mandatory', desc: 'Recent formal color portrait (white background)' },
+                    { key: 'docSpecimenSignature', title: 'Official Specimen Signature', icon: '✍️', req: 'Mandatory', desc: 'Signed paper specimen for statutory nomination' },
+                    { key: 'docBankCancelledCheque', title: 'Bank Pre-Printed Cancelled Cheque', icon: '🏦', req: 'Mandatory', desc: 'Bank passbook first page or pre-printed cheque leaf' },
+                    { key: 'docPassportOrDl', title: 'Passport / Driving License', icon: '🌐', req: 'Optional', desc: 'Valid passport (pages 1-2) or MoRTH DL' }
+                  ].map((doc) => {
+                    const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                    return (
+                      <div 
+                        key={doc.key} 
+                        className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
+                          uploaded ? 'bg-emerald-50/80 border-emerald-400 shadow-2xs' : 'bg-slate-50 border-slate-200 hover:border-indigo-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-xl shrink-0">{doc.icon}</span>
+                            <div className="min-w-0">
+                              <strong className="text-slate-900 font-bold text-xs block truncate">{doc.title}</strong>
+                              <p className="text-[10px] text-slate-500 line-clamp-1">{doc.desc}</p>
+                            </div>
+                          </div>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase shrink-0 ${
+                            doc.req === 'Mandatory' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-600'
+                          }`}>
+                            {doc.req}
+                          </span>
+                        </div>
+
+                        {uploaded ? (
+                          <div className="bg-white p-2 rounded-xl border border-emerald-200 flex items-center justify-between gap-2 text-[10px]">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              <span className="font-mono font-bold text-emerald-950 truncate">{uploaded.name}</span>
+                              <span className="text-slate-400 font-mono">({uploaded.size || '200 KB'})</span>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setPreviewDoc(uploaded)}
+                                className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+                                title="Preview document"
+                              >
+                                <Eye className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveUploadedDoc(doc.key)}
+                                className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 cursor-pointer"
+                                title="Remove document"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-400 rounded-xl cursor-pointer text-indigo-700 font-bold text-xs transition-colors shadow-2xs">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Select & Upload File</span>
+                            <input 
+                              type="file" 
+                              accept=".pdf,.png,.jpg,.jpeg"
+                              onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)}
+                              className="hidden" 
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sub-Group B: Academic & Prior Employment Records */}
+              <div className="space-y-3 pt-2 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>B. Academic Qualifications & Previous Employment Dossier</span>
+                  </h4>
+                  <span className="text-[10px] text-slate-400 font-bold">Relieving & education certificates</span>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                  <span className="font-bold text-slate-800 block">3. Highest Degree Certificate / Trade Marksheet *</span>
-                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  {[
+                    { key: 'docDegreeCert', title: 'Highest Degree Certificate', icon: '🎓', req: 'Mandatory', desc: 'University convocation degree certificate' },
+                    { key: 'docConsolidatedMarksheet', title: 'Consolidated Marksheet', icon: '📑', req: 'Mandatory', desc: 'All-semester cumulative marksheet transcript' },
+                    { key: 'docHsc12thMarksheet', title: 'Higher Secondary (12th) Marksheet', icon: '📜', req: 'Mandatory', desc: '10+2 / Intermediate Board certificate' },
+                    { key: 'docSslc10thMarksheet', title: 'SSLC (10th Standard) Certificate', icon: '🏫', req: 'Mandatory', desc: 'Secondary school mark memo / DOB proof' },
+                    { key: 'docRelievingLetter', title: 'Previous Employer Relieving Letter', icon: '💼', req: 'Mandatory', desc: 'Formal relieving / service release letter' },
+                    { key: 'docExperienceCertificate', title: 'Service / Experience Certificate', icon: '⭐', req: 'Mandatory', desc: 'Prior employer work experience certificate' },
+                    { key: 'docSalarySlips3Months', title: 'Last 3 Months Salary Slips', icon: '💰', req: 'Mandatory', desc: 'Consecutive payslips or Form 16 statement' },
+                    { key: 'docMedicalFitnessCert', title: 'Medical Fitness Certificate', icon: '🏥', req: 'Mandatory', desc: 'Registered medical practitioner fitness certificate' },
+                    { key: 'docSignedNda', title: 'Executed Employer NDA & IP Assignment', icon: '📝', req: 'Mandatory', desc: 'Signed employee confidentiality agreement' }
+                  ].map((doc) => {
+                    const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                    return (
+                      <div 
+                        key={doc.key} 
+                        className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
+                          uploaded ? 'bg-emerald-50/80 border-emerald-400 shadow-2xs' : 'bg-slate-50 border-slate-200 hover:border-indigo-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-xl shrink-0">{doc.icon}</span>
+                            <div className="min-w-0">
+                              <strong className="text-slate-900 font-bold text-xs block truncate">{doc.title}</strong>
+                              <p className="text-[10px] text-slate-500 line-clamp-1">{doc.desc}</p>
+                            </div>
+                          </div>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase shrink-0 ${
+                            doc.req === 'Mandatory' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-600'
+                          }`}>
+                            {doc.req}
+                          </span>
+                        </div>
+
+                        {uploaded ? (
+                          <div className="bg-white p-2 rounded-xl border border-emerald-200 flex items-center justify-between gap-2 text-[10px]">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              <span className="font-mono font-bold text-emerald-950 truncate">{uploaded.name}</span>
+                              <span className="text-slate-400 font-mono">({uploaded.size || '250 KB'})</span>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setPreviewDoc(uploaded)}
+                                className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+                                title="Preview document"
+                              >
+                                <Eye className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveUploadedDoc(doc.key)}
+                                className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 cursor-pointer"
+                                title="Remove document"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-400 rounded-xl cursor-pointer text-indigo-700 font-bold text-xs transition-colors shadow-2xs">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Select & Upload File</span>
+                            <input 
+                              type="file" 
+                              accept=".pdf,.png,.jpg,.jpeg"
+                              onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)}
+                              className="hidden" 
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sub-Group C: Industry-Specific Compliance Documents */}
+              <div className="space-y-3 pt-2 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-purple-600" />
+                    <span>C. Sector-Specific Compliance Documents ({formData.employeeCategory?.toUpperCase() || 'IT/TECH'})</span>
+                  </h4>
+                  <span className="badge badge-indigo text-[9px] font-bold">Tailored to Job Role</span>
                 </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                  <span className="font-bold text-slate-800 block">4. Bank Passbook / Cancelled Cheque *</span>
-                  <input type="file" className="text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                  {formData.employeeCategory === 'manufacturing' && (
+                    <>
+                      {[
+                        { key: 'docTradeCert', title: 'NCVT / ITI Trade Certificate', icon: '⚙️', req: 'Mandatory', desc: 'Apprentices Act 1961 machinist/fitter certification' },
+                        { key: 'docForm33', title: 'Factory Health Fitness (Form 33)', icon: '🩺', req: 'Mandatory', desc: 'Factories Act 1948 Section 41C medical report' },
+                        { key: 'docHeavyOperatorLicense', title: 'Forklift / Heavy Machinery License', icon: '🚜', req: 'Conditional', desc: 'MoRTH heavy equipment operating certificate' }
+                      ].map((doc) => {
+                        const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                        return (
+                          <div key={doc.key} className="p-3.5 rounded-2xl border-2 bg-purple-50/50 border-purple-200 flex flex-col justify-between gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-xl">{doc.icon}</span>
+                              <strong className="text-slate-900 font-bold text-xs flex-1">{doc.title}</strong>
+                              <span className="badge badge-purple text-[8px]">{doc.req}</span>
+                            </div>
+                            <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-purple-100 border border-purple-300 rounded-xl cursor-pointer text-purple-700 font-bold text-xs">
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>{uploaded ? '✓ Replace File' : 'Upload Proof'}</span>
+                              <input type="file" onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)} className="hidden" />
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {formData.employeeCategory === 'bfsi' && (
+                    <>
+                      {[
+                        { key: 'docCaCfaMembership', title: 'CA / CFA / CMA Membership Certificate', icon: '📊', req: 'Conditional', desc: 'ICAI / CFA Institute statutory registration' },
+                        { key: 'docFidelityIndemnityBond', title: 'Employee Fidelity Guarantee Bond', icon: '🛡️', req: 'Mandatory', desc: 'Banking cash handling indemnity agreement' }
+                      ].map((doc) => {
+                        const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                        return (
+                          <div key={doc.key} className="p-3.5 rounded-2xl border-2 bg-emerald-50/50 border-emerald-200 flex flex-col justify-between gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-xl">{doc.icon}</span>
+                              <strong className="text-slate-900 font-bold text-xs flex-1">{doc.title}</strong>
+                              <span className="badge badge-emerald text-[8px]">{doc.req}</span>
+                            </div>
+                            <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-xl cursor-pointer text-emerald-700 font-bold text-xs">
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>{uploaded ? '✓ Replace File' : 'Upload Proof'}</span>
+                              <input type="file" onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)} className="hidden" />
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {formData.employeeCategory === 'logistics' && (
+                    <>
+                      {[
+                        { key: 'docCommercialDl', title: 'Commercial Heavy Vehicle License (HMV)', icon: '🚛', req: 'Mandatory', desc: 'MoRTH Sarathi commercial transport badge' },
+                        { key: 'docVisionForm1A', title: 'Vision & Night Blindness Fitness (Form 1A)', icon: '👁️', req: 'Mandatory', desc: 'Motor Vehicles Act Section 8 medical fitness' }
+                      ].map((doc) => {
+                        const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                        return (
+                          <div key={doc.key} className="p-3.5 rounded-2xl border-2 bg-amber-50/50 border-amber-200 flex flex-col justify-between gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-xl">{doc.icon}</span>
+                              <strong className="text-slate-900 font-bold text-xs flex-1">{doc.title}</strong>
+                              <span className="badge badge-amber text-[8px]">{doc.req}</span>
+                            </div>
+                            <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-amber-100 border border-amber-300 rounded-xl cursor-pointer text-amber-700 font-bold text-xs">
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>{uploaded ? '✓ Replace File' : 'Upload Proof'}</span>
+                              <input type="file" onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)} className="hidden" />
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {formData.employeeCategory === 'healthcare' && (
+                    <>
+                      {[
+                        { key: 'docCouncilReg', title: 'Medical / Nursing Council Registration', icon: '🩺', req: 'Mandatory', desc: 'NMC / State Nursing statutory license' },
+                        { key: 'docLifeSupportCert', title: 'BLS / ACLS Life Support Certificate', icon: '❤️', req: 'Mandatory', desc: 'American Heart Association accredited cert' },
+                        { key: 'docVaccinationRecord', title: 'Hepatitis B & Tetanus Vaccination Card', icon: '💉', req: 'Mandatory', desc: 'Hospital occupational health immunization record' }
+                      ].map((doc) => {
+                        const uploaded = (formData.uploadedDocuments || {})[doc.key];
+                        return (
+                          <div key={doc.key} className="p-3.5 rounded-2xl border-2 bg-rose-50/50 border-rose-200 flex flex-col justify-between gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-xl">{doc.icon}</span>
+                              <strong className="text-slate-900 font-bold text-xs flex-1">{doc.title}</strong>
+                              <span className="badge badge-rose text-[8px]">{doc.req}</span>
+                            </div>
+                            <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-rose-100 border border-rose-300 rounded-xl cursor-pointer text-rose-700 font-bold text-xs">
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>{uploaded ? '✓ Replace File' : 'Upload Proof'}</span>
+                              <input type="file" onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)} className="hidden" />
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {(!formData.employeeCategory || formData.employeeCategory === 'it_tech' || formData.employeeCategory === 'retail') && (
+                    <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 col-span-full text-indigo-900 flex items-center gap-2.5">
+                      <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
+                      <div>
+                        <strong className="text-xs block">All Universal KYC & Employment Exhibits Ready</strong>
+                        <p className="text-[10px] text-indigo-700">Digital signatures, NDA, and sovereign ID proofs will be compiled into the Profile PDF Annexure.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

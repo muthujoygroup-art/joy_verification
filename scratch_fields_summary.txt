@@ -1,0 +1,606 @@
+
+========================================
+INDUSTRY SHEET: 1. IT & Software (Total Fields: 76)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (4 fields):
+   [73] GitHub Profile Repository URL (key: githubUrl) | Type: URL Input | Req: Optional | Statutory: Technical Skill Benchmark | Sample: https://github.com/developer-profile
+   [74] LinkedIn Profile URL (key: linkedInUrl) | Type: URL Input | Req: Optional | Statutory: Professional Social Presence | Sample: Professional portfolio
+   [75] Moonlighting Non-Engagement Declaration (key: moonlightingDeclaration) | Type: Checkbox Agreement | Req: Mandatory | Statutory: IT Industry Dual Employment Code | Sample: True (Agreed & Signed)
+   [76] Non-Disclosure & IP Assignment (NDA) (key: ndaIpAssignment) | Type: Checkbox Agreement | Req: Mandatory | Statutory: Corporate Confidentiality & Patent Act | Sample: True (Digitally Executed)
+
+========================================
+INDUSTRY SHEET: 2. Manufacturing (Total Fields: 75)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (3 fields):
+   [73] ITI / Vocational Trade Certificate (NCVT) (key: docTradeCert) | Type: File Upload | Req: Mandatory | Statutory: Factory Skills Record | Sample: ITI_Fitter_Certificate.pdf
+   [74] Pre-Employment Medical Fitness Report (Form 33) (key: docForm33) | Type: File Upload | Req: Mandatory | Statutory: Factory Act 1948 Section 41C | Sample: Form33_Fitness_Report.pdf
+   [75] Forklift / Heavy Machinery Operator License (key: heavyOperatorLicense) | Type: Text Input | Req: Conditional | Statutory: MoRTH Form 7 / Factory Inspection | Sample: KA0120190004128
+
+========================================
+INDUSTRY SHEET: 3. BFSI (Finance) (Total Fields: 75)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (3 fields):
+   [73] Chartered Accountant (CA) / CFA Membership Number (key: membershipNumber) | Type: Text Input | Req: Conditional | Statutory: Statutory Professional Registry | Sample: ICAI-MRN-419820
+   [74] Director Identification Number (DIN) Check (key: dinNumber) | Type: Text Input | Req: Optional | Statutory: Companies Act 2013 Section 152 | Sample: 08912340
+   [75] SEBI Insider Trading Blackout & PEP Declaration (key: insiderTradingDeclaration) | Type: Checkbox Agreement | Req: Mandatory | Statutory: SEBI Prohibition of Insider Trading (PIT) | Sample: True (Disclosed & Agreed)
+
+========================================
+INDUSTRY SHEET: 4. Logistics & Fleet (Total Fields: 75)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (3 fields):
+   [73] Commercial Driving License (DL) Number (key: dlNumber) | Type: Text Input | Req: Mandatory | Statutory: Motor Vehicle Act 1988 / MoRTH | Sample: KA0120200004910
+   [74] Vehicle RC Number & Traffic Challan Search (key: assignedVehicleRc) | Type: Text Input | Req: Conditional | Statutory: Vahan National Vehicle Registry | Sample: KA01MF4912
+   [75] Vision & Night Blindness Medical Certificate (Form 1A) (key: visionMedicalCert) | Type: File Upload | Req: Mandatory | Statutory: Motor Vehicle Act Section 8 | Sample: Form1A_Vision_Report.pdf
+
+========================================
+INDUSTRY SHEET: 5. Healthcare & Pharma (Total Fields: 75)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (3 fields):
+   [73] Medical / Nursing Council Registration Number (key: councilRegNumber) | Type: Text Input | Req: Mandatory | Statutory: National Medical Commission Act 2019 | Sample: KMC-REG-2012-9942
+   [74] Life Support Certifications (BLS / ACLS) (key: lifeSupportCert) | Type: Dropdown Select | Req: Mandatory | Statutory: NABH / JCI Hospital Accreditation | Sample: BLS & ACLS Certified
+   [75] Hepatitis B & Tetanus Vaccination Record (key: vaccinationRecord) | Type: File Upload | Req: Mandatory | Statutory: Hospital Infection Control & CDC | Sample: HepB_Titer_Report.pdf
+
+========================================
+INDUSTRY SHEET: 6. Sales & Retail (Total Fields: 74)
+========================================
+
+[SECTION] 1. Basic Personal & Profile Identity (19 fields):
+   [1] Employee ID (key: empId) | Type: Text Input | Req: Mandatory | Statutory: Company HR Directory | Sample: JOY-2026-001
+   [2] Employee Number (key: employeeNumber) | Type: Text Input | Req: Mandatory | Statutory: ERP Payroll System | Sample: EN-884912
+   [3] Employee Name (key: fullName) | Type: Text Input | Req: Mandatory | Statutory: Form 11 / Form 16 / Dossier | Sample: Muthu Kumar P
+   [4] Status (key: status) | Type: Dropdown Select | Req: Mandatory | Statutory: Employee Lifecycle State | Sample: In Verification
+   [5] Date of Birth (DOB) (key: dob) | Type: Date Picker | Req: Mandatory | Statutory: Form 11 / EPF / Factories Act | Sample: 1996-05-15
+   [6] Age (key: age) | Type: Number Input / Auto | Req: Mandatory | Statutory: Factories Act / Minor Prevention | Sample: 30 Years
+   [7] Working Company (key: workingCompany) | Type: Dropdown Select | Req: Mandatory | Statutory: Corporate Entity Master | Sample: JOY CORPORATE SOLUTIONS PVT LTD
+   [8] Department (key: dept) | Type: Dropdown Select | Req: Mandatory | Statutory: Organizational Hierarchy | Sample: Engineering & Software Architecture
+   [9] Designation (key: designation) | Type: Text Input | Req: Mandatory | Statutory: Form Q Appointment Order | Sample: Senior Software Engineer
+   [10] Mobile Number (key: mobile) | Type: Tel Input | Req: Mandatory | Statutory: 2FA OTP & Communication | Sample: 9876543210
+   [11] Date of Joining (DOJ) (key: doj) | Type: Date Picker | Req: Mandatory | Statutory: Appointment Order / Form 11 | Sample: 2026-09-01
+   [12] Mother Language (Mother Tongue) (key: motherTongue) | Type: Text Input | Req: Mandatory | Statutory: Diversity & Linguistic Matrix | Sample: Tamil
+   [13] Known Languages (key: languagesKnown) | Type: Text Input | Req: Mandatory | Statutory: Client Communication Profile | Sample: English, Tamil, Hindi
+   [14] Gender (key: gender) | Type: Dropdown Select | Req: Mandatory | Statutory: POSH / Equal Remuneration Act | Sample: Male
+   [15] Status Married or Unmarried (key: maritalStatus) | Type: Dropdown Select | Req: Mandatory | Statutory: Form 2 EPFO / Gratuity Nominee | Sample: Single
+   [16] Religion (key: religion) | Type: Dropdown Select | Req: Optional | Statutory: Equal Opportunity Reporting | Sample: Hindu
+   [17] Caste (key: caste) | Type: Text Input | Req: Optional | Statutory: Affirmative Action Registry | Sample: General / BC / MBC
+   [18] Category (key: category) | Type: Dropdown Select | Req: Mandatory | Statutory: Govt Labor Welfare Norms | Sample: General
+   [19] Identification Marks (key: identificationMarks) | Type: Textarea | Req: Mandatory | Statutory: Police Verification & Safety Dossier | Sample: Mole on right collar bone, scar on left knee
+
+[SECTION] 2. Native Domicile & Addresses (4 fields):
+   [20] Residential Address (Present) (key: residentialAddress) | Type: Textarea | Req: Mandatory | Statutory: Local Police & Courier Delivery | Sample: #42, 3rd Floor, Koramangala 4th Block, Bengaluru - 560034
+   [21] Permanent Address (key: permanentAddress) | Type: Textarea | Req: Mandatory | Statutory: Statutory Form 11 / Legal Notice | Sample: No 15, North Car Street, Madurai, TN - 625001
+   [22] Native State (key: nativeState) | Type: Dropdown Select | Req: Mandatory | Statutory: Inter-State Migrant Workmen Act | Sample: Tamil Nadu
+   [23] Native District (key: nativeDistrict) | Type: Dropdown Select | Req: Mandatory | Statutory: Regional Employment Registry | Sample: Madurai
+
+[SECTION] 3. Statutory & Social Security Identifiers (3 fields):
+   [24] Aadhaar Number (key: aadhaarNo) | Type: Number Input | Req: Mandatory | Statutory: Aadhaar Act 2016 / Form 11 | Sample: 5489 1234 9876
+   [25] PF Number / Universal Account Number (UAN) (key: pfNumber) | Type: Number Input | Req: Mandatory | Statutory: Form 11 (EPFO Declaration) | Sample: 101239019283
+   [26] ESI Number (IP Number) (key: esiNumber) | Type: Number Input | Req: Conditional | Statutory: ESIC Act 1948 / Form 1 | Sample: 5300918239
+
+[SECTION] 4. Banking & Compensation Payroll (4 fields):
+   [27] Bank Name (key: bankName) | Type: Dropdown Select | Req: Mandatory | Statutory: Direct Salary Credit & NACH | Sample: HDFC Bank Limited
+   [28] Bank Account Number (key: bankAccountNo) | Type: Text Input | Req: Mandatory | Statutory: Payment of Wages Act 1936 | Sample: 501002349845
+   [29] Bank IFSC Code (key: bankIfscCode) | Type: Text Input | Req: Mandatory | Statutory: RBI NEFT / RTGS / IMPS Routing | Sample: HDFC0000128
+   [30] Bank Branch Name (key: bankBranchName) | Type: Text Input | Req: Mandatory | Statutory: Bank Master Directory | Sample: Account home branch
+
+[SECTION] 5. Education Details (Multi-Entry) (5 fields):
+   [31] Name of the Institution / College (key: educationInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Credentials Record | Sample: PSG College of Technology, Coimbatore
+   [32] Degree Name / Course (key: educationDegreeName) | Type: Dropdown / Text (Matrix Row) | Req: Mandatory | Statutory: HR Skill Qualifications | Sample: B.Tech (CSE)
+   [33] Year of Joining Course (key: educationYearOfJoining) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Course start year
+   [34] Year of End / Graduation (key: educationYearOfEnd) | Type: Number Input (Matrix Row) | Req: Mandatory | Statutory: Academic Timeline Record | Sample: Graduation completion year
+   [35] Grade / Percentage / CGPA (key: educationGrade) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Academic Merit Record | Sample: Academic performance grade
+
+[SECTION] 6. Family Member Particulars (10 fields):
+   [36] Father Name (key: fatherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 / Form F Gratuity Nominee | Sample: Suresh Kumar P
+   [37] Father Age (key: fatherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent insurance age computation
+   [38] Father Mobile Number (key: fatherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Incident Escalation | Sample: Immediate family emergency contact
+   [39] Father Occupation (key: fatherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [40] Mother Name (key: motherName) | Type: Text Input | Req: Mandatory | Statutory: Form 2 EPFO / Family Record | Sample: Meenakshi S
+   [41] Mother Age (key: motherAge) | Type: Number Input | Req: Mandatory | Statutory: Dependent Medical Coverage | Sample: Dependent health insurance coverage
+   [42] Mother Mobile Number (key: motherMobile) | Type: Tel Input | Req: Mandatory | Statutory: Emergency Contact Backup | Sample: Secondary family emergency contact
+   [43] Mother Occupation (key: motherOccupation) | Type: Text Input | Req: Mandatory | Statutory: Family Background Profile | Sample: Family background context
+   [44] Wife or Husband Details (Name, Age, Mobile, Occupation) (key: spouseDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: Form 2 EPS Pension / Form F Gratuity | Sample: Sunita Sharma (28 Yrs, 9876543213, Software Engineer)
+   [45] Children Details (Name, Age, Gender, Education) (key: childrenDetails) | Type: Textarea / Structured | Req: Conditional | Statutory: EPS Family Pension / Group Insurance | Sample: Aarav Kumar (4 Yrs, Male, Kindergarten)
+
+[SECTION] 7. Personal Achievements & Extracurricular (2 fields):
+   [46] Personal Achievements (key: personalAchievements) | Type: Textarea | Req: Optional | Statutory: HR Talent Leadership Profile | Sample: Winner of National Hackathon 2023, Published IEEE Research Paper
+   [47] Extra-Curricular Activities (key: extraCurricularActivities) | Type: Textarea | Req: Optional | Statutory: Employee Engagement Matrix | Sample: State Level Badminton Player, Active Blood Donor
+
+[SECTION] 8. Employment Experience (Multi-Entry) (6 fields):
+   [48] Institution / Company Name (key: experienceInstitutionName) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Form 11 / Service Continuity | Sample: Infosys Limited
+   [49] Institution Address (key: experienceInstitutionAddress) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Physical BGV / HR Verification | Sample: Employer physical existence
+   [50] Designation (key: experienceDesignation) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Experience Record | Sample: Role comparability
+   [51] Period of Service (From - To) (key: experiencePeriodOfService) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Service Duration Audit | Sample: Employment tenure verification
+   [52] Salary Drawn (Last Drawn CTC) (key: experienceSalaryDrawn) | Type: Text Input (Matrix Row) | Req: Mandatory | Statutory: Compensation Benchmark | Sample: Salary benchmarking
+   [53] Reason for Leaving (key: experienceReasonForLeaving) | Type: Textarea (Matrix Row) | Req: Mandatory | Statutory: Exit Integrity Check | Sample: Integrity and voluntary exit audit
+
+[SECTION] 9. Health, Lifestyle & Background Disclosures (12 fields):
+   [54] Do you smoke (Y/N) (key: isSmoker) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Health & Group Insurance | Sample: No
+   [55] If 'Yes' how many cigarettes do smoke per day? (key: cigarettesPerDay) | Type: Number Input | Req: Conditional | Statutory: Insurance Health Underwriting | Sample: Smoking risk quantification
+   [56] Have you had any major surgery (Y/N) (key: hasMajorSurgery) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Occupational Safety & Fitness | Sample: No
+   [57] If 'Yes' surgery details? (key: surgeryDetails) | Type: Textarea | Req: Conditional | Statutory: Health Underwriting File | Sample: Surgery recovery assessment
+   [58] Are you have any illness or issues (Y/N) (key: hasIllnessIssues) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Workplace Health & Ergonomics | Sample: No
+   [59] If 'Yes' illness details? (key: illnessDetails) | Type: Textarea | Req: Conditional | Statutory: Health & Wellness Support | Sample: Workplace accommodation & health insurance
+   [60] Do you own house (Y/N) (key: ownsHouse) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Socio-Economic Profile | Sample: Yes
+   [61] If 'Yes' in which city/town? (key: houseCityTown) | Type: Text Input | Req: Conditional | Statutory: Asset Profile | Sample: Property location stability
+   [62] Do you get any income other than employment (Y/N) (key: hasOtherIncome) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Dual Employment & Conflict of Interest | Sample: No
+   [63] If 'Yes' enter details? (key: otherIncomeDetails) | Type: Textarea | Req: Conditional | Statutory: Tax & Conflict Governance | Sample: Legitimate passive income disclosure
+   [64] Have you ever been convicted (Y/N) (key: hasCriminalConviction) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Criminal Record & Workplace Safety | Sample: No (Never Convicted)
+   [65] If 'Yes' enter details? (key: convictionDetails) | Type: Textarea | Req: Conditional | Statutory: Legal Compliance Audit | Sample: Legal risk evaluation
+
+[SECTION] 10. Group Relationship & Reference Liberty (7 fields):
+   [66] Are you related to any employee in our group (Y/N) (key: relatedToGroupEmployee) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Anti-Nepotism & HR Governance | Sample: No
+   [67] If 'Yes' enter details (Name, Position, Mobile) (key: relatedEmployeeDetails) | Type: Textarea | Req: Conditional | Statutory: Nepotism Audit File | Sample: Governance transparency
+   [68] Have you been previously interviewed for any position in our group (Y/N) (key: previouslyInterviewedInGroup) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: Recruitment History Tracking | Sample: No
+   [69] If 'Yes' give particulars (Name of reference/employee, Position, Mobile) (key: previousInterviewDetails) | Type: Textarea | Req: Conditional | Statutory: ATS History | Sample: Recruitment interview history
+   [70] Are we at liberty to contact your present employer (Y/N)? (key: contactPresentEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Ethics | Sample: Yes (Post-Offer / Resignation Only)
+   [71] Are we at liberty to contact your previous employer (Y/N)? (key: contactPreviousEmployerLiberty) | Type: Radio (Yes / No) | Req: Mandatory | Statutory: HR Reference Check Protocol | Sample: Yes (Authorized)
+   [72] Confirmation & Legal Execution (key: confirmationButton) | Type: Digital Checkbox & Signature | Req: Mandatory | Statutory: DPDP Act 2023 Legal Contract | Sample: True (Digitally Confirmed & Executed)
+
+[SECTION] 11. Document Uploads & Proofs (2 fields):
+   [73] Two-Wheeler Driving License (DL) for Field Travel (key: fieldSalesDl) | Type: Text Input | Req: Mandatory | Statutory: Field Travel Policy | Sample: TN0120180004918
+   [74] Cash Handling & Store POS Policy Agreement (key: cashHandlingPolicy) | Type: Checkbox Agreement | Req: Mandatory | Statutory: Retail POS & Cash Audit Policy | Sample: True (Acknowledged & Executed)
