@@ -88,6 +88,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const pfNum = c.pfNumber || jf.pfNumber || 'KN/BLR/0012345/000/0054321';
   const esiNum = c.esiNumber || jf.esiNumber || '31001234560000001';
 
+  const candSpec = c.industrySpecialization || jf.industrySpecialization || {};
   // Social Media & Online Professional Presence
   const linkedIn = jf.linkedInUrl || c.linkedInUrl || candSpec.linkedInUrl || '';
   const github = jf.githubUrl || c.githubUrl || candSpec.githubUrl || '';
