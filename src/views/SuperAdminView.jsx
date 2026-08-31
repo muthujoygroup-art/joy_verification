@@ -44,6 +44,7 @@ import {
   Send,
   Database,
   Users,
+  UserCheck,
   Scale,
   Clock,
   TrendingUp,
