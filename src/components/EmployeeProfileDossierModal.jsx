@@ -265,7 +265,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         {/* ========================================================================= */}
         {/* PRINTABLE MASTER DOSSIER ROOT CONTAINER */}
         {/* ========================================================================= */}
-        <div id="printable-employee-master-dossier" className="space-y-8 text-slate-900 bg-white p-2 sm:p-4">
+        <div id="printable-employee-master-dossier" className="space-y-8 text-slate-900 bg-white p-4 sm:p-6 max-w-[840px] mx-auto overflow-hidden shadow-xs border border-slate-100 rounded-xl">
           
           {/* SECTION 1: BIO & DEMOGRAPHICS */}
           {(activeTab === 1 || activeTab === 6 || isExporting) && (
@@ -322,25 +322,36 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <span className="text-[10px] font-mono">17 Core Attributes</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
-                  <div><span className="text-slate-400 block text-[10px]">Full Legal Name:</span><strong className="text-slate-900 font-black">{c.name}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Employee Code / ID:</span><strong className="font-mono text-sky-800">{c.employeeNumber || c.empId || 'JOY-2026-001'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Date of Joining (DOJ):</span><strong>{doj}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Date of Birth (DOB):</span><strong>{dob} (Age: {age})</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Father's Full Name:</span><strong>{fatherName}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Mother's Full Name:</span><strong>{c.motherName || jf.motherName || 'Kavitha Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Spouse Name:</span><strong>{c.spouseName || jf.spouseName || 'Sunita Kumar'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Gender / Blood Group:</span><strong>{c.gender || 'Male'} • {bloodGroup}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Marital Status:</span><strong>{c.maritalStatus || 'Married'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Nationality:</span><strong>{c.nationality || 'Indian'}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Mother Tongue:</span><strong>{motherTongue}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Languages Known:</span><strong>{languagesKnown}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Religion / Caste / Cat:</span><strong>{religion} • {caste} ({category})</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Native State & District:</span><strong>{nativeState}, {nativeDistrict}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Identification Marks:</span><strong className="text-slate-800">{identificationMarks}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Official Mobile:</span><strong className="font-mono">{c.mobile}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Official Email:</span><strong>{c.email}</strong></div>
-                  <div className="sm:col-span-3"><span className="text-slate-400 block text-[10px]">Residential Address:</span><strong>{jf.presentAddress || `${jf.area || '#42 Koramangala'}, ${jf.city || 'Bengaluru'}, ${jf.state || 'Karnataka'} - ${jf.pincode || '560103'}`}</strong></div>
+                <div className="grid grid-cols-4 gap-3 text-xs p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Full Legal Name:</span><strong className="text-slate-900 font-black truncate block">{c.name}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Employee Code / ID:</span><strong className="font-mono text-sky-800 truncate block">{c.employeeNumber || c.empId || c.uniqueProfileId || 'COMP001EMP001'}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Date of Joining (DOJ):</span><strong className="truncate block">{doj}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Date of Birth (DOB):</span><strong className="truncate block">{dob} (Age: {age})</strong></div>
+                  
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Father's Full Name:</span><strong className="truncate block">{fatherName}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Mother's Full Name:</span><strong className="truncate block">{c.motherName || jf.motherName || 'Kavitha Kumar'}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Spouse Name:</span><strong className="truncate block">{c.spouseName || jf.spouseName || 'Sunita Kumar'}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Gender / Blood Group:</span><strong className="truncate block">{c.gender || 'Male'} • {bloodGroup}</strong></div>
+                  
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Marital Status:</span><strong className="truncate block">{c.maritalStatus || 'Married'}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Nationality:</span><strong className="truncate block">{c.nationality || 'Indian'}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Mother Tongue:</span><strong className="truncate block">{motherTongue}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Languages Known:</span><strong className="truncate block">{languagesKnown}</strong></div>
+                  
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Religion / Caste / Cat:</span><strong className="truncate block">{religion} • {caste} ({category})</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Native State & District:</span><strong className="truncate block">{nativeState}, {nativeDistrict}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Identification Marks:</span><strong className="text-slate-800 truncate block">{identificationMarks}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Official Mobile:</span><strong className="font-mono truncate block">{c.mobile}</strong></div>
+                  
+                  {/* Dedicated Full Rows for Long Fields to prevent text overlap */}
+                  <div className="col-span-2 min-w-0 pt-1 border-t border-slate-200/60">
+                    <span className="text-slate-400 block text-[10px]">Official Email:</span>
+                    <strong className="text-slate-900 font-mono text-[11px] break-all block">{c.email}</strong>
+                  </div>
+                  <div className="col-span-2 min-w-0 pt-1 border-t border-slate-200/60">
+                    <span className="text-slate-400 block text-[10px]">Residential Address:</span>
+                    <strong className="text-slate-900 text-[11px] break-words leading-relaxed block">{jf.presentAddress || `${jf.area || '#42 Koramangala'}, ${jf.city || 'Bengaluru'}, ${jf.state || 'Karnataka'} - ${jf.pincode || '560103'}`}</strong>
+                  </div>
                 </div>
               </div>
 
@@ -358,15 +369,15 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <span className="text-[10px] bg-sky-950 px-2 py-0.5 rounded font-mono">Role Architecture</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
-                <div><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900 font-extrabold">{c.designation || 'Senior Verification Engineer'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900">{c.dept || 'Engineering'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Employment Type:</span><strong>{c.jobType || 'Full Time Permanent'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Work Location:</span><strong>{c.workLocation || 'Bengaluru Global Tech Hub (HQ)'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Previous Employer:</span><strong>{c.previousEmployer || 'Infosys Limited'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Total Experience:</span><strong>{c.experienceYears || '4.5'} Years</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Probation Period:</span><strong>6 Months</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Notice Period:</span><strong>60 Days</strong></div>
+              <div className="grid grid-cols-4 gap-3 text-xs p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900 font-extrabold truncate block">{c.designation || 'Senior Verification Engineer'}</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900 truncate block">{c.dept || 'Engineering'}</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Employment Type:</span><strong className="truncate block">{c.jobType || 'Full Time Permanent'}</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Work Location:</span><strong className="truncate block">{c.workLocation || 'Bengaluru Global Tech Hub (HQ)'}</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Previous Employer:</span><strong className="truncate block">{c.previousEmployer || 'Infosys Limited'}</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Total Experience:</span><strong className="truncate block">{c.experienceYears || '4.5'} Years</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Probation Period:</span><strong className="truncate block">6 Months</strong></div>
+                <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Notice Period:</span><strong className="truncate block">60 Days</strong></div>
               </div>
 
               {/* Industry Specialization Parameters */}
