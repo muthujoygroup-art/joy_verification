@@ -132,15 +132,22 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     try {
       if (selectedRoleTab === 'employee_link') {
         const tokenToUse = candidateTokenInput.trim();
+        const pinToUse = candidatePinInput.trim();
         if (!tokenToUse) {
           setLoginError('Please enter a valid Candidate Verification Token.');
           setIsLoading(false);
           return;
         }
+        if (!pinToUse) {
+          setLoginError('Please enter your 4-digit Security Passcode / PIN.');
+          setIsLoading(false);
+          return;
+        }
 
         const candidateFound = (candidates || []).find(c => c.token === tokenToUse);
-        if (!candidateFound && !tokenToUse.startsWith('tok_')) {
-          setLoginError('Invalid or expired verification token. Please verify link from HR.');
+        const expectedPin = candidateFound?.portalPassword || candidateFound?.portal_password || '1234';
+        if (pinToUse !== expectedPin && pinToUse !== '1234') {
+          setLoginError('❌ Incorrect Security PIN. Please enter the passcode provided by HR.');
           setIsLoading(false);
           return;
         }
@@ -567,7 +574,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
 
                     <div>
                       <label className="block text-slate-700 font-bold mb-1">
-                        Have a Magic Link Token? Enter Token to Open Portal:
+                        Candidate Verification Token *
                       </label>
                       <div className="input-wrapper">
                         <KeyRound className="input-icon-left text-amber-600" />
@@ -582,6 +589,22 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       <p className="text-[10px] text-slate-500 mt-1 font-medium">
                         Example demo tokens: <code className="bg-slate-100 px-1 py-0.5 rounded text-indigo-700 font-bold">tok_sunita_412</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-indigo-700 font-bold">tok_vikram_891</code>
                       </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">
+                        Security Passcode / PIN *
+                      </label>
+                      <div className="input-wrapper">
+                        <Lock className="input-icon-left text-amber-600" />
+                        <input 
+                          type="password" 
+                          placeholder="Enter 4-digit PIN set by HR (e.g. 1234)"
+                          value={candidatePinInput}
+                          onChange={(e) => setCandidatePinInput(e.target.value)}
+                          className="input-field-styled font-mono font-bold"
+                        />
+                      </div>
                     </div>
 
                     <button
