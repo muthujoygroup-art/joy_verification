@@ -1000,6 +1000,63 @@ export const HrExecutiveView = () => {
     });
   };
 
+  // Dynamic Education Handlers for HR
+  const handleHrAddEducation = () => {
+    setFormData(prev => ({
+      ...prev,
+      educationList: [
+        ...(prev.educationList || []),
+        { qualificationCategory: 'Under Graduate (UG / Bachelor Degree)', degreeName: '', institutionName: '', university: '', yearOfJoining: '', yearOfEnd: '', grade: '', passingYear: '' }
+      ]
+    }));
+  };
+
+  const handleHrRemoveEducation = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      educationList: (prev.educationList || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleHrUpdateEducation = (index, field, value) => {
+    setFormData(prev => {
+      const list = [...(prev.educationList || [])];
+      list[index] = { ...list[index], [field]: value };
+      return { ...prev, educationList: list };
+    });
+  };
+
+  // Dynamic Experience Handlers for HR
+  const handleHrAddExperience = () => {
+    setFormData(prev => ({
+      ...prev,
+      experienceList: [
+        ...(prev.experienceList || []),
+        { companyName: '', institutionName: '', address: '', institutionAddress: '', designation: '', periodOfService: '', salaryDrawn: '', reasonForLeaving: '', relievingStatus: 'Relieved with Full Notice ✓' }
+      ]
+    }));
+  };
+
+  const handleHrRemoveExperience = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      experienceList: (prev.experienceList || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleHrUpdateExperience = (index, field, value) => {
+    setFormData(prev => {
+      const list = [...(prev.experienceList || [])];
+      list[index] = { 
+        ...list[index], 
+        [field]: value, 
+        ...(field === 'companyName' ? { institutionName: value } : {}), 
+        ...(field === 'address' ? { institutionAddress: value } : {}) 
+      };
+      return { ...prev, experienceList: list };
+    });
+  };
+
   const handleCreateCandidateSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.mobile || !formData.aadhaarNo) {

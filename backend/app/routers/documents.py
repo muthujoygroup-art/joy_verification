@@ -107,12 +107,12 @@ def export_employee_profile_dossier(identifier: str, db: Session = Depends(get_d
             {
                 "id": d.id,
                 "title": d.title,
-                "name": d.name,
+                "name": getattr(d, 'name', None) or d.title,
                 "doc_type": d.doc_type,
                 "file_format": d.file_format,
                 "file_size_kb": d.file_size_kb,
                 "file_path": d.file_path,
-                "uploaded_at": str(d.uploaded_at)
+                "uploaded_at": str(getattr(d, 'created_at', datetime.utcnow()))
             }
             for d in docs_db
         ]

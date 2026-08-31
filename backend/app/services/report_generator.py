@@ -1,6 +1,6 @@
 import io
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -838,10 +838,13 @@ def generate_word_report(title: str, candidate_data: List[Dict[str, Any]]) -> io
     return buffer
 
 
-def generate_tax_invoice_pdf(invoice: Dict[str, Any], company: Dict[str, Any]) -> io.BytesIO:
+def generate_tax_invoice_pdf(invoice: Dict[str, Any], company: Optional[Dict[str, Any]] = None) -> io.BytesIO:
     """
     Generates a structured, professional GST Tax Invoice PDF.
     """
+    if company is None:
+        company = {}
+        
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=36)
     story = []
@@ -855,7 +858,7 @@ def generate_tax_invoice_pdf(invoice: Dict[str, Any], company: Dict[str, Any]) -
         textColor=colors.HexColor('#1e293b')
     )
     
-    comp_name = company.get('name', 'Acme Global Technologies Pvt Ltd')
+    comp_name = company.get('name') or invoice.get('company_name') or 'Acme Global Technologies Pvt Ltd'
     comp_code = company.get('code', 'ACME')
     inv_id = invoice.get('id', f'INV-{comp_code}-2026')
     month = invoice.get('month', 'August')
