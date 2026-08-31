@@ -457,27 +457,32 @@ export const SuperAdminView = () => {
         </div>
 
         {/* 🌟 PERMANENT TOP HERO: UNIVERSAL PROFILE ID & OMNISEARCH TRACKER (COMP001, COMP001HR001, COMP001EMP001) */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-purple-950 text-white border-2 border-indigo-500/50 shadow-lg space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] font-black uppercase tracking-wider">
-                ⚡ Global Profile ID & User Tracker
-              </span>
-              <span className="text-[11px] text-slate-300 font-mono">
-                COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
-              </span>
+        <div className="p-5 sm:p-6 rounded-2xl bg-slate-900 text-white border-2 border-indigo-500 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-3 py-1 rounded-md bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
+                  ⚡ Global Profile ID & User Tracker
+                </span>
+                <span className="text-xs font-mono font-bold text-indigo-200">
+                  COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 font-medium mt-1">
+                Enter any Unique ID, Company Name, HR Name, or Candidate Name to locate their 360° record instantly.
+              </p>
             </div>
 
             {/* Quick Filter Presets */}
-            <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
-              <span className="text-slate-400 font-medium text-[10px]">Quick Search:</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-slate-300 font-bold text-xs">Quick Presets:</span>
               <button
                 type="button"
                 onClick={() => {
                   setGlobalSearchQuery('COMP001');
                   setActiveTab('omnisearch');
                 }}
-                className="px-2 py-0.5 rounded-md bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 border border-purple-400/40 font-mono font-bold cursor-pointer transition-all"
+                className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-purple-400"
               >
                 🏢 COMP001
               </button>
@@ -487,7 +492,7 @@ export const SuperAdminView = () => {
                   setGlobalSearchQuery('COMP001HR001');
                   setActiveTab('omnisearch');
                 }}
-                className="px-2 py-0.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-200 border border-emerald-400/40 font-mono font-bold cursor-pointer transition-all"
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-emerald-400"
               >
                 👔 COMP001HR001
               </button>
@@ -497,16 +502,16 @@ export const SuperAdminView = () => {
                   setGlobalSearchQuery('COMP001EMP001');
                   setActiveTab('omnisearch');
                 }}
-                className="px-2 py-0.5 rounded-md bg-sky-500/20 hover:bg-sky-500/40 text-sky-200 border border-sky-400/40 font-mono font-bold cursor-pointer transition-all"
+                className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-sky-400"
               >
                 👤 COMP001EMP001
               </button>
             </div>
           </div>
 
-          {/* Large Live Omnisearch Input */}
+          {/* Large Live Omnisearch Input with High Contrast */}
           <div className="relative flex items-center">
-            <Search className="w-5 h-5 text-indigo-400 absolute left-3.5 pointer-events-none" />
+            <Search className="w-5 h-5 text-amber-400 absolute left-4 pointer-events-none" />
             <input
               type="text"
               value={globalSearchQuery}
@@ -518,13 +523,13 @@ export const SuperAdminView = () => {
                 if (activeTab !== 'omnisearch') setActiveTab('omnisearch');
               }}
               placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
-              className="w-full pl-11 pr-24 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-inner"
+              className="w-full pl-12 pr-28 py-3.5 rounded-xl bg-slate-950 text-white font-bold placeholder:text-slate-400 placeholder:font-normal border-2 border-indigo-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/40 text-sm shadow-inner"
             />
             {globalSearchQuery ? (
               <button
                 type="button"
                 onClick={() => setGlobalSearchQuery('')}
-                className="absolute right-3 px-2 py-1 rounded bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold cursor-pointer"
+                className="absolute right-3 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm transition-all"
               >
                 Clear ✕
               </button>
@@ -532,9 +537,9 @@ export const SuperAdminView = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('omnisearch')}
-                className="absolute right-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer shadow-sm transition-all"
+                className="absolute right-3 px-4 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs cursor-pointer shadow-md transition-all"
               >
-                Open Tracker 🔍
+                Search 🔍
               </button>
             )}
           </div>
@@ -723,74 +728,25 @@ export const SuperAdminView = () => {
       {activeTab === 'omnisearch' && (
         <div className="space-y-6 animate-tab-switch">
           
-          {/* Search Hero Card */}
-          <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-xl relative overflow-hidden space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="badge badge-emerald text-[9px] font-black uppercase">Hierarchical Unique Profile ID Engine</span>
-                  <span className="text-[10px] text-slate-400 font-mono">COMP001 • COMP001HR001 • COMP001EMP001</span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white mt-1">Universal Profile Tracker & Omnisearch</h3>
-                <p className="text-xs text-slate-300 font-medium mt-0.5">
-                  Instantly locate and track any Company, HR Executive, or Employee across the enterprise database.
-                </p>
-              </div>
-
-              {/* Quick Preset Buttons */}
-              <div className="flex items-center gap-2 flex-wrap text-xs">
-                <button
-                  type="button"
-                  onClick={() => setGlobalSearchQuery('COMP001')}
-                  className="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-400/40 font-mono font-bold cursor-pointer"
-                >
-                  🏢 Sample: COMP001
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setGlobalSearchQuery('COMP001HR001')}
-                  className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 font-mono font-bold cursor-pointer"
-                >
-                  👔 Sample: COMP001HR001
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setGlobalSearchQuery('COMP001EMP001')}
-                  className="px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 border border-sky-400/40 font-mono font-bold cursor-pointer"
-                >
-                  👤 Sample: COMP001EMP001
-                </button>
-              </div>
-            </div>
-
-            {/* Omnisearch Input Box */}
-            <div className="relative">
-              <Search className="w-5 h-5 text-indigo-400 absolute left-4 top-3.5 pointer-events-none" />
-              <input
-                type="text"
-                value={globalSearchQuery}
-                onChange={(e) => setGlobalSearchQuery(e.target.value)}
-                placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
-                className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-inner"
-              />
-              {globalSearchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setGlobalSearchQuery('')}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-
-            {/* Search Match Summary */}
-            <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1">
-              <span>
-                {globalSearchQuery ? `Found ${searchResults.totalMatches} matches for "${globalSearchQuery}"` : 'Showing all registered enterprise entities'}
+          {/* Search Result Statistics Summary Bar */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-900">
+                {globalSearchQuery ? `🔍 Search Results for "${globalSearchQuery}":` : '📂 Enterprise Directory Overview:'}
               </span>
-              <span className="font-mono text-slate-400">
-                {enrichedDirectory.companies.length} Companies • {enrichedDirectory.hrUsers.length} HRs • {enrichedDirectory.candidates.length} Employees
+              <span className="badge badge-emerald font-bold">
+                {searchResults.totalMatches} Active Entities Found
+              </span>
+            </div>
+            <div className="flex items-center gap-3 font-mono font-bold text-[11px]">
+              <span className="text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                🏢 {searchResults.companies.length} Companies
+              </span>
+              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                👔 {searchResults.hrUsers.length} HRs
+              </span>
+              <span className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                👤 {searchResults.candidates.length} Employees
               </span>
             </div>
           </div>
