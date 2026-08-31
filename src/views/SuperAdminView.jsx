@@ -455,8 +455,92 @@ export const SuperAdminView = () => {
           </div>
         </div>
 
+        {/* 🌟 PERMANENT TOP HERO: UNIVERSAL PROFILE ID & OMNISEARCH TRACKER (COMP001, COMP001HR001, COMP001EMP001) */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-purple-950 text-white border-2 border-indigo-500/50 shadow-lg space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] font-black uppercase tracking-wider">
+                ⚡ Global Profile ID & User Tracker
+              </span>
+              <span className="text-[11px] text-slate-300 font-mono">
+                COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
+              </span>
+            </div>
+
+            {/* Quick Filter Presets */}
+            <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+              <span className="text-slate-400 font-medium text-[10px]">Quick Search:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setGlobalSearchQuery('COMP001');
+                  setActiveTab('omnisearch');
+                }}
+                className="px-2 py-0.5 rounded-md bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 border border-purple-400/40 font-mono font-bold cursor-pointer transition-all"
+              >
+                🏢 COMP001
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setGlobalSearchQuery('COMP001HR001');
+                  setActiveTab('omnisearch');
+                }}
+                className="px-2 py-0.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-200 border border-emerald-400/40 font-mono font-bold cursor-pointer transition-all"
+              >
+                👔 COMP001HR001
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setGlobalSearchQuery('COMP001EMP001');
+                  setActiveTab('omnisearch');
+                }}
+                className="px-2 py-0.5 rounded-md bg-sky-500/20 hover:bg-sky-500/40 text-sky-200 border border-sky-400/40 font-mono font-bold cursor-pointer transition-all"
+              >
+                👤 COMP001EMP001
+              </button>
+            </div>
+          </div>
+
+          {/* Large Live Omnisearch Input */}
+          <div className="relative flex items-center">
+            <Search className="w-5 h-5 text-indigo-400 absolute left-3.5 pointer-events-none" />
+            <input
+              type="text"
+              value={globalSearchQuery}
+              onChange={(e) => {
+                setGlobalSearchQuery(e.target.value);
+                if (activeTab !== 'omnisearch') setActiveTab('omnisearch');
+              }}
+              onFocus={() => {
+                if (activeTab !== 'omnisearch') setActiveTab('omnisearch');
+              }}
+              placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
+              className="w-full pl-11 pr-24 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-inner"
+            />
+            {globalSearchQuery ? (
+              <button
+                type="button"
+                onClick={() => setGlobalSearchQuery('')}
+                className="absolute right-3 px-2 py-1 rounded bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold cursor-pointer"
+              >
+                Clear ✕
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setActiveTab('omnisearch')}
+                className="absolute right-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer shadow-sm transition-all"
+              >
+                Open Tracker 🔍
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Sub-Navigation Tabs Bar */}
-        <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar">
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-inner">
           
           {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
           <button
