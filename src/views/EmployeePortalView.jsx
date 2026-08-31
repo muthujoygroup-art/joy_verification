@@ -86,18 +86,9 @@ export const EmployeePortalView = () => {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [passcodeError, setPasscodeError] = useState('');
   // Auto-unlock if valid p param is present in URL
+  // Ensure portal strictly enforces manual PIN entry on arrival
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlEncodedPin = urlParams.get('p');
-    if (urlEncodedPin) {
-      try {
-        const decoded = decodeURIComponent(atob(urlEncodedPin)).trim();
-        if (decoded) {
-          setPasscodeDigits(decoded);
-          setIsUnlocked(true);
-        }
-      } catch (e) {}
-    }
+    setIsUnlocked(false);
   }, []);
   const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
 

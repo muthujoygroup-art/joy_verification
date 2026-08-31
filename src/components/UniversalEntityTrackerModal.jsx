@@ -319,7 +319,7 @@ export const UniversalEntityTrackerModal = ({
                 )}
 
                 <a
-                  href={`/verify?token=${entity.token}&p=${btoa(entity.portalPassword || '1234')}`}
+                  href={`/verify?token=${entity.token}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-secondary text-xs py-2 px-4 font-bold flex items-center gap-1.5 text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"

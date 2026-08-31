@@ -37,7 +37,7 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   const company = companies.find(c => c.id === candidate.companyId) || companies[0];
   const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
   const encodedPin = btoa(encodeURIComponent(activePin));
-  const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}&p=${encodedPin}`;
+  const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
 
   // Copy ONLY the pure, clean verification link (with encoded security token)
   const handleCopyCleanLink = async () => {
