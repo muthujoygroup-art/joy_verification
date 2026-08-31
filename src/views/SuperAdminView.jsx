@@ -12,6 +12,8 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { UniversalEntityTrackerModal } from '../components/UniversalEntityTrackerModal';
+import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import { 
   Building2, 
   ShieldCheck, 
@@ -142,7 +144,24 @@ export const SuperAdminView = () => {
   const [masterEntriesPerPage, setMasterEntriesPerPage] = useState(10);
   const [newMasterItemInput, setNewMasterItemInput] = useState('');
 
-  const [activeTab, setActiveTab] = useState('analytics'); 
+  const [activeTab, setActiveTab] = useState('omnisearch');
+  // 🔍 Universal Profile ID & Omnisearch Tracker States (COMP001, COMP001HR001, COMP001EMP001)
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [selectedTrackedEntity, setSelectedTrackedEntity] = useState(null);
+  const [selectedTrackedEntityType, setSelectedTrackedEntityType] = useState('candidate');
+  const [selectedDossierCandidate, setSelectedDossierCandidate] = useState(null);
+  const [selectedCertCandidate, setSelectedCertCandidate] = useState(null);
+
+  // Enriched entities with hierarchical unique profile IDs
+  const enrichedDirectory = useMemo(() => {
+    return enrichEntitiesWithHierarchy(companies, hrUsers, candidates);
+  }, [companies, hrUsers, candidates]);
+
+  // Search matches across Companies, HRs, and Employees
+  const searchResults = useMemo(() => {
+    return searchUniversalDirectory(globalSearchQuery, enrichedDirectory);
+  }, [globalSearchQuery, enrichedDirectory]);
+ 
   // 'analytics' | 'companies' | 'terms_hub' | 'billing' | 'logins' | 'dbms' | 'masterfields' | 'apiconfig' | 'reports' | 'tickets' | 'issuelogs' | 'guidelines' | 'settings'
 
   // Company filtering for analytics
@@ -439,6 +458,17 @@ export const SuperAdminView = () => {
         {/* Sub-Navigation Tabs Bar */}
         <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar">
           
+          {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
+          <button
+            onClick={() => setActiveTab('omnisearch')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              activeTab === 'omnisearch' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md' : 'text-slate-700 hover:text-slate-900 hover:bg-sky-100'
+            }`}
+          >
+            <Search className="w-4 h-4 text-amber-300" />
+            <span>🔍 Global Profile ID Tracker (COMP / HR / EMP)</span>
+          </button>
+
           {/* TAB 1: Analytics & Profit */}
           <button
             data-tour-step="superadmin-analytics-tab"
@@ -602,6 +632,232 @@ export const SuperAdminView = () => {
       </div>
 
       {/* TAB 1: PLATFORM STATISTICS & COMPANY-WISE PROFIT MARGIN ANALYTICS */}
+            {/* ========================================================================= */}
+      {/* TAB 0: UNIVERSAL OMNISEARCH & HIERARCHICAL PROFILE ID TRACKER */}
+      {/* ========================================================================= */}
+      {activeTab === 'omnisearch' && (
+        <div className="space-y-6 animate-tab-switch">
+          
+          {/* Search Hero Card */}
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-xl relative overflow-hidden space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-emerald text-[9px] font-black uppercase">Hierarchical Unique Profile ID Engine</span>
+                  <span className="text-[10px] text-slate-400 font-mono">COMP001 • COMP001HR001 • COMP001EMP001</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white mt-1">Universal Profile Tracker & Omnisearch</h3>
+                <p className="text-xs text-slate-300 font-medium mt-0.5">
+                  Instantly locate and track any Company, HR Executive, or Employee across the enterprise database.
+                </p>
+              </div>
+
+              {/* Quick Preset Buttons */}
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001')}
+                  className="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-400/40 font-mono font-bold cursor-pointer"
+                >
+                  🏢 Sample: COMP001
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001HR001')}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 font-mono font-bold cursor-pointer"
+                >
+                  👔 Sample: COMP001HR001
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001EMP001')}
+                  className="px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 border border-sky-400/40 font-mono font-bold cursor-pointer"
+                >
+                  👤 Sample: COMP001EMP001
+                </button>
+              </div>
+            </div>
+
+            {/* Omnisearch Input Box */}
+            <div className="relative">
+              <Search className="w-5 h-5 text-indigo-400 absolute left-4 top-3.5 pointer-events-none" />
+              <input
+                type="text"
+                value={globalSearchQuery}
+                onChange={(e) => setGlobalSearchQuery(e.target.value)}
+                placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
+                className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-inner"
+              />
+              {globalSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('')}
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            {/* Search Match Summary */}
+            <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1">
+              <span>
+                {globalSearchQuery ? `Found ${searchResults.totalMatches} matches for "${globalSearchQuery}"` : 'Showing all registered enterprise entities'}
+              </span>
+              <span className="font-mono text-slate-400">
+                {enrichedDirectory.companies.length} Companies • {enrichedDirectory.hrUsers.length} HRs • {enrichedDirectory.candidates.length} Employees
+              </span>
+            </div>
+          </div>
+
+          {/* RESULTS DIRECTORY GRID */}
+          <div className="space-y-6">
+            
+            {/* 1. MATCHED COMPANIES */}
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-black uppercase text-purple-900 tracking-wider flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-purple-600" />
+                  <span>1. Companies Directory ({globalSearchQuery ? searchResults.companies.length : enrichedDirectory.companies.length})</span>
+                </h4>
+                <span className="badge badge-purple text-[9px] font-bold">Prefix: COMPxxx</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(globalSearchQuery ? searchResults.companies : enrichedDirectory.companies).map(comp => (
+                  <div key={comp.id} className="p-3.5 rounded-2xl bg-purple-50/40 border border-purple-200 hover:border-purple-400 transition-all flex flex-col justify-between gap-3 group shadow-2xs">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xl">🏢</span>
+                        <div className="min-w-0">
+                          <strong className="text-slate-900 font-bold text-xs block truncate">{comp.name}</strong>
+                          <p className="text-[10px] text-slate-500 truncate">{comp.email} • {comp.plan || 'Enterprise'}</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md bg-purple-200 text-purple-900 font-mono font-black text-[10px] shrink-0">
+                        {comp.code || comp.uniqueProfileId}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-purple-100 text-[10px]">
+                      <span className="text-slate-500 font-medium">
+                        Quota: <strong>{comp.max_limit || comp.maxLimit || 500} Users</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTrackedEntity(comp);
+                          setSelectedTrackedEntityType('company');
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Track 360°</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. MATCHED HR EXECUTIVES */}
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-black uppercase text-emerald-900 tracking-wider flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-emerald-600" />
+                  <span>2. HR Executives Directory ({globalSearchQuery ? searchResults.hrUsers.length : enrichedDirectory.hrUsers.length})</span>
+                </h4>
+                <span className="badge badge-emerald text-[9px] font-bold">Prefix: COMPxxxHRxxx</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(globalSearchQuery ? searchResults.hrUsers : enrichedDirectory.hrUsers).map(hr => (
+                  <div key={hr.id} className="p-3.5 rounded-2xl bg-emerald-50/40 border border-emerald-200 hover:border-emerald-400 transition-all flex flex-col justify-between gap-3 group shadow-2xs">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xl">👔</span>
+                        <div className="min-w-0">
+                          <strong className="text-slate-900 font-bold text-xs block truncate">{hr.name}</strong>
+                          <p className="text-[10px] text-slate-500 truncate">{hr.email} • {hr.dept || 'HR Talent'}</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-200 text-emerald-900 font-mono font-black text-[10px] shrink-0">
+                        {hr.hrCode || hr.uniqueProfileId}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-emerald-100 text-[10px]">
+                      <span className="text-slate-500 font-medium">
+                        Company: <strong className="text-purple-800">{hr.companyCode}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTrackedEntity(hr);
+                          setSelectedTrackedEntityType('hr');
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Track 360°</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. MATCHED EMPLOYEES & CANDIDATES */}
+            <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-black uppercase text-sky-900 tracking-wider flex items-center gap-2">
+                  <Users className="w-4 h-4 text-sky-600" />
+                  <span>3. Employees & Candidates Directory ({globalSearchQuery ? searchResults.candidates.length : enrichedDirectory.candidates.length})</span>
+                </h4>
+                <span className="badge badge-sky text-[9px] font-bold">Prefix: COMPxxxEMPxxx</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(globalSearchQuery ? searchResults.candidates : enrichedDirectory.candidates).map(cand => (
+                  <div key={cand.id || cand.token} className="p-3.5 rounded-2xl bg-sky-50/40 border border-sky-200 hover:border-sky-400 transition-all flex flex-col justify-between gap-3 group shadow-2xs">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xl">👤</span>
+                        <div className="min-w-0">
+                          <strong className="text-slate-900 font-bold text-xs block truncate">{cand.name}</strong>
+                          <p className="text-[10px] text-slate-500 truncate">{cand.designation || 'Specialist'} • {cand.mobile}</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md bg-sky-200 text-sky-900 font-mono font-black text-[10px] shrink-0">
+                        {cand.employeeCode || cand.uniqueProfileId}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-sky-100 text-[10px]">
+                      <span className="badge badge-emerald text-[9px] font-bold">
+                        {cand.status || 'Verified ✓'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTrackedEntity(cand);
+                          setSelectedTrackedEntityType('candidate');
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Track 360°</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {activeTab === 'analytics' && (
         <div className="space-y-6">
           
@@ -3416,6 +3672,37 @@ export const SuperAdminView = () => {
             </form>
           </div>
         </div>
+      )}
+
+            {/* 👁️ 360° UNIVERSAL ENTITY TRACKER MODAL */}
+      {selectedTrackedEntity && (
+        <UniversalEntityTrackerModal
+          entity={selectedTrackedEntity}
+          entityType={selectedTrackedEntityType}
+          onClose={() => setSelectedTrackedEntity(null)}
+          onOpenDossier={(cand) => setSelectedDossierCandidate(cand)}
+          onOpenCertificate={(cand) => setSelectedCertCandidate(cand)}
+          onImpersonateRole={(role, ent) => {
+            setSelectedTrackedEntity(null);
+            showToast(`🚀 Impersonating ${role.toUpperCase()} session for ${ent.name}...`);
+          }}
+        />
+      )}
+
+      {/* Dossier Modal when clicked from Tracker */}
+      {selectedDossierCandidate && (
+        <EmployeeProfileDossierModal
+          candidate={selectedDossierCandidate}
+          onClose={() => setSelectedDossierCandidate(null)}
+        />
+      )}
+
+      {/* Certificate Modal when clicked from Tracker */}
+      {selectedCertCandidate && (
+        <OfficialVerificationCertificateModal
+          candidate={selectedCertCandidate}
+          onClose={() => setSelectedCertCandidate(null)}
+        />
       )}
 
       {/* Invoice Modal */}

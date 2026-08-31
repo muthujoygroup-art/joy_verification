@@ -30,6 +30,12 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     clean_name = payload.name.lower().replace(" ", "_")[:10]
     token = f"tok_{clean_name}_{uuid.uuid4().hex[:4]}"
     
+    # Compute hierarchical employee profile code (e.g. COMP001EMP001)
+    comp = db.query(Company).filter(Company.id == payload.company_id).first() if payload.company_id else None
+    comp_code = comp.code if comp and comp.code else "COMP001"
+    emp_count = db.query(Candidate).filter(Candidate.company_id == payload.company_id).count() + 1
+    hierarchical_emp_code = f"{comp_code}EMP{emp_count:03d}" "
+    
     # Default verifications completed status
     initial_verifs = {
         "aadhaar": False,
@@ -57,8 +63,8 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         id=candidate_id,
         token=token,
         name=payload.name,
-        emp_id=payload.emp_id or f"EMP-2026-{uuid.uuid4().hex[:4].upper()}",
-        employee_number=payload.employee_number or payload.emp_id or f"EN-{uuid.uuid4().hex[:6].upper()}",
+        emp_id=payload.emp_id or hierarchical_emp_code,
+        employee_number=payload.employee_number or hierarchical_emp_code,
         email=payload.email,
         mobile=payload.mobile,
         aadhaar_no=payload.aadhaar_no,

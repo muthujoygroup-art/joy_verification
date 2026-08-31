@@ -23,7 +23,8 @@ def get_all_companies(db: Session = Depends(get_db)):
 @router.post("/companies", response_model=CompanyResponse)
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     """Register a new enterprise company profile"""
-    comp_code = payload.code or payload.name[:4].upper()
+    total_comps = db.query(Company).count() + 1
+    comp_code = payload.code or f"COMP{total_comps:03d}"
     comp_id = f"comp-{uuid.uuid4().hex[:6]}"
     
     # Default features if none specified
