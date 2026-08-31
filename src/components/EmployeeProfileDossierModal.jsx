@@ -1,3 +1,6 @@
+import { EpfoForm11 } from './statutory/EpfoForm11';
+import { EpfoForm2 } from './statutory/EpfoForm2';
+import { EsicForm1 } from './statutory/EsicForm1';
 import React, { useState } from 'react';
 import { 
   FileText, 
@@ -219,39 +222,46 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
             onClick={() => setActiveTab(1)} 
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 1 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            1. Demographics & Bio
+            1. Demographics
           </button>
           <button 
             onClick={() => setActiveTab(2)} 
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 2 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            2. Appointment & Role
+            2. Role & Sector
           </button>
           <button 
             onClick={() => setActiveTab(3)} 
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 3 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            3. Edu & Experience
+            3. Edu & Exp
           </button>
           <button 
             onClick={() => setActiveTab(4)} 
             className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 4 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            4. Statutory & Health
+            4. Statutory & Bank
           </button>
           <button 
             onClick={() => setActiveTab(5)} 
-            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 5 ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 5 ? 'bg-purple-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            <FolderDown className="w-3.5 h-3.5" />
-            <span>5. Attached Exhibits ({attachedExhibits.length})</span>
+            <Scale className="w-3.5 h-3.5 text-amber-300" />
+            <span>5. Statutory Forms (Form 11, 2, ESIC 1)</span>
           </button>
           <button 
             onClick={() => setActiveTab(6)} 
-            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 6 ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 6 ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Complete All-in-One View 📄</span>
+            <FolderDown className="w-3.5 h-3.5" />
+            <span>6. Attached Exhibits ({attachedExhibits.length})</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab(7)} 
+            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 7 ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>7. Complete Master PDF (Profile + Forms + Exhibits) 📄</span>
           </button>
         </div>
 
@@ -268,7 +278,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         <div id="printable-employee-master-dossier" className="space-y-8 text-slate-900 bg-white p-4 sm:p-6 max-w-[840px] mx-auto overflow-hidden shadow-xs border border-slate-100 rounded-xl">
           
           {/* SECTION 1: BIO & DEMOGRAPHICS */}
-          {(activeTab === 1 || activeTab === 6 || isExporting) && (
+          {(activeTab === 1 || activeTab === 7 || isExporting) && (
             <div className="space-y-5 pdf-avoid-break">
               
               {/* Hierarchical Entity Codes Stamp */}
@@ -372,7 +382,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           )}
 
           {/* SECTION 2: APPOINTMENT & ROLE MATRIX */}
-          {(activeTab === 2 || activeTab === 6 || isExporting) && (
+          {(activeTab === 2 || activeTab === 7 || isExporting) && (
             <div className="space-y-4 pdf-avoid-break">
               <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -409,7 +419,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           )}
 
           {/* SECTION 3: EDU & EXPERIENCE TABLES */}
-          {(activeTab === 3 || activeTab === 6 || isExporting) && (
+          {(activeTab === 3 || activeTab === 7 || isExporting) && (
             <div className="space-y-4 pdf-avoid-break">
               <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -486,7 +496,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           )}
 
           {/* SECTION 4: STATUTORY ACCOUNTS, HEALTH & LEGAL DECLARATION */}
-          {(activeTab === 4 || activeTab === 6 || isExporting) && (
+          {(activeTab === 4 || activeTab === 7 || isExporting) && (
             <div className="space-y-4 pdf-avoid-break">
               <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -550,11 +560,52 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           {/* ========================================================================= */}
           {/* SECTION B: CONSECUTIVE FULL-PAGE ATTACHED DOCUMENT EXHIBITS (ANNEXURES) */}
           {/* ========================================================================= */}
-          {(activeTab === 5 || activeTab === 6 || isExporting) && (
+                    {/* SECTION 5: STATUTORY MANUFACTURING & LABOR FORMS (EPFO FORM 11, FORM 2 REVISED, ESIC FORM 1) */}
+          {(activeTab === 5 || activeTab === 7 || isExporting) && (
+            <div className="space-y-6 pdf-avoid-break">
+              <div className="bg-purple-900 text-white text-xs font-bold px-3 py-2 rounded-md flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-amber-400" />
+                  <span className="font-black">SECTION 5: STATUTORY LABOR & REGULATORY DECLARATION FORMS</span>
+                </div>
+                <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded font-mono">EPFO Form 11 • Form 2 • ESIC Form 1</span>
+              </div>
+
+              {/* Form 1: EPFO Form 11 */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">1</span>
+                  <span>EPFO Form No. 11 — New Declaration Form (EPF 1952 & EPS 1995)</span>
+                </div>
+                <EpfoForm11 candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 2: EPFO Form 2 Revised */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">2</span>
+                  <span>EPFO Form 2 (Revised) — Nomination & Declaration Form (Part A EPF & Part B EPS)</span>
+                </div>
+                <EpfoForm2 candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 3: ESIC Form 1 */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">3</span>
+                  <span>ESIC Form 1 — Declaration Form, Family Particulars & Temporary Identification Card (TIC)</span>
+                </div>
+                <EsicForm1 candidate={c} jf={jf} companyName={companyName} />
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 6: ATTACHED ORIGINAL DOCUMENT EXHIBITS */}
+          {(activeTab === 6 || activeTab === 7 || isExporting) && (
             <div className="space-y-6">
               
               {/* If in Tab 5 (Interactive Preview), show annexure selector bar */}
-              {activeTab === 5 && !isExporting && (
+              {activeTab === 6 && !isExporting && (
                 <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl space-y-2 print:hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-indigo-950 uppercase tracking-wider">
@@ -585,8 +636,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               )}
 
               {/* Render either the selected annexure (Tab 5) or ALL annexures consecutively (Tab 6 & Export Mode) */}
-              {(activeTab === 5 && !isExporting ? [attachedExhibits[selectedAnnexureIdx]] : attachedExhibits).map((doc, idx) => {
-                const actualIdx = activeTab === 5 && !isExporting ? selectedAnnexureIdx + 1 : idx + 1;
+              {(activeTab === 6 && !isExporting ? [attachedExhibits[selectedAnnexureIdx]] : attachedExhibits).map((doc, idx) => {
+                const actualIdx = activeTab === 6 && !isExporting ? selectedAnnexureIdx + 1 : idx + 1;
                 const docHash = `SHA256-VAULT-${(doc.doc_type || 'DOC').toUpperCase().substring(0, 4)}-${actualIdx * 8129 + 1092}`;
 
                 return (
