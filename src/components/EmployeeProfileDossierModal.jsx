@@ -279,7 +279,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           
           {/* SECTION 1: BIO & DEMOGRAPHICS */}
           {(activeTab === 1 || activeTab === 7 || isExporting) && (
-            <div className="space-y-5 pdf-avoid-break">
+            <div className="pdf-page-block space-y-5 bg-white p-4 rounded-xl border border-slate-200">
               
               {/* Hierarchical Entity Codes Stamp */}
               <div className="p-2.5 bg-slate-100 border border-slate-300 rounded-xl flex items-center justify-between gap-2 text-xs font-mono font-bold text-slate-800">
@@ -301,7 +301,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     JOY
                   </div>
                   <div>
-                    <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">{companyName}</h1>
+                    <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight uppercase">{companyName}</h1>
                     <p className="text-[11px] text-slate-600 font-medium">Corporate Human Resources & Statutory Labor Compliance Operations</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] bg-slate-100 border border-slate-300 font-bold px-1.5 py-0.5 rounded uppercase">{employeeTypeLabel}</span>
@@ -346,7 +346,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
 
                 <div className="grid grid-cols-4 gap-3 text-xs p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Full Legal Name:</span><strong className="text-slate-900 font-black truncate block">{c.name}</strong></div>
+                  <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Full Legal Name:</span><strong className="text-slate-900 font-bold truncate block">{c.name}</strong></div>
                   <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Employee Code / ID:</span><strong className="font-mono text-sky-800 truncate block">{c.employeeNumber || c.empId || c.uniqueProfileId || 'COMP001EMP001'}</strong></div>
                   <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Date of Joining (DOJ):</span><strong className="truncate block">{doj}</strong></div>
                   <div className="col-span-1 min-w-0"><span className="text-slate-400 block text-[10px]">Date of Birth (DOB):</span><strong className="truncate block">{dob} (Age: {age})</strong></div>
@@ -420,7 +420,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
           {/* SECTION 3: EDU & EXPERIENCE TABLES */}
           {(activeTab === 3 || activeTab === 7 || isExporting) && (
-            <div className="space-y-4 pdf-avoid-break">
+            <div className="pdf-page-block space-y-4 bg-white p-4 rounded-xl border border-slate-200">
               <div className="bg-sky-800 text-white text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4" />
@@ -508,7 +508,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
                 <div><span className="text-slate-400 block text-[10px]">Primary Bank:</span><strong>{bankName}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Account Number:</span><strong className="font-mono text-slate-900 font-black">{accNo}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Account Number:</span><strong className="font-mono text-slate-900 font-bold">{accNo}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">IFSC & Branch:</span><strong className="font-mono">{ifsc} ({branch})</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Income Tax PAN:</span><strong className="font-mono text-indigo-900 font-bold">{panNo}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Aadhaar Identity Ref:</span><strong className="font-mono text-indigo-900 font-bold">{aadhaarNo}</strong></div>
@@ -562,18 +562,17 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           {/* ========================================================================= */}
                     {/* SECTION 5: STATUTORY MANUFACTURING & LABOR FORMS (EPFO FORM 11, FORM 2 REVISED, ESIC FORM 1) */}
           {(activeTab === 5 || activeTab === 7 || isExporting) && (
-            <div className="space-y-6 pdf-avoid-break">
-              <div className="bg-purple-900 text-white text-xs font-bold px-3 py-2 rounded-md flex items-center justify-between shadow-xs">
-                <div className="flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-amber-400" />
-                  <span className="font-black">SECTION 5: STATUTORY LABOR & REGULATORY DECLARATION FORMS</span>
-                </div>
-                <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded font-mono">EPFO Form 11 • Form 2 • ESIC Form 1</span>
-              </div>
-
+            <div className="space-y-6">
               {/* Form 1: EPFO Form 11 */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="bg-purple-900 text-white text-xs font-bold px-3 py-2 rounded-md flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-amber-400" />
+                    <span className="font-black">SECTION 5: STATUTORY LABOR & REGULATORY DECLARATION FORMS</span>
+                  </div>
+                  <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded font-mono">EPFO Form 11</span>
+                </div>
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs pt-1">
                   <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">1</span>
                   <span>EPFO Form No. 11 — New Declaration Form (EPF 1952 & EPS 1995)</span>
                 </div>
@@ -581,8 +580,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               </div>
 
               {/* Form 2: EPFO Form 2 Revised */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
                   <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">2</span>
                   <span>EPFO Form 2 (Revised) — Nomination & Declaration Form (Part A EPF & Part B EPS)</span>
                 </div>
@@ -590,8 +589,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               </div>
 
               {/* Form 3: ESIC Form 1 */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 font-black text-slate-800 text-xs">
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
                   <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">3</span>
                   <span>ESIC Form 1 — Declaration Form, Family Particulars & Temporary Identification Card (TIC)</span>
                 </div>
@@ -652,7 +651,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                           <span className="badge badge-purple text-[10px]">ANNEXURE EXHIBIT {actualIdx}</span>
                           <span className="text-[10px] text-slate-500 font-mono">JOY-SECURE-VAULT-2026</span>
                         </div>
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 uppercase mt-0.5 tracking-tight">
+                        <h2 className="text-base sm:text-lg font-bold text-slate-900 uppercase mt-0.5 tracking-tight">
                           {doc.title}
                         </h2>
                         <p className="text-[11px] text-slate-500 font-medium">
@@ -696,7 +695,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                             <FileText className="w-10 h-10" />
                           </div>
                           <div className="space-y-1">
-                            <h3 className="text-base font-black text-slate-900">{doc.title}</h3>
+                            <h3 className="text-base font-bold text-slate-900">{doc.title}</h3>
                             <p className="text-xs text-slate-600 font-mono">📄 {doc.name} ({doc.file_size_kb || 450} KB)</p>
                             <span className="badge badge-emerald text-[10px] mt-1">Stored in ISO 27001 Encrypted Storage ✓</span>
                           </div>
