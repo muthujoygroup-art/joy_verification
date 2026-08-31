@@ -96,7 +96,9 @@ def on_startup():
             "CREATE TABLE IF NOT EXISTS candidate_documents (id VARCHAR(50) PRIMARY KEY, candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE CASCADE, title VARCHAR(200) NOT NULL, doc_type VARCHAR(50), file_format VARCHAR(20), file_path TEXT, file_size_kb FLOAT DEFAULT 0.0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
             "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_path TEXT;",
             "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_size_kb FLOAT DEFAULT 0.0;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS custom_fields JSON DEFAULT '{}';"
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS custom_fields JSON DEFAULT '{}';",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS specimen_signature TEXT;",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS statutory_details JSON DEFAULT '{}';" 
         ]
         with engine.connect() as conn:
             for stmt in migration_statements:
