@@ -42,7 +42,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   const c = candidate;
   const companyName = c.companyName || c.joiningFormData?.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
-  const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || '/joy_logo.png';
+  const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
   
   const indMap = {
@@ -294,32 +294,32 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <span className="text-[10px] text-slate-500 font-mono">Verified Statutory Record</span>
               </div>
 
-              {/* Master Corporate Header */}
-              <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3">
+              {/* Master Corporate Header: Company Logo Left, Employee Profile Image Right */}
+              <div className="flex items-center justify-between border-b-2 border-slate-900 pb-3 gap-4">
+                {/* LEFT: Official Company Logo & Corporate Credentials */}
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-sky-800 text-white flex items-center justify-center font-black text-xl shadow-sm">
-                    JOY
+                  <div className="w-14 h-14 rounded-xl bg-white border-2 border-slate-200 shadow-xs flex items-center justify-center p-1.5 shrink-0">
+                    <img src="/joy_logo.png" alt="Company Official Logo" className="w-full h-full object-contain" />
                   </div>
                   <div>
-                    <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight uppercase">{companyName}</h1>
+                    <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">{companyName}</h1>
                     <p className="text-[11px] text-slate-600 font-medium">Corporate Human Resources & Statutory Labor Compliance Operations</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] bg-slate-100 border border-slate-300 font-bold px-1.5 py-0.5 rounded uppercase">{employeeTypeLabel}</span>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-[10px] bg-slate-100 border border-slate-300 font-bold px-2 py-0.5 rounded uppercase text-slate-800">{employeeTypeLabel}</span>
                       <span className="text-[10px] text-slate-500 font-mono">CIN: U74999KA2026PTC192841</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {facePhoto && (
-                    <div className="w-20 h-24 rounded-lg border-2 border-sky-600 overflow-hidden bg-slate-100 shadow-sm flex items-center justify-center">
-                      <img src={facePhoto} alt="Employee Portrait" className="w-full h-full object-cover" />
-                    </div>
-                  )}
+                {/* RIGHT: Official Employee Profile Photo & Verified Identity Badge */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="w-20 h-24 rounded-lg border-2 border-sky-600 overflow-hidden bg-slate-100 shadow-sm flex items-center justify-center shrink-0">
+                    <img src={facePhoto} alt="Employee Profile Photo" className="w-full h-full object-cover" />
+                  </div>
                   <div className="text-right text-xs space-y-1">
-                    <span className="badge badge-emerald">Verified Profile</span>
-                    <p className="text-[11px] text-slate-500 font-mono font-bold">Emp ID: #{c.empId || c.employeeNumber || 'JOY-2026-001'}</p>
-                    <p className="text-[10px] text-slate-400 font-mono">Token: {c.token}</p>
+                    <span className="badge badge-emerald font-black uppercase text-[10px] px-2.5 py-0.5">VERIFIED PROFILE ✓</span>
+                    <p className="text-[11px] text-slate-900 font-mono font-bold">Emp ID: #{c.employeeNumber || c.empId || c.uniqueProfileId || 'COMP001EMP001'}</p>
+                    <p className="text-[10px] text-slate-500 font-mono">Token: {c.token || 'tok_verified'}</p>
                   </div>
                 </div>
               </div>
