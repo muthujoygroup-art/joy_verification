@@ -1,3 +1,6 @@
+import { EpfoForm11 } from '../components/statutory/EpfoForm11';
+import { EpfoForm2 } from '../components/statutory/EpfoForm2';
+import { EsicForm1 } from '../components/statutory/EsicForm1';
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -3838,44 +3841,71 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs">
                 {[
-                  { key: 'form16', title: 'Form 16 / TDS Declaration', desc: 'Income Tax Sec 192 / Form 12B declaration for salaried employees', tag: 'Tax Compliance' },
-                  { key: 'form11', title: 'Form 11 (EPFO Declaration)', desc: 'Statutory Provident Fund declaration under EPF Act 1952', tag: 'Labor Statutory' },
-                  { key: 'formF', title: 'Form F (Gratuity Nomination)', desc: 'Payment of Gratuity Act 1972 statutory family nomination', tag: 'Gratuity Act' },
-                  { key: 'esicForm1', title: 'ESIC Form 1 Registration', desc: 'Employee State Insurance Corporation medical coverage', tag: 'Social Security' },
-                  { key: 'nda', title: 'Non-Disclosure Agreement (NDA)', desc: 'Proprietary IP protection & employer confidentiality covenant', tag: 'Legal Agreement' },
-                  { key: 'posh', title: 'POSH Code of Conduct', desc: 'Prevention of Sexual Harassment workplace policy acknowledgement', tag: 'HR Compliance' },
-                  { key: 'nonCompete', title: 'Non-Compete & Non-Solicit', desc: 'Post-employment non-compete covenants & client non-solicitation', tag: 'Enterprise' },
-                  { key: 'contractFormXIII', title: 'Contract Labor Form XIII', desc: 'Contract Labor (Regulation & Abolition) Act register format', tag: 'Contract Staff' }
+                  { key: 'form11', title: 'Form 11 (EPFO Declaration)', desc: 'Statutory Provident Fund declaration under EPF Act 1952 & EPS 1995', tag: 'EPFO 1952', previewable: true },
+                  { key: 'form2', title: 'Form 2 (EPFO Nomination)', desc: 'Revised Nomination & Declaration Form (Part A EPF & Part B EPS Pension)', tag: 'EPFO Form 2', previewable: true },
+                  { key: 'esicForm1', title: 'ESIC Form 1 (Declaration & TIC)', desc: 'Employees State Insurance Corporation medical coverage & Temporary ID Card', tag: 'ESIC 1948', previewable: true },
+                  { key: 'form16', title: 'Form 16 / TDS Declaration', desc: 'Income Tax Sec 192 / Form 12B tax regime declaration for salaried employees', tag: 'Income Tax', previewable: false },
+                  { key: 'formF', title: 'Form F (Gratuity Nomination)', desc: 'Payment of Gratuity Act 1972 statutory family nomination & legal share', tag: 'Gratuity Act', previewable: false },
+                  { key: 'nda', title: 'Non-Disclosure Agreement (NDA)', desc: 'Proprietary IP protection & employer confidentiality binding covenant', tag: 'Legal NDA', previewable: false },
+                  { key: 'posh', title: 'POSH Code of Conduct', desc: 'Prevention of Sexual Harassment workplace policy & compliance consent', tag: 'HR POSH', previewable: false },
+                  { key: 'nonCompete', title: 'Non-Compete & Non-Solicit', desc: 'Post-employment non-compete covenants & business non-solicitation', tag: 'Enterprise', previewable: false },
+                  { key: 'contractFormXIII', title: 'Contract Labor Form XIII', desc: 'Contract Labor (Regulation & Abolition) Act register & deployment slip', tag: 'Contract Act', previewable: false }
                 ].map((formItem) => {
-                  const isChecked = !!formData.statutoryFormsConfig?.[formItem.key];
+                  const isChecked = formData.statutoryFormsConfig?.[formItem.key] !== undefined 
+                    ? !!formData.statutoryFormsConfig[formItem.key] 
+                    : ['form11', 'form2', 'esicForm1', 'form16', 'nda', 'posh'].includes(formItem.key);
+
                   return (
-                    <label
+                    <div
                       key={formItem.key}
-                      className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-2.5 ${
+                      className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-3 shadow-xs ${
                         isChecked 
-                          ? 'bg-indigo-50/70 border-indigo-400 text-slate-900 shadow-2xs' 
+                          ? 'bg-indigo-50/80 border-indigo-500 text-slate-900' 
                           : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                       }`}
                     >
-                      <input 
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          statutoryFormsConfig: { ...formData.statutoryFormsConfig, [formItem.key]: e.target.checked }
-                        })}
-                        className="accent-indigo-600 mt-0.5 w-4 h-4 shrink-0"
-                      />
-                      <div className="space-y-0.5 flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-extrabold text-xs text-slate-900 leading-tight">{formItem.title}</span>
-                          <span className="text-[8px] bg-indigo-100 text-indigo-800 font-bold px-1.5 py-0.5 rounded uppercase">{formItem.tag}</span>
+                      <div className="flex items-start gap-2.5">
+                        <input 
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            statutoryFormsConfig: { 
+                              ...(formData.statutoryFormsConfig || {}), 
+                              [formItem.key]: e.target.checked 
+                            }
+                          })}
+                          className="accent-indigo-600 mt-1 w-4 h-4 shrink-0 cursor-pointer"
+                        />
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                            <span className="font-black text-xs text-slate-900 leading-tight truncate">{formItem.title}</span>
+                            <span className="text-[9px] bg-purple-100 text-purple-900 font-mono font-bold px-2 py-0.5 rounded uppercase">{formItem.tag}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-snug">{formItem.desc}</p>
                         </div>
-                        <p className="text-[10px] text-slate-500 leading-snug">{formItem.desc}</p>
                       </div>
-                    </label>
+
+                      {/* Bottom Action & Preview Trigger Bar */}
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 text-[10px]">
+                        <span className="text-emerald-700 font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          Auto-Filled from Profile ✓
+                        </span>
+                        
+                        <button
+                          type="button"
+                          onClick={() => setActivePreviewStatutoryForm(formItem.key)}
+                          className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-all"
+                          title="Preview live form with current candidate inputs"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>View Form 👁️</span>
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
