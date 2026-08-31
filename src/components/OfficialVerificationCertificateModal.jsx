@@ -40,7 +40,8 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);
-    const filename = `JOY_Corporate_Certificate_${(candidate.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
+    const empIdCode = candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || 'COMP001EMP001';
+    const filename = `JOY_Certificate_${empIdCode}_${(candidate.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
     try {
       const el = document.getElementById('printable-official-certificate');
       if (el) {

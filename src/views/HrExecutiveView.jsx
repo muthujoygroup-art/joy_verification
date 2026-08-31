@@ -1109,8 +1109,14 @@ export const HrExecutiveView = () => {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
-              <span className="text-[11px] sm:text-xs text-slate-500 font-bold truncate max-w-[260px] sm:max-w-none">
+              <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
                 • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany.name})</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
+                👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany.code || 'COMP001'}HR001`}
+              </span>
+              <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
+                🏢 Company: {currentCompany.code || 'COMP001'}
               </span>
             </div>
             <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>

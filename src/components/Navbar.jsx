@@ -219,13 +219,18 @@ export const Navbar = () => {
               <ActiveSessionBadge />
             </div>
 
-            {/* User Profile Pill */}
+            {/* User Profile Pill with Unique Profile Code */}
             <div className="flex items-center gap-2 bg-slate-100/90 px-3 h-8 rounded-xl border border-slate-200 text-xs shadow-2xs shrink-0 whitespace-nowrap">
               <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <div className="text-left max-w-[150px] truncate">
-                <p className="font-extrabold text-slate-900 leading-tight truncate">
-                  {currentUser?.email || `${currentRole?.toUpperCase()} User`}
-                </p>
+              <div className="text-left max-w-[180px] truncate">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-extrabold text-slate-900 leading-tight truncate">
+                    {currentUser?.name || currentUser?.email || 'User'}
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[9px] border border-indigo-200">
+                    {currentRole === 'superadmin' ? 'SUPERADMIN' : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentUser?.code || (currentRole === 'company' ? 'COMP001' : currentRole === 'hrexecutive' ? 'COMP001HR001' : 'COMP001EMP001'))}
+                  </span>
+                </div>
               </div>
             </div>
 

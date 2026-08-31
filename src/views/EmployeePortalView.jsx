@@ -654,13 +654,21 @@ export const EmployeePortalView = () => {
             )}
             
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="badge badge-indigo text-[10px] font-black">CANDIDATE ONBOARDING</span>
-                <span className="text-xs text-slate-500 font-bold">• Official Employment Verification</span>
+                <span className="px-2 py-0.5 rounded-md bg-sky-100 text-sky-950 font-mono font-black text-[11px] border border-sky-300 shadow-2xs">
+                  👤 Employee ID: {candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || 'COMP001EMP001'}
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
+                  🏢 Company: {candidate.companyCode || 'COMP001'}
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
+                  👔 HR: {candidate.hrCode || `${candidate.companyCode || 'COMP001'}HR001`}
+                </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{candidate.name}</h2>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Role: <strong className="text-slate-800">{candidate.designation || 'Specialist'}</strong> • Dept: <strong className="text-slate-800">{candidate.dept || 'Engineering'}</strong> • ID: <code className="text-slate-700 font-bold font-mono">{candidate.empId || 'EMP-2026-88'}</code>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{candidate.name}</h2>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                Role: <strong className="text-slate-900 font-bold">{candidate.designation || 'Specialist'}</strong> • Dept: <strong className="text-slate-900 font-bold">{candidate.dept || 'Engineering'}</strong> • Unique ID: <code className="text-indigo-900 font-black font-mono">{candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || 'COMP001EMP001'}</code>
               </p>
             </div>
           </div>

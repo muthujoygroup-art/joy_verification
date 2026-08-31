@@ -271,6 +271,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           {(activeTab === 1 || activeTab === 6 || isExporting) && (
             <div className="space-y-5 pdf-avoid-break">
               
+              {/* Hierarchical Entity Codes Stamp */}
+              <div className="p-2.5 bg-slate-100 border border-slate-300 rounded-xl flex items-center justify-between gap-2 text-xs font-mono font-bold text-slate-800">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-slate-500 font-sans uppercase font-black">Entity Hierarchy Binding:</span>
+                  <span className="text-purple-900 bg-purple-200/70 px-2 py-0.5 rounded border border-purple-300">🏢 Company: {c.companyCode || 'COMP001'}</span>
+                  <span className="text-slate-400">➔</span>
+                  <span className="text-emerald-900 bg-emerald-200/70 px-2 py-0.5 rounded border border-emerald-300">👔 HR Executive: {c.hrCode || `${c.companyCode || 'COMP001'}HR001`}</span>
+                  <span className="text-slate-400">➔</span>
+                  <span className="text-sky-900 bg-sky-200/70 px-2 py-0.5 rounded border border-sky-300">👤 Employee: {c.employeeCode || c.uniqueProfileId || c.empId || 'COMP001EMP001'}</span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono">Verified Statutory Record</span>
+              </div>
+
               {/* Master Corporate Header */}
               <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3">
                 <div className="flex items-center gap-3">
