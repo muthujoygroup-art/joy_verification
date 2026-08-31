@@ -3898,11 +3898,16 @@ export const HrExecutiveView = () => {
                         
                         <button
                           type="button"
-                          onClick={() => setActivePreviewStatutoryForm(formItem.key)}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-all"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log("Opening statutory preview for:", formItem.key);
+                            setActivePreviewStatutoryForm(formItem.key);
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] flex items-center gap-1.5 cursor-pointer shadow-xs transition-all hover:scale-105 active:scale-95"
                           title="Preview live form with current candidate inputs"
                         >
-                          <Eye className="w-3 h-3" />
+                          <Eye className="w-3.5 h-3.5" />
                           <span>View Form 👁️</span>
                         </button>
                       </div>
@@ -4539,7 +4544,7 @@ export const HrExecutiveView = () => {
 
       {/* 🌟 STATUTORY FORM LIVE PREVIEW MODAL */}
       {activePreviewStatutoryForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-xs animate-fadeIn" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
           <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col">
             
             {/* Modal Header */}
@@ -4572,15 +4577,15 @@ export const HrExecutiveView = () => {
               </div>
 
               {activePreviewStatutoryForm === 'form11' && (
-                <EpfoForm11 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+                <EpfoForm11 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
               )}
 
               {activePreviewStatutoryForm === 'form2' && (
-                <EpfoForm2 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+                <EpfoForm2 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
               )}
 
               {activePreviewStatutoryForm === 'esicForm1' && (
-                <EsicForm1 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+                <EsicForm1 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
               )}
 
               {!['form11', 'form2', 'esicForm1'].includes(activePreviewStatutoryForm) && (
