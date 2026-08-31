@@ -115,6 +115,7 @@ export const HrExecutiveView = () => {
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
 
   const activeHr = hrUsers[0] || { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', dept: 'Engineering Recruitment' };
   const currentCompany = companies.find(c => c.id === activeHr.companyId) || companies[0];
@@ -4530,6 +4531,93 @@ export const HrExecutiveView = () => {
                   <span>✅ Accept & Approve Profile</span>
                 </button>
               </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 STATUTORY FORM LIVE PREVIEW MODAL */}
+      {activePreviewStatutoryForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-fadeIn">
+          <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <span className="px-2.5 py-0.5 rounded-md bg-purple-500 text-white font-mono font-bold text-xs uppercase shadow-sm">
+                  Live Statutory Form Preview
+                </span>
+                <span className="text-xs text-slate-200 font-bold">
+                  {activePreviewStatutoryForm === 'form11' ? 'EPFO Form 11 (New Declaration Form)' : activePreviewStatutoryForm === 'form2' ? 'EPFO Form 2 Revised (Nomination & Family Particulars)' : activePreviewStatutoryForm === 'esicForm1' ? 'ESIC Form 1 (Declaration & Temporary ID Card)' : activePreviewStatutoryForm === 'form16' ? 'Form 16 / TDS Declaration' : activePreviewStatutoryForm === 'formF' ? 'Form F (Payment of Gratuity Act 1972)' : activePreviewStatutoryForm === 'nda' ? 'Non-Disclosure Agreement (NDA)' : activePreviewStatutoryForm === 'posh' ? 'POSH Policy & Code of Conduct' : activePreviewStatutoryForm === 'nonCompete' ? 'Non-Compete & Non-Solicit Agreement' : 'Contract Labor Act Form XIII'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActivePreviewStatutoryForm(null)}
+                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer hover:bg-slate-700 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50 flex-1">
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
+                <div>
+                  <strong className="text-indigo-900 block font-bold">⚡ Real-Time Auto-Generated Statutory Form:</strong>
+                  <span>Populated dynamically with current input data for candidate: <strong className="text-slate-900 font-mono font-bold">{formData.name || 'Candidate Name'}</strong> ({formData.email || 'email@company.com'}).</span>
+                </div>
+                <span className="badge badge-emerald font-bold shrink-0 self-start sm:self-auto">Live Synced ✓</span>
+              </div>
+
+              {activePreviewStatutoryForm === 'form11' && (
+                <EpfoForm11 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+              )}
+
+              {activePreviewStatutoryForm === 'form2' && (
+                <EpfoForm2 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+              )}
+
+              {activePreviewStatutoryForm === 'esicForm1' && (
+                <EsicForm1 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany.name} />
+              )}
+
+              {!['form11', 'form2', 'esicForm1'].includes(activePreviewStatutoryForm) && (
+                <div className="p-8 bg-white border-2 border-indigo-200 rounded-2xl text-center space-y-4 shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto border border-indigo-100 shadow-2xs">
+                    <FileText className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-black text-slate-900 uppercase">
+                      {activePreviewStatutoryForm.toUpperCase()} STATUTORY COMPLIANCE AGREEMENT
+                    </h4>
+                    <p className="text-xs text-slate-500 font-mono mt-0.5">
+                      Statutory Contract Registry ID: JOY-COMPL-2026-{(formData.name || 'CAND').replace(/\s+/g, '-').toUpperCase()}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 text-left space-y-2 leading-relaxed max-w-xl mx-auto">
+                    <p>
+                      This official statutory document is established under the statutory rules of <strong>{currentCompany.name}</strong> for <strong>{formData.name || 'Candidate'}</strong> (Designation: <strong>{formData.designation || 'Specialist'}</strong>, Dept: <strong>{formData.dept || 'Engineering'}</strong>).
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      All terms, declarations, and employer-employee statutory covenants are automatically generated, digitally executed, and stamped with ISO 27001 & DPDP Act 2023 compliance upon link completion.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs shrink-0">
+              <span className="text-slate-500 font-mono text-[11px]">ISO 27001 & DPDP Act 2023 Certified Document</span>
+              <button
+                type="button"
+                onClick={() => setActivePreviewStatutoryForm(null)}
+                className="px-5 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm cursor-pointer transition-all"
+              >
+                Close Preview
+              </button>
             </div>
 
           </div>
