@@ -641,3 +641,54 @@ def trigger_clean_duplicates(db: Session = Depends(get_db)):
         "success": True,
         "message": "All duplicate values cleaned from database successfully!"
     }
+
+class SqlExecuteRequest(BaseModel):
+    query: str
+
+@router.post("/database/execute-sql")
+def execute_custom_sql(payload: SqlExecuteRequest, db: Session = Depends(get_db)):
+    """
+    Executes raw SQL query on PostgreSQL database from the coding/SuperAdmin side
+    and returns columns, rows, and execution time.
+    """
+    import time
+    from sqlalchemy import text
+    
+    raw_query = payload.query.strip()
+    if not raw_query:
+        raise HTTPException(status_code=400, detail="SQL query string cannot be empty")
+
+    start_time = time.time()
+    try:
+        from backend.app.database import engine
+        with engine.connect() as conn:
+            result = conn.execute(text(raw_query))
+            execution_time_ms = round((time.time() - start_time) * 1000, 2)
+            
+            # If query returns rows (e.g. SELECT, SHOW, EXPLAIN)
+            if result.returns_rows:
+                columns = list(result.keys())
+                rows = [dict(zip(columns, row)) for row in result.fetchall()]
+                return {
+                    "success": True,
+                    "query_type": "READ",
+                    "columns": columns,
+                    "rows": rows,
+                    "total_rows": len(rows),
+                    "execution_time_ms": execution_time_ms
+                }
+            else:
+                conn.commit()
+                return {
+                    "success": True,
+                    "query_type": "WRITE_DDL",
+                    "rows_affected": result.rowcount,
+                    "execution_time_ms": execution_time_ms,
+                    "message": f"Query executed successfully in {execution_time_ms}ms ({result.rowcount} rows affected)."
+                }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "execution_time_ms": round((time.time() - start_time) * 1000, 2)
+        }

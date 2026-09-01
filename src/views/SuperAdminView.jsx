@@ -1886,6 +1886,119 @@ export const SuperAdminView = () => {
             </div>
           </div>
 
+          {/* 💻 Direct SQL Console & Code-Side Migration Runner */}
+          <div className="p-5 rounded-2xl bg-slate-950 text-slate-100 space-y-4 shadow-xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-5 h-5 text-emerald-400" />
+                <div>
+                  <h4 className="font-bold text-sm text-white">Live PostgreSQL Query Console & Code-Side Migrations</h4>
+                  <p className="text-[11px] text-slate-400">Run queries, alter tables, or execute migrations directly without pgAdmin</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleRunAllMigrations}
+                  disabled={isMigratingDb}
+                  className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] py-1.5 px-3 font-bold flex items-center gap-1.5 cursor-pointer shadow-md rounded-xl"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isMigratingDb ? 'animate-spin' : ''}`} />
+                  <span>{isMigratingDb ? 'Running Migrations...' : 'Run All Migrations 🚀'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleExecuteSql(customSqlQuery)}
+                  disabled={isExecutingSql}
+                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] py-1.5 px-3.5 font-bold flex items-center gap-1.5 cursor-pointer shadow-md rounded-xl"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>{isExecutingSql ? 'Running...' : 'Execute SQL ⚡'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Preset Queries */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px]">
+              <span className="text-slate-400 font-bold uppercase text-[9px] mr-1">Presets:</span>
+              {[
+                { label: 'View Companies', sql: 'SELECT id, name, code, email, status, created_at FROM companies ORDER BY created_at DESC LIMIT 10;' },
+                { label: 'View Candidates', sql: 'SELECT id, name, email, mobile, status, company_id, created_at FROM candidates ORDER BY created_at DESC LIMIT 10;' },
+                { label: 'View HR Users', sql: 'SELECT id, name, email, company_id, dept FROM hr_users;' },
+                { label: 'Clean Duplicates', sql: 'SELECT count(*) as total_companies FROM companies;' },
+                { label: 'List Tables', sql: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';" }
+              ].map((preset, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setCustomSqlQuery(preset.sql);
+                    handleExecuteSql(preset.sql);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 whitespace-nowrap cursor-pointer transition-all text-[10px] font-mono"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            {/* SQL Input Area */}
+            <textarea
+              rows={3}
+              value={customSqlQuery}
+              onChange={(e) => setCustomSqlQuery(e.target.value)}
+              placeholder="e.g. SELECT * FROM companies; or ALTER TABLE candidates ADD COLUMN IF NOT EXISTS ...;"
+              className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 focus:outline-none focus:border-indigo-500"
+            />
+
+            {/* SQL Query Result Display */}
+            {sqlQueryResult && (
+              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2 text-xs font-mono animate-fadeIn">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+                  <span className="flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full ${sqlQueryResult.success ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                    <strong>{sqlQueryResult.success ? 'Execution Succeeded' : 'Execution Failed'}</strong>
+                  </span>
+                  <span>{sqlQueryResult.execution_time_ms}ms • {sqlQueryResult.total_rows !== undefined ? `${sqlQueryResult.total_rows} rows returned` : (sqlQueryResult.message || '')}</span>
+                </div>
+
+                {sqlQueryResult.error && (
+                  <div className="p-2.5 bg-rose-950/60 border border-rose-800 rounded text-rose-300 text-xs">
+                    {sqlQueryResult.error}
+                  </div>
+                )}
+
+                {sqlQueryResult.rows && sqlQueryResult.rows.length > 0 && (
+                  <div className="max-h-60 overflow-auto no-scrollbar rounded border border-slate-800">
+                    <table className="w-full text-left text-[11px] text-slate-200">
+                      <thead className="bg-slate-950 text-slate-400 font-bold sticky top-0">
+                        <tr>
+                          {sqlQueryResult.columns.map((col, cIdx) => (
+                            <th key={cIdx} className="p-2 border-b border-slate-800 whitespace-nowrap">{col}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {sqlQueryResult.rows.map((row, rIdx) => (
+                          <tr key={rIdx} className="hover:bg-slate-800/50">
+                            {sqlQueryResult.columns.map((col, cIdx) => (
+                              <td key={cIdx} className="p-2 whitespace-nowrap text-slate-300 max-w-xs truncate">
+                                {typeof row[col] === 'object' ? JSON.stringify(row[col]) : String(row[col] ?? 'NULL')}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+
           {/* Table Selector Pills */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 uppercase">Select PostgreSQL Table to Inspect:</label>
