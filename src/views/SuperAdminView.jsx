@@ -76,7 +76,8 @@ import {
   Star,
   ToggleLeft,
   ToggleRight,
-  EyeOff
+  EyeOff,
+  Play
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
