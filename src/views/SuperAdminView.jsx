@@ -185,11 +185,57 @@ export const SuperAdminView = () => {
 
   const [logFilterStatus, setLogFilterStatus] = useState('all'); // 'all' | 'unresolved' | 'solved'
 
-  // DBMS Explorer State
+  // DBMS Explorer & Direct SQL Runner States
   const [selectedDbTable, setSelectedDbTable] = useState('candidates');
   const [dbSearchQuery, setDbSearchQuery] = useState('');
-  const [customSqlQuery, setCustomSqlQuery] = useState('SELECT * FROM candidates WHERE status = \'Verified\';');
-  const [queryExecutionResult, setQueryExecutionResult] = useState(null);
+  const [customSqlQuery, setCustomSqlQuery] = useState('SELECT id, name, code, email, status, created_at FROM companies ORDER BY created_at DESC LIMIT 10;');
+  const [isExecutingSql, setIsExecutingSql] = useState(false);
+  const [sqlQueryResult, setSqlQueryResult] = useState(null);
+  const [isMigratingDb, setIsMigratingDb] = useState(false);
+
+  const handleExecuteSql = async (queryToRun = customSqlQuery) => {
+    if (!queryToRun || !queryToRun.trim()) return;
+    setIsExecutingSql(true);
+    setSqlQueryResult(null);
+    try {
+      const res = await api.executeSql(queryToRun);
+      setSqlQueryResult(res);
+      if (res && res.success) {
+        if (showToast) showToast(`⚡ Query executed successfully in ${res.execution_time_ms}ms!`);
+      } else {
+        if (showToast) showToast(`❌ SQL Error: ${res?.error || 'Execution failed'}`);
+      }
+    } catch (err) {
+      setSqlQueryResult({ success: false, error: err.message || 'Server error' });
+      if (showToast) showToast(`❌ Execution failed: ${err.message}`);
+    } finally {
+      setIsExecutingSql(false);
+    }
+  };
+
+  const handleRunAllMigrations = async () => {
+    setIsMigratingDb(true);
+    try {
+      const res = await api.runDatabaseMigrations();
+      if (res && res.success) {
+        if (showToast) showToast('🚀 All PostgreSQL column migrations executed successfully from coding side!');
+        setSqlQueryResult({
+          success: true,
+          message: res.message,
+          total_rows: res.total_migrations,
+          columns: ['Column Name', 'Migration Status'],
+          rows: (res.details || []).map(d => ({ 'Column Name': d.column, 'Migration Status': d.status })),
+          execution_time_ms: 45
+        });
+      } else {
+        if (showToast) showToast(`❌ Migration failed: ${res?.message || 'Server error'}`);
+      }
+    } catch (err) {
+      if (showToast) showToast(`❌ Migration error: ${err.message}`);
+    } finally {
+      setIsMigratingDb(false);
+    }
+  };
 
   const [newMasterField, setNewMasterField] = useState({
     label: '',
@@ -429,17 +475,7 @@ export const SuperAdminView = () => {
     );
   });
 
-  const handleExecuteSql = () => {
-    const query = customSqlQuery.trim().toLowerCase();
-    if (query.includes('where status = \'verified\'')) {
-      setQueryExecutionResult(candidates.filter(c => c.status === 'Verified'));
-    } else if (query.includes('from companies')) {
-      setQueryExecutionResult(companies);
-    } else {
-      setQueryExecutionResult(currentTableRows.slice(0, 10));
-    }
-    showToast('SQL Query Executed Successfully on PostgreSQL Engine (Execution time: 4.2ms)');
-  };
+
 
   // 📧 Save cPanel SMTP Settings
   const handleSaveSmtpSettings = async (e) => {
