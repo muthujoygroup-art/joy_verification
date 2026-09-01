@@ -842,6 +842,206 @@ export const CompanyAdminView = () => {
       )}
 
       {/* TAB: COMPLIANCE DOCUMENT STORAGE MANAGEMENT SYSTEM (DMS) */}
+            {/* TAB: COMPANY PROFILE & STATUTORY DOCUMENTS */}
+      {activeTab === 'profile_details' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 animate-fadeIn rounded-3xl shadow-sm">
+          <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-black text-slate-900">Company Master Profile & Statutory Documents</h3>
+                  <span className="badge badge-emerald text-[10px] font-bold">VERIFIED ENTITY</span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">Update your organization's tax credentials, registered address, and compliance certificates</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveCompanyProfile}
+              disabled={isSavingProfile}
+              className="btn btn-company text-xs py-2 px-5 flex items-center gap-2 font-bold shadow-md cursor-pointer shrink-0"
+            >
+              {isSavingProfile ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              <span>{isSavingProfile ? 'Saving Profile...' : 'Save Company Details 💾'}</span>
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveCompanyProfile} className="space-y-6 text-xs">
+            
+            {/* Master Credentials Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Company Legal Name</label>
+                <input 
+                  type="text" 
+                  value={company.name} 
+                  disabled
+                  className="form-input bg-slate-100 font-bold text-slate-600 cursor-not-allowed" 
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Corporate Identification Number (CIN) *</label>
+                <input 
+                  type="text" 
+                  value={profileData.cin_number} 
+                  onChange={(e) => setProfileData({ ...profileData, cin_number: e.target.value.toUpperCase() })}
+                  placeholder="e.g. U74999KA2026PTC192841"
+                  className="form-input font-mono font-bold" 
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Company PAN Number *</label>
+                <input 
+                  type="text" 
+                  maxLength={10}
+                  value={profileData.company_pan} 
+                  onChange={(e) => setProfileData({ ...profileData, company_pan: e.target.value.toUpperCase() })}
+                  placeholder="e.g. AAACJ1234F"
+                  className="form-input font-mono font-bold" 
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">GSTIN Registration Number *</label>
+                <input 
+                  type="text" 
+                  maxLength={15}
+                  value={profileData.gstin_number} 
+                  onChange={(e) => setProfileData({ ...profileData, gstin_number: e.target.value.toUpperCase() })}
+                  placeholder="e.g. 29AAAAA0000A1Z5"
+                  className="form-input font-mono font-bold" 
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Industry Sector / Domain *</label>
+                <select
+                  value={profileData.industry_sector}
+                  onChange={(e) => setProfileData({ ...profileData, industry_sector: e.target.value })}
+                  className="form-select font-bold text-xs"
+                >
+                  <option value="Information Technology (IT/ITeS)">Information Technology (IT/ITeS)</option>
+                  <option value="Banking, Financial Services & Insurance (BFSI)">Banking, Financial Services & Insurance (BFSI)</option>
+                  <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
+                  <option value="E-Commerce, Logistics & Supply Chain">E-Commerce, Logistics & Supply Chain</option>
+                  <option value="Manufacturing & Infrastructure">Manufacturing & Infrastructure</option>
+                  <option value="Consulting & Professional Services">Consulting & Professional Services</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Official Corporate Website</label>
+                <input 
+                  type="url" 
+                  value={profileData.website} 
+                  onChange={(e) => setProfileData({ ...profileData, website: e.target.value })}
+                  placeholder="https://www.yourcompany.com"
+                  className="form-input font-bold" 
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className="block font-bold text-slate-700 mb-1">Registered Corporate Office Address *</label>
+                <textarea 
+                  rows={2}
+                  value={profileData.registered_address} 
+                  onChange={(e) => setProfileData({ ...profileData, registered_address: e.target.value })}
+                  placeholder="Floor No, Building Name, Street Address, City, State, Pincode"
+                  className="form-input text-xs" 
+                />
+              </div>
+            </div>
+
+            {/* Statutory Documents Uploads */}
+            <div className="pt-4 border-t border-slate-100 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <UploadCloud className="w-4 h-4 text-indigo-600" />
+                  <span>Statutory Corporate Documents Vault</span>
+                </h4>
+                <span className="text-[10px] text-slate-400">PDF, JPG, PNG Supported</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                {/* Doc 1: COI */}
+                <div className="p-3.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 space-y-2 hover:border-indigo-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-slate-900 font-bold text-[11px]">1. Certificate of Incorporation</strong>
+                    {companyUploadedDocs.coi && <span className="badge badge-emerald text-[8px]">ATTACHED ✓</span>}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleCompanyDocUpload('coi', e.target.files[0])}
+                    className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                </div>
+
+                {/* Doc 2: Company PAN */}
+                <div className="p-3.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 space-y-2 hover:border-indigo-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-slate-900 font-bold text-[11px]">2. Company PAN Card</strong>
+                    {companyUploadedDocs.pan && <span className="badge badge-emerald text-[8px]">ATTACHED ✓</span>}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleCompanyDocUpload('pan', e.target.files[0])}
+                    className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                </div>
+
+                {/* Doc 3: GST */}
+                <div className="p-3.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 space-y-2 hover:border-indigo-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-slate-900 font-bold text-[11px]">3. GST REG-06 Certificate</strong>
+                    {companyUploadedDocs.gst && <span className="badge badge-emerald text-[8px]">ATTACHED ✓</span>}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleCompanyDocUpload('gst', e.target.files[0])}
+                    className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                </div>
+
+                {/* Doc 4: Board Resolution */}
+                <div className="p-3.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 space-y-2 hover:border-indigo-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-slate-900 font-bold text-[11px]">4. Signatory / Resolution</strong>
+                    {companyUploadedDocs.signatory_proof && <span className="badge badge-emerald text-[8px]">ATTACHED ✓</span>}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleCompanyDocUpload('signatory_proof', e.target.files[0])}
+                    className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="submit"
+                disabled={isSavingProfile}
+                className="btn btn-company text-xs py-2 px-6 flex items-center gap-2 font-bold shadow-md cursor-pointer"
+              >
+                {isSavingProfile ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{isSavingProfile ? 'Saving...' : 'Save Corporate Profile & Documents 💾'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+
       {activeTab === 'dochub' && (
         <DocumentStorageHub />
       )}

@@ -340,332 +340,121 @@ export const CompanyActivationView = () => {
         )}
 
         {/* ========================================================================= */}
-        {/* 🏢 STEP 2: UNLOCKED ACTIVATION FORM WIZARD */}
+        {/* 🏢 STEP 2: UNLOCKED TERMS & ACCOUNT ACTIVATION SCREEN */}
         {/* ========================================================================= */}
         {isUnlocked && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-2xl border border-slate-200 animate-fadeIn space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-2xl border border-slate-200 animate-fadeIn space-y-6 max-w-xl mx-auto">
             
-            {/* Step Progress Pills */}
-            <div className="grid grid-cols-3 gap-2 border-b border-slate-100 pb-4">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className={`p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  currentStep === 1 
-                    ? 'bg-indigo-600 text-white shadow-sm' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                <span>1. Corporate Profile</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setCurrentStep(2)}
-                className={`p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  currentStep === 2 
-                    ? 'bg-indigo-600 text-white shadow-sm' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                <span>2. Statutory Uploads</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setCurrentStep(3)}
-                className={`p-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  currentStep === 3 
-                    ? 'bg-indigo-600 text-white shadow-sm' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                <span>3. Legal SLA Acceptance</span>
-              </button>
-            </div>
-
-            {/* --- SECTION 1: CORPORATE PROFILE --- */}
-            {currentStep === 1 && (
-              <div className="space-y-4 text-xs animate-fadeIn">
-                <div className="border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-indigo-600" />
-                    <span>Organization Master Details</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">Verify your corporate tax credentials and registered address</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Company Full Legal Name *</label>
-                    <input 
-                      type="text" 
-                      value={companyDetails.name} 
-                      disabled
-                      className="form-input bg-slate-100 font-bold text-slate-600 cursor-not-allowed" 
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Corporate Identification Number (CIN) *</label>
-                    <input 
-                      type="text" 
-                      value={corporateData.cin_number} 
-                      onChange={(e) => setCorporateData({ ...corporateData, cin_number: e.target.value.toUpperCase() })}
-                      placeholder="e.g. U74999KA2026PTC192841"
-                      className="form-input font-mono font-bold" 
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Company PAN (Permanent Account Number) *</label>
-                    <input 
-                      type="text" 
-                      maxLength={10}
-                      value={corporateData.company_pan} 
-                      onChange={(e) => setCorporateData({ ...corporateData, company_pan: e.target.value.toUpperCase() })}
-                      placeholder="e.g. AAACJ1234F"
-                      className="form-input font-mono font-bold" 
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">GSTIN Number (Goods & Services Tax) *</label>
-                    <input 
-                      type="text" 
-                      maxLength={15}
-                      value={corporateData.gstin_number} 
-                      onChange={(e) => setCorporateData({ ...corporateData, gstin_number: e.target.value.toUpperCase() })}
-                      placeholder="e.g. 29AAAAA0000A1Z5"
-                      className="form-input font-mono font-bold" 
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Industry Sector / Domain *</label>
-                    <select
-                      value={corporateData.industry_sector}
-                      onChange={(e) => setCorporateData({ ...corporateData, industry_sector: e.target.value })}
-                      className="form-select font-bold text-xs"
-                    >
-                      <option value="Information Technology (IT/ITeS)">Information Technology (IT/ITeS)</option>
-                      <option value="Banking, Financial Services & Insurance (BFSI)">Banking, Financial Services & Insurance (BFSI)</option>
-                      <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
-                      <option value="E-Commerce, Logistics & Supply Chain">E-Commerce, Logistics & Supply Chain</option>
-                      <option value="Manufacturing & Infrastructure">Manufacturing & Infrastructure</option>
-                      <option value="Consulting & Professional Services">Consulting & Professional Services</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Official Corporate Website URL</label>
-                    <input 
-                      type="url" 
-                      value={corporateData.website} 
-                      onChange={(e) => setCorporateData({ ...corporateData, website: e.target.value })}
-                      placeholder="https://www.yourcompany.com"
-                      className="form-input font-bold" 
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block font-bold text-slate-700 mb-1">Registered Corporate Office Address *</label>
-                    <textarea 
-                      rows={2}
-                      value={corporateData.registered_address} 
-                      onChange={(e) => setCorporateData({ ...corporateData, registered_address: e.target.value })}
-                      placeholder="Floor No, Building Name, Street Address, City, State, Pincode"
-                      className="form-input text-xs" 
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(2)}
-                    className="btn btn-company text-xs py-2 px-5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
-                  >
-                    <span>Proceed to Statutory Uploads &rarr;</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* --- SECTION 2: STATUTORY DOCUMENT UPLOADS --- */}
-            {currentStep === 2 && (
-              <div className="space-y-4 text-xs animate-fadeIn">
-                <div className="border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <UploadCloud className="w-4 h-4 text-indigo-600" />
-                    <span>Statutory Corporate Documents</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">Attach digital copies of your organization's legal certificates (PDF or JPEG)</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Doc 1: COI */}
-                  <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/70 space-y-2 transition-all">
-                    <div className="flex items-center justify-between">
-                      <strong className="text-slate-900 font-bold">1. Certificate of Incorporation (COI)</strong>
-                      {documents.coi && <span className="badge badge-emerald text-[9px]">ATTACHED ✓</span>}
+            {!isActivatedSuccess ? (
+              <form onSubmit={handleCompleteActivation} className="space-y-5">
+                
+                {/* Header Strip */}
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                      <ShieldCheck className="w-5 h-5" />
                     </div>
-                    <p className="text-[10px] text-slate-500">Ministry of Corporate Affairs Certificate or MSME Udyam</p>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload('coi', e.target.files[0])}
-                      className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                    />
-                  </div>
-
-                  {/* Doc 2: Company PAN */}
-                  <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/70 space-y-2 transition-all">
-                    <div className="flex items-center justify-between">
-                      <strong className="text-slate-900 font-bold">2. Company PAN Card Copy</strong>
-                      {documents.pan && <span className="badge badge-emerald text-[9px]">ATTACHED ✓</span>}
+                    <div>
+                      <h2 className="text-base font-black text-slate-900">Activate Your Organization Account</h2>
+                      <p className="text-xs text-slate-500 font-medium">Accept terms to complete account provisioning</p>
                     </div>
-                    <p className="text-[10px] text-slate-500">Entity PAN card issued by Income Tax Department</p>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload('pan', e.target.files[0])}
-                      className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                    />
                   </div>
+                  <span className="badge badge-purple text-[10px] font-bold">DPDP ACT 2023</span>
+                </div>
 
-                  {/* Doc 3: GST Registration */}
-                  <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/70 space-y-2 transition-all">
-                    <div className="flex items-center justify-between">
-                      <strong className="text-slate-900 font-bold">3. GST Registration Certificate</strong>
-                      {documents.gst && <span className="badge badge-emerald text-[9px]">ATTACHED ✓</span>}
-                    </div>
-                    <p className="text-[10px] text-slate-500">Form GST REG-06 Certificate of Registration</p>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload('gst', e.target.files[0])}
-                      className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                    />
+                {/* Organization Details Summary Card */}
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Company Name</span>
+                    <strong className="text-slate-900 font-black text-sm">{companyDetails.name}</strong>
                   </div>
-
-                  {/* Doc 4: Signatory Proof */}
-                  <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/70 space-y-2 transition-all">
-                    <div className="flex items-center justify-between">
-                      <strong className="text-slate-900 font-bold">4. Authorized Signatory / Board Resolution</strong>
-                      {documents.signatory_proof && <span className="badge badge-emerald text-[9px]">ATTACHED ✓</span>}
-                    </div>
-                    <p className="text-[10px] text-slate-500">Board Authorization or Signatory Identity Proof</p>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload('signatory_proof', e.target.files[0])}
-                      className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-                    />
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Company Code</span>
+                    <span className="font-mono text-purple-800 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                      #{companyDetails.code}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Admin Username</span>
+                    <span className="font-mono text-slate-900 font-bold">{companyDetails.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Provisioned Plan</span>
+                    <span className="text-indigo-700 font-black">{companyDetails.plan}</span>
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
-                  >
-                    &larr; Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(3)}
-                    className="btn btn-company text-xs py-2 px-5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
-                  >
-                    <span>Proceed to Legal SLA Agreement &rarr;</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* --- SECTION 3: LEGAL SLA & DPDP ACCEPTANCE --- */}
-            {currentStep === 3 && (
-              <div className="space-y-4 text-xs animate-fadeIn">
-                <div className="border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-indigo-600" />
-                    <span>Enterprise Terms of Service & DPDP Act 2023 Agreement</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 font-medium">Review statutory obligations for candidate data verification</p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 text-xs text-slate-700 space-y-2.5 leading-relaxed">
-                  <p>
-                    By proceeding with activation of <strong>{companyDetails.name}</strong>, you declare that all background verification checks initiated on this platform shall comply with the <strong>Digital Personal Data Protection (DPDP) Act 2023</strong> and the <strong>Information Technology Act 2000</strong>.
+                {/* Terms of Service & DPDP Act Summary */}
+                <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 text-xs text-slate-700 space-y-2 leading-relaxed">
+                  <strong className="text-indigo-950 font-bold block flex items-center gap-1.5">
+                    <Scale className="w-4 h-4 text-indigo-700" />
+                    <span>Master Service Agreement & Statutory Declarations</span>
+                  </strong>
+                  <p className="text-[11px] text-slate-600">
+                    By activating your account for <strong>{companyDetails.name}</strong>, you agree to comply with the <strong>DPDP Act 2023</strong> and the <strong>Information Technology Act 2000</strong>.
                   </p>
                   <ul className="list-disc pl-5 space-y-1 text-[11px] text-slate-600">
-                    <li>Explicit candidate consent is mandatory before requesting Aadhaar, EPFO, or judicial records.</li>
-                    <li>Verification reports are strictly for employment qualification purposes.</li>
-                    <li>Point-in-Time Data Verification Mechanism maintains immutable statutory audit logs for 7 years.</li>
+                    <li>Mandatory candidate consent before requesting Aadhaar, EPFO, or judicial records.</li>
+                    <li>7-Year immutable audit retention under Point-in-Time Data Verification protocol.</li>
+                    <li>Authorized use strictly for employment background checks and statutory onboarding.</li>
                   </ul>
                 </div>
 
+                {/* Interactive Acceptance Checkbox */}
                 <label className="p-3.5 rounded-2xl bg-slate-50 border-2 border-indigo-200 flex items-start gap-3 cursor-pointer hover:bg-indigo-50/30 transition-all">
                   <input 
                     type="checkbox" 
+                    required
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-indigo-600 rounded"
+                    className="mt-1 w-4 h-4 text-indigo-600 rounded cursor-pointer"
                   />
                   <div className="text-xs">
                     <strong className="text-slate-900 block font-bold">
-                      I accept the Enterprise Master Service Agreement & DPDP Compliance Protocol
+                      I accept the Enterprise Master Service Agreement & DPDP Compliance Protocol *
                     </strong>
                     <span className="text-[11px] text-slate-500 mt-0.5 block">
-                      Authorized by: {companyDetails.contact_person} ({companyDetails.email}) on behalf of {companyDetails.name}
+                      Accepted by {companyDetails.contact_person || 'Authorized Representative'} ({companyDetails.email}) on behalf of {companyDetails.name}
                     </span>
                   </div>
                 </label>
 
-                <div className="flex justify-between pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(2)}
-                    className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
-                  >
-                    &larr; Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCompleteActivation}
-                    disabled={isSubmitting || !termsAccepted}
-                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-6 flex items-center gap-2 font-black shadow-lg cursor-pointer transition-all active:scale-98"
-                  >
-                    {isSubmitting ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <CheckCircle2 className="w-4 h-4" />
-                    )}
-                    <span>{isSubmitting ? 'Activating Organization...' : 'Complete Activation & Open Portal 🚀'}</span>
-                  </button>
-                </div>
-              </div>
-            )}
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !termsAccepted}
+                  className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-3 px-6 flex items-center justify-center gap-2 font-black shadow-lg cursor-pointer transition-all active:scale-98 rounded-2xl"
+                >
+                  {isSubmitting ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-4 h-4" />
+                  )}
+                  <span>{isSubmitting ? 'Creating Account & Activating...' : 'Create Account & Activate Portal 🚀'}</span>
+                </button>
 
-            {/* --- SECTION 4: ACTIVATION SUCCESS --- */}
-            {(currentStep === 4 || isActivatedSuccess) && (
-              <div className="text-center py-8 space-y-5 animate-fadeIn">
-                <div className="w-20 h-20 bg-emerald-50 border-2 border-emerald-300 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
-                  <CheckCircle2 className="w-10 h-10" />
+                <p className="text-center text-[10px] text-slate-400">
+                  After activation, you can update your full company details (CIN, GSTIN, PAN, Address, Documents) and create HR recruiter accounts inside your Company Portal.
+                </p>
+              </form>
+            ) : (
+              /* Success State */
+              <div className="text-center py-6 space-y-5 animate-fadeIn">
+                <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-300 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
+                  <CheckCircle2 className="w-9 h-9" />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <span className="badge badge-emerald text-xs font-black uppercase tracking-wider">
-                    ORGANIZATION PORTAL ACTIVE 🟢
+                    ACCOUNT CREATED & ACTIVATED 🟢
                   </span>
                   <h2 className="text-xl font-black text-slate-900">{companyDetails.name}</h2>
-                  <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">
-                    Your enterprise portal has been successfully provisioned. You can now log in to create HR recruiter accounts, configure verification templates, and dispatch candidate links.
+                  <p className="text-xs text-slate-500 font-medium max-w-sm mx-auto">
+                    Your company account has been created. Log in to update your corporate profile details, create HR recruiters, and start onboarding candidates.
                   </p>
                 </div>
 
-                <div className="max-w-md mx-auto p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2">
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-sm mx-auto">
                   <div className="flex justify-between text-slate-600">
                     <span>Company ID / Code:</span>
                     <strong className="font-mono text-slate-900">{companyDetails.code}</strong>
@@ -675,7 +464,7 @@ export const CompanyActivationView = () => {
                     <strong className="font-mono text-slate-900">{companyDetails.email}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Plan Tier:</span>
+                    <span>Plan:</span>
                     <strong className="text-indigo-700 font-bold">{companyDetails.plan}</strong>
                   </div>
                 </div>
@@ -683,9 +472,9 @@ export const CompanyActivationView = () => {
                 <button
                   type="button"
                   onClick={handleEnterCompanyDashboard}
-                  className="btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-8 rounded-2xl shadow-xl flex items-center justify-center gap-2 mx-auto cursor-pointer transition-all active:scale-98 text-xs"
+                  className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
                 >
-                  <span>Enter Company Admin Dashboard 🚀</span>
+                  <span>Enter Company Admin Portal 🚀</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
