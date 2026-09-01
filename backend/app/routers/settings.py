@@ -44,28 +44,36 @@ def get_communication_gateways(company_id: str = None, db: Session = Depends(get
     gateways = db.query(CommunicationGateway).all()
     return gateways
 
+@router.post("/email-config")
 @router.post("/gateways")
 def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
     """Save or update WhatsApp / SMTP email credentials"""
-    gw_type = payload.get("gateway_type") # 'whatsapp' | 'email_smtp'
+    gw_type = payload.get("gateway_type", "email_smtp")
     gw_id = f"gw_{gw_type}"
+    settings_data = payload.get("settings") if payload.get("settings") is not None else payload
     
     gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
     if not gw:
         gw = CommunicationGateway(
             id=gw_id,
             gateway_type=gw_type,
-            settings_data=payload.get("settings", {}),
+            settings_data=settings_data,
             is_active=True
         )
         db.add(gw)
     else:
-        gw.settings_data = payload.get("settings", {})
+        gw.settings_data = settings_data
         gw.is_active = payload.get("is_active", True)
         
     db.commit()
     db.refresh(gw)
-    return {"success": True, "gateway": gw}
+    return {
+        "success": True,
+        "message": "SMTP Email Configuration saved successfully!",
+        "gateway_id": gw.id,
+        "gateway_type": gw.gateway_type,
+        "is_active": gw.is_active
+    }
 
 from datetime import datetime
 
