@@ -87,6 +87,7 @@ def send_smtp_email(
     html_content: str,
     text_content: Optional[str] = None,
     company_id: Optional[str] = None,
+    custom_config: Optional[Dict[str, Any]] = None,
     db=None
 ) -> Dict[str, Any]:
     """
@@ -96,7 +97,20 @@ def send_smtp_email(
         logger.warning(f"Skipping email dispatch: invalid recipient address '{to_email}'")
         return {"success": False, "error": "Invalid recipient email"}
 
-    cfg = get_smtp_config(db, company_id=company_id)
+    if custom_config and isinstance(custom_config, dict) and custom_config.get("user"):
+        cfg = {
+            "host": custom_config.get("host") or "mail.joycorporatesolutions.com",
+            "port": int(custom_config.get("port") or 465),
+            "user": custom_config.get("user") or "admin@joycorporatesolutions.com",
+            "password": custom_config.get("password") or "",
+            "use_ssl": bool(custom_config.get("use_ssl", int(custom_config.get("port") or 465) == 465)),
+            "use_tls": bool(custom_config.get("use_tls", int(custom_config.get("port") or 465) == 587)),
+            "from_email": custom_config.get("from_email") or custom_config.get("user") or "admin@joycorporatesolutions.com",
+            "from_name": custom_config.get("from_name") or "JOY Corporate Solutions BGV",
+            "mode": "runtime_override"
+        }
+    else:
+        cfg = get_smtp_config(db, company_id=company_id)
     
     # If no SMTP password configured, log simulation mode
     if not cfg["password"]:

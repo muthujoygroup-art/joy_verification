@@ -92,27 +92,73 @@ def get_email_config(db: Session = Depends(get_db)):
 def test_email_dispatch(payload: dict, db: Session = Depends(get_db)):
     """Dispatches a live diagnostic test email to verify cPanel SMTP connectivity"""
     to_email = payload.get("to_email")
+    smtp_cfg = payload.get("smtp_config")
+    
     if not to_email:
         raise HTTPException(status_code=400, detail="Recipient 'to_email' is required")
 
+    # If SMTP config with password was provided in test request, persist it to database
+    if smtp_cfg and isinstance(smtp_cfg, dict) and smtp_cfg.get("password"):
+        gw_id = "gw_email_smtp"
+        gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
+        if not gw:
+            gw = CommunicationGateway(
+                id=gw_id,
+                gateway_type="email_smtp",
+                settings_data=smtp_cfg,
+                is_active=True
+            )
+            db.add(gw)
+        else:
+            gw.settings_data = smtp_cfg
+            gw.is_active = True
+        db.commit()
+        db.refresh(gw)
+
     test_html = f"""
-    <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a;">
-        <h2 style="color: #4338ca; margin-top: 0;">🎉 cPanel SMTP Email Gateway Connected!</h2>
-        <p>This is a live test email dispatched from your <strong>JOY Background Verification Platform</strong>.</p>
-        <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            <strong style="color: #15803d;">Status: Successfully Authenticated with Mail Server</strong><br>
-            <span style="font-size: 12px; color: #475569;">Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</span>
+    <div style="font-family: Arial, sans-serif; padding: 25px; color: #0f172a; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #ffffff; margin: 0; font-size: 18px; letter-spacing: 0.5px;">JOY CORPORATE SOLUTIONS</h2>
+            <span style="color: #94a3b8; font-size: 11px; font-weight: 600; text-transform: uppercase;">cPanel SMTP Direct Gateway Handshake</span>
         </div>
-        <p style="font-size: 12px; color: #64748b;">
-            All automated account creation and verification notice emails will be dispatched via this gateway.
-        </p>
+        
+        <div style="background: #f0fdf4; border: 2px solid #86efac; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+            <strong style="color: #15803d; font-size: 15px;">🎉 SMTP Gateway Connection Verified!</strong><br>
+            <p style="margin: 6px 0 0 0; font-size: 12px; color: #334155; line-height: 1.5;">
+                This live diagnostic email confirms that your cPanel mail server (<strong>{smtp_cfg.get('host') if smtp_cfg else 'mail.joycorporatesolutions.com'}</strong>) is properly authenticated and ready to dispatch notifications.
+            </p>
+        </div>
+
+        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12px; margin-bottom: 20px;">
+            <tr>
+                <td width="35%" style="color: #64748b; font-weight: 600;">Sender Account:</td>
+                <td style="color: #0f172a; font-weight: bold; font-family: monospace;">{smtp_cfg.get('user') if smtp_cfg else 'admin@joycorporatesolutions.com'}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Recipient:</td>
+                <td style="color: #0f172a; font-weight: bold; font-family: monospace;">{to_email}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Handshake Protocol:</td>
+                <td style="color: #4338ca; font-weight: bold;">SSL/TLS Port {smtp_cfg.get('port') if smtp_cfg else 465}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Timestamp (UTC):</td>
+                <td style="color: #0f172a;">{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</td>
+            </tr>
+        </table>
+
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 11px; color: #94a3b8;">
+            JOY Data Verification & Compliance Gateway • ISO 27001 Certified • DPDP Act 2023 Ready
+        </div>
     </div>
     """
 
     res = send_smtp_email(
         to_email=to_email,
-        subject="✅ JOY Corporate Solutions - cPanel SMTP Test Verification",
+        subject="✅ JOY Corporate Solutions - cPanel SMTP Gateway Verification",
         html_content=test_html,
+        custom_config=smtp_cfg,
         db=db
     )
 
