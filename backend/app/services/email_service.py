@@ -275,7 +275,7 @@ def send_company_welcome_email(
         </div>
         <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12px;">
             <tr>
-                <td width="38%" style="color: #64748b; font-weight: 600;">Company Code / ID:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Company Code / ID:</td>
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace; font-size: 13px;">{company_code}</td>
             </tr>
             <tr>
@@ -283,11 +283,15 @@ def send_company_welcome_email(
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{admin_email}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Security Unlock Password:</td>
+                <td style="color: #64748b; font-weight: 600;">Admin Login Password:</td>
+                <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{temporary_password}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Activation Unlock PIN:</td>
                 <td style="color: #4338ca; font-weight: 900; font-family: monospace; font-size: 16px; letter-spacing: 1px;">{temporary_password}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Link Valid Until:</td>
+                <td style="color: #64748b; font-weight: 600;">Activation Link Valid Until:</td>
                 <td style="color: #b45309; font-weight: 700;">{expires_at_str or '15 Days from Issue'}</td>
             </tr>
         </table>

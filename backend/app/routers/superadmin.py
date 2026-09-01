@@ -93,7 +93,8 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         price_per_check = 180.0
 
     credits_bought = payload.credits_purchased or payload.max_limit or 500
-    password_set = payload.password or payload.activation_password or "1234"
+    login_password_set = payload.password or "Company@Admin2026"
+    activation_pin_set = payload.activation_password or "1234"
 
     # Expiry calculation
     if payload.expiry_date:
@@ -125,7 +126,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         contact_person=payload.contact_person,
         phone=payload.phone,
         email=payload.email,
-        password_hash=password_set,
+        password_hash=login_password_set,
         plan=plan_name,
         price_per_verification=price_per_check,
         max_limit=credits_bought,
@@ -135,7 +136,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         status="Pending Activation",
         activation_status="Pending Activation",
         activation_token=activation_token,
-        activation_password=password_set,
+        activation_password=activation_pin_set,
         activation_expires_at=expires_at,
         created_at=datetime.utcnow()
     )

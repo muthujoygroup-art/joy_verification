@@ -200,12 +200,15 @@ export const SuperAdminView = () => {
   // 🏢 Company Activation & Onboarding States
   const [activatingCompany, setActivatingCompany] = useState(null);
   const [showNewCompPassword, setShowNewCompPassword] = useState(false);
+  const [showNewCompLoginPassword, setShowNewCompLoginPassword] = useState(false);
+  const [showNewCompActivationPin, setShowNewCompActivationPin] = useState(false);
   const [newCompany, setNewCompany] = useState({
     name: '',
     contactPerson: '',
     phone: '',
     email: '',
-    password: '1234',
+    password: 'Company@Admin2026',
+    activation_password: '1234',
     plan: 'Standard Tier',
     credits_purchased: 500,
     maxLimit: 500,
@@ -3555,7 +3558,7 @@ export const SuperAdminView = () => {
                 </div>
               </div>
 
-              {/* Field 4 & 5: Company Email (Username) & Password Set Option */}
+              {/* Field 4 & 5: Company Login Email & Company Login Password */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">Company Email (Login Username) *</label>
@@ -3567,72 +3570,67 @@ export const SuperAdminView = () => {
                     onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
                     className="form-input font-bold font-mono"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Official administrator login address</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Used to sign in to Company Admin portal</span>
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-slate-700 font-bold">Password Set Option *</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-                        setNewCompany({ ...newCompany, password: randomPin });
-                      }}
-                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Random PIN</span>
-                    </button>
-                  </div>
+                  <label className="block text-slate-700 font-bold mb-1">Company Login Password *</label>
                   <div className="relative flex items-center">
                     <input 
-                      type={showNewCompPassword ? 'text' : 'password'}
+                      type={showNewCompLoginPassword ? 'text' : 'password'}
                       required
-                      placeholder="e.g. 1234 or Joy@Admin2026"
+                      placeholder="e.g. Company@Admin2026"
                       value={newCompany.password}
                       onChange={(e) => setNewCompany({ ...newCompany, password: e.target.value })}
                       className="form-input font-mono font-bold pr-9"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowNewCompPassword(!showNewCompPassword)}
+                      onClick={() => setShowNewCompLoginPassword(!showNewCompLoginPassword)}
                       className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
                     >
-                      {showNewCompPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showNewCompLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Security passcode to open activation link</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Permanent password for /company portal login</span>
                 </div>
               </div>
 
-              {/* Field 6, 7 & 8: Plan Bought, Credits Purchased & Link Expiry Window */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Field 6 & 7: Activation Link Security PIN & Link Expiry Window */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Plan Bought *</label>
-                  <select 
-                    value={newCompany.plan}
-                    onChange={(e) => setNewCompany({ ...newCompany, plan: e.target.value })}
-                    className="form-select text-xs font-bold"
-                  >
-                    <option value="Enterprise Premier">Enterprise Premier (₹180 / check)</option>
-                    <option value="Standard Tier">Standard Tier (₹120 / check)</option>
-                    <option value="Basic Tier">Basic Tier (₹80 / check)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Credits Purchased *</label>
-                  <input 
-                    type="number" 
-                    min="10"
-                    max="10000"
-                    placeholder="500"
-                    value={newCompany.credits_purchased}
-                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: e.target.value })}
-                    className="form-input font-mono font-bold"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Verification credit quota</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                        setNewCompany({ ...newCompany, activation_password: randomPin });
+                      }}
+                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Random 4-Digit PIN</span>
+                    </button>
+                  </div>
+                  <div className="relative flex items-center">
+                    <input 
+                      type={showNewCompActivationPin ? 'text' : 'password'}
+                      required
+                      placeholder="e.g. 1234 or 1025"
+                      value={newCompany.activation_password}
+                      onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
+                      className="form-input font-mono font-bold pr-9 text-indigo-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
+                      className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
                 </div>
 
                 <div>
@@ -3647,7 +3645,38 @@ export const SuperAdminView = () => {
                     <option value={30}>30 Days Window</option>
                     <option value={60}>60 Days Window</option>
                   </select>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Activation TTL</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Time-to-live before activation link expires</span>
+                </div>
+              </div>
+
+              {/* Field 8 & 9: Plan Bought & Credits Purchased */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Plan Bought *</label>
+                  <select 
+                    value={newCompany.plan}
+                    onChange={(e) => setNewCompany({ ...newCompany, plan: e.target.value })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value="Enterprise Premier">Enterprise Premier (₹180 / check)</option>
+                    <option value="Standard Tier">Standard Tier (₹120 / check)</option>
+                    <option value="Basic Tier">Basic Tier (₹80 / check)</option>
+                  </select>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Commercial pricing tier</span>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Credits Purchased *</label>
+                  <input 
+                    type="number" 
+                    min="10"
+                    max="10000"
+                    placeholder="500"
+                    value={newCompany.credits_purchased}
+                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: e.target.value })}
+                    className="form-input font-mono font-bold"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Verification credit balance</span>
                 </div>
               </div>
 
