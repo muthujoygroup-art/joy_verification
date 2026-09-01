@@ -147,6 +147,7 @@ export const SuperAdminView = () => {
   const [newMasterItemInput, setNewMasterItemInput] = useState('');
 
   const [activeTab, setActiveTab] = useState('omnisearch');
+  const [tabCategory, setTabCategory] = useState('all'); // 'all' | 'core' | 'infra' | 'governance'
   // 🔍 Universal Profile ID & Omnisearch Tracker States (COMP001, COMP001HR001, COMP001EMP001)
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [selectedTrackedEntity, setSelectedTrackedEntity] = useState(null);
@@ -612,179 +613,291 @@ export const SuperAdminView = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Tabs Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-inner">
+        {/* Modern Segmented Navigation Bar */}
+        <div className="space-y-2.5">
           
-          {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
-          <button
-            onClick={() => setActiveTab('omnisearch')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-              activeTab === 'omnisearch' ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md' : 'text-slate-700 hover:text-slate-900 hover:bg-sky-100'
-            }`}
-          >
-            <Search className="w-4 h-4 text-amber-300" />
-            <span>🔍 Global Profile ID Tracker (COMP / HR / EMP)</span>
-          </button>
+          {/* Top Quick Category Filter Chips */}
+          <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar px-1 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider mr-1">SECTIONS:</span>
+              <button 
+                type="button" 
+                onClick={() => setTabCategory('all')} 
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  tabCategory === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`}
+              >
+                All Tabs (15)
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setTabCategory('core')} 
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  tabCategory === 'core' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`}
+              >
+                🏢 Clients & Billing
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setTabCategory('infra')} 
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  tabCategory === 'infra' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`}
+              >
+                🔌 Data & APIs
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setTabCategory('governance')} 
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  tabCategory === 'governance' ? 'bg-purple-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                }`}
+              >
+                🛡️ Governance & Settings
+              </button>
+            </div>
 
-          {/* TAB 1: Analytics & Profit */}
-          <button
-            data-tour-step="superadmin-analytics-tab"
-            onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>1. Platform & Profit Analytics</span>
-          </button>
+            <div className="text-[11px] font-bold text-slate-400 hidden sm:flex items-center gap-1.5">
+              <span>Super Admin Master Station</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            </div>
+          </div>
 
-          {/* TAB 2: Companies & Features */}
-          <button
-            data-tour-step="superadmin-companies-tab"
-            onClick={() => setActiveTab('companies')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>2. Companies & Feature Matrix</span>
-          </button>
+          {/* Clean Aligned & Scrollable Ribbon */}
+          <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 shadow-inner overflow-x-auto no-scrollbar scroll-smooth">
+            
+            {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
+            {(tabCategory === 'all' || tabCategory === 'core') && (
+              <button
+                onClick={() => setActiveTab('omnisearch')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'omnisearch' 
+                    ? 'bg-gradient-to-r from-indigo-600 via-sky-600 to-indigo-700 text-white shadow-md' 
+                    : 'bg-white text-slate-800 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <Search className={`w-3.5 h-3.5 ${activeTab === 'omnisearch' ? 'text-amber-300' : 'text-indigo-600'}`} />
+                <span>🔍 Global Profile ID Tracker</span>
+              </button>
+            )}
 
-          {/* TAB 3: Terms & Conditions Contracts Hub */}
-          <button
-            onClick={() => setActiveTab('terms_hub')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Scale className="w-4 h-4" />
-            <span>3. Terms & Contracts Hub 📜</span>
-          </button>
+            {/* TAB 1: Analytics & Profit */}
+            {(tabCategory === 'all' || tabCategory === 'core') && (
+              <button
+                data-tour-step="superadmin-analytics-tab"
+                onClick={() => setActiveTab('analytics')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'analytics' 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>1. Platform Analytics</span>
+              </button>
+            )}
 
-          {/* TAB 4: Metered Billing & Invoices */}
-          <button
-            data-tour-step="superadmin-billing-tab"
-            onClick={() => setActiveTab('billing')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'billing' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>4. Metered Invoicing & Bill Dispatch</span>
-          </button>
+            {/* TAB 2: Companies & Features */}
+            {(tabCategory === 'all' || tabCategory === 'core') && (
+              <button
+                data-tour-step="superadmin-companies-tab"
+                onClick={() => setActiveTab('companies')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'companies' 
+                    ? 'bg-purple-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                <span>2. Companies & Features</span>
+              </button>
+            )}
 
-          {/* TAB 5: Multi-Login Telemetry */}
-          <button
-            onClick={() => setActiveTab('logins')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'logins' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>5. Login Sessions Telemetry 👥</span>
-          </button>
+            {/* TAB 3: Terms & Conditions Contracts Hub */}
+            {(tabCategory === 'all' || tabCategory === 'core' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('terms_hub')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'terms_hub' 
+                    ? 'bg-amber-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>3. Terms & Contracts 📜</span>
+              </button>
+            )}
 
-          {/* TAB 6: Database Management System (DBMS) */}
-          <button
-            data-tour-step="superadmin-dbms-tab"
-            onClick={() => setActiveTab('dbms')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'dbms' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Database className="w-4 h-4" />
-            <span>6. Database Management (DBMS) 🗄️</span>
-          </button>
+            {/* TAB 4: Metered Billing & Invoices */}
+            {(tabCategory === 'all' || tabCategory === 'core') && (
+              <button
+                data-tour-step="superadmin-billing-tab"
+                onClick={() => setActiveTab('billing')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'billing' 
+                    ? 'bg-sky-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>4. Invoicing & Billing</span>
+              </button>
+            )}
 
-          {/* TAB 7: Master Fields & Dropdowns */}
-          <button
-            onClick={() => setActiveTab('masterfields')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'masterfields' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <ListCheck className="w-4 h-4" />
-            <span>7. Master Fields & Dropdowns</span>
-          </button>
+            {/* TAB 5: Multi-Login Telemetry */}
+            {(tabCategory === 'all' || tabCategory === 'infra') && (
+              <button
+                onClick={() => setActiveTab('logins')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'logins' 
+                    ? 'bg-emerald-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>5. Login Telemetry 👥</span>
+              </button>
+            )}
 
-          {/* TAB 8: API Credentials */}
-          <button
-            data-tour-step="superadmin-apiconfig-tab"
-            onClick={() => setActiveTab('apiconfig')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'apiconfig' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Server className="w-4 h-4" />
-            <span>8. API Credentials</span>
-          </button>
+            {/* TAB 6: Database Management System (DBMS) */}
+            {(tabCategory === 'all' || tabCategory === 'infra') && (
+              <button
+                data-tour-step="superadmin-dbms-tab"
+                onClick={() => setActiveTab('dbms')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'dbms' 
+                    ? 'bg-teal-700 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Database className="w-3.5 h-3.5" />
+                <span>6. Database (DBMS) 🗄️</span>
+              </button>
+            )}
 
-          {/* TAB 9: Reports Center */}
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'reports' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileDown className="w-4 h-4" />
-            <span>9. Reports Center</span>
-          </button>
+            {/* TAB 7: Master Fields & Dropdowns */}
+            {(tabCategory === 'all' || tabCategory === 'infra') && (
+              <button
+                onClick={() => setActiveTab('masterfields')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'masterfields' 
+                    ? 'bg-teal-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <ListCheck className="w-3.5 h-3.5" />
+                <span>7. Master Fields</span>
+              </button>
+            )}
 
-          {/* TAB 10: Support Tickets */}
-          <button
-            onClick={() => setActiveTab('tickets')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'tickets' ? 'bg-indigo-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <LifeBuoy className="w-4 h-4" />
-            <span>10. Support Helpdesk ({supportTickets.length})</span>
-          </button>
+            {/* TAB 8: API Credentials */}
+            {(tabCategory === 'all' || tabCategory === 'infra') && (
+              <button
+                data-tour-step="superadmin-apiconfig-tab"
+                onClick={() => setActiveTab('apiconfig')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'apiconfig' 
+                    ? 'bg-emerald-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Server className="w-3.5 h-3.5" />
+                <span>8. API Gateways</span>
+              </button>
+            )}
 
-          {/* TAB 11: Issue Logs */}
-          <button
-            onClick={() => setActiveTab('issuelogs')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'issuelogs' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <AlertCircle className="w-4 h-4" />
-            <span>11. Error Logs ({totalUnresolvedErrorCount})</span>
-          </button>
+            {/* TAB 9: Reports Center */}
+            {(tabCategory === 'all' || tabCategory === 'infra') && (
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'reports' 
+                    ? 'bg-amber-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                <span>9. Reports Center</span>
+              </button>
+            )}
 
-          {/* TAB 12: Guidelines */}
-          <button
-            onClick={() => setActiveTab('guidelines')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'guidelines' ? 'bg-purple-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>12. Platform Guidelines</span>
-          </button>
+            {/* TAB 10: Support Tickets */}
+            {(tabCategory === 'all' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('tickets')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'tickets' 
+                    ? 'bg-indigo-700 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <LifeBuoy className="w-3.5 h-3.5" />
+                <span>10. Helpdesk ({supportTickets.length})</span>
+              </button>
+            )}
 
-          {/* TAB 13: Settings */}
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'settings' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>13. Settings</span>
-          </button>
+            {/* TAB 11: Issue Logs */}
+            {(tabCategory === 'all' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('issuelogs')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'issuelogs' 
+                    ? 'bg-rose-600 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>11. Error Logs ({totalUnresolvedErrorCount})</span>
+              </button>
+            )}
 
-          {/* TAB 14: Legal & DPDP Governance */}
-          <button
-            onClick={() => setActiveTab('legal_governance')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-              activeTab === 'legal_governance' ? 'bg-purple-800 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Scale className="w-4 h-4 text-purple-400" />
-            <span>14. Legal & DPDP Governance 🏛️</span>
-          </button>
+            {/* TAB 12: Guidelines */}
+            {(tabCategory === 'all' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('guidelines')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'guidelines' 
+                    ? 'bg-purple-700 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>12. Guidelines</span>
+              </button>
+            )}
 
+            {/* TAB 13: Settings */}
+            {(tabCategory === 'all' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'settings' 
+                    ? 'bg-slate-900 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span>13. Settings & Mail 📧</span>
+              </button>
+            )}
+
+            {/* TAB 14: Legal & DPDP Governance */}
+            {(tabCategory === 'all' || tabCategory === 'governance') && (
+              <button
+                onClick={() => setActiveTab('legal_governance')}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeTab === 'legal_governance' 
+                    ? 'bg-purple-800 text-white shadow-md' 
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
+              >
+                <Scale className="w-3.5 h-3.5 text-purple-400" />
+                <span>14. DPDP Governance 🏛️</span>
+              </button>
+            )}
+
+          </div>
         </div>
       </div>
 
