@@ -16,6 +16,60 @@ from backend.app.schemas import (
 
 router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
 
+@router.post("/companies/{company_id}/resend-activation")
+def resend_company_activation(company_id: str, payload: dict = {}, db: Session = Depends(get_db)):
+    """Resend company portal activation link via Email or SMS"""
+    channel = payload.get("channel", "email") # 'email' | 'sms'
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    if not comp.activation_token:
+        comp.activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
+        db.commit()
+
+    if channel == "email" and comp.email:
+        send_company_welcome_email(
+            company_name=comp.name,
+            company_code=comp.code,
+            admin_email=comp.email,
+            contact_person=comp.contact_person,
+            temporary_password=comp.activation_password or "1234",
+            activation_token=comp.activation_token,
+            expires_at_str=comp.activation_expires_at.strftime('%Y-%m-%d %H:%M:%S UTC') if comp.activation_expires_at else "15 Days",
+            db=db
+        )
+
+    return {
+        "success": True,
+        "channel": channel,
+        "message": f"Activation link dispatched to {comp.email} (Password: {comp.activation_password or '1234'})",
+        "activation_token": comp.activation_token
+    }
+
+@router.post("/companies/{company_id}/set-activation-password")
+def set_company_activation_password(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update the security password for company self-activation"""
+    password = payload.get("password", "").strip()
+    if not password:
+        raise HTTPException(status_code=400, detail="Password cannot be empty")
+
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    comp.activation_password = password
+    comp.password_hash = password
+    db.commit()
+    db.refresh(comp)
+
+    return {
+        "success": True,
+        "message": f"Activation password updated to '{password}' for {comp.name}",
+        "activation_password": comp.activation_password
+    }
+
+
 @router.get("/companies", response_model=List[CompanyResponse])
 def get_all_companies(db: Session = Depends(get_db)):
     """Fetch all registered client companies"""
@@ -23,21 +77,43 @@ def get_all_companies(db: Session = Depends(get_db)):
 
 @router.post("/companies", response_model=CompanyResponse)
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
-    """Register a new enterprise company profile"""
+    """Register a new enterprise company profile and issue a multi-channel self-activation token"""
     total_comps = db.query(Company).count() + 1
     comp_code = payload.code or f"COMP{total_comps:03d}"
     comp_id = f"comp-{uuid.uuid4().hex[:6]}"
+    activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
     
+    # Pricing according to Plan Tier
+    plan_name = payload.plan or "Enterprise Premier"
+    if "Basic" in plan_name:
+        price_per_check = 80.0
+    elif "Standard" in plan_name:
+        price_per_check = 120.0
+    else:
+        price_per_check = 180.0
+
+    credits_bought = payload.credits_purchased or payload.max_limit or 500
+    password_set = payload.password or payload.activation_password or "1234"
+
+    # Expiry calculation
+    if payload.expiry_date:
+        try:
+            expires_at = datetime.fromisoformat(payload.expiry_date.replace("Z", "+00:00"))
+        except Exception:
+            expires_at = datetime.utcnow() + timedelta(days=payload.expiry_days or 15)
+    else:
+        expires_at = datetime.utcnow() + timedelta(days=payload.expiry_days or 15)
+
     # Default features if none specified
     default_features = payload.features or {
         "aadhaar": True,
         "mobileOtp": True,
         "faceCapture": True,
-        "drivingLicense": False,
+        "drivingLicense": True if "Enterprise" in plan_name or "Standard" in plan_name else False,
         "pan": True,
-        "uan": False,
+        "uan": True if "Enterprise" in plan_name else False,
         "education": False,
-        "criminalCheck": False,
+        "criminalCheck": True if "Enterprise" in plan_name else False,
         "addressCheck": False,
         "bankCheck": True
     }
@@ -47,19 +123,27 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         name=payload.name,
         code=comp_code,
         contact_person=payload.contact_person,
+        phone=payload.phone,
         email=payload.email,
-        plan=payload.plan or "Enterprise Premier",
-        price_per_verification=payload.price_per_verification or 120.0,
-        max_limit=payload.max_limit or 500,
+        password_hash=password_set,
+        plan=plan_name,
+        price_per_verification=price_per_check,
+        max_limit=credits_bought,
+        wallet_balance=credits_bought * price_per_check,
         features=default_features,
         verified_count_this_month=0,
-        status="Active"
+        status="Pending Activation",
+        activation_status="Pending Activation",
+        activation_token=activation_token,
+        activation_password=password_set,
+        activation_expires_at=expires_at,
+        created_at=datetime.utcnow()
     )
     db.add(new_comp)
     db.commit()
     db.refresh(new_comp)
     
-    # 📧 Automated Email Notification to Company Administrator
+    # 📧 Automated Email Notification with Activation Link & Password
     try:
         if new_comp.email:
             send_company_welcome_email(
@@ -67,7 +151,9 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
                 company_code=new_comp.code,
                 admin_email=new_comp.email,
                 contact_person=new_comp.contact_person or new_comp.name,
-                temporary_password="Admin@123",
+                temporary_password=password_set,
+                activation_token=activation_token,
+                expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
                 db=db
             )
     except Exception as e:

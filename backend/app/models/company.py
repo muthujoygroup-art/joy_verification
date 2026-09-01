@@ -10,14 +10,29 @@ class Company(Base):
     name = Column(String(200), nullable=False)
     code = Column(String(50), unique=True, index=True, nullable=False)
     contact_person = Column(String(100), nullable=False)
+    phone = Column(String(50), nullable=True) # Mobile / contact number
     email = Column(String(150), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), default="Company@Admin2026")
-    plan = Column(String(100), default="Enterprise Premier")
+    plan = Column(String(100), default="Enterprise Premier") # 'Basic Tier' | 'Standard Tier' | 'Enterprise Premier'
     price_per_verification = Column(Float, default=120.0)
     verified_count_this_month = Column(Integer, default=0)
     max_limit = Column(Integer, default=500)
     wallet_balance = Column(Float, default=50000.0)
-    status = Column(String(50), default="Active")
+    status = Column(String(50), default="Active") # 'Active' | 'Pending Activation' | 'Suspended'
+    activation_status = Column(String(50), default="Pending Activation") # 'Pending Activation' | 'Active'
+    activation_token = Column(String(100), unique=True, index=True, nullable=True) # comp_act_...
+    activation_password = Column(String(100), default="1234") # Security password set by Super Admin
+    activation_expires_at = Column(DateTime, nullable=True)
+    
+    # Detailed Corporate Profile Fields (Completed during Activation)
+    cin_number = Column(String(100), nullable=True) # Corporate Identification Number
+    gstin_number = Column(String(100), nullable=True) # GST Registration
+    company_pan = Column(String(50), nullable=True) # Company PAN
+    registered_address = Column(Text, nullable=True) # Registered Office Address
+    industry_sector = Column(String(100), nullable=True) # Industry / Domain
+    website = Column(String(200), nullable=True) # Official Website
+    documents = Column(JSON, default=dict) # Uploaded COI, PAN, GST, Board Resolution files
+    
     is_active = Column(Boolean, default=True)
     features = Column(JSON, default=dict)
     terms_accepted = Column(String(50), default="true")

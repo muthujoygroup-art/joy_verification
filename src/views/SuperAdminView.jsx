@@ -9,6 +9,7 @@ import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyM
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
+import { CompanyActivationModal } from '../components/CompanyActivationModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
@@ -335,11 +336,26 @@ export const SuperAdminView = () => {
     return true;
   });
 
-  const handleCreateCompanySubmit = (e) => {
+  const handleCreateCompanySubmit = async (e) => {
     e.preventDefault();
     if (!newCompany.name || !newCompany.email) return;
-    addCompany(newCompany);
+    const created = await addCompany(newCompany);
     setShowAddCompanyModal(false);
+    if (created) {
+      setActivatingCompany(created);
+    }
+    setNewCompany({
+      name: '',
+      contactPerson: '',
+      phone: '',
+      email: '',
+      password: '1234',
+      plan: 'Standard Tier',
+      credits_purchased: 500,
+      expiry_days: 15,
+      expiry_date: '',
+      termsAccepted: true
+    });
   };
 
   const handleCreateMasterFieldSubmit = (e) => {
@@ -3465,126 +3481,193 @@ export const SuperAdminView = () => {
 
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring max-h-[90vh] overflow-y-auto">
+            
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-indigo-600" />
-                <span>Onboard New Enterprise Company</span>
-              </h3>
-              <button onClick={() => setShowAddCompanyModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">Onboard New Enterprise Company</h3>
+                  <p className="text-xs text-slate-500 font-medium">Provision organization account and generate self-activation link</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAddCompanyModal(false)} 
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
 
             <form onSubmit={handleCreateCompanySubmit} className="space-y-4 text-xs">
+              
+              {/* Field 1: Company Full Name */}
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Company Full Name *</label>
+                <label className="block text-slate-700 font-bold mb-1">Company Full Legal Name *</label>
                 <input 
                   type="text" 
                   required
-                  placeholder="e.g. Acme Tech Corporation"
+                  placeholder="e.g. Acme Technologies Private Limited"
                   value={newCompany.name}
                   onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
-                  className="form-input"
+                  className="form-input font-bold"
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              {/* Field 2 & 3: Contact Person & Contact Number */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Contact Person</label>
+                  <label className="block text-slate-700 font-bold mb-1">Contact Person Name *</label>
                   <input 
                     type="text" 
+                    required
                     placeholder="e.g. Vikram Malhotra"
                     value={newCompany.contactPerson}
                     onChange={(e) => setNewCompany({ ...newCompany, contactPerson: e.target.value })}
-                    className="form-input"
+                    className="form-input font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Admin Email *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Contact Number (Mobile) *</label>
+                  <input 
+                    type="tel" 
+                    required
+                    placeholder="e.g. +91 98765 43210"
+                    value={newCompany.phone}
+                    onChange={(e) => setNewCompany({ ...newCompany, phone: e.target.value })}
+                    className="form-input font-bold font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Field 4 & 5: Company Email (Username) & Password Set Option */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Company Email (Login Username) *</label>
                   <input 
                     type="email" 
                     required
                     placeholder="admin@company.com"
                     value={newCompany.email}
                     onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
-                    className="form-input"
+                    className="form-input font-bold font-mono"
                   />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Official administrator login address</span>
                 </div>
+
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Admin Password *</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="Company@Admin2026"
-                    value={newCompany.password}
-                    onChange={(e) => setNewCompany({ ...newCompany, password: e.target.value })}
-                    className="form-input font-mono font-bold"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-slate-700 font-bold">Password Set Option *</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                        setNewCompany({ ...newCompany, password: randomPin });
+                      }}
+                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Random PIN</span>
+                    </button>
+                  </div>
+                  <div className="relative flex items-center">
+                    <input 
+                      type={showNewCompPassword ? 'text' : 'password'}
+                      required
+                      placeholder="e.g. 1234 or Joy@Admin2026"
+                      value={newCompany.password}
+                      onChange={(e) => setNewCompany({ ...newCompany, password: e.target.value })}
+                      className="form-input font-mono font-bold pr-9"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCompPassword(!showNewCompPassword)}
+                      className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showNewCompPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Security passcode to open activation link</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {/* Field 6, 7 & 8: Plan Bought, Credits Purchased & Link Expiry Window */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Tariff Plan Tier</label>
+                  <label className="block text-slate-700 font-bold mb-1">Plan Bought *</label>
                   <select 
                     value={newCompany.plan}
                     onChange={(e) => setNewCompany({ ...newCompany, plan: e.target.value })}
                     className="form-select text-xs font-bold"
                   >
-                    <option value="Enterprise Premier">Enterprise Premier (₹120 / check)</option>
-                    <option value="Standard Tier">Standard Tier (₹100 / check)</option>
+                    <option value="Enterprise Premier">Enterprise Premier (₹180 / check)</option>
+                    <option value="Standard Tier">Standard Tier (₹120 / check)</option>
                     <option value="Basic Tier">Basic Tier (₹80 / check)</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Monthly Quota Limit</label>
+                  <label className="block text-slate-700 font-bold mb-1">Credits Purchased *</label>
                   <input 
                     type="number" 
-                    min="50"
-                    max="5000"
-                    value={newCompany.maxLimit}
-                    onChange={(e) => setNewCompany({ ...newCompany, maxLimit: parseInt(e.target.value) || 500 })}
-                    className="form-input"
+                    min="10"
+                    max="10000"
+                    placeholder="500"
+                    value={newCompany.credits_purchased}
+                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: e.target.value })}
+                    className="form-input font-mono font-bold"
                   />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Verification credit quota</span>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Link Expiry Date / Window *</label>
+                  <select 
+                    value={newCompany.expiry_days}
+                    onChange={(e) => setNewCompany({ ...newCompany, expiry_days: parseInt(e.target.value) || 15 })}
+                    className="form-select text-xs font-bold"
+                  >
+                    <option value={7}>7 Days Window</option>
+                    <option value={15}>15 Days Window (Standard)</option>
+                    <option value={30}>30 Days Window</option>
+                    <option value={60}>60 Days Window</option>
+                  </select>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Activation TTL</span>
                 </div>
               </div>
 
               {/* Terms Acceptance */}
-              <div className="p-3.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2.5">
+              <div className="p-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
                     <Scale className="w-4 h-4 text-indigo-700" />
-                    <span>Legal Compliance & Terms Acceptance</span>
+                    <span>Legal Compliance & Multi-Channel Activation</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedTermsCompany(newCompany.name || 'New Enterprise Client');
-                      setShowTermsModal(true);
-                    }}
-                    className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 underline"
-                  >
-                    Review Full Terms (v2.4)
-                  </button>
+                  <span className="badge badge-indigo text-[9px]">DPDP 2023 READY</span>
                 </div>
 
-                <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                  <input 
-                    type="checkbox"
-                    required
-                    checked={newCompany.termsAccepted}
-                    onChange={(e) => setNewCompany({ ...newCompany, termsAccepted: e.target.checked })}
-                    className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
-                  />
-                  <span className="text-[11px] font-bold text-slate-800">
-                    I confirm the authorized representative agrees to JOY Corporate Solutions Terms of Service, Point-in-Time Disclosures, and DPDP Privacy Policy.
-                  </span>
-                </label>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Upon creation, an official activation link will be generated. The company admin can complete the remaining steps (CIN, GSTIN, Company PAN, and COI uploads) by unlocking the link with the security password set above.
+                </p>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowAddCompanyModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-superadmin font-bold shadow-md">Save & Onboard Company</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddCompanyModal(false)} 
+                  className="btn btn-secondary text-xs py-2 px-4 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Onboard & Generate Activation Link 🚀</span>
+                </button>
               </div>
             </form>
           </div>
@@ -4755,6 +4838,14 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-    </div>
+    
+      {/* 📲 COMPANY ACTIVATION MODAL */}
+      {activatingCompany && (
+        <CompanyActivationModal 
+          company={activatingCompany} 
+          onClose={() => setActivatingCompany(null)} 
+        />
+      )}
+</div>
   );
 };

@@ -8,6 +8,7 @@ import { SuperAdminView } from './views/SuperAdminView';
 import { CompanyAdminView } from './views/CompanyAdminView';
 import { HrExecutiveView } from './views/HrExecutiveView';
 import { EmployeePortalView } from './views/EmployeePortalView';
+import { CompanyActivationView } from './views/CompanyActivationView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -136,6 +137,7 @@ const MainApp = () => {
         <Route path="/superadmin/*" element={<SuperAdminRoute />} />
         <Route path="/company/*" element={<CompanyRoute />} />
         <Route path="/hr/*" element={<HrRoute />} />
+        <Route path="/company-activation" element={<CompanyActivationView />} />
         <Route path="/verify" element={<CandidateRoute />} />
         <Route path="/candidate" element={<CandidateRoute />} />
         <Route path="/login" element={<GenericLoginRoute />} />

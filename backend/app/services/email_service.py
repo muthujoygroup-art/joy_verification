@@ -250,27 +250,32 @@ def send_company_welcome_email(
     admin_email: str,
     contact_person: str,
     temporary_password: str = "Admin@123",
+    activation_token: Optional[str] = None,
+    expires_at_str: Optional[str] = None,
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
-    login_url = f"{app_url}/login"
+    activation_url = f"{app_url}/company-activation?token={activation_token}" if activation_token else f"{app_url}/login"
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
         Welcome to JOY Corporate Solutions, {contact_person}!
     </h2>
     <p>
-        Your enterprise organization <strong>{company_name}</strong> has been successfully registered on the JOY Background Verification & Statutory Labor Compliance Gateway.
+        Your enterprise organization <strong>{company_name}</strong> has been provisioned on the JOY Background Verification & Statutory Labor Compliance Gateway.
+    </p>
+    <p>
+        Please complete your remaining corporate onboarding (CIN, GSTIN, Company PAN, and COI document uploads) using your secure activation link below.
     </p>
 
     <!-- Credentials Box -->
     <div style="background-color: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 14px; padding: 18px; margin: 20px 0;">
         <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px;">
-            🔐 Organization Access Credentials:
+            🔐 Organization Activation Access:
         </div>
         <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12px;">
             <tr>
-                <td width="35%" style="color: #64748b; font-weight: 600;">Company Code / ID:</td>
+                <td width="38%" style="color: #64748b; font-weight: 600;">Company Code / ID:</td>
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace; font-size: 13px;">{company_code}</td>
             </tr>
             <tr>
@@ -278,30 +283,30 @@ def send_company_welcome_email(
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{admin_email}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Temporary Password:</td>
-                <td style="color: #4338ca; font-weight: 800; font-family: monospace; font-size: 13px;">{temporary_password}</td>
+                <td style="color: #64748b; font-weight: 600;">Security Unlock Password:</td>
+                <td style="color: #4338ca; font-weight: 900; font-family: monospace; font-size: 16px; letter-spacing: 1px;">{temporary_password}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Portal URL:</td>
-                <td style="color: #0f172a; font-weight: 600;"><a href="{login_url}" style="color: #4338ca;">{login_url}</a></td>
+                <td style="color: #64748b; font-weight: 600;">Link Valid Until:</td>
+                <td style="color: #b45309; font-weight: 700;">{expires_at_str or '15 Days from Issue'}</td>
             </tr>
         </table>
     </div>
 
     <p style="font-size: 12px; color: #475569;">
-        You can now log in to manage your HR recruitment teams, configure customized statutory verification forms (EPFO Form 11, Form 2, ESIC Form 1), and inspect 360&deg; employee dossiers in real time.
+        Once activated, you can immediately create HR recruiter logins, configure customized statutory verification checks (Aadhaar, PAN, EPFO UAN, ESIC), and inspect live 360&deg; candidate dossiers.
     </p>
     """
 
     html = _build_email_shell(
-        header_title=f"Welcome {company_name} - JOY Corporate Solutions",
-        badge_text="ORGANIZATION CREATION NOTIFICATION",
+        header_title=f"Activate {company_name} - JOY Corporate Solutions",
+        badge_text="ORGANIZATION ONBOARDING INVITATION",
         content_html=content,
-        action_url=login_url,
-        action_text="Log In to Company Portal"
+        action_url=activation_url,
+        action_text="Complete Company Portal Activation"
     )
 
-    subject = f"🏢 Welcome to JOY BGV Portal - Organization Credentials for {company_name} ({company_code})"
+    subject = f"🏢 Organization Portal Activation - {company_name} ({company_code})"
     return send_smtp_email(admin_email, subject, html, db=db)
 
 
