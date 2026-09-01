@@ -383,6 +383,29 @@ export const api = {
   },
 
   // 📧 cPanel SMTP Email Gateway & Automated Notifications
+  getCompanyEmailConfig: (companyId) => request(`/settings/company/${companyId}/email-config`),
+  saveCompanyEmailConfig: (companyId, config) => {
+    requestCache.clear();
+    return request(`/settings/company/${companyId}/email-config`, {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  },
+  testCompanyEmail: (companyId, toEmail, config = null) => {
+    return request(`/settings/company/${companyId}/test-email`, {
+      method: 'POST',
+      body: JSON.stringify({ to_email: toEmail, config }),
+    });
+  },
+  getHrPreferences: (hrId) => request(`/settings/hr/${hrId}/preferences`),
+  saveHrPreferences: (hrId, preferences) => {
+    requestCache.clear();
+    return request(`/settings/hr/${hrId}/preferences`, {
+      method: 'POST',
+      body: JSON.stringify(preferences),
+    });
+  },
+
   getEmailConfig: () => request('/settings/email-config'),
   saveEmailConfig: (smtpSettings) => {
     requestCache.clear();

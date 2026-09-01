@@ -12,30 +12,62 @@ from backend.app.config import settings
 logger = logging.getLogger("joy_email_service")
 logging.basicConfig(level=logging.INFO)
 
-def get_smtp_config(db=None) -> Dict[str, Any]:
+# =============================================================================
+# 🏢 TENANT-AWARE SMTP CONFIGURATION RESOLVER
+# =============================================================================
+def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]:
     """
-    Retrieves the active SMTP configuration from database CommunicationGateway or falls back to settings/cPanel defaults.
+    Retrieves SMTP settings:
+    1. If company_id is provided, looks for custom company SMTP gateway.
+    2. Falls back to Master Super Admin cPanel SMTP (admin@joycorporatesolutions.com).
+    3. Falls back to environment settings.
     """
+    # 👑 Master Super Admin cPanel Defaults
     config = {
         "host": settings.SMTP_HOST or "mail.joycorporatesolutions.com",
         "port": int(settings.SMTP_PORT or 465),
-        "user": settings.SMTP_USER or "noreply@joycorporatesolutions.com",
+        "user": settings.SMTP_USER or "admin@joycorporatesolutions.com",
         "password": settings.SMTP_PASSWORD or "",
         "use_ssl": True if int(settings.SMTP_PORT or 465) == 465 else False,
         "use_tls": True if int(settings.SMTP_PORT or 465) == 587 else False,
-        "from_email": settings.EMAILS_FROM_EMAIL or "noreply@joycorporatesolutions.com",
-        "from_name": settings.EMAILS_FROM_NAME or "JOY Corporate Solutions"
+        "from_email": settings.EMAILS_FROM_EMAIL or "admin@joycorporatesolutions.com",
+        "from_name": settings.EMAILS_FROM_NAME or "JOY Corporate Solutions BGV",
+        "mode": "master_cpanel" # 'master_cpanel' | 'custom_company'
     }
 
     if db:
         try:
             from backend.app.models.system import CommunicationGateway
-            gw = db.query(CommunicationGateway).filter(
+            
+            # Step 1: Check if company has a dedicated custom SMTP gateway configured
+            if company_id:
+                comp_gw = db.query(CommunicationGateway).filter(
+                    CommunicationGateway.gateway_type == "email_smtp",
+                    CommunicationGateway.company_id == company_id,
+                    CommunicationGateway.is_active == True
+                ).first()
+                if comp_gw and comp_gw.settings_data and comp_gw.settings_data.get("use_custom_smtp"):
+                    sd = comp_gw.settings_data
+                    return {
+                        "host": sd.get("host") or config["host"],
+                        "port": int(sd.get("port") or config["port"]),
+                        "user": sd.get("user") or config["user"],
+                        "password": sd.get("password") or config["password"],
+                        "from_email": sd.get("from_email") or config["from_email"],
+                        "from_name": sd.get("from_name") or config["from_name"],
+                        "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
+                        "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                        "mode": "custom_company",
+                        "company_id": company_id
+                    }
+
+            # Step 2: Check Master Super Admin cPanel SMTP Gateway
+            master_gw = db.query(CommunicationGateway).filter(
                 CommunicationGateway.id == "gw_email_smtp",
                 CommunicationGateway.is_active == True
             ).first()
-            if gw and gw.settings_data:
-                sd = gw.settings_data
+            if master_gw and master_gw.settings_data:
+                sd = master_gw.settings_data
                 config["host"] = sd.get("host") or config["host"]
                 config["port"] = int(sd.get("port") or config["port"])
                 config["user"] = sd.get("user") or config["user"]
@@ -45,7 +77,7 @@ def get_smtp_config(db=None) -> Dict[str, Any]:
                 config["use_ssl"] = bool(sd.get("use_ssl", config["port"] == 465))
                 config["use_tls"] = bool(sd.get("use_tls", config["port"] == 587))
         except Exception as e:
-            logger.warning(f"Could not load custom SMTP from DB: {e}")
+            logger.warning(f"Could not resolve custom SMTP gateway from database: {e}")
 
     return config
 
@@ -54,25 +86,26 @@ def send_smtp_email(
     subject: str,
     html_content: str,
     text_content: Optional[str] = None,
+    company_id: Optional[str] = None,
     db=None
 ) -> Dict[str, Any]:
     """
-    Core function to send an email via cPanel SMTP.
-    Supports SSL (Port 465), STARTTLS (Port 587), and plain SMTP.
+    Core function to send an email via resolved SMTP gateway (Master cPanel or Company Custom).
     """
     if not to_email or "@" not in to_email:
         logger.warning(f"Skipping email dispatch: invalid recipient address '{to_email}'")
         return {"success": False, "error": "Invalid recipient email"}
 
-    cfg = get_smtp_config(db)
+    cfg = get_smtp_config(db, company_id=company_id)
     
     # If no SMTP password configured, log simulation mode
     if not cfg["password"]:
-        logger.info(f"📧 [SMTP SIMULATION] To: {to_email} | Subject: {subject} | (Configure SMTP password in settings to dispatch live)")
+        logger.info(f"📧 [SMTP SIMULATION - Mode: {cfg['mode']}] To: {to_email} | Subject: {subject}")
         return {
             "success": True,
             "simulated": True,
-            "message": "Email logged in simulation mode (Set SMTP password to dispatch live cPanel email)",
+            "mode": cfg["mode"],
+            "message": "Email logged in simulation mode (Configure SMTP password in Settings to dispatch live)",
             "to": to_email,
             "subject": subject
         }
@@ -88,7 +121,7 @@ def send_smtp_email(
         if text_content:
             msg.attach(MIMEText(text_content, "plain", "utf-8"))
         else:
-            msg.attach(MIMEText("Please enable HTML view to read this official notification from JOY Corporate Solutions.", "plain", "utf-8"))
+            msg.attach(MIMEText("Please enable HTML view to read this official notification.", "plain", "utf-8"))
 
         # HTML body
         msg.attach(MIMEText(html_content, "html", "utf-8"))
@@ -107,18 +140,25 @@ def send_smtp_email(
                 server.login(cfg["user"], cfg["password"])
                 server.sendmail(cfg["from_email"], [to_email], msg.as_string())
 
-        logger.info(f"✅ [SMTP SENT] Successfully sent email to {to_email} (Subject: {subject})")
-        return {"success": True, "to": to_email, "subject": subject}
+        logger.info(f"✅ [SMTP SENT - Mode: {cfg['mode']}] Dispatched to {to_email} ({subject})")
+        return {"success": True, "to": to_email, "subject": subject, "mode": cfg["mode"]}
 
     except Exception as e:
-        logger.error(f"❌ [SMTP ERROR] Failed to send email to {to_email}: {e}")
-        return {"success": False, "error": str(e), "to": to_email}
+        logger.error(f"❌ [SMTP ERROR - Mode: {cfg['mode']}] Failed to send email to {to_email}: {e}")
+        return {"success": False, "error": str(e), "to": to_email, "mode": cfg["mode"]}
 
 
 # =============================================================================
 # 🎨 BASE HTML TEMPLATE GENERATOR
 # =============================================================================
-def _build_email_shell(header_title: str, badge_text: str, content_html: str, action_url: str = None, action_text: str = None) -> str:
+def _build_email_shell(
+    header_title: str, 
+    badge_text: str, 
+    content_html: str, 
+    action_url: str = None, 
+    action_text: str = None,
+    sender_brand: str = "JOY CORPORATE SOLUTIONS"
+) -> str:
     action_button_html = ""
     if action_url and action_text:
         action_button_html = f"""
@@ -153,7 +193,7 @@ def _build_email_shell(header_title: str, badge_text: str, content_html: str, ac
                                                 {badge_text}
                                             </div>
                                             <h1 style="color: #ffffff; font-size: 18px; font-weight: 900; margin: 0; letter-spacing: -0.5px;">
-                                                JOY CORPORATE SOLUTIONS
+                                                {sender_brand.upper()}
                                             </h1>
                                             <div style="color: #94a3b8; font-size: 11px; margin-top: 2px;">
                                                 Enterprise Background Verification & Statutory Compliance
@@ -181,7 +221,7 @@ def _build_email_shell(header_title: str, badge_text: str, content_html: str, ac
                         <tr>
                             <td style="background-color: #f8fafc; padding: 20px 30px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; text-align: center; line-height: 1.5;">
                                 <p style="margin: 0 0 4px 0; font-weight: 600; color: #475569;">
-                                    JOY CORPORATE SOLUTIONS PRIVATE LIMITED
+                                    JOY CORPORATE SOLUTIONS PRIVATE LIMITED &bull; Master Email: admin@joycorporatesolutions.com
                                 </p>
                                 <p style="margin: 0 0 8px 0; font-size: 10px;">
                                     CIN: U74999KA2026PTC192841 &bull; Direct Government Gateway Authorized Partner
@@ -202,7 +242,7 @@ def _build_email_shell(header_title: str, badge_text: str, content_html: str, ac
 
 
 # =============================================================================
-# 1. 🏢 COMPANY WELCOME EMAIL
+# 1. 🏢 COMPANY CREATION WELCOME EMAIL (Super Admin -> Company Admin)
 # =============================================================================
 def send_company_welcome_email(
     company_name: str,
@@ -212,9 +252,6 @@ def send_company_welcome_email(
     temporary_password: str = "Admin@123",
     db=None
 ) -> Dict[str, Any]:
-    """
-    Sends welcome credentials to the Company Administrator upon organization creation.
-    """
     app_url = settings.APP_BASE_URL.rstrip('/')
     login_url = f"{app_url}/login"
 
@@ -269,19 +306,17 @@ def send_company_welcome_email(
 
 
 # =============================================================================
-# 2. 👔 HR EXECUTIVE WELCOME EMAIL
+# 2. 👔 HR EXECUTIVE APPOINTMENT EMAIL (Company Admin -> HR Recruiter)
 # =============================================================================
 def send_hr_welcome_email(
     hr_name: str,
     hr_code: str,
     hr_email: str,
     company_name: str,
+    company_id: Optional[str] = None,
     temporary_password: str = "Hr@123",
     db=None
 ) -> Dict[str, Any]:
-    """
-    Sends welcome credentials to a newly onboarded HR Executive.
-    """
     app_url = settings.APP_BASE_URL.rstrip('/')
     login_url = f"{app_url}/login"
 
@@ -328,15 +363,16 @@ def send_hr_welcome_email(
         badge_text="HR RECRUITER APPOINTMENT",
         content_html=content,
         action_url=login_url,
-        action_text="Open HR Workstation"
+        action_text="Open HR Workstation",
+        sender_brand=company_name
     )
 
     subject = f"👔 HR Recruiter Credentials - {company_name} ({hr_code})"
-    return send_smtp_email(hr_email, subject, html, db=db)
+    return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
 
 
 # =============================================================================
-# 3. 📱 CANDIDATE ONBOARDING LINK DISPATCH EMAIL
+# 3. 📱 CANDIDATE ONBOARDING INVITATION (HR Recruiter -> Candidate)
 # =============================================================================
 def send_candidate_onboarding_email(
     candidate_name: str,
@@ -345,12 +381,10 @@ def send_candidate_onboarding_email(
     token: str,
     security_pin: str,
     company_name: str,
+    company_id: Optional[str] = None,
     designation: str = "Associate",
     db=None
 ) -> Dict[str, Any]:
-    """
-    Sends the 15-minute secure verification link & 4-digit PIN to the candidate.
-    """
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
 
@@ -396,15 +430,16 @@ def send_candidate_onboarding_email(
         badge_text="EMPLOYEE ONBOARDING INVITATION",
         content_html=content,
         action_url=verify_url,
-        action_text="Start Verification & Complete Forms"
+        action_text="Start Verification & Complete Forms",
+        sender_brand=company_name
     )
 
     subject = f"📱 Onboarding Verification Link - {company_name} ({candidate_name})"
-    return send_smtp_email(candidate_email, subject, html, db=db)
+    return send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
 
 
 # =============================================================================
-# 4. ✅ CANDIDATE VERIFICATION COMPLETED NOTICE
+# 4. ✅ BGV VERIFICATION CERTIFIED NOTICE (To Candidate, HR & Company)
 # =============================================================================
 def send_candidate_verification_completed_email(
     candidate_name: str,
@@ -412,12 +447,10 @@ def send_candidate_verification_completed_email(
     candidate_email: str,
     hr_email: str,
     company_name: str,
+    company_id: Optional[str] = None,
     score: str = "99.6",
     db=None
 ) -> Dict[str, Any]:
-    """
-    Sends confirmation when all background checks and forms are successfully verified.
-    """
     app_url = settings.APP_BASE_URL.rstrip('/')
 
     content = f"""
@@ -451,22 +484,21 @@ def send_candidate_verification_completed_email(
         badge_text="AUDIT CERTIFICATION NOTICE",
         content_html=content,
         action_url=f"{app_url}/hr",
-        action_text="View Certified Profile Dossier"
+        action_text="View Certified Profile Dossier",
+        sender_brand=company_name
     )
 
     subject = f"✅ BGV Certified (Score: {score}/100) - {candidate_name} ({candidate_code})"
+    res1 = send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
     
-    # Send to candidate
-    res1 = send_smtp_email(candidate_email, subject, html, db=db)
-    # Also notify HR
     if hr_email and hr_email != candidate_email:
-        send_smtp_email(hr_email, f"✅ [HR Alert] {candidate_name} Onboarding Verification Complete", html, db=db)
+        send_smtp_email(hr_email, f"✅ [HR Alert] {candidate_name} Onboarding Verification Complete", html, company_id=company_id, db=db)
 
     return res1
 
 
 # =============================================================================
-# 5. 🔄 CORRECTION REQUEST EMAIL
+# 5. 🔄 HR CORRECTION REQUEST (HR -> Candidate)
 # =============================================================================
 def send_candidate_correction_email(
     candidate_name: str,
@@ -474,11 +506,9 @@ def send_candidate_correction_email(
     token: str,
     correction_notes: str,
     company_name: str,
+    company_id: Optional[str] = None,
     db=None
 ) -> Dict[str, Any]:
-    """
-    Sends a correction request notice to the candidate with specific instructions.
-    """
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
 
@@ -510,8 +540,60 @@ def send_candidate_correction_email(
         badge_text="HR CORRECTION REQUEST",
         content_html=content,
         action_url=verify_url,
-        action_text="Update & Resubmit Verification"
+        action_text="Update & Resubmit Verification",
+        sender_brand=company_name
     )
 
     subject = f"🔄 Action Required: Information Correction Request - {company_name}"
-    return send_smtp_email(candidate_email, subject, html, db=db)
+    return send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
+
+
+# =============================================================================
+# 6. 🚨 COMPANY RED-FLAG / DISCREPANCY ALERT (System -> Company Admin / HR)
+# =============================================================================
+def send_company_discrepancy_alert(
+    company_name: str,
+    admin_email: str,
+    candidate_name: str,
+    candidate_code: str,
+    discrepancy_type: str,
+    details: str,
+    company_id: Optional[str] = None,
+    db=None
+) -> Dict[str, Any]:
+    app_url = settings.APP_BASE_URL.rstrip('/')
+
+    content = f"""
+    <h2 style="color: #991b1b; font-size: 16px; font-weight: 800; margin-top: 0;">
+        ⚠️ Urgent: Background Discrepancy Flagged
+    </h2>
+    <p>
+        The automated compliance scanner has detected a potential discrepancy for <strong>{candidate_name}</strong> ({candidate_code}) under <strong>{company_name}</strong>.
+    </p>
+
+    <!-- Discrepancy Box -->
+    <div style="background-color: #fef2f2; border: 2px solid #ef4444; border-radius: 14px; padding: 18px; margin: 20px 0;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #b91c1c; margin-bottom: 8px;">
+            🚨 Discrepancy Classification: {discrepancy_type}
+        </div>
+        <div style="font-size: 12px; color: #7f1d1d; line-height: 1.5;">
+            {details}
+        </div>
+    </div>
+
+    <p style="font-size: 12px; color: #475569;">
+        Please review the candidate's 360&deg; Multi-API Dossier in your Company Admin portal for manual adjudication.
+    </p>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Discrepancy Alert - {candidate_name}",
+        badge_text="COMPLIANCE SECURITY ALERT",
+        content_html=content,
+        action_url=f"{app_url}/company",
+        action_text="Review Candidate Profile",
+        sender_brand=company_name
+    )
+
+    subject = f"🚨 [Compliance Alert] Discrepancy Flagged for {candidate_name} ({candidate_code})"
+    return send_smtp_email(admin_email, subject, html, company_id=company_id, db=db)

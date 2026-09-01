@@ -1102,6 +1102,21 @@ export const HrExecutiveView = () => {
     setTimeout(() => setCopiedToken(null), 2500);
   };
 
+  // 👔 Save HR Notification Preferences
+  const handleSaveHrPreferences = async (e) => {
+    if (e) e.preventDefault();
+    setIsSavingHrPref(true);
+    try {
+      await api.saveHrPreferences('hr-001', hrPreferences);
+      showToast('💾 HR notification preferences & email signature saved!');
+    } catch (err) {
+      console.warn('Error saving HR preferences:', err);
+      showToast('❌ Failed to save HR preferences');
+    } finally {
+      setIsSavingHrPref(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
@@ -3986,6 +4001,148 @@ export const HrExecutiveView = () => {
             }} 
             className="space-y-6 text-xs"
           >
+            {/* 📧 Dedicated HR Recruiter Email & Notification Station Card */}
+            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-white space-y-5 shadow-xs mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-black text-slate-900 text-base">
+                        HR Recruiter Notification & Outgoing Email Signature
+                      </h4>
+                      <span className="badge badge-indigo text-[10px] font-bold">RECRUITER STATION</span>
+                    </div>
+                    <p className="text-slate-500 text-xs">
+                      Personalize your notification email alerts and outgoing candidate invitation signatures
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSaveHrPreferences}
+                  disabled={isSavingHrPref}
+                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-sm cursor-pointer shrink-0"
+                >
+                  {isSavingHrPref ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSavingHrPref ? 'Saving...' : 'Save Recruiter Settings 💾'}</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Recruiter Notification Email *</label>
+                  <input 
+                    type="email" 
+                    value={hrPreferences.notification_email}
+                    onChange={(e) => setHrPreferences({ ...hrPreferences, notification_email: e.target.value })}
+                    placeholder="praveen.b@joycorporatesolutions.com"
+                    className="form-input font-bold"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Where candidate verification alerts will be sent</span>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Supervisor / Team Lead CC Email</label>
+                  <input 
+                    type="email" 
+                    value={hrPreferences.cc_email}
+                    onChange={(e) => setHrPreferences({ ...hrPreferences, cc_email: e.target.value })}
+                    placeholder="ta_manager@joycorporatesolutions.com"
+                    className="form-input font-bold"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Optional CC for verification milestones</span>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Recruiter Display Name</label>
+                  <input 
+                    type="text" 
+                    value={hrPreferences.sender_display_name}
+                    onChange={(e) => setHrPreferences({ ...hrPreferences, sender_display_name: e.target.value })}
+                    placeholder="Praveen B (Talent Acquisition)"
+                    className="form-input font-bold"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Shown in candidate email headers</span>
+                </div>
+
+                <div className="col-span-1 md:col-span-3">
+                  <label className="block font-bold text-slate-700 mb-1">Custom Recruiter Email Signature & Disclaimer</label>
+                  <textarea 
+                    rows={2}
+                    value={hrPreferences.custom_signature}
+                    onChange={(e) => setHrPreferences({ ...hrPreferences, custom_signature: e.target.value })}
+                    placeholder="Best regards,\nPraveen B | Senior Recruiter"
+                    className="form-input text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Instant Notification Checkboxes */}
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <span className="font-bold text-slate-900 text-xs block">
+                  Instant Recruiter Email Alerts:
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold text-[11px]">📱 Candidate Link Sent</strong>
+                      <span className="text-[10px] text-slate-500">Confirm email delivery to candidate</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={hrPreferences.auto_email_candidate_link}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, auto_email_candidate_link: e.target.checked })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold text-[11px]">✅ Verification Passed</strong>
+                      <span className="text-[10px] text-slate-500">Alert when 10+ APIs pass 100%</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={hrPreferences.notify_on_candidate_verified}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, notify_on_candidate_verified: e.target.checked })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold text-[11px]">🚨 Discrepancy Found</strong>
+                      <span className="text-[10px] text-slate-500">Urgent moonlighting/court alert</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={hrPreferences.notify_on_red_flags}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, notify_on_red_flags: e.target.checked })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold text-[11px]">📊 Daily Digest</strong>
+                      <span className="text-[10px] text-slate-500">Summary of active candidates</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={hrPreferences.daily_digest}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, daily_digest: e.target.checked })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-4">

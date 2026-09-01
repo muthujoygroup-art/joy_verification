@@ -168,6 +168,42 @@ export const CompanyAdminView = () => {
     updateCompanyFeatures(company.id, allStandard);
   };
 
+  // 🏢 Save Company Email Gateway Settings
+  const handleSaveCompanyEmailSettings = async () => {
+    if (!company?.id) return;
+    setIsSavingCompEmail(true);
+    try {
+      await api.saveCompanyEmailConfig(company.id, compEmailConfig);
+      showToast('💾 Company email gateway & notification rules saved successfully!');
+    } catch (err) {
+      console.warn('Error saving company email settings:', err);
+      showToast('❌ Failed to save company email settings');
+    } finally {
+      setIsSavingCompEmail(false);
+    }
+  };
+
+  // 🏢 Send Live Company Test Email
+  const handleSendCompanyTestEmail = async (e) => {
+    if (e) e.preventDefault();
+    if (!compTestRecipient || !compTestRecipient.includes('@')) {
+      showToast('⚠️ Please enter a valid test recipient email address');
+      return;
+    }
+    setIsSendingCompTestEmail(true);
+    setCompTestEmailResult(null);
+    try {
+      const res = await api.testCompanyEmail(company?.id || 'comp-001', compTestRecipient.trim(), compEmailConfig);
+      setCompTestEmailResult(res);
+      showToast(`🎉 Test email dispatched to ${compTestRecipient}!`);
+    } catch (err) {
+      setCompTestEmailResult({ success: false, error: err.message || 'SMTP Handshake failed' });
+      showToast('❌ Test email delivery failed');
+    } finally {
+      setIsSendingCompTestEmail(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
@@ -1319,6 +1355,281 @@ export const CompanyAdminView = () => {
               </div>
             </div>
 
+            {/* 📧 Company Email Gateway & Notification Rules Card */}
+            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-white space-y-5 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-black text-slate-900 text-base">
+                        Company Email Gateway & Automated Notifications
+                      </h4>
+                      <span className="badge badge-indigo text-[10px] font-bold">WHITE-LABEL READY</span>
+                    </div>
+                    <p className="text-slate-500 text-xs">
+                      Configure how candidate verification links, HR recruiter credentials, and BGV reports are emailed
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCompTestRecipient(company?.email || 'admin@company.com');
+                      setShowCompTestEmailModal(true);
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold cursor-pointer hover:bg-slate-100"
+                  >
+                    <Send className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Test Dispatch 📨</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveCompanyEmailSettings}
+                    disabled={isSavingCompEmail}
+                    className="btn btn-company text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-sm cursor-pointer"
+                  >
+                    {isSavingCompEmail ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    <span>{isSavingCompEmail ? 'Saving...' : 'Save Email Rules 💾'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Mode Selection Pill Bar */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <label className="block font-bold text-slate-800 text-xs">
+                  Select Outgoing Email Gateway Routing:
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Mode 1: Master Gateway */}
+                  <label 
+                    onClick={() => setCompEmailConfig({ ...compEmailConfig, use_custom_smtp: false })}
+                    className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
+                      !compEmailConfig.use_custom_smtp 
+                        ? 'border-indigo-600 bg-indigo-50/50 shadow-xs' 
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    <input 
+                      type="radio" 
+                      name="email_mode" 
+                      checked={!compEmailConfig.use_custom_smtp}
+                      onChange={() => setCompEmailConfig({ ...compEmailConfig, use_custom_smtp: false })}
+                      className="mt-1 text-indigo-600"
+                    />
+                    <div>
+                      <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                        <span>JOY Master cPanel Mail Gateway</span>
+                        <span className="badge badge-emerald text-[9px]">RECOMMENDED</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                        Dispatches via high-reputation system server (<code>admin@joycorporatesolutions.com</code>) branded with <strong>{company.name}</strong> headers.
+                      </p>
+                    </div>
+                  </label>
+
+                  {/* Mode 2: Custom Company SMTP */}
+                  <label 
+                    onClick={() => setCompEmailConfig({ ...compEmailConfig, use_custom_smtp: true })}
+                    className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
+                      compEmailConfig.use_custom_smtp 
+                        ? 'border-indigo-600 bg-indigo-50/50 shadow-xs' 
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    <input 
+                      type="radio" 
+                      name="email_mode" 
+                      checked={compEmailConfig.use_custom_smtp}
+                      onChange={() => setCompEmailConfig({ ...compEmailConfig, use_custom_smtp: true })}
+                      className="mt-1 text-indigo-600"
+                    />
+                    <div>
+                      <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                        <span>Custom Company SMTP Server</span>
+                        <span className="badge badge-purple text-[9px]">WHITE-LABELED</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                        Route emails directly through your corporate mail server (e.g. Office 365, Google Workspace, SendGrid, or custom cPanel).
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Custom SMTP Config Form (Visible only if Custom SMTP chosen) */}
+                {compEmailConfig.use_custom_smtp && (
+                  <div className="pt-3 border-t border-slate-200/80 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fadeIn">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Corporate SMTP Host *</label>
+                      <input 
+                        type="text" 
+                        value={compEmailConfig.host}
+                        onChange={(e) => setCompEmailConfig({ ...compEmailConfig, host: e.target.value })}
+                        placeholder="e.g. mail.yourcompany.com"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Port & Protocol *</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input 
+                          type="number" 
+                          value={compEmailConfig.port}
+                          onChange={(e) => setCompEmailConfig({ ...compEmailConfig, port: parseInt(e.target.value) || 465 })}
+                          className="form-input font-mono font-bold"
+                        />
+                        <select 
+                          value={compEmailConfig.port === 465 ? 'ssl' : 'tls'}
+                          onChange={(e) => {
+                            const isSSL = e.target.value === 'ssl';
+                            setCompEmailConfig({
+                              ...compEmailConfig,
+                              port: isSSL ? 465 : 587,
+                              use_ssl: isSSL,
+                              use_tls: !isSSL
+                            });
+                          }}
+                          className="form-input font-bold"
+                        >
+                          <option value="ssl">SSL (465)</option>
+                          <option value="tls">TLS (587)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">SMTP Login Email *</label>
+                      <input 
+                        type="text" 
+                        value={compEmailConfig.user}
+                        onChange={(e) => setCompEmailConfig({ ...compEmailConfig, user: e.target.value })}
+                        placeholder="onboarding@yourcompany.com"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">SMTP Password *</label>
+                      <div className="relative flex items-center">
+                        <input 
+                          type={showCompSmtpPassword ? 'text' : 'password'}
+                          value={compEmailConfig.password}
+                          onChange={(e) => setCompEmailConfig({ ...compEmailConfig, password: e.target.value })}
+                          placeholder="Enter password..."
+                          className="form-input pr-9 font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCompSmtpPassword(!showCompSmtpPassword)}
+                          className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                        >
+                          {showCompSmtpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">From Email Address *</label>
+                      <input 
+                        type="text" 
+                        value={compEmailConfig.from_email}
+                        onChange={(e) => setCompEmailConfig({ ...compEmailConfig, from_email: e.target.value })}
+                        placeholder="hr@yourcompany.com"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Sender Display Name *</label>
+                      <input 
+                        type="text" 
+                        value={compEmailConfig.from_name}
+                        onChange={(e) => setCompEmailConfig({ ...compEmailConfig, from_name: e.target.value })}
+                        placeholder={`${company.name} Talent Acquisition`}
+                        className="form-input font-bold"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Notification Triggers Toggles */}
+              <div className="pt-2 space-y-2">
+                <span className="font-bold text-slate-900 text-xs block">
+                  Automated Company Event Notifications:
+                </span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold">👔 New HR Recruiter Credentials</strong>
+                      <span className="text-[11px] text-slate-500">Auto-email login credentials and HR ID upon recruiter appointment</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={compEmailConfig.notification_rules?.notify_hr_created !== false}
+                      onChange={(e) => setCompEmailConfig({
+                        ...compEmailConfig,
+                        notification_rules: { ...compEmailConfig.notification_rules, notify_hr_created: e.target.checked }
+                      })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold">✅ Candidate Verification Certified</strong>
+                      <span className="text-[11px] text-slate-500">Email summary when an employee's 360° dossier is 100% certified</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={compEmailConfig.notification_rules?.notify_candidate_verified !== false}
+                      onChange={(e) => setCompEmailConfig({
+                        ...compEmailConfig,
+                        notification_rules: { ...compEmailConfig.notification_rules, notify_candidate_verified: e.target.checked }
+                      })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold">🚨 Red-Flag & Moonlighting Escalation</strong>
+                      <span className="text-[11px] text-slate-500">Instant email alert if moonlighting or adverse court cases are flagged</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={compEmailConfig.notification_rules?.notify_discrepancies !== false}
+                      onChange={(e) => setCompEmailConfig({
+                        ...compEmailConfig,
+                        notification_rules: { ...compEmailConfig.notification_rules, notify_discrepancies: e.target.checked }
+                      })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+
+                  <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
+                    <div>
+                      <strong className="text-slate-900 block font-bold">💳 Low Wallet Balance / Billing Invoice</strong>
+                      <span className="text-[11px] text-slate-500">Receive alerts when verification credits fall below safety threshold</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      checked={compEmailConfig.notification_rules?.notify_low_balance !== false}
+                      onChange={(e) => setCompEmailConfig({
+                        ...compEmailConfig,
+                        notification_rules: { ...compEmailConfig.notification_rules, notify_low_balance: e.target.checked }
+                      })}
+                      className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            
             {/* Card 4: 📜 Enterprise Legal Compliance & Point-in-Time Agreement Status */}
             <div className="p-5 rounded-xl border-2 border-indigo-200 bg-indigo-50/60 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-200 pb-2">
@@ -1916,6 +2227,86 @@ export const CompanyAdminView = () => {
         onClose={() => setShowRazorpayModal(false)}
         targetCompanyId={company?.id}
       />
+
+    
+      {/* 🏢 COMPANY TEST EMAIL TRANSMISSION MODAL */}
+      {showCompTestEmailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-modal-spring">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Send className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-slate-900">Test Company Email Dispatch</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Verify outgoing emails for {company.name}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowCompTestEmailModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSendCompanyTestEmail} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Recipient Test Email Address *
+                </label>
+                <input 
+                  type="email" 
+                  required
+                  value={compTestRecipient}
+                  onChange={(e) => setCompTestRecipient(e.target.value)}
+                  placeholder="e.g. admin@yourcompany.com"
+                  className="form-input font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">
+                  Mode: <strong>{compEmailConfig.use_custom_smtp ? `Custom SMTP (${compEmailConfig.host})` : 'JOY Master cPanel Mail Gateway'}</strong>
+                </span>
+              </div>
+
+              {compTestEmailResult && (
+                <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+                  compTestEmailResult.success 
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-950' 
+                    : 'bg-rose-50 border-rose-200 text-rose-950'
+                }`}>
+                  <strong className="block flex items-center gap-1.5 font-bold">
+                    {compTestEmailResult.success ? '🎉 Transmission Successful!' : '❌ Delivery Failed'}
+                  </strong>
+                  <p className="text-[11px] leading-relaxed">
+                    {compTestEmailResult.success 
+                      ? `Successfully dispatched test message to ${compTestEmailResult.to}. Check your inbox!`
+                      : `Error: ${compTestEmailResult.error || 'Connection failed'}`}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCompTestEmailModal(false)}
+                  className="btn btn-secondary text-xs py-2 px-3.5 font-bold cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSendingCompTestEmail}
+                  className="btn btn-company text-xs py-2 px-4 font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+                >
+                  {isSendingCompTestEmail ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  <span>{isSendingCompTestEmail ? 'Sending...' : 'Send Test Email 📨'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
