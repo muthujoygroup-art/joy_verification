@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from backend.app.models import VerificationRecord
+from backend.app.services.email_service import send_company_welcome_email
 
 from backend.app.database import get_db
 from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
@@ -57,6 +58,21 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     db.add(new_comp)
     db.commit()
     db.refresh(new_comp)
+    
+    # 📧 Automated Email Notification to Company Administrator
+    try:
+        if new_comp.email:
+            send_company_welcome_email(
+                company_name=new_comp.name,
+                company_code=new_comp.code,
+                admin_email=new_comp.email,
+                contact_person=new_comp.contact_person or new_comp.name,
+                temporary_password="Admin@123",
+                db=db
+            )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch company welcome email: {e}")
+
     return new_comp
 
 @router.put("/companies/{company_id}/features")

@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 from backend.app.database import get_db
 from backend.app.models import SystemSetting, PlatformGuideline, CommunicationGateway
 from backend.app.schemas import RoleSettingsUpdate, PlatformGuidelineUpdate
+from backend.app.services.email_service import send_smtp_email, get_smtp_config
 
 router = APIRouter(prefix="/settings", tags=["System Settings & Guidelines"])
 
@@ -65,3 +66,57 @@ def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(gw)
     return {"success": True, "gateway": gw}
+
+from datetime import datetime
+
+
+@router.get("/email-config")
+def get_email_config(db: Session = Depends(get_db)):
+    """Fetch current active SMTP configuration (with masked password)"""
+    cfg = get_smtp_config(db)
+    # Mask password for display
+    masked_pw = "********" if cfg.get("password") else ""
+    return {
+        "host": cfg.get("host"),
+        "port": cfg.get("port"),
+        "user": cfg.get("user"),
+        "has_password": bool(cfg.get("password")),
+        "password_masked": masked_pw,
+        "from_email": cfg.get("from_email"),
+        "from_name": cfg.get("from_name"),
+        "use_ssl": cfg.get("use_ssl"),
+        "use_tls": cfg.get("use_tls")
+    }
+
+@router.post("/test-email")
+def test_email_dispatch(payload: dict, db: Session = Depends(get_db)):
+    """Dispatches a live diagnostic test email to verify cPanel SMTP connectivity"""
+    to_email = payload.get("to_email")
+    if not to_email:
+        raise HTTPException(status_code=400, detail="Recipient 'to_email' is required")
+
+    test_html = f"""
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a;">
+        <h2 style="color: #4338ca; margin-top: 0;">🎉 cPanel SMTP Email Gateway Connected!</h2>
+        <p>This is a live test email dispatched from your <strong>JOY Background Verification Platform</strong>.</p>
+        <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <strong style="color: #15803d;">Status: Successfully Authenticated with Mail Server</strong><br>
+            <span style="font-size: 12px; color: #475569;">Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</span>
+        </div>
+        <p style="font-size: 12px; color: #64748b;">
+            All automated account creation and verification notice emails will be dispatched via this gateway.
+        </p>
+    </div>
+    """
+
+    res = send_smtp_email(
+        to_email=to_email,
+        subject="✅ JOY Corporate Solutions - cPanel SMTP Test Verification",
+        html_content=test_html,
+        db=db
+    )
+
+    if not res.get("success") and not res.get("simulated"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to dispatch test email via SMTP"))
+
+    return res

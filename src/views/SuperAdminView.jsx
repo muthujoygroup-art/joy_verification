@@ -409,6 +409,42 @@ export const SuperAdminView = () => {
     showToast('SQL Query Executed Successfully on PostgreSQL Engine (Execution time: 4.2ms)');
   };
 
+  // 📧 Save cPanel SMTP Settings
+  const handleSaveSmtpSettings = async (e) => {
+    if (e) e.preventDefault();
+    setIsSavingSmtp(true);
+    try {
+      await api.saveEmailConfig(smtpConfig);
+      showToast('💾 cPanel SMTP email configuration saved successfully!');
+    } catch (err) {
+      console.warn('Error saving SMTP settings:', err);
+      showToast('❌ Failed to save SMTP configuration');
+    } finally {
+      setIsSavingSmtp(false);
+    }
+  };
+
+  // 📧 Send Live Diagnostic Test Email
+  const handleSendTestEmail = async (e) => {
+    if (e) e.preventDefault();
+    if (!testEmailRecipient || !testEmailRecipient.includes('@')) {
+      showToast('⚠️ Please enter a valid test recipient email address');
+      return;
+    }
+    setIsSendingTestEmail(true);
+    setTestEmailResult(null);
+    try {
+      const res = await api.sendTestEmail(testEmailRecipient.trim(), smtpConfig);
+      setTestEmailResult(res);
+      showToast(`🎉 Test email dispatched to ${testEmailRecipient}!`);
+    } catch (err) {
+      setTestEmailResult({ success: false, error: err.message || 'SMTP Handshake failed' });
+      showToast('❌ Test email delivery failed');
+    } finally {
+      setIsSendingTestEmail(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">
       
@@ -3000,52 +3036,287 @@ export const SuperAdminView = () => {
         </div>
       )}
 
-      {/* TAB 13: PLATFORM SETTINGS */}
+      {/* TAB 13: PLATFORM SETTINGS & CPANEL MAIL CONFIGURATION */}
       {activeTab === 'settings' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900">Super Admin Global Platform Settings</h3>
-            <p className="text-xs text-slate-500 font-medium">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
+        <div className="space-y-6">
+          
+          {/* 📧 cPanel SMTP Mail Gateway Configuration */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-slate-900">cPanel SMTP Mail Gateway Configuration</h3>
+                    <span className="badge badge-emerald text-[10px] font-bold">AUTOMATED NOTIFICATIONS</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Configure your cPanel hosted mail accounts for automated Company creation, HR credentials, and Candidate link delivery
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTestEmailRecipient('muthukumar@joycorporatesolutions.com');
+                    setShowTestEmailModal(true);
+                  }}
+                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer hover:bg-slate-100"
+                >
+                  <Send className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Send Test Email 📨</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveSmtpSettings}
+                  disabled={isSavingSmtp}
+                  className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                >
+                  {isSavingSmtp ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSavingSmtp ? 'Saving...' : 'Save Mail Settings 💾'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* SMTP Input Fields Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  cPanel SMTP Host *
+                </label>
+                <input 
+                  type="text" 
+                  value={smtpConfig.host}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
+                  placeholder="e.g. mail.joycorporatesolutions.com"
+                  className="form-input font-mono font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Default: mail.joycorporatesolutions.com</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  SMTP Port & Protocol *
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input 
+                    type="number" 
+                    value={smtpConfig.port}
+                    onChange={(e) => {
+                      const p = parseInt(e.target.value) || 465;
+                      setSmtpConfig({ 
+                        ...smtpConfig, 
+                        port: p,
+                        use_ssl: p === 465,
+                        use_tls: p === 587
+                      });
+                    }}
+                    placeholder="465 or 587"
+                    className="form-input font-mono font-bold"
+                  />
+                  <select
+                    value={smtpConfig.port === 465 ? 'ssl' : 'tls'}
+                    onChange={(e) => {
+                      const isSSL = e.target.value === 'ssl';
+                      setSmtpConfig({
+                        ...smtpConfig,
+                        port: isSSL ? 465 : 587,
+                        use_ssl: isSSL,
+                        use_tls: !isSSL
+                      });
+                    }}
+                    className="form-input font-bold"
+                  >
+                    <option value="ssl">SSL (Port 465)</option>
+                    <option value="tls">TLS (Port 587)</option>
+                  </select>
+                </div>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">cPanel standard: 465 SSL</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  cPanel Email / SMTP Username *
+                </label>
+                <input 
+                  type="text" 
+                  value={smtpConfig.user}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
+                  placeholder="noreply@joycorporatesolutions.com"
+                  className="form-input font-mono font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Your cPanel email address</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  cPanel Email Password *
+                </label>
+                <div className="relative flex items-center">
+                  <input 
+                    type={showSmtpPassword ? 'text' : 'password'}
+                    value={smtpConfig.password}
+                    onChange={(e) => setSmtpConfig({ ...smtpConfig, password: e.target.value })}
+                    placeholder="Enter cPanel email account password..."
+                    className="form-input pr-9 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  >
+                    {showSmtpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Used to authenticate with cPanel mail server</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Sender From Email Address *
+                </label>
+                <input 
+                  type="text" 
+                  value={smtpConfig.from_email}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
+                  placeholder="noreply@joycorporatesolutions.com"
+                  className="form-input font-mono font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Display address on sent emails</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Sender Display Name *
+                </label>
+                <input 
+                  type="text" 
+                  value={smtpConfig.from_name}
+                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
+                  placeholder="JOY Corporate Solutions BGV"
+                  className="form-input font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Official organization sender name</span>
+              </div>
+            </div>
+
+            {/* Automated Email Workflows Matrix */}
+            <div className="pt-4 border-t border-slate-100 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                  Automated Event Notification Triggers
+                </span>
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  4 Active Workflows
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                
+                {/* Trigger 1 */}
+                <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🏢</span>
+                    <strong className="text-purple-950 font-bold">Company Creation</strong>
+                  </div>
+                  <p className="text-[11px] text-purple-900/80 leading-relaxed">
+                    Sends Welcome email with Company ID (<code>COMP001</code>) and Admin credentials.
+                  </p>
+                  <span className="badge badge-purple text-[9px] font-bold">AUTO DISPATCH ✓</span>
+                </div>
+
+                {/* Trigger 2 */}
+                <div className="p-3.5 rounded-xl bg-sky-50/70 border border-sky-200 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">👔</span>
+                    <strong className="text-sky-950 font-bold">HR Recruiter Setup</strong>
+                  </div>
+                  <p className="text-[11px] text-sky-900/80 leading-relaxed">
+                    Sends HR Workstation login credentials and unique HR Code (<code>COMP001HR001</code>).
+                  </p>
+                  <span className="badge badge-cyan text-[9px] font-bold">AUTO DISPATCH ✓</span>
+                </div>
+
+                {/* Trigger 3 */}
+                <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">📱</span>
+                    <strong className="text-emerald-950 font-bold">Candidate Onboarding</strong>
+                  </div>
+                  <p className="text-[11px] text-emerald-900/80 leading-relaxed">
+                    Dispatches 15-minute verification link with 4-Digit Security PIN to employee email.
+                  </p>
+                  <span className="badge badge-emerald text-[9px] font-bold">AUTO DISPATCH ✓</span>
+                </div>
+
+                {/* Trigger 4 */}
+                <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">✅</span>
+                    <strong className="text-amber-950 font-bold">Verification Certified</strong>
+                  </div>
+                  <p className="text-[11px] text-amber-900/80 leading-relaxed">
+                    Notifies both Candidate and HR when 360° BGV Dossier & Statutory forms are verified.
+                  </p>
+                  <span className="badge badge-amber text-[9px] font-bold">AUTO DISPATCH ✓</span>
+                </div>
+
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Global Platform Title</label>
-              <input 
-                type="text" 
-                value={systemSettings.superadmin?.platformTitle || 'JOY DATA VERIFICATION'} 
-                onChange={(e) => updateRoleSettings('superadmin', { platformTitle: e.target.value })}
-                className="form-input" 
-              />
+          {/* Global Platform Parameters */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900">Super Admin Global Platform Settings</h3>
+              <p className="text-xs text-slate-500 font-medium">Configure global title, SLA parameters, session inactivity rules, and security policies</p>
             </div>
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">API Rate Limit Per Minute</label>
-              <input 
-                type="number" 
-                value={systemSettings.superadmin?.apiRateLimitPerMin || 600} 
-                onChange={(e) => updateRoleSettings('superadmin', { apiRateLimitPerMin: parseInt(e.target.value) || 600 })}
-                className="form-input" 
-              />
-            </div>
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Session Inactivity Timeout (Minutes)</label>
-              <input 
-                type="number" 
-                value={systemSettings.superadmin?.sessionTimeoutMins || 30} 
-                onChange={(e) => updateRoleSettings('superadmin', { sessionTimeoutMins: parseInt(e.target.value) || 30 })}
-                className="form-input" 
-              />
-            </div>
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Error Log Retention Period (Days)</label>
-              <input 
-                type="number" 
-                value={systemSettings.superadmin?.logRetentionDays || 90} 
-                onChange={(e) => updateRoleSettings('superadmin', { logRetentionDays: parseInt(e.target.value) || 90 })}
-                className="form-input" 
-              />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Global Platform Title</label>
+                <input 
+                  type="text" 
+                  value={systemSettings.superadmin?.platformTitle || 'JOY DATA VERIFICATION'} 
+                  onChange={(e) => updateRoleSettings('superadmin', { platformTitle: e.target.value })}
+                  className="form-input" 
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">API Rate Limit Per Minute</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.superadmin?.apiRateLimitPerMin || 600} 
+                  onChange={(e) => updateRoleSettings('superadmin', { apiRateLimitPerMin: parseInt(e.target.value) || 600 })}
+                  className="form-input" 
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Session Inactivity Timeout (Minutes)</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.superadmin?.sessionTimeoutMins || 30} 
+                  onChange={(e) => updateRoleSettings('superadmin', { sessionTimeoutMins: parseInt(e.target.value) || 30 })}
+                  className="form-input" 
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Error Log Retention Period (Days)</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.superadmin?.logRetentionDays || 90} 
+                  onChange={(e) => updateRoleSettings('superadmin', { logRetentionDays: parseInt(e.target.value) || 90 })}
+                  className="form-input" 
+                />
+              </div>
             </div>
           </div>
+
         </div>
       )}
 
@@ -4403,6 +4674,86 @@ export const SuperAdminView = () => {
         onClose={() => setShowSuperAdminRazorpayModal(false)}
         targetCompanyId={selectedRechargeCompanyId}
       />
+
+    
+      {/* 📧 TEST EMAIL TRANSMISSION MODAL */}
+      {showTestEmailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-modal-spring">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Send className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-slate-900">cPanel SMTP Connection Test</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Verify live transmission to your cPanel mail server</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowTestEmailModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSendTestEmail} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Recipient Test Email Address *
+                </label>
+                <input 
+                  type="email" 
+                  required
+                  value={testEmailRecipient}
+                  onChange={(e) => setTestEmailRecipient(e.target.value)}
+                  placeholder="e.g. your_email@domain.com"
+                  className="form-input font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">
+                  A test verification message will be sent via <strong>{smtpConfig.host}:{smtpConfig.port}</strong>
+                </span>
+              </div>
+
+              {testEmailResult && (
+                <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+                  testEmailResult.success 
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-950' 
+                    : 'bg-rose-50 border-rose-200 text-rose-950'
+                }`}>
+                  <strong className="block flex items-center gap-1.5 font-bold">
+                    {testEmailResult.success ? '🎉 Transmission Successful!' : '❌ Delivery Failed'}
+                  </strong>
+                  <p className="text-[11px] leading-relaxed">
+                    {testEmailResult.success 
+                      ? `Successfully authenticated and dispatched to ${testEmailResult.to}. Check your inbox/spam folder!`
+                      : `Error: ${testEmailResult.error || 'Could not connect to SMTP server'}`}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTestEmailModal(false)}
+                  className="btn btn-secondary text-xs py-2 px-3.5 font-bold cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSendingTestEmail}
+                  className="btn btn-superadmin text-xs py-2 px-4 font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+                >
+                  {isSendingTestEmail ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  <span>{isSendingTestEmail ? 'Connecting & Sending...' : 'Send Live Test Email 📨'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

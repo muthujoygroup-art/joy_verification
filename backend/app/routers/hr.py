@@ -6,6 +6,7 @@ from typing import List, Dict, Any
 
 from backend.app.database import get_db
 from backend.app.models import Candidate, Company, HrUser, CandidateDocument
+from backend.app.services.email_service import send_candidate_onboarding_email
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
 
 router = APIRouter(prefix="/hr", tags=["HR Executive"])
@@ -135,32 +136,58 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
             
     db.commit()
     db.refresh(new_candidate)
+
+    # 📧 Automated Email Invitation to Candidate
+    try:
+        if new_candidate.email:
+            comp_obj = db.query(Company).filter(Company.id == new_candidate.company_id).first() if new_candidate.company_id else None
+            comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+            send_candidate_onboarding_email(
+                candidate_name=new_candidate.name,
+                candidate_code=new_candidate.emp_id or hierarchical_emp_code,
+                candidate_email=new_candidate.email,
+                token=new_candidate.token,
+                security_pin=new_candidate.portal_password or "1234",
+                company_name=comp_name,
+                designation=new_candidate.designation or "Associate",
+                db=db
+            )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch candidate onboarding email: {e}")
+
     return new_candidate
 
 @router.post("/dispatch-link")
 def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     """
-    Simulates multi-channel link dispatch via WhatsApp API, SMS Gateway, or SMTP Email.
+    Multi-channel link dispatch via WhatsApp API, SMS Gateway, or cPanel SMTP Email.
     """
-    channel = payload.get("channel", "whatsapp") # 'whatsapp' | 'sms' | 'email'
+    channel = payload.get("channel", "email") # 'email' | 'whatsapp' | 'sms'
     candidate_id = payload.get("candidate_id")
     
-    candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+    candidate = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
-        
-    magic_link = f"http://localhost:5173/verify?token={candidate.token}"
+
+    comp_obj = db.query(Company).filter(Company.id == candidate.company_id).first() if candidate.company_id else None
+    comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
     
-    if channel == "whatsapp":
-        msg = f"WhatsApp template dispatched to {candidate.mobile} with verification link."
-    elif channel == "sms":
-        msg = f"SMS OTP Link sent to {candidate.mobile} via DLT Bulk Gateway."
-    else:
-        msg = f"Onboarding invitation email sent to {candidate.email}."
-        
+    email_res = None
+    if candidate.email:
+        email_res = send_candidate_onboarding_email(
+            candidate_name=candidate.name,
+            candidate_code=candidate.emp_id or candidate.employee_number or "COMP001EMP001",
+            candidate_email=candidate.email,
+            token=candidate.token,
+            security_pin=candidate.portal_password or "1234",
+            company_name=comp_name,
+            designation=candidate.designation or "Associate",
+            db=db
+        )
+
     return {
         "success": True,
         "channel": channel,
-        "message": msg,
-        "link": magic_link
+        "message": f"Onboarding invitation email dispatched to {candidate.email} (PIN: {candidate.portal_password or '1234'}).",
+        "email_result": email_res
     }

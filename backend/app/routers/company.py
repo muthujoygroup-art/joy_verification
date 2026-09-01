@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 
 from backend.app.database import get_db
 from backend.app.models import Company, HrUser, Candidate, Invoice
+from backend.app.services.email_service import send_hr_welcome_email
 from backend.app.schemas import HrUserCreate, HrUserResponse, CompanyResponse
 
 router = APIRouter(prefix="/company", tags=["Company Admin"])
@@ -26,6 +27,12 @@ def get_company_hr_users(company_id: str, db: Session = Depends(get_db)):
 def add_hr_user(company_id: str, payload: HrUserCreate, db: Session = Depends(get_db)):
     """Add a new HR Executive under this employer"""
     hr_id = f"hr-{uuid.uuid4().hex[:6]}"
+    comp = db.query(Company).filter(Company.id == company_id).first()
+    comp_code = comp.code if comp and comp.code else "COMP001"
+    comp_name = comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+    hr_count = db.query(HrUser).filter(HrUser.company_id == company_id).count() + 1
+    hr_code = f"{comp_code}HR{hr_count:03d}"
+
     new_hr = HrUser(
         id=hr_id,
         company_id=company_id,
@@ -38,6 +45,21 @@ def add_hr_user(company_id: str, payload: HrUserCreate, db: Session = Depends(ge
     db.add(new_hr)
     db.commit()
     db.refresh(new_hr)
+
+    # 📧 Automated Email Notification to HR Executive
+    try:
+        if new_hr.email:
+            send_hr_welcome_email(
+                hr_name=new_hr.name,
+                hr_code=hr_code,
+                hr_email=new_hr.email,
+                company_name=comp_name,
+                temporary_password="Hr@123",
+                db=db
+            )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch HR welcome email: {e}")
+
     return new_hr
 
 @router.get("/{company_id}/candidates")

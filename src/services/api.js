@@ -382,6 +382,28 @@ export const api = {
     });
   },
 
+  // 📧 cPanel SMTP Email Gateway & Automated Notifications
+  getEmailConfig: () => request('/settings/email-config'),
+  saveEmailConfig: (smtpSettings) => {
+    requestCache.clear();
+    return request('/settings/gateways', {
+      method: 'POST',
+      body: JSON.stringify({ gateway_type: 'email_smtp', settings: smtpSettings }),
+    });
+  },
+  sendTestEmail: (toEmail, smtpConfig = null) => {
+    return request('/settings/test-email', {
+      method: 'POST',
+      body: JSON.stringify({ to_email: toEmail, smtp_config: smtpConfig }),
+    });
+  },
+  dispatchCandidateEmail: (candidateId) => {
+    return request('/hr/dispatch-link', {
+      method: 'POST',
+      body: JSON.stringify({ channel: 'email', candidate_id: candidateId }),
+    });
+  },
+
   // Role Settings & Guidelines
   getRoleSettings: (role) => request(`/settings/role/${role}`, {}, true),
   updateRoleSettings: (role, settings) => {

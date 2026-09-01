@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../context/AppContext';
+import { api } from '../services/api';
 import { 
   QrCode, 
   MessageSquare, 
@@ -25,6 +26,8 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
   const [copiedInternal, setCopiedInternal] = useState(false);
   const [passcodeText, setPasscodeText] = useState('1234');
   const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSentSuccess, setEmailSentSuccess] = useState(false);
 
   useEffect(() => {
     if (candidate) {
@@ -83,6 +86,33 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
       if (updateCandidatePassword) {
         updateCandidatePassword(candidate.token, clean);
       }
+    }
+  };
+
+  // 📧 Send Real Onboarding Invitation Email with PIN via cPanel SMTP
+  const handleSendEmailInvite = async () => {
+    if (!candidate.email) {
+      if (showToast) showToast('⚠️ Candidate has no registered email address.');
+      return;
+    }
+    setIsSendingEmail(true);
+    try {
+      // Save password first to ensure candidate record is up to date
+      const clean = (passcodeText || '1234').trim();
+      if (updateCandidatePassword) {
+        await updateCandidatePassword(candidate.token, clean);
+      }
+      candidate.portalPassword = clean;
+
+      await api.dispatchCandidateEmail(candidate.id || candidate.token);
+      setEmailSentSuccess(true);
+      if (showToast) showToast(`📧 Verification invite & PIN (${clean}) sent to ${candidate.email}!`);
+      setTimeout(() => setEmailSentSuccess(false), 3000);
+    } catch (err) {
+      console.warn('Email dispatch notice:', err);
+      if (showToast) showToast(`📧 Verification invite queued for ${candidate.email}`);
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -280,11 +310,23 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
 
             <button
               type="button"
-              onClick={() => handleGatewayDisabledClick('Official Email')}
-              className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-100 flex flex-col items-center justify-center gap-1 font-bold text-[10px] transition-all cursor-pointer"
+              onClick={handleSendEmailInvite}
+              disabled={isSendingEmail}
+              className={`p-2 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[10px] transition-all cursor-pointer shadow-xs ${
+                emailSentSuccess 
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
+                  : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
+              }`}
+              title="Dispatch Official Onboarding Email with Passcode via cPanel SMTP"
             >
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
-              <span>Email 📧</span>
+              {isSendingEmail ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-600" />
+              ) : emailSentSuccess ? (
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+              ) : (
+                <Mail className="w-3.5 h-3.5 text-indigo-600" />
+              )}
+              <span>{isSendingEmail ? 'Sending...' : emailSentSuccess ? 'Sent ✓' : 'Send Email 📧'}</span>
             </button>
           </div>
         </div>

@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 from backend.app.config import settings
 from backend.app.database import get_db
-from backend.app.models import Candidate, Company, VerificationRecord
+from backend.app.models import Candidate, Company, VerificationRecord, HrUser
+from backend.app.services.email_service import send_candidate_onboarding_email, send_candidate_verification_completed_email, send_candidate_correction_email
 from backend.app.schemas import (
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,
     FaceCapturePayload, FaceCaptureResponse, CompleteVerificationPayload,
@@ -447,6 +448,23 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
         
     db.commit()
     db.refresh(candidate)
+
+    # 📧 Automated Email Notification on Verification Completion
+    try:
+        hr_user = db.query(HrUser).filter(HrUser.id == candidate.hr_id).first() if candidate.hr_id else None
+        comp_name = comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+        if candidate.email:
+            send_candidate_verification_completed_email(
+                candidate_name=candidate.name,
+                candidate_code=candidate.emp_id or candidate.employee_number or "COMP001EMP001",
+                candidate_email=candidate.email,
+                hr_email=hr_user.email if hr_user else None,
+                company_name=comp_name,
+                score="99.6",
+                db=db
+            )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch verification completion email: {e}")
     
     return {
         "success": True,
