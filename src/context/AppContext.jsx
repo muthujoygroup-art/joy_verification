@@ -871,19 +871,29 @@ export const AppProvider = ({ children }) => {
         ]);
 
         if (comps && Array.isArray(comps)) {
-          setCompanies(comps.map(c => ({
-            id: c.id,
-            name: c.name,
-            code: c.code,
-            contactPerson: c.contact_person,
-            email: c.email,
-            plan: c.plan,
-            pricePerVerification: c.price_per_verification,
-            verifiedCountThisMonth: c.verified_count_this_month,
-            maxLimit: c.max_limit,
-            status: c.status,
-            features: c.features || {}
-          })));
+          // Deduplicate companies by id and email
+          const seen = new Set();
+          const uniqueComps = [];
+          for (const c of comps) {
+            const key = (c.id || c.code || c.email || '').toLowerCase();
+            if (key && !seen.has(key)) {
+              seen.add(key);
+              uniqueComps.push({
+                id: c.id,
+                name: c.name,
+                code: c.code,
+                contactPerson: c.contact_person,
+                email: c.email,
+                plan: c.plan,
+                pricePerVerification: c.price_per_verification,
+                verifiedCountThisMonth: c.verified_count_this_month,
+                maxLimit: c.max_limit,
+                status: c.status,
+                features: c.features || {}
+              });
+            }
+          }
+          setCompanies(uniqueComps);
           setIsBackendConnected(true);
         }
 

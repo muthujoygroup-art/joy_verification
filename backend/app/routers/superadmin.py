@@ -630,3 +630,14 @@ def trigger_database_migrations():
         "total_migrations": len(results),
         "details": results
     }
+
+@router.post("/database/clean-duplicates")
+@router.get("/database/clean-duplicates")
+def trigger_clean_duplicates(db: Session = Depends(get_db)):
+    """Admin trigger to clean all duplicate records in PostgreSQL database"""
+    from backend.app.seed import clean_database_duplicates
+    clean_database_duplicates()
+    return {
+        "success": True,
+        "message": "All duplicate values cleaned from database successfully!"
+    }
