@@ -121,6 +121,11 @@ async function request(endpoint, options = {}, useCache = false) {
 }
 
 export const api = {
+  // 🗄️ PostgreSQL Database Management & Direct Code-Side SQL Runner
+  executeSql: (query) => request('/superadmin/database/execute-sql', { method: 'POST', body: JSON.stringify({ query }) }),
+  runDatabaseMigrations: () => request('/superadmin/database/run-migrations', { method: 'POST' }),
+  cleanDatabaseDuplicates: () => request('/superadmin/database/clean-duplicates', { method: 'POST' }),
+
   // Authentication & Session Management
   login: async (credentials) => {
     const data = await request('/auth/login', {

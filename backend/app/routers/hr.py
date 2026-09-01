@@ -35,7 +35,7 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     comp = db.query(Company).filter(Company.id == payload.company_id).first() if payload.company_id else None
     comp_code = comp.code if comp and comp.code else "COMP001"
     emp_count = db.query(Candidate).filter(Candidate.company_id == payload.company_id).count() + 1
-    hierarchical_emp_code = f"{comp_code}EMP{emp_count:03d}" "
+    hierarchical_emp_code = f"{comp_code}EMP{emp_count:03d}"
     
     # Default verifications completed status
     initial_verifs = {

@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 from backend.app.models import VerificationRecord
 from backend.app.services.email_service import send_company_welcome_email
 
+from pydantic import BaseModel
 from backend.app.database import get_db
 from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
 from backend.app.schemas import (
