@@ -197,28 +197,40 @@ export const SuperAdminView = () => {
     defaultMandatory: true
   });
 
+  // 🏢 Company Activation & Onboarding States
+  const [activatingCompany, setActivatingCompany] = useState(null);
+  const [showNewCompPassword, setShowNewCompPassword] = useState(false);
   const [newCompany, setNewCompany] = useState({
     name: '',
     contactPerson: '',
+    phone: '',
     email: '',
-    password: 'Company@Admin2026',
-    plan: 'Enterprise Premier',
+    password: '1234',
+    plan: 'Standard Tier',
+    credits_purchased: 500,
     maxLimit: 500,
-    termsAccepted: true,
-    termsVersion: 'v2.4-2026',
-    features: {
-      aadhaar: true,
-      mobileOtp: true,
-      faceCapture: true,
-      drivingLicense: false,
-      pan: true,
-      uan: false,
-      education: false,
-      criminalCheck: false,
-      addressCheck: false,
-      bankCheck: true
-    }
+    expiry_days: 15,
+    expiry_date: '',
+    termsAccepted: true
   });
+
+  // 📧 cPanel SMTP Configuration & Test Email States
+  const [smtpConfig, setSmtpConfig] = useState({
+    host: 'mail.joycorporatesolutions.com',
+    port: 465,
+    user: 'admin@joycorporatesolutions.com',
+    password: '',
+    from_email: 'admin@joycorporatesolutions.com',
+    from_name: 'JOY Corporate Solutions BGV',
+    use_ssl: true,
+    use_tls: false
+  });
+  const [showSmtpPassword, setShowSmtpPassword] = useState(false);
+  const [isSavingSmtp, setIsSavingSmtp] = useState(false);
+  const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+  const [testEmailRecipient, setTestEmailRecipient] = useState('');
+  const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
+  const [testEmailResult, setTestEmailResult] = useState(null);
 
   const [editApiConfig, setEditApiConfig] = useState(() => ({
     server1_sandbox: {
