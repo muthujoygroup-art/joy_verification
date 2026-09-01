@@ -2119,52 +2119,6 @@ export const SuperAdminView = () => {
               </table>
             </div>
           </div>
-
-          {/* SQL Query Runner Console */}
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-900 text-slate-100 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono text-xs text-teal-400 font-bold">
-                <Terminal className="w-4 h-4" />
-                <span>Super Admin SQL Query Runner (PostgreSQL Console)</span>
-              </div>
-              <span className="text-[10px] text-slate-400 font-mono">Read-Only Safe Mode Active</span>
-            </div>
-
-            <div className="space-y-2">
-              <textarea
-                rows={2}
-                value={customSqlQuery}
-                onChange={(e) => setCustomSqlQuery(e.target.value)}
-                className="w-full bg-slate-950 text-teal-300 font-mono text-xs p-3 rounded-lg border border-slate-800 outline-none focus:border-teal-500"
-              />
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                  <span>Quick Templates:</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT * FROM candidates WHERE status = \'Verified\';')} className="underline hover:text-teal-300">Verified Candidates</button>
-                  <span>•</span>
-                  <button onClick={() => setCustomSqlQuery('SELECT id, name, plan, verified_count_this_month FROM companies;')} className="underline hover:text-teal-300">Company Volume</button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleExecuteSql}
-                  className="btn btn-superadmin text-xs py-1.5 px-4 font-mono font-bold flex items-center gap-1.5 shadow-md"
-                >
-                  <span>Execute SQL ▶</span>
-                </button>
-              </div>
-            </div>
-
-            {queryExecutionResult && (
-              <div className="p-3 bg-slate-950 rounded-lg border border-teal-900/50 text-[11px] font-mono text-teal-200 space-y-1">
-                <span className="text-[10px] text-teal-400 block font-bold">Query Execution Output ({queryExecutionResult.length} rows returned):</span>
-                <pre className="max-h-36 overflow-y-auto overflow-x-auto text-[10px] text-slate-300">
-                  {JSON.stringify(queryExecutionResult, null, 2)}
-                </pre>
-              </div>
-            )}
-          </div>
-
         </div>
       )}
 
