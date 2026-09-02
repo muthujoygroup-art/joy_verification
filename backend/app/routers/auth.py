@@ -49,6 +49,12 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not comp:
             raise HTTPException(status_code=404, detail="Company account not found.")
             
+        if comp.status in ("Inactive", "Suspended", "Discontinued"):
+            raise HTTPException(
+                status_code=403, 
+                detail=f"Your enterprise organization account ({comp.name}) is currently {comp.status.upper()}. Please contact Super Administrator."
+            )
+            
         user_data = {
             "id": comp.id,
             "name": comp.contact_person,
@@ -69,6 +75,12 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not hr:
             raise HTTPException(status_code=404, detail="HR Executive account not found.")
             
+        if hr.status in ("Inactive", "Suspended", "Deactivated"):
+            raise HTTPException(
+                status_code=403,
+                detail=f"Your HR Recruiter workstation account is currently {hr.status.upper()}. Please contact your Company Administrator."
+            )
+            
         comp = db.query(Company).filter(Company.id == hr.company_id).first()
         user_data = {
             "id": hr.id,
@@ -86,6 +98,12 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         candidate = db.query(Candidate).filter(Candidate.token == token).first()
         if not candidate:
             raise HTTPException(status_code=404, detail="Invalid or expired verification token.")
+            
+        if candidate.status in ("Inactive", "Discontinued", "Withdrawn"):
+            raise HTTPException(
+                status_code=403,
+                detail="This verification onboarding link has been discontinued or withdrawn by your employer."
+            )
             
         comp = db.query(Company).filter(Company.id == candidate.company_id).first()
         user_data = {

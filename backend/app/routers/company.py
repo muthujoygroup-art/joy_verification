@@ -209,3 +209,17 @@ def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
             "status": comp.status
         }
     }
+
+
+@router.put("/{company_id}/hr-users/{hr_id}/status")
+def toggle_hr_status(company_id: str, hr_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Set HR recruiter status: 'Active' | 'Inactive' | 'Suspended'"""
+    hr = db.query(HrUser).filter((HrUser.id == hr_id) & (HrUser.company_id == company_id)).first()
+    if not hr:
+        raise HTTPException(status_code=404, detail="HR user not found")
+    
+    new_status = payload.get("status", "Active")
+    hr.status = new_status
+    db.commit()
+    db.refresh(hr)
+    return {"success": True, "hr_id": hr.id, "status": hr.status}

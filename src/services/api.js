@@ -432,6 +432,28 @@ export const api = {
     });
   },
 
+  updateCompanyStatus: (companyId, status) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  },
+  updateHrStatus: (companyId, hrId, status) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/hr-users/${hrId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  },
+  updateCandidateStatus: (candidateId, status) => {
+    requestCache.clear();
+    return request(`/hr/candidates/${candidateId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  },
+
   // Role Settings & Guidelines
   getRoleSettings: (role) => request(`/settings/role/${role}`, {}, true),
   updateRoleSettings: (role, settings) => {

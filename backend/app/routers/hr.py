@@ -220,3 +220,17 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
         "message": f"Onboarding invitation email dispatched to {candidate.email} (PIN: {candidate.portal_password or '1234'}).",
         "email_result": email_res
     }
+
+
+@router.put("/candidates/{candidate_id}/status")
+def toggle_candidate_status(candidate_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Set candidate verification status: 'Verified' | 'Link Sent' | 'In Verification' | 'Inactive' | 'Discontinued' | 'Withdrawn'"""
+    cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    new_status = payload.get("status", "Inactive")
+    cand.status = new_status
+    db.commit()
+    db.refresh(cand)
+    return {"success": True, "candidate_id": cand.id, "status": cand.status}
