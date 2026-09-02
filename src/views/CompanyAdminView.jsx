@@ -438,11 +438,11 @@ export const CompanyAdminView = () => {
           </div>
 
           {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
-          <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white shadow-xl border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-950 text-white shadow-2xl border-2 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
               
-              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider px-2.5 py-1 rounded-lg bg-cyan-400/10 border border-cyan-400/20 shrink-0">
+              <span className="text-[11px] font-black text-slate-950 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-cyan-400 shadow-md shrink-0">
                 SUB-SECTIONS:
               </span>
 
@@ -452,7 +452,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('registry')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
@@ -461,7 +461,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('telemetry')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
@@ -476,7 +476,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('hrteam')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Users className="w-3.5 h-3.5" />
@@ -485,7 +485,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('hr_permissions')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
@@ -500,7 +500,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('profile_details')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
@@ -509,7 +509,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('dochub')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <FolderDown className="w-3.5 h-3.5" />
@@ -524,7 +524,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('billing_wallet')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <CreditCard className="w-3.5 h-3.5" />
@@ -533,7 +533,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('settings')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Mail className="w-3.5 h-3.5" />

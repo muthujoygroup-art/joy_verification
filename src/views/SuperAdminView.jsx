@@ -1153,11 +1153,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
 
           {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
-          <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-950 text-white shadow-2xl border-2 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
               
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-400/10 border border-amber-400/20 shrink-0">
+              <span className="text-[11px] font-black text-slate-950 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-amber-400 shadow-md shrink-0">
                 SUB-SECTIONS:
               </span>
 
@@ -1167,7 +1167,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('analytics')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
@@ -1176,7 +1176,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('companies')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
@@ -1185,7 +1185,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('ledger')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Users className="w-3.5 h-3.5" />
@@ -1194,7 +1194,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('terms_hub')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Scale className="w-3.5 h-3.5" />
@@ -1209,7 +1209,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('apiconfig')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'apiconfig' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'apiconfig' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Server className="w-3.5 h-3.5" />
@@ -1218,7 +1218,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('studio')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'studio' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'studio' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Zap className="w-3.5 h-3.5" />
@@ -1227,7 +1227,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('settings')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Mail className="w-3.5 h-3.5" />
@@ -1242,7 +1242,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('billing')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'billing' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'billing' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <CreditCard className="w-3.5 h-3.5" />
@@ -1257,7 +1257,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('dbms')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'dbms' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'dbms' ? 'bg-rose-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Database className="w-3.5 h-3.5" />
@@ -1266,7 +1266,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('audit')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'audit' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'audit' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <FileText className="w-3.5 h-3.5" />
@@ -1275,7 +1275,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('sessions')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'sessions' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'sessions' ? 'bg-sky-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
@@ -1284,7 +1284,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('issuelogs')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'issuelogs' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'issuelogs' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <AlertTriangle className="w-3.5 h-3.5" />
@@ -1299,7 +1299,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('reports')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'reports' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'reports' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -1308,7 +1308,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('legal_governance')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'legal_governance' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'legal_governance' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Scale className="w-3.5 h-3.5" />
@@ -1317,7 +1317,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('masterdata')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'masterdata' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'masterdata' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
@@ -1326,7 +1326,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('tickets')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'tickets' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'tickets' ? 'bg-rose-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <LifeBuoy className="w-3.5 h-3.5" />
@@ -1335,7 +1335,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <button
                     onClick={() => setActiveTab('guidelines')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'guidelines' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      activeTab === 'guidelines' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
                   >
                     <BookOpen className="w-3.5 h-3.5" />
