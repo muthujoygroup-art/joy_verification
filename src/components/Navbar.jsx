@@ -9,6 +9,7 @@ import { ActiveSessionBadge } from './ActiveSessionBadge';
 import { TermsAndPrivacyPolicyModal } from './TermsAndPrivacyPolicyModal';
 import { LegalComplianceHandbookModal } from './LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from './UniversalDocumentExportModal';
+import { InteractiveTourGuideModal } from './InteractiveTourGuideModal';
 import { 
   ShieldCheck, 
   Building2, 
@@ -45,6 +46,7 @@ export const Navbar = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
+  const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -145,14 +147,14 @@ export const Navbar = () => {
                 <span>Home 🌐</span>
               </Link>
               
-              {/* Interactive Guided Tour Replay Button */}
+              {/* Interactive Guided Tour & Feature Guide Dropdown Button */}
               <button
-                onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
-                className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="Launch Game-Style Interactive Guided Walkthrough"
+                onClick={() => setShowTourGuideModal(true)}
+                className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap group"
+                title="Launch Interactive Feature Walkthroughs & How-To Guides"
               >
                 <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow shrink-0" />
-                <span>Tour 🎮</span>
+                <span>Tour & Guides 🎮</span>
               </button>
 
               {/* Statutory Legal & DPDP Compliance Handbook Trigger */}

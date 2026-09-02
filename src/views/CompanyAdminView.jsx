@@ -14,11 +14,13 @@ import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvRepor
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
 import { 
   Building2, 
   Users, 
   CheckCircle2, 
-  Clock, 
+  Clock,
+  Compass, 
   Search, 
   Eye, 
   ExternalLink,
@@ -68,7 +70,30 @@ export const CompanyAdminView = () => {
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
-  const [showAddHrModal, setShowAddHrModal] = useState(false);
+  const [showTourGuideModal, setShowTourGuideModal] = useState(false);
+
+  // Listen to tour action events from Navbar / Tour Modal
+  React.useEffect(() => {
+    const handleTourAction = (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      if (payload.type === 'launch_full_tour') {
+        window.dispatchEvent(new CustomEvent('launch_guided_tour'));
+      } else if (payload.type === 'navigate_tab') {
+        if (payload.tab) setActiveTab(payload.tab);
+        if (payload.openModal === 'add_hr') setShowAddHrModal(true);
+        if (payload.openModal === 'razorpay') setShowRazorpayModal(true);
+      } else if (payload.type === 'open_modal') {
+        if (payload.modal === 'gateways') setShowGatewaysModal(true);
+        if (payload.modal === 'universal_export') setShowUniversalExportModal(true);
+        if (payload.modal === 'support') setShowGatewaysModal(true);
+      }
+    };
+    window.addEventListener('tour_feature_action', handleTourAction);
+    return () => window.removeEventListener('tour_feature_action', handleTourAction);
+  }, []);
+
+    const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showRazorpayModal, setShowRazorpayModal] = useState(false);
   const [showGatewaysModal, setShowGatewaysModal] = useState(false);
