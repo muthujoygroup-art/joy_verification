@@ -1017,3 +1017,64 @@ def resend_company_activation_email_endpoint(company_id: str, db: Session = Depe
         "company_code": comp.code,
         "company_email": comp.email
     }
+
+
+@router.put("/companies/{company_id}/approve-login")
+def approve_company_login(company_id: str, db: Session = Depends(get_db)):
+    """Super Admin approves submitted company registration and grants live portal login access"""
+    comp = db.query(Company).filter(
+        (Company.id == company_id) | (Company.code == company_id) | (Company.email.ilike(company_id))
+    ).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    comp.status = "Active"
+    comp.activation_status = "Active"
+    comp.is_active = True
+    db.commit()
+    db.refresh(comp)
+
+    # Dispatch confirmation email to company admin
+    try:
+        from backend.app.services.email_service import _build_email_shell, send_smtp_email
+        app_url = settings.APP_BASE_URL.rstrip('/')
+        login_url = f"{app_url}/login"
+        
+        content = f"""
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0;">
+            🎉 Congratulations {comp.contact_person}! Your Account is Approved!
+        </h2>
+        <p style="font-size: 13px; color: #475569; line-height: 1.6;">
+            Your enterprise organization account for <strong>{comp.name}</strong> (Code: <strong>#{comp.code}</strong>) has been officially reviewed, approved, and activated by JOY Super Administration.
+        </p>
+        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 18px; margin: 20px 0;">
+            <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px;">
+                ✅ Login Credentials:
+            </div>
+            <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
+                <tr><td width="35%" style="color: #64748b; font-weight: bold;">Login Portal:</td><td style="color: #4338ca; font-weight: bold;">Company Admin Portal</td></tr>
+                <tr><td style="color: #64748b; font-weight: bold;">Username:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">{comp.email}</td></tr>
+                <tr><td style="color: #64748b; font-weight: bold;">Company Code:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">#{comp.code}</td></tr>
+            </table>
+        </div>
+        <p style="font-size: 12.5px; color: #334155;">
+            You can now log in to appoint HR recruiters, configure verification features, and start onboarding candidates.
+        </p>
+        """
+        html = _build_email_shell(
+            header_title="Account Approved - JOY Corporate Solutions",
+            badge_text="ORGANIZATION ACCOUNT ACTIVATED",
+            content_html=content,
+            action_url=login_url,
+            action_text="Sign In to Company Portal 🚀"
+        )
+        send_smtp_email(comp.email, f"🎉 Account Approved & Activated - {comp.name} (#{comp.code})", html, db=db)
+    except Exception as e:
+        print(f"Warning sending approval email: {e}")
+
+    return {
+        "success": True,
+        "message": f"🎉 {comp.name} approved! Login access granted and confirmation email dispatched.",
+        "company_id": comp.id,
+        "status": comp.status
+    }

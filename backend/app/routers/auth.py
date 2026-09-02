@@ -56,11 +56,22 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not comp:
             raise HTTPException(status_code=401, detail="Company account not found. Please onboard company from Super Admin first.")
             
-        if comp.status in ("Inactive", "Suspended", "Discontinued"):
-            raise HTTPException(
-                status_code=403, 
-                detail=f"Your enterprise organization account ({comp.name}) is currently {comp.status.upper()}. Please contact Super Administrator."
-            )
+        if comp.status in ("Inactive", "Suspended", "Discontinued", "Pending Activation", "Pending Approval"):
+            if comp.status == "Pending Activation":
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Your company account ({comp.name}) has not completed self-activation. Please open the activation link sent to your email to complete registration."
+                )
+            elif comp.status == "Pending Approval":
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Your company account ({comp.name}) is currently pending final review & authorization by Super Administrator. You will receive an email once approved."
+                )
+            else:
+                raise HTTPException(
+                    status_code=403, 
+                    detail=f"Your enterprise organization account ({comp.name}) is currently {comp.status.upper()}. Please contact Super Administrator."
+                )
             
         user_data = {
             "id": comp.id,

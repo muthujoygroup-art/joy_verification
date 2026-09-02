@@ -58,7 +58,15 @@ def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
         gw = db.query(CommunicationGateway).filter(
             (CommunicationGateway.gateway_type == gw_type) | (CommunicationGateway.id == gw_id)
         ).first()
-        
+
+        existing_sd = dict(gw.settings_data or {}) if gw else {}
+        incoming_pw = settings_data.get("password")
+
+        # Retain existing password if masked or not provided
+        if not incoming_pw or incoming_pw == "********" or incoming_pw == "":
+            if existing_sd.get("password"):
+                settings_data["password"] = existing_sd["password"]
+
         if not gw:
             gw = CommunicationGateway(
                 id=gw_id,

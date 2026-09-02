@@ -754,23 +754,27 @@ export const CompanyActivationView = () => {
               /* SUCCESS STATE: CELEBRATION & DIRECT LOGIN BUTTON */
               /* ------------------------------------------------------------- */
               <div className="text-center py-6 space-y-5 animate-fadeIn">
-                <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-300 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
+                <div className="w-16 h-16 bg-purple-50 border-2 border-purple-300 text-purple-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg animate-bounce">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
 
                 <div className="space-y-1">
-                  <span className="badge badge-emerald text-xs font-black uppercase tracking-wider">
-                    ACCOUNT FULLY ACTIVATED & LIVE 🟢
+                  <span className="badge badge-purple text-xs font-black uppercase tracking-wider">
+                    STATUTORY PROFILE & AGREEMENT SUBMITTED 🟡
                   </span>
                   <h2 className="text-xl font-black text-slate-900">{companyDetails.name}</h2>
-                  <p className="text-xs text-slate-500 font-medium max-w-sm mx-auto">
-                    Your corporate profile, statutory documents, and legal agreements have been saved to PostgreSQL. You can now log in to manage HR recruiters and onboard candidates.
+                  <p className="text-xs text-slate-600 font-medium max-w-md mx-auto leading-relaxed">
+                    Thank you, <strong>{corporateData.signatory_name || companyDetails.contact_person}</strong>! Your statutory documents, entity identifiers, and signed Master Services Agreement have been submitted to JOY Super Administration.
                   </p>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-sm mx-auto">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-md mx-auto">
                   <div className="flex justify-between text-slate-600">
-                    <span>Company ID / Code:</span>
+                    <span>Account Status:</span>
+                    <strong className="badge badge-amber text-[10px]">Pending Super Admin Approval</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Company Code:</span>
                     <strong className="font-mono text-slate-900">#{companyDetails.code}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
@@ -778,18 +782,21 @@ export const CompanyActivationView = () => {
                     <strong className="font-mono text-slate-900">{companyDetails.email}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Provisioned Plan:</span>
-                    <strong className="text-indigo-700 font-bold">{companyDetails.plan}</strong>
+                    <span>Signatory Officer:</span>
+                    <strong className="text-indigo-900 font-bold">{corporateData.signatory_name} ({corporateData.signatory_designation})</strong>
                   </div>
+                </div>
+
+                <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-xs text-indigo-950 font-medium max-w-md mx-auto">
+                  📬 An automated confirmation email will be sent to <strong>{companyDetails.email}</strong> as soon as the Super Administrator reviews and authorizes your live portal access.
                 </div>
 
                 <button
                   type="button"
-                  onClick={handleEnterCompanyDashboard}
-                  className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
+                  onClick={() => navigate('/')}
+                  className="btn btn-secondary text-xs py-2.5 px-6 font-bold cursor-pointer"
                 >
-                  <span>Proceed to Company Admin Login &rarr;</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Return to Homepage &rarr;
                 </button>
               </div>
             )}

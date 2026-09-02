@@ -165,6 +165,10 @@ export const api = {
   topupCompanyCredits: (companyId, payload) => request(`/superadmin/companies/${companyId}/topup-credits`, { method: 'POST', body: JSON.stringify(payload) }),
   updateCompanyTariffs: (companyId, tariffs) => request(`/superadmin/companies/${companyId}/tariffs`, { method: 'PUT', body: JSON.stringify({ tariffs }) }),
   resendCompanyActivationEmail: (companyId) => request(`/superadmin/companies/${companyId}/resend-activation`, { method: 'POST' }),
+  approveCompanyLogin: (companyId) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/approve-login`, { method: 'PUT' });
+  },
   getCompanyActivationDetails: (token) => request(`/company/activation/${token}`),
   unlockCompanyActivation: (token, password) => request('/company/activation/unlock', { method: 'POST', body: JSON.stringify({ token, password }) }),
   completeCompanyActivation: (payload) => request('/company/activation/complete', { method: 'POST', body: JSON.stringify(payload) }),

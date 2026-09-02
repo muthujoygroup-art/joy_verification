@@ -215,15 +215,16 @@ def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
     comp.terms_accepted = "true"
     comp.terms_accepted_at = datetime.utcnow()
     comp.terms_accepted_by = f"{signatory} ({designation})"
-    comp.status = "Active"
-    comp.activation_status = "Active"
+    # Set to Pending Approval so Super Admin gives final authorization
+    comp.status = "Pending Approval"
+    comp.activation_status = "Pending Approval"
 
     db.commit()
     db.refresh(comp)
 
     return {
         "success": True,
-        "message": f"🎉 Congratulations! {comp.name} has been fully activated and is ready to onboard HR recruiters.",
+        "message": f"🎉 Statutory details and signed Master Services Agreement submitted successfully! Awaiting final authorization from Super Administrator.",
         "company": {
             "id": comp.id,
             "name": comp.name,

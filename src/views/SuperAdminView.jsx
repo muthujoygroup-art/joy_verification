@@ -1865,23 +1865,44 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         </span>
                       </td>
                       <td className="py-4 px-4 text-center">
-                        <div className="flex flex-col items-center justify-center gap-1">
-                          {comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
-                            <span className="badge badge-amber text-[10px] font-black py-1 px-2">
-                              🟡 PENDING ACTIVATION
+                        <div className="flex flex-col items-center justify-center gap-1.5">
+                          {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
+                            <span className="badge badge-purple text-[10px] font-black py-1 px-2 border border-purple-300 animate-pulse">
+                              🔵 PENDING APPROVAL (Terms Signed)
+                            </span>
+                          ) : comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
+                            <span className="badge badge-amber text-[10px] font-black py-1 px-2 border border-amber-300">
+                              🟡 PENDING ACTIVATION (Link Sent)
                             </span>
                           ) : comp.status === 'Suspended' || comp.status === 'Inactive' ? (
-                            <span className="badge badge-rose text-[10px] font-black py-1 px-2">
+                            <span className="badge badge-rose text-[10px] font-black py-1 px-2 border border-rose-300">
                               🔴 SUSPENDED
                             </span>
                           ) : (
-                            <span className="badge badge-emerald text-[10px] font-black py-1 px-2">
+                            <span className="badge badge-emerald text-[10px] font-black py-1 px-2 border border-emerald-300">
                               🟢 ACTIVE & VERIFIED
                             </span>
                           )}
 
-                          <div className="flex items-center gap-1 mt-1">
-                            {comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    const res = await api.approveCompanyLogin(comp.id);
+                                    showToast(res.message || `🎉 ${comp.name} approved and login access granted!`);
+                                    setCompanies(prev => prev.map(c => c.id === comp.id ? { ...c, status: 'Active', activation_status: 'Active' } : c));
+                                  } catch (err) {
+                                    showToast(`❌ Approval failed: ${err.message}`, 'error');
+                                  }
+                                }}
+                                className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer transition-all active:scale-95"
+                                title="Approve & Grant Login Access"
+                              >
+                                ✅ Approve Login Access
+                              </button>
+                            ) : comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
                               <>
                                 <button
                                   type="button"
