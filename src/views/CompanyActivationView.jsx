@@ -21,7 +21,10 @@ import {
   AlertTriangle,
   RefreshCw,
   Eye,
-  EyeOff
+  EyeOff,
+  Image as ImageIcon,
+  Check,
+  Info
 } from 'lucide-react';
 
 export const CompanyActivationView = () => {
@@ -44,8 +47,12 @@ export const CompanyActivationView = () => {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [unlockError, setUnlockError] = useState('');
 
-  // Form Step Tracking
-  const [currentStep, setCurrentStep] = useState(1); // 1: Corporate Details, 2: Documents, 3: SLA Acceptance, 4: Complete
+  // 4-Step Wizard Tracking
+  // Step 1: Review SuperAdmin Data & Basic Profile (Logo, Website, Address)
+  // Step 2: Statutory Corporate Identifiers (CIN, GSTIN, PAN) & Document Proofs
+  // Step 3: Master Services Agreement & DPDP Act 2023 Consent Acceptance
+  // Step 4: Activation Success & Direct Login
+  const [activeStep, setActiveStep] = useState(1);
 
   // Corporate Profile Fields
   const [corporateData, setCorporateData] = useState({
@@ -53,27 +60,33 @@ export const CompanyActivationView = () => {
     gstin_number: '',
     company_pan: '',
     registered_address: '',
-    industry_sector: 'Information Technology (IT/ITeS)',
-    website: ''
+    industry_sector: 'Information Technology & Software (IT/ITeS)',
+    website: '',
+    signatory_name: '',
+    signatory_designation: 'Director / Authorized Signatory'
   });
 
-  // Uploaded Documents State
+  const [companyLogoBase64, setCompanyLogoBase64] = useState(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState(null);
+
+  // Uploaded Statutory Document Files
   const [documents, setDocuments] = useState({
     coi: null, // Certificate of Incorporation
     pan: null, // Company PAN Card
     gst: null, // GST Certificate
-    signatory_proof: null // Board Resolution / Signatory ID
+    signatory_proof: null // Board Resolution / Signatory Authorization
   });
 
-  // Terms Acceptance Checkbox
+  // Terms Acceptance State
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [dpdpConsentAccepted, setDpdpConsentAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isActivatedSuccess, setIsActivatedSuccess] = useState(false);
 
   // 1. Fetch Company Activation Status on Mount
   useEffect(() => {
     if (!token) {
-      setErrorMsg('No activation token provided. Please use the link sent by JOY Corporate Solutions.');
+      setErrorMsg('No activation token provided. Please use the official link provided by JOY Corporate Solutions.');
       setIsLoading(false);
       return;
     }
@@ -93,9 +106,16 @@ export const CompanyActivationView = () => {
               gstin_number: data.gstin_number || '',
               company_pan: data.company_pan || '',
               registered_address: data.registered_address || '',
-              industry_sector: data.industry_sector || 'Information Technology (IT/ITeS)',
-              website: data.website || ''
+              industry_sector: data.industry_sector || 'Information Technology & Software (IT/ITeS)',
+              website: data.website || '',
+              signatory_name: data.contact_person || '',
+              signatory_designation: 'Director / Authorized Signatory'
             });
+          } else {
+            setCorporateData(prev => ({
+              ...prev,
+              signatory_name: data.contact_person || ''
+            }));
           }
         }
       })
@@ -123,7 +143,7 @@ export const CompanyActivationView = () => {
         setIsUnlocked(true);
         if (showToast) showToast('🔓 Security authentication successful! Welcome to company activation.');
       } else {
-        setUnlockError('Invalid password. Please check the passcode sent by Super Admin.');
+        setUnlockError('Invalid password. Please check the passcode provided by Super Admin.');
       }
     } catch (err) {
       setUnlockError(err.message || 'Authentication failed. Please check your passcode.');
@@ -132,25 +152,44 @@ export const CompanyActivationView = () => {
     }
   };
 
-  // 3. Mock File Upload Handler
-  const handleFileUpload = (docKey, file) => {
+  // 3. Logo Upload Handler with Base64 Conversion
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
     if (!file) return;
-    setDocuments(prev => ({
-      ...prev,
-      [docKey]: {
-        name: file.name,
-        size: (file.size / 1024).toFixed(1) + ' KB',
-        uploaded_at: new Date().toISOString()
-      }
-    }));
-    if (showToast) showToast(`📎 Uploaded ${file.name} successfully!`);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCompanyLogoBase64(reader.result);
+      setLogoPreviewUrl(reader.result);
+      if (showToast) showToast('🖼️ Company logo uploaded successfully!');
+    };
+    reader.readAsDataURL(file);
   };
 
-  // 4. Final Submission & Activation
+  // 4. Document Upload Handler
+  const handleDocUpload = (docKey, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setDocuments(prev => ({
+        ...prev,
+        [docKey]: {
+          name: file.name,
+          size_kb: (file.size / 1024).toFixed(1),
+          base64: reader.result,
+          uploaded_at: new Date().toISOString()
+        }
+      }));
+      if (showToast) showToast(`📎 Uploaded ${file.name} successfully!`);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 5. Final Submission & Activation
   const handleCompleteActivation = async (e) => {
     if (e) e.preventDefault();
-    if (!termsAccepted) {
-      if (showToast) showToast('⚠️ Please accept the Legal Terms of Service & DPDP Act Compliance Agreement');
+    if (!termsAccepted || !dpdpConsentAccepted) {
+      if (showToast) showToast('⚠️ Please accept both the Master Services Agreement and DPDP Act 2023 Consent', 'error');
       return;
     }
 
@@ -159,23 +198,27 @@ export const CompanyActivationView = () => {
       const payload = {
         token,
         ...corporateData,
-        documents,
+        company_logo: companyLogoBase64,
+        coi: documents.coi?.base64 || null,
+        pan: documents.pan?.base64 || null,
+        gst: documents.gst?.base64 || null,
+        signatory_proof: documents.signatory_proof?.base64 || null,
         terms_accepted: true
       };
       const res = await api.completeCompanyActivation(payload);
       if (res && res.success) {
         setIsActivatedSuccess(true);
-        setCurrentStep(4);
-        if (showToast) showToast('🎉 Company portal activated successfully!');
+        setActiveStep(4);
+        if (showToast) showToast('🎉 Company account successfully activated in database!');
       }
     } catch (err) {
-      if (showToast) showToast(`❌ Activation failed: ${err.message || 'Server error'}`);
+      if (showToast) showToast(`❌ Activation failed: ${err.message || 'Server error'}`, 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 5. Navigate to Company Portal Dashboard
+  // 6. Navigate to Company Portal Dashboard
   const handleEnterCompanyDashboard = () => {
     if (setCurrentRole) setCurrentRole('company');
     navigate('/company');
@@ -208,7 +251,7 @@ export const CompanyActivationView = () => {
           </div>
           <button 
             onClick={() => navigate('/login')}
-            className="btn btn-secondary text-xs py-2.5 px-6 font-bold w-full"
+            className="btn btn-secondary text-xs py-2.5 px-6 font-bold w-full cursor-pointer"
           >
             Go to Login Portal &rarr;
           </button>
@@ -228,12 +271,12 @@ export const CompanyActivationView = () => {
           <div>
             <h2 className="text-lg font-black text-slate-900">Activation Window Expired</h2>
             <p className="text-xs text-slate-500 mt-2">
-              The 15-day activation window for <strong>{companyDetails.name}</strong> has expired. Please contact JOY Super Admin to re-issue an activation link.
+              The activation window for <strong>{companyDetails.name}</strong> has expired. Please contact JOY Super Admin to re-issue an activation link.
             </p>
           </div>
           <button 
             onClick={() => navigate('/login')}
-            className="btn btn-secondary text-xs py-2.5 px-6 font-bold w-full"
+            className="btn btn-secondary text-xs py-2.5 px-6 font-bold w-full cursor-pointer"
           >
             Go to Login Portal &rarr;
           </button>
@@ -245,7 +288,7 @@ export const CompanyActivationView = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 py-8 px-4 sm:px-6 flex flex-col justify-between">
       
-      {/* Top Header */}
+      {/* Top Header Bar */}
       <div className="max-w-4xl mx-auto w-full mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg text-white font-black text-lg">
@@ -262,7 +305,7 @@ export const CompanyActivationView = () => {
 
         <div className="flex items-center gap-2 text-xs">
           <span className="bg-slate-800 text-indigo-400 font-mono px-3 py-1.5 rounded-xl border border-slate-700 font-bold">
-            🏢 {companyDetails.name} ({companyDetails.code})
+            🏢 {companyDetails.name} (#{companyDetails.code})
           </span>
         </div>
       </div>
@@ -281,7 +324,7 @@ export const CompanyActivationView = () => {
               </div>
               <h2 className="text-lg font-black text-slate-900">Protected Organization Portal</h2>
               <p className="text-xs text-slate-500 font-medium">
-                Please enter the 4-digit security PIN or password provided by JOY Corporate Solutions to activate <strong>{companyDetails.name}</strong>.
+                Please enter the 4-digit security PIN or password provided by JOY Corporate Solutions to unlock <strong>{companyDetails.name}</strong>.
               </p>
             </div>
 
@@ -298,7 +341,7 @@ export const CompanyActivationView = () => {
                     autoFocus
                     value={enteredPassword}
                     onChange={(e) => setEnteredPassword(e.target.value)}
-                    placeholder="Enter security password..."
+                    placeholder="Enter 4-digit PIN..."
                     className="w-full bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 focus:bg-white text-slate-900 font-mono font-black text-base py-3 px-4 rounded-xl outline-none transition-all tracking-wider"
                   />
                   <button
@@ -340,105 +383,376 @@ export const CompanyActivationView = () => {
         )}
 
         {/* ========================================================================= */}
-        {/* 🏢 STEP 2: UNLOCKED TERMS & ACCOUNT ACTIVATION SCREEN */}
+        {/* 🏢 STEP 2: UNLOCKED 4-STEP ACTIVATION WIZARD */}
         {/* ========================================================================= */}
         {isUnlocked && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-2xl border border-slate-200 animate-fadeIn space-y-6 max-w-xl mx-auto">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-2xl border border-slate-200 animate-fadeIn space-y-6">
             
             {!isActivatedSuccess ? (
-              <form onSubmit={handleCompleteActivation} className="space-y-5">
-                
-                {/* Header Strip */}
-                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
+              <div>
+                {/* Wizard Step Indicator Bar */}
+                <div className="border-b border-slate-100 pb-4 mb-5">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-base font-black text-slate-900">Activate Your Organization Account</h2>
-                      <p className="text-xs text-slate-500 font-medium">Accept terms to complete account provisioning</p>
+                      <span className="badge badge-indigo text-[10px] font-bold uppercase">Enterprise Self-Activation</span>
+                      <h2 className="text-base font-black text-slate-900 mt-1">Complete Corporate Onboarding: {companyDetails.name}</h2>
+                    </div>
+                    <span className="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200">
+                      Step {activeStep} of 3
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mt-4">
+                    {[
+                      { step: 1, label: '1. Corporate Profile' },
+                      { step: 2, label: '2. Statutory & Docs' },
+                      { step: 3, label: '3. Legal Agreement' },
+                    ].map(s => (
+                      <button
+                        key={s.step}
+                        type="button"
+                        onClick={() => setActiveStep(s.step)}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
+                          activeStep === s.step
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                            : activeStep > s.step
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ------------------------------------------------------------- */}
+                {/* STEP 1: SuperAdmin Overview & Corporate Profile Form */}
+                {/* ------------------------------------------------------------- */}
+                {activeStep === 1 && (
+                  <div className="space-y-4 text-xs">
+                    {/* SuperAdmin Summary Card */}
+                    <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
+                      <span className="text-[10px] font-extrabold uppercase text-indigo-900 tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-indigo-600" />
+                        <span>Super Administrator Provisioned Summary</span>
+                      </span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+                        <div>
+                          <span className="text-slate-400 block font-bold">Company Code</span>
+                          <strong className="font-mono text-indigo-700 text-xs">{companyDetails.code}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block font-bold">Plan Tier</span>
+                          <strong className="text-slate-800 text-xs">{companyDetails.plan}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block font-bold">Credits Pre-Loaded</span>
+                          <strong className="font-mono text-emerald-700 text-xs">{companyDetails.max_limit || 500} Verifications</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block font-bold">Admin Email</span>
+                          <strong className="font-mono text-slate-800 text-xs truncate block">{companyDetails.email}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Logo Upload Box */}
+                    <div className="p-3.5 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50/50 flex flex-col sm:flex-row items-center gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                        {logoPreviewUrl ? (
+                          <img src={logoPreviewUrl} alt="Company Logo" className="w-full h-full object-contain" />
+                        ) : (
+                          <ImageIcon className="w-7 h-7 text-slate-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 text-center sm:text-left">
+                        <label className="block font-bold text-slate-800 text-xs mb-0.5">Upload Official Corporate Logo</label>
+                        <p className="text-[11px] text-slate-500">PNG, JPG, or SVG (Max 2MB). Will appear on employee BGV certificates.</p>
+                      </div>
+                      <label className="btn btn-secondary text-xs py-1.5 px-3 cursor-pointer shrink-0 font-bold flex items-center gap-1">
+                        <UploadCloud className="w-3.5 h-3.5" />
+                        <span>Choose Logo</span>
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                      </label>
+                    </div>
+
+                    {/* Registered Address & Website */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Official Corporate Website *</label>
+                        <div className="relative flex items-center">
+                          <Globe className="w-4 h-4 text-slate-400 absolute left-3" />
+                          <input
+                            type="url"
+                            placeholder="https://acmetech.com"
+                            value={corporateData.website}
+                            onChange={(e) => setCorporateData({ ...corporateData, website: e.target.value })}
+                            className="form-input text-xs pl-9 font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Industry Sector & Domain *</label>
+                        <select
+                          value={corporateData.industry_sector}
+                          onChange={(e) => setCorporateData({ ...corporateData, industry_sector: e.target.value })}
+                          className="form-select text-xs font-bold"
+                        >
+                          <option value="Information Technology & Software (IT/ITeS)">Information Technology & Software (IT/ITeS)</option>
+                          <option value="Banking, Financial Services & Insurance (BFSI)">Banking, Financial Services & Insurance (BFSI)</option>
+                          <option value="Automobile & Advanced Manufacturing">Automobile & Advanced Manufacturing</option>
+                          <option value="Logistics, Supply Chain & Fleet Drivers">Logistics, Supply Chain & Fleet Drivers</option>
+                          <option value="Healthcare, Pharmaceuticals & Hospitals">Healthcare, Pharmaceuticals & Hospitals</option>
+                          <option value="Retail, FMCG & E-Commerce Operations">Retail, FMCG & E-Commerce Operations</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Registered Corporate Office Address *</label>
+                      <div className="relative">
+                        <textarea
+                          rows={2}
+                          required
+                          placeholder="Complete building, street, city, state, and pincode..."
+                          value={corporateData.registered_address}
+                          onChange={(e) => setCorporateData({ ...corporateData, registered_address: e.target.value })}
+                          className="form-input text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => setActiveStep(2)}
+                        className="btn btn-indigo text-xs py-2.5 px-5 font-black flex items-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <span>Next: Statutory Identifiers & Documents &rarr;</span>
+                      </button>
                     </div>
                   </div>
-                  <span className="badge badge-purple text-[10px] font-bold">DPDP ACT 2023</span>
-                </div>
+                )}
 
-                {/* Organization Details Summary Card */}
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-bold uppercase text-[10px]">Company Name</span>
-                    <strong className="text-slate-900 font-black text-sm">{companyDetails.name}</strong>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-bold uppercase text-[10px]">Company Code</span>
-                    <span className="font-mono text-purple-800 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-                      #{companyDetails.code}
+                {/* ------------------------------------------------------------- */}
+                {/* STEP 2: Statutory Corporate Identifiers & Proof Documents */}
+                {/* ------------------------------------------------------------- */}
+                {activeStep === 2 && (
+                  <div className="space-y-4 text-xs">
+                    <div className="p-3 bg-indigo-50/50 border border-indigo-200 rounded-2xl flex items-center gap-2 text-indigo-950 font-medium">
+                      <Info className="w-4 h-4 text-indigo-600 shrink-0" />
+                      <span>Enter official government identifiers for institutional BGV invoicing and compliance audits.</span>
+                    </div>
+
+                    {/* CIN, GSTIN, Company PAN */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">CIN Number *</label>
+                        <input
+                          type="text"
+                          required
+                          maxLength={21}
+                          placeholder="e.g. U72200KA2026PTC189201"
+                          value={corporateData.cin_number}
+                          onChange={(e) => setCorporateData({ ...corporateData, cin_number: e.target.value.toUpperCase() })}
+                          className="form-input text-xs font-mono font-bold"
+                        />
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">21-digit MCA CIN</span>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">GSTIN Number *</label>
+                        <input
+                          type="text"
+                          required
+                          maxLength={15}
+                          placeholder="e.g. 29ABCDE1234F1Z5"
+                          value={corporateData.gstin_number}
+                          onChange={(e) => setCorporateData({ ...corporateData, gstin_number: e.target.value.toUpperCase() })}
+                          className="form-input text-xs font-mono font-bold"
+                        />
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">15-digit GST Number</span>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Company PAN *</label>
+                        <input
+                          type="text"
+                          required
+                          maxLength={10}
+                          placeholder="e.g. ABCDE1234F"
+                          value={corporateData.company_pan}
+                          onChange={(e) => setCorporateData({ ...corporateData, company_pan: e.target.value.toUpperCase() })}
+                          className="form-input text-xs font-mono font-bold"
+                        />
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">10-digit Entity PAN</span>
+                      </div>
+                    </div>
+
+                    {/* Document Uploads Grid */}
+                    <span className="font-extrabold text-slate-800 text-xs block pt-2">
+                      Upload Statutory Verification Attachments (PDF / Images)
                     </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-bold uppercase text-[10px]">Admin Username</span>
-                    <span className="font-mono text-slate-900 font-bold">{companyDetails.email}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-bold uppercase text-[10px]">Provisioned Plan</span>
-                    <span className="text-indigo-700 font-black">{companyDetails.plan}</span>
-                  </div>
-                </div>
 
-                {/* Terms of Service & DPDP Act Summary */}
-                <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 text-xs text-slate-700 space-y-2 leading-relaxed">
-                  <strong className="text-indigo-950 font-bold block flex items-center gap-1.5">
-                    <Scale className="w-4 h-4 text-indigo-700" />
-                    <span>Master Service Agreement & Statutory Declarations</span>
-                  </strong>
-                  <p className="text-[11px] text-slate-600">
-                    By activating your account for <strong>{companyDetails.name}</strong>, you agree to comply with the <strong>DPDP Act 2023</strong> and the <strong>Information Technology Act 2000</strong>.
-                  </p>
-                  <ul className="list-disc pl-5 space-y-1 text-[11px] text-slate-600">
-                    <li>Mandatory candidate consent before requesting Aadhaar, EPFO, or judicial records.</li>
-                    <li>7-Year immutable audit retention under Point-in-Time Data Verification protocol.</li>
-                    <li>Authorized use strictly for employment background checks and statutory onboarding.</li>
-                  </ul>
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {[
+                        { key: 'coi', label: 'Certificate of Incorporation (COI)', desc: 'MCA incorporation certificate' },
+                        { key: 'pan', label: 'Company PAN Card Scan', desc: 'Copy of official PAN card' },
+                        { key: 'gst', label: 'GST Registration Certificate', desc: 'Form GST REG-06' },
+                        { key: 'signatory_proof', label: 'Board Resolution / Signatory Letter', desc: 'Signatory authorization proof' },
+                      ].map((doc) => (
+                        <div key={doc.key} className="p-3 border border-slate-200 rounded-2xl bg-slate-50 flex items-center justify-between">
+                          <div>
+                            <span className="font-bold text-slate-800 text-xs block">{doc.label}</span>
+                            <span className="text-[10px] text-slate-500">
+                              {documents[doc.key] ? `✓ ${documents[doc.key].name} (${documents[doc.key].size_kb} KB)` : doc.desc}
+                            </span>
+                          </div>
+                          <label className={`py-1.5 px-3 rounded-xl text-xs font-bold cursor-pointer transition-all ${
+                            documents[doc.key]
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              : 'bg-white text-slate-700 border border-slate-300 hover:bg-indigo-50'
+                          }`}>
+                            <span>{documents[doc.key] ? 'Replace' : 'Upload'}</span>
+                            <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocUpload(doc.key, e)} className="hidden" />
+                          </label>
+                        </div>
+                      ))}
+                    </div>
 
-                {/* Interactive Acceptance Checkbox */}
-                <label className="p-3.5 rounded-2xl bg-slate-50 border-2 border-indigo-200 flex items-start gap-3 cursor-pointer hover:bg-indigo-50/30 transition-all">
-                  <input 
-                    type="checkbox" 
-                    required
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-indigo-600 rounded cursor-pointer"
-                  />
-                  <div className="text-xs">
-                    <strong className="text-slate-900 block font-bold">
-                      I accept the Enterprise Master Service Agreement & DPDP Compliance Protocol *
-                    </strong>
-                    <span className="text-[11px] text-slate-500 mt-0.5 block">
-                      Accepted by {companyDetails.contact_person || 'Authorized Representative'} ({companyDetails.email}) on behalf of {companyDetails.name}
-                    </span>
+                    <div className="flex justify-between pt-3 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => setActiveStep(1)}
+                        className="btn btn-secondary text-xs py-2 px-4 cursor-pointer"
+                      >
+                        &larr; Back to Profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveStep(3)}
+                        className="btn btn-indigo text-xs py-2.5 px-5 font-black flex items-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <span>Next: Master Services Agreement &rarr;</span>
+                      </button>
+                    </div>
                   </div>
-                </label>
+                )}
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !termsAccepted}
-                  className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-3 px-6 flex items-center justify-center gap-2 font-black shadow-lg cursor-pointer transition-all active:scale-98 rounded-2xl"
-                >
-                  {isSubmitting ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="w-4 h-4" />
-                  )}
-                  <span>{isSubmitting ? 'Creating Account & Activating...' : 'Create Account & Activate Portal 🚀'}</span>
-                </button>
+                {/* ------------------------------------------------------------- */}
+                {/* STEP 3: Master Services Agreement & DPDP Act 2023 Consent */}
+                {/* ------------------------------------------------------------- */}
+                {activeStep === 3 && (
+                  <form onSubmit={handleCompleteActivation} className="space-y-4 text-xs">
+                    
+                    {/* Legal Notice Banner */}
+                    <div className="p-4 bg-amber-50/80 border-2 border-amber-300 rounded-2xl space-y-1.5 text-amber-950">
+                      <div className="flex items-center gap-2 font-black text-xs">
+                        <Scale className="w-4 h-4 text-amber-700" />
+                        <span>IMPORTANT LEGAL NOTICE & MANDATORY DPDP ACT 2023 COMPLIANCE</span>
+                      </div>
+                      <p className="text-[11px] text-amber-900 leading-relaxed">
+                        Please review all clauses of the <strong>Master Services Agreement (MSA)</strong>, <strong>Data Processing Addendum (DPA)</strong>, and <strong>DPDP Act 2023 Statutory Undertaking</strong> thoroughly before digital execution.
+                      </p>
+                    </div>
 
-                <p className="text-center text-[10px] text-slate-400">
-                  After activation, you can update your full company details (CIN, GSTIN, PAN, Address, Documents) and create HR recruiter accounts inside your Company Portal.
-                </p>
-              </form>
+                    {/* Scrollable Legal Terms Box */}
+                    <div className="p-4 bg-slate-50 border border-slate-300 rounded-2xl max-h-52 overflow-y-auto space-y-3 text-[11px] text-slate-700 font-serif leading-relaxed">
+                      <h4 className="font-bold text-slate-900 font-sans text-xs">MASTER SERVICES & DATA PROCESSING AGREEMENT</h4>
+                      <p>
+                        This Master Services Agreement ("Agreement") is executed by and between <strong>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</strong> ("Verification Service Provider") and <strong>{companyDetails.name}</strong> ("Enterprise Client Organization").
+                      </p>
+                      <p><strong>1. PURPOSE & SCOPE:</strong> The Client is granted enterprise access to execute digital background verification (BGV) checks across authorized Government Registries (UIDAI, NSDL, NPCI, MoRTH, EPFO, MEA, eCourts) exclusively for statutory employment screening.</p>
+                      <p><strong>2. DIGITAL PERSONAL DATA PROTECTION (DPDP) ACT 2023:</strong> The Client warrants that explicit, verifiable consent will be obtained from every candidate prior to initiating identity, financial, judicial, or past employment checks.</p>
+                      <p><strong>3. DATA RETENTION & POINT-IN-TIME VERIFICATION:</strong> In accordance with statutory guidelines, verification certificates and cryptographic tamper-evident hashes shall be retained for 7 years under Point-in-Time Data Verification protocols.</p>
+                      <p><strong>4. CONFIDENTIALITY & NON-DISCLOSURE:</strong> All raw payloads, biometric embeddings, and candidate documents are encrypted using AES-256 and TLS 1.3 standards.</p>
+                    </div>
+
+                    {/* Authorized Signatory Details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Authorized Signatory Full Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={corporateData.signatory_name}
+                          onChange={(e) => setCorporateData({ ...corporateData, signatory_name: e.target.value })}
+                          className="form-input text-xs font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Signatory Official Designation *</label>
+                        <input
+                          type="text"
+                          required
+                          value={corporateData.signatory_designation}
+                          onChange={(e) => setCorporateData({ ...corporateData, signatory_designation: e.target.value })}
+                          className="form-input text-xs font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Checkboxes */}
+                    <div className="space-y-2 pt-1">
+                      <label className="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-200 flex items-start gap-2.5 cursor-pointer hover:bg-indigo-50 transition-all">
+                        <input
+                          type="checkbox"
+                          required
+                          checked={termsAccepted}
+                          onChange={(e) => setTermsAccepted(e.target.checked)}
+                          className="mt-1 w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                        />
+                        <div className="text-[11px] text-slate-800 font-medium leading-relaxed">
+                          <strong>I accept the Enterprise Master Services Agreement (MSA)</strong> on behalf of <strong>{companyDetails.name}</strong> and confirm that I am legally authorized to execute this agreement.
+                        </div>
+                      </label>
+
+                      <label className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-200 flex items-start gap-2.5 cursor-pointer hover:bg-emerald-50 transition-all">
+                        <input
+                          type="checkbox"
+                          required
+                          checked={dpdpConsentAccepted}
+                          onChange={(e) => setDpdpConsentAccepted(e.target.checked)}
+                          className="mt-1 w-4 h-4 text-emerald-600 rounded cursor-pointer"
+                        />
+                        <div className="text-[11px] text-slate-800 font-medium leading-relaxed">
+                          <strong>I confirm adherence to the DPDP Act 2023</strong> and declare that candidate consent will be recorded prior to every verification check.
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className="flex justify-between pt-3 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => setActiveStep(2)}
+                        className="btn btn-secondary text-xs py-2 px-4 cursor-pointer"
+                      >
+                        &larr; Back to Documents
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || !termsAccepted || !dpdpConsentAccepted}
+                        className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-3 px-6 flex items-center justify-center gap-2 font-black shadow-lg cursor-pointer transition-all active:scale-98 rounded-2xl"
+                      >
+                        {isSubmitting ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="w-4 h-4" />
+                        )}
+                        <span>{isSubmitting ? 'Saving to Database & Activating...' : 'Execute Agreement & Activate Account 🚀'}</span>
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+              </div>
             ) : (
-              /* Success State */
+              /* ------------------------------------------------------------- */
+              /* SUCCESS STATE: CELEBRATION & DIRECT LOGIN BUTTON */
+              /* ------------------------------------------------------------- */
               <div className="text-center py-6 space-y-5 animate-fadeIn">
                 <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-300 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
                   <CheckCircle2 className="w-9 h-9" />
@@ -446,25 +760,25 @@ export const CompanyActivationView = () => {
 
                 <div className="space-y-1">
                   <span className="badge badge-emerald text-xs font-black uppercase tracking-wider">
-                    ACCOUNT CREATED & ACTIVATED 🟢
+                    ACCOUNT FULLY ACTIVATED & LIVE 🟢
                   </span>
                   <h2 className="text-xl font-black text-slate-900">{companyDetails.name}</h2>
                   <p className="text-xs text-slate-500 font-medium max-w-sm mx-auto">
-                    Your company account has been created. Log in to update your corporate profile details, create HR recruiters, and start onboarding candidates.
+                    Your corporate profile, statutory documents, and legal agreements have been saved to PostgreSQL. You can now log in to manage HR recruiters and onboard candidates.
                   </p>
                 </div>
 
                 <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-sm mx-auto">
                   <div className="flex justify-between text-slate-600">
                     <span>Company ID / Code:</span>
-                    <strong className="font-mono text-slate-900">{companyDetails.code}</strong>
+                    <strong className="font-mono text-slate-900">#{companyDetails.code}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Admin Username:</span>
                     <strong className="font-mono text-slate-900">{companyDetails.email}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Plan:</span>
+                    <span>Provisioned Plan:</span>
                     <strong className="text-indigo-700 font-bold">{companyDetails.plan}</strong>
                   </div>
                 </div>
@@ -474,7 +788,7 @@ export const CompanyActivationView = () => {
                   onClick={handleEnterCompanyDashboard}
                   className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
                 >
-                  <span>Enter Company Admin Portal 🚀</span>
+                  <span>Proceed to Company Admin Login &rarr;</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>

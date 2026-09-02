@@ -259,6 +259,19 @@ export const CompanyActivationModal = ({ company, onClose }) => {
               </>
             )}
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ONBOARDING INVITATION*\n\nDear ${company.contact_person || company.name},\n\nYour enterprise verification account for *${company.name}* (Code: #${company.code}) has been provisioned.\n\n🔗 *Activation Portal*: ${activationUrl}\n🔑 *Security Unlock PIN*: ${passcodeText}\n💳 *Plan*: ${company.plan}\n\nPlease unlock the link to upload corporate details and execute the Master Services Agreement.\n\n_JOY Direct Verification Gateway_`;
+              navigator.clipboard.writeText(fullMsg);
+              if (showToast) showToast('📋 Full Invitation Dossier copied to clipboard!');
+            }}
+            className="w-full btn py-2 px-3 flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-100/70 text-indigo-900 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Copy Full Invitation Dossier (WhatsApp / Email) 📄</span>
+          </button>
         </div>
 
         {/* Multi-Channel Dispatch Buttons */}
@@ -289,25 +302,19 @@ export const CompanyActivationModal = ({ company, onClose }) => {
               <span>{isSendingEmail ? 'Sending...' : emailSentSuccess ? 'Sent ✓' : 'Send Email 📧'}</span>
             </button>
 
-            {/* SMS Dispatch */}
+            {/* WhatsApp Web Dispatch */}
             <button
               type="button"
-              onClick={handleSendSms}
-              disabled={isSendingSms}
-              className={`p-2 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all cursor-pointer shadow-xs ${
-                smsSentSuccess 
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
-                  : 'bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100'
-              }`}
+              onClick={() => {
+                const phoneClean = (company.phone || '').replace(/[^0-9]/g, '');
+                const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ACTIVATION*\n\nDear ${company.contact_person || company.name},\n\nYour account for *${company.name}* is ready.\n\n🔗 Activation Link: ${activationUrl}\n🔑 Security PIN: ${passcodeText}\n\nPlease click the link to activate your portal.`;
+                const waUrl = `https://api.whatsapp.com/send?${phoneClean ? `phone=${phoneClean}&` : ''}text=${encodeURIComponent(fullMsg)}`;
+                window.open(waUrl, '_blank');
+              }}
+              className="p-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center justify-center gap-2 font-bold text-xs transition-all cursor-pointer shadow-xs"
             >
-              {isSendingSms ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : smsSentSuccess ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-              ) : (
-                <Smartphone className="w-3.5 h-3.5 text-sky-600" />
-              )}
-              <span>{isSendingSms ? 'Sending...' : smsSentSuccess ? 'Sent ✓' : 'Send SMS 📱'}</span>
+              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+              <span>WhatsApp 💬</span>
             </button>
           </div>
         </div>

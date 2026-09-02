@@ -955,3 +955,44 @@ def update_company_tariffs(company_id: str, payload: dict, db: Session = Depends
         "message": f"Custom price tariffs updated for {comp.name}!",
         "feature_tariffs": comp.feature_tariffs
     }
+
+
+@router.post("/companies/{company_id}/resend-activation")
+def resend_company_activation_email_endpoint(company_id: str, db: Session = Depends(get_db)):
+    """Resend activation link, security PIN, and credentials to company admin via SMTP"""
+    comp = db.query(Company).filter(Company.id == company_id).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    if not comp.activation_token:
+        comp.activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
+        comp.activation_password = comp.activation_password or "1234"
+        comp.activation_expires_at = datetime.utcnow() + timedelta(days=15)
+        db.commit()
+
+    email_sent = False
+    try:
+        if comp.email:
+            send_company_welcome_email(
+                company_name=comp.name,
+                company_code=comp.code,
+                admin_email=comp.email,
+                contact_person=comp.contact_person or comp.name,
+                temporary_password=comp.password_hash or "Company@Admin2026",
+                activation_token=comp.activation_token,
+                expires_at_str=comp.activation_expires_at.strftime('%Y-%m-%d %H:%M:%S UTC') if comp.activation_expires_at else "15 Days",
+                db=db
+            )
+            email_sent = True
+    except Exception as e:
+        print(f"Warning on resend email: {e}")
+
+    return {
+        "success": True,
+        "message": f"Activation credentials and invitation link dispatched to {comp.email}!",
+        "email_dispatched": email_sent,
+        "activation_token": comp.activation_token,
+        "activation_pin": comp.activation_password or "1234",
+        "company_code": comp.code,
+        "company_email": comp.email
+    }

@@ -1,3 +1,4 @@
+from backend.app.services.storage_service import get_company_folder, save_base64_file
 from backend.app.services.storage_service import get_hr_folder, get_company_folder
 import uuid
 from fastapi import APIRouter, Depends, HTTPException
@@ -181,18 +182,39 @@ def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid activation token")
 
-    # Update corporate profile
-    if payload.get("cin_number"): comp.cin_number = payload["cin_number"]
-    if payload.get("gstin_number"): comp.gstin_number = payload["gstin_number"]
-    if payload.get("company_pan"): comp.company_pan = payload["company_pan"]
-    if payload.get("registered_address"): comp.registered_address = payload["registered_address"]
-    if payload.get("industry_sector"): comp.industry_sector = payload["industry_sector"]
-    if payload.get("website"): comp.website = payload["website"]
-    if payload.get("documents"): comp.documents = payload["documents"]
+    # Ensure dedicated physical storage directory exists
+    comp_folder = get_company_folder(comp.id)
 
+    # Save company logo to disk if provided
+    docs_dict = dict(comp.documents or {})
+    if payload.get("company_logo"):
+        logo_path = save_base64_file(payload["company_logo"], comp_folder, "logo")
+        docs_dict["company_logo"] = logo_path
+
+    # Save uploaded statutory documents to disk
+    for doc_key in ["coi", "pan", "gst", "signatory_proof", "msme"]:
+        if payload.get(doc_key):
+            saved_doc_path = save_base64_file(payload[doc_key], os.path.join(comp_folder, "contracts"), doc_key)
+            docs_dict[doc_key] = saved_doc_path
+
+    if payload.get("documents"):
+        docs_dict.update(payload["documents"])
+
+    # Update corporate profile attributes
+    if payload.get("cin_number"): comp.cin_number = payload["cin_number"].strip().upper()
+    if payload.get("gstin_number"): comp.gstin_number = payload["gstin_number"].strip().upper()
+    if payload.get("company_pan"): comp.company_pan = payload["company_pan"].strip().upper()
+    if payload.get("registered_address"): comp.registered_address = payload["registered_address"].strip()
+    if payload.get("industry_sector"): comp.industry_sector = payload["industry_sector"].strip()
+    if payload.get("website"): comp.website = payload["website"].strip()
+    comp.documents = docs_dict
+
+    # Record authorized legal signatory and timestamped acceptance
+    signatory = payload.get("signatory_name") or payload.get("signatoryName") or comp.contact_person
+    designation = payload.get("signatory_designation") or payload.get("signatoryDesignation") or "Authorized Officer"
     comp.terms_accepted = "true"
     comp.terms_accepted_at = datetime.utcnow()
-    comp.terms_accepted_by = comp.contact_person
+    comp.terms_accepted_by = f"{signatory} ({designation})"
     comp.status = "Active"
     comp.activation_status = "Active"
 
