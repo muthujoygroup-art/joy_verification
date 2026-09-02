@@ -586,9 +586,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           className="input-field-styled font-mono font-bold"
                         />
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-1 font-medium">
-                        Example demo tokens: <code className="bg-slate-100 px-1 py-0.5 rounded text-indigo-700 font-bold">tok_sunita_412</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-indigo-700 font-bold">tok_vikram_891</code>
-                      </p>
+
                     </div>
 
                     <div>

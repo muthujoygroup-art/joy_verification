@@ -2128,18 +2128,6 @@ export const HrExecutiveView = () => {
                   Dynamically configures industry-specific operational fields, labor statutory forms & mandatory background verifications.
                 </p>
               </div>
-
-              {/* ⚡ Quick 1-Click Multi-Industry Auto-Fill Presets Bar */}
-              <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-auto text-[10px]">
-                <span className="font-bold text-slate-500">Quick Demos:</span>
-                <button type="button" onClick={() => handleAutoFillMockData('it_tech')} className="px-2 py-1 rounded-md bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold border border-purple-200 cursor-pointer">💻 IT / Tech</button>
-                <button type="button" onClick={() => handleAutoFillMockData('manufacturing')} className="px-2 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 cursor-pointer">🏭 Plant</button>
-                <button type="button" onClick={() => handleAutoFillMockData('bfsi')} className="px-2 py-1 rounded-md bg-cyan-50 hover:bg-cyan-100 text-cyan-900 font-bold border border-cyan-200 cursor-pointer">🏦 BFSI</button>
-                <button type="button" onClick={() => handleAutoFillMockData('healthcare')} className="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold border border-rose-200 cursor-pointer">🏥 Health</button>
-                <button type="button" onClick={() => handleAutoFillMockData('logistics')} className="px-2 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-amber-200 cursor-pointer">🚚 Fleet</button>
-                <button type="button" onClick={() => handleAutoFillMockData('retail_hospitality')} className="px-2 py-1 rounded-md bg-orange-50 hover:bg-orange-100 text-orange-900 font-bold border border-orange-200 cursor-pointer">🛍️ Retail</button>
-                <button type="button" onClick={() => handleAutoFillMockData('contractual')} className="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 cursor-pointer">🏗️ Contract</button>
-              </div>
             </div>
 
             {/* 7 Industry Cards Grid */}

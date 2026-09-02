@@ -675,18 +675,6 @@ export const EmployeePortalView = () => {
               <span>Expires: {formatTimer(secondsRemaining)}</span>
             </div>
 
-            {/* ⚡ 1-Click Quick Mock Verification */}
-            {!isAllComplete && (
-              <button
-                onClick={handleQuickMockVerifyAll}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition-all hover:scale-102 cursor-pointer btn-interactive"
-                title="Simulate passing all verification gates instantly"
-              >
-                <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300 animate-bounce" />
-                <span>⚡ Auto Verify</span>
-              </button>
-            )}
-
             <button
               onClick={() => {
                 setIsUnlocked(false);
