@@ -1,3 +1,4 @@
+from backend.app.services.storage_service import get_company_folder
 import uuid
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException

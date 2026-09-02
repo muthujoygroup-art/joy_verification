@@ -1,3 +1,4 @@
+from backend.app.services.storage_service import get_candidate_folder
 import uuid
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException

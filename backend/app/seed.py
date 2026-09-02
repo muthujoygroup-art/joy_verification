@@ -95,73 +95,7 @@ def seed_database(force_refresh=False):
             )
             db.add(new_sa)
             db.flush()
-
-        # 2. Check master company (muthukumar@joyglobalcorp.com)
-        joy_comp = db.query(Company).filter(Company.id == "comp-joy").first()
-        if not joy_comp:
-            logger.info("Seeding master company: JOY CORPORATE SOLUTIONS PRIVATE LIMITED...")
-            joy_company = Company(
-                id="comp-joy",
-                name="JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
-                code="JOY",
-                contact_person="MUTHUKUMAR P",
-                email="muthukumar@joyglobalcorp.com",
-                plan="Enterprise Premier",
-                price_per_verification=120.0,
-                verified_count_this_month=1,
-                max_limit=5000,
-                status="Active",
-                activation_status="Active",
-                features={
-                    "aadhaar": True, "mobileOtp": True, "faceCapture": True, "drivingLicense": True,
-                    "pan": True, "uan": True, "education": True, "criminalCheck": True,
-                    "addressCheck": True, "bankCheck": True, "passport": True, "directorship": True, "voterId": True
-                }
-            )
-            db.add(joy_company)
-            db.flush()
-
-        # 3. Check master HR (muthujoygroup@gmail.com)
-        joy_hr = db.query(HrUser).filter(HrUser.id == "hr-joy-1").first()
-        if not joy_hr:
-            hr_muthu = HrUser(
-                id="hr-joy-1",
-                company_id="comp-joy",
-                name="MUTHUKUMAR P (HR Lead)",
-                email="muthujoygroup@gmail.com",
-                dept="Human Resources & Talent Acquisition",
-                active_links=1
-            )
-            db.add(hr_muthu)
-            db.flush()
-
-        # Check master Candidate
-        joy_cand = db.query(Candidate).filter(Candidate.id == "emp-101").first()
-        if not joy_cand:
-            cand_muthu = Candidate(
-                id="emp-101",
-                token="tok_sunita_412",
-                name="MUTHUKUMAR P",
-                emp_id="JOY-2026-001",
-                email="muthukumar.p@joycorporatesolutions.com",
-                mobile="+91 98765 43210",
-                aadhaar_no="5489 1234 9876",
-                designation="Senior Verification Engineer",
-                dept="Technology & Engineering",
-                company_id="comp-joy",
-                hr_id="hr-joy-1",
-                status="Pending",
-                verification_config={
-                    "requireAadhaar": True, "requireMobileOtp": True, "requireFaceMatch": True,
-                    "requireDL": False, "requirePAN": True, "requireBankCheck": True
-                },
-                verifications_completed={
-                    "aadhaar": False, "mobile": False, "face": False, "pan": False, "bankCheck": False
-                }
-            )
-            db.add(cand_muthu)
-            db.flush()
-
+        # 2. Master System Configs & Tariffs are managed dynamically
         db.commit()
     except Exception as e:
         db.rollback()
