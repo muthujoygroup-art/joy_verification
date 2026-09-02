@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 class HrUserBase(BaseModel):
-    name: str
-    email: str
+    name: Optional[str] = ""
+    email: Optional[str] = ""
     dept: Optional[str] = "Human Resources"
     active_links: Optional[int] = 0
     status: Optional[str] = "Active"
@@ -22,16 +22,17 @@ class HrUserResponse(HrUserBase):
 
 
 class CompanyBase(BaseModel):
-    name: str
+    name: Optional[str] = ""
     code: Optional[str] = None
-    contact_person: str
+    contact_person: Optional[str] = ""
     phone: Optional[str] = None
-    email: str
-    plan: Optional[str] = "Enterprise Premier"
+    email: Optional[str] = ""
+    plan: Optional[str] = "Standard Tier"
     price_per_verification: Optional[float] = 120.0
     max_limit: Optional[int] = 500
-    features: Optional[Dict[str, bool]] = None
+    features: Optional[Dict[str, Any]] = None
     wallet_balance: Optional[float] = 50000.0
+    status: Optional[str] = "Pending Activation"
     activation_status: Optional[str] = "Pending Activation"
     activation_token: Optional[str] = None
     activation_password: Optional[str] = "1234"
@@ -43,6 +44,11 @@ class CompanyBase(BaseModel):
     industry_sector: Optional[str] = None
     website: Optional[str] = None
     documents: Optional[Dict[str, Any]] = None
+    terms_accepted: Optional[str] = None
+    terms_accepted_at: Optional[datetime] = None
+    terms_accepted_by: Optional[str] = None
+    terms_version: Optional[str] = None
+    custom_tariffs: Optional[Dict[str, Any]] = None
 
 class CompanyCreate(CompanyBase):
     password: Optional[str] = "Company@Admin2026"
@@ -70,9 +76,9 @@ class CompanyActivationCompleteRequest(BaseModel):
 
 class CompanyResponse(CompanyBase):
     id: str
-    verified_count_this_month: int
-    status: str
-    features: Dict[str, Any]
+    verified_count_this_month: Optional[int] = 0
+    status: Optional[str] = "Pending Activation"
+    features: Optional[Dict[str, Any]] = None
     created_at: Optional[datetime] = None
 
     class Config:

@@ -81,30 +81,51 @@ def get_all_companies(db: Session = Depends(get_db)):
 @router.post("/companies", response_model=CompanyResponse)
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     """Register a new enterprise company profile and issue a multi-channel self-activation token"""
-    total_comps = db.query(Company).count() + 1
-    comp_code = payload.code or f"COMP{total_comps:03d}"
-    comp_id = f"comp-{uuid.uuid4().hex[:6]}"
-    activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
+    from sqlalchemy.exc import IntegrityError
     
-    # 🛡️ Strict Duplicate Prevention: Reject duplicates on email, phone, code, or name
-    clean_email = payload.email.strip().lower()
+    clean_name = (payload.name or "").strip()
+    if not clean_name:
+        raise HTTPException(status_code=400, detail="Company legal name is required.")
+
+    clean_email = (payload.email or "").strip().lower()
+    if not clean_email:
+        raise HTTPException(status_code=400, detail="Company admin email is required.")
+
+    clean_phone = (payload.phone or "").strip() or None
+    clean_contact = (payload.contact_person or clean_name).strip()
+
+    # 🛡️ Strict Duplicate Prevention
     existing_email = db.query(Company).filter(Company.email.ilike(clean_email)).first()
     if existing_email:
-        raise HTTPException(status_code=400, detail=f"Company with email '{clean_email}' already exists. Duplicate emails are strictly prohibited.")
+        raise HTTPException(status_code=400, detail=f"Company with email '{clean_email}' already exists. Duplicate email is not allowed.")
 
-    if payload.phone and payload.phone.strip():
-        clean_phone = payload.phone.strip()
+    if clean_phone:
         existing_phone = db.query(Company).filter(Company.phone == clean_phone).first()
         if existing_phone:
-            raise HTTPException(status_code=400, detail=f"Company with mobile number '{clean_phone}' already exists. Duplicate phone numbers are strictly prohibited.")
+            raise HTTPException(status_code=400, detail=f"Company with mobile number '{clean_phone}' already exists. Duplicate phone number is not allowed.")
 
-    clean_name = payload.name.strip()
     existing_name = db.query(Company).filter(Company.name.ilike(clean_name)).first()
     if existing_name:
-        raise HTTPException(status_code=400, detail=f"Company '{clean_name}' already exists. Duplicate company legal names are strictly prohibited.")
+        raise HTTPException(status_code=400, detail=f"Company named '{clean_name}' already exists. Duplicate company name is not allowed.")
+
+    # Generate guaranteed unique company code
+    all_codes = {c.code.upper() for c in db.query(Company.code).all() if c.code}
+    if payload.code and payload.code.strip():
+        comp_code = payload.code.strip().upper()
+        if comp_code in all_codes:
+            raise HTTPException(status_code=400, detail=f"Company code '{comp_code}' already exists. Please choose another code.")
+    else:
+        num = db.query(Company).count() + 1
+        comp_code = f"COMP{num:03d}"
+        while comp_code in all_codes:
+            num += 1
+            comp_code = f"COMP{num:03d}"
+
+    comp_id = f"comp_{uuid.uuid4().hex[:10]}"
+    activation_token = f"comp_act_{uuid.uuid4().hex[:14]}"
 
     # Pricing according to Plan Tier
-    plan_name = payload.plan or "Enterprise Premier"
+    plan_name = payload.plan or "Standard Tier"
     if "Basic" in plan_name:
         price_per_check = 80.0
     elif "Standard" in plan_name:
@@ -141,11 +162,11 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     
     new_comp = Company(
         id=comp_id,
-        name=payload.name,
+        name=clean_name,
         code=comp_code,
-        contact_person=payload.contact_person,
-        phone=payload.phone,
-        email=payload.email,
+        contact_person=clean_contact,
+        phone=clean_phone,
+        email=clean_email,
         password_hash=login_password_set,
         plan=plan_name,
         price_per_verification=price_per_check,
@@ -160,10 +181,19 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         activation_expires_at=expires_at,
         created_at=datetime.utcnow()
     )
-    db.add(new_comp)
-    db.commit()
-    db.refresh(new_comp)
-    
+
+    try:
+        db.add(new_comp)
+        db.commit()
+        db.refresh(new_comp)
+    except IntegrityError as ie:
+        db.rollback()
+        err_msg = str(ie.orig) if hasattr(ie, 'orig') else str(ie)
+        raise HTTPException(status_code=400, detail=f"Database constraint error: {err_msg}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to create company: {str(e)}")
+
     # 📧 Automated Email Notification with Activation Link & Password
     try:
         if new_comp.email:
