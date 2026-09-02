@@ -19,12 +19,25 @@ class Settings(BaseSettings):
     
     @property
     def DATABASE_URL(self) -> str:
-        # If full connection string is explicitly specified in env, use it
+        # If full connection string is explicitly specified in env, clean and normalize it
         if self.DATABASE_URL_ENV:
-            return self.DATABASE_URL_ENV
+            import re
+            u = self.DATABASE_URL_ENV.strip()
+            # Clean accidental leading whitespace after postgresql://
+            u = re.sub(r"postgresql://\s*", "postgresql://", u)
+            # Replace localhost with 127.0.0.1 to avoid ::1 IPv6 pg_hba.conf rejection
+            u = re.sub(r"@localhost(:|/)", r"@127.0.0.1\1", u)
+            return u
+            
         # Otherwise encode password to handle special characters (@, #, $, etc.) safely
-        encoded_password = urllib.parse.quote_plus(self.POSTGRES_PASSWORD)
-        return f"postgresql://{self.POSTGRES_USER}:{encoded_password}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        user = self.POSTGRES_USER.strip()
+        host = self.POSTGRES_HOST.strip()
+        if host.lower() == "localhost":
+            host = "127.0.0.1"
+        encoded_password = urllib.parse.quote_plus(self.POSTGRES_PASSWORD.strip())
+        db = self.POSTGRES_DB.strip()
+        port = self.POSTGRES_PORT.strip()
+        return f"postgresql://{user}:{encoded_password}@{host}:{port}/{db}"
     
     # Fallback to local SQLite if PostgreSQL service is unavailable
     FALLBACK_DATABASE_URL: str = "sqlite:///./joy_verification.db"
