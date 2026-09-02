@@ -2569,7 +2569,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       )}
 
       {/* TAB 7: ENTERPRISE MANAGE MASTER CONSOLE */}
-      {activeTab === 'masterfields' && (() => {
+      {(activeTab === 'masterfields' || activeTab === 'masterdata') && (() => {
         const MASTER_CATEGORIES = [
           { key: 'skills', label: 'Manage Skills' },
           { key: 'selfInterests', label: 'Manage Self Interest' },
@@ -2806,7 +2806,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       })()}
 
       {/* TAB 8: DYNAMIC UPSTREAM API PROVIDERS & GATEWAY MANAGEMENT */}
-      {activeTab === 'apiconfig' && (() => {
+      {(activeTab === 'apiconfig' || activeTab === 'studio') && (() => {
         // Filter out backwards-compatibility alias keys so we get distinct provider cards
         const providerList = Object.entries(apiConfigurations || {})
           .filter(([key, val]) => val && typeof val === 'object' && !['apiSetu', 'sandbox', 'coincircletrust'].includes(key))
