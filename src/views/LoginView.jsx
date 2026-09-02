@@ -28,10 +28,11 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
   const navigate = useNavigate();
   const [selectedRoleTab, setSelectedRoleTab] = useState(initialRole || 'superadmin');
   
-  const [emailInput, setEmailInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
+  const [emailInput, setEmailInput] = useState('admin@joycorporatesolutions.com');
+  const [passwordInput, setPasswordInput] = useState('SuperAdmin@2026');
   const [showPassword, setShowPassword] = useState(false);
   const [candidateTokenInput, setCandidateTokenInput] = useState('');
+  const [candidatePinInput, setCandidatePinInput] = useState('1234');
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
 
@@ -284,8 +285,13 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                   key={rKey}
                   onClick={() => {
                     setSelectedRoleTab(rKey);
-                    setEmailInput('');
-                    setPasswordInput('');
+                    if (rKey === 'superadmin') {
+                      setEmailInput('admin@joycorporatesolutions.com');
+                      setPasswordInput('SuperAdmin@2026');
+                    } else {
+                      setEmailInput('');
+                      setPasswordInput('');
+                    }
                     setLoginError('');
                   }}
                   className={`glass-panel p-5 cursor-pointer transition-all relative overflow-hidden flex flex-col justify-between space-y-4 rounded-2xl ${
