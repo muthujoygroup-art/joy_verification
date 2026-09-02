@@ -84,6 +84,19 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     comp_id = f"comp-{uuid.uuid4().hex[:6]}"
     activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
     
+    # 🛡️ Strict Duplicate Prevention: Check if company already exists by code, email, or name
+    existing_comp = db.query(Company).filter(
+        (Company.code.ilike(comp_code.strip())) | 
+        (Company.email.ilike(payload.email.strip())) |
+        (Company.name.ilike(payload.name.strip()))
+    ).first()
+    if existing_comp:
+        existing_comp.name = payload.name
+        existing_comp.contact_person = payload.contact_person or getattr(payload, 'contactPerson', None) or existing_comp.contact_person
+        db.commit()
+        db.refresh(existing_comp)
+        return existing_comp
+
     # Pricing according to Plan Tier
     plan_name = payload.plan or "Enterprise Premier"
     if "Basic" in plan_name:

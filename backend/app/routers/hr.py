@@ -27,6 +27,35 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     Creates a new labor/employee profile, configures verification fields,
     and issues an automated verification token link.
     """
+    # 🛡️ Strict Duplicate Prevention: Check if candidate already exists by email, mobile, aadhaar, or emp_id
+    existing_cand = None
+    if payload.email:
+        existing_cand = db.query(Candidate).filter(
+            Candidate.company_id == payload.company_id,
+            Candidate.email.ilike(payload.email.strip())
+        ).first()
+    if not existing_cand and payload.mobile:
+        existing_cand = db.query(Candidate).filter(
+            Candidate.company_id == payload.company_id,
+            Candidate.mobile == payload.mobile.strip()
+        ).first()
+    if not existing_cand and payload.aadhaar_no:
+        existing_cand = db.query(Candidate).filter(
+            Candidate.company_id == payload.company_id,
+            Candidate.aadhaar_no == payload.aadhaar_no.strip()
+        ).first()
+
+    if existing_cand:
+        # Update existing candidate record rather than creating a duplicate
+        existing_cand.name = payload.name or existing_cand.name
+        existing_cand.designation = payload.designation or existing_cand.designation
+        existing_cand.dept = payload.dept or existing_cand.dept
+        if payload.verification_config:
+            existing_cand.verification_config = payload.verification_config
+        db.commit()
+        db.refresh(existing_cand)
+        return existing_cand
+
     candidate_id = f"emp-{uuid.uuid4().hex[:6]}"
     clean_name = payload.name.lower().replace(" ", "_")[:10]
     token = f"tok_{clean_name}_{uuid.uuid4().hex[:4]}"

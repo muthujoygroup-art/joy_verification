@@ -26,6 +26,17 @@ def get_company_hr_users(company_id: str, db: Session = Depends(get_db)):
 @router.post("/{company_id}/hr-users", response_model=HrUserResponse)
 def add_hr_user(company_id: str, payload: HrUserCreate, db: Session = Depends(get_db)):
     """Add a new HR Executive under this employer"""
+    # 🛡️ Strict Duplicate Prevention: Check if HR with this email already exists
+    existing_hr = db.query(HrUser).filter(
+        (HrUser.company_id == company_id) & (HrUser.email.ilike(payload.email.strip()))
+    ).first()
+    if existing_hr:
+        existing_hr.name = payload.name or existing_hr.name
+        existing_hr.dept = payload.dept or existing_hr.dept
+        db.commit()
+        db.refresh(existing_hr)
+        return existing_hr
+
     hr_id = f"hr-{uuid.uuid4().hex[:6]}"
     comp = db.query(Company).filter(Company.id == company_id).first()
     comp_code = comp.code if comp and comp.code else "COMP001"
