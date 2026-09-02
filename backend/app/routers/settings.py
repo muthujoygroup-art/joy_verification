@@ -54,7 +54,11 @@ def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
         gw_id = f"gw_{gw_type}"
         settings_data = payload.get("settings") if payload.get("settings") is not None else payload
         
-        gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
+        # Match existing gateway by gateway_type or ID to guarantee clean updates without duplicate key collision
+        gw = db.query(CommunicationGateway).filter(
+            (CommunicationGateway.gateway_type == gw_type) | (CommunicationGateway.id == gw_id)
+        ).first()
+        
         if not gw:
             gw = CommunicationGateway(
                 id=gw_id,

@@ -63,7 +63,7 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
 
             # Step 2: Check Master Super Admin cPanel SMTP Gateway
             master_gw = db.query(CommunicationGateway).filter(
-                CommunicationGateway.id == "gw_email_smtp",
+                (CommunicationGateway.gateway_type == "email_smtp") | (CommunicationGateway.id == "gw_email_smtp"),
                 CommunicationGateway.is_active == True
             ).first()
             if master_gw and master_gw.settings_data:
