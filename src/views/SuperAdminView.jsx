@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -28,6 +28,8 @@ import {
   Check,
   CheckCheck,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Copy,
   Cpu,
@@ -150,7 +152,16 @@ export const SuperAdminView = () => {
   const [newMasterItemInput, setNewMasterItemInput] = useState('');
 
   const [activeTab, setActiveTab] = useState('omnisearch');
-  const [tabCategory, setTabCategory] = useState('all'); // 'all' | 'core' | 'infra' | 'governance'
+  // 🎛️ Navigation Ribbon Scroll Ref & Controls
+  const tabsContainerRef = useRef(null);
+  const scrollTabs = (direction) => {
+    if (tabsContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320;
+      tabsContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+    const [tabCategory, setTabCategory] = useState('all'); // 'all' | 'core' | 'infra' | 'governance'
   // 🔍 Universal Profile ID & Omnisearch Tracker States (COMP001, COMP001HR001, COMP001EMP001)
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [selectedTrackedEntity, setSelectedTrackedEntity] = useState(null);
@@ -927,8 +938,24 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
-          {/* Clean Aligned & Scrollable Ribbon */}
-          <div className="flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 shadow-inner overflow-x-auto no-scrollbar scroll-smooth">
+          {/* Clean Aligned & Scrollable Ribbon with Left/Right Buttons */}
+          <div className="relative flex items-center gap-2 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-inner group">
+            
+            {/* Left Scroll Button */}
+            <button
+              type="button"
+              onClick={() => scrollTabs('left')}
+              className="p-2.5 rounded-xl bg-white hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-300 shadow-md transition-all cursor-pointer shrink-0 active:scale-95 flex items-center justify-center"
+              title="Scroll Left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Scrollable Container */}
+            <div 
+              ref={tabsContainerRef}
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5"
+            >
             
             {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
             {(tabCategory === 'all' || tabCategory === 'core') && (
@@ -1159,6 +1186,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <span>14. DPDP Governance 🏛️</span>
               </button>
             )}
+
+            </div>
+
+            {/* Right Scroll Button */}
+            <button
+              type="button"
+              onClick={() => scrollTabs('right')}
+              className="p-2.5 rounded-xl bg-white hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-300 shadow-md transition-all cursor-pointer shrink-0 active:scale-95 flex items-center justify-center"
+              title="Scroll Right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
 
           </div>
         </div>
