@@ -254,36 +254,13 @@ def reset_database_direct():
     
     db = SessionLocal()
     try:
-        # 2. Delete transaction and profile data safely
+        # 2. Fast instant table purge on connected database
         for model in [VerificationRecord, CandidateDocument, Candidate, HrUser, Invoice, PaymentRecord, TicketReply, SupportTicket, Company, ActiveSession]:
             try:
-                db.query(model).delete()
+                db.query(model).delete(synchronize_session=False)
             except Exception:
                 db.rollback()
                 pass
-
-        # 2b. Also purge PostgreSQL directly if reachable
-        pg_purged = False
-        try:
-            from sqlalchemy import create_engine, text
-            pg_urls = [
-                settings.DATABASE_URL,
-                "postgresql://postgres:Muthu%40123@127.0.0.1:5432/joy_verification",
-                "postgresql://postgres:Muthu%40123@localhost:5432/joy_verification",
-                "postgresql:///joy_verification"
-            ]
-            for u in pg_urls:
-                try:
-                    pg_eng = create_engine(u, connect_args={"connect_timeout": 2})
-                    with pg_eng.connect() as pg_conn:
-                        pg_conn.execute(text("TRUNCATE TABLE verification_records, candidate_documents, candidates, hr_users, invoices, payment_records, support_tickets, ticket_replies, companies, active_sessions CASCADE;"))
-                        pg_conn.commit()
-                        pg_purged = True
-                        break
-                except Exception:
-                    continue
-        except Exception:
-            pass
 
         # 3. Ensure Master Super Admin account exists and is Active
         admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
