@@ -118,21 +118,29 @@ def test_email_dispatch(payload: dict, db: Session = Depends(get_db)):
 
     # If SMTP config with password was provided in test request, persist it to database
     if smtp_cfg and isinstance(smtp_cfg, dict) and smtp_cfg.get("password"):
-        gw_id = "gw_email_smtp"
-        gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
-        if not gw:
-            gw = CommunicationGateway(
-                id=gw_id,
-                gateway_type="email_smtp",
-                settings_data=smtp_cfg,
-                is_active=True
-            )
-            db.add(gw)
-        else:
-            gw.settings_data = smtp_cfg
-            gw.is_active = True
-        db.commit()
-        db.refresh(gw)
+        try:
+            gw_id = "gw_email_smtp"
+            gw = db.query(CommunicationGateway).filter(
+                (CommunicationGateway.gateway_type == "email_smtp") | (CommunicationGateway.id == gw_id)
+            ).first()
+            if not gw:
+                gw = CommunicationGateway(
+                    id=gw_id,
+                    gateway_type="email_smtp",
+                    settings_data=smtp_cfg,
+                    is_active=True,
+                    updated_at=datetime.utcnow()
+                )
+                db.add(gw)
+            else:
+                gw.settings_data = smtp_cfg
+                gw.is_active = True
+                gw.updated_at = datetime.utcnow()
+            db.commit()
+            db.refresh(gw)
+        except Exception as e:
+            db.rollback()
+            print(f"Warning persisting SMTP config in test email: {e}")
 
     test_html = f"""
     <div style="font-family: Arial, sans-serif; padding: 25px; color: #0f172a; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">

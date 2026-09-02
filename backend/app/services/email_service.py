@@ -140,16 +140,18 @@ def send_smtp_email(
         # HTML body
         msg.attach(MIMEText(html_content, "html", "utf-8"))
 
-        # Connection handling based on Port / SSL / TLS
+        # Connection handling based on Port / SSL / TLS with cPanel SSL compatibility
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+
         if cfg["use_ssl"] or cfg["port"] == 465:
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(cfg["host"], cfg["port"], context=context, timeout=15) as server:
+            with smtplib.SMTP_SSL(cfg["host"], cfg["port"], context=context, timeout=20) as server:
                 server.login(cfg["user"], cfg["password"])
                 server.sendmail(cfg["from_email"], [to_email], msg.as_string())
         else:
-            with smtplib.SMTP(cfg["host"], cfg["port"], timeout=15) as server:
+            with smtplib.SMTP(cfg["host"], cfg["port"], timeout=20) as server:
                 if cfg["use_tls"] or cfg["port"] == 587:
-                    context = ssl.create_default_context()
                     server.starttls(context=context)
                 server.login(cfg["user"], cfg["password"])
                 server.sendmail(cfg["from_email"], [to_email], msg.as_string())
