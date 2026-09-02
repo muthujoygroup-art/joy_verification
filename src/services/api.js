@@ -158,6 +158,12 @@ export const api = {
 
   // Super Admin - Companies & Platform Governance
   getCompanies: () => request('/superadmin/companies', {}, true),
+  getCompanyRequests: () => request('/superadmin/company-requests', {}, true),
+  submitCompanyRequest: (payload) => request('/superadmin/company-requests', { method: 'POST', body: JSON.stringify(payload) }),
+  approveCompanyRequest: (requestId) => request(`/superadmin/company-requests/${requestId}/approve`, { method: 'PUT' }),
+  rejectCompanyRequest: (requestId, payload = {}) => request(`/superadmin/company-requests/${requestId}/reject`, { method: 'PUT', body: JSON.stringify(payload) }),
+  topupCompanyCredits: (companyId, payload) => request(`/superadmin/companies/${companyId}/topup-credits`, { method: 'POST', body: JSON.stringify(payload) }),
+  updateCompanyTariffs: (companyId, tariffs) => request(`/superadmin/companies/${companyId}/tariffs`, { method: 'PUT', body: JSON.stringify({ tariffs }) }),
   createCompany: (companyData) => {
     requestCache.clear();
     return request('/superadmin/companies', {

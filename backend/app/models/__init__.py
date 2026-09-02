@@ -1,3 +1,4 @@
+from backend.app.models.company_request import CompanyRequest
 from backend.app.models.super_admin import SuperAdminUser
 from backend.app.models.company import Company, HrUser
 from backend.app.models.candidate import Candidate, CandidateDocument
@@ -12,6 +13,7 @@ from backend.app.models.system import SystemErrorLog, SystemSetting, PlatformGui
 
 __all__ = [
     "SuperAdminUser",
+    "CompanyRequest",
     "Company",
     "HrUser",
     "Candidate",

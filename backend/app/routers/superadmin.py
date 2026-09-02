@@ -1,3 +1,4 @@
+from backend.app.models.company_request import CompanyRequest
 from backend.app.services.storage_service import get_company_folder
 import uuid
 from datetime import datetime, timedelta
@@ -167,7 +168,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
                 company_code=new_comp.code,
                 admin_email=new_comp.email,
                 contact_person=new_comp.contact_person or new_comp.name,
-                temporary_password=password_set,
+                temporary_password=login_password_set,
                 activation_token=activation_token,
                 expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
                 db=db
@@ -722,3 +723,235 @@ def toggle_company_status(company_id: str, payload: dict, db: Session = Depends(
     db.commit()
     db.refresh(comp)
     return {"success": True, "company_id": comp.id, "status": comp.status, "is_active": comp.is_active}
+
+
+# =============================================================================
+# 📥 INBOUND COMPANY PURCHASE REQUESTS & APPROVAL PIPELINE
+# =============================================================================
+
+@router.get("/company-requests")
+def get_company_requests(db: Session = Depends(get_db)):
+    """Retrieve all inbound enterprise purchase/demo requests from landing page"""
+    reqs = db.query(CompanyRequest).order_by(CompanyRequest.created_at.desc()).all()
+    return [
+        {
+            "id": r.id,
+            "company_name": r.company_name,
+            "contact_person": r.contact_person,
+            "email": r.email,
+            "phone": r.phone,
+            "requested_plan": r.requested_plan,
+            "estimated_monthly_verifications": r.estimated_monthly_verifications,
+            "industry": r.industry,
+            "status": r.status,
+            "notes": r.notes,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "approved_at": r.approved_at.isoformat() if r.approved_at else None,
+            "approved_by": r.approved_by
+        }
+        for r in reqs
+    ]
+
+@router.post("/company-requests")
+def submit_company_request(payload: dict, db: Session = Depends(get_db)):
+    """Public endpoint for landing page visitors to request an enterprise verification account"""
+    req_id = f"req_{uuid.uuid4().hex[:8]}"
+    company_name = payload.get("company_name") or payload.get("companyName") or "Enterprise Client"
+    contact_person = payload.get("contact_person") or payload.get("contactPerson") or "Corporate HR"
+    email = payload.get("email", "").strip().lower()
+    phone = payload.get("phone") or payload.get("mobile") or ""
+    plan = payload.get("requested_plan") or payload.get("plan") or "Business Enterprise"
+    est_verifs = int(payload.get("estimated_monthly_verifications") or payload.get("monthlyVerifications") or 250)
+    industry = payload.get("industry") or "IT & Software"
+    notes = payload.get("notes") or payload.get("message") or ""
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Corporate Email is required.")
+
+    req = CompanyRequest(
+        id=req_id,
+        company_name=company_name,
+        contact_person=contact_person,
+        email=email,
+        phone=phone,
+        requested_plan=plan,
+        estimated_monthly_verifications=est_verifs,
+        industry=industry,
+        status="Pending",
+        notes=notes,
+        created_at=datetime.utcnow()
+    )
+    db.add(req)
+    db.commit()
+    db.refresh(req)
+    return {
+        "success": True,
+        "message": "Enterprise account request submitted successfully! Our Super Admin team will review and provision your account.",
+        "request_id": req.id
+    }
+
+@router.put("/company-requests/{request_id}/approve")
+def approve_company_request(request_id: str, db: Session = Depends(get_db)):
+    """Super Admin 1-Click Approval: Automatically provisions the company account, creates storage folder, and dispatches welcome email"""
+    req = db.query(CompanyRequest).filter(CompanyRequest.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found.")
+
+    req.status = "Approved"
+    req.approved_at = datetime.utcnow()
+    req.approved_by = "Super Administrator"
+
+    # Create Company automatically
+    total_comps = db.query(Company).count() + 1
+    comp_code = f"COMP{total_comps:03d}"
+    comp_id = f"comp-{uuid.uuid4().hex[:6]}"
+    activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
+    login_password_set = "Company@Admin2026"
+    expires_at = datetime.utcnow() + timedelta(days=30)
+
+    # Determine storage and seats from plan
+    if "Starter" in req.requested_plan:
+        storage_gb = 5
+        max_seats = 2
+        quota = 100
+        price = 80.0
+    elif "Unlimited" in req.requested_plan or "Premier" in req.requested_plan:
+        storage_gb = 100
+        max_seats = 50
+        quota = 10000
+        price = 180.0
+    else:
+        storage_gb = 25
+        max_seats = 10
+        quota = 1000
+        price = 120.0
+
+    tariffs = {
+        "aadhaar": 15, "pan": 10, "bank": 8, "dl": 12, "epfo": 25,
+        "passport": 20, "faceMatch": 15, "courtRecord": 45, "education": 35, "address": 50
+    }
+
+    new_comp = Company(
+        id=comp_id,
+        name=req.company_name,
+        code=comp_code,
+        contact_person=req.contact_person,
+        phone=req.phone,
+        email=req.email,
+        password_hash=login_password_set,
+        plan=req.requested_plan,
+        price_per_verification=price,
+        max_limit=quota,
+        wallet_balance=5000.0, # Initial ₹5,000 credit buffer
+        storage_limit_gb=storage_gb,
+        max_hr_seats=max_seats,
+        monthly_quota_limit=quota,
+        feature_tariffs=tariffs,
+        features={
+            "aadhaar": True, "mobileOtp": True, "faceCapture": True, "drivingLicense": True,
+            "pan": True, "uan": True, "education": True, "criminalCheck": True, "addressCheck": True, "bankCheck": True
+        },
+        verified_count_this_month=0,
+        status="Active",
+        activation_status="Active",
+        activation_token=activation_token,
+        activation_password="1234",
+        activation_expires_at=expires_at,
+        industry_sector=req.industry,
+        created_at=datetime.utcnow()
+    )
+    db.add(new_comp)
+    db.commit()
+
+    # Create storage folder on disk
+    get_company_folder(new_comp.id)
+
+    # Send Welcome Email
+    try:
+        send_company_welcome_email(
+            company_name=new_comp.name,
+            company_code=new_comp.code,
+            admin_email=new_comp.email,
+            contact_person=new_comp.contact_person,
+            temporary_password=login_password_set,
+            activation_token=activation_token,
+            expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
+            db=db
+        )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch welcome email: {e}")
+
+    return {
+        "success": True,
+        "message": f"Enterprise Account for {new_comp.name} approved, provisioned & credentials dispatched to {new_comp.email}!",
+        "company": {
+            "id": new_comp.id,
+            "name": new_comp.name,
+            "code": new_comp.code,
+            "email": new_comp.email,
+            "plan": new_comp.plan
+        }
+    }
+
+@router.put("/company-requests/{request_id}/reject")
+def reject_company_request(request_id: str, payload: dict = None, db: Session = Depends(get_db)):
+    """Reject an inbound enterprise account request"""
+    req = db.query(CompanyRequest).filter(CompanyRequest.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found.")
+    req.status = "Rejected"
+    if payload and payload.get("reason"):
+        req.notes = f"Rejected: {payload.get('reason')}"
+    db.commit()
+    return {"success": True, "message": "Enterprise request marked as Rejected."}
+
+# =============================================================================
+# 💳 COMPANY CREDIT TOP-UP & TARIFF MANAGEMENT
+# =============================================================================
+
+@router.post("/companies/{company_id}/topup-credits")
+def topup_company_credits(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Add prepaid verification credits to a company wallet"""
+    comp = db.query(Company).filter(Company.id == company_id).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found.")
+    
+    amount = float(payload.get("amount") or 0.0)
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Top-up amount must be greater than 0.")
+
+    comp.wallet_balance = (comp.wallet_balance or 0.0) + amount
+    
+    # Log payment record
+    pmt = PaymentRecord(
+        id=f"pmt_{uuid.uuid4().hex[:8]}",
+        company_id=comp.id,
+        amount=amount,
+        payment_method=payload.get("payment_method") or "Super Admin Credit Grant",
+        transaction_ref=payload.get("transaction_ref") or f"TXN-SA-{uuid.uuid4().hex[:8].upper()}",
+        status="SUCCESS",
+        notes=payload.get("notes") or f"Prepaid verification credit top-up by Super Admin"
+    )
+    db.add(pmt)
+    db.commit()
+    return {
+        "success": True,
+        "message": f"Successfully credited ₹{amount:,.2f} to {comp.name} wallet!",
+        "new_balance": comp.wallet_balance
+    }
+
+@router.put("/companies/{company_id}/tariffs")
+def update_company_tariffs(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update custom price tariffs per verification check for a specific company"""
+    comp = db.query(Company).filter(Company.id == company_id).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found.")
+    
+    tariffs = payload.get("tariffs") or payload.get("feature_tariffs") or {}
+    comp.feature_tariffs = {**(comp.feature_tariffs or {}), **tariffs}
+    db.commit()
+    return {
+        "success": True,
+        "message": f"Custom price tariffs updated for {comp.name}!",
+        "feature_tariffs": comp.feature_tariffs
+    }

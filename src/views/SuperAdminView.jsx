@@ -593,6 +593,22 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   };
 
+    const loadCompanyRequests = async () => {
+    try {
+      setLoadingCompanyRequests(true);
+      const reqs = await api.getCompanyRequests();
+      setCompanyRequests(Array.isArray(reqs) ? reqs : []);
+    } catch (e) {
+      console.warn("Could not load company requests:", e.message);
+    } finally {
+      setLoadingCompanyRequests(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCompanyRequests();
+  }, []);
+
   useEffect(() => {
     if (activeTab === 'apiconfig' || activeTab === 'reports' || activeTab === 'analytics') {
       fetchTelemetryData(telemetryTimeRange);
@@ -637,6 +653,59 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     if (logFilterStatus === 'solved') return log.solved;
     return true;
   });
+
+    const handleApproveCompanyRequest = async (requestId) => {
+    try {
+      showToast('Approving & provisioning enterprise account...', 'info');
+      const res = await api.approveCompanyRequest(requestId);
+      showToast(res.message || 'Company account provisioned successfully!');
+      loadCompanyRequests();
+      if (typeof fetchCompanies === 'function') fetchCompanies();
+    } catch (e) {
+      showToast('Approval failed: ' + e.message, 'error');
+    }
+  };
+
+  const handleRejectCompanyRequest = async (requestId) => {
+    const reason = prompt('Please enter rejection reason (optional):');
+    try {
+      await api.rejectCompanyRequest(requestId, { reason });
+      showToast('Enterprise access request marked as rejected.');
+      loadCompanyRequests();
+    } catch (e) {
+      showToast('Rejection failed: ' + e.message, 'error');
+    }
+  };
+
+  const handleTopupCreditsSubmit = async (e) => {
+    e.preventDefault();
+    if (!topupModalCompany) return;
+    try {
+      const res = await api.topupCompanyCredits(topupModalCompany.id, {
+        amount: parseFloat(topupAmount),
+        payment_method: 'Super Admin Pre-paid Grant',
+        notes: 'Pre-paid API credits added by Super Admin'
+      });
+      showToast(res.message || 'Credits successfully added!');
+      setTopupModalCompany(null);
+      if (typeof fetchCompanies === 'function') fetchCompanies();
+    } catch (e) {
+      showToast('Credit top-up failed: ' + e.message, 'error');
+    }
+  };
+
+  const handleUpdateTariffsSubmit = async (e) => {
+    e.preventDefault();
+    if (!customTariffModalCompany) return;
+    try {
+      const res = await api.updateCompanyTariffs(customTariffModalCompany.id, customTariffValues);
+      showToast(res.message || 'Custom tariffs saved successfully!');
+      setCustomTariffModalCompany(null);
+      if (typeof fetchCompanies === 'function') fetchCompanies();
+    } catch (e) {
+      showToast('Tariff update failed: ' + e.message, 'error');
+    }
+  };
 
   const handleCreateCompanySubmit = async (e) => {
     e.preventDefault();
