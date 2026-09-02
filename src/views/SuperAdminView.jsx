@@ -515,6 +515,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     use_ssl: true,
     use_tls: false
   });
+  const [smtpHasSavedPassword, setSmtpHasSavedPassword] = useState(false);
   const [showSmtpPassword, setShowSmtpPassword] = useState(false);
   const [isSavingSmtp, setIsSavingSmtp] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
@@ -607,6 +608,32 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
   useEffect(() => {
     loadCompanyRequests();
+
+    // Fetch active SMTP configuration from PostgreSQL
+    const loadEmailSettings = async () => {
+      try {
+        const cfg = await api.getEmailConfig();
+        if (cfg && cfg.host) {
+          setSmtpConfig(prev => ({
+            ...prev,
+            host: cfg.host || prev.host,
+            port: cfg.port || prev.port,
+            user: cfg.user || prev.user,
+            password: '',
+            from_email: cfg.from_email || prev.from_email,
+            from_name: cfg.from_name || prev.from_name,
+            use_ssl: cfg.use_ssl !== undefined ? cfg.use_ssl : prev.use_ssl,
+            use_tls: cfg.use_tls !== undefined ? cfg.use_tls : prev.use_tls
+          }));
+          if (cfg.has_password || cfg.password_masked) {
+            setSmtpHasSavedPassword(true);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load SMTP config from DB:', err);
+      }
+    };
+    loadEmailSettings();
   }, []);
 
   useEffect(() => {
@@ -946,7 +973,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     setIsSavingSmtp(true);
     try {
       const res = await api.saveEmailConfig(smtpConfig);
-      showToast(res.message || '💾 cPanel SMTP email configuration saved successfully!');
+      if (smtpConfig.password) {
+        setSmtpHasSavedPassword(true);
+      }
+      showToast(res.message || '💾 cPanel SMTP email configuration saved successfully to PostgreSQL!');
     } catch (err) {
       console.warn('Error saving SMTP settings:', err);
       showToast(`❌ Failed to save SMTP configuration: ${err.message || 'Server error'}`, 'error');
