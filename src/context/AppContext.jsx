@@ -999,46 +999,62 @@ export const AppProvider = ({ children }) => {
     showToast('Logged out of session successfully');
   };
 
-  // Add Company (Persists to PostgreSQL)
+  // Add Company (Strict PostgreSQL Persistence)
   const addCompany = async (companyData) => {
     try {
-      const created = await api.createCompany({
-        name: companyData.name,
-        contact_person: companyData.contactPerson || companyData.name,
-        email: companyData.email,
-        plan: companyData.plan || 'Enterprise Premier',
-        price_per_verification: companyData.pricePerVerification || 120,
-        max_limit: companyData.maxLimit || 500,
-        features: companyData.features
-      });
+      const payload = {
+        name: (companyData.name || '').trim(),
+        contact_person: (companyData.contactPerson || companyData.contact_person || companyData.name || '').trim(),
+        phone: (companyData.phone || '').trim(),
+        email: (companyData.email || '').trim().toLowerCase(),
+        password: companyData.password || 'Company@Admin2026',
+        activation_password: companyData.activation_password || companyData.password || '1234',
+        plan: companyData.plan || 'Standard Tier',
+        credits_purchased: parseInt(companyData.credits_purchased || companyData.maxLimit || 500),
+        expiry_days: parseInt(companyData.expiry_days || 15),
+        expiry_date: companyData.expiry_date || null,
+        features: companyData.features || {
+          aadhaar: true,
+          pan: true,
+          bankCheck: true,
+          mobileOtp: true,
+          faceCapture: true,
+          drivingLicense: false,
+          uan: false,
+          criminalCheck: false,
+          education: false,
+          addressCheck: false
+        }
+      };
+
+      const created = await api.createCompany(payload);
 
       const formatted = {
         id: created.id,
         name: created.name,
         code: created.code,
         contactPerson: created.contact_person,
+        phone: created.phone,
         email: created.email,
         plan: created.plan,
         pricePerVerification: created.price_per_verification,
-        verifiedCountThisMonth: created.verified_count_this_month,
-        maxLimit: created.max_limit,
-        status: created.status,
-        features: created.features || {}
+        verifiedCountThisMonth: 0,
+        maxLimit: created.max_limit || 500,
+        status: created.status || 'Pending Activation',
+        activation_status: created.activation_status || 'Pending Activation',
+        activation_token: created.activation_token,
+        activation_password: created.activation_password,
+        features: created.features || {},
+        custom_tariffs: created.custom_tariffs || {}
       };
 
-      setCompanies(prev => [formatted, ...prev]);
-      showToast(`Company "${created.name}" onboarded & saved to PostgreSQL!`);
+      setCompanies(prev => [formatted, ...prev.filter(c => c.id !== formatted.id)]);
+      showToast(`🎉 Company "${created.name}" (#${created.code}) onboarded & saved to PostgreSQL!`);
+      return created;
     } catch (err) {
-      const newComp = {
-        id: `comp-${Date.now()}`,
-        code: companyData.name.substring(0, 4).toUpperCase(),
-        verifiedCountThisMonth: 0,
-        status: 'Active',
-        pricePerVerification: companyData.plan === 'Enterprise Premier' ? 120 : 100,
-        ...companyData
-      };
-      setCompanies(prev => [newComp, ...prev]);
-      showToast(`Company "${companyData.name}" onboarded!`);
+      console.error('Failed to create company:', err);
+      showToast(`❌ Company onboarding failed: ${err.message || 'Server error'}`, 'error');
+      throw err;
     }
   };
 
