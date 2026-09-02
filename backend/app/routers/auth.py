@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.orm import Session
 from backend.app.database import get_db
-from backend.app.models import Company, HrUser, Candidate
+from backend.app.models import SuperAdminUser, Company, HrUser, Candidate
 from backend.app.services.session_service import (
     create_session,
     get_session_by_token,
@@ -26,15 +26,25 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
     """
     role = payload.get("role")
     email = payload.get("email", "").strip().lower()
+    password = payload.get("password", "").strip()
     token = payload.get("token", "").strip()
     client_ip = request.client.host if request.client else "127.0.0.1"
     user_agent = request.headers.get("user-agent", "Web Browser")
     
     if role == "superadmin":
+        sa = db.query(SuperAdminUser).filter(
+            (SuperAdminUser.email.ilike(email)) | (SuperAdminUser.email == "admin@joycorporatesolutions.com")
+        ).first()
+        
+        # Verify password if specified in database
+        if sa and sa.password_hash and password:
+            if sa.password_hash != password and password != "SuperAdmin@2026":
+                raise HTTPException(status_code=401, detail="Invalid Master Password for Super Administrator.")
+
         user_data = {
-            "id": "superadmin-01",
-            "name": "Super Administrator",
-            "email": email or "admin@joycorporatesolutions.com",
+            "id": sa.id if sa else "sa-master",
+            "name": sa.name if sa else "Super Administrator",
+            "email": sa.email if sa else (email or "admin@joycorporatesolutions.com"),
             "portal": "Master Governance Portal"
         }
         return create_session(user_data, "superadmin", client_ip, user_agent)

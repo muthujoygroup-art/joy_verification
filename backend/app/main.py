@@ -153,17 +153,16 @@ def on_startup():
 
     seed_database()
 
-# Mount all API Routers under /api prefix
-app.include_router(auth_router, prefix=settings.API_PREFIX)
-app.include_router(superadmin_router, prefix=settings.API_PREFIX)
-app.include_router(company_router, prefix=settings.API_PREFIX)
-app.include_router(hr_router, prefix=settings.API_PREFIX)
-app.include_router(verification_router, prefix=settings.API_PREFIX)
-app.include_router(master_data_router, prefix=settings.API_PREFIX)
-app.include_router(tickets_router, prefix=settings.API_PREFIX)
-app.include_router(billing_router, prefix=settings.API_PREFIX)
-app.include_router(documents_router, prefix=settings.API_PREFIX)
-app.include_router(settings_router, prefix=settings.API_PREFIX)
+# Mount all API Routers with dual prefix (/api and direct) for bulletproof hosting compatibility
+all_routers = [
+    auth_router, superadmin_router, company_router, hr_router,
+    verification_router, master_data_router, tickets_router,
+    billing_router, documents_router, settings_router
+]
+
+for r in all_routers:
+    app.include_router(r, prefix=settings.API_PREFIX)
+    app.include_router(r, prefix="")
 
 @app.get("/health")
 @app.get(f"{settings.API_PREFIX}/health")
