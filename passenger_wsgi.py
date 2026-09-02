@@ -110,9 +110,9 @@ class PureAsyncWsgiAdapter:
                 if chunk:
                     response_body_chunks.append(chunk)
 
-        await self.asgi_app(scope, receive, send)
-
-        status_text = f"{response_status} OK" if response_status == 200 else f"{response_status} Response"
+        import http.client
+        phrase = http.client.responses.get(response_status, "OK")
+        status_text = f"{response_status} {phrase}"
         start_response(status_text, response_headers)
         return response_body_chunks
 
