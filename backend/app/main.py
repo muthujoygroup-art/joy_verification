@@ -55,10 +55,12 @@ async def add_performance_headers(request: Request, call_next):
     response.headers["X-Active-Cluster-Region"] = "ap-south-1"
     return response
 
-# Startup event to ensure database tables, column extensions, and initial seed data are populated
-@app.on_event("startup")
+# Initialize database tables, column extensions, and initial seed data immediately
 def on_startup():
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Base.metadata.create_all error: {e}")
     
     # Auto-execute PostgreSQL column migrations if needed
     try:
@@ -152,6 +154,12 @@ def on_startup():
         pass
 
     seed_database()
+
+# Run immediately upon module load for Passenger / ASGI servers
+try:
+    on_startup()
+except Exception as e:
+    print(f"Startup execution warning: {e}")
 
 
 from fastapi.responses import JSONResponse
@@ -312,6 +320,12 @@ def reset_database_direct():
 
         # 4. Seed standard master data (drop-downs, APIs, settings) if empty
         seed_database()
+
+# Run immediately upon module load for Passenger / ASGI servers
+try:
+    on_startup()
+except Exception as e:
+    print(f"Startup execution warning: {e}")
 
         return {
             "success": True,

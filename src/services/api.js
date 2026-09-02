@@ -85,8 +85,18 @@ async function request(endpoint, options = {}, useCache = false) {
             await new Promise(r => setTimeout(r, 600 * attempts));
             continue;
           }
-          const errorData = await res.json().catch(() => ({}));
-          const errorMessage = errorData.detail || errorData.message || `Request failed with status ${res.status}`;
+          let errorMessage = `Request failed with status ${res.status}`;
+          try {
+            const rawText = await res.text();
+            try {
+              const errorData = JSON.parse(rawText);
+              errorMessage = errorData.detail || errorData.message || errorMessage;
+            } catch {
+              if (rawText && rawText.trim()) {
+                errorMessage = rawText.slice(0, 300);
+              }
+            }
+          } catch {}
           throw new Error(errorMessage);
         }
         const data = await res.json();
