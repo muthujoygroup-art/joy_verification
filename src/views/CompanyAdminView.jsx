@@ -231,6 +231,18 @@ export const CompanyAdminView = () => {
     updateCompanyFeatures(company.id, allStandard);
   };
 
+  const handleToggleHrStatus = async (hrId, currentStatus) => {
+    const newStatus = (currentStatus === 'Active' || !currentStatus) ? 'Inactive' : 'Active';
+    try {
+      await api.updateHrStatus(company?.id || 'comp-joy', hrId, newStatus);
+      showToast(`👔 HR Recruiter account set to ${newStatus}!`);
+      // Update local state
+      setCompanyHrUsers(prev => prev.map(h => h.id === hrId ? { ...h, status: newStatus } : h));
+    } catch (err) {
+      showToast('❌ Failed to update HR status: ' + err.message);
+    }
+  };
+
   // 🏢 Save Company Email Gateway Settings
   const handleSaveCompanyEmailSettings = async () => {
     if (!company?.id) return;
@@ -885,16 +897,32 @@ export const CompanyAdminView = () => {
                 </div>
                 <h4 className="font-extrabold text-slate-900 text-sm">{hr.name}</h4>
                 <p className="text-xs text-slate-500">{hr.email}</p>
-                <div className="pt-2 flex justify-between items-center text-xs border-t border-slate-200">
-                  <span className="text-emerald-700 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Active HR Account
-                  </span>
+                <div className="pt-2 flex justify-between items-center text-xs border-t border-slate-200 gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`badge text-[10px] font-bold ${
+                      hr.status === 'Inactive' || hr.status === 'Deactivated'
+                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                        : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    }`}>
+                      {hr.status === 'Inactive' || hr.status === 'Deactivated' ? '🔴 Inactive' : '🟢 Active'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleHrStatus(hr.id, hr.status)}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
+                        hr.status === 'Inactive' || hr.status === 'Deactivated'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                          : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                      }`}
+                    >
+                      {hr.status === 'Inactive' || hr.status === 'Deactivated' ? 'Activate 🟢' : 'Deactivate 🔴'}
+                    </button>
+                  </div>
                   <button 
                     onClick={() => setRoleView('hrexecutive')}
-                    className="text-sky-700 hover:underline font-bold flex items-center gap-1"
+                    className="text-sky-700 hover:underline font-bold flex items-center gap-1 text-[11px]"
                   >
-                    <span>Open HR Workstation</span>
+                    <span>HR Station</span>
                     <ExternalLink className="w-3 h-3" />
                   </button>
                 </div>

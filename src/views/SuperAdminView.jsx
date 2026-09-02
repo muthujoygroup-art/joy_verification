@@ -885,6 +885,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   };
 
+  const handleToggleCompanyStatus = async (compId, currentStatus) => {
+    const newStatus = (currentStatus === 'Active' || !currentStatus) ? 'Suspended' : 'Active';
+    try {
+      await api.updateCompanyStatus(compId, newStatus);
+      showToast(`🏢 Company status changed to ${newStatus}!`);
+      // Update local state
+      setCompanies(prev => prev.map(c => c.id === compId ? { ...c, status: newStatus } : c));
+    } catch (err) {
+      showToast('❌ Failed to update company status: ' + err.message);
+    }
+  };
+
   // 📧 Send Live Diagnostic Test Email
   const handleSendTestEmail = async (e) => {
     if (e) e.preventDefault();
@@ -1791,6 +1803,29 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         <span className="badge badge-purple text-[10px] font-bold">
                           {enabledCount} of 10 Enabled
                         </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span className={`badge text-[10px] font-bold ${
+                            comp.status === 'Suspended' || comp.status === 'Inactive'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                              : 'badge-emerald'
+                          }`}>
+                            {comp.status === 'Suspended' || comp.status === 'Inactive' ? '🔴 Suspended' : '🟢 Active'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleCompanyStatus(comp.id, comp.status)}
+                            className={`px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
+                              comp.status === 'Suspended' || comp.status === 'Inactive'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                            }`}
+                            title={comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Click to Reactivate' : 'Click to Suspend / Inactive'}
+                          >
+                            {comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Reactivate 🟢' : 'Suspend ⏸️'}
+                          </button>
+                        </div>
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button
