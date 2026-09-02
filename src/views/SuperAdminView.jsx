@@ -1054,319 +1054,309 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
         </div>
 
-        {/* Modern Segmented Navigation Bar */}
-        <div className="space-y-2.5">
+        {/* ========================================================================= */}
+        {/* 🏛️ 2-TIER HIERARCHICAL SECTIONS & SUB-SECTIONS NAVIGATION ENGINE          */}
+        {/* ========================================================================= */}
+        <div className="space-y-4">
           
-          {/* Top Quick Category Filter Chips */}
-          <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar px-1 text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider mr-1">SECTIONS:</span>
-              <button 
-                type="button" 
-                onClick={() => setTabCategory('all')} 
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  tabCategory === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                All Tabs (15)
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setTabCategory('core')} 
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  tabCategory === 'core' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                🏢 Clients & Billing
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setTabCategory('infra')} 
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  tabCategory === 'infra' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                🔌 Data & APIs
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setTabCategory('governance')} 
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  tabCategory === 'governance' ? 'bg-purple-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                🛡️ Governance & Settings
-              </button>
-            </div>
+          {/* TIER 1: 5 MAIN PILLAR CATEGORY CARDS */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+            {[
+              {
+                id: 'core_ops',
+                title: '1. Core Operations',
+                subtitle: 'Tenants & Candidates',
+                icon: Building2,
+                colorClass: 'from-indigo-600 to-indigo-800',
+                activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
+                badgeText: '4 Sub-Sections',
+                defaultTab: 'analytics'
+              },
+              {
+                id: 'gateways_engine',
+                title: '2. Upstream Gateways',
+                subtitle: 'APIs & Live Studio',
+                icon: Zap,
+                colorClass: 'from-teal-600 to-emerald-800',
+                activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
+                badgeText: '3 Sub-Sections',
+                defaultTab: 'apiconfig'
+              },
+              {
+                id: 'billing_finance',
+                title: '3. Financial Billing',
+                subtitle: 'Invoices & Ledger',
+                icon: CreditCard,
+                colorClass: 'from-amber-600 to-amber-800',
+                activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
+                badgeText: '2 Sub-Sections',
+                defaultTab: 'billing'
+              },
+              {
+                id: 'db_security',
+                title: '4. Database & Security',
+                subtitle: 'DBMS & Audit Chain',
+                icon: Database,
+                colorClass: 'from-rose-600 to-rose-800',
+                activeBorder: 'border-rose-500 bg-rose-50/90 text-rose-950 shadow-md',
+                badgeText: '4 Sub-Sections',
+                defaultTab: 'dbms'
+              },
+              {
+                id: 'gov_reports',
+                title: '5. Governance & Config',
+                subtitle: 'DPDP, Reports & Help',
+                icon: ShieldCheck,
+                colorClass: 'from-purple-600 to-purple-900',
+                activeBorder: 'border-purple-500 bg-purple-50/90 text-purple-950 shadow-md',
+                badgeText: '4 Sub-Sections',
+                defaultTab: 'reports'
+              }
+            ].map(cat => {
+              const Icon = cat.icon;
+              const isSelected = activeMainSection === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveMainSection(cat.id);
+                    setActiveTab(cat.defaultTab);
+                  }}
+                  className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
+                    isSelected 
+                      ? `${cat.activeBorder} scale-[1.02]` 
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700 shadow-2xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-2">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
+                      isSelected ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                      isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {cat.badgeText}
+                    </span>
+                  </div>
 
-            <div className="text-[11px] font-bold text-slate-400 hidden sm:flex items-center gap-1.5">
-              <span>Super Admin Master Station</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs sm:text-sm tracking-tight">{cat.title}</h4>
+                    <p className="text-[10px] text-slate-500 font-medium truncate">{cat.subtitle}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Clean Aligned & Scrollable Ribbon with Left/Right Buttons */}
-          <div className="relative flex items-center gap-2 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-inner group">
+          {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
+          <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
-            {/* Left Scroll Button */}
-            <button
-              type="button"
-              onClick={() => scrollTabs('left')}
-              className="p-2.5 rounded-xl bg-white hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-300 shadow-md transition-all cursor-pointer shrink-0 active:scale-95 flex items-center justify-center"
-              title="Scroll Left"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
+              
+              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-400/10 border border-amber-400/20 shrink-0">
+                SUB-SECTIONS:
+              </span>
 
-            {/* Scrollable Container */}
-            <div 
-              ref={tabsContainerRef}
-              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5"
-            >
-            
-            {/* TAB 0: Universal Omnisearch & Profile ID Tracker */}
-            {(tabCategory === 'all' || tabCategory === 'core') && (
-              <button
-                onClick={() => setActiveTab('omnisearch')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'omnisearch' 
-                    ? 'bg-gradient-to-r from-indigo-600 via-sky-600 to-indigo-700 text-white shadow-md' 
-                    : 'bg-white text-slate-800 border border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                <Search className={`w-3.5 h-3.5 ${activeTab === 'omnisearch' ? 'text-amber-300' : 'text-indigo-600'}`} />
-                <span>🔍 Global Profile ID Tracker</span>
-              </button>
-            )}
+              {/* 1. Core Operations Sub-Sections */}
+              {activeMainSection === 'core_ops' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('analytics')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>1. Platform Analytics</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('companies')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'companies' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>2. Companies & Features</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('ledger')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>3. Candidate Ledger</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('terms_hub')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Scale className="w-3.5 h-3.5" />
+                    <span>4. Terms & Agreements</span>
+                  </button>
+                </>
+              )}
 
-            {/* TAB 1: Analytics & Profit */}
-            {(tabCategory === 'all' || tabCategory === 'core') && (
-              <button
-                data-tour-step="superadmin-analytics-tab"
-                onClick={() => setActiveTab('analytics')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'analytics' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>1. Platform Analytics</span>
-              </button>
-            )}
+              {/* 2. Upstream Gateways Sub-Sections */}
+              {activeMainSection === 'gateways_engine' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('apiconfig')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'apiconfig' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Server className="w-3.5 h-3.5" />
+                    <span>1. Dual API Gateways</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('studio')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'studio' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>2. Live Verification Studio</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('settings')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>3. cPanel SMTP & Mail 📧</span>
+                  </button>
+                </>
+              )}
 
-            {/* TAB 2: Companies & Features */}
-            {(tabCategory === 'all' || tabCategory === 'core') && (
-              <button
-                data-tour-step="superadmin-companies-tab"
-                onClick={() => setActiveTab('companies')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'companies' 
-                    ? 'bg-purple-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Building2 className="w-3.5 h-3.5" />
-                <span>2. Companies & Features</span>
-              </button>
-            )}
+              {/* 3. Billing & Finance Sub-Sections */}
+              {activeMainSection === 'billing_finance' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('billing')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'billing' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    <span>1. Metered Invoicing & Razorpay</span>
+                  </button>
+                </>
+              )}
 
-            {/* TAB 3: Terms & Conditions Contracts Hub */}
-            {(tabCategory === 'all' || tabCategory === 'core' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('terms_hub')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'terms_hub' 
-                    ? 'bg-amber-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Scale className="w-3.5 h-3.5" />
-                <span>3. Terms & Contracts 📜</span>
-              </button>
-            )}
+              {/* 4. Database, Security & Telemetry Sub-Sections */}
+              {activeMainSection === 'db_security' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('dbms')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'dbms' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Database className="w-3.5 h-3.5" />
+                    <span>1. PostgreSQL DBMS Explorer</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('audit')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'audit' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>2. Audit Trail & DPDP Chain</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('sessions')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'sessions' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>3. Active Sessions Hub</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('issuelogs')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'issuelogs' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>4. System Error Telemetry ({totalUnresolvedErrorCount})</span>
+                  </button>
+                </>
+              )}
 
-            {/* TAB 4: Metered Billing & Invoices */}
-            {(tabCategory === 'all' || tabCategory === 'core') && (
-              <button
-                data-tour-step="superadmin-billing-tab"
-                onClick={() => setActiveTab('billing')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'billing' 
-                    ? 'bg-sky-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <CreditCard className="w-3.5 h-3.5" />
-                <span>4. Invoicing & Billing</span>
-              </button>
-            )}
-
-            {/* TAB 5: Multi-Login Telemetry */}
-            {(tabCategory === 'all' || tabCategory === 'infra') && (
-              <button
-                onClick={() => setActiveTab('logins')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'logins' 
-                    ? 'bg-emerald-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Users className="w-3.5 h-3.5" />
-                <span>5. Login Telemetry 👥</span>
-              </button>
-            )}
-
-            {/* TAB 6: Database Management System (DBMS) */}
-            {(tabCategory === 'all' || tabCategory === 'infra') && (
-              <button
-                data-tour-step="superadmin-dbms-tab"
-                onClick={() => setActiveTab('dbms')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'dbms' 
-                    ? 'bg-teal-700 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Database className="w-3.5 h-3.5" />
-                <span>6. Database (DBMS) 🗄️</span>
-              </button>
-            )}
-
-            {/* TAB 7: Master Fields & Dropdowns */}
-            {(tabCategory === 'all' || tabCategory === 'infra') && (
-              <button
-                onClick={() => setActiveTab('masterfields')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'masterfields' 
-                    ? 'bg-teal-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <ListCheck className="w-3.5 h-3.5" />
-                <span>7. Master Fields</span>
-              </button>
-            )}
-
-            {/* TAB 8: API Credentials */}
-            {(tabCategory === 'all' || tabCategory === 'infra') && (
-              <button
-                data-tour-step="superadmin-apiconfig-tab"
-                onClick={() => setActiveTab('apiconfig')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'apiconfig' 
-                    ? 'bg-emerald-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Server className="w-3.5 h-3.5" />
-                <span>8. API Gateways</span>
-              </button>
-            )}
-
-            {/* TAB 9: Reports Center */}
-            {(tabCategory === 'all' || tabCategory === 'infra') && (
-              <button
-                onClick={() => setActiveTab('reports')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'reports' 
-                    ? 'bg-amber-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <FileDown className="w-3.5 h-3.5" />
-                <span>9. Reports Center</span>
-              </button>
-            )}
-
-            {/* TAB 10: Support Tickets */}
-            {(tabCategory === 'all' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('tickets')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'tickets' 
-                    ? 'bg-indigo-700 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <LifeBuoy className="w-3.5 h-3.5" />
-                <span>10. Helpdesk ({supportTickets.length})</span>
-              </button>
-            )}
-
-            {/* TAB 11: Issue Logs */}
-            {(tabCategory === 'all' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('issuelogs')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'issuelogs' 
-                    ? 'bg-rose-600 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>11. Error Logs ({totalUnresolvedErrorCount})</span>
-              </button>
-            )}
-
-            {/* TAB 12: Guidelines */}
-            {(tabCategory === 'all' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('guidelines')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'guidelines' 
-                    ? 'bg-purple-700 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>12. Guidelines</span>
-              </button>
-            )}
-
-            {/* TAB 13: Settings */}
-            {(tabCategory === 'all' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('settings')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'settings' 
-                    ? 'bg-slate-900 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Settings className="w-3.5 h-3.5" />
-                <span>13. Settings & Mail 📧</span>
-              </button>
-            )}
-
-            {/* TAB 14: Legal & DPDP Governance */}
-            {(tabCategory === 'all' || tabCategory === 'governance') && (
-              <button
-                onClick={() => setActiveTab('legal_governance')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  activeTab === 'legal_governance' 
-                    ? 'bg-purple-800 text-white shadow-md' 
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70'
-                }`}
-              >
-                <Scale className="w-3.5 h-3.5 text-purple-400" />
-                <span>14. DPDP Governance 🏛️</span>
-              </button>
-            )}
+              {/* 5. Governance, Reports & Config Sub-Sections */}
+              {activeMainSection === 'gov_reports' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('reports')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'reports' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>1. Reports Center</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('legal_governance')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'legal_governance' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Scale className="w-3.5 h-3.5" />
+                    <span>2. Legal & DPDP Governance 🏛️</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('masterdata')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'masterdata' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Sliders className="w-3.5 h-3.5" />
+                    <span>3. Master Data Presets</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('tickets')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'tickets' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <LifeBuoy className="w-3.5 h-3.5" />
+                    <span>4. Support Helpdesk</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('guidelines')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'guidelines' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>5. Guidelines</span>
+                  </button>
+                </>
+              )}
 
             </div>
 
-            {/* Right Scroll Button */}
+            {/* Quick Omnisearch Trigger */}
             <button
               type="button"
-              onClick={() => scrollTabs('right')}
-              className="p-2.5 rounded-xl bg-white hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-300 shadow-md transition-all cursor-pointer shrink-0 active:scale-95 flex items-center justify-center"
-              title="Scroll Right"
+              onClick={() => setActiveTab('omnisearch')}
+              className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 border border-white/10"
             >
-              <ChevronRight className="w-4 h-4" />
+              <Search className="w-3.5 h-3.5 text-amber-400" />
+              <span>Omnisearch 🔍</span>
             </button>
 
           </div>
+
         </div>
       </div>
 

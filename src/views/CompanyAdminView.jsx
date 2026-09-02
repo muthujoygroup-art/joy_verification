@@ -349,109 +349,212 @@ export const CompanyAdminView = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Tabs Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 gap-1.5 shadow-2xs">
-          <button
-            onClick={() => setActiveTab('telemetry')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'telemetry' 
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 shrink-0" />
-            <span className="truncate">Telemetry & TAT</span>
-          </button>
+        {/* ========================================================================= */}
+        {/* 🏢 2-TIER HIERARCHICAL SECTIONS & SUB-SECTIONS NAVIGATION ENGINE          */}
+        {/* ========================================================================= */}
+        <div className="space-y-4">
+          
+          {/* TIER 1: 4 MAIN PILLAR CATEGORY CARDS */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+            {[
+              {
+                id: 'telemetry_candidates',
+                title: '1. Telemetry & Candidates',
+                subtitle: 'Usage & Master Registry',
+                icon: ShieldCheck,
+                activeBorder: 'border-sky-500 bg-sky-50/90 text-sky-950 shadow-md',
+                badgeText: `${candidates.length} Profiles`,
+                defaultTab: 'registry'
+              },
+              {
+                id: 'hr_governance',
+                title: '2. HR Team & Access',
+                subtitle: 'Recruiters & Permissions',
+                icon: Users,
+                activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
+                badgeText: `${companyHrUsers.length} Staff`,
+                defaultTab: 'hrteam'
+              },
+              {
+                id: 'corporate_dms',
+                title: '3. Profile & Document Vault',
+                subtitle: 'CIN, GSTIN & Cloud DMS',
+                icon: Building2,
+                activeBorder: 'border-emerald-500 bg-emerald-50/90 text-emerald-950 shadow-md',
+                badgeText: 'Statutory Docs',
+                defaultTab: 'profile_details'
+              },
+              {
+                id: 'billing_gateways',
+                title: '4. Billing & Gateways',
+                subtitle: 'Wallet, SMTP & Alerts',
+                icon: CreditCard,
+                activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
+                badgeText: `₹${company.walletBalance?.toLocaleString() || 50000}`,
+                defaultTab: 'billing_wallet'
+              }
+            ].map(cat => {
+              const Icon = cat.icon;
+              const isSelected = activeMainSection === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveMainSection(cat.id);
+                    setActiveTab(cat.defaultTab);
+                  }}
+                  className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
+                    isSelected 
+                      ? `${cat.activeBorder} scale-[1.02]` 
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700 shadow-2xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-2">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
+                      isSelected ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                      isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {cat.badgeText}
+                    </span>
+                  </div>
 
-          <button
-            data-tour-step="company-registry-tab"
-            onClick={() => setActiveTab('registry')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'registry' 
-                ? 'bg-sky-600 text-white shadow-md shadow-sky-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span className="truncate">Registry</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-              activeTab === 'registry' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-            }`}>
-              {candidates.length}
-            </span>
-          </button>
+                  <div>
+                    <h4 className="font-extrabold text-xs sm:text-sm tracking-tight">{cat.title}</h4>
+                    <p className="text-[10px] text-slate-500 font-medium truncate">{cat.subtitle}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
 
-          <button
-            data-tour-step="company-hr-tab"
-            onClick={() => setActiveTab('hrteam')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'hrteam' 
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <Users className="w-4 h-4 shrink-0" />
-            <span className="truncate">HR Team</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-              activeTab === 'hrteam' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-            }`}>
-              {hrUsers.length}
-            </span>
-          </button>
+          {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
+          <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white shadow-xl border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
+              
+              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider px-2.5 py-1 rounded-lg bg-cyan-400/10 border border-cyan-400/20 shrink-0">
+                SUB-SECTIONS:
+              </span>
 
-          <button
-            data-tour-step="company-dochub-tab"
-            onClick={() => setActiveTab('dochub')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'dochub' 
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <FolderDown className="w-4 h-4 shrink-0" />
-            <span className="truncate">Doc Vault</span>
-          </button>
+              {/* 1. Telemetry & Candidates Sub-Sections */}
+              {activeMainSection === 'telemetry_candidates' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('registry')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>1. Candidate Registry ({candidates.length})</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('telemetry')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>2. Telemetry & TAT Analytics</span>
+                  </button>
+                </>
+              )}
 
-          <button
-            onClick={() => setActiveTab('billing_wallet')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'billing_wallet' 
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <CreditCard className="w-4 h-4 shrink-0" />
-            <span className="truncate">Wallet & Billing</span>
-          </button>
+              {/* 2. HR Team & Access Sub-Sections */}
+              {activeMainSection === 'hr_governance' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('hrteam')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>1. HR Staff Directory ({companyHrUsers.length})</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('hr_permissions')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Sliders className="w-3.5 h-3.5" />
+                    <span>2. Check Flags Matrix</span>
+                  </button>
+                </>
+              )}
 
-          <button
-            onClick={() => setActiveTab('hr_permissions')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'hr_permissions' 
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span className="truncate">Governance</span>
-          </button>
+              {/* 3. Corporate Profile & DMS Sub-Sections */}
+              {activeMainSection === 'corporate_dms' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('profile_details')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>1. Company Profile & Statutory Docs</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('dochub')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <FolderDown className="w-3.5 h-3.5" />
+                    <span>2. Cloud Document Vault (DMS)</span>
+                  </button>
+                </>
+              )}
 
-          <button
-            data-tour-step="company-settings-tab"
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center justify-center lg:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-center select-none cursor-pointer ${
-              activeTab === 'settings' 
-                ? 'bg-indigo-700 text-white shadow-md shadow-indigo-600/20 scale-[1.02]' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-            }`}
-          >
-            <Settings className="w-4 h-4 shrink-0" />
-            <span className="truncate">Settings</span>
-          </button>
+              {/* 4. Billing, Gateways & Support Sub-Sections */}
+              {activeMainSection === 'billing_gateways' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('billing_wallet')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    <span>1. Prepaid Wallet & GST Invoices</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('settings')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>2. Email & Gateway Rules</span>
+                  </button>
+                </>
+              )}
+
+            </div>
+
+            {/* Quick Top-up Button */}
+            <button
+              type="button"
+              onClick={() => setShowRazorpayModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md"
+            >
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span>Recharge ⚡</span>
+            </button>
+
+          </div>
+
         </div>
       </div>
 
-      {/* Metrics Row */}
+            {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Active HR Executives" 
