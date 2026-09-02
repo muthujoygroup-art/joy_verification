@@ -1230,10 +1230,10 @@ export const HrExecutiveView = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between w-full mb-2">
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
-                      isSelected ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600'
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-transform group-hover:scale-110 ${
+                      isSelected ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md' : 'bg-slate-100 text-slate-700 border border-slate-200'
                     }`}>
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-5 h-5" />
                     </div>
                     <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
                       isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
