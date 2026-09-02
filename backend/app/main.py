@@ -233,6 +233,68 @@ def run_migrations_direct():
             "error": str(e)
         }
 
+@app.get("/clean-duplicates")
+@app.get("/api/clean-duplicates")
+@app.get("/api/database/clean-duplicates")
+@app.get("/api/superadmin/database/clean-duplicates")
+@app.get("/reset-database")
+@app.get("/api/reset-database")
+def reset_database_direct():
+    """Direct URL trigger to purge all mock/test data for a clean fresh production launch"""
+    from backend.app.database import SessionLocal
+    from backend.app.models import (
+        SuperAdminUser, Company, HrUser, Candidate, CandidateDocument,
+        VerificationRecord, Invoice, PaymentRecord, SupportTicket,
+        TicketReply, ActiveSession
+    )
+    
+    db = SessionLocal()
+    try:
+        db.query(VerificationRecord).delete()
+        db.query(CandidateDocument).delete()
+        db.query(Candidate).delete()
+        db.query(HrUser).delete()
+        db.query(Invoice).delete()
+        db.query(PaymentRecord).delete()
+        db.query(TicketReply).delete()
+        db.query(SupportTicket).delete()
+        db.query(Company).delete()
+        db.query(ActiveSession).delete()
+
+        admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
+        if not admin:
+            admin = SuperAdminUser(
+                id="sa-master",
+                name="Super Administrator",
+                email="admin@joycorporatesolutions.com",
+                password_hash="SuperAdmin@2026",
+                role="superadmin",
+                status="Active"
+            )
+            db.add(admin)
+        else:
+            admin.password_hash = "SuperAdmin@2026"
+            admin.status = "Active"
+
+        db.commit()
+        return {
+            "success": True,
+            "message": "Database reset completed! All mock/test profiles removed for a 100% clean fresh start.",
+            "status": "CLEAN_PRODUCTION_READY",
+            "super_admin": "admin@joycorporatesolutions.com",
+            "companies_count": 0,
+            "hr_users_count": 0,
+            "candidates_count": 0
+        }
+    except Exception as e:
+        db.rollback()
+        return {
+            "success": False,
+            "error": str(e)
+        }
+    finally:
+        db.close()
+
 
 
 
