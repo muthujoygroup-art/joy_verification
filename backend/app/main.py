@@ -267,6 +267,7 @@ def reset_database_direct():
         try:
             from sqlalchemy import create_engine, text
             pg_urls = [
+                settings.DATABASE_URL,
                 "postgresql://postgres:Muthu%40123@127.0.0.1:5432/joy_verification",
                 "postgresql://postgres:Muthu%40123@localhost:5432/joy_verification",
                 "postgresql:///joy_verification"
