@@ -188,6 +188,103 @@ export const SuperAdminView = () => {
 
   const [logFilterStatus, setLogFilterStatus] = useState('all'); // 'all' | 'unresolved' | 'solved'
 
+  const defaultStatutoryDocs = [
+    {
+      id: 'doc-iso-27001',
+      title: '1. ISO 27001:2022 ISMS Security Certificate',
+      category: 'ISO STANDARDS',
+      badge: 'ISO CERTIFIED',
+      badgeClass: 'badge-indigo',
+      subtitle: 'Information Security Management System Compliance',
+      certNumber: 'ISO-27001-2022-IND-99412',
+      content: `This is to certify that JOY CORPORATE SOLUTIONS PRIVATE LIMITED operates an Information Security Management System (ISMS) in compliance with the requirements of ISO/IEC 27001:2022.
+
+Scope of Certification:
+1. Automated background identity verification gateways (UIDAI Aadhaar, NSDL PAN, EPFO UAN, MoRTH Driving License).
+2. Ephemeral anti-spoofing AI facial biometric analysis and digital signature capture.
+3. High-availability PostgreSQL database vault with AES-256 point-in-time cryptographic tokenization.
+4. DPDP Act 2023 compliance auditing, retention lifecycle, and secure customer data purges.`
+    },
+    {
+      id: 'doc-dpdp-2023',
+      title: '2. DPDP Act 2023 Master Compliance Declaration',
+      category: 'DPDP ACT 2023',
+      badge: 'DPDP ACT 2023',
+      badgeClass: 'badge-purple',
+      subtitle: 'Statutory Data Privacy & Affirmative Consent Framework',
+      certNumber: 'JOY/DPDP-2026/08821',
+      content: `STATUTORY DECLARATION OF COMPLIANCE UNDER DPDP ACT 2023:
+
+1. SECTION 6(1) AFFIRMATIVE CONSENT:
+Candidate consent is obtained unconditionally through a dedicated, multi-factor authenticated digital consent gate prior to executing any repository query.
+
+2. SECTION 7(A) PURPOSE LIMITATION:
+All personal and statutory data (including EPFO employment records and UIDAI demographics) is retrieved strictly for bona fide pre-employment background checks and payroll joining.
+
+3. SECTION 8(7) AUTOMATED PURGE LIFECYCLE:
+The platform enforces a mandatory active data retention threshold (60 days), following which all candidate dossiers are cryptographically archived.`
+    },
+    {
+      id: 'doc-dpa-sla',
+      title: '3. Enterprise Master Data Processing Agreement (DPA)',
+      category: 'B2B CONTRACTS',
+      badge: 'ENTERPRISE SLA',
+      badgeClass: 'badge-emerald',
+      subtitle: 'B2B Employer Legal SLA & Statutory Governance',
+      certNumber: 'JOY/DPA-SLA-2026/102',
+      content: `ENTERPRISE DATA PROCESSING & SERVICE LEVEL AGREEMENT:
+
+1. PARTIES & ROLES:
+JOY Corporate Solutions acts as the Data Processor/Intermediary. The Client Employer Organization acts as the Data Fiduciary.
+
+2. CONFIDENTIALITY & NON-DISCLOSURE:
+All employee identity documents, salary accounts, PF histories, and litigation audit records are strictly confidential and protected by 256-bit encryption.
+
+3. TAT GUARANTEE & UPTIME:
+The platform guarantees 99.9% gateway uptime with Turnaround Time (TAT) under 120 seconds for automated API checks.
+
+4. 7-YEAR STATUTORY LABOR COMPLIANCE RETENTION:
+Completed EPFO Form 11, EPFO Form 2, ESIC Form 1, and Gratuity Form F dossiers are stored in compliance with statutory labor recordkeeping rules.`
+    },
+    {
+      id: 'doc-uidai-mandate',
+      title: '4. UIDAI Aadhaar Masking & Security Standard',
+      category: 'IDENTITY SHIELD',
+      badge: 'UIDAI MANDATE',
+      badgeClass: 'badge-amber',
+      subtitle: 'Regulation 16B & 19 Compliance Guarantee',
+      certNumber: 'UIDAI-SEC-2026-904',
+      content: `UIDAI AADHAAR DATA SECURITY & MASKING CERTIFICATE:
+
+1. MANDATORY DIGIT REDACTION:
+In accordance with Regulation 16B of UIDAI Regulations, all 12-digit Aadhaar numbers are masked upon retrieval (XXXX-XXXX-9876).
+
+2. ZERO BIOMETRIC RESIDENCE:
+No core biometric data (fingerprints/iris) is stored on server infrastructure.
+
+3. OPT-IN VOLUNTARY e-KYC:
+Aadhaar OTP verification is initiated purely on candidate request with an active OTP TTL of 10 minutes.`
+    },
+    {
+      id: 'doc-it-sec79',
+      title: '5. IT Act Intermediary Recognition Gazette',
+      category: 'LEGAL STATUTE',
+      badge: 'IT ACT SEC 79',
+      badgeClass: 'badge-cyan',
+      subtitle: 'Government Intermediary Safe Harbor Status',
+      certNumber: 'JOY/IT-SEC79-2026/011',
+      content: `GOVERNMENT IT ACT SECTION 79 INTERMEDIARY RECOGNITION:
+
+JOY Corporate Solutions Private Limited functions as a registered digital intermediary providing real-time data connectivity to statutory repositories.
+
+1. Safe Harbor Protection:
+Exempts verified reports from intermediate liability provided public repository responses match point-in-time truth.
+
+2. Due Diligence:
+All verification transactions maintain end-to-end cryptographic audit trails with tamper-proof hashing.`
+    }
+  ];
+
   // 🏛️ Master Legal & DPDP Governance Editor States
   const [legalPolicies, setLegalPolicies] = useState({
     dpdp_consent_declaration: "I hereby voluntarily provide my explicit and unconditional consent under Section 6 of the Digital Personal Data Protection Act 2023 (DPDP Act 2023) to JOY Corporate Solutions Private Limited and my prospective employer to verify my identity credentials against authorized Government and statutory databases (UIDAI Aadhaar, Income Tax PAN, EPFO, MoRTH Driving License). I understand my data is processed solely for employment background verification and statutory payroll onboarding.",
@@ -199,11 +296,95 @@ export const SuperAdminView = () => {
     dpo_phone: "+91 44 2819 0900",
     dpo_address: "JOY Corporate Solutions Tower, Mount Road, Chennai, Tamil Nadu - 600002",
     dpo_reg_no: "BC/TN/2026/0912",
-    iso_cert_no: "ISO-27001-2022-IND-99412"
+    iso_cert_no: "ISO-27001-2022-IND-99412",
+    statutory_documents: defaultStatutoryDocs
   });
   const [isSavingLegal, setIsSavingLegal] = useState(false);
   const [viewingLegalDoc, setViewingLegalDoc] = useState(null);
   const [uploadedLegalCerts, setUploadedLegalCerts] = useState({});
+
+  // Dynamic Document Creator / Editor States
+  const [showAddDocModal, setShowAddDocModal] = useState(false);
+  const [editingDocId, setEditingDocId] = useState(null);
+  const [newDocData, setNewDocData] = useState({
+    title: '',
+    category: 'STATUTORY ACT',
+    badge: 'GOVT COMPLIANT',
+    badgeClass: 'badge-purple',
+    subtitle: '',
+    certNumber: `JOY/STAT-${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+    content: ''
+  });
+
+  const handleOpenAddDocModal = (docToEdit = null) => {
+    if (docToEdit) {
+      setEditingDocId(docToEdit.id);
+      setNewDocData({
+        title: docToEdit.title,
+        category: docToEdit.category || 'STATUTORY ACT',
+        badge: docToEdit.badge || 'GOVT COMPLIANT',
+        badgeClass: docToEdit.badgeClass || 'badge-purple',
+        subtitle: docToEdit.subtitle || '',
+        certNumber: docToEdit.certNumber || `JOY/STAT-${new Date().getFullYear()}/001`,
+        content: docToEdit.content || ''
+      });
+    } else {
+      setEditingDocId(null);
+      setNewDocData({
+        title: '',
+        category: 'STATUTORY ACT',
+        badge: 'GOVT COMPLIANT',
+        badgeClass: 'badge-purple',
+        subtitle: '',
+        certNumber: `JOY/STAT-${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+        content: ''
+      });
+    }
+    setShowAddDocModal(true);
+  };
+
+  const handleSaveDynamicDoc = (e) => {
+    e.preventDefault();
+    if (!newDocData.title.trim()) {
+      if (showToast) showToast('⚠️ Please enter a document title');
+      return;
+    }
+
+    const currentDocs = legalPolicies.statutory_documents || defaultStatutoryDocs;
+    let updatedDocs;
+
+    if (editingDocId) {
+      updatedDocs = currentDocs.map(doc => 
+        doc.id === editingDocId ? { ...doc, ...newDocData } : doc
+      );
+      if (showToast) showToast(`✅ Updated statutory document: "${newDocData.title}"`);
+    } else {
+      const newDoc = {
+        id: `doc-custom-${Date.now()}`,
+        ...newDocData
+      };
+      updatedDocs = [...currentDocs, newDoc];
+      if (showToast) showToast(`🎉 Added new statutory document: "${newDocData.title}"`);
+    }
+
+    setLegalPolicies(prev => ({
+      ...prev,
+      statutory_documents: updatedDocs
+    }));
+    setShowAddDocModal(false);
+  };
+
+  const handleDeleteDynamicDoc = (docId, docTitle) => {
+    if (window.confirm(`Are you sure you want to remove "${docTitle}" from the Statutory Documents Vault?`)) {
+      const currentDocs = legalPolicies.statutory_documents || defaultStatutoryDocs;
+      const filtered = currentDocs.filter(d => d.id !== docId);
+      setLegalPolicies(prev => ({
+        ...prev,
+        statutory_documents: filtered
+      }));
+      if (showToast) showToast(`🗑️ Removed document "${docTitle}"`);
+    }
+  };
 
   const handleSaveLegalGovernance = async (e) => {
     if (e) e.preventDefault();
@@ -3640,12 +3821,21 @@ export const SuperAdminView = () => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => handleOpenAddDocModal()}
+                  className="btn bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Document / Act 📜</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={handleSaveLegalGovernance}
                   disabled={isSavingLegal}
-                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-5 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
+                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
                 >
                   {isSavingLegal ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>{isSavingLegal ? 'Saving Policies...' : 'Save Legal Policies 💾'}</span>
+                  <span>{isSavingLegal ? 'Saving...' : 'Save All Changes 💾'}</span>
                 </button>
 
                 <button
@@ -3660,7 +3850,7 @@ export const SuperAdminView = () => {
             </div>
 
             <p className="text-xs text-slate-200 font-medium leading-relaxed max-w-3xl">
-              Centralized legal compliance station governing explicit digital consent, immutable statutory audit archiving, IT Act safe harbor, and master DPDP regulatory certificates visible across all Companies and HR recruiter portals.
+              Centralized legal compliance station governing statutory policies, custom compliance acts, and master regulatory certificates visible across all Companies and HR recruiter portals.
             </p>
           </div>
 
@@ -3698,7 +3888,7 @@ export const SuperAdminView = () => {
               <div className="text-xl font-black text-emerald-700 font-mono">{legalPolicies.data_retention_days || 60} Days Active</div>
               <div className="text-xs text-slate-500 font-semibold">Automated Purge Scheduler</div>
               <p className="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100">
-                Next Purge Queue: 3 candidates
+                Next Purge Queue: Active
               </p>
             </div>
 
@@ -3715,267 +3905,108 @@ export const SuperAdminView = () => {
             </div>
           </div>
 
-          {/* 📂 SECTION 1: MASTER STATUTORY LEGAL CERTIFICATES & DOCUMENTS VAULT */}
+          {/* 📂 SECTION 1: DYNAMIC STATUTORY LEGAL CERTIFICATES & DOCUMENTS VAULT */}
           <div className="glass-panel p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
                 <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
                   <Award className="w-5 h-5 text-purple-600" />
-                  <span>Master Statutory Compliance Certificates & Legal Proofs</span>
+                  <span>Master Statutory Compliance Certificates & Documents Vault</span>
                 </h4>
                 <p className="text-xs text-slate-500 font-medium">
-                  Official certificates proving platform legality, government compliance, and data security
+                  Dynamic repository of official acts, compliance proofs, and custom legal provisions for corporate clients
                 </p>
               </div>
-              <span className="badge badge-purple text-xs font-mono font-bold">5 STATUTORY DOCUMENTS</span>
+
+              <div className="flex items-center gap-2">
+                <span className="badge badge-purple text-xs font-mono font-bold">
+                  {(legalPolicies.statutory_documents || defaultStatutoryDocs).length} DOCUMENTS ACTIVE
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenAddDocModal()}
+                  className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-sm cursor-pointer rounded-xl"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add New Document 📜</span>
+                </button>
+              </div>
             </div>
 
+            {/* Dynamic Documents Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-              
-              {/* Doc 1: ISO 27001 */}
-              <div className="p-4 rounded-2xl border-2 border-indigo-100 bg-gradient-to-br from-indigo-50/60 to-white space-y-3 shadow-2xs hover:border-indigo-300 transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
-                    <ShieldCheck className="w-5 h-5" />
+              {(legalPolicies.statutory_documents || defaultStatutoryDocs).map((doc, idx) => (
+                <div 
+                  key={doc.id || idx}
+                  className="p-4 rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-slate-50/60 via-white to-indigo-50/30 space-y-3 shadow-2xs hover:border-purple-300 transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <span className={`badge ${doc.badgeClass || 'badge-purple'} text-[9px] font-bold uppercase`}>
+                        {doc.badge || 'STATUTORY ACT'}
+                      </span>
+                      
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenAddDocModal(doc)}
+                          className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-indigo-600 cursor-pointer"
+                          title="Edit Document Provisions"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDynamicDoc(doc.id, doc.title)}
+                          className="p-1 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 cursor-pointer"
+                          title="Delete Document"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <strong className="text-slate-900 font-black text-sm block line-clamp-2">
+                        {doc.title}
+                      </strong>
+                      <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
+                        {doc.subtitle || 'Statutory Compliance Record'}
+                      </p>
+                      <span className="font-mono text-[10px] text-purple-700 block mt-1">
+                        Cert: {doc.certNumber || 'JOY/LEG-2026/01'}
+                      </span>
+                    </div>
                   </div>
-                  <span className="badge badge-indigo text-[9px] font-bold">ISO CERTIFIED</span>
-                </div>
-                <div>
-                  <strong className="text-slate-900 font-black text-sm block">1. ISO 27001:2022 ISMS Security Certificate</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Information Security Management System Compliance</p>
-                  <span className="font-mono text-[10px] text-indigo-700 block mt-1">Cert: {legalPolicies.iso_cert_no || 'ISO-27001-2022-IND-99412'}</span>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-indigo-100">
-                  <button
-                    type="button"
-                    onClick={() => setViewingLegalDoc({
-                      title: 'ISO 27001:2022 ISMS Information Security Compliance Certificate',
-                      subtitle: 'Accredited Information Security & Cryptographic Vault Standard',
-                      certNumber: legalPolicies.iso_cert_no || 'ISO-27001-2022-IND-99412',
-                      content: `This is to certify that JOY CORPORATE SOLUTIONS PRIVATE LIMITED operates an Information Security Management System (ISMS) in compliance with the requirements of ISO/IEC 27001:2022.
 
-Scope of Certification:
-1. Automated background identity verification gateways (UIDAI Aadhaar, NSDL PAN, EPFO UAN, MoRTH Driving License).
-2. Ephemeral anti-spoofing AI facial biometric analysis and digital signature capture.
-3. High-availability PostgreSQL database vault with AES-256 point-in-time cryptographic tokenization.
-4. DPDP Act 2023 compliance auditing, retention lifecycle, and secure customer data purges.`
-                    })}
-                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Document</span>
-                  </button>
-                  <label className="btn bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
-                    <span>Upload 📎</span>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.png" 
-                      className="hidden" 
-                      onChange={(e) => handleUploadLegalCert('iso_cert', e.target.files[0])}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Doc 2: DPDP Compliance Declaration */}
-              <div className="p-4 rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-purple-50/60 to-white space-y-3 shadow-2xs hover:border-purple-300 transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
-                    <Scale className="w-5 h-5" />
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setViewingLegalDoc({
+                        title: doc.title,
+                        subtitle: doc.subtitle,
+                        certNumber: doc.certNumber,
+                        content: doc.content
+                      })}
+                      className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View Document</span>
+                    </button>
+                    
+                    <label className="btn bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
+                      <span>Upload 📎</span>
+                      <input 
+                        type="file" 
+                        accept=".pdf,.jpg,.png" 
+                        className="hidden" 
+                        onChange={(e) => handleUploadLegalCert(doc.id, e.target.files[0])}
+                      />
+                    </label>
                   </div>
-                  <span className="badge badge-purple text-[9px] font-bold">DPDP ACT 2023</span>
                 </div>
-                <div>
-                  <strong className="text-slate-900 font-black text-sm block">2. DPDP Act 2023 Master Compliance Declaration</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Statutory Data Privacy & Affirmative Consent Framework</p>
-                  <span className="font-mono text-[10px] text-purple-700 block mt-1">Version: v2.4-2026 (Gazette Aligned)</span>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-purple-100">
-                  <button
-                    type="button"
-                    onClick={() => setViewingLegalDoc({
-                      title: 'DPDP Act 2023 Master Statutory Privacy & Consent Declaration',
-                      subtitle: 'Compliance Record under Digital Personal Data Protection Act, 2023',
-                      certNumber: 'JOY/DPDP-2026/08821',
-                      content: `STATUTORY DECLARATION OF COMPLIANCE UNDER DPDP ACT 2023:
-
-1. SECTION 6(1) AFFIRMATIVE CONSENT:
-Candidate consent is obtained unconditionally through a dedicated, multi-factor authenticated digital consent gate prior to executing any repository query.
-
-2. SECTION 7(A) PURPOSE LIMITATION:
-All personal and statutory data (including EPFO employment records and UIDAI demographics) is retrieved strictly for bona fide pre-employment background checks and payroll joining.
-
-3. SECTION 8(7) AUTOMATED PURGE LIFECYCLE:
-The platform enforces a mandatory active data retention threshold (${legalPolicies.data_retention_days || 60} days), following which all candidate dossiers are cryptographically archived.
-
-4. DESIGNATED DATA PROTECTION OFFICER:
-Name: ${legalPolicies.dpo_name || 'Adv. Rajeshwari Sundaram'}
-Email: ${legalPolicies.dpo_email || 'dpo@joycorporatesolutions.com'}
-Phone: ${legalPolicies.dpo_phone || '+91 44 2819 0900'}`
-                    })}
-                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Document</span>
-                  </button>
-                  <label className="btn bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
-                    <span>Upload 📎</span>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.png" 
-                      className="hidden" 
-                      onChange={(e) => handleUploadLegalCert('dpdp_decl', e.target.files[0])}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Doc 3: Master DPA / SLA Agreement */}
-              <div className="p-4 rounded-2xl border-2 border-emerald-100 bg-gradient-to-br from-emerald-50/60 to-white space-y-3 shadow-2xs hover:border-emerald-300 transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <span className="badge badge-emerald text-[9px] font-bold">ENTERPRISE SLA</span>
-                </div>
-                <div>
-                  <strong className="text-slate-900 font-black text-sm block">3. Enterprise Master Data Processing Agreement (DPA)</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5">B2B Employer Legal SLA & Statutory Governance</p>
-                  <span className="font-mono text-[10px] text-emerald-700 block mt-1">Standard B2B Agreement v3.0</span>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-emerald-100">
-                  <button
-                    type="button"
-                    onClick={() => setViewingLegalDoc({
-                      title: 'Enterprise Master Data Processing & Service Level Agreement (DPA / SLA)',
-                      subtitle: 'Legal Framework Governing Client Employers & Verification Intermediary',
-                      certNumber: 'JOY/DPA-SLA-2026/102',
-                      content: `ENTERPRISE DATA PROCESSING & SERVICE LEVEL AGREEMENT:
-
-1. PARTIES & ROLES:
-JOY Corporate Solutions acts as the Data Processor/Intermediary. The Client Employer Organization acts as the Data Fiduciary.
-
-2. CONFIDENTIALITY & NON-DISCLOSURE:
-All employee identity documents, salary accounts, PF histories, and litigation audit records are strictly confidential and protected by 256-bit encryption.
-
-3. TAT GUARANTEE & UPTIME:
-The platform guarantees 99.9% gateway uptime with Turnaround Time (TAT) under 120 seconds for automated API checks.
-
-4. 7-YEAR STATUTORY LABOR COMPLIANCE RETENTION:
-Completed EPFO Form 11, EPFO Form 2, ESIC Form 1, and Gratuity Form F dossiers are stored in compliance with the Apprentices and Minimum Wages statutory recordkeeping rules.`
-                    })}
-                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Document</span>
-                  </button>
-                  <label className="btn bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
-                    <span>Upload 📎</span>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.png" 
-                      className="hidden" 
-                      onChange={(e) => handleUploadLegalCert('dpa_sla', e.target.files[0])}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Doc 4: UIDAI Masking Mandate */}
-              <div className="p-4 rounded-2xl border-2 border-amber-100 bg-gradient-to-br from-amber-50/60 to-white space-y-3 shadow-2xs hover:border-amber-300 transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold">
-                    <Lock className="w-5 h-5" />
-                  </div>
-                  <span className="badge badge-amber text-[9px] font-bold">UIDAI MANDATE</span>
-                </div>
-                <div>
-                  <strong className="text-slate-900 font-black text-sm block">4. UIDAI Aadhaar Masking & Security Standard</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Regulation 16B & 19 Compliance Guarantee</p>
-                  <span className="font-mono text-[10px] text-amber-700 block mt-1">Protocol: CERT-IN Level-4</span>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-amber-100">
-                  <button
-                    type="button"
-                    onClick={() => setViewingLegalDoc({
-                      title: 'UIDAI Aadhaar Data Security & Masking Standard Certificate',
-                      subtitle: 'Official Guarantee on Zero Plaintext Aadhaar Storage & Full Redaction',
-                      certNumber: 'UIDAI-SEC-2026-904',
-                      content: `UIDAI AADHAAR DATA SECURITY & MASKING CERTIFICATE:
-
-1. MANDATORY DIGIT REDACTION:
-In accordance with Regulation 16B of UIDAI Regulations, all 12-digit Aadhaar numbers are masked upon retrieval (XXXX-XXXX-9876).
-
-2. ZERO BIOMETRIC RESIDENCE:
-No core biometric data (fingerprints/iris) is stored on server infrastructure.
-
-3. OPT-IN VOLUNTARY e-KYC:
-Aadhaar OTP verification is initiated purely on candidate request with an active OTP TTL of 10 minutes.`
-                    })}
-                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Document</span>
-                  </button>
-                  <label className="btn bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
-                    <span>Upload 📎</span>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.png" 
-                      className="hidden" 
-                      onChange={(e) => handleUploadLegalCert('uidai_cert', e.target.files[0])}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Doc 5: IT Act Intermediary Recognition */}
-              <div className="p-4 rounded-2xl border-2 border-sky-100 bg-gradient-to-br from-sky-50/60 to-white space-y-3 shadow-2xs hover:border-sky-300 transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold">
-                    <Building2 className="w-5 h-5" />
-                  </div>
-                  <span className="badge badge-cyan text-[9px] font-bold">IT ACT SEC 79</span>
-                </div>
-                <div>
-                  <strong className="text-slate-900 font-black text-sm block">5. IT Act Intermediary Recognition Gazette</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Government Intermediary Safe Harbor Status</p>
-                  <span className="font-mono text-[10px] text-sky-700 block mt-1">MCA Reg: U74999TN2026PTC184912</span>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-sky-100">
-                  <button
-                    type="button"
-                    onClick={() => setViewingLegalDoc({
-                      title: 'Information Technology Act Section 79 Intermediary Safe Harbor Status',
-                      subtitle: 'Official Recognition as Digital Identity & Verification Intermediary',
-                      certNumber: 'JOY/IT-SEC79-2026/011',
-                      content: `GOVERNMENT IT ACT SECTION 79 INTERMEDIARY RECOGNITION:
-
-JOY Corporate Solutions Private Limited functions as a registered digital intermediary providing real-time data connectivity to statutory repositories.
-
-1. Safe Harbor Protection:
-Exempts verified reports from intermediate liability provided public repository responses match point-in-time truth.
-
-2. Due Diligence:
-All verification transactions maintain end-to-end cryptographic audit trails with tamper-proof hashing.`
-                    })}
-                    className="btn btn-secondary text-[11px] py-1.5 px-3 font-bold flex-1 cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View Document</span>
-                  </button>
-                  <label className="btn bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 text-[11px] py-1.5 px-2.5 font-bold cursor-pointer rounded-xl">
-                    <span>Upload 📎</span>
-                    <input 
-                      type="file" 
-                      accept=".pdf,.jpg,.png" 
-                      className="hidden" 
-                      onChange={(e) => handleUploadLegalCert('it_act_cert', e.target.files[0])}
-                    />
-                  </label>
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
 
@@ -4149,57 +4180,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
 
             </form>
-          </div>
-
-          {/* 📊 SECTION 3: LIVE CANDIDATE DIGITAL CONSENT AUDIT LEDGER */}
-          <div className="glass-panel p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h4 className="text-base font-black text-slate-900">Live Candidate Digital Consent Audit Ledger</h4>
-                <p className="text-xs text-slate-500 font-medium">Immutable consent trail recorded under Section 6(1) of the DPDP Act 2023</p>
-              </div>
-              <span className="badge badge-emerald text-xs font-mono font-bold">100% Legally Authorized</span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
-                    <th className="py-2.5 px-3">Candidate & Token</th>
-                    <th className="py-2.5 px-3">Employer Fiduciary</th>
-                    <th className="py-2.5 px-3">Authorized Scope</th>
-                    <th className="py-2.5 px-3">Consent Timestamp</th>
-                    <th className="py-2.5 px-3">IP Address & Device</th>
-                    <th className="py-2.5 px-3 text-right">Legal Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800">
-                  {candidates.map((c, i) => (
-                    <tr key={c.id} className="hover:bg-slate-50">
-                      <td className="py-3 px-3">
-                        <div className="font-bold text-slate-900">{c.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">{c.token}</div>
-                      </td>
-                      <td className="py-3 px-3 font-semibold text-slate-700">
-                        {companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="badge badge-indigo text-[9px]">Aadhaar + PAN + EPFO + Bank</span>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-[11px] text-slate-600">
-                        2026-08-26 10:{20 + i}:14 UTC
-                      </td>
-                      <td className="py-3 px-3 font-mono text-[10px] text-slate-500">
-                        117.201.88.{40 + i} (Mobile Safari / Chrome)
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        <span className="badge badge-emerald text-[9px] font-black">VALID CONSENT ✓</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
 
         </div>
