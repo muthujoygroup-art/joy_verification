@@ -153,6 +153,37 @@ def on_startup():
 
     seed_database()
 
+
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail, "status_code": exc.status_code}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    msg = "; ".join([f"{e.get('loc', ['field'])[-1]}: {e.get('msg', 'Invalid')}" for e in errors])
+    return JSONResponse(
+        status_code=422,
+        content={"detail": f"Validation Error: {msg}", "errors": errors}
+    )
+
+@app.exception_handler(Exception)
+async def global_catchall_exception_handler(request: Request, exc: Exception):
+    import traceback
+    error_trace = traceback.format_exc()
+    print(f"❌ CRITICAL SERVER ERROR: {exc}\n{error_trace}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Server Error: {str(exc)}", "type": type(exc).__name__}
+    )
+
 # Mount all API Routers with dual prefix (/api and direct) for bulletproof hosting compatibility
 all_routers = [
     auth_router, superadmin_router, company_router, hr_router,
