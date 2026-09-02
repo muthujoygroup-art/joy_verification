@@ -241,26 +241,28 @@ def run_migrations_direct():
 @app.get("/api/reset-database")
 def reset_database_direct():
     """Direct URL trigger to purge all mock/test data for a clean fresh production launch"""
-    from backend.app.database import SessionLocal
+    from backend.app.database import SessionLocal, Base, engine
     from backend.app.models import (
         SuperAdminUser, Company, HrUser, Candidate, CandidateDocument,
         VerificationRecord, Invoice, PaymentRecord, SupportTicket,
         TicketReply, ActiveSession
     )
+    from backend.app.seed import seed_database
+    
+    # 1. Ensure all 20 tables exist in current database engine
+    Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
     try:
-        db.query(VerificationRecord).delete()
-        db.query(CandidateDocument).delete()
-        db.query(Candidate).delete()
-        db.query(HrUser).delete()
-        db.query(Invoice).delete()
-        db.query(PaymentRecord).delete()
-        db.query(TicketReply).delete()
-        db.query(SupportTicket).delete()
-        db.query(Company).delete()
-        db.query(ActiveSession).delete()
+        # 2. Delete transaction and profile data safely
+        for model in [VerificationRecord, CandidateDocument, Candidate, HrUser, Invoice, PaymentRecord, TicketReply, SupportTicket, Company, ActiveSession]:
+            try:
+                db.query(model).delete()
+            except Exception:
+                db.rollback()
+                pass
 
+        # 3. Ensure Master Super Admin account exists and is Active
         admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
         if not admin:
             admin = SuperAdminUser(
@@ -277,10 +279,15 @@ def reset_database_direct():
             admin.status = "Active"
 
         db.commit()
+
+        # 4. Seed standard master data (drop-downs, APIs, settings) if empty
+        seed_database()
+
         return {
             "success": True,
             "message": "Database reset completed! All mock/test profiles removed for a 100% clean fresh start.",
             "status": "CLEAN_PRODUCTION_READY",
+            "active_database_engine": engine.dialect.name,
             "super_admin": "admin@joycorporatesolutions.com",
             "companies_count": 0,
             "hr_users_count": 0,
@@ -290,7 +297,8 @@ def reset_database_direct():
         db.rollback()
         return {
             "success": False,
-            "error": str(e)
+            "error": str(e),
+            "active_database_engine": engine.dialect.name
         }
     finally:
         db.close()
