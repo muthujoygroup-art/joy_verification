@@ -18,9 +18,9 @@ import { UniversalEntityTrackerModal } from '../components/UniversalEntityTracke
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import {
   Activity,
-  Archive,
   AlertCircle,
   AlertTriangle,
+  Archive,
   Award,
   BarChart3,
   BookOpen,
@@ -83,7 +83,7 @@ import {
   Users,
   X,
   Zap
-} from 'lucide-react';
+} from 'lucide-react';;
 
 export const SuperAdminView = () => {
   const { 

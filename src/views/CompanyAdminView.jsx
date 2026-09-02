@@ -15,38 +15,42 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
-import { 
-  Building2, 
-  Users, 
-  CheckCircle2, 
-  Clock,
-  Compass, 
-  Search, 
-  Eye, 
-  ExternalLink,
-  ShieldCheck,
-  UserPlus,
-  FileCheck,
-  BarChart3,
-  Download,
-  FolderDown,
-  Layers,
+import {
   AlertTriangle,
+  BarChart3,
+  Building2,
+  Check,
+  CheckCircle2,
+  Clock,
+  Compass,
+  Copy,
   CreditCard,
+  Download,
+  ExternalLink,
+  Eye,
+  FileCheck,
+  FileText,
+  FolderDown,
+  KeyRound,
+  Layers,
+  Lock,
+  Mail,
   MessageSquare,
   Receipt,
-  Settings,
+  RefreshCw,
   Save,
-  Lock,
   Scale,
-  Zap,
-  Copy,
+  Search,
   SendHorizontal,
   Server,
+  Settings,
+  ShieldCheck,
+  Sliders,
   Sparkles,
-  KeyRound,
-  FileText
-} from 'lucide-react';
+  UserPlus,
+  Users,
+  Zap
+} from 'lucide-react';;
 
 export const CompanyAdminView = () => {
   const { 
