@@ -321,12 +321,6 @@ def reset_database_direct():
         # 4. Seed standard master data (drop-downs, APIs, settings) if empty
         seed_database()
 
-# Run immediately upon module load for Passenger / ASGI servers
-try:
-    on_startup()
-except Exception as e:
-    print(f"Startup execution warning: {e}")
-
         return {
             "success": True,
             "message": "Database reset completed! All mock/test profiles removed for a 100% clean fresh start.",

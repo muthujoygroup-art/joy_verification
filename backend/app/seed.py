@@ -7,6 +7,7 @@ from backend.app.models import (
     MasterDataOption, MasterFormField, Invoice, PaymentRecord,
     SupportTicket, TicketReply, SystemErrorLog, SystemSetting, PlatformGuideline, CommunicationGateway
 )
+from backend.app.models.super_admin import SuperAdminUser
 
 logger = logging.getLogger("seed")
 logging.basicConfig(level=logging.INFO)
