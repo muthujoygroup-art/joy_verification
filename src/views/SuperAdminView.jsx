@@ -152,6 +152,7 @@ export const SuperAdminView = () => {
   const [masterEntriesPerPage, setMasterEntriesPerPage] = useState(10);
   const [newMasterItemInput, setNewMasterItemInput] = useState('');
 
+  const [activeMainSection, setActiveMainSection] = useState('core_ops');
   const [activeTab, setActiveTab] = useState('omnisearch');
   // 🎛️ Navigation Ribbon Scroll Ref & Controls
   const tabsContainerRef = useRef(null);

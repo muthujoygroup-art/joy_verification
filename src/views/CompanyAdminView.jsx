@@ -69,6 +69,7 @@ export const CompanyAdminView = () => {
     showToast
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
+  const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
 
