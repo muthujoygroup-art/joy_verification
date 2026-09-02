@@ -45,10 +45,10 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------
     # 🌐 DOMAIN, APP & WEBHOOK CALLBACK URLS
     # -------------------------------------------------------------
-    APP_BASE_URL: str = os.getenv("APP_BASE_URL", "https://verification.joycorporatesolutions.com")
-    API_BASE_URL: str = os.getenv("API_BASE_URL", "https://verification.joycorporatesolutions.com")
-    CALLBACK_URL: str = os.getenv("CALLBACK_URL", "https://verification.joycorporatesolutions.com/api/verification/webhook/callback")
-    WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "https://verification.joycorporatesolutions.com/api/verification/webhook/callback")
+    APP_BASE_URL: str = os.getenv("APP_BASE_URL", "https://test2.joycorporatesolutions.com")
+    API_BASE_URL: str = os.getenv("API_BASE_URL", "https://test2.joycorporatesolutions.com")
+    CALLBACK_URL: str = os.getenv("CALLBACK_URL", "https://test2.joycorporatesolutions.com/api/verification/webhook/callback")
+    WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "https://test2.joycorporatesolutions.com/api/verification/webhook/callback")
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET", "joy_whsec_994281749102")
     
     # -------------------------------------------------------------
