@@ -185,7 +185,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           return;
         }
 
-        const comp = (companies || []).find(c => c.email?.toLowerCase() === email) || companies[0];
+        const comp = (companies || []).find(c => c.email?.toLowerCase() === email);
         await loginUser('company', { email, password, companyId: comp?.id });
         navigate('/company');
       } 
@@ -199,7 +199,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           return;
         }
 
-        const hr = (hrUsers || []).find(h => h.email?.toLowerCase() === email) || hrUsers[0];
+        const hr = (hrUsers || []).find(h => h.email?.toLowerCase() === email);
         await loginUser('hrexecutive', { email, password, hrId: hr?.id });
         navigate('/hr');
       }

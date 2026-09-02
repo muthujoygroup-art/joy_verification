@@ -19,140 +19,11 @@ const INITIAL_FEATURE_LIST = [
   { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', serverMode: 'both', serverTag: 'Internal Ops', defaultOn: false, description: 'GPS geotagged physical home/office visit' }
 ];
 
-const INITIAL_COMPANIES = [
-  {
-    id: 'comp-joy',
-    name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    code: 'COMP001',
-    uniqueProfileId: 'COMP001',
-    contactPerson: 'PRAVEEN B',
-    email: 'director@joycorporatesolutions.com',
-    plan: 'Enterprise Premier',
-    pricePerVerification: 120,
-    walletBalance: 100000,
-    verifiedCountThisMonth: 1,
-    maxLimit: 5000,
-    status: 'Active',
-    apiRoutingEngine: 'hybrid', // 'hybrid' | 'server1' | 'server2'
-    apiStats: {
-      server1_sandbox_calls: 12,
-      server2_coincircle_calls: 4,
-      total_spent: 46.00,
-      billable_revenue: 120.00
-    },
-    rechargeTransactions: [
-      {
-        id: 'PAY-RZP-981241',
-        paymentId: 'pay_Nq98xK1982',
-        orderId: 'order_Nq98xK1982',
-        date: '2026-08-28 10:00 AM',
-        baseAmount: 100000,
-        gstAmount: 18000,
-        totalAmount: 118000,
-        creditsAdded: 833,
-        method: 'Razorpay Corporate Banking',
-        status: 'Success 🟢',
-        invoiceNumber: 'INV-2026-AUG-001'
-      }
-    ],
-    features: {
-      // Communication Gateways
-      whatsappGateway: true,
-      emailGateway: false,
-      smsGateway: false,
-      // Portal Access Controls
-      allowCompanyAdminLogin: true,
-      allowHrLogin: true,
-      allowEmployeePortalAccess: true,
-      // Document & Compliance Protocols
-      documentVaultVerification: true,
-      statutoryAgreements: true,
-      // Biometrics & AI Engine (Paused for now)
-      aiFaceBiometrics: false,
-      // Government Verification APIs (Aadhaar active; SMS, Face, PAN, Bank paused/off by default)
-      aadhaar: true, 
-      mobileOtp: false, 
-      faceCapture: false, 
-      drivingLicense: false,
-      pan: false, 
-      uan: false, 
-      education: false, 
-      criminalCheck: false,
-      addressCheck: false, 
-      bankCheck: false, 
-      passport: false, 
-      directorship: false, 
-      voterId: false
-    },
-    hrPermissions: {
-      allowProfileCreation: true,
-      allowBulkExcelUpload: true,
-      allowWhatsAppDispatch: true,
-      allowEmailDispatch: true,
-      allowSmsDispatch: true,
-      requireOriginalDocumentVault: true,
-      requireAiFaceBiometrics: true,
-      allow360DossierExport: true,
-      allowCertificateGeneration: true
-    }
-  }
-];
+const INITIAL_COMPANIES = [];
 
-const INITIAL_HR_USERS = [
-  { 
-    id: 'hr-joy-1', 
-    companyId: 'comp-joy', 
-    companyCode: 'COMP001',
-    hrCode: 'COMP001HR001',
-    uniqueProfileId: 'COMP001HR001',
-    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    name: 'PRAVEEN B', 
-    email: 'praveen.b@joycorporatesolutions.com', 
-    phone: '+91 98765 43210',
-    dept: 'Human Resources & Talent Acquisition', 
-    activeLinks: 1 
-  }
-];
+const INITIAL_HR_USERS = [];
 
-const INITIAL_CANDIDATES = [
-  {
-    id: 'emp-101',
-    token: 'tok_sunita_412',
-    name: 'MUTHUKUMAR P',
-    empId: 'JOY-2026-001',
-    companyCode: 'COMP001',
-    hrCode: 'COMP001HR001',
-    employeeCode: 'COMP001EMP001',
-    employeeNumber: 'COMP001EMP001',
-    uniqueProfileId: 'COMP001EMP001',
-    email: 'muthukumar.p@joycorporatesolutions.com',
-    mobile: '+91 98765 43210',
-    aadhaarNo: '5489 1234 9876',
-    designation: 'Senior Verification Engineer',
-    dept: 'Technology & Engineering',
-    companyId: 'comp-joy',
-    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    hrId: 'hr-joy-1',
-    status: 'Pending',
-    portalPassword: '1234',
-    hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please complete your official background verification and e-KYC onboarding process.',
-    hrCorrectionRemarks: '',
-    verificationConfig: {
-      requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true, requireDL: false, requirePAN: true, requireBankCheck: true
-    },
-    verificationsCompleted: {
-      aadhaar: false, mobile: false, face: false, pan: false, bankCheck: false
-    },
-    faceImages: {
-      straight: null,
-      livePhoto: null,
-      aadhaarRef: null,
-      left: null,
-      right: null
-    },
-    verificationDate: ''
-  }
-];
+const INITIAL_CANDIDATES = [];
 
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState(() => {
@@ -1077,21 +948,8 @@ export const AppProvider = ({ children }) => {
       setShowInactivityWarning(false);
       showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 30 Mins)!`);
     } catch (err) {
-      // Fallback local login if backend is booting
-      setCurrentRole(role);
-      setCurrentUser({
-        role,
-        loginTimestamp: new Date().toLocaleTimeString(),
-        ...userData
-      });
-      setSessionData({
-        sessionId: `sess_${Math.random().toString(36).substring(2, 10)}`,
-        role: role,
-        expiresIn: 1800
-      });
-      setSessionTtlSeconds(1800);
-      setLastActivityTimestamp(Date.now());
-      showToast(`Logged in as ${role.toUpperCase()}!`);
+      console.error('Login failed:', err);
+      throw err;
     }
   };
 

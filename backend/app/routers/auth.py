@@ -40,14 +40,11 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         return create_session(user_data, "superadmin", client_ip, user_agent)
         
     elif role in ("company", "companyadmin"):
-        comp = None
-        if email:
-            comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        if not email:
+            raise HTTPException(status_code=400, detail="Company Admin Email is required.")
+        comp = db.query(Company).filter(Company.email.ilike(email)).first()
         if not comp:
-            comp = db.query(Company).first()
-            
-        if not comp:
-            raise HTTPException(status_code=404, detail="Company account not found.")
+            raise HTTPException(status_code=401, detail="Company account not found. Please onboard company from Super Admin first.")
             
         if comp.status in ("Inactive", "Suspended", "Discontinued"):
             raise HTTPException(
@@ -66,14 +63,11 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         return create_session(user_data, "company", client_ip, user_agent)
         
     elif role in ("hrexecutive", "hr"):
-        hr = None
-        if email:
-            hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        if not email:
+            raise HTTPException(status_code=400, detail="HR Executive Work Email is required.")
+        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
         if not hr:
-            hr = db.query(HrUser).first()
-            
-        if not hr:
-            raise HTTPException(status_code=404, detail="HR Executive account not found.")
+            raise HTTPException(status_code=401, detail="HR Executive account not found. Please create HR recruiter from Company Admin first.")
             
         if hr.status in ("Inactive", "Suspended", "Deactivated"):
             raise HTTPException(
