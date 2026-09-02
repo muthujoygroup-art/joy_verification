@@ -47,7 +47,18 @@ class Candidate(Base):
     joining_form_data = Column(JSON, default=dict) # Full CiteHR 6-tab joining form data
     custom_fields = Column(JSON, default=dict) # Dynamic custom attributes configured on the fly by HR
     specimen_signature = Column(Text, nullable=True)
-    statutory_details = Column(JSON, default=dict)
+    # Specialized Structured API Cache Data Stores
+    aadhaar_data = Column(JSON, default=dict)
+    pan_data = Column(JSON, default=dict)
+    bank_data = Column(JSON, default=dict)
+    dl_data = Column(JSON, default=dict)
+    epfo_data = Column(JSON, default=dict)
+    passport_data = Column(JSON, default=dict)
+    face_match_data = Column(JSON, default=dict)
+    court_record_data = Column(JSON, default=dict)
+    risk_score = Column(Float, default=0.0)
+    bgv_verdict = Column(String(50), default="Pending") # 'Pending' | 'Clear / Verified' | 'Major Discrepancy' | 'Minor Flag'
+    discrepancies_detected = Column(JSON, default=list)
     
     verification_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

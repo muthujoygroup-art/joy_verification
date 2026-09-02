@@ -42,6 +42,17 @@ class VerificationRecord(Base):
     latency_ms = Column(Integer, default=62)     # Turnaround roundtrip latency in ms
     endpoint_path = Column(String(150), nullable=True) # e.g. /apiProduct/aadhaar-verify
     api_id = Column(String(100), nullable=True)        # Official KYC API ID from guide
+
+    # 🛡️ Rich Upstream Extraction & Discrepancy Attributes
+    extracted_name = Column(String(250), nullable=True)
+    identity_number = Column(String(100), nullable=True)
+    name_match_score = Column(Float, default=100.0)
+    risk_level = Column(String(30), default="Low") # 'Low' | 'Medium' | 'High' | 'Critical'
+    discrepancy_details = Column(JSON, default=dict)
+    document_file_path = Column(Text, nullable=True)
+    raw_request_payload = Column(JSON, default=dict)
+    verified_by_ip = Column(String(50), nullable=True)
+    verification_summary = Column(Text, nullable=True)
     
     verified_at = Column(DateTime, default=datetime.utcnow, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
