@@ -945,11 +945,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     if (e) e.preventDefault();
     setIsSavingSmtp(true);
     try {
-      await api.saveEmailConfig(smtpConfig);
-      showToast('💾 cPanel SMTP email configuration saved successfully!');
+      const res = await api.saveEmailConfig(smtpConfig);
+      showToast(res.message || '💾 cPanel SMTP email configuration saved successfully!');
     } catch (err) {
       console.warn('Error saving SMTP settings:', err);
-      showToast('❌ Failed to save SMTP configuration');
+      showToast(`❌ Failed to save SMTP configuration: ${err.message || 'Server error'}`, 'error');
     } finally {
       setIsSavingSmtp(false);
     }

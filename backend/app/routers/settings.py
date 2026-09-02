@@ -46,34 +46,41 @@ def get_communication_gateways(company_id: str = None, db: Session = Depends(get
 
 @router.post("/email-config")
 @router.post("/gateways")
+@router.post("/smtp-settings")
 def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
     """Save or update WhatsApp / SMTP email credentials"""
-    gw_type = payload.get("gateway_type", "email_smtp")
-    gw_id = f"gw_{gw_type}"
-    settings_data = payload.get("settings") if payload.get("settings") is not None else payload
-    
-    gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
-    if not gw:
-        gw = CommunicationGateway(
-            id=gw_id,
-            gateway_type=gw_type,
-            settings_data=settings_data,
-            is_active=True
-        )
-        db.add(gw)
-    else:
-        gw.settings_data = settings_data
-        gw.is_active = payload.get("is_active", True)
+    try:
+        gw_type = payload.get("gateway_type", "email_smtp")
+        gw_id = f"gw_{gw_type}"
+        settings_data = payload.get("settings") if payload.get("settings") is not None else payload
         
-    db.commit()
-    db.refresh(gw)
-    return {
-        "success": True,
-        "message": "SMTP Email Configuration saved successfully!",
-        "gateway_id": gw.id,
-        "gateway_type": gw.gateway_type,
-        "is_active": gw.is_active
-    }
+        gw = db.query(CommunicationGateway).filter(CommunicationGateway.id == gw_id).first()
+        if not gw:
+            gw = CommunicationGateway(
+                id=gw_id,
+                gateway_type=gw_type,
+                settings_data=settings_data,
+                is_active=True,
+                updated_at=datetime.utcnow()
+            )
+            db.add(gw)
+        else:
+            gw.settings_data = settings_data
+            gw.is_active = payload.get("is_active", True)
+            gw.updated_at = datetime.utcnow()
+            
+        db.commit()
+        db.refresh(gw)
+        return {
+            "success": True,
+            "message": "cPanel SMTP Email Configuration saved successfully!",
+            "gateway_id": gw.id,
+            "gateway_type": gw.gateway_type,
+            "is_active": gw.is_active
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error saving SMTP settings: {str(e)}")
 
 from datetime import datetime
 
