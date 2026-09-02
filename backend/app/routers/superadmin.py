@@ -169,8 +169,11 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
                 admin_email=new_comp.email,
                 contact_person=new_comp.contact_person or new_comp.name,
                 temporary_password=login_password_set,
+                activation_pin=activation_password_set,
                 activation_token=activation_token,
                 expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
+                plan_name=new_comp.plan,
+                credits=new_comp.max_limit or 500,
                 db=db
             )
     except Exception as e:
@@ -979,8 +982,11 @@ def resend_company_activation_email_endpoint(company_id: str, db: Session = Depe
                 admin_email=comp.email,
                 contact_person=comp.contact_person or comp.name,
                 temporary_password=comp.password_hash or "Company@Admin2026",
+                activation_pin=comp.activation_password or "1234",
                 activation_token=comp.activation_token,
                 expires_at_str=comp.activation_expires_at.strftime('%Y-%m-%d %H:%M:%S UTC') if comp.activation_expires_at else "15 Days",
+                plan_name=comp.plan or "Standard Tier",
+                credits=comp.max_limit or 500,
                 db=db
             )
             email_sent = True

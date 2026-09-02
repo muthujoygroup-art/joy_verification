@@ -269,46 +269,68 @@ def send_company_welcome_email(
     company_code: str,
     admin_email: str,
     contact_person: str,
-    temporary_password: str = "Admin@123",
+    temporary_password: str = "Company@Admin2026",
+    activation_pin: str = "1234",
     activation_token: Optional[str] = None,
     expires_at_str: Optional[str] = None,
+    plan_name: Optional[str] = "Standard Tier",
+    credits: Optional[int] = 500,
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     activation_url = f"{app_url}/company-activation?token={activation_token}" if activation_token else f"{app_url}/login"
 
     content = f"""
-    <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
-        Welcome to JOY Corporate Solutions, {contact_person}!
-    </h2>
-    <p>
-        Your enterprise organization <strong>{company_name}</strong> has been provisioned on the JOY Background Verification & Statutory Labor Compliance Gateway.
-    </p>
-    <p>
-        Please complete your remaining corporate onboarding (CIN, GSTIN, Company PAN, and COI document uploads) using your secure activation link below.
-    </p>
+    <div style="margin-bottom: 24px;">
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Welcome to JOY Corporate Solutions, {contact_person}!
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            We are pleased to inform you that your enterprise organization account for <strong>{company_name}</strong> has been officially provisioned on the <strong>JOY Background Verification Platform</strong>.
+        </p>
+    </div>
 
-    <!-- Credentials Box -->
-    <div style="background-color: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 14px; padding: 18px; margin: 20px 0;">
-        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px;">
-            🔐 Organization Activation Access:
+    <!-- Instructions Box -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 12px; letter-spacing: 0.5px;">
+            📋 Easy 3-Step Organization Activation Instructions:
         </div>
-        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12px;">
+        <ol style="margin: 0; padding-left: 20px; font-size: 12.5px; color: #334155; line-height: 1.8;">
+            <li>Click the <strong>Complete Company Portal Activation</strong> button below.</li>
+            <li>Enter your <strong>4-digit Security Unlock PIN</strong> (shown below) to unlock your portal.</li>
+            <li>Review pre-filled details, upload statutory proofs (COI, GSTIN, PAN), and accept the <strong>DPDP Act 2023 Master Services Agreement</strong>.</li>
+        </ol>
+    </div>
+
+    <!-- Credentials & PIN Box -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid #a7f3d0; border-radius: 16px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #047857; margin-bottom: 12px; letter-spacing: 0.5px;">
+            🔐 Your Organization Access Dossier:
+        </div>
+        <table width="100%" border="0" cellspacing="6" cellpadding="0" style="font-size: 12.5px;">
             <tr>
-                <td width="40%" style="color: #64748b; font-weight: 600;">Company Code / ID:</td>
-                <td style="color: #0f172a; font-weight: 800; font-family: monospace; font-size: 13px;">{company_code}</td>
+                <td width="42%" style="color: #64748b; font-weight: 600;">Company Legal Name:</td>
+                <td style="color: #0f172a; font-weight: 800;">{company_name}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Admin Login Email:</td>
+                <td style="color: #64748b; font-weight: 600;">Assigned Company Code:</td>
+                <td style="color: #4338ca; font-weight: 800; font-family: monospace; font-size: 13px;">#{company_code}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Admin Login Username:</td>
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{admin_email}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Admin Login Password:</td>
-                <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{temporary_password}</td>
+                <td style="color: #64748b; font-weight: 600;">Commercial Plan:</td>
+                <td style="color: #0f172a; font-weight: 800;">{plan_name} ({credits} Checks Allocated)</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Activation Unlock PIN:</td>
-                <td style="color: #4338ca; font-weight: 900; font-family: monospace; font-size: 16px; letter-spacing: 1px;">{temporary_password}</td>
+                <td style="color: #64748b; font-weight: 600;">Activation Link Security PIN:</td>
+                <td>
+                    <span style="background-color: #4338ca; color: #ffffff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-family: monospace; font-size: 15px; letter-spacing: 2px; display: inline-block;">
+                        {activation_pin}
+                    </span>
+                </td>
             </tr>
             <tr>
                 <td style="color: #64748b; font-weight: 600;">Activation Link Valid Until:</td>
@@ -317,20 +339,26 @@ def send_company_welcome_email(
         </table>
     </div>
 
-    <p style="font-size: 12px; color: #475569;">
-        Once activated, you can immediately create HR recruiter logins, configure customized statutory verification checks (Aadhaar, PAN, EPFO UAN, ESIC), and inspect live 360&deg; candidate dossiers.
+    <!-- Fallback Direct Link -->
+    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-top: 20px; font-size: 11px; color: #64748b;">
+        <span style="font-weight: bold; color: #334155; display: block; margin-bottom: 4px;">Direct Activation URL:</span>
+        <a href="{activation_url}" style="color: #4338ca; word-break: break-all; text-decoration: underline;">{activation_url}</a>
+    </div>
+
+    <p style="font-size: 11.5px; color: #64748b; margin-top: 18px; line-height: 1.5;">
+        🛡️ <em>Security Advisory: This official onboarding email contains confidential enterprise credentials. Do not forward this link to unauthorized personnel.</em>
     </p>
     """
 
     html = _build_email_shell(
-        header_title=f"Activate {company_name} - JOY Corporate Solutions",
-        badge_text="ORGANIZATION ONBOARDING INVITATION",
+        header_title=f"Welcome to JOY - Activate {company_name}",
+        badge_text="ORGANIZATION ONBOARDING & ACTIVATION",
         content_html=content,
         action_url=activation_url,
-        action_text="Complete Company Portal Activation"
+        action_text="Complete Company Portal Activation 🚀"
     )
 
-    subject = f"🏢 Organization Portal Activation - {company_name} ({company_code})"
+    subject = f"🏢 Welcome to JOY - Activate Your Organization Account ({company_name} - #{company_code})"
     return send_smtp_email(admin_email, subject, html, db=db)
 
 
