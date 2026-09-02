@@ -26,16 +26,35 @@ import {
 import { useApp } from '../context/AppContext';
 
 export const InteractiveTourGuideModal = ({ 
-  isOpen, 
+  isOpen = false, 
   onClose, 
   onSelectAction, 
   currentRole = 'company' 
 }) => {
+  const [internalOpen, setInternalOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedTopicId, setExpandedTopicId] = useState(null);
 
-  if (!isOpen) return null;
+  React.useEffect(() => {
+    setInternalOpen(isOpen);
+  }, [isOpen]);
+
+  React.useEffect(() => {
+    const handleOpen = () => {
+      setInternalOpen(true);
+    };
+    window.addEventListener('open_tour_guide_modal', handleOpen);
+    return () => window.removeEventListener('open_tour_guide_modal', handleOpen);
+  }, []);
+
+  const isModalVisible = isOpen || internalOpen;
+  if (!isModalVisible) return null;
+
+  const handleModalClose = () => {
+    setInternalOpen(false);
+    if (onClose) onClose();
+  };
 
   const tourTopics = [
     {
@@ -268,7 +287,7 @@ export const InteractiveTourGuideModal = ({
           </div>
 
           <button 
-            onClick={onClose} 
+            onClick={handleModalClose} 
             className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer transition-all"
           >
             ✕
@@ -449,7 +468,7 @@ export const InteractiveTourGuideModal = ({
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleModalClose}
             className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
           >
             Close Guide

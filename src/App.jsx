@@ -11,6 +11,7 @@ import { EmployeePortalView } from './views/EmployeePortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
+import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { CheckCircle2 } from 'lucide-react';
 
@@ -156,6 +157,7 @@ const MainApp = () => {
 
       {/* Global Interactive Guided Tour Spotlight */}
       <GuidedTourSpotlight />
+      <InteractiveTourGuideModal />
 
       {/* Toast Notification */}
       {toastMessage && (

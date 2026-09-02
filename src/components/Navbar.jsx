@@ -149,7 +149,7 @@ export const Navbar = () => {
               
               {/* Interactive Guided Tour & Feature Guide Dropdown Button */}
               <button
-                onClick={() => setShowTourGuideModal(true)}
+                onClick={() => { setShowTourGuideModal(true); window.dispatchEvent(new CustomEvent("open_tour_guide_modal")); }}
                 className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap group"
                 title="Launch Interactive Feature Walkthroughs & How-To Guides"
               >
@@ -494,6 +494,12 @@ export const Navbar = () => {
           onClose={() => setShowTermsModal(false)} 
         />
       )}
+
+      <InteractiveTourGuideModal
+        isOpen={showTourGuideModal}
+        onClose={() => setShowTourGuideModal(false)}
+        currentRole={currentRole}
+      />
 
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
