@@ -1016,3 +1016,77 @@ body[data-role="employee_link"] {
   background-color: #cbd5e1;
   border-radius: 9999px;
 }
+
+/* =============================================================================
+   📱 RESPONSIVE DESIGN & DEVICE-ADAPTIVE ANIMATION UTILITIES
+   ============================================================================= */
+
+/* Tab Entrance Animations */
+@keyframes tabSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tabFadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-tab-switch {
+  animation: tabSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-scale {
+  animation: tabFadeScale 0.2s ease-out forwards;
+}
+
+/* Category Card Glowing Accents */
+.category-active-superadmin {
+  box-shadow: 0 0 0 2px #6366f1, 0 8px 20px -4px rgba(99, 102, 241, 0.25);
+}
+
+.category-active-company {
+  box-shadow: 0 0 0 2px #0284c7, 0 8px 20px -4px rgba(2, 132, 199, 0.25);
+}
+
+.category-active-hr {
+  box-shadow: 0 0 0 2px #059669, 0 8px 20px -4px rgba(5, 150, 105, 0.25);
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+  .btn, button, select, input {
+    min-height: 40px;
+  }
+  
+  .glass-panel {
+    border-radius: 1.25rem;
+  }
+}
+
+/* Small mobile (<= 640px) padding adjustments */
+@media (max-width: 640px) {
+  .responsive-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .responsive-stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
+
