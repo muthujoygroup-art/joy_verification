@@ -720,16 +720,27 @@ def execute_custom_sql(payload: SqlExecuteRequest, db: Session = Depends(get_db)
 @router.put("/companies/{company_id}/status")
 def toggle_company_status(company_id: str, payload: dict, db: Session = Depends(get_db)):
     """Set company status: 'Active' | 'Inactive' | 'Suspended' | 'Discontinued'"""
-    comp = db.query(Company).filter(Company.id == company_id).first()
+    comp = db.query(Company).filter(
+        (Company.id == company_id) | (Company.code == company_id) | (Company.email.ilike(company_id))
+    ).first()
     if not comp:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail=f"Company with ID/Code '{company_id}' not found in database.")
     
     new_status = payload.get("status", "Active")
     comp.status = new_status
-    comp.is_active = (new_status == "Active")
+    try:
+        comp.is_active = (new_status == "Active")
+    except Exception:
+        pass
     db.commit()
     db.refresh(comp)
-    return {"success": True, "company_id": comp.id, "status": comp.status, "is_active": comp.is_active}
+    return {
+        "success": True, 
+        "company_id": comp.id, 
+        "status": comp.status, 
+        "is_active": getattr(comp, 'is_active', True),
+        "message": f"Organization '{comp.name}' status updated to {comp.status}."
+    }
 
 
 # =============================================================================

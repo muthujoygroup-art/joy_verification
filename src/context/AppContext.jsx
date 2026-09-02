@@ -26,16 +26,7 @@ const INITIAL_HR_USERS = [];
 const INITIAL_CANDIDATES = [];
 
 export const AppProvider = ({ children }) => {
-  const [companies, setCompanies] = useState(() => {
-    try {
-      const saved = localStorage.getItem('joy_companies_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch (e) {}
-    return INITIAL_COMPANIES;
-  });
+  const [companies, setCompanies] = useState([]);
   const [hrUsers, setHrUsers] = useState(INITIAL_HR_USERS);
   const [candidates, setCandidates] = useState(() => {
     try {
