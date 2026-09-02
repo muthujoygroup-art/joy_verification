@@ -46,7 +46,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       borderClass: 'border-indigo-400',
       badgeClass: 'badge-purple',
       btnClass: 'btn-superadmin',
-      placeholderEmail: 'superadmin@joyverification.com',
+      placeholderEmail: 'admin@joycorporatesolutions.com',
       icon: Crown,
       roleTag: 'Platform Master Governance',
       provisionNotice: 'Platform Master Access Only. Public registration & sign-up is permanently disabled.',
@@ -67,7 +67,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       borderClass: 'border-sky-400',
       badgeClass: 'badge-cyan',
       btnClass: 'btn-company',
-      placeholderEmail: 'admin@acmeglobal.com',
+      placeholderEmail: 'muthukumar@joyglobalcorp.com',
       icon: Building2,
       roleTag: 'Corporate Account Management',
       provisionNotice: 'Company accounts are provisioned exclusively by Super Admin during enterprise onboarding.',
@@ -88,7 +88,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       borderClass: 'border-emerald-400',
       badgeClass: 'badge-emerald',
       btnClass: 'btn-hrexecutive',
-      placeholderEmail: 'priya.s@acmeglobal.com',
+      placeholderEmail: 'muthujoygroup@gmail.com',
       icon: UserCheck,
       roleTag: 'Recruiting & Onboarding Workstation',
       provisionNotice: 'HR accounts are provisioned exclusively by your Company Administrator in the HR Team tab.',
@@ -166,7 +166,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         }
 
         // Validate superadmin credentials
-        if (email.toLowerCase() !== 'superadmin@joyverification.com' && !email.includes('admin')) {
+        if (email.toLowerCase() !== 'admin@joycorporatesolutions.com' && email.toLowerCase() !== 'superadmin@joyverification.com' && !email.includes('admin')) {
           setLoginError('Invalid Super Admin credentials. Please check your official email.');
           setIsLoading(false);
           return;
@@ -396,7 +396,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           <input 
                             type="email" 
                             required
-                            placeholder="superadmin@joyverification.com"
+                            placeholder="admin@joycorporatesolutions.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             className="input-field-styled"
@@ -454,7 +454,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           <input 
                             type="email" 
                             required
-                            placeholder="admin@acmeglobal.com"
+                            placeholder="muthukumar@joyglobalcorp.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             className="input-field-styled"
@@ -512,7 +512,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           <input 
                             type="email" 
                             required
-                            placeholder="priya.s@acmeglobal.com"
+                            placeholder="muthujoygroup@gmail.com"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
                             className="input-field-styled"

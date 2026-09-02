@@ -34,7 +34,7 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         user_data = {
             "id": "superadmin-01",
             "name": "Super Administrator",
-            "email": email or "superadmin@joyverification.com",
+            "email": email or "admin@joycorporatesolutions.com",
             "portal": "Master Governance Portal"
         }
         return create_session(user_data, "superadmin", client_ip, user_agent)

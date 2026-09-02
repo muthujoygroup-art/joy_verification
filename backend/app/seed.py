@@ -81,7 +81,22 @@ def seed_database(force_refresh=False):
     
     db = SessionLocal()
     try:
-        # Check if master company already exists
+        # 1. Check Super Admin
+        sa_admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
+        if not sa_admin:
+            logger.info("Seeding Super Admin: admin@joycorporatesolutions.com...")
+            new_sa = SuperAdminUser(
+                id="superadmin-01",
+                name="Super Administrator",
+                email="admin@joycorporatesolutions.com",
+                password_hash="SuperAdmin@2026",
+                role="superadmin",
+                status="Active"
+            )
+            db.add(new_sa)
+            db.flush()
+
+        # 2. Check master company (muthukumar@joyglobalcorp.com)
         joy_comp = db.query(Company).filter(Company.id == "comp-joy").first()
         if not joy_comp:
             logger.info("Seeding master company: JOY CORPORATE SOLUTIONS PRIVATE LIMITED...")
@@ -89,8 +104,8 @@ def seed_database(force_refresh=False):
                 id="comp-joy",
                 name="JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
                 code="JOY",
-                contact_person="PRAVEEN B",
-                email="director@joycorporatesolutions.com",
+                contact_person="MUTHUKUMAR P",
+                email="muthukumar@joyglobalcorp.com",
                 plan="Enterprise Premier",
                 price_per_verification=120.0,
                 verified_count_this_month=1,
@@ -106,18 +121,18 @@ def seed_database(force_refresh=False):
             db.add(joy_company)
             db.flush()
 
-        # Check master HR
+        # 3. Check master HR (muthujoygroup@gmail.com)
         joy_hr = db.query(HrUser).filter(HrUser.id == "hr-joy-1").first()
         if not joy_hr:
-            hr_praveen = HrUser(
+            hr_muthu = HrUser(
                 id="hr-joy-1",
                 company_id="comp-joy",
-                name="PRAVEEN B",
-                email="praveen.b@joycorporatesolutions.com",
+                name="MUTHUKUMAR P (HR Lead)",
+                email="muthujoygroup@gmail.com",
                 dept="Human Resources & Talent Acquisition",
                 active_links=1
             )
-            db.add(hr_praveen)
+            db.add(hr_muthu)
             db.flush()
 
         # Check master Candidate
