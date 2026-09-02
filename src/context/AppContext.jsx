@@ -48,23 +48,29 @@ export const AppProvider = ({ children }) => {
     return INITIAL_CANDIDATES;
   });
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Super Administrator',
-    email: 'superadmin@joycorporatesolutions.com',
-    role: 'superadmin'
+  // 🛡️ Strict Enterprise Authentication: User must log in with valid credentials
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_auth_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
   });
-  const [currentRole, setCurrentRole] = useState('superadmin'); // 'superadmin' | 'company' | 'hrexecutive' | 'employee_link'
-  const [selectedCandidateToken, setSelectedCandidateToken] = useState('tok_sunita_412');
+  const [currentRole, setCurrentRole] = useState(() => {
+    try {
+      return localStorage.getItem('joy_auth_role') || null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [selectedCandidateToken, setSelectedCandidateToken] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
 
   // SESSION MANAGEMENT & INACTIVITY TRACKING
-  const [sessionData, setSessionData] = useState({
-    sessionId: 'sess_prod_admin_8812',
-    role: 'superadmin',
-    expiresIn: 1800
-  });
-  const [sessionTtlSeconds, setSessionTtlSeconds] = useState(1800); // 30 mins
+  const [sessionData, setSessionData] = useState(null);
+  const [sessionTtlSeconds, setSessionTtlSeconds] = useState(0);
   const [showInactivityWarning, setShowInactivityWarning] = useState(false);
   const [inactivityCountdown, setInactivityCountdown] = useState(300); // 5 mins warning
   const [lastActivityTimestamp, setLastActivityTimestamp] = useState(Date.now());
@@ -931,12 +937,17 @@ export const AppProvider = ({ children }) => {
         token: userData.token || ''
       });
 
-      setCurrentRole(resp.role);
-      setCurrentUser({
+      const userObj = {
         ...resp.user,
         role: resp.role,
         loginTimestamp: new Date().toLocaleTimeString()
-      });
+      };
+      setCurrentRole(resp.role);
+      setCurrentUser(userObj);
+      try {
+        localStorage.setItem('joy_auth_user', JSON.stringify(userObj));
+        localStorage.setItem('joy_auth_role', resp.role);
+      } catch (e) {}
       setSessionData({
         sessionId: resp.session_id,
         token: resp.access_token,
@@ -980,6 +991,11 @@ export const AppProvider = ({ children }) => {
     try {
       await api.logoutSession();
     } catch (err) {}
+    try {
+      localStorage.removeItem('joy_auth_user');
+      localStorage.removeItem('joy_auth_role');
+      localStorage.removeItem('joy_auth_token');
+    } catch (e) {}
     setCurrentUser(null);
     setCurrentRole(null);
     setSessionData(null);
