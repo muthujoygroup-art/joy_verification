@@ -157,6 +157,10 @@ def send_smtp_email(
         logger.info(f"✅ [SMTP SENT - Mode: {cfg['mode']}] Dispatched to {to_email} ({subject})")
         return {"success": True, "to": to_email, "subject": subject, "mode": cfg["mode"]}
 
+    except smtplib.SMTPAuthenticationError as auth_err:
+        err_str = f"Authentication Rejected (535): Incorrect password for {cfg['user']}. Please check your cPanel webmail password and save settings."
+        logger.error(f"❌ [SMTP AUTH ERROR - Mode: {cfg['mode']}] {err_str}")
+        return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
     except Exception as e:
         logger.error(f"❌ [SMTP ERROR - Mode: {cfg['mode']}] Failed to send email to {to_email}: {e}")
         return {"success": False, "error": str(e), "to": to_email, "mode": cfg["mode"]}

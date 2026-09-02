@@ -170,9 +170,6 @@ def test_email_dispatch(payload: dict, db: Session = Depends(get_db)):
         db=db
     )
 
-    if not res.get("success") and not res.get("simulated"):
-        raise HTTPException(status_code=500, detail=res.get("error", "Failed to dispatch test email via SMTP"))
-
     return res
 
 
