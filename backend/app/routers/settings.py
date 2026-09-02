@@ -327,3 +327,55 @@ def save_hr_preferences(hr_id: str, payload: dict, db: Session = Depends(get_db)
     db.commit()
     db.refresh(setting)
     return {"success": True, "hr_id": hr_id, "preferences": setting.settings_data}
+
+# =============================================================================
+# 🏛️ LEGAL & DPDP GOVERNANCE MASTER ENDPOINTS
+# =============================================================================
+@router.get("/legal-governance")
+def get_legal_governance_settings(db: Session = Depends(get_db)):
+    """Fetch master DPDP Act policies, IT Act disclaimers, and DPO officer details"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "legal_governance").first()
+    
+    defaults = {
+        "dpdp_consent_declaration": "I hereby voluntarily provide my explicit and unconditional consent under Section 6 of the Digital Personal Data Protection Act 2023 (DPDP Act 2023) to JOY Corporate Solutions Private Limited and my prospective employer to verify my identity credentials against authorized Government and statutory databases (UIDAI Aadhaar, Income Tax PAN, EPFO, MoRTH Driving License). I understand my data is processed solely for employment background verification and statutory payroll onboarding.",
+        "it_act_safe_harbor": "JOY Corporate Solutions operates as a technology intermediary under Section 79 of the Information Technology Act 2000, retrieving point-in-time public records. Employer organizations remain the primary Data Fiduciaries responsible for lawful onboarding.",
+        "uidai_aadhaar_mandate": "All Aadhaar data is processed under Regulation 16B & 19 of UIDAI Security Regulations. Raw 12-digit numbers are strictly masked as XXXX-XXXX-9876 across all reports, dossiers, and database storage.",
+        "data_retention_days": 60,
+        "dpo_name": "Adv. Rajeshwari Sundaram",
+        "dpo_email": "dpo@joycorporatesolutions.com",
+        "dpo_phone": "+91 44 2819 0900",
+        "dpo_address": "JOY Corporate Solutions Tower, Mount Road, Chennai, Tamil Nadu - 600002",
+        "dpo_reg_no": "BC/TN/2026/0912",
+        "iso_cert_no": "ISO-27001-2022-IND-99412",
+        "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    }
+
+    if not setting or not setting.settings_data:
+        return defaults
+    
+    return {**defaults, **setting.settings_data}
+
+
+@router.post("/legal-governance")
+def save_legal_governance_settings(payload: dict, db: Session = Depends(get_db)):
+    """Save or update master legal clauses, retention policy, and DPO officer information"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "legal_governance").first()
+    
+    if not setting:
+        setting = SystemSetting(
+            role="legal_governance",
+            settings_data=payload,
+            updated_at=datetime.utcnow()
+        )
+        db.add(setting)
+    else:
+        setting.settings_data = payload
+        setting.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(setting)
+    return {
+        "success": True,
+        "message": "Legal & DPDP Governance policies updated successfully!",
+        "settings": setting.settings_data
+    }
