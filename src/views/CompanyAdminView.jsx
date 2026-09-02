@@ -117,14 +117,14 @@ export const CompanyAdminView = () => {
   const companyHrUsers = hrUsers.filter(h => h.companyId === company.id);
   const companyCandidates = candidates.filter(c => c.companyId === company.id);
 
-  const filteredCandidates = companyCandidates.filter(c => 
+  const filteredCandidates = (companyCandidates || []).filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.empId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const verifiedCount = companyCandidates.filter(c => c.status === 'Verified').length;
-  const pendingCount = companyCandidates.filter(c => c.status !== 'Verified').length;
+  const verifiedCount = (companyCandidates || []).filter(c => c.status === 'Verified').length;
+  const pendingCount = (companyCandidates || []).filter(c => c.status !== 'Verified').length;
 
   // 🏢 Company Profile Details & Statutory Uploads States
   const [profileData, setProfileData] = useState({
@@ -572,7 +572,7 @@ export const CompanyAdminView = () => {
             subtitle: `Recruiting & Onboarding staff assigned to ${company.name}`,
             metricValue: `${companyHrUsers.length} HR Staff`,
             metricType: 'company_hr',
-            data: companyHrUsers.map(h => ({
+            data: (companyHrUsers || []).map(h => ({
               name: h.name,
               email: h.email,
               dept: h.dept,
@@ -594,7 +594,7 @@ export const CompanyAdminView = () => {
             subtitle: `Successfully verified candidates under ${company.name}`,
             metricValue: `${verifiedCount} Verified`,
             metricType: 'company_verified',
-            data: companyCandidates.filter(c => c.status === 'Verified').map(c => ({
+            data: (companyCandidates || []).filter(c => c.status === 'Verified').map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -618,7 +618,7 @@ export const CompanyAdminView = () => {
             subtitle: `Candidates currently awaiting Aadhaar OTP, SMS OTP, or Face verification`,
             metricValue: `${pendingCount} Pending`,
             metricType: 'company_pending',
-            data: companyCandidates.filter(c => c.status !== 'Verified').map(c => ({
+            data: (companyCandidates || []).filter(c => c.status !== 'Verified').map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -997,7 +997,7 @@ export const CompanyAdminView = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {companyHrUsers.map(hr => (
+            {(companyHrUsers || []).map(hr => (
               <div key={hr.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-sky-300 transition-all">
                 <div className="flex items-center justify-between">
                   <span className="badge badge-cyan text-[10px]">{hr.dept}</span>

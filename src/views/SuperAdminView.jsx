@@ -2590,7 +2590,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         ];
 
         const currentMasterCategoryObj = MASTER_CATEGORIES.find(c => c.key === activeMasterMenu) || MASTER_CATEGORIES[0];
-        const allCurrentMasterItems = masterDropdownOptions[activeMasterMenu] || [];
+        const allCurrentMasterItems = (masterDropdownOptions?.[activeMasterMenu] || []) || [];
         const filteredMasterItems = allCurrentMasterItems.filter(item => 
           item.toLowerCase().includes(masterSearchQuery.toLowerCase())
         );
