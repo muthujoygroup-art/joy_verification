@@ -1865,36 +1865,93 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         </span>
                       </td>
                       <td className="py-4 px-4 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <span className={`badge text-[10px] font-bold ${
-                            comp.status === 'Suspended' || comp.status === 'Inactive'
-                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                              : 'badge-emerald'
-                          }`}>
-                            {comp.status === 'Suspended' || comp.status === 'Inactive' ? '🔴 Suspended' : '🟢 Active'}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleToggleCompanyStatus(comp.id, comp.status)}
-                            className={`px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
-                              comp.status === 'Suspended' || comp.status === 'Inactive'
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
-                                : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
-                            }`}
-                            title={comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Click to Reactivate' : 'Click to Suspend / Inactive'}
-                          >
-                            {comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Reactivate 🟢' : 'Suspend ⏸️'}
-                          </button>
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          {comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
+                            <span className="badge badge-amber text-[10px] font-black py-1 px-2">
+                              🟡 PENDING ACTIVATION
+                            </span>
+                          ) : comp.status === 'Suspended' || comp.status === 'Inactive' ? (
+                            <span className="badge badge-rose text-[10px] font-black py-1 px-2">
+                              🔴 SUSPENDED
+                            </span>
+                          ) : (
+                            <span className="badge badge-emerald text-[10px] font-black py-1 px-2">
+                              🟢 ACTIVE & VERIFIED
+                            </span>
+                          )}
+
+                          <div className="flex items-center gap-1 mt-1">
+                            {comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setActivatingCompany(comp)}
+                                  className="px-2 py-1 rounded-lg text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 cursor-pointer shadow-2xs"
+                                  title="View Activation Token & PIN"
+                                >
+                                  🔗 Link & PIN
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    try {
+                                      const res = await api.resendCompanyActivationEmail(comp.id);
+                                      showToast(res.message || `📧 Activation email resent to ${comp.email}!`);
+                                    } catch (err) {
+                                      showToast(`❌ Failed to resend email: ${err.message}`, 'error');
+                                    }
+                                  }}
+                                  className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 cursor-pointer"
+                                  title="Resend Activation Email to Admin"
+                                >
+                                  📧 Resend
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleToggleCompanyStatus(comp.id, comp.status)}
+                                className={`px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
+                                  comp.status === 'Suspended' || comp.status === 'Inactive'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                    : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                                }`}
+                                title={comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Click to Reactivate' : 'Click to Suspend / Inactive'}
+                              >
+                                {comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Reactivate 🟢' : 'Suspend ⏸️'}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="py-4 px-4 text-right">
-                        <button
-                          onClick={() => setEditingFeaturesCompany(comp)}
-                          className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold shadow-2xs ml-auto"
-                        >
-                          <Sliders className="w-3.5 h-3.5" />
-                          <span>Configure 10 Flags</span>
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setEditingFeaturesCompany(comp)}
+                            className="btn btn-superadmin text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
+                            title="Configure 10 Verification Modules"
+                          >
+                            <Sliders className="w-3.5 h-3.5" />
+                            <span>10 Flags</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setCustomTariffModalCompany(comp);
+                              setCustomTariffValues(comp.custom_tariffs || {});
+                            }}
+                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-700"
+                            title="Custom Price Tariffs per Check"
+                          >
+                            <span>Tariffs 💰</span>
+                          </button>
+                          <button
+                            onClick={() => setTopupModalCompany(comp)}
+                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-800"
+                            title="Top Up Verification Credits"
+                          >
+                            <span>+ Credits ⚡</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

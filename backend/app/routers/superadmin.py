@@ -86,18 +86,22 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     comp_id = f"comp-{uuid.uuid4().hex[:6]}"
     activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
     
-    # 🛡️ Strict Duplicate Prevention: Check if company already exists by code, email, or name
-    existing_comp = db.query(Company).filter(
-        (Company.code.ilike(comp_code.strip())) | 
-        (Company.email.ilike(payload.email.strip())) |
-        (Company.name.ilike(payload.name.strip()))
-    ).first()
-    if existing_comp:
-        existing_comp.name = payload.name
-        existing_comp.contact_person = payload.contact_person or getattr(payload, 'contactPerson', None) or existing_comp.contact_person
-        db.commit()
-        db.refresh(existing_comp)
-        return existing_comp
+    # 🛡️ Strict Duplicate Prevention: Reject duplicates on email, phone, code, or name
+    clean_email = payload.email.strip().lower()
+    existing_email = db.query(Company).filter(Company.email.ilike(clean_email)).first()
+    if existing_email:
+        raise HTTPException(status_code=400, detail=f"Company with email '{clean_email}' already exists. Duplicate emails are strictly prohibited.")
+
+    if payload.phone and payload.phone.strip():
+        clean_phone = payload.phone.strip()
+        existing_phone = db.query(Company).filter(Company.phone == clean_phone).first()
+        if existing_phone:
+            raise HTTPException(status_code=400, detail=f"Company with mobile number '{clean_phone}' already exists. Duplicate phone numbers are strictly prohibited.")
+
+    clean_name = payload.name.strip()
+    existing_name = db.query(Company).filter(Company.name.ilike(clean_name)).first()
+    if existing_name:
+        raise HTTPException(status_code=400, detail=f"Company '{clean_name}' already exists. Duplicate company legal names are strictly prohibited.")
 
     # Pricing according to Plan Tier
     plan_name = payload.plan or "Enterprise Premier"

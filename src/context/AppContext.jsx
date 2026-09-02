@@ -760,13 +760,18 @@ export const AppProvider = ({ children }) => {
                 name: c.name,
                 code: c.code,
                 contactPerson: c.contact_person,
+                phone: c.phone,
                 email: c.email,
                 plan: c.plan,
                 pricePerVerification: c.price_per_verification,
                 verifiedCountThisMonth: c.verified_count_this_month,
                 maxLimit: c.max_limit,
-                status: c.status,
-                features: c.features || {}
+                status: c.status || 'Pending Activation',
+                activation_status: c.activation_status || c.status || 'Pending Activation',
+                activation_token: c.activation_token,
+                activation_password: c.activation_password,
+                features: c.features || {},
+                custom_tariffs: c.custom_tariffs || {}
               });
             }
           }
