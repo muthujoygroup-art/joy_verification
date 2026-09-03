@@ -145,6 +145,18 @@ export const HrExecutiveView = () => {
         code: 'COMP001'
       };
 
+  const [isSavingHrPref, setIsSavingHrPref] = useState(false);
+  const [hrPreferences, setHrPreferences] = useState({
+    notification_email: activeHr.email || '',
+    cc_email: '',
+    sender_display_name: `${activeHr.name} (${currentCompany.name})`,
+    custom_signature: `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany.name}`,
+    auto_email_candidate_link: true,
+    notify_on_candidate_verified: true,
+    notify_on_red_flags: true,
+    daily_digest: false
+  });
+
   const [formData, setFormData] = useState({
     name: '',
     empId: '',
