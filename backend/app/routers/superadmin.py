@@ -179,25 +179,34 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             "bankCheck": True
         }
         
+        # Store all extended attributes inside features JSONB for bulletproof PostgreSQL schema compatibility
+        combined_features = {
+            **default_features,
+            "phone": clean_phone,
+            "activation_token": activation_token,
+            "activation_password": activation_pin_set,
+            "activation_expires_at": expires_at.isoformat() if expires_at else None,
+            "activation_status": "Pending Activation",
+            "custom_tariffs": getattr(payload, 'custom_tariffs', None) or {}
+        }
+
         new_comp = Company(
             id=comp_id,
             name=clean_name,
             code=comp_code,
             contact_person=clean_contact,
-            phone=clean_phone,
             email=clean_email,
             password_hash=login_password_set,
             plan=plan_name,
             price_per_verification=price_per_check,
             max_limit=credits_bought,
             wallet_balance=credits_bought * price_per_check,
-            features=default_features,
+            features=combined_features,
             verified_count_this_month=0,
             status="Pending Activation",
-            activation_status="Pending Activation",
-            activation_token=activation_token,
-            activation_password=activation_pin_set,
-            activation_expires_at=expires_at,
+            terms_accepted="true",
+            terms_accepted_at=datetime.utcnow(),
+            terms_version="v2.4-2026",
             created_at=datetime.utcnow()
         )
 
