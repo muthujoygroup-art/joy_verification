@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
 import { HrPerformanceChart, TatDistributionChart } from '../components/StatsCharts';
