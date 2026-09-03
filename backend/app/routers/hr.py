@@ -235,3 +235,51 @@ def toggle_candidate_status(candidate_id: str, payload: dict, db: Session = Depe
     db.commit()
     db.refresh(cand)
     return {"success": True, "candidate_id": cand.id, "status": cand.status}
+
+
+@router.delete("/candidates/{candidate_id}")
+def delete_candidate(candidate_id: str, db: Session = Depends(get_db)):
+    """Deletes a candidate profile and cascades all associated verification records and documents"""
+    cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    cand_name = cand.name
+    db.delete(cand)
+    db.commit()
+    return {"success": True, "message": f"Candidate {cand_name} deleted successfully"}
+
+@router.post("/candidates/purge-duplicates")
+def purge_duplicate_candidates(payload: dict = None, db: Session = Depends(get_db)):
+    """Purges duplicate candidate records keeping only the most recent unique record per email/mobile/aadhaar"""
+    company_id = payload.get("company_id") if payload else None
+    query = db.query(Candidate)
+    if company_id:
+        query = query.filter(Candidate.company_id == company_id)
+    
+    all_cands = query.order_by(Candidate.created_at.desc()).all()
+    seen = set()
+    deleted_count = 0
+    
+    for c in all_cands:
+        key = None
+        if c.aadhaar_no:
+            key = f"aadhaar_{c.aadhaar_no.strip()}"
+        elif c.email:
+            key = f"email_{c.email.strip().lower()}"
+        elif c.mobile:
+            key = f"mobile_{c.mobile.strip()}"
+        
+        if key:
+            if key in seen:
+                db.delete(c)
+                deleted_count += 1
+            else:
+                seen.add(key)
+    
+    db.commit()
+    return {
+        "success": True,
+        "message": f"Purged {deleted_count} duplicate candidate records.",
+        "deleted_count": deleted_count
+    }

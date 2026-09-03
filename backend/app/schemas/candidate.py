@@ -33,7 +33,7 @@ class CandidateBase(BaseModel):
     verification_config: Optional[Dict[str, Any]] = None
     manual_checks: Optional[Dict[str, Any]] = None
     joining_form_data: Optional[Dict[str, Any]] = None
-    custom_fields: Optional[Dict[str, Any]] = None
+    custom_fields: Optional[Any] = None
     documents: Optional[List[Dict[str, Any]]] = None
 
 class CandidateCreate(CandidateBase):

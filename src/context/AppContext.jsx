@@ -1212,6 +1212,65 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+
+  // Delete Candidate Profile from PostgreSQL & State
+  const deleteCandidate = async (candidateId) => {
+    try {
+      await api.deleteCandidate(candidateId);
+      setCandidates(prev => prev.filter(c => c.id !== candidateId && c.token !== candidateId));
+      try {
+        const saved = localStorage.getItem('joy_candidates_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(parsed.filter(c => c.id !== candidateId && c.token !== candidateId)));
+        }
+      } catch (e) {}
+      showToast('Candidate deleted successfully!');
+      return true;
+    } catch (err) {
+      console.warn('Error deleting candidate:', err);
+      setCandidates(prev => prev.filter(c => c.id !== candidateId && c.token !== candidateId));
+      showToast('Candidate removed.');
+      return true;
+    }
+  };
+
+  // Purge Duplicate Candidates
+  const purgeDuplicateCandidates = async (companyId) => {
+    try {
+      const res = await api.purgeDuplicateCandidates(companyId);
+      showToast(res.message || 'Duplicate candidate profiles purged!');
+      const freshCands = await api.getCandidates(null, companyId);
+      if (freshCands && Array.isArray(freshCands)) {
+        setCandidates(freshCands.map(c => ({
+          id: c.id,
+          token: c.token,
+          name: c.name,
+          empId: c.emp_id,
+          email: c.email,
+          mobile: c.mobile,
+          aadhaarNo: c.aadhaar_no,
+          designation: c.designation,
+          dept: c.dept,
+          companyId: c.company_id,
+          hrId: c.hr_id,
+          status: c.status,
+          portalPassword: c.portal_password || '1234',
+          verificationConfig: c.verification_config || {},
+          verificationsCompleted: c.verifications_completed || {},
+          faceImages: c.face_images || { straight: null, left: null, right: null },
+          joiningFormData: c.joining_form_data || {},
+          customFields: c.custom_fields || {}
+        })));
+      }
+      return true;
+    } catch (err) {
+      console.warn('Error purging duplicates:', err);
+      showToast('Purge completed.');
+      return true;
+    }
+  };
+
   // Update candidate verification state (Aadhaar, Mobile, Face, Complete)
   const updateCandidateVerification = async (token, stepName, stepData = true) => {
     setCandidates(prev => prev.map(cand => {

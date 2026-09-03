@@ -331,6 +331,17 @@ export const api = {
       body: JSON.stringify(candidateData),
     });
   },
+  deleteCandidate: (candidateId) => {
+    requestCache.clear();
+    return request(`/hr/candidates/${candidateId}`, { method: 'DELETE' });
+  },
+  purgeDuplicateCandidates: (companyId) => {
+    requestCache.clear();
+    return request('/hr/candidates/purge-duplicates', {
+      method: 'POST',
+      body: JSON.stringify({ company_id: companyId })
+    });
+  },
   dispatchLink: (dispatchData) => request('/hr/dispatch-link', {
     method: 'POST',
     body: JSON.stringify(dispatchData),

@@ -1,3 +1,5 @@
+import { SignaturePadModal } from '../components/SignaturePadModal';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
@@ -38,7 +40,12 @@ import {
   Cpu,
   Clock,
   Eye,
-  EyeOff
+  EyeOff,
+  WifiOff,
+  Pen,
+  Trash2,
+  Plus,
+  Upload
 } from 'lucide-react';
 
 export const EmployeePortalView = () => {
@@ -64,6 +71,40 @@ export const EmployeePortalView = () => {
   const [showCertModal, setShowCertModal] = useState(false);
   const [showLaborDossierModal, setShowLaborDossierModal] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [isSlowNetwork, setIsSlowNetwork] = useState(false);
+  const [dynamicFieldValues, setDynamicFieldValues] = useState({});
+
+  // 📶 Real-Time Network Speed & Latency Detector
+  useEffect(() => {
+    const updateNetworkStatus = () => {
+      if (!navigator.onLine) {
+        setIsSlowNetwork(true);
+        return;
+      }
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn) {
+        if (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.saveData) {
+          setIsSlowNetwork(true);
+        } else {
+          setIsSlowNetwork(false);
+        }
+      }
+    };
+
+    updateNetworkStatus();
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn) {
+      conn.addEventListener('change', updateNetworkStatus);
+    }
+    return () => {
+      window.removeEventListener('online', updateNetworkStatus);
+      window.removeEventListener('offline', updateNetworkStatus);
+      if (conn) conn.removeEventListener('change', updateNetworkStatus);
+    };
+  }, []);
 
   // Aadhaar Live Data Fetching & e-KYC telemetry states
   const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
@@ -583,6 +624,19 @@ export const EmployeePortalView = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-16 text-slate-900">
+      
+      {/* 📶 SLOW NETWORK / LATENCY INDICATOR */}
+      {isSlowNetwork && (
+        <div className="p-3.5 bg-amber-500/15 border-2 border-amber-400 text-amber-900 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold shadow-xs animate-pulse">
+          <div className="flex items-center gap-2">
+            <WifiOff className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>⚠️ Slow / Unstable Network Detected: Uploading large proof documents may take longer. Please do not close or refresh this tab.</span>
+          </div>
+          <span className="text-[10px] bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full font-mono font-black shrink-0">
+            Slow 2G/3G Mode
+          </span>
+        </div>
+      )}
       
       {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR */}
       <div className="p-3.5 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-md border border-slate-800">

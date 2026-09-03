@@ -1,3 +1,4 @@
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
 import { EpfoForm11 } from '../components/statutory/EpfoForm11';
 import { EpfoForm2 } from '../components/statutory/EpfoForm2';
 import { EsicForm1 } from '../components/statutory/EsicForm1';
@@ -112,6 +113,30 @@ export const HrExecutiveView = () => {
   const [viewingUploadedDocsCandidate, setViewingUploadedDocsCandidate] = useState(null);
   const [selectedDocPreview, setSelectedDocPreview] = useState(null);
   const [onboardingMode, setOnboardingMode] = useState('hr_filled'); // 'hr_filled' | 'candidate_filled'
+  
+  // 📋 Dynamic Custom Form Fields Configured by HR
+  const [dynamicCustomFields, setDynamicCustomFields] = useState([]);
+  const [newDynFieldTitle, setNewDynFieldTitle] = useState('');
+  const [newDynFieldType, setNewDynFieldType] = useState('text');
+  const [newDynFieldRequired, setNewDynFieldRequired] = useState(true);
+  const [newDynFieldMode, setNewDynFieldMode] = useState('through_link');
+  const [showAddDynFieldModal, setShowAddDynFieldModal] = useState(false);
+
+  // 📑 Verification Checklist & Mode Configuration (HR Verified vs Through Link)
+  const [verificationChecklist, setVerificationChecklist] = useState({
+    aadhaar: { enabled: true, mode: 'through_link', title: 'Aadhaar Card (UIDAI OTP e-KYC)' },
+    pan: { enabled: true, mode: 'through_link', title: 'PAN Card Verification (NSDL/ITD)' },
+    bankCheck: { enabled: true, mode: 'through_link', title: 'Bank Account & IFSC (Penny Drop / IMPS)' },
+    uan: { enabled: true, mode: 'through_link', title: 'EPFO UAN / Employment Service History' },
+    drivingLicense: { enabled: false, mode: 'through_link', title: 'Driving License (MoRTH / Sarathi)' },
+    passport: { enabled: false, mode: 'through_link', title: 'Passport Verification' },
+    voterId: { enabled: false, mode: 'through_link', title: 'Voter ID (ECI)' },
+    education: { enabled: true, mode: 'through_link', title: 'Academic Degree & Marksheets' },
+    criminalCheck: { enabled: true, mode: 'hr_verified', title: 'Police Criminal Record Check' },
+    courtLitigation: { enabled: true, mode: 'hr_verified', title: 'Court Litigation / e-Courts Check' },
+    specimenSignature: { enabled: true, mode: 'through_link', title: 'Digital Specimen Signature' },
+    dpdpConsent: { enabled: true, mode: 'through_link', title: 'DPDP Act 2023 Statutory Consent Gate' }
+  }); // 'hr_filled' | 'candidate_filled'
   const [dispatchingCandidate, setDispatchingCandidate] = useState(null);
   const [reviewingCandidate, setReviewingCandidate] = useState(null);
   const [correctionNotes, setCorrectionNotes] = useState('');
@@ -951,31 +976,31 @@ export const HrExecutiveView = () => {
   };
 
   // Dynamic Custom Fields State & Handlers
-  const [newFieldLabel, setNewFieldLabel] = useState('');
-  const [newFieldType, setNewFieldType] = useState('text');
-  const [newFieldRequired, setNewFieldRequired] = useState(false);
+  const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
+  const [legacyFieldType, setLegacyFieldType] = useState('text');
+  const [legacyFieldRequired, setLegacyFieldRequired] = useState(false);
   const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
 
   const [newDocTitle, setNewDocTitle] = useState('');
   const [newDocDesc, setNewDocDesc] = useState('');
   const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
 
-  const handleAddCustomField = () => {
-    if (!newFieldLabel.trim()) return;
+  const handleAddLegacyCustomField = () => {
+    if (!legacyFieldLabel.trim()) return;
     const fieldId = `custom_${Date.now()}`;
     const newField = {
       id: fieldId,
-      key: newFieldLabel.toLowerCase().replace(/[^a-z0-9]/g, '_'),
-      label: newFieldLabel.trim(),
-      type: newFieldType,
-      required: newFieldRequired,
+      key: legacyFieldLabel.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+      label: legacyFieldLabel.trim(),
+      type: legacyFieldType,
+      required: legacyFieldRequired,
       value: ''
     };
     setFormData(prev => ({
       ...prev,
       customFields: [...(prev.customFields || []), newField]
     }));
-    setNewFieldLabel('');
+    setLegacyFieldLabel('');
     setShowAddCustomFieldModal(false);
     showToast(`✨ Added custom field: "${newField.label}"!`);
   };
@@ -2076,6 +2101,20 @@ export const HrExecutiveView = () => {
                           >
                             <Smartphone className="w-3.5 h-3.5" />
                             <span>Test Portal</span>
+                          </button>
+
+                          {/* 5. Delete Candidate Record */}
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`⚠️ Are you sure you want to permanently delete candidate ${cand.name}? This will remove all verification records from the database.`)) {
+                                deleteCandidate(cand.id || cand.token);
+                              }
+                            }}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2 flex items-center gap-1 text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 hover:border-rose-300"
+                            title="Delete Candidate Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete</span>
                           </button>
                         </div>
                       </td>
