@@ -1,3 +1,4 @@
+from backend.app.services.logger_service import record_system_error_log
 import os
 import smtplib
 import logging
@@ -165,6 +166,13 @@ def send_smtp_email(
         return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
     except Exception as e:
         logger.error(f"❌ [SMTP ERROR - Mode: {cfg['mode']}] Failed to send email to {to_email}: {e}")
+        record_system_error_log(
+            section="Email Gateway",
+            error_code="ERR_SMTP_DISPATCH",
+            message=f"Failed to send email to {to_email} via {cfg.get('host')}:{cfg.get('port')}: {str(e)}",
+            severity="Warning",
+            db=db
+        )
         return {"success": False, "error": str(e), "to": to_email, "mode": cfg["mode"]}
 
 

@@ -1,3 +1,4 @@
+from backend.app.services.logger_service import record_system_error_log
 from backend.app.models.company_request import CompanyRequest
 from backend.app.services.storage_service import get_company_folder
 import uuid
@@ -238,6 +239,13 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     except Exception as exc:
         tr = traceback.format_exc()
         print(f"❌ CRITICAL ERROR IN create_company: {exc}\n{tr}")
+        record_system_error_log(
+            section="Company Onboarding",
+            error_code="ERR_ONBOARD_EXCEPTION",
+            message=f"{str(exc)}\n{tr}",
+            severity="Critical",
+            db=db
+        )
         return JSONResponse(
             status_code=500,
             content={"detail": f"Failed to onboard company: {str(exc)}", "trace": tr}
