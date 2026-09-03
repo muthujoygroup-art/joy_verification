@@ -2018,19 +2018,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           >
                             <span>+ Credits ⚡</span>
                           </button>
-                          {comp.status === 'Active' && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                loginUser('company', { email: comp.email, id: comp.id, name: comp.contact_person, companyName: comp.name, companyCode: comp.code });
-                                navigate('/company');
-                              }}
-                              className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-800 shadow-2xs"
-                              title={`Open ${comp.name} Company Admin Portal`}
-                            >
-                              <span>🏢 Portal ↗</span>
-                            </button>
-                          )}
                         </div>
                       </td>
                     </tr>
