@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
 from backend.app.database import engine, Base
+import backend.app.models  # Guarantees all 21 models and relationships are registered
 from backend.app.seed import seed_database
 from backend.app.routers import (
     auth_router,
