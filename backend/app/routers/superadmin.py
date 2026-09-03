@@ -696,14 +696,13 @@ def trigger_database_migrations():
     from sqlalchemy import text
     
     results = []
-    with engine.connect() as conn:
-        for name, stmt in migration_statements:
-            try:
+    for name, stmt in migration_statements:
+        try:
+            with engine.begin() as conn:
                 conn.execute(text(stmt))
-                results.append({"column": name, "status": "SUCCESS"})
-            except Exception as e:
-                results.append({"column": name, "status": f"ERROR: {str(e)}"})
-        conn.commit()
+            results.append({"column": name, "status": "SUCCESS"})
+        except Exception as e:
+            results.append({"column": name, "status": f"ERROR: {str(e)}"})
         
     return {
         "success": True,
