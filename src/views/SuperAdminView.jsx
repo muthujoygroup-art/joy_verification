@@ -541,7 +541,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     server2_coincircle: {
       clientId: apiConfigurations.server2_coincircle?.clientId || 'CCT_CORP_VERIF_882910',
       clientSecret: apiConfigurations.server2_coincircle?.clientSecret || 'cct_sec_JoyCircleTrust_9921_xK',
-      endpointUrl: apiConfigurations.server2_coincircle?.endpointUrl || 'https://api.coincircletrust.com/api/v1',
+      endpointUrl: apiConfigurations.server2_coincircle?.endpointUrl || 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct',
       status: apiConfigurations.server2_coincircle?.status || 'Online',
       mode: apiConfigurations.server2_coincircle?.mode || 'Production (Live Mode)'
     }
@@ -3256,7 +3256,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-slate-500 font-bold text-[11px]">Base Endpoint:</span>
                             <span className="font-mono text-[11px] font-semibold text-slate-700 truncate max-w-[240px]">
-                              {provider.endpointUrl || 'https://api.coincircletrust.com/api/v1'}
+                              {provider.endpointUrl || 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct'}
                             </span>
                           </div>
 
