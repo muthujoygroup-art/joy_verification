@@ -4189,9 +4189,9 @@ export const HrExecutiveView = () => {
             }} 
             className="space-y-6 text-xs"
           >
-            {/* 📧 Dedicated HR Recruiter Email & Notification Station Card */}
-            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-white space-y-5 shadow-xs mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+            {/* 📧 Dedicated HR Recruiter Outgoing SMTP Mail Server & Password Card */}
+            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-white space-y-6 shadow-xs mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
                     <Mail className="w-5 h-5" />
@@ -4199,12 +4199,12 @@ export const HrExecutiveView = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-black text-slate-900 text-base">
-                        HR Recruiter Notification & Outgoing Email Signature
+                        HR Recruiter Outgoing Mail Server (SMTP) & Credentials
                       </h4>
-                      <span className="badge badge-indigo text-[10px] font-bold">RECRUITER STATION</span>
+                      <span className="badge badge-indigo text-[10px] font-bold">RECRUITER WORKSTATION</span>
                     </div>
                     <p className="text-slate-500 text-xs">
-                      Personalize your notification email alerts and outgoing candidate invitation signatures
+                      Configure your official webmail password, outgoing SMTP server, and candidate email signature
                     </p>
                   </div>
                 </div>
@@ -4213,60 +4213,155 @@ export const HrExecutiveView = () => {
                   type="button"
                   onClick={handleSaveHrPreferences}
                   disabled={isSavingHrPref}
-                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-sm cursor-pointer shrink-0"
+                  className="btn btn-hrexecutive text-xs py-2 px-5 flex items-center gap-1.5 font-black shadow-md cursor-pointer shrink-0"
                 >
                   {isSavingHrPref ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>{isSavingHrPref ? 'Saving...' : 'Save Recruiter Settings 💾'}</span>
+                  <span>{isSavingHrPref ? 'Saving...' : '💾 Save Mail Configuration'}</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Recruiter Notification Email *</label>
-                  <input 
-                    type="email" 
-                    value={hrPreferences.notification_email}
-                    onChange={(e) => setHrPreferences({ ...hrPreferences, notification_email: e.target.value })}
-                    placeholder="praveen.b@joycorporatesolutions.com"
-                    className="form-input font-bold"
+              {/* SMTP MAIL SERVER CONFIGURATION GRID */}
+              <div>
+                <div className="text-[11px] font-black text-indigo-700 uppercase tracking-wider mb-2 flex items-center gap-1">
+                  <span>📬 Outgoing SMTP Mail Server Details:</span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Host Server *</label>
+                    <input 
+                      type="text" 
+                      value={hrPreferences.smtp_host || 'mail.joycorporatesolutions.com'}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, smtp_host: e.target.value })}
+                      placeholder="mail.joycorporatesolutions.com"
+                      className="form-input font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Port *</label>
+                    <input 
+                      type="number" 
+                      value={hrPreferences.smtp_port || 465}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, smtp_port: parseInt(e.target.value) || 465 })}
+                      placeholder="465"
+                      className="form-input font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Username / Email *</label>
+                    <input 
+                      type="email" 
+                      value={hrPreferences.smtp_user || activeHr.email || ''}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, smtp_user: e.target.value })}
+                      placeholder={activeHr.email || "haripriya@joycorporatesolutions.com"}
+                      className="form-input font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">SMTP Webmail Password *</label>
+                    <div className="relative">
+                      <input 
+                        type={showSmtpPassword ? 'text' : 'password'} 
+                        value={hrPreferences.smtp_password || ''}
+                        onChange={(e) => setHrPreferences({ ...hrPreferences, smtp_password: e.target.value })}
+                        placeholder="••••••••••••"
+                        className="form-input font-mono pr-9"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {showSmtpPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Recruiter Display Name</label>
+                    <input 
+                      type="text" 
+                      value={hrPreferences.sender_display_name || `${activeHr.name} (${currentCompany.name})`}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, sender_display_name: e.target.value })}
+                      placeholder={`${activeHr.name} (${currentCompany.name})`}
+                      className="form-input font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Sender Email Address</label>
+                    <input 
+                      type="email" 
+                      value={hrPreferences.sender_email || activeHr.email || ''}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, sender_email: e.target.value })}
+                      placeholder={activeHr.email}
+                      className="form-input font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Supervisor / Team Lead CC Email</label>
+                    <input 
+                      type="email" 
+                      value={hrPreferences.cc_email || ''}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, cc_email: e.target.value })}
+                      placeholder="ta_manager@joycorporatesolutions.com"
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Notification Email</label>
+                    <input 
+                      type="email" 
+                      value={hrPreferences.notification_email || activeHr.email || ''}
+                      onChange={(e) => setHrPreferences({ ...hrPreferences, notification_email: e.target.value })}
+                      placeholder={activeHr.email}
+                      className="form-input font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* LIVE DIAGNOSTIC SMTP TEST BAR */}
+              <div className="p-4 bg-indigo-50/60 rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="email"
+                    value={testSmtpEmail}
+                    onChange={(e) => setTestSmtpEmail(e.target.value)}
+                    placeholder="Enter test recipient email..."
+                    className="form-input text-xs w-full sm:w-72 font-mono bg-white"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Where candidate verification alerts will be sent</span>
+                  <button
+                    type="button"
+                    onClick={handleTestHrSmtp}
+                    disabled={isTestingSmtp}
+                    className="btn btn-secondary text-xs py-2 px-4 flex items-center gap-1.5 font-bold bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50 cursor-pointer shadow-2xs whitespace-nowrap"
+                  >
+                    {isTestingSmtp ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <SendHorizontal className="w-3.5 h-3.5" />}
+                    <span>{isTestingSmtp ? 'Sending Test...' : 'Send Live Test Email 📨'}</span>
+                  </button>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Supervisor / Team Lead CC Email</label>
-                  <input 
-                    type="email" 
-                    value={hrPreferences.cc_email}
-                    onChange={(e) => setHrPreferences({ ...hrPreferences, cc_email: e.target.value })}
-                    placeholder="ta_manager@joycorporatesolutions.com"
-                    className="form-input font-bold"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Optional CC for verification milestones</span>
+                <div className="text-[11px] text-indigo-800 font-medium">
+                  Dispatches a diagnostic test email to verify credentials & deliverability.
                 </div>
+              </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Recruiter Display Name</label>
-                  <input 
-                    type="text" 
-                    value={hrPreferences.sender_display_name}
-                    onChange={(e) => setHrPreferences({ ...hrPreferences, sender_display_name: e.target.value })}
-                    placeholder="Praveen B (Talent Acquisition)"
-                    className="form-input font-bold"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Shown in candidate email headers</span>
-                </div>
-
-                <div className="col-span-1 md:col-span-3">
-                  <label className="block font-bold text-slate-700 mb-1">Custom Recruiter Email Signature & Disclaimer</label>
-                  <textarea 
-                    rows={2}
-                    value={hrPreferences.custom_signature}
-                    onChange={(e) => setHrPreferences({ ...hrPreferences, custom_signature: e.target.value })}
-                    placeholder="Best regards,\nPraveen B | Senior Recruiter"
-                    className="form-input text-xs font-mono"
-                  />
-                </div>
+              {/* CUSTOM SIGNATURE */}
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Custom Recruiter Email Signature & Disclaimer</label>
+                <textarea 
+                  rows={2}
+                  value={hrPreferences.custom_signature || `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany.name}`}
+                  onChange={(e) => setHrPreferences({ ...hrPreferences, custom_signature: e.target.value })}
+                  placeholder={`Best regards,\n${activeHr.name} | Talent Acquisition`}
+                  className="form-input text-xs font-mono"
+                />
               </div>
 
               {/* Instant Notification Checkboxes */}
@@ -4283,7 +4378,7 @@ export const HrExecutiveView = () => {
                     </div>
                     <input 
                       type="checkbox"
-                      checked={hrPreferences.auto_email_candidate_link}
+                      checked={hrPreferences.auto_email_candidate_link !== false}
                       onChange={(e) => setHrPreferences({ ...hrPreferences, auto_email_candidate_link: e.target.checked })}
                       className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
                     />
@@ -4296,7 +4391,7 @@ export const HrExecutiveView = () => {
                     </div>
                     <input 
                       type="checkbox"
-                      checked={hrPreferences.notify_on_candidate_verified}
+                      checked={hrPreferences.notify_on_candidate_verified !== false}
                       onChange={(e) => setHrPreferences({ ...hrPreferences, notify_on_candidate_verified: e.target.checked })}
                       className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
                     />
@@ -4309,7 +4404,7 @@ export const HrExecutiveView = () => {
                     </div>
                     <input 
                       type="checkbox"
-                      checked={hrPreferences.notify_on_red_flags}
+                      checked={hrPreferences.notify_on_red_flags !== false}
                       onChange={(e) => setHrPreferences({ ...hrPreferences, notify_on_red_flags: e.target.checked })}
                       className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
                     />
@@ -4322,13 +4417,56 @@ export const HrExecutiveView = () => {
                     </div>
                     <input 
                       type="checkbox"
-                      checked={hrPreferences.daily_digest}
+                      checked={hrPreferences.daily_digest === true}
                       onChange={(e) => setHrPreferences({ ...hrPreferences, daily_digest: e.target.checked })}
                       className="w-4 h-4 rounded text-indigo-600 shrink-0 ml-2"
                     />
                   </label>
                 </div>
               </div>
+
+              {/* 🔐 CHANGE WORKSTATION LOGIN PASSWORD */}
+              <div className="pt-4 border-t border-slate-100">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <KeyRound className="w-4 h-4 text-indigo-600" />
+                      <strong className="text-xs font-black text-slate-900">Change Workstation Login Password</strong>
+                    </div>
+                    <span className="text-[11px] text-slate-400 font-mono">User: {activeHr.email}</span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <div className="relative w-full sm:w-72">
+                      <input
+                        type={showHrNewPassword ? 'text' : 'password'}
+                        value={hrNewPassword}
+                        onChange={(e) => setHrNewPassword(e.target.value)}
+                        placeholder="Enter new login password..."
+                        className="form-input text-xs font-mono font-bold pr-9 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowHrNewPassword(!showHrNewPassword)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {showHrNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleUpdateHrLoginPassword}
+                      disabled={isUpdatingHrPassword || !hrNewPassword}
+                      className="btn btn-primary text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {isUpdatingHrPassword ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />}
+                      <span>{isUpdatingHrPassword ? 'Updating...' : '🔐 Update Login Password'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
