@@ -538,36 +538,66 @@ def send_hr_approval_email(
     db = None
 ) -> Dict[str, Any]:
     """
-    Dispatches confirmation email to HR Recruiter once approved by Company Admin.
+    Dispatches confirmation email to HR Recruiter once approved by Company Admin,
+    including login credentials and a comprehensive Quick Start Software Guide.
     """
     app_url = settings.APP_BASE_URL.rstrip('/')
     login_url = f"{app_url}/login"
 
     content = f"""
-    <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0;">
+    <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0; line-height: 1.4;">
         🎉 Congratulations {hr_name}! Your HR Recruiter Account is Approved!
     </h2>
     <p style="font-size: 13px; color: #475569; line-height: 1.6;">
-        Your recruiter profile for <strong>{company_name}</strong> (Staff Code: <strong>#{hr_code}</strong>) has been officially reviewed and approved by your Company Administrator.
+        Your recruiter profile for <strong>{company_name}</strong> (Staff Code: <strong>#{hr_code}</strong>) has been officially reviewed, verified, and activated by your Company Administrator.
     </p>
+
+    <!-- Credentials Box -->
     <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 18px; margin: 20px 0;">
-        <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
             ✅ HR Workstation Login Credentials:
         </div>
-        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
-            <tr><td width="35%" style="color: #64748b; font-weight: bold;">Login Portal:</td><td style="color: #4338ca; font-weight: bold;">HR Recruiter Portal</td></tr>
-            <tr><td style="color: #64748b; font-weight: bold;">Username:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">{hr_email}</td></tr>
-            <tr><td style="color: #64748b; font-weight: bold;">Staff ID:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">#{hr_code}</td></tr>
+        <table width="100%" border="0" cellspacing="5" cellpadding="0" style="font-size: 12.5px;">
+            <tr>
+                <td width="38%" style="color: #64748b; font-weight: 600;">Workstation Portal:</td>
+                <td style="color: #4338ca; font-weight: 800;">HR Recruiter Workstation</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Official Login Email:</td>
+                <td style="color: #0f172a; font-family: monospace; font-weight: 800;">{hr_email}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Recruiter Staff ID:</td>
+                <td style="color: #0f172a; font-family: monospace; font-weight: 800;">#{hr_code}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Employer Organization:</td>
+                <td style="color: #0f172a; font-weight: 800;">{company_name}</td>
+            </tr>
         </table>
     </div>
-    <p style="font-size: 12.5px; color: #334155;">
-        You can now log in to invite candidates, initiate live verification checks, and review identity records.
+
+    <!-- Quick Start Software Guide -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px; letter-spacing: 0.5px;">
+            📘 HR Recruiter Quick Start Guide & Features:
+        </div>
+        <ol style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.8;">
+            <li><strong>Initiate Candidate Verification:</strong> Click <em>"+ Send Verification Link"</em> to invite candidates with automated 4-digit PIN security.</li>
+            <li><strong>Live Identity Checks:</strong> Audit real-time Aadhaar OTP e-KYC, PAN card verification, and EPFO employment service records.</li>
+            <li><strong>Statutory Forms & Signatures:</strong> Review specimen digital signatures, EPFO Form 11, and ESIC Form 1 submissions.</li>
+            <li><strong>Export 360° BGV Dossiers:</strong> Generate instant Background Verification Certificates and complete candidate audit reports.</li>
+        </ol>
+    </div>
+
+    <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
+        🛡️ <em>All candidate records are protected under the Digital Personal Data Protection (DPDP) Act 2023. Keep your workstation login credentials confidential.</em>
     </p>
     """
 
     html = _build_email_shell(
         header_title=f"HR Recruiter Approved - {company_name}",
-        badge_text="ACCOUNT ACTIVATED",
+        badge_text="ACCOUNT ACTIVATED & VERIFIED",
         content_html=content,
         action_url=login_url,
         action_text="Open HR Recruiter Portal →",

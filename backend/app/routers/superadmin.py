@@ -1191,24 +1191,53 @@ def approve_company_login(company_id: str, db: Session = Depends(get_db)):
         login_url = f"{app_url}/login"
         
         content = f"""
-        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0;">
-            🎉 Congratulations {comp.contact_person}! Your Account is Approved!
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0; line-height: 1.4;">
+            🎉 Congratulations {comp.contact_person}! Your Organization Account is Approved!
         </h2>
         <p style="font-size: 13px; color: #475569; line-height: 1.6;">
-            Your enterprise organization account for <strong>{comp.name}</strong> (Code: <strong>#{comp.code}</strong>) has been officially reviewed, approved, and activated by JOY Super Administration.
+            Your enterprise account for <strong>{comp.name}</strong> (Company Code: <strong>#{comp.code}</strong>) has been officially authorized and activated on the JOY Corporate Background Verification Platform.
         </p>
+
+        <!-- Credentials Box -->
         <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 18px; margin: 20px 0;">
-            <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px;">
-                ✅ Login Credentials:
+            <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
+                ✅ Company Administrator Login Credentials:
             </div>
-            <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
-                <tr><td width="35%" style="color: #64748b; font-weight: bold;">Login Portal:</td><td style="color: #4338ca; font-weight: bold;">Company Admin Portal</td></tr>
-                <tr><td style="color: #64748b; font-weight: bold;">Username:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">{comp.email}</td></tr>
-                <tr><td style="color: #64748b; font-weight: bold;">Company Code:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">#{comp.code}</td></tr>
+            <table width="100%" border="0" cellspacing="5" cellpadding="0" style="font-size: 12.5px;">
+                <tr>
+                    <td width="40%" style="color: #64748b; font-weight: 600;">Admin Login Portal:</td>
+                    <td style="color: #4338ca; font-weight: 800;">Company Admin Portal</td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b; font-weight: 600;">Administrator Email:</td>
+                    <td style="color: #0f172a; font-family: monospace; font-weight: 800;">{comp.email}</td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b; font-weight: 600;">Enterprise Company Code:</td>
+                    <td style="color: #0f172a; font-family: monospace; font-weight: 800;">#{comp.code}</td>
+                </tr>
+                <tr>
+                    <td style="color: #64748b; font-weight: 600;">Subscription Plan:</td>
+                    <td style="color: #0f172a; font-weight: 800;">{comp.plan or 'Enterprise Platinum'}</td>
+                </tr>
             </table>
         </div>
-        <p style="font-size: 12.5px; color: #334155;">
-            You can now log in to appoint HR recruiters, configure verification features, and start onboarding candidates.
+
+        <!-- Enterprise Getting Started Guide -->
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+            <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px; letter-spacing: 0.5px;">
+                📘 Enterprise Administrator Getting Started Guide:
+            </div>
+            <ol style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.8;">
+                <li><strong>Configure Custom Outgoing Mail (SMTP):</strong> Go to <em>Settings</em> tab to set up your corporate email server so all invitation emails carry your corporate domain name.</li>
+                <li><strong>Onboard HR Recruiters:</strong> Go to <em>HR Team</em> tab and click <em>"+ Onboard HR Recruiter"</em> to invite recruitment executives with 4-digit PINs.</li>
+                <li><strong>Configure Verification Modules:</strong> Enable or disable mandatory checks (Aadhaar, PAN, EPFO, Police records, Court litigation).</li>
+                <li><strong>Document Management System (DMS):</strong> Access all employee verification certificates, specimen signatures, and DPDP compliance records anytime.</li>
+            </ol>
+        </div>
+
+        <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
+            🛡️ <em>Your signed Master Services Agreement (MSA v2.4-2026) and statutory incorporation proofs are securely stored in your compliance archive.</em>
         </p>
         """
         html = _build_email_shell(
