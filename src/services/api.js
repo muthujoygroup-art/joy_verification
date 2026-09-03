@@ -10,21 +10,23 @@ const requestCache = new Map();
 const inFlightRequests = new Map();
 const CACHE_TTL_MS = 1500; // 1.5 seconds deduplication window
 
-// Token Management
-let authToken = sessionStorage.getItem('joy_auth_token') || '';
+// Token Management (Persistent across localStorage & sessionStorage)
+let authToken = localStorage.getItem('joy_auth_token') || sessionStorage.getItem('joy_auth_token') || '';
 
 export const setAuthToken = (token) => {
   authToken = token || '';
   if (token) {
+    localStorage.setItem('joy_auth_token', token);
     sessionStorage.setItem('joy_auth_token', token);
   } else {
+    localStorage.removeItem('joy_auth_token');
     sessionStorage.removeItem('joy_auth_token');
   }
 };
 
 export const getAuthToken = () => {
   if (!authToken) {
-    authToken = sessionStorage.getItem('joy_auth_token') || '';
+    authToken = localStorage.getItem('joy_auth_token') || sessionStorage.getItem('joy_auth_token') || '';
   }
   return authToken;
 };

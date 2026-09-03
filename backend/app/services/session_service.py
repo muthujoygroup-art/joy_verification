@@ -13,7 +13,7 @@ from backend.app.config import settings
 # In production, this can be synced to Redis or PostgreSQL
 ACTIVE_SESSIONS: Dict[str, Dict[str, Any]] = {}
 
-SESSION_TTL_SECONDS = 30 * 60  # 30 Minutes standard session TTL
+SESSION_TTL_SECONDS = 7 * 24 * 3600  # 30 Minutes standard session TTL
 
 def _base64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')

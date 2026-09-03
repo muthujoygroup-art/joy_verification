@@ -24,7 +24,7 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
     Role-based authentication & JWT session creation.
     Supports Super Admin, Company Admin, HR Executive, and Candidate link.
     """
-    role = payload.get("role")
+    role = (payload.get("role") or payload.get("portal_type") or payload.get("portalType") or "superadmin").strip().lower()
     email = payload.get("email", "").strip().lower()
     password = payload.get("password", "").strip()
     token = payload.get("token", "").strip()
