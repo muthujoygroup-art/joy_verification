@@ -74,7 +74,7 @@ export const CompanyAdminView = () => {
     apiConfigurations,
     showToast
   } = useApp();
-  const [selectedCompanyId, setSelectedCompanyId] = useState('comp-joy');
+  const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
@@ -230,8 +230,31 @@ export const CompanyAdminView = () => {
     return () => window.removeEventListener('tour_feature_action', handleTourAction);
   }, []);
 
-  const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
-  const companyHrUsers = hrUsers.filter(h => h.companyId === company.id);
+  // Robust Tenant-Aware Company Resolution (Never returns undefined)
+  const resolvedCompany = (Array.isArray(companies) && companies.length > 0)
+    ? (companies.find(c => c.id === selectedCompanyId || c.id === currentUser?.companyId || c.email === currentUser?.email) || companies[0])
+    : (currentUser?.company || {
+        id: currentUser?.companyId || 'comp-joy',
+        name: currentUser?.companyName || 'Joy Corporate Solutions Pvt Ltd',
+        code: 'COMP001',
+        email: currentUser?.email || 'info@joycorporatesolutions.com',
+        plan: 'Enterprise Platinum',
+        features: {},
+        documents: {}
+      });
+
+  const company = resolvedCompany || {
+    id: 'comp-joy',
+    name: 'Joy Corporate Solutions Pvt Ltd',
+    code: 'COMP001',
+    email: 'info@joycorporatesolutions.com',
+    plan: 'Enterprise Platinum',
+    features: {},
+    documents: {}
+  };
+
+  const companyHrUsers = (hrUsers || []).filter(h => h.companyId === company.id);
+
   // Fetch Company SMTP Settings and HR Recruiters from PostgreSQL
   useEffect(() => {
     if (!company?.id) return;
@@ -265,7 +288,7 @@ export const CompanyAdminView = () => {
   // Combine DB HR users with context HR users
   const allCompanyHrUsers = dbHrUsers.length > 0 ? dbHrUsers : companyHrUsers;
 
-  const companyCandidates = candidates.filter(c => c.companyId === company.id);
+  const companyCandidates = (candidates || []).filter(c => c.companyId === company.id);
 
   const filteredCandidates = (companyCandidates || []).filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
