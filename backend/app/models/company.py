@@ -184,8 +184,14 @@ class Company(Base):
 
 
 class HrUser(Base):
+    """
+    HR Recruiter / Staff User Model.
+    Aligned 100% with live PostgreSQL database schema (11 physical columns).
+    Extended profile, education, documents, and activation tokens are persisted in 'permissions' JSON column.
+    """
     __tablename__ = "hr_users"
 
+    # Core Physical Database Columns (Existing in PostgreSQL)
     id = Column(String(50), primary_key=True, index=True)
     company_id = Column(String(50), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(100), nullable=False)
@@ -193,10 +199,167 @@ class HrUser(Base):
     password_hash = Column(String(255), default="Hr@Recruiter2026")
     dept = Column(String(100), default="Human Resources")
     active_links = Column(Integer, default=0)
-    permissions = Column(JSON, default=lambda: {"can_create": True, "can_verify": True, "can_export": True})
+    permissions = Column(JSON, default=lambda: {
+        "can_create": True, 
+        "can_verify": True, 
+        "can_export": True,
+        "phone": "",
+        "activation_status": "Pending Activation",
+        "activation_password": "1234"
+    })
     status = Column(String(50), default="Active")
     last_login_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # Virtual Properties backed seamlessly by 'permissions' JSON
+    @property
+    def phone(self) -> Optional[str]:
+        return (self.permissions or {}).get("phone")
+
+    @phone.setter
+    def phone(self, val: Optional[str]):
+        p = dict(self.permissions or {})
+        p["phone"] = val
+        self.permissions = p
+
+    @property
+    def designation(self) -> str:
+        return (self.permissions or {}).get("designation", "HR Recruiter / Talent Acquisition")
+
+    @designation.setter
+    def designation(self, val: str):
+        p = dict(self.permissions or {})
+        p["designation"] = val
+        self.permissions = p
+
+    @property
+    def activation_status(self) -> str:
+        return (self.permissions or {}).get("activation_status", self.status or "Pending Activation")
+
+    @activation_status.setter
+    def activation_status(self, val: str):
+        p = dict(self.permissions or {})
+        p["activation_status"] = val
+        self.permissions = p
+
+    @property
+    def activation_token(self) -> Optional[str]:
+        return (self.permissions or {}).get("activation_token")
+
+    @activation_token.setter
+    def activation_token(self, val: Optional[str]):
+        p = dict(self.permissions or {})
+        p["activation_token"] = val
+        self.permissions = p
+
+    @property
+    def activation_password(self) -> str:
+        return (self.permissions or {}).get("activation_password", "1234")
+
+    @activation_password.setter
+    def activation_password(self, val: str):
+        p = dict(self.permissions or {})
+        p["activation_password"] = val
+        self.permissions = p
+
+    @property
+    def activation_expires_at(self) -> Optional[datetime]:
+        iso_str = (self.permissions or {}).get("activation_expires_at")
+        if iso_str:
+            try:
+                return datetime.fromisoformat(iso_str)
+            except Exception:
+                return None
+        return None
+
+    @activation_expires_at.setter
+    def activation_expires_at(self, val: Any):
+        p = dict(self.permissions or {})
+        if isinstance(val, datetime):
+            p["activation_expires_at"] = val.isoformat()
+        else:
+            p["activation_expires_at"] = str(val) if val else None
+        self.permissions = p
+
+    @property
+    def personal_details(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("personal_details", {})
+
+    @personal_details.setter
+    def personal_details(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["personal_details"] = val or {}
+        self.permissions = p
+
+    @property
+    def employment_details(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("employment_details", {})
+
+    @employment_details.setter
+    def employment_details(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["employment_details"] = val or {}
+        self.permissions = p
+
+    @property
+    def education_details(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("education_details", {})
+
+    @education_details.setter
+    def education_details(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["education_details"] = val or {}
+        self.permissions = p
+
+    @property
+    def documents(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("documents", {})
+
+    @documents.setter
+    def documents(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["documents"] = val or {}
+        self.permissions = p
+
+    @property
+    def terms_accepted(self) -> str:
+        return (self.permissions or {}).get("terms_accepted", "true")
+
+    @terms_accepted.setter
+    def terms_accepted(self, val: str):
+        p = dict(self.permissions or {})
+        p["terms_accepted"] = val
+        self.permissions = p
+
+    @property
+    def terms_accepted_at(self) -> Optional[datetime]:
+        iso_str = (self.permissions or {}).get("terms_accepted_at")
+        if iso_str:
+            try:
+                return datetime.fromisoformat(iso_str)
+            except Exception:
+                return None
+        return None
+
+    @terms_accepted_at.setter
+    def terms_accepted_at(self, val: Any):
+        p = dict(self.permissions or {})
+        if isinstance(val, datetime):
+            p["terms_accepted_at"] = val.isoformat()
+        else:
+            p["terms_accepted_at"] = str(val) if val else None
+        self.permissions = p
+
+    @property
+    def terms_accepted_by(self) -> Optional[str]:
+        return (self.permissions or {}).get("terms_accepted_by")
+
+    @terms_accepted_by.setter
+    def terms_accepted_by(self, val: Optional[str]):
+        p = dict(self.permissions or {})
+        p["terms_accepted_by"] = val
+        self.permissions = p
+
+    # Relationships
     company = relationship("Company", back_populates="hr_users")
     candidates = relationship("Candidate", back_populates="hr_user")

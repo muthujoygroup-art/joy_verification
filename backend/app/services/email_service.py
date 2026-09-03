@@ -40,8 +40,26 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
         try:
             from backend.app.models.system import CommunicationGateway
             
-            # Step 1: Check if company has a dedicated custom SMTP gateway configured
+            # Step 1: Check if company has custom SMTP settings stored in Company.features or CommunicationGateway
             if company_id:
+                from backend.app.models.company import Company
+                comp_obj = db.query(Company).filter(Company.id == company_id).first()
+                if comp_obj and comp_obj.features and comp_obj.features.get("smtp_settings"):
+                    sd = comp_obj.features["smtp_settings"]
+                    if sd.get("use_custom_smtp") or sd.get("host"):
+                        return {
+                            "host": sd.get("host") or config["host"],
+                            "port": int(sd.get("port") or config["port"]),
+                            "user": sd.get("user") or sd.get("username") or config["user"],
+                            "password": sd.get("password") or config["password"],
+                            "from_email": sd.get("from_email") or config["from_email"],
+                            "from_name": sd.get("from_name") or f"{comp_obj.name} - Verification Portal",
+                            "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
+                            "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                            "mode": "custom_company",
+                            "company_id": company_id
+                        }
+
                 comp_gw = db.query(CommunicationGateway).filter(
                     CommunicationGateway.gateway_type == "email_smtp",
                     CommunicationGateway.company_id == company_id,
@@ -439,6 +457,127 @@ def send_hr_welcome_email(
 # =============================================================================
 # 3. 📱 CANDIDATE ONBOARDING INVITATION (HR Recruiter -> Candidate)
 # =============================================================================
+# =============================================================================
+# 2. 👔 HR RECRUITER SELF-ONBOARDING & ACTIVATION EMAILS
+# =============================================================================
+def send_hr_invitation_email(
+    hr_name: str,
+    hr_code: str,
+    hr_email: str,
+    activation_token: str,
+    activation_pin: str,
+    company_name: str,
+    company_id: Optional[str] = None,
+    department: str = "Human Resources",
+    designation: str = "HR Recruiter",
+    db = None
+) -> Dict[str, Any]:
+    """
+    Dispatches self-activation invitation email to newly invited HR Recruiter with security PIN.
+    """
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    activation_url = f"{app_url}/hr-activation?token={activation_token}"
+
+    content = f"""
+    <h2 style="color: #0f172a; font-size: 17px; font-weight: 800; margin-top: 0; line-height: 1.4;">
+        Welcome {hr_name}! Complete Your HR Profile for {company_name}
+    </h2>
+    <p style="font-size: 13px; color: #475569; line-height: 1.6;">
+        You have been invited by <strong>{company_name}</strong> to join the Background Verification & Candidate Onboarding workstation as <strong>{designation}</strong> in <strong>{department}</strong>.
+    </p>
+
+    <!-- 4-Digit Security PIN Box -->
+    <div style="background-color: #f8fafc; border: 2px dashed #6366f1; border-radius: 14px; padding: 18px; margin: 20px 0; text-align: center;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4f46e5; letter-spacing: 0.5px; margin-bottom: 6px;">
+            🔐 Your 4-Digit Security Unlock PIN:
+        </div>
+        <div style="font-size: 32px; font-family: 'Courier New', monospace; font-weight: 900; color: #1e1b4b; letter-spacing: 6px; margin: 6px 0;">
+            {activation_pin}
+        </div>
+        <div style="font-size: 11.5px; color: #64748b;">
+            Enter this 4-digit PIN when opening your personal onboarding link below.
+        </div>
+    </div>
+
+    <!-- Onboarding Step Guide -->
+    <div style="background-color: #f0fdf4; border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 12.5px; color: #166534;">
+        <strong>📋 4 Quick Steps in Self-Activation:</strong>
+        <ol style="margin: 6px 0 0 16px; padding: 0; line-height: 1.6;">
+            <li>Enter your 4-digit security PIN to unlock the wizard.</li>
+            <li>Fill your personal contact & permanent address details.</li>
+            <li>Enter your educational background and upload ID proof.</li>
+            <li>Review and digitally accept the HR Confidentiality & DPDP Consent.</li>
+        </ol>
+    </div>
+
+    <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
+        This activation link is confidential and restricted for your authorized email (<code>{hr_email}</code>).
+    </p>
+    """
+
+    html = _build_email_shell(
+        header_title=f"HR Recruiter Onboarding - {company_name}",
+        badge_text="HR RECRUITER INVITATION",
+        content_html=content,
+        action_url=activation_url,
+        action_text="Complete HR Self-Activation →",
+        sender_brand=company_name
+    )
+
+    subject = f"👔 Complete Your HR Profile - {company_name} (#{hr_code})"
+    return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
+
+
+def send_hr_approval_email(
+    hr_name: str,
+    hr_code: str,
+    hr_email: str,
+    company_name: str,
+    company_id: Optional[str] = None,
+    login_password: str = "Hr@Recruiter2026",
+    db = None
+) -> Dict[str, Any]:
+    """
+    Dispatches confirmation email to HR Recruiter once approved by Company Admin.
+    """
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    login_url = f"{app_url}/login"
+
+    content = f"""
+    <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0;">
+        🎉 Congratulations {hr_name}! Your HR Recruiter Account is Approved!
+    </h2>
+    <p style="font-size: 13px; color: #475569; line-height: 1.6;">
+        Your recruiter profile for <strong>{company_name}</strong> (Staff Code: <strong>#{hr_code}</strong>) has been officially reviewed and approved by your Company Administrator.
+    </p>
+    <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 18px; margin: 20px 0;">
+        <div style="font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; margin-bottom: 8px;">
+            ✅ HR Workstation Login Credentials:
+        </div>
+        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
+            <tr><td width="35%" style="color: #64748b; font-weight: bold;">Login Portal:</td><td style="color: #4338ca; font-weight: bold;">HR Recruiter Portal</td></tr>
+            <tr><td style="color: #64748b; font-weight: bold;">Username:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">{hr_email}</td></tr>
+            <tr><td style="color: #64748b; font-weight: bold;">Staff ID:</td><td style="color: #0f172a; font-family: monospace; font-weight: bold;">#{hr_code}</td></tr>
+        </table>
+    </div>
+    <p style="font-size: 12.5px; color: #334155;">
+        You can now log in to invite candidates, initiate live verification checks, and review identity records.
+    </p>
+    """
+
+    html = _build_email_shell(
+        header_title=f"HR Recruiter Approved - {company_name}",
+        badge_text="ACCOUNT ACTIVATED",
+        content_html=content,
+        action_url=login_url,
+        action_text="Open HR Recruiter Portal →",
+        sender_brand=company_name
+    )
+
+    subject = f"🎉 HR Account Approved & Active - {company_name} (#{hr_code})"
+    return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
+
+
 def send_candidate_onboarding_email(
     candidate_name: str,
     candidate_code: str,

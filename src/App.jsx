@@ -9,6 +9,7 @@ import { CompanyAdminView } from './views/CompanyAdminView';
 import { HrExecutiveView } from './views/HrExecutiveView';
 import { EmployeePortalView } from './views/EmployeePortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
+import { HrActivationView } from './views/HrActivationView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModal';
@@ -139,6 +140,7 @@ const MainApp = () => {
         <Route path="/company/*" element={<CompanyRoute />} />
         <Route path="/hr/*" element={<HrRoute />} />
         <Route path="/company-activation" element={<CompanyActivationView />} />
+        <Route path="/hr-activation" element={<HrActivationView />} />
         <Route path="/verify" element={<CandidateRoute />} />
         <Route path="/candidate" element={<CandidateRoute />} />
         <Route path="/login" element={<GenericLoginRoute />} />

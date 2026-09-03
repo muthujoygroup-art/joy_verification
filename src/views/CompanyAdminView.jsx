@@ -1,3 +1,4 @@
+import { api } from '../services/api';
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -15,6 +16,7 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
+import { HrGovernanceModal } from '../components/HrGovernanceModal';
 import {
   AlertTriangle,
   BarChart3,
@@ -76,6 +78,136 @@ export const CompanyAdminView = () => {
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
+  const [showAddHrModal, setShowAddHrModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showRazorpayModal, setShowRazorpayModal] = useState(false);
+  const [showGatewaysModal, setShowGatewaysModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [inspectCandidate, setInspectCandidate] = useState(null);
+  const [downloadingCandidate, setDownloadingCandidate] = useState(null);
+  const [activeDrilldown, setActiveDrilldown] = useState(null);
+  const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
+  const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
+  const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
+
+  // 👔 HR Recruiter Governance & Activation States
+  const [governanceHr, setGovernanceHr] = useState(null);
+  const [activatingHr, setActivatingHr] = useState(null);
+  const [dbHrUsers, setDbHrUsers] = useState([]);
+  const [isLoadingHr, setIsLoadingHr] = useState(false);
+
+  // 📧 Company Outgoing SMTP Mail Server States
+  const [smtpForm, setSmtpForm] = useState({
+    use_custom_smtp: true,
+    host: 'mail.joycorporatesolutions.com',
+    port: 465,
+    user: '',
+    password: '',
+    from_email: '',
+    from_name: '',
+    use_ssl: true,
+    use_tls: false
+  });
+  const [isSavingSmtp, setIsSavingSmtp] = useState(false);
+  const [isTestingSmtp, setIsTestingSmtp] = useState(false);
+  const [testSmtpEmail, setTestSmtpEmail] = useState('');
+
+  // 4-Digit PIN & Advanced New HR State
+  const [newHr, setNewHr] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    dept: 'Engineering Recruitment',
+    designation: 'HR Recruiter',
+    password: 'Hr@Recruiter2026',
+    activation_password: '1234',
+    send_email: true
+  });
+
+  // Save Company Custom SMTP
+  const handleSaveSmtp = async (e) => {
+    e?.preventDefault();
+    setIsSavingSmtp(true);
+    try {
+      const res = await api.saveCompanySmtpSettings(company.id, smtpForm);
+      showToast(res.message || '💾 Company SMTP configuration saved to PostgreSQL!');
+    } catch (err) {
+      showToast(`❌ Failed to save SMTP: ${err.message}`, 'error');
+    } finally {
+      setIsSavingSmtp(false);
+    }
+  };
+
+  // Test Company SMTP
+  const handleTestSmtp = async (e) => {
+    e?.preventDefault();
+    if (!testSmtpEmail || !testSmtpEmail.includes('@')) {
+      showToast('⚠️ Please enter a valid test recipient email address');
+      return;
+    }
+    setIsTestingSmtp(true);
+    try {
+      const res = await api.testCompanySmtpDispatch(company.id, testSmtpEmail, smtpForm);
+      showToast(res.message || `📧 Test email sent to ${testSmtpEmail}!`);
+    } catch (err) {
+      showToast(`❌ SMTP Test Failed: ${err.message}`, 'error');
+    } finally {
+      setIsTestingSmtp(false);
+    }
+  };
+
+  // Onboard HR Recruiter Submit
+  const handleOnboardHrSubmit = async (e) => {
+    e?.preventDefault();
+    if (!newHr.name || !newHr.email) {
+      showToast('⚠️ Name and Email are required');
+      return;
+    }
+    try {
+      const res = await api.onboardHrUser(company.id, newHr);
+      showToast(res.message || `🎉 HR Recruiter ${newHr.name} onboarded!`);
+      if (res.hr_user) {
+        setDbHrUsers(prev => [res.hr_user, ...prev]);
+      }
+      setShowAddHrModal(false);
+      setNewHr({
+        name: '',
+        email: '',
+        phone: '',
+        dept: 'Engineering Recruitment',
+        designation: 'HR Recruiter',
+        password: 'Hr@Recruiter2026',
+        activation_password: '1234',
+        send_email: true
+      });
+    } catch (err) {
+      showToast(`❌ Failed to onboard HR: ${err.message}`, 'error');
+    }
+  };
+
+  // 1-Click Approve HR Recruiter
+  const handleApproveHr = async (hrId, hrName) => {
+    try {
+      const res = await api.approveHrUser(company.id, hrId);
+      showToast(res.message || `🎉 ${hrName} approved and live login access granted!`);
+      setDbHrUsers(prev => prev.map(h => h.id === hrId ? { ...h, status: 'Active', activation_status: 'Active' } : h));
+    } catch (err) {
+      showToast(`❌ Approval failed: ${err.message}`, 'error');
+    }
+  };
+
+  // Resend HR Activation Email
+  const handleResendHrActivation = async (hrId, hrEmail) => {
+    try {
+      const res = await api.resendHrActivationEmail(company.id, hrId);
+      showToast(res.message || `📧 Activation invitation resent to ${hrEmail}!`);
+    } catch (err) {
+      showToast(`❌ Failed to resend email: ${err.message}`, 'error');
+    }
+  };
 
   // Listen to tour action events from Navbar / Tour Modal
   React.useEffect(() => {
@@ -98,23 +230,41 @@ export const CompanyAdminView = () => {
     return () => window.removeEventListener('tour_feature_action', handleTourAction);
   }, []);
 
-    const [showAddHrModal, setShowAddHrModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showRazorpayModal, setShowRazorpayModal] = useState(false);
-  const [showGatewaysModal, setShowGatewaysModal] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false);
-  const [inspectCandidate, setInspectCandidate] = useState(null);
-  const [downloadingCandidate, setDownloadingCandidate] = useState(null);
-  const [activeDrilldown, setActiveDrilldown] = useState(null);
-  const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
-  const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
-  const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
-  const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
-
   const company = companies.find(c => c.id === selectedCompanyId) || companies[0];
   const companyHrUsers = hrUsers.filter(h => h.companyId === company.id);
+  // Fetch Company SMTP Settings and HR Recruiters from PostgreSQL
+  useEffect(() => {
+    if (!company?.id) return;
+
+    // Load HR Users
+    setIsLoadingHr(true);
+    api.getCompanyHrUsers(company.id)
+      .then(data => {
+        if (Array.isArray(data)) setDbHrUsers(data);
+      })
+      .catch(err => console.warn('Could not load HR users from DB:', err))
+      .finally(() => setIsLoadingHr(false));
+
+    // Load SMTP Settings
+    api.getCompanySmtpSettings(company.id)
+      .then(res => {
+        if (res && res.smtp_settings) {
+          setSmtpForm(prev => ({
+            ...prev,
+            ...res.smtp_settings,
+            user: res.smtp_settings.user || company.email || '',
+            from_email: res.smtp_settings.from_email || company.email || '',
+            from_name: res.smtp_settings.from_name || `${company.name} - Verification Portal`
+          }));
+          setTestSmtpEmail(company.email || '');
+        }
+      })
+      .catch(err => console.warn('Could not load SMTP settings:', err));
+  }, [company?.id]);
+
+  // Combine DB HR users with context HR users
+  const allCompanyHrUsers = dbHrUsers.length > 0 ? dbHrUsers : companyHrUsers;
+
   const companyCandidates = candidates.filter(c => c.companyId === company.id);
 
   const filteredCandidates = (companyCandidates || []).filter(c => 
@@ -162,25 +312,6 @@ export const CompanyAdminView = () => {
   const [compTestRecipient, setCompTestRecipient] = useState('');
   const [isSendingCompTestEmail, setIsSendingCompTestEmail] = useState(false);
   const [compTestEmailResult, setCompTestEmailResult] = useState(null);
-
-  const [newHr, setNewHr] = useState({
-    name: '',
-    email: '',
-    password: 'Hr@Recruiter2026',
-    dept: 'Engineering Recruitment'
-  });
-
-  const handleAddHrSubmit = (e) => {
-    e.preventDefault();
-    if (!newHr.name || !newHr.email) return;
-    addHrUser({
-      ...newHr,
-      companyId: company.id
-    });
-    setShowAddHrModal(false);
-    showToast(`✅ Created HR Account for ${newHr.name} (${newHr.email})!`);
-    setNewHr({ name: '', email: '', password: 'Hr@Recruiter2026', dept: 'Engineering Recruitment' });
-  };
 
   const handleToggleFeature = (featKey, val) => {
     const updated = {
@@ -977,65 +1108,175 @@ export const CompanyAdminView = () => {
       )}
 
       {/* TAB: HR EXECUTIVE TEAM */}
-      {activeTab === 'hrteam' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4">
+            {activeTab === 'hrteam' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-sky-600" />
-                <span>HR Executive Staff Directory & Access Tiers</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">HR executives responsible for initiating candidate verification forms</p>
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-600" />
+                <h3 className="text-lg font-black text-slate-900">HR Recruiter Directory & Governance Hub</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  {allCompanyHrUsers.length} Appointed Staff
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Onboard recruiters with automated self-activation links, 4-digit PIN security, and audit submitted statutory dossiers.
+              </p>
             </div>
+            
             <button 
               onClick={() => setShowAddHrModal(true)}
-              className="btn btn-company text-xs flex items-center gap-1.5"
+              className="btn btn-company text-xs flex items-center gap-1.5 py-2 px-4 shadow-md font-bold"
             >
               <UserPlus className="w-4 h-4" />
-              <span>Add HR Executive</span>
+              <span>+ Onboard HR Recruiter 🚀</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(companyHrUsers || []).map(hr => (
-              <div key={hr.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-sky-300 transition-all">
-                <div className="flex items-center justify-between">
-                  <span className="badge badge-cyan text-[10px]">{hr.dept}</span>
-                  <span className="text-[11px] text-slate-500 font-medium">{hr.activeLinks} Active Links</span>
-                </div>
-                <h4 className="font-extrabold text-slate-900 text-sm">{hr.name}</h4>
-                <p className="text-xs text-slate-500">{hr.email}</p>
-                <div className="pt-2 flex justify-between items-center text-xs border-t border-slate-200 gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className={`badge text-[10px] font-bold ${
-                      hr.status === 'Inactive' || hr.status === 'Deactivated'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                    }`}>
-                      {hr.status === 'Inactive' || hr.status === 'Deactivated' ? '🔴 Inactive' : '🟢 Active'}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleHrStatus(hr.id, hr.status)}
-                      className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
-                        hr.status === 'Inactive' || hr.status === 'Deactivated'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
-                          : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
-                      }`}
-                    >
-                      {hr.status === 'Inactive' || hr.status === 'Deactivated' ? 'Activate 🟢' : 'Deactivate 🔴'}
-                    </button>
-                  </div>
-                  <button 
-                    onClick={() => setRoleView('hrexecutive')}
-                    className="text-sky-700 hover:underline font-bold flex items-center gap-1 text-[11px]"
-                  >
-                    <span>HR Station</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
+          {/* HR RECRUITERS TABLE */}
+          <div className="overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-black text-[10px] tracking-wider">
+                  <th className="py-3 px-4">Recruiter Profile</th>
+                  <th className="py-3 px-4">Contact Info</th>
+                  <th className="py-3 px-4">Department & Role</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {allCompanyHrUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-slate-400 font-semibold">
+                      No HR recruiters onboarded yet. Click "+ Onboard HR Recruiter" to invite your first team member!
+                    </td>
+                  </tr>
+                ) : (
+                  allCompanyHrUsers.map(hr => {
+                    const isPendingAct = hr.status === 'Pending Activation' || hr.activation_status === 'Pending Activation';
+                    const isPendingApp = hr.status === 'Pending Approval' || hr.activation_status === 'Pending Approval';
+                    const isAct = hr.status === 'Active';
+
+                    return (
+                      <tr key={hr.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-black text-xs">
+                              {hr.name ? hr.name.charAt(0).toUpperCase() : 'H'}
+                            </div>
+                            <div>
+                              <div 
+                                onClick={() => setGovernanceHr(hr)}
+                                className="font-black text-slate-900 text-sm hover:text-indigo-600 transition-colors cursor-pointer underline decoration-dotted decoration-indigo-300"
+                                title="Click to view full HR profile & documents"
+                              >
+                                {hr.name}
+                              </div>
+                              <span className="font-mono text-[10px] text-slate-400">#{hr.id}</span>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="space-y-0.5">
+                            <div className="font-mono font-bold text-slate-800 text-[11px]">{hr.email}</div>
+                            <div className="text-[11px] text-slate-500">{hr.phone || (hr.personal_details || {}).phone || 'No phone set'}</div>
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div>
+                            <div className="font-bold text-slate-800">{hr.dept || 'Human Resources'}</div>
+                            <div className="text-[11px] text-slate-500">{hr.designation || 'HR Recruiter'}</div>
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4 text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            {isPendingAct ? (
+                              <span className="badge badge-amber text-[10px] font-black py-1 px-2 border border-amber-300">
+                                🟡 PENDING ACTIVATION
+                              </span>
+                            ) : isPendingApp ? (
+                              <span className="badge badge-purple text-[10px] font-black py-1 px-2 border border-purple-300 animate-pulse">
+                                🟣 PENDING APPROVAL
+                              </span>
+                            ) : isAct ? (
+                              <span className="badge badge-emerald text-[10px] font-black py-1 px-2 border border-emerald-300">
+                                🟢 ACTIVE & VERIFIED
+                              </span>
+                            ) : (
+                              <span className="badge badge-rose text-[10px] font-black py-1 px-2 border border-rose-300">
+                                🔴 SUSPENDED
+                              </span>
+                            )}
+
+                            {isPendingApp && (
+                              <button
+                                type="button"
+                                onClick={() => handleApproveHr(hr.id, hr.name)}
+                                className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm cursor-pointer transition-all active:scale-95"
+                                title="Approve & Grant Workstation Login"
+                              >
+                                ✅ Approve Recruiter
+                              </button>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setGovernanceHr(hr)}
+                              className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
+                              title="View & Edit HR Profile, Reset Password, Check Educational Records"
+                            >
+                              <User className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>Manage Profile ⚙️</span>
+                            </button>
+
+                            {isPendingAct && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setActivatingHr(hr)}
+                                  className="px-2 py-1 rounded-lg text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 cursor-pointer"
+                                  title="View HR Activation Token & PIN"
+                                >
+                                  🔗 Link & PIN
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleResendHrActivation(hr.id, hr.email)}
+                                  className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 cursor-pointer"
+                                  title="Resend Invitation Email"
+                                >
+                                  📧 Resend
+                                </button>
+                              </>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleToggleHrStatus(hr.id, hr.status)}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer transition-all ${
+                                hr.status === 'Suspended' || hr.status === 'Inactive'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                  : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                              }`}
+                            >
+                              {hr.status === 'Suspended' || hr.status === 'Inactive' ? 'Reactivate 🟢' : 'Suspend ⏸️'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -1266,6 +1507,130 @@ export const CompanyAdminView = () => {
             }} 
             className="space-y-6 text-xs"
           >
+                        {/* 📧 COMPANY CUSTOM OUTGOING SMTP MAIL SERVER CONFIGURATION */}
+            <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/70 via-white to-sky-50/70 space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-sm">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-900 text-base">
+                      Company Outgoing Mail Server & SMTP Gateway Configuration
+                    </h4>
+                    <p className="text-slate-500 text-[11px]">
+                      Configure your company's dedicated mail server to dispatch HR onboarding invitations and candidate verification links.
+                    </p>
+                  </div>
+                </div>
+
+                <span className="badge badge-emerald text-[10px] font-black">
+                  {smtpForm.use_custom_smtp ? 'CUSTOM COMPANY SMTP ACTIVE' : 'PLATFORM MASTER FALLBACK'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">SMTP Host Server *</label>
+                  <input
+                    type="text"
+                    value={smtpForm.host}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, host: e.target.value })}
+                    placeholder="mail.joycorporatesolutions.com"
+                    className="form-input font-mono text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">SMTP Port *</label>
+                  <input
+                    type="number"
+                    value={smtpForm.port}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, port: parseInt(e.target.value) || 465 })}
+                    placeholder="465"
+                    className="form-input font-mono text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">SMTP Username / Email *</label>
+                  <input
+                    type="text"
+                    value={smtpForm.user}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, user: e.target.value })}
+                    placeholder="info@joycorporatesolutions.com"
+                    className="form-input font-mono text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">SMTP Webmail Password *</label>
+                  <input
+                    type="password"
+                    value={smtpForm.password}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, password: e.target.value })}
+                    placeholder="••••••••••••"
+                    className="form-input font-mono text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Sender Display Name (From Header)</label>
+                  <input
+                    type="text"
+                    value={smtpForm.from_name}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, from_name: e.target.value })}
+                    placeholder={`${company?.name || 'Company'} - HR Desk`}
+                    className="form-input text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Sender Email Address</label>
+                  <input
+                    type="email"
+                    value={smtpForm.from_email}
+                    onChange={(e) => setSmtpForm({ ...smtpForm, from_email: e.target.value })}
+                    placeholder={company?.email || 'info@joycorporatesolutions.com'}
+                    className="form-input font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* SAVE & LIVE TEST TOOLBAR */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-indigo-100">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="email"
+                    value={testSmtpEmail}
+                    onChange={(e) => setTestSmtpEmail(e.target.value)}
+                    placeholder="Enter test recipient email..."
+                    className="form-input text-xs w-full sm:w-64 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleTestSmtp}
+                    disabled={isTestingSmtp}
+                    className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50 cursor-pointer shadow-2xs whitespace-nowrap"
+                  >
+                    {isTestingSmtp ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <SendHorizontal className="w-3.5 h-3.5" />}
+                    <span>{isTestingSmtp ? 'Sending...' : 'Send Live Test Email 📨'}</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSaveSmtp}
+                  disabled={isSavingSmtp}
+                  className="btn btn-primary text-xs py-2 px-5 flex items-center gap-2 font-black shadow-md cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSavingSmtp ? 'Saving...' : '💾 Save SMTP Configuration to PostgreSQL'}</span>
+                </button>
+              </div>
+            </div>
+
+
             {/* 🏢 VERIFICATION MODULES & PIPELINE TOGGLES (ACTIVE CHECKS FOR EMPLOYEE LINK) */}
             <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/70 space-y-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
@@ -2462,84 +2827,183 @@ export const CompanyAdminView = () => {
         </div>
       )}
 
-      {/* Add HR Modal */}
+            {/* Add HR Onboarding Modal */}
       {showAddHrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-sky-600" />
-                <span>Create HR Executive Account</span>
-              </h3>
-              <button onClick={() => setShowAddHrModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">Onboard & Invite HR Recruiter</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">Provision workstation access with 4-digit PIN security</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddHrModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
             </div>
 
-            <form onSubmit={handleAddHrSubmit} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">HR Executive Name *</label>
-                <input 
-                  type="text"
-                  required
-                  placeholder="e.g. Priya Sundaram"
-                  value={newHr.name}
-                  onChange={(e) => setNewHr({ ...newHr, name: e.target.value })}
-                  className="form-input"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Work Email Address *</label>
-                <input 
-                  type="email"
-                  required
-                  placeholder="priya.s@company.com"
-                  value={newHr.email}
-                  onChange={(e) => setNewHr({ ...newHr, email: e.target.value })}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleOnboardHrSubmit} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Recruitment Department</label>
-                  <select 
-                    value={newHr.dept}
-                    onChange={(e) => setNewHr({ ...newHr, dept: e.target.value })}
-                    className="form-select text-xs font-bold"
-                  >
-                    <option value="Engineering Recruitment">Engineering Recruitment</option>
-                    <option value="Executive Talent Acquisition">Executive Talent Acquisition</option>
-                    <option value="Operations & Logistics Onboarding">Operations & Logistics Onboarding</option>
-                    <option value="General HR Operations">General HR Operations</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Initial Password *</label>
+                  <label className="block text-slate-700 font-bold mb-1">HR Recruiter Full Name *</label>
                   <input 
                     type="text"
                     required
-                    placeholder="Hr@Recruiter2026"
-                    value={newHr.password}
-                    onChange={(e) => setNewHr({ ...newHr, password: e.target.value })}
-                    className="form-input font-mono font-bold"
+                    placeholder="e.g. Priya Sundaram"
+                    value={newHr.name}
+                    onChange={(e) => setNewHr({ ...newHr, name: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Work Email Address *</label>
+                  <input 
+                    type="email"
+                    required
+                    placeholder="priya.s@company.com"
+                    value={newHr.email}
+                    onChange={(e) => setNewHr({ ...newHr, email: e.target.value })}
+                    className="form-input font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Official Mobile / Phone</label>
+                  <input 
+                    type="text"
+                    placeholder="+91 98401 23456"
+                    value={newHr.phone}
+                    onChange={(e) => setNewHr({ ...newHr, phone: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Recruitment Department</label>
+                  <input 
+                    type="text"
+                    placeholder="e.g. Talent Acquisition"
+                    value={newHr.dept}
+                    onChange={(e) => setNewHr({ ...newHr, dept: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Designation / Role</label>
+                  <input 
+                    type="text"
+                    placeholder="e.g. Senior Technical Recruiter"
+                    value={newHr.designation}
+                    onChange={(e) => setNewHr({ ...newHr, designation: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">4-Digit Security Unlock PIN *</label>
+                  <input 
+                    type="text"
+                    maxLength={6}
+                    required
+                    placeholder="1234"
+                    value={newHr.activation_password}
+                    onChange={(e) => setNewHr({ ...newHr, activation_password: e.target.value })}
+                    className="form-input font-mono font-black text-center tracking-widest text-sm bg-emerald-50 border-emerald-300 text-emerald-900"
                   />
                 </div>
               </div>
 
-              <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 text-[11px] text-sky-900 font-medium flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0" />
-                <span>The HR Executive can sign in immediately at the HR Portal with these credentials.</span>
+              <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200 text-[11px] text-indigo-900 font-medium space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-indigo-700">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Automated Self-Onboarding Workflow:</span>
+                </div>
+                <p>
+                  A self-activation invitation link will be dispatched to <strong>{newHr.email || 'the recruiter'}</strong> along with the 4-digit PIN. Once the recruiter completes their profile and document proofs, you can give final 1-click authorization.
+                </p>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowAddHrModal(false)} className="btn btn-secondary text-xs font-bold">Cancel</button>
-                <button type="submit" className="btn btn-company text-xs font-bold">Provision HR Account</button>
+                <button type="button" onClick={() => setShowAddHrModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+                <button type="submit" className="btn btn-company text-xs font-black py-2 px-5 shadow-md cursor-pointer">
+                  🚀 Onboard & Send Invitation Link
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* HR Link & PIN Modal */}
+      {activatingHr && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-indigo-600" />
+                <span>HR Self-Activation Credentials</span>
+              </h3>
+              <button onClick={() => setActivatingHr(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="text-slate-500 font-bold block mb-1">HR Recruiter:</span>
+                <span className="text-sm font-black text-slate-900">{activatingHr.name} ({activatingHr.email})</span>
+              </div>
+
+              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-center">
+                <span className="text-[11px] font-bold text-emerald-700 uppercase block mb-1">4-Digit Security Unlock PIN</span>
+                <span className="text-3xl font-mono font-black text-emerald-900 tracking-widest">{activatingHr.activation_password || '1234'}</span>
+              </div>
+
+              <div className="p-3.5 bg-indigo-50 rounded-xl border border-indigo-200">
+                <span className="text-indigo-700 font-bold block mb-1">Self-Activation URL:</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}/hr-activation?token=${activatingHr.activation_token}`}
+                    className="form-input text-[11px] font-mono select-all bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/hr-activation?token=${activatingHr.activation_token}`);
+                      showToast('📋 Activation link copied to clipboard!');
+                    }}
+                    className="p-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 cursor-pointer"
+                    title="Copy Link"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-100">
+              <button onClick={() => setActivatingHr(null)} className="btn btn-secondary text-xs font-bold cursor-pointer">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HR GOVERNANCE & PROFILE DOSSIER MODAL */}
+      {governanceHr && (
+        <HrGovernanceModal
+          hrUser={governanceHr}
+          companyId={company.id}
+          isOpen={!!governanceHr}
+          onClose={() => setGovernanceHr(null)}
+          onUpdateHr={(updated) => setDbHrUsers(prev => prev.map(h => h.id === updated.id ? { ...h, ...updated } : h))}
+          showToast={showToast}
+        />
+      )}
+
 
       {/* Online Payment & Settlement Modal */}
       {showPaymentModal && (

@@ -184,6 +184,62 @@ export const api = {
   getCompanyActivationDetails: (token) => request(`/company/activation/${token}`),
   unlockCompanyActivation: (token, password) => request('/company/activation/unlock', { method: 'POST', body: JSON.stringify({ token, password }) }),
   completeCompanyActivation: (payload) => request('/company/activation/complete', { method: 'POST', body: JSON.stringify(payload) }),
+
+  // Company SMTP Settings
+  getCompanySmtpSettings: (companyId) => request(`/company/${companyId}/smtp`),
+  saveCompanySmtpSettings: (companyId, settingsData) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/smtp`, {
+      method: 'POST',
+      body: JSON.stringify(settingsData)
+    });
+  },
+  testCompanySmtpDispatch: (companyId, toEmail, smtpConfig) => {
+    return request(`/company/${companyId}/smtp/test`, {
+      method: 'POST',
+      body: JSON.stringify({ to_email: toEmail, smtp_config: smtpConfig })
+    });
+  },
+
+  // HR Recruiter Onboarding & Governance
+  getCompanyHrUsers: (companyId) => request(`/company/${companyId}/hr-users`),
+  onboardHrUser: (companyId, payload) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/hr-users`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+  getHrActivationDetails: (token) => request(`/company/hr-activation/${token}`),
+  unlockHrActivation: (token, password) => request('/company/hr-activation/unlock', {
+    method: 'POST',
+    body: JSON.stringify({ token, password })
+  }),
+  completeHrActivation: (payload) => request('/company/hr-activation/complete', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  approveHrUser: (companyId, hrId) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/hr-users/${hrId}/approve`, { method: 'PUT' });
+  },
+  updateHrPassword: (companyId, hrId, password, sendEmail = true) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/hr-users/${hrId}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password, send_email: sendEmail })
+    });
+  },
+  updateHrProfile: (companyId, hrId, profileData) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/hr-users/${hrId}/profile`, {
+      method: 'PUT',
+      body: JSON.stringify(profileData)
+    });
+  },
+  resendHrActivationEmail: (companyId, hrId) => {
+    return request(`/company/${companyId}/hr-users/${hrId}/resend-activation`, { method: 'POST' });
+  },
   createCompany: (companyData) => {
     requestCache.clear();
     return request('/superadmin/companies', {
