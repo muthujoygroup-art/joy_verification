@@ -1139,6 +1139,73 @@ export const HrExecutiveView = () => {
     setTimeout(() => setCopiedToken(null), 2500);
   };
 
+
+  // Load saved HR preferences on mount
+  useEffect(() => {
+    if (!activeHr?.id) return;
+    api.getHrPreferences(activeHr.id)
+      .then(res => {
+        if (res && res.preferences) {
+          setHrPreferences(prev => ({
+            ...prev,
+            ...res.preferences,
+            notification_email: res.preferences.notification_email || activeHr.email || '',
+            sender_display_name: res.preferences.sender_display_name || `${activeHr.name} (${currentCompany.name})`,
+            sender_email: res.preferences.sender_email || activeHr.email || '',
+            smtp_user: res.preferences.smtp_user || activeHr.email || ''
+          }));
+          setTestSmtpEmail(res.preferences.notification_email || activeHr.email || '');
+        }
+      })
+      .catch(err => console.warn('Could not load HR preferences:', err));
+  }, [activeHr?.id]);
+
+  // Test Outgoing Mail Dispatch
+  const handleTestHrSmtp = async (e) => {
+    if (e) e.preventDefault();
+    if (!testSmtpEmail || !testSmtpEmail.includes('@')) {
+      showToast('⚠️ Please enter a valid test recipient email address');
+      return;
+    }
+    setIsTestingSmtp(true);
+    try {
+      const cfg = {
+        host: hrPreferences.smtp_host || 'mail.joycorporatesolutions.com',
+        port: hrPreferences.smtp_port || 465,
+        user: hrPreferences.smtp_user || activeHr.email || '',
+        password: hrPreferences.smtp_password || '',
+        from_email: hrPreferences.sender_email || activeHr.email || '',
+        from_name: hrPreferences.sender_display_name || activeHr.name,
+        use_ssl: true
+      };
+      const res = await api.testCompanySmtpDispatch(currentCompany.id, testSmtpEmail, cfg);
+      showToast(res.message || `📧 Test email sent to ${testSmtpEmail}!`);
+    } catch (err) {
+      showToast(`❌ SMTP Test Failed: ${err.message}`, 'error');
+    } finally {
+      setIsTestingSmtp(false);
+    }
+  };
+
+  // Change HR Login Password
+  const handleUpdateHrLoginPassword = async (e) => {
+    if (e) e.preventDefault();
+    if (!hrNewPassword || hrNewPassword.length < 4) {
+      showToast('⚠️ Password must be at least 4 characters');
+      return;
+    }
+    setIsUpdatingHrPassword(true);
+    try {
+      const res = await api.updateHrPassword(currentCompany.id, activeHr.id, hrNewPassword, false);
+      showToast(res.message || '🔐 Workstation login password updated successfully!');
+      setHrNewPassword('');
+    } catch (err) {
+      showToast(`❌ Failed to update password: ${err.message}`, 'error');
+    } finally {
+      setIsUpdatingHrPassword(false);
+    }
+  };
+
   // 👔 Save HR Notification Preferences
   const handleSaveHrPreferences = async (e) => {
     if (e) e.preventDefault();
