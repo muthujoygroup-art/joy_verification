@@ -1058,6 +1058,11 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Update Company Status (Active / Suspended / Pending Approval / Pending Activation)
+  const updateCompanyStatus = (companyId, newStatus) => {
+    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, status: newStatus, activation_status: newStatus } : c));
+  };
+
   // Update Company Features
   const updateCompanyFeatures = async (companyId, newFeatures, newPlan) => {
     setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, features: newFeatures, plan: newPlan || c.plan } : c));
