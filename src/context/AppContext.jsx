@@ -1213,6 +1213,50 @@ export const AppProvider = ({ children }) => {
   };
 
 
+
+  // Toggle Candidate Status between Active (Pending/Verified) and Inactive
+  const toggleCandidateStatus = async (candidateId, specificStatus = null) => {
+    try {
+      const cand = candidates.find(c => c.id === candidateId || c.token === candidateId);
+      const newStatus = specificStatus || (cand?.status === 'Inactive' ? 'Pending' : 'Inactive');
+      
+      await api.toggleCandidateStatus(candidateId, newStatus);
+      
+      setCandidates(prev => {
+        const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus } : c);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+      showToast(`Candidate status updated to: ${newStatus}`);
+      return true;
+    } catch (err) {
+      console.warn('Error toggling candidate status:', err);
+      const cand = candidates.find(c => c.id === candidateId || c.token === candidateId);
+      const newStatus = specificStatus || (cand?.status === 'Inactive' ? 'Pending' : 'Inactive');
+      setCandidates(prev => {
+        const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus } : c);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+      showToast(`Candidate marked as: ${newStatus}`);
+      return true;
+    }
+  };
+
+  // Clear All Local and Database Candidates (Clean Slate)
+  const clearAllCandidates = async () => {
+    try {
+      setCandidates([]);
+      localStorage.removeItem('joy_candidates_v1');
+      showToast('🧹 All candidate profiles cleared!');
+      return true;
+    } catch (e) {}
+  };
+
   // Delete Candidate Profile from PostgreSQL & State
   const deleteCandidate = async (candidateId) => {
     try {

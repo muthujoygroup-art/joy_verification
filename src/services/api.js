@@ -331,6 +331,13 @@ export const api = {
       body: JSON.stringify(candidateData),
     });
   },
+  toggleCandidateStatus: (candidateId, status) => {
+    requestCache.clear();
+    return request(`/hr/candidates/${candidateId}/toggle-status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    });
+  },
   deleteCandidate: (candidateId) => {
     requestCache.clear();
     return request(`/hr/candidates/${candidateId}`, { method: 'DELETE' });

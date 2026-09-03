@@ -283,3 +283,26 @@ def purge_duplicate_candidates(payload: dict = None, db: Session = Depends(get_d
         "message": f"Purged {deleted_count} duplicate candidate records.",
         "deleted_count": deleted_count
     }
+
+@router.put("/candidates/{candidate_id}/toggle-status")
+def toggle_candidate_status(candidate_id: str, payload: dict = None, db: Session = Depends(get_db)):
+    """Toggles candidate status between Active (Pending/Verified) and Inactive"""
+    cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    new_status = payload.get("status") if payload and "status" in payload else None
+    if not new_status:
+        if cand.status == "Inactive":
+            new_status = "Pending"
+        else:
+            new_status = "Inactive"
+            
+    cand.status = new_status
+    db.commit()
+    db.refresh(cand)
+    return {
+        "success": True,
+        "message": f"Candidate {cand.name} is now {new_status}",
+        "status": cand.status
+    }
