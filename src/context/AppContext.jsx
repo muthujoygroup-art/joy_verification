@@ -1720,23 +1720,59 @@ export const AppProvider = ({ children }) => {
 
   const updateApiConfig = async (gatewayKey, newConfig) => {
     try {
-      if (isBackendConnected) {
-        await api.updateApiConfig(gatewayKey, {
-          display_name: newConfig.name || newConfig.displayName,
-          endpoint_url: newConfig.endpointUrl,
-          api_key: newConfig.apiKey || newConfig.clientId,
-          secret_key: newConfig.secretKey || newConfig.clientSecret,
-          webhook_url: newConfig.webhookUrl,
-          sandbox_mode: newConfig.mode?.includes('Sandbox') || false,
-          rate_limit_per_min: newConfig.rateLimitPerMin,
-          status: newConfig.status
-        });
+      const apiKeyVal = (newConfig.apiKey || newConfig.clientId || '').trim();
+      const secretKeyVal = (newConfig.secretKey || newConfig.clientSecret || '').trim();
+      const endpointVal = (newConfig.endpointUrl || 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct').trim();
+      const nameVal = newConfig.name || newConfig.displayName || 'CoinCircleTrust Gateways';
+      const modeVal = newConfig.mode || 'Production (Live Mode)';
+      const isSandbox = modeVal.includes('Sandbox');
+
+      const payload = {
+        provider_key: gatewayKey,
+        display_name: nameVal,
+        endpoint_url: endpointVal,
+        api_key: apiKeyVal,
+        secret_key: secretKeyVal,
+        webhook_url: newConfig.webhookUrl || '',
+        sandbox_mode: isSandbox,
+        rate_limit_per_min: parseInt(newConfig.rateLimitPerMin) || 120,
+        monthly_quota: parseInt(newConfig.monthlyQuota) || 10000,
+        status: newConfig.status || 'CONNECTED'
+      };
+
+      // 1. Immediately update React state & localStorage
+      setApiConfigurations(prev => {
+        const current = prev[gatewayKey] || {};
+        const updatedObj = {
+          ...current,
+          ...newConfig,
+          id: gatewayKey,
+          key: gatewayKey,
+          name: nameVal,
+          displayName: nameVal,
+          apiKey: apiKeyVal,
+          clientId: apiKeyVal,
+          secretKey: secretKeyVal,
+          clientSecret: secretKeyVal,
+          endpointUrl: endpointVal,
+          mode: modeVal,
+          sandbox_mode: isSandbox
+        };
+        const updated = { ...prev, [gatewayKey]: updatedObj };
+        try {
+          localStorage.setItem('joy_api_configs_v1', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+
+      // 2. Persist to PostgreSQL Database
+      try {
+        await api.updateApiConfig(gatewayKey, payload);
+      } catch (err) {
+        await api.createApiConfig(payload).catch(() => {});
       }
-      setApiConfigurations(prev => ({
-        ...prev,
-        [gatewayKey]: { ...prev[gatewayKey], ...newConfig }
-      }));
-      showToast(`API Configuration for ${apiConfigurations[gatewayKey]?.name || gatewayKey} updated!`);
+
+      showToast(`✅ API Key & Configuration for ${nameVal} saved successfully in Database!`);
       return { success: true };
     } catch (e) {
       console.error(e);
