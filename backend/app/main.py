@@ -212,6 +212,7 @@ def health_check():
         "status": "healthy",
         "service": "JOY DATA VERIFICATION API",
         "version": settings.VERSION,
+        "build_tag": "v2.4-clean-dict-serialization",
         "database": "connected",
         "load_balancer": "active",
         "node": "joy-cluster-node-01"
