@@ -79,6 +79,7 @@ import {
 
 export const HrExecutiveView = () => {
   const { 
+    currentUser,
     candidates, 
     addCandidate, 
     setRoleView, 
