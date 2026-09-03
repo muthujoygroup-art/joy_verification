@@ -2036,6 +2036,8 @@ export const AppProvider = ({ children }) => {
       setRoleView,
       logoutUser,
       companies,
+      setCompanies,
+      updateCompanyStatus,
       addCompany,
       updateCompanyFeatures,
       updateCompanyHrPermissions,

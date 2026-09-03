@@ -88,6 +88,7 @@ import {
 export const SuperAdminView = () => {
   const { 
     companies, 
+    setCompanies,
     addCompany, 
     updateCompanyFeatures, 
     apiConfigurations, 
