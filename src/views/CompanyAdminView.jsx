@@ -56,6 +56,7 @@ import {
 
 export const CompanyAdminView = () => {
   const { 
+    currentUser,
     companies, 
     hrUsers, 
     candidates, 
@@ -396,7 +397,7 @@ export const CompanyAdminView = () => {
       await api.updateHrStatus(company?.id || 'comp-joy', hrId, newStatus);
       showToast(`👔 HR Recruiter account set to ${newStatus}!`);
       // Update local state
-      setCompanyHrUsers(prev => prev.map(h => h.id === hrId ? { ...h, status: newStatus } : h));
+      setDbHrUsers(prev => prev.map(h => h.id === hrId ? { ...h, status: newStatus } : h));
     } catch (err) {
       showToast('❌ Failed to update HR status: ' + err.message);
     }
