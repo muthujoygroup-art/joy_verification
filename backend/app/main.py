@@ -85,6 +85,7 @@ def on_startup():
             "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
             "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_by VARCHAR(100);",
             "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_version VARCHAR(50) DEFAULT 'v2.4-2026';",
+            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS custom_tariffs JSON DEFAULT '{}';",
             "ALTER TABLE companies ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;",
             "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) DEFAULT 'Hr@Recruiter2026';",
             "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS active_links INTEGER DEFAULT 0;",

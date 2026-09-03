@@ -39,6 +39,7 @@ class Company(Base):
     terms_accepted_at = Column(DateTime, default=datetime.utcnow)
     terms_accepted_by = Column(String(100), nullable=True)
     terms_version = Column(String(50), default="v2.4-2026")
+    custom_tariffs = Column(JSON, default=dict)
     last_login_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

@@ -73,12 +73,48 @@ def set_company_activation_password(company_id: str, payload: dict, db: Session 
     }
 
 
-@router.get("/companies", response_model=List[CompanyResponse])
+def format_company_dict(c: Company) -> Dict[str, Any]:
+    """Helper to safely serialize a Company model into a clean JSON dictionary"""
+    return {
+        "id": c.id,
+        "name": c.name or "",
+        "code": c.code or "",
+        "contact_person": c.contact_person or "",
+        "phone": c.phone or "",
+        "email": c.email or "",
+        "plan": c.plan or "Standard Tier",
+        "price_per_verification": float(c.price_per_verification or 120.0),
+        "verified_count_this_month": int(c.verified_count_this_month or 0),
+        "max_limit": int(c.max_limit or 500),
+        "wallet_balance": float(c.wallet_balance or 50000.0),
+        "status": c.status or "Pending Activation",
+        "activation_status": c.activation_status or "Pending Activation",
+        "activation_token": c.activation_token,
+        "activation_password": c.activation_password or "1234",
+        "activation_expires_at": c.activation_expires_at.isoformat() if c.activation_expires_at else None,
+        "cin_number": c.cin_number,
+        "gstin_number": c.gstin_number,
+        "company_pan": c.company_pan,
+        "registered_address": c.registered_address,
+        "industry_sector": c.industry_sector,
+        "website": c.website,
+        "documents": c.documents or {},
+        "features": c.features or {},
+        "terms_accepted": c.terms_accepted or "true",
+        "terms_accepted_at": c.terms_accepted_at.isoformat() if c.terms_accepted_at else None,
+        "terms_accepted_by": c.terms_accepted_by,
+        "terms_version": c.terms_version or "v2.4-2026",
+        "custom_tariffs": getattr(c, 'custom_tariffs', None) or {},
+        "created_at": c.created_at.isoformat() if c.created_at else None
+    }
+
+@router.get("/companies")
 def get_all_companies(db: Session = Depends(get_db)):
     """Fetch all registered client companies"""
-    return db.query(Company).order_by(Company.created_at.desc()).all()
+    companies = db.query(Company).order_by(Company.created_at.desc()).all()
+    return [format_company_dict(c) for c in companies]
 
-@router.post("/companies", response_model=CompanyResponse)
+@router.post("/companies")
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     """Register a new enterprise company profile and issue a multi-channel self-activation token"""
     from sqlalchemy.exc import IntegrityError
@@ -213,7 +249,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"Warning: Failed to dispatch company welcome email: {e}")
 
-    return new_comp
+    return format_company_dict(new_comp)
 
 @router.put("/companies/{company_id}/features")
 def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db: Session = Depends(get_db)):
