@@ -1,9 +1,10 @@
+import os
 from backend.app.services.storage_service import get_company_folder, save_base64_file
 from backend.app.services.storage_service import get_hr_folder, get_company_folder
 import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from backend.app.database import get_db
 from backend.app.models import Company, HrUser, Candidate, Invoice
@@ -112,13 +113,27 @@ def get_company_stats(company_id: str, db: Session = Depends(get_db)):
 
 from datetime import datetime
 
+def find_company_by_activation_token(token: str, db: Session) -> Optional[Company]:
+    """Find company by activation token across both physical columns and features JSONB"""
+    clean_token = (token or "").strip()
+    if not clean_token:
+        return None
+    
+    companies = db.query(Company).all()
+    for comp in companies:
+        if comp.activation_token == clean_token:
+            return comp
+        if (comp.features or {}).get("activation_token") == clean_token:
+            return comp
+    return None
+
 # =============================================================================
 # 🏢 COMPANY SELF-ACTIVATION PORTAL ENDPOINTS
 # =============================================================================
 @router.get("/activation/{token}")
 def get_company_activation_details(token: str, db: Session = Depends(get_db)):
     """Resolves company self-activation token and checks validity"""
-    comp = db.query(Company).filter(Company.activation_token == token).first()
+    comp = find_company_by_activation_token(token, db)
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid or expired company activation link")
 
@@ -154,7 +169,7 @@ def unlock_company_activation(payload: dict, db: Session = Depends(get_db)):
     token = payload.get("token")
     password = (payload.get("password") or "").strip()
 
-    comp = db.query(Company).filter(Company.activation_token == token).first()
+    comp = find_company_by_activation_token(token, db)
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid activation link")
 
@@ -178,7 +193,7 @@ def unlock_company_activation(payload: dict, db: Session = Depends(get_db)):
 def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
     """Submits corporate details, uploaded statutory documents, accepts terms, and activates company"""
     token = payload.get("token")
-    comp = db.query(Company).filter(Company.activation_token == token).first()
+    comp = find_company_by_activation_token(token, db)
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid activation token")
 
