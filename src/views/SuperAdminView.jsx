@@ -11,6 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { CompanyActivationModal } from '../components/CompanyActivationModal';
+import { CompanyGovernanceModal } from '../components/CompanyGovernanceModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { OfficialLegalDocumentViewerModal } from '../components/OfficialLegalDocumentViewerModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
@@ -490,6 +491,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   });
 
   // 🏢 Company Activation & Onboarding States
+  const [governanceCompany, setGovernanceCompany] = useState(null);
   const [activatingCompany, setActivatingCompany] = useState(null);
   const [showNewCompPassword, setShowNewCompPassword] = useState(false);
   const [showNewCompLoginPassword, setShowNewCompLoginPassword] = useState(false);
@@ -1982,6 +1984,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       </td>
                       <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setGovernanceCompany(comp)}
+                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
+                            title="View & Edit Company Profile, Reset Password, Check Documents & DPDP Legal Status"
+                          >
+                            <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>Manage Profile ⚙️</span>
+                          </button>
                           <button
                             onClick={() => setEditingFeaturesCompany(comp)}
                             className="btn btn-superadmin text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
@@ -6419,6 +6430,17 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <CompanyActivationModal 
           company={activatingCompany} 
           onClose={() => setActivatingCompany(null)} 
+        />
+      )}
+
+      {/* 🏢 COMPANY GOVERNANCE & PROFILE DOSSIER MODAL */}
+      {governanceCompany && (
+        <CompanyGovernanceModal 
+          company={governanceCompany} 
+          isOpen={!!governanceCompany}
+          onClose={() => setGovernanceCompany(null)} 
+          onUpdateCompany={(updated) => setCompanies(prev => prev.map(c => c.id === updated.id ? { ...c, ...updated } : c))}
+          showToast={showToast}
         />
       )}
 </div>

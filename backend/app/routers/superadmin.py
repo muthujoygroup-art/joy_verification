@@ -791,6 +791,82 @@ def execute_custom_sql(payload: SqlExecuteRequest, db: Session = Depends(get_db)
         }
 
 
+@router.put("/companies/{company_id}/password")
+def update_company_password(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update company login password and optionally email credentials"""
+    comp = db.query(Company).filter(
+        (Company.id == company_id) | (Company.code == company_id) | (Company.email.ilike(company_id))
+    ).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    new_password = (payload.get("password") or "").strip()
+    if not new_password:
+        raise HTTPException(status_code=400, detail="Password cannot be empty")
+
+    send_email = payload.get("send_email", True)
+    comp.password_hash = new_password
+    db.commit()
+    db.refresh(comp)
+
+    email_sent = False
+    if send_email and comp.email:
+        try:
+            from backend.app.services.email_service import send_smtp_email, _build_email_shell
+            from backend.app.config import settings
+            app_url = settings.APP_BASE_URL.rstrip('/')
+            html = f"""
+            <h2 style="color: #0f172a; margin-bottom: 8px;">🔐 Security Password Updated</h2>
+            <p style="font-size: 13px; color: #475569;">Your permanent administrator password for <strong>{comp.name}</strong> (#{comp.code}) has been updated by Super Administrator.</p>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 18px 0; font-size: 13px;">
+                <p style="margin: 4px 0;"><strong>Login Username:</strong> {comp.email}</p>
+                <p style="margin: 4px 0;"><strong>New Password:</strong> <code style="background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 6px; font-weight: bold;">{new_password}</code></p>
+            </div>
+            """
+            body = _build_email_shell("Company Password Updated", "SECURITY UPDATE", html, f"{app_url}/login", "Sign In to Portal")
+            send_smtp_email(comp.email, f"🔐 Security Update: New Login Password for {comp.name}", body, db=db)
+            email_sent = True
+        except Exception as e:
+            print(f"Warning: Failed to email new password: {e}")
+
+    return {
+        "success": True,
+        "message": f"Login password for {comp.name} updated successfully! (Email notified: {'Yes' if email_sent else 'No'})",
+        "email_sent": email_sent
+    }
+
+@router.put("/companies/{company_id}/profile")
+def update_company_profile(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update detailed corporate profile and statutory identifiers"""
+    comp = db.query(Company).filter(
+        (Company.id == company_id) | (Company.code == company_id) | (Company.email.ilike(company_id))
+    ).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    if payload.get("name"): comp.name = payload["name"].strip()
+    if payload.get("contact_person"): comp.contact_person = payload["contact_person"].strip()
+    if payload.get("phone") is not None: comp.phone = payload["phone"].strip() if payload["phone"] else None
+    if payload.get("plan"): comp.plan = payload["plan"]
+    if payload.get("price_per_verification") is not None: comp.price_per_verification = float(payload["price_per_verification"])
+    if payload.get("max_limit") is not None: comp.max_limit = int(payload["max_limit"])
+    if payload.get("cin_number") is not None: comp.cin_number = payload["cin_number"].strip().upper()
+    if payload.get("gstin_number") is not None: comp.gstin_number = payload["gstin_number"].strip().upper()
+    if payload.get("company_pan") is not None: comp.company_pan = payload["company_pan"].strip().upper()
+    if payload.get("registered_address") is not None: comp.registered_address = payload["registered_address"].strip()
+    if payload.get("industry_sector") is not None: comp.industry_sector = payload["industry_sector"].strip()
+    if payload.get("website") is not None: comp.website = payload["website"].strip()
+    if payload.get("documents") is not None: comp.documents = {**(comp.documents or {}), **payload["documents"]}
+
+    db.commit()
+    db.refresh(comp)
+
+    return {
+        "success": True,
+        "message": f"Corporate profile and statutory details for {comp.name} updated!",
+        "company": format_company_dict(comp)
+    }
+
 @router.put("/companies/{company_id}/status")
 def toggle_company_status(company_id: str, payload: dict, db: Session = Depends(get_db)):
     """Set company status: 'Active' | 'Inactive' | 'Suspended' | 'Discontinued'"""

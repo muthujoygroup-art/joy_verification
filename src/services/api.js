@@ -465,6 +465,20 @@ export const api = {
       body: JSON.stringify({ status }),
     });
   },
+  updateCompanyPassword: (companyId, password, sendEmail = true) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password, send_email: sendEmail }),
+    });
+  },
+  updateCompanyProfile: (companyId, profileData) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/profile`, {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  },
   updateHrStatus: (companyId, hrId, status) => {
     requestCache.clear();
     return request(`/company/${companyId}/hr-users/${hrId}/status`, {
