@@ -41,6 +41,7 @@ import {
   HeartPulse,
   Award,
   Plus,
+  Scale,
   Trash2
 } from 'lucide-react';
 

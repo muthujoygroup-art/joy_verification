@@ -30,6 +30,7 @@ import {
   Download,
   ExternalLink,
   Eye,
+  EyeOff,
   FileCheck,
   FileText,
   FolderDown,
@@ -50,6 +51,8 @@ import {
   ShieldCheck,
   Sliders,
   Sparkles,
+  UploadCloud,
+  User,
   UserPlus,
   Users,
   Zap
