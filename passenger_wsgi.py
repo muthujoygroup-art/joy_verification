@@ -114,6 +114,8 @@ class PureAsyncWsgiAdapter:
                 if chunk:
                     response_body_chunks.append(chunk)
 
+        await self.asgi_app(scope, receive, send)
+
         import http.client
         phrase = http.client.responses.get(response_status, "OK")
         status_text = f"{response_status} {phrase}"
