@@ -19,37 +19,6 @@ from backend.app.schemas import (
 
 router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
 
-@router.post("/companies/{company_id}/resend-activation")
-def resend_company_activation(company_id: str, payload: dict = {}, db: Session = Depends(get_db)):
-    """Resend company portal activation link via Email or SMS"""
-    channel = payload.get("channel", "email") # 'email' | 'sms'
-    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
-    if not comp:
-        raise HTTPException(status_code=404, detail="Company not found")
-
-    if not comp.activation_token:
-        comp.activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
-        db.commit()
-
-    if channel == "email" and comp.email:
-        send_company_welcome_email(
-            company_name=comp.name,
-            company_code=comp.code,
-            admin_email=comp.email,
-            contact_person=comp.contact_person,
-            temporary_password=comp.activation_password or "1234",
-            activation_token=comp.activation_token,
-            expires_at_str=comp.activation_expires_at.strftime('%Y-%m-%d %H:%M:%S UTC') if comp.activation_expires_at else "15 Days",
-            db=db
-        )
-
-    return {
-        "success": True,
-        "channel": channel,
-        "message": f"Activation link dispatched to {comp.email} (Password: {comp.activation_password or '1234'})",
-        "activation_token": comp.activation_token
-    }
-
 @router.post("/companies/{company_id}/set-activation-password")
 def set_company_activation_password(company_id: str, payload: dict, db: Session = Depends(get_db)):
     """Update the security password for company self-activation"""

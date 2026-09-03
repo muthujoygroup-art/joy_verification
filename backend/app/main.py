@@ -214,6 +214,19 @@ def health_check():
         "node": "joy-cluster-node-01"
     }
 
+@app.get("/system/debug-wsgi")
+@app.get(f"{settings.API_PREFIX}/system/debug-wsgi")
+def debug_wsgi_scope(request: Request):
+    return {
+        "url": str(request.url),
+        "path": request.url.path,
+        "method": request.method,
+        "client": str(request.client),
+        "headers": dict(request.headers),
+        "scope_keys": list(request.scope.keys()),
+        "scope_path": request.scope.get("path")
+    }
+
 @app.get("/system/db-status")
 @app.get(f"{settings.API_PREFIX}/system/db-status")
 def get_database_status():
