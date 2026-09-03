@@ -1782,7 +1782,7 @@ export const HrExecutiveView = () => {
                       </div>
 
                       <span className={`badge font-black text-[10px] shrink-0 ${
-                        cand.status === 'Inactive' ? 'badge-slate bg-slate-200 text-slate-600 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
+                        cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
                         cand.status === 'Submitted - Pending HR Review' ? 'badge-amber ring-2 ring-amber-400 animate-pulse' :
                         cand.status === 'Corrections Requested' ? 'badge-rose' :
                         cand.status === 'In Verification' ? 'badge-cyan' : 'badge-slate'
@@ -1995,7 +1995,7 @@ export const HrExecutiveView = () => {
                       </td>
                       <td className="py-4 px-4 text-center">
                         <span className={`badge font-bold ${
-                          cand.status === 'Inactive' ? 'badge-slate bg-slate-200 text-slate-600 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
+                          cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
                           cand.status === 'Submitted - Pending HR Review' ? 'badge-amber ring-2 ring-amber-400 animate-pulse' :
                           cand.status === 'Corrections Requested' ? 'badge-rose' :
                           cand.status === 'In Verification' ? 'badge-cyan' : 'badge-slate'
@@ -2108,21 +2108,21 @@ export const HrExecutiveView = () => {
                           <button
                             type="button"
                             onClick={() => {
-                              const isInactive = cand.status === 'Inactive';
+                              const isInactive = cand.status?.toLowerCase() === 'inactive';
                               const actionPrompt = isInactive ? 're-activate' : 'mark as Inactive';
                               if (window.confirm(`Are you sure you want to ${actionPrompt} employee "${cand.name}"?`)) {
                                 toggleCandidateStatus(cand.id || cand.token);
                               }
                             }}
-                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold transition-all ${
-                              cand.status === 'Inactive'
+                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold transition-all cursor-pointer ${
+                              cand.status?.toLowerCase() === 'inactive'
                                 ? 'text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs'
                                 : 'text-slate-700 bg-slate-100 border-slate-300 hover:bg-slate-200 shadow-2xs'
                             }`}
-                            title={cand.status === 'Inactive' ? 'Click to Reactivate Employee' : 'Click to Set Employee to Inactive'}
+                            title={cand.status?.toLowerCase() === 'inactive' ? 'Click to Reactivate Employee' : 'Click to Set Employee to Inactive'}
                           >
-                            <Power className={`w-3.5 h-3.5 ${cand.status === 'Inactive' ? 'text-emerald-600' : 'text-slate-500'}`} />
-                            <span>{cand.status === 'Inactive' ? 'Activate' : 'Inactive'}</span>
+                            <Power className={`w-3.5 h-3.5 ${cand.status?.toLowerCase() === 'inactive' ? 'text-emerald-600' : 'text-slate-500'}`} />
+                            <span>{cand.status?.toLowerCase() === 'inactive' ? 'Activate' : 'Inactive'}</span>
                           </button>
                         </div>
                       </td>

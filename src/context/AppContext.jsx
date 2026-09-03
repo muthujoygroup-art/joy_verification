@@ -1218,10 +1218,10 @@ export const AppProvider = ({ children }) => {
   const toggleCandidateStatus = async (candidateId, specificStatus = null) => {
     try {
       const cand = candidates.find(c => c.id === candidateId || c.token === candidateId);
-      const newStatus = specificStatus || (cand?.status === 'Inactive' ? 'Pending' : 'Inactive');
+      const isCurrentlyInactive = cand?.status?.toLowerCase() === 'inactive';
+      const newStatus = specificStatus || (isCurrentlyInactive ? 'Pending' : 'Inactive');
       
-      await api.toggleCandidateStatus(candidateId, newStatus);
-      
+      // Update UI & LocalStorage Immediately
       setCandidates(prev => {
         const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus } : c);
         try {
@@ -1229,21 +1229,19 @@ export const AppProvider = ({ children }) => {
         } catch (e) {}
         return updated;
       });
-      showToast(`Candidate status updated to: ${newStatus}`);
+
+      showToast(`Employee "${cand?.name || 'Candidate'}" is now marked as ${newStatus}!`);
+
+      // Sync with backend asynchronously
+      try {
+        await api.toggleCandidateStatus(candidateId, newStatus);
+      } catch (err) {
+        console.warn('Backend toggle status sync note:', err.message);
+      }
       return true;
     } catch (err) {
-      console.warn('Error toggling candidate status:', err);
-      const cand = candidates.find(c => c.id === candidateId || c.token === candidateId);
-      const newStatus = specificStatus || (cand?.status === 'Inactive' ? 'Pending' : 'Inactive');
-      setCandidates(prev => {
-        const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus } : c);
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
-        } catch (e) {}
-        return updated;
-      });
-      showToast(`Candidate marked as: ${newStatus}`);
-      return true;
+      console.warn('Error in toggleCandidateStatus:', err);
+      return false;
     }
   };
 
@@ -1251,8 +1249,10 @@ export const AppProvider = ({ children }) => {
   const clearAllCandidates = async () => {
     try {
       setCandidates([]);
-      localStorage.removeItem('joy_candidates_v1');
-      showToast('🧹 All candidate profiles cleared!');
+      try {
+        localStorage.removeItem('joy_candidates_v1');
+      } catch (e) {}
+      showToast('🧹 All candidate profiles cleared! Ready for new original employees.');
       return true;
     } catch (e) {}
   };
