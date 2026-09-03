@@ -121,8 +121,28 @@ export const HrExecutiveView = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
 
-  const activeHr = hrUsers[0] || { id: 'hr-1', companyId: 'comp-1', name: 'Priya Sundaram', dept: 'Engineering Recruitment' };
-  const currentCompany = companies.find(c => c.id === activeHr.companyId) || companies[0];
+  // Dynamic HR Recruiter & Employer Company Resolution (Resolves from live logged-in session)
+  const activeHr = (currentUser && (currentUser.role === 'hrexecutive' || currentUser.role === 'hr' || currentUser.email))
+    ? {
+        id: currentUser.id || currentUser.hrId || 'hr-1',
+        name: currentUser.name || currentUser.userName || 'HR Recruiter',
+        email: currentUser.email || '',
+        dept: currentUser.dept || 'Human Resources',
+        companyId: currentUser.companyId || 'comp-joy',
+        companyName: currentUser.companyName || 'Joy Corporate Solutions Private Limited',
+        hrCode: currentUser.hrCode || currentUser.code || currentUser.id || 'COMP001HR001'
+      }
+    : (Array.isArray(hrUsers) && hrUsers.length > 0)
+    ? (hrUsers.find(h => h.email?.toLowerCase() === currentUser?.email?.toLowerCase()) || hrUsers[0])
+    : { id: 'hr-1', companyId: 'comp-joy', name: 'HR Recruiter', dept: 'Human Resources' };
+
+  const currentCompany = (Array.isArray(companies) && companies.length > 0)
+    ? (companies.find(c => c.id === activeHr.companyId || c.email === activeHr.companyEmail || c.name === activeHr.companyName) || companies[0])
+    : {
+        id: activeHr.companyId || 'comp-joy',
+        name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
+        code: 'COMP001'
+      };
 
   const [formData, setFormData] = useState({
     name: '',
