@@ -43,6 +43,7 @@ import {
   Save,
   Scale,
   Search,
+  Send,
   SendHorizontal,
   Server,
   Settings,
@@ -52,7 +53,7 @@ import {
   UserPlus,
   Users,
   Zap
-} from 'lucide-react';;
+} from 'lucide-react';
 
 export const CompanyAdminView = () => {
   const { 
