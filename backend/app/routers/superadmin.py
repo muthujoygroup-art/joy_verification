@@ -111,145 +111,168 @@ def format_company_dict(c: Company) -> Dict[str, Any]:
 @router.get("/companies")
 def get_all_companies(db: Session = Depends(get_db)):
     """Fetch all registered client companies"""
-    companies = db.query(Company).order_by(Company.created_at.desc()).all()
-    return [format_company_dict(c) for c in companies]
+    from fastapi.responses import JSONResponse
+    import traceback
+    try:
+        companies = db.query(Company).order_by(Company.created_at.desc()).all()
+        return [format_company_dict(c) for c in companies]
+    except Exception as e:
+        tr = traceback.format_exc()
+        print(f"❌ ERROR IN get_all_companies: {e}\n{tr}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Failed to fetch companies: {str(e)}", "trace": tr}
+        )
 
 @router.post("/companies")
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     """Register a new enterprise company profile and issue a multi-channel self-activation token"""
+    from fastapi.responses import JSONResponse
     from sqlalchemy.exc import IntegrityError
+    import traceback
     
-    clean_name = (payload.name or "").strip()
-    if not clean_name:
-        raise HTTPException(status_code=400, detail="Company legal name is required.")
+    try:
+        clean_name = (payload.name or "").strip()
+        if not clean_name:
+            raise HTTPException(status_code=400, detail="Company legal name is required.")
 
-    clean_email = (payload.email or "").strip().lower()
-    if not clean_email:
-        raise HTTPException(status_code=400, detail="Company admin email is required.")
+        clean_email = (payload.email or "").strip().lower()
+        if not clean_email:
+            raise HTTPException(status_code=400, detail="Company admin email is required.")
 
-    clean_phone = (payload.phone or "").strip() or None
-    clean_contact = (payload.contact_person or clean_name).strip()
+        clean_phone = (payload.phone or "").strip() or None
+        clean_contact = (payload.contact_person or clean_name).strip()
 
-    # 🛡️ Strict Duplicate Prevention
-    existing_email = db.query(Company).filter(Company.email.ilike(clean_email)).first()
-    if existing_email:
-        raise HTTPException(status_code=400, detail=f"Company with email '{clean_email}' already exists. Duplicate email is not allowed.")
+        # 🛡️ Strict Duplicate Prevention
+        existing_email = db.query(Company).filter(Company.email.ilike(clean_email)).first()
+        if existing_email:
+            raise HTTPException(status_code=400, detail=f"Company with email '{clean_email}' already exists. Duplicate email is not allowed.")
 
-    if clean_phone:
-        existing_phone = db.query(Company).filter(Company.phone == clean_phone).first()
-        if existing_phone:
-            raise HTTPException(status_code=400, detail=f"Company with mobile number '{clean_phone}' already exists. Duplicate phone number is not allowed.")
+        if clean_phone:
+            existing_phone = db.query(Company).filter(Company.phone == clean_phone).first()
+            if existing_phone:
+                raise HTTPException(status_code=400, detail=f"Company with mobile number '{clean_phone}' already exists. Duplicate phone number is not allowed.")
 
-    existing_name = db.query(Company).filter(Company.name.ilike(clean_name)).first()
-    if existing_name:
-        raise HTTPException(status_code=400, detail=f"Company named '{clean_name}' already exists. Duplicate company name is not allowed.")
+        existing_name = db.query(Company).filter(Company.name.ilike(clean_name)).first()
+        if existing_name:
+            raise HTTPException(status_code=400, detail=f"Company named '{clean_name}' already exists. Duplicate company name is not allowed.")
 
-    # Generate guaranteed unique company code
-    all_codes = {c.code.upper() for c in db.query(Company.code).all() if c.code}
-    if payload.code and payload.code.strip():
-        comp_code = payload.code.strip().upper()
-        if comp_code in all_codes:
-            raise HTTPException(status_code=400, detail=f"Company code '{comp_code}' already exists. Please choose another code.")
-    else:
-        num = db.query(Company).count() + 1
-        comp_code = f"COMP{num:03d}"
-        while comp_code in all_codes:
-            num += 1
+        # Generate guaranteed unique company code
+        all_codes = {c.code.upper() for c in db.query(Company.code).all() if c.code}
+        if payload.code and payload.code.strip():
+            comp_code = payload.code.strip().upper()
+            if comp_code in all_codes:
+                raise HTTPException(status_code=400, detail=f"Company code '{comp_code}' already exists. Please choose another code.")
+        else:
+            num = db.query(Company).count() + 1
             comp_code = f"COMP{num:03d}"
+            while comp_code in all_codes:
+                num += 1
+                comp_code = f"COMP{num:03d}"
 
-    comp_id = f"comp_{uuid.uuid4().hex[:10]}"
-    activation_token = f"comp_act_{uuid.uuid4().hex[:14]}"
+        comp_id = f"comp_{uuid.uuid4().hex[:10]}"
+        activation_token = f"comp_act_{uuid.uuid4().hex[:14]}"
 
-    # Pricing according to Plan Tier
-    plan_name = payload.plan or "Standard Tier"
-    if "Basic" in plan_name:
-        price_per_check = 80.0
-    elif "Standard" in plan_name:
-        price_per_check = 120.0
-    else:
-        price_per_check = 180.0
+        # Pricing according to Plan Tier
+        plan_name = payload.plan or "Standard Tier"
+        if "Basic" in plan_name:
+            price_per_check = 80.0
+        elif "Standard" in plan_name:
+            price_per_check = 120.0
+        else:
+            price_per_check = 180.0
 
-    credits_bought = payload.credits_purchased or payload.max_limit or 500
-    login_password_set = payload.password or "Company@Admin2026"
-    activation_pin_set = payload.activation_password or "1234"
+        credits_bought = payload.credits_purchased or payload.max_limit or 500
+        login_password_set = payload.password or "Company@Admin2026"
+        activation_pin_set = payload.activation_password or "1234"
 
-    # Expiry calculation
-    if payload.expiry_date:
-        try:
-            expires_at = datetime.fromisoformat(payload.expiry_date.replace("Z", "+00:00"))
-        except Exception:
+        # Expiry calculation
+        if payload.expiry_date:
+            try:
+                expires_at = datetime.fromisoformat(payload.expiry_date.replace("Z", "+00:00"))
+            except Exception:
+                expires_at = datetime.utcnow() + timedelta(days=payload.expiry_days or 15)
+        else:
             expires_at = datetime.utcnow() + timedelta(days=payload.expiry_days or 15)
-    else:
-        expires_at = datetime.utcnow() + timedelta(days=payload.expiry_days or 15)
 
-    # Default features if none specified
-    default_features = payload.features or {
-        "aadhaar": True,
-        "mobileOtp": True,
-        "faceCapture": True,
-        "drivingLicense": True if "Enterprise" in plan_name or "Standard" in plan_name else False,
-        "pan": True,
-        "uan": True if "Enterprise" in plan_name else False,
-        "education": False,
-        "criminalCheck": True if "Enterprise" in plan_name else False,
-        "addressCheck": False,
-        "bankCheck": True
-    }
-    
-    new_comp = Company(
-        id=comp_id,
-        name=clean_name,
-        code=comp_code,
-        contact_person=clean_contact,
-        phone=clean_phone,
-        email=clean_email,
-        password_hash=login_password_set,
-        plan=plan_name,
-        price_per_verification=price_per_check,
-        max_limit=credits_bought,
-        wallet_balance=credits_bought * price_per_check,
-        features=default_features,
-        verified_count_this_month=0,
-        status="Pending Activation",
-        activation_status="Pending Activation",
-        activation_token=activation_token,
-        activation_password=activation_pin_set,
-        activation_expires_at=expires_at,
-        created_at=datetime.utcnow()
-    )
+        # Default features if none specified
+        default_features = payload.features or {
+            "aadhaar": True,
+            "mobileOtp": True,
+            "faceCapture": True,
+            "drivingLicense": True if "Enterprise" in plan_name or "Standard" in plan_name else False,
+            "pan": True,
+            "uan": True if "Enterprise" in plan_name else False,
+            "education": False,
+            "criminalCheck": True if "Enterprise" in plan_name else False,
+            "addressCheck": False,
+            "bankCheck": True
+        }
+        
+        new_comp = Company(
+            id=comp_id,
+            name=clean_name,
+            code=comp_code,
+            contact_person=clean_contact,
+            phone=clean_phone,
+            email=clean_email,
+            password_hash=login_password_set,
+            plan=plan_name,
+            price_per_verification=price_per_check,
+            max_limit=credits_bought,
+            wallet_balance=credits_bought * price_per_check,
+            features=default_features,
+            verified_count_this_month=0,
+            status="Pending Activation",
+            activation_status="Pending Activation",
+            activation_token=activation_token,
+            activation_password=activation_pin_set,
+            activation_expires_at=expires_at,
+            created_at=datetime.utcnow()
+        )
 
-    try:
-        db.add(new_comp)
-        db.commit()
-        db.refresh(new_comp)
-    except IntegrityError as ie:
-        db.rollback()
-        err_msg = str(ie.orig) if hasattr(ie, 'orig') else str(ie)
-        raise HTTPException(status_code=400, detail=f"Database constraint error: {err_msg}")
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to create company: {str(e)}")
+        try:
+            db.add(new_comp)
+            db.commit()
+            db.refresh(new_comp)
+        except IntegrityError as ie:
+            db.rollback()
+            err_msg = str(ie.orig) if hasattr(ie, 'orig') else str(ie)
+            raise HTTPException(status_code=400, detail=f"Database constraint error: {err_msg}")
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail=f"Failed to create company: {str(e)}")
 
-    # 📧 Automated Email Notification with Activation Link & Password
-    try:
-        if new_comp.email:
-            send_company_welcome_email(
-                company_name=new_comp.name,
-                company_code=new_comp.code,
-                admin_email=new_comp.email,
-                contact_person=new_comp.contact_person or new_comp.name,
-                temporary_password=login_password_set,
-                activation_pin=new_comp.activation_password or "1234",
-                activation_token=activation_token,
-                expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
-                plan_name=new_comp.plan,
-                credits=new_comp.max_limit or 500,
-                db=db
-            )
-    except Exception as e:
-        print(f"Warning: Failed to dispatch company welcome email: {e}")
+        # 📧 Automated Email Notification with Activation Link & Password
+        try:
+            if new_comp.email:
+                send_company_welcome_email(
+                    company_name=new_comp.name,
+                    company_code=new_comp.code,
+                    admin_email=new_comp.email,
+                    contact_person=new_comp.contact_person or new_comp.name,
+                    temporary_password=login_password_set,
+                    activation_pin=new_comp.activation_password or "1234",
+                    activation_token=activation_token,
+                    expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
+                    plan_name=new_comp.plan,
+                    credits=new_comp.max_limit or 500,
+                    db=db
+                )
+        except Exception as e:
+            print(f"Warning: Failed to dispatch company welcome email: {e}")
 
-    return format_company_dict(new_comp)
+        return format_company_dict(new_comp)
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        tr = traceback.format_exc()
+        print(f"❌ CRITICAL ERROR IN create_company: {exc}\n{tr}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Failed to onboard company: {str(exc)}", "trace": tr}
+        )
 
 @router.put("/companies/{company_id}/features")
 def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db: Session = Depends(get_db)):
