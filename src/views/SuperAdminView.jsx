@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -87,6 +88,7 @@ import {
 
 export const SuperAdminView = () => {
   const { 
+    loginUser,
     companies, 
     setCompanies,
     addCompany, 
@@ -125,6 +127,8 @@ export const SuperAdminView = () => {
     updatePaymentGatewayConfig,
     showToast
   } = useApp();
+
+  const navigate = useNavigate();
 
   const [ticketReplyText, setTicketReplyText] = useState({});
   const [showSuperAdminRazorpayModal, setShowSuperAdminRazorpayModal] = useState(false);
@@ -2003,6 +2007,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           >
                             <span>+ Credits ⚡</span>
                           </button>
+                          {comp.status === 'Active' && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                loginUser('company', { email: comp.email, id: comp.id, name: comp.contact_person, companyName: comp.name, companyCode: comp.code });
+                                navigate('/company');
+                              }}
+                              className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-800 shadow-2xs"
+                              title={`Open ${comp.name} Company Admin Portal`}
+                            >
+                              <span>🏢 Portal ↗</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
