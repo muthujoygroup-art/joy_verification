@@ -33,6 +33,7 @@ import {
   Download,
   ExternalLink,
   Eye,
+  EyeOff,
   Factory,
   FileCheck2,
   FileCode,
@@ -147,10 +148,25 @@ export const HrExecutiveView = () => {
       };
 
   const [isSavingHrPref, setIsSavingHrPref] = useState(false);
+  const [showSmtpPassword, setShowSmtpPassword] = useState(false);
+  const [testSmtpEmail, setTestSmtpEmail] = useState(activeHr.email || '');
+  const [isTestingSmtp, setIsTestingSmtp] = useState(false);
+
+  // HR Workstation Password Reset State
+  const [hrNewPassword, setHrNewPassword] = useState('');
+  const [showHrNewPassword, setShowHrNewPassword] = useState(false);
+  const [isUpdatingHrPassword, setIsUpdatingHrPassword] = useState(false);
+
   const [hrPreferences, setHrPreferences] = useState({
     notification_email: activeHr.email || '',
     cc_email: '',
     sender_display_name: `${activeHr.name} (${currentCompany.name})`,
+    sender_email: activeHr.email || '',
+    smtp_host: 'mail.joycorporatesolutions.com',
+    smtp_port: 465,
+    smtp_user: activeHr.email || '',
+    smtp_password: '',
+    use_custom_smtp: true,
     custom_signature: `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany.name}`,
     auto_email_candidate_link: true,
     notify_on_candidate_verified: true,
