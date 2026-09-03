@@ -55,6 +55,7 @@ import {
   MapPin,
   MessageSquare,
   Plus,
+  Power,
   QrCode,
   RefreshCw,
   Save,
