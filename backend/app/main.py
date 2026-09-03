@@ -1,7 +1,6 @@
 import time
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
 from backend.app.config import settings
 from backend.app.database import engine, Base
 from backend.app.seed import seed_database
@@ -32,10 +31,7 @@ app = FastAPI(
 # 1. Enterprise Security, Rate Limiting & Anti-DDoS Middleware
 app.add_middleware(EnterpriseSecurityMiddleware)
 
-# 2. GZip Response Compression Middleware (Compresses responses > 500 bytes)
-app.add_middleware(GZipMiddleware, minimum_size=500)
-
-# 3. CORS Middleware setup
+# 2. CORS Middleware setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
