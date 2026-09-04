@@ -326,30 +326,40 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     if not target_email:
         raise HTTPException(status_code=400, detail="Candidate email address is required for dispatch")
 
-    email_res = send_candidate_onboarding_email(
-        candidate_name=candidate.name,
-        candidate_code=candidate.emp_id or candidate.employee_number or candidate_code,
-        candidate_email=target_email,
-        token=candidate.token,
-        security_pin=candidate.portal_password or security_pin,
-        company_name=comp_name,
-        company_id=candidate.company_id,
-        designation=candidate.designation or designation,
-        sender_hr_name=hr_name,
-        sender_hr_email=hr_email,
-        custom_smtp=custom_smtp,
-        db=db
-    )
+    app_url = "https://test2.joycorporatesolutions.com"
+    verify_url = f"{app_url}/verify?token={candidate.token}"
 
-    if email_res and email_res.get("success") is False:
-        raise HTTPException(status_code=500, detail=f"Email dispatch error: {email_res.get('error')}")
+    try:
+        email_res = send_candidate_onboarding_email(
+            candidate_name=candidate.name,
+            candidate_code=candidate.emp_id or candidate.employee_number or candidate_code,
+            candidate_email=target_email,
+            token=candidate.token,
+            security_pin=candidate.portal_password or security_pin,
+            company_name=comp_name,
+            company_id=candidate.company_id,
+            designation=candidate.designation or designation,
+            sender_hr_name=hr_name,
+            sender_hr_email=hr_email,
+            custom_smtp=custom_smtp,
+            db=db
+        )
+    except Exception as em_err:
+        email_res = {"success": False, "error": str(em_err)}
+
+    email_sent = bool(email_res and email_res.get("success"))
+    email_error = email_res.get("error") if (email_res and not email_sent) else None
 
     return {
         "success": True,
         "channel": channel,
         "candidate_id": candidate.id,
         "token": candidate.token,
-        "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {candidate.portal_password or security_pin}).",
+        "verify_url": verify_url,
+        "security_pin": candidate.portal_password or security_pin,
+        "email_sent": email_sent,
+        "email_error": email_error,
+        "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {candidate.portal_password or security_pin})." if email_sent else f"Verification link generated for {target_email}. Note: {email_error or 'Email queued'}",
         "email_result": email_res
     }
 

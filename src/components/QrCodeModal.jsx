@@ -150,9 +150,15 @@ export const QrCodeModal = ({
 
       const res = await api.dispatchCandidateEmail(payload);
       if (res && res.success) {
-        setEmailSentSuccess(true);
-        setEmailSuccessMsg(`Email delivered to ${destEmail} (PIN: ${clean})!`);
-        if (showToast) showToast(`📧 Onboarding Link & PIN (${clean}) sent to ${destEmail}!`);
+        if (res.email_sent === false) {
+          setEmailSentSuccess(true);
+          setEmailSuccessMsg(`Link generated! (Note: ${res.email_error || 'Email queued'})`);
+          if (showToast) showToast(`ℹ️ Verification Link & PIN (${clean}) generated! Note: ${res.email_error || 'Email queued'}`);
+        } else {
+          setEmailSentSuccess(true);
+          setEmailSuccessMsg(`Email delivered to ${destEmail} (PIN: ${clean})!`);
+          if (showToast) showToast(`📧 Onboarding Link & PIN (${clean}) sent to ${destEmail}!`);
+        }
         setTimeout(() => setEmailSentSuccess(false), 6000);
       } else {
         throw new Error(res?.error || 'Email delivery failed');
@@ -160,7 +166,7 @@ export const QrCodeModal = ({
     } catch (err) {
       console.warn('Email dispatch notice:', err);
       setEmailSentSuccess(false);
-      if (showToast) showToast(`❌ Email failed: ${err.message || 'SMTP delivery issue'}`, 'error');
+      if (showToast) showToast(`❌ Email notice: ${err.message || 'SMTP delivery issue'}`, 'error');
     } finally {
       setIsSendingEmail(false);
     }

@@ -1,7 +1,7 @@
 import { logPortalError } from '../utils/errorLogger';
 import { SignaturePadModal } from '../components/SignaturePadModal';
 import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
