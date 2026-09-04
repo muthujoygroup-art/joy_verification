@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Printer, Download, CheckCircle2, ShieldCheck, FileText, Sliders, Edit3, Save } from 'lucide-react';
 
 export const InvoiceModal = ({ company, onClose }) => {
