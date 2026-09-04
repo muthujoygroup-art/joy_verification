@@ -1050,7 +1050,7 @@ export const HrExecutiveView = () => {
       <div className="flex items-center justify-between gap-1 mb-1">
         <label className="text-slate-700 font-bold leading-tight flex items-center gap-1 cursor-pointer">
           <span>{label}</span>
-          {isRequired && <span className="text-rose-500 font-black">*</span>}
+          {isRequired && isHr && <span className="text-rose-500 font-black">*</span>}
         </label>
         <button
           type="button"
@@ -1276,8 +1276,8 @@ export const HrExecutiveView = () => {
 
   const handleCreateCandidateSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.mobile || !formData.aadhaarNo) {
-      alert('Please fill out Name, Mobile, and Aadhaar Number.');
+    if (!formData.name || !formData.name.trim()) {
+      showToast('⚠️ Please enter the Candidate Full Name to generate profile & link.');
       return;
     }
 
@@ -2595,7 +2595,7 @@ export const HrExecutiveView = () => {
             </div>
           </div>
 
-          <form onSubmit={handleCreateCandidateSubmit} className="space-y-6 pt-3 border-t border-slate-100">
+          <form onSubmit={handleCreateCandidateSubmit} noValidate className="space-y-6 pt-3 border-t border-slate-100">
             
             {/* 🔐 PORTAL UNLOCK PASSWORD / SECURITY PIN GATE */}
             <div className="p-4 bg-gradient-to-r from-indigo-50 via-slate-50 to-emerald-50 border-2 border-indigo-200 rounded-2xl space-y-3">
@@ -2623,7 +2623,6 @@ export const HrExecutiveView = () => {
                   <label className="block text-slate-700 font-bold mb-1">Passcode / PIN Code *</label>
                   <input 
                     type="text" 
-                    required
                     placeholder="e.g. 1234 or Joy@2026"
                     value={formData.portalPassword}
                     onChange={(e) => setFormData({ ...formData, portalPassword: e.target.value })}
@@ -2970,7 +2969,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Candidate Full Name', 'name', true)}
                   <input 
                     type="text" 
-                    required
                     placeholder="e.g. Ramesh Chandra"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -3207,7 +3205,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Primary Mobile (WhatsApp/SMS)', 'mobile', true)}
                   <input 
                     type="tel" 
-                    required
                     placeholder="+91 98765 43210"
                     value={formData.mobile}
                     onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
@@ -3228,7 +3225,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Official / Personal Email', 'email', true)}
                   <input 
                     type="email" 
-                    required
                     placeholder="candidate@gmail.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -3239,7 +3235,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Aadhaar Identity Number', 'aadhaarNo', true)}
                   <input 
                     type="text" 
-                    required
                     maxLength="14"
                     placeholder="XXXX XXXX XXXX"
                     value={formData.aadhaarNo}
@@ -3573,7 +3568,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Department', 'dept', true)}
                   <input 
                     type="text" 
-                    required
                     placeholder="e.g. Engineering & Cloud Architecture"
                     value={formData.dept}
                     onChange={(e) => setFormData({ ...formData, dept: e.target.value })}
@@ -3584,7 +3578,6 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Designation', 'designation', true)}
                   <input 
                     type="text" 
-                    required
                     placeholder="e.g. Senior Software Engineer"
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value })}

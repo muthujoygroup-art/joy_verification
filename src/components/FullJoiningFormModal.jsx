@@ -737,7 +737,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
         </div>
 
         {/* Master Joining Form Body */}
-        <form onSubmit={handleFinalFormSubmit} className="space-y-4 text-xs max-h-[55vh] overflow-y-auto pr-1">
+        <form onSubmit={handleFinalFormSubmit} noValidate className="space-y-4 text-xs max-h-[55vh] overflow-y-auto pr-1">
           {/* SECTION 1: PERSONAL & BIO DEMOGRAPHICS */}
           {activeSection === 'personal' && (
             <div className="space-y-4 animate-tab-switch">
