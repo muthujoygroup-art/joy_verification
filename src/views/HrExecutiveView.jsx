@@ -25,6 +25,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
+import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
 import {
   AlertCircle,
@@ -5830,104 +5831,13 @@ export const HrExecutiveView = () => {
       )}
 
       {/* 🌟 STATUTORY FORM LIVE PREVIEW MODAL */}
-      {activePreviewStatutoryForm && typeof document !== 'undefined' && createPortal(
-        <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn overflow-y-auto"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setActivePreviewStatutoryForm(null);
-          }}
-        >
-          <div className="w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col my-auto relative z-10 animate-modal-spring">
-            
-            {/* Modal Header */}
-            <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <span className="px-2.5 py-0.5 rounded-md bg-purple-500 text-white font-mono font-bold text-xs uppercase shadow-sm">
-                  Live Statutory Form Preview
-                </span>
-                <span className="text-xs text-slate-200 font-bold truncate max-w-xs sm:max-w-md">
-                  {activePreviewStatutoryForm === 'form11' ? 'EPFO Form 11 (New Declaration Form)' :
-                   activePreviewStatutoryForm === 'form2' ? 'EPFO Form 2 Revised (Nomination & Family Particulars)' :
-                   activePreviewStatutoryForm === 'esicForm1' ? 'ESIC Form 1 (Declaration & Temporary ID Card)' :
-                   activePreviewStatutoryForm === 'form16' ? 'Form 16 / TDS Declaration (Form 12B)' :
-                   activePreviewStatutoryForm === 'formF' ? 'Form F (Payment of Gratuity Act 1972)' :
-                   activePreviewStatutoryForm === 'nda' ? 'Non-Disclosure Agreement (NDA)' :
-                   activePreviewStatutoryForm === 'posh' ? 'POSH Policy & Code of Conduct' :
-                   activePreviewStatutoryForm === 'nonCompete' ? 'Non-Compete & Non-Solicit Covenant' :
-                   'Contract Labor Act Form XIII (Employment Card)'}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActivePreviewStatutoryForm(null)}
-                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer hover:bg-slate-700 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50 flex-1">
-              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
-                <div>
-                  <strong className="text-indigo-900 block font-bold">⚡ Real-Time Auto-Generated Statutory Form:</strong>
-                  <span>Populated dynamically with current input data for candidate: <strong className="text-slate-900 font-mono font-bold">{formData.name || 'Candidate Name'}</strong> ({formData.email || 'email@company.com'}).</span>
-                </div>
-                <span className="badge badge-emerald font-bold shrink-0 self-start sm:self-auto">Live Synced ✓</span>
-              </div>
-
-              {activePreviewStatutoryForm === 'form11' && (
-                <EpfoForm11 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'form2' && (
-                <EpfoForm2 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf || formData.pfNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'esicForm1' && (
-                <EsicForm1 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'form16' && (
-                <Form16TdsDeclaration candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, panNo: formData.panNo, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'formF' && (
-                <GratuityFormF candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'nda' && (
-                <NdaAgreement candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, panNo: formData.panNo, aadhaarNo: formData.aadhaarNo, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'posh' && (
-                <PoshPolicyDeclaration candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'nonCompete' && (
-                <NonCompeteAgreement candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-
-              {activePreviewStatutoryForm === 'contractFormXIII' && (
-                <ContractFormXIII candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, fatherName: formData.fatherName, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs shrink-0">
-              <span className="text-slate-500 font-mono text-[11px]">ISO 27001 & DPDP Act 2023 Certified Document</span>
-              <button
-                type="button"
-                onClick={() => setActivePreviewStatutoryForm(null)}
-                className="px-5 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm cursor-pointer transition-all"
-              >
-                Close Preview
-              </button>
-            </div>
-
-          </div>
-        </div>,
-        document.body
+      {activePreviewStatutoryForm && (
+        <StatutoryFormPreviewModal
+          formKey={activePreviewStatutoryForm}
+          formData={formData}
+          companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}
+          onClose={() => setActivePreviewStatutoryForm(null)}
+        />
       )}
 
       {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
