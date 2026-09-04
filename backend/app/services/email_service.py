@@ -66,15 +66,17 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
 
             # Step 1: Check if company has custom SMTP settings stored in Company.features
             comp_obj = db.query(Company).filter(Company.id == company_id).first()
+            dummy_passwords = {"password", "1234", "123456", "admin", "test", "Company@123", "dummy"}
             if comp_obj and comp_obj.features and comp_obj.features.get("smtp_settings"):
                 sd = comp_obj.features["smtp_settings"]
-                # Only use custom if explicitly enabled AND has password
-                if sd.get("use_custom_smtp") and sd.get("password") and sd.get("host"):
+                # Only use custom if explicitly enabled AND has a real non-placeholder password
+                custom_pass = (sd.get("password") or "").strip()
+                if sd.get("use_custom_smtp") and custom_pass and custom_pass not in dummy_passwords and sd.get("host"):
                     return {
                         "host": sd.get("host") or master_config["host"],
                         "port": int(sd.get("port") or master_config["port"]),
                         "user": sd.get("user") or sd.get("username") or master_config["user"],
-                        "password": sd.get("password"),
+                        "password": custom_pass,
                         "from_email": sd.get("from_email") or master_config["from_email"],
                         "from_name": sd.get("from_name") or f"{comp_obj.name} - Verification Portal",
                         "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
@@ -88,20 +90,22 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
                 CommunicationGateway.company_id == company_id,
                 CommunicationGateway.is_active == True
             ).first()
-            if comp_gw and comp_gw.settings_data and comp_gw.settings_data.get("use_custom_smtp") and comp_gw.settings_data.get("password"):
+            if comp_gw and comp_gw.settings_data and comp_gw.settings_data.get("use_custom_smtp"):
                 sd = comp_gw.settings_data
-                return {
-                    "host": sd.get("host") or master_config["host"],
-                    "port": int(sd.get("port") or master_config["port"]),
-                    "user": sd.get("user") or master_config["user"],
-                    "password": sd.get("password"),
-                    "from_email": sd.get("from_email") or master_config["from_email"],
-                    "from_name": sd.get("from_name") or master_config["from_name"],
-                    "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
-                    "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
-                    "mode": "custom_company",
-                    "company_id": company_id
-                }
+                custom_pass = (sd.get("password") or "").strip()
+                if custom_pass and custom_pass not in dummy_passwords and sd.get("host"):
+                    return {
+                        "host": sd.get("host") or master_config["host"],
+                        "port": int(sd.get("port") or master_config["port"]),
+                        "user": sd.get("user") or master_config["user"],
+                        "password": custom_pass,
+                        "from_email": sd.get("from_email") or master_config["from_email"],
+                        "from_name": sd.get("from_name") or master_config["from_name"],
+                        "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
+                        "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                        "mode": "custom_company",
+                        "company_id": company_id
+                    }
         except Exception as e:
             logger.warning(f"Could not resolve custom SMTP gateway from database: {e}")
 

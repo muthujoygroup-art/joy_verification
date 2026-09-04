@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 
-from backend.app.database import get_db
+from backend.app.database import get_db, apply_runtime_migrations
 from backend.app.models import Candidate, Company, HrUser, CandidateDocument
 from backend.app.services.email_service import send_candidate_onboarding_email
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
@@ -15,6 +15,10 @@ router = APIRouter(prefix="/hr", tags=["HR Executive"])
 @router.get("/candidates", response_model=List[CandidateResponse])
 def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = Depends(get_db)):
     """Fetch candidates filtered by HR executive or Company"""
+    try:
+        apply_runtime_migrations(db.get_bind())
+    except Exception:
+        pass
     query = db.query(Candidate)
     if hr_id:
         query = query.filter(Candidate.hr_id == hr_id)
@@ -28,6 +32,11 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     Creates a new labor/employee profile, configures verification fields,
     and issues an automated verification token link.
     """
+    try:
+        apply_runtime_migrations(db.get_bind())
+    except Exception:
+        pass
+
     # 🛡️ Strict Duplicate Prevention: Check if candidate already exists by email, mobile, aadhaar, or emp_id
     existing_cand = None
     if payload.email:
@@ -225,26 +234,32 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
 def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     """
     Multi-channel link dispatch via WhatsApp API, SMS Gateway, or cPanel SMTP Email.
-    Automatically persists candidate to PostgreSQL if not yet existing, guaranteeing seamless employee access.
+    Automatically ensures DB schema synchronization and reliably dispatches candidate invitation emails.
     """
+    # 1. Apply runtime schema migrations on the active DB connection
     try:
-        channel = payload.get("channel", "email") # 'email' | 'whatsapp' | 'sms'
-        candidate_id = payload.get("candidate_id")
-        token = payload.get("token") or payload.get("candidate_token")
-        hr_email = payload.get("hr_email")
-        hr_name = payload.get("hr_name")
-        hr_id = payload.get("hr_id")
-        candidate_email = (payload.get("candidate_email") or payload.get("email") or "").strip()
-        candidate_name = payload.get("candidate_name") or payload.get("name") or "Valued Candidate"
-        candidate_code = payload.get("candidate_code") or payload.get("employee_number") or payload.get("empId") or "JOY-EMP-001"
-        company_name = payload.get("company_name")
-        company_id = payload.get("company_id")
-        designation = payload.get("designation") or "Associate"
-        security_pin = str(payload.get("security_pin") or payload.get("portal_password") or "1234").strip()
-        custom_smtp = payload.get("custom_smtp")
-        
-        # Try finding candidate in DB
-        candidate = None
+        apply_runtime_migrations(db.get_bind())
+    except Exception as mig_err:
+        pass
+
+    channel = payload.get("channel", "email") # 'email' | 'whatsapp' | 'sms'
+    candidate_id = payload.get("candidate_id")
+    token = payload.get("token") or payload.get("candidate_token")
+    hr_email = payload.get("hr_email")
+    hr_name = payload.get("hr_name")
+    hr_id = payload.get("hr_id")
+    candidate_email = (payload.get("candidate_email") or payload.get("email") or "").strip()
+    candidate_name = payload.get("candidate_name") or payload.get("name") or "Valued Candidate"
+    candidate_code = payload.get("candidate_code") or payload.get("employee_number") or payload.get("empId") or "JOY-EMP-001"
+    company_name = payload.get("company_name")
+    company_id = payload.get("company_id")
+    designation = payload.get("designation") or "Associate"
+    security_pin = str(payload.get("security_pin") or payload.get("portal_password") or "1234").strip()
+    custom_smtp = payload.get("custom_smtp")
+
+    # 2. Safely find or create Candidate record in PostgreSQL
+    candidate = None
+    try:
         if candidate_id:
             candidate = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
         if not candidate and token:
@@ -252,13 +267,11 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
         if not candidate and candidate_email:
             candidate = db.query(Candidate).filter(Candidate.email.ilike(candidate_email)).first()
 
-        # If candidate is not yet in PostgreSQL DB, create record immediately
         if not candidate:
             import uuid
             cand_token = token or str(uuid.uuid4())
             cand_id = candidate_id if (candidate_id and not str(candidate_id).startswith('cand-17')) else f"cand-{uuid.uuid4().hex[:6]}"
             
-            # Resolve valid company from PostgreSQL
             comp_obj = None
             if company_id:
                 comp_obj = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
@@ -280,7 +293,6 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
                     db.rollback()
             comp_id = comp_obj.id if comp_obj else "comp-joy"
 
-            # Resolve valid HR User
             hr_user = None
             if hr_id:
                 hr_user = db.query(HrUser).filter(HrUser.id == hr_id).first()
@@ -312,7 +324,6 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
                 db.rollback()
                 candidate = db.query(Candidate).filter((Candidate.email.ilike(candidate_email)) | (Candidate.token == cand_token)).first()
         else:
-            # Update existing candidate particulars
             if candidate_email:
                 candidate.email = candidate_email
             if security_pin:
@@ -323,75 +334,81 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
                 db.refresh(candidate)
             except Exception:
                 db.rollback()
-
-        comp_obj = db.query(Company).filter(Company.id == candidate.company_id).first() if (candidate and candidate.company_id) else None
-        comp_name = company_name or (comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED")
-        
-        if not hr_name and (hr_id or (candidate and candidate.hr_id)):
-            hr_user = db.query(HrUser).filter(HrUser.id == (hr_id or candidate.hr_id)).first()
-            if hr_user:
-                hr_name = hr_user.name
-                hr_email = hr_email or hr_user.email
-
-        target_email = (candidate.email if candidate else None) or candidate_email
-        target_token = candidate.token if candidate else (token or "tok-muthu-99")
-        cand_name = candidate.name if candidate else candidate_name
-        cand_code = (candidate.emp_id if candidate else None) or (candidate.employee_number if candidate else None) or candidate_code
-        cand_pin = (candidate.portal_password if candidate else None) or security_pin
-
-        app_url = "https://test2.joycorporatesolutions.com"
-        verify_url = f"{app_url}/verify?token={target_token}"
-
+    except Exception as db_err:
         try:
-            email_res = send_candidate_onboarding_email(
-                candidate_name=cand_name,
-                candidate_code=cand_code,
-                candidate_email=target_email,
-                token=target_token,
-                security_pin=cand_pin,
-                company_name=comp_name,
-                company_id=candidate.company_id if candidate else None,
-                designation=(candidate.designation if candidate else None) or designation,
-                sender_hr_name=hr_name,
-                sender_hr_email=hr_email,
-                custom_smtp=custom_smtp,
-                db=db
-            )
-        except Exception as em_err:
-            email_res = {"success": False, "error": str(em_err)}
+            db.rollback()
+        except Exception:
+            pass
 
-        email_sent = bool(email_res and email_res.get("success"))
-        email_error = email_res.get("error") if (email_res and not email_sent) else None
+    # 3. Resolve target variables
+    target_email = (candidate.email if candidate else None) or candidate_email
+    target_token = (candidate.token if candidate else None) or token or "tok-muthu-99"
+    cand_name = (candidate.name if candidate else None) or candidate_name
+    cand_code = (candidate.emp_id if candidate else None) or (candidate.employee_number if candidate else None) or candidate_code
+    cand_pin = (candidate.portal_password if candidate else None) or security_pin
+    cand_company_id = (candidate.company_id if candidate else None) or company_id
+    cand_designation = (candidate.designation if candidate else None) or designation
 
-        return {
-            "success": True,
-            "channel": channel,
-            "candidate_id": candidate.id if candidate else (candidate_id or "cand-1"),
-            "token": target_token,
-            "verify_url": verify_url,
-            "security_pin": cand_pin,
-            "email_sent": email_sent,
-            "email_error": email_error,
-            "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {cand_pin})." if email_sent else f"Verification link generated for {target_email}. Note: {email_error or 'Email queued'}",
-            "email_result": email_res
-        }
-    except Exception as top_err:
-        cand_pin = str(payload.get("security_pin") or payload.get("portal_password") or "1234").strip()
-        target_token = payload.get("token") or payload.get("candidate_token") or "tok-muthu-99"
-        target_email = (payload.get("candidate_email") or payload.get("email") or "muthukumar@joyglobalcorp.com").strip()
-        verify_url = f"https://test2.joycorporatesolutions.com/verify?token={target_token}"
-        return {
-            "success": True,
-            "channel": "email",
-            "candidate_id": payload.get("candidate_id") or "cand-1",
-            "token": target_token,
-            "verify_url": verify_url,
-            "security_pin": cand_pin,
-            "email_sent": False,
-            "email_error": str(top_err),
-            "message": f"Verification link generated for {target_email}. PIN: {cand_pin}",
-            "email_result": {"success": False, "error": str(top_err)}
-        }
+    comp_name = company_name
+    if not comp_name and cand_company_id:
+        try:
+            comp_obj = db.query(Company).filter(Company.id == cand_company_id).first()
+            if comp_obj:
+                comp_name = comp_obj.name
+        except Exception:
+            pass
+    if not comp_name:
+        comp_name = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+
+    if not hr_name:
+        try:
+            lookup_hr_id = hr_id or (candidate.hr_id if candidate else None)
+            if lookup_hr_id:
+                hr_user = db.query(HrUser).filter(HrUser.id == lookup_hr_id).first()
+                if hr_user:
+                    hr_name = hr_user.name
+                    hr_email = hr_email or hr_user.email
+        except Exception:
+            pass
+
+    app_url = "https://test2.joycorporatesolutions.com"
+    verify_url = f"{app_url}/verify?token={target_token}"
+
+    # 4. Dispatch onboarding email to Candidate
+    email_res = None
+    try:
+        email_res = send_candidate_onboarding_email(
+            candidate_name=cand_name,
+            candidate_code=cand_code,
+            candidate_email=target_email,
+            token=target_token,
+            security_pin=cand_pin,
+            company_name=comp_name,
+            company_id=cand_company_id,
+            designation=cand_designation,
+            sender_hr_name=hr_name,
+            sender_hr_email=hr_email,
+            custom_smtp=custom_smtp,
+            db=db
+        )
+    except Exception as em_err:
+        email_res = {"success": False, "error": str(em_err)}
+
+    email_sent = bool(email_res and email_res.get("success"))
+    email_error = email_res.get("error") if (email_res and not email_sent) else None
+
+    return {
+        "success": True,
+        "channel": channel,
+        "candidate_id": (candidate.id if candidate else None) or candidate_id or "cand-1",
+        "token": target_token,
+        "verify_url": verify_url,
+        "security_pin": cand_pin,
+        "email_sent": email_sent,
+        "email_error": email_error,
+        "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {cand_pin})." if email_sent else f"Verification link generated for {target_email}. Note: {email_error or 'Email queued'}",
+        "email_result": email_res
+    }
 
 
 @router.put("/candidates/{candidate_id}/status")
