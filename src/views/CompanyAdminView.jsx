@@ -81,7 +81,12 @@ export const CompanyAdminView = () => {
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
-  const [activeTab, setActiveTab] = useState('telemetry'); // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
+  const [activeTab, setActiveTab] = useState('telemetry');
+  // Smooth Dashboard Positioning on Tab Switches
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, activeMainSection]);
+ // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);

@@ -173,7 +173,12 @@ export const SuperAdminView = () => {
     }
   };
 
-    const [tabCategory, setTabCategory] = useState('all'); // 'all' | 'core' | 'infra' | 'governance'
+    const [tabCategory, setTabCategory] = useState('all');
+  // Smooth Dashboard Positioning on Tab Switches
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, activeMainSection]);
+ // 'all' | 'core' | 'infra' | 'governance'
   // 🔍 Universal Profile ID & Omnisearch Tracker States (COMP001, COMP001HR001, COMP001EMP001)
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [selectedTrackedEntity, setSelectedTrackedEntity] = useState(null);
@@ -198,6 +203,9 @@ export const SuperAdminView = () => {
   
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [customTariffModalCompany, setCustomTariffModalCompany] = useState(null);
+  const [topupModalCompany, setTopupModalCompany] = useState(null);
+  const [customTariffValues, setCustomTariffValues] = useState({});
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [selectedTermsCompany, setSelectedTermsCompany] = useState(null);

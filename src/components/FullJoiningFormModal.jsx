@@ -51,6 +51,14 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  // Lock Body Scroll while Master Joining Form Modal is Open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
 
   const jfd = candidate?.joiningFormData || {};
   const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
@@ -501,7 +509,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
       <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
         
         {/* Modal Header */}

@@ -37,6 +37,14 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  // Lock Body Scroll while Dossier Modal is Open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
 
   if (!candidate) return null;
 
@@ -190,7 +198,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-6 flex justify-center items-start sm:items-center print:p-0 print:bg-white animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-6 flex justify-center items-start sm:items-center print:p-0 print:bg-white animate-fadeIn">
       <div className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-7 space-y-5 text-slate-900 relative my-2 sm:my-auto print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring">
         
         {/* Action Header Controls (Hidden on Print) */}

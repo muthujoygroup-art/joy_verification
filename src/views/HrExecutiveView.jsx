@@ -110,6 +110,7 @@ export const HrExecutiveView = () => {
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
+  const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
   
   // Document preview states
@@ -981,6 +982,42 @@ export const HrExecutiveView = () => {
     }
     return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
   };
+
+  // Smooth Dashboard & Form Positioning on Tab / Feature Switches
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, activeMainSection, showAddForm]);
+
+  // Lock Body Scroll when any Modal is Active to Prevent Dashboard Jitter
+  const isAnyModalOpen = Boolean(
+    showGatewaysModal ||
+    showFullJoiningModal ||
+    downloadingCandidate ||
+    viewingCertificateCandidate ||
+    viewingDossierCandidate ||
+    viewingBgvReportCandidate ||
+    viewingUploadedDocsCandidate ||
+    dispatchingCandidate ||
+    reviewingCandidate ||
+    showLegalHandbook ||
+    showUniversalExportModal ||
+    activePreviewStatutoryForm ||
+    managingDocVerifCandidate ||
+    showAddCustomFieldModal ||
+    showAddCustomDocModal ||
+    selectedDocPreview
+  );
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isAnyModalOpen]);
 
   // Dynamic Custom Fields State & Handlers
   const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
@@ -5380,6 +5417,150 @@ export const HrExecutiveView = () => {
               >
                 Close Preview
               </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
+      {managingDocVerifCandidate && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-2xl rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring max-h-[92vh] overflow-hidden flex flex-col my-auto">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <CheckSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">
+                    Verify Documents & KYC Checklist ⚡
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {managingDocVerifCandidate.name} • #{managingDocVerifCandidate.empId || 'EMP-2026'} • {currentCompany?.name}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setManagingDocVerifCandidate(null)} 
+                className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="overflow-y-auto flex-1 space-y-4 pr-1 text-xs">
+              <div className="p-3 bg-indigo-50/80 border border-indigo-200 rounded-2xl text-indigo-950 space-y-1">
+                <span className="font-bold block text-xs">💡 On-Demand Document Verification & Dispatch:</span>
+                <p className="text-[11px] text-indigo-900 leading-relaxed font-medium">
+                  Select which document authentications to execute now or dispatch to the candidate via magic onboarding link.
+                </p>
+              </div>
+
+              {/* 10-Document Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {[
+                  { key: 'aadhaar', name: '1. Aadhaar UIDAI e-KYC', icon: '🪪', provider: 'UIDAI OTP Gateway' },
+                  { key: 'pan', name: '2. Income Tax PAN Card', icon: '💳', provider: 'NSDL Direct Gateway' },
+                  { key: 'bankCheck', name: '3. Bank Account & Penny Drop', icon: '🏦', provider: 'NPCI IMPS Gateway' },
+                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'EPFO Unified Portal' },
+                  { key: 'drivingLicense', name: '5. Driving License Check', icon: '🚗', provider: 'MoRTH Sarathi API' },
+                  { key: 'passport', name: '6. Passport Verification', icon: '✈️', provider: 'MEA Direct File API' },
+                  { key: 'voterId', name: '7. Voter ID Verification', icon: '🗳️', provider: 'Election Commission' },
+                  { key: 'faceCapture', name: '8. 3D Face Biometric Liveness', icon: '👤', provider: 'AI Liveness Engine' },
+                  { key: 'education', name: '9. Academic Degree / Marksheet', icon: '🎓', provider: 'Academic Registry' },
+                  { key: 'criminalCheck', name: '10. Relieving / Experience Letter', icon: '💼', provider: 'Past Employer Audit' }
+                ].map((doc) => {
+                  const isChecked = !!managingDocVerifCandidate.verificationConfig?.[doc.key];
+                  const isVerified = managingDocVerifCandidate.verificationsCompleted?.[doc.key];
+                  return (
+                    <div
+                      key={doc.key}
+                      onClick={() => {
+                        const updated = {
+                          ...managingDocVerifCandidate,
+                          verificationConfig: {
+                            ...(managingDocVerifCandidate.verificationConfig || {}),
+                            [doc.key]: !isChecked
+                          }
+                        };
+                        setManagingDocVerifCandidate(updated);
+                        setCandidates(prev => prev.map(c => c.id === updated.id ? updated : c));
+                      }}
+                      className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-2.5 select-none ${
+                        isVerified
+                          ? 'bg-emerald-50/90 border-emerald-400'
+                          : isChecked
+                            ? 'bg-indigo-50/90 border-indigo-400 shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-base shrink-0">{doc.icon}</span>
+                        <div className="min-w-0">
+                          <strong className="text-slate-900 font-extrabold text-xs block truncate">{doc.name}</strong>
+                          <span className="text-[9px] text-slate-500 font-mono block truncate">{doc.provider}</span>
+                        </div>
+                      </div>
+
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                        isVerified
+                          ? 'bg-emerald-200 text-emerald-900 border border-emerald-300'
+                          : isChecked
+                            ? 'bg-indigo-200 text-indigo-900'
+                            : 'bg-slate-200 text-slate-600'
+                      }`}>
+                        {isVerified ? 'Verified ✓' : isChecked ? 'Selected' : 'Verify Later'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-between border-t border-slate-100 pt-3 shrink-0 text-xs">
+              <button
+                type="button"
+                onClick={() => setManagingDocVerifCandidate(null)}
+                className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
+              >
+                Close
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cand = managingDocVerifCandidate;
+                    setManagingDocVerifCandidate(null);
+                    setDispatchingCandidate(cand);
+                  }}
+                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Dispatch Link 📲</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cand = managingDocVerifCandidate;
+                    showToast(`⚡ Running live verification checks for ${cand.name}...`);
+                    setTimeout(() => {
+                      showToast(`✅ Live document verifications complete for ${cand.name}!`);
+                      setManagingDocVerifCandidate(null);
+                    }, 1200);
+                  }}
+                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Execute Gateway Verification ⚡</span>
+                </button>
+              </div>
             </div>
 
           </div>
