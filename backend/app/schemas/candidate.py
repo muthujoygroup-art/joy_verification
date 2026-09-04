@@ -34,6 +34,7 @@ class CandidateBase(BaseModel):
     manual_checks: Optional[Dict[str, Any]] = None
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Any] = None
+    specimen_signature: Optional[str] = None
     documents: Optional[List[Dict[str, Any]]] = None
 
 class CandidateCreate(CandidateBase):
@@ -72,6 +73,7 @@ class CandidateUpdate(BaseModel):
     manual_checks: Optional[Dict[str, Any]] = None
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Dict[str, Any]] = None
+    specimen_signature: Optional[str] = None
 
 class CandidateResponse(CandidateBase):
     id: str

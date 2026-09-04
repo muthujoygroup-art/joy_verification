@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 class SendOtpRequest(BaseModel):
     channel: str # 'aadhaar' | 'mobile'
@@ -38,3 +38,6 @@ class FaceCaptureResponse(BaseModel):
 class CompleteVerificationPayload(BaseModel):
     token: str
     joining_form_data: Optional[Dict[str, Any]] = None
+    status: Optional[str] = "Submitted - Pending HR Review"
+    specimen_signature: Optional[str] = None
+    documents: Optional[List[Dict[str, Any]]] = None

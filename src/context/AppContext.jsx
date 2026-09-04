@@ -1364,36 +1364,105 @@ export const AppProvider = ({ children }) => {
   };
 
   // Candidate Submits Joining Form & Documents from Magic Link
-  const submitCandidateJoiningForm = (token, submittedFormData) => {
-    setCandidates(prev => prev.map(cand => {
-      if (cand.token !== token) return cand;
-      return {
-        ...cand,
+  const submitCandidateJoiningForm = async (token, submittedFormData) => {
+    // 1. Optimistic Update in State & LocalStorage
+    setCandidates(prev => {
+      const updated = prev.map(cand => {
+        if (cand.token !== token) return cand;
+        const mergedJfd = {
+          ...(cand.joiningFormData || {}),
+          ...submittedFormData
+        };
+        return {
+          ...cand,
+          status: 'Submitted - Pending HR Review',
+          submittedFormData: submittedFormData,
+          joiningFormData: mergedJfd,
+          specimenSignature: submittedFormData.signature || submittedFormData.specimenSignature || cand.specimenSignature,
+          lastSubmittedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          verificationsCompleted: {
+            ...cand.verificationsCompleted,
+            joiningForm: true
+          },
+          // Sync key top-level properties
+          name: submittedFormData.fullName || cand.name,
+          empId: submittedFormData.empId || cand.empId,
+          employeeNumber: submittedFormData.employeeNumber || cand.employeeNumber || cand.empId,
+          dob: submittedFormData.dob || cand.dob,
+          doj: submittedFormData.doj || cand.doj,
+          age: submittedFormData.age || cand.age,
+          gender: submittedFormData.gender || cand.gender,
+          maritalStatus: submittedFormData.maritalStatus || cand.maritalStatus,
+          motherTongue: submittedFormData.motherTongue || cand.motherTongue,
+          languagesKnown: submittedFormData.languagesKnown || cand.languagesKnown,
+          pfNumber: submittedFormData.pfNumber || submittedFormData.uanEpf || cand.pfNumber,
+          esiNumber: submittedFormData.esiNumber || submittedFormData.esicNo || cand.esiNumber,
+          religion: submittedFormData.religion || cand.religion,
+          caste: submittedFormData.caste || cand.caste,
+          category: submittedFormData.category || cand.category,
+          nativeState: submittedFormData.nativeState || submittedFormData.state || cand.nativeState,
+          nativeDistrict: submittedFormData.nativeDistrict || submittedFormData.city || cand.nativeDistrict,
+          identificationMarks: submittedFormData.identificationMarks || cand.identificationMarks,
+          employeeType: submittedFormData.employeeCategory || submittedFormData.employeeType || cand.employeeType
+        };
+      });
+      try {
+        localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    // 2. Persist to Backend Database
+    try {
+      await api.submitCandidateJoiningForm(token, {
+        token,
+        joining_form_data: submittedFormData,
         status: 'Submitted - Pending HR Review',
-        submittedFormData: submittedFormData,
-        lastSubmittedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-        verificationsCompleted: {
-          ...cand.verificationsCompleted,
-          joiningForm: true
-        }
-      };
-    }));
+        specimen_signature: submittedFormData.signature || submittedFormData.specimenSignature || null
+      });
+    } catch (err) {
+      console.warn('Backend database joining form sync warning (data saved locally):', err);
+    }
+
     showToast('🎉 Onboarding Details & Documents Submitted! Sent to HR for Review & Approval.');
   };
 
   // HR Approves Candidate Submission
-  const approveCandidateSubmission = (token) => {
-    setCandidates(prev => prev.map(cand => {
-      if (cand.token !== token) return cand;
-      // update company monthly verified count
-      setCompanies(comps => comps.map(c => c.id === cand.companyId ? { ...c, verifiedCountThisMonth: c.verifiedCountThisMonth + 1 } : c));
-      return {
-        ...cand,
-        status: 'Verified',
-        hrCorrectionRemarks: '',
-        verificationDate: new Date().toISOString().replace('T', ' ').substring(0, 16)
-      };
-    }));
+  const approveCandidateSubmission = async (token) => {
+    let targetCand = null;
+    setCandidates(prev => {
+      const updated = prev.map(cand => {
+        if (cand.token !== token) return cand;
+        targetCand = cand;
+        return {
+          ...cand,
+          status: 'Verified',
+          hrCorrectionRemarks: '',
+          verificationDate: new Date().toISOString().replace('T', ' ').substring(0, 16)
+        };
+      });
+      try {
+        localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    // update company monthly verified count
+    if (targetCand?.companyId) {
+      setCompanies(comps => comps.map(c => c.id === targetCand.companyId ? { ...c, verifiedCountThisMonth: (c.verifiedCountThisMonth || 0) + 1 } : c));
+    }
+
+    // Persist to Backend Database
+    try {
+      if (targetCand?.id) {
+        await api.updateCandidateStatus(targetCand.id, 'Verified');
+      } else {
+        await api.completeVerification({ token, status: 'Verified' });
+      }
+    } catch (err) {
+      console.warn('Backend status approval warning (saved locally):', err);
+    }
+
     showToast('✅ Candidate Profile Approved & Certified! Official Dossier is now ready.');
   };
 

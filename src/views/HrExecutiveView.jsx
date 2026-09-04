@@ -231,10 +231,11 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
     contractTenure: '2026-09-01 to 2027-08-31 (12 Months Renewable)'
   },
   statutoryFormsConfig: {
-    form16: true,
     form11: true,
+    form2: true,
+    esicForm1: true,
+    form16: true,
     formF: true,
-    esicForm1: false,
     nda: true,
     posh: true,
     nonCompete: true,

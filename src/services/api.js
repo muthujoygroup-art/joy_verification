@@ -407,6 +407,13 @@ export const api = {
       body: JSON.stringify(completionData),
     });
   },
+  submitCandidateJoiningForm: (token, payload) => {
+    requestCache.clear();
+    return request('/verification/submit-joining', {
+      method: 'POST',
+      body: JSON.stringify({ token, ...payload }),
+    });
+  },
 
   // 🏛️ Upstream Government & Institutional Verification APIs
   verifyAadhaarLive: (token, aadhaarNumber, otp) => request('/verification/verify-aadhaar', {

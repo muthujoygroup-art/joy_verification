@@ -55,8 +55,13 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   if (!candidate) return null;
 
   const c = candidate;
-  const jf = c.joining_form_data || c.joiningFormData || {};
-  const companyName = c.companyName || jf.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const jf = {
+    ...(c.joining_form_data || {}),
+    ...(c.joiningFormData || {}),
+    ...(c.submittedFormData || {}),
+    ...c
+  };
+  const companyName = c.companyName || jf.companyName || jf.workingCompany || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
   

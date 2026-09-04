@@ -6,10 +6,9 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-
 from backend.app.config import settings
 from backend.app.database import get_db
-from backend.app.models import Candidate, Company, VerificationRecord, HrUser
+from backend.app.models import Candidate, Company, VerificationRecord, HrUser, CandidateDocument
 from backend.app.services.email_service import send_candidate_onboarding_email, send_candidate_verification_completed_email, send_candidate_correction_email
 from backend.app.schemas import (
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,
@@ -409,7 +408,7 @@ def perform_face_match_with_aadhaar(payload: dict = None, db: Session = Depends(
 # -----------------------------------------------------------------------------
 @router.post("/complete")
 def complete_verification(payload: CompleteVerificationPayload, db: Session = Depends(get_db)):
-    """Submits candidate verification and marks record as Verified"""
+    """Submits candidate verification and marks record as Verified (or designated status)"""
     candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -438,14 +437,38 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
         if jfd.get("nativeDistrict") or jfd.get("city"): candidate.native_district = jfd.get("nativeDistrict") or jfd.get("city")
         if jfd.get("identificationMarks"): candidate.identification_marks = jfd["identificationMarks"]
         if jfd.get("employeeType"): candidate.employee_type = jfd["employeeType"]
+        if jfd.get("signature") or jfd.get("specimenSignature") or payload.specimen_signature:
+            candidate.specimen_signature = payload.specimen_signature or jfd.get("signature") or jfd.get("specimenSignature")
         
-    candidate.status = "Verified"
+        # Save attached candidate documents
+        docs = payload.documents or jfd.get("documents") or jfd.get("uploadedDocuments")
+        if docs:
+            if isinstance(docs, dict):
+                docs = list(docs.values())
+            for doc in docs:
+                if isinstance(doc, dict) and (doc.get("title") or doc.get("name")):
+                    doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+                    cand_doc = CandidateDocument(
+                        id=doc_id,
+                        candidate_id=candidate.id,
+                        title=doc.get("title") or doc.get("name") or "Candidate Submitted Document",
+                        doc_type=doc.get("doc_type") or doc.get("type") or "general",
+                        file_format=doc.get("file_format") or doc.get("format") or "pdf",
+                        file_path=doc.get("file_path") or doc.get("data") or doc.get("url") or "",
+                        file_size_kb=float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0),
+                        created_at=datetime.utcnow()
+                    )
+                    db.add(cand_doc)
+
+    new_status = payload.status or "Verified"
+    candidate.status = new_status
     candidate.verification_date = datetime.utcnow()
     
-    # Increment company verified count
-    comp = db.query(Company).filter(Company.id == candidate.company_id).first()
-    if comp:
-        comp.verified_count_this_month = (comp.verified_count_this_month or 0) + 1
+    # Increment company verified count if status is Verified
+    if new_status == "Verified":
+        comp = db.query(Company).filter(Company.id == candidate.company_id).first()
+        if comp:
+            comp.verified_count_this_month = (comp.verified_count_this_month or 0) + 1
         
     db.commit()
     db.refresh(candidate)
@@ -453,8 +476,9 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
     # 📧 Automated Email Notification on Verification Completion
     try:
         hr_user = db.query(HrUser).filter(HrUser.id == candidate.hr_id).first() if candidate.hr_id else None
-        comp_name = comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
-        if candidate.email:
+        comp_obj = db.query(Company).filter(Company.id == candidate.company_id).first() if candidate.company_id else None
+        comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+        if candidate.email and new_status == "Verified":
             send_candidate_verification_completed_email(
                 candidate_name=candidate.name,
                 candidate_code=candidate.emp_id or candidate.employee_number or "COMP001EMP001",
@@ -469,7 +493,82 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
     
     return {
         "success": True,
-        "message": f"Verification completed successfully for {candidate.name}.",
+        "message": f"Verification status updated to '{candidate.status}' for {candidate.name}.",
+        "candidate": candidate
+    }
+
+
+@router.post("/submit-joining")
+def submit_joining_form(payload: CompleteVerificationPayload, db: Session = Depends(get_db)):
+    """
+    Candidate submits comprehensive joining form particulars, uploaded documents,
+    9 statutory declarations, and specimen signature via onboarding magic link.
+    Persists data and sets status to 'Submitted - Pending HR Review'.
+    """
+    candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    jfd = payload.joining_form_data or {}
+    candidate.joining_form_data = jfd
+
+    # Sync top-level demographic columns
+    if jfd.get("fullName"): candidate.name = jfd["fullName"]
+    if jfd.get("empId"): candidate.emp_id = jfd["empId"]
+    if jfd.get("employeeNumber"): candidate.employee_number = jfd["employeeNumber"]
+    if jfd.get("dob"): candidate.dob = jfd["dob"]
+    if jfd.get("doj"): candidate.doj = jfd["doj"]
+    if jfd.get("age"): candidate.age = int(jfd["age"]) if str(jfd["age"]).isdigit() else candidate.age
+    if jfd.get("gender"): candidate.gender = jfd["gender"]
+    if jfd.get("maritalStatus"): candidate.marital_status = jfd["maritalStatus"]
+    if jfd.get("motherTongue"): candidate.mother_tongue = jfd["motherTongue"]
+    if jfd.get("languagesKnown"): candidate.languages_known = jfd["languagesKnown"]
+    if jfd.get("pfNumber") or jfd.get("uanEpf"): candidate.pf_number = jfd.get("pfNumber") or jfd.get("uanEpf")
+    if jfd.get("esiNumber") or jfd.get("esicNo"): candidate.esi_number = jfd.get("esiNumber") or jfd.get("esicNo")
+    if jfd.get("religion"): candidate.religion = jfd["religion"]
+    if jfd.get("caste"): candidate.caste = jfd["caste"]
+    if jfd.get("category"): candidate.category = jfd["category"]
+    if jfd.get("nativeState") or jfd.get("state"): candidate.native_state = jfd.get("nativeState") or jfd.get("state")
+    if jfd.get("nativeDistrict") or jfd.get("city"): candidate.native_district = jfd.get("nativeDistrict") or jfd.get("city")
+    if jfd.get("identificationMarks"): candidate.identification_marks = jfd["identificationMarks"]
+    if jfd.get("employeeType"): candidate.employee_type = jfd["employeeType"]
+    if jfd.get("signature") or jfd.get("specimenSignature") or payload.specimen_signature:
+        candidate.specimen_signature = payload.specimen_signature or jfd.get("signature") or jfd.get("specimenSignature")
+
+    # Save attached documents
+    docs = payload.documents or jfd.get("documents") or jfd.get("uploadedDocuments")
+    if docs:
+        if isinstance(docs, dict):
+            docs = list(docs.values())
+        for doc in docs:
+            if isinstance(doc, dict) and (doc.get("title") or doc.get("name")):
+                doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+                cand_doc = CandidateDocument(
+                    id=doc_id,
+                    candidate_id=candidate.id,
+                    title=doc.get("title") or doc.get("name") or "Candidate Submitted Document",
+                    doc_type=doc.get("doc_type") or doc.get("type") or "general",
+                    file_format=doc.get("file_format") or doc.get("format") or "pdf",
+                    file_path=doc.get("file_path") or doc.get("data") or doc.get("url") or "",
+                    file_size_kb=float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0),
+                    created_at=datetime.utcnow()
+                )
+                db.add(cand_doc)
+
+    candidate.status = payload.status or "Submitted - Pending HR Review"
+    
+    # Mark joining form completed in verification checklist
+    verifs = dict(candidate.verifications_completed or {})
+    verifs["joiningForm"] = True
+    candidate.verifications_completed = verifs
+
+    db.commit()
+    db.refresh(candidate)
+
+    return {
+        "success": True,
+        "message": f"Joining form and statutory documents successfully submitted for {candidate.name}. Profile is now under HR review.",
+        "status": candidate.status,
         "candidate": candidate
     }
 

@@ -51,8 +51,29 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         existing_cand.name = payload.name or existing_cand.name
         existing_cand.designation = payload.designation or existing_cand.designation
         existing_cand.dept = payload.dept or existing_cand.dept
-        if payload.verification_config:
-            existing_cand.verification_config = payload.verification_config
+        existing_cand.employee_type = payload.employee_type or existing_cand.employee_type
+        if payload.emp_id: existing_cand.emp_id = payload.emp_id
+        if payload.employee_number: existing_cand.employee_number = payload.employee_number
+        if payload.dob: existing_cand.dob = payload.dob
+        if payload.doj: existing_cand.doj = payload.doj
+        if payload.age: existing_cand.age = payload.age
+        if payload.gender: existing_cand.gender = payload.gender
+        if payload.marital_status: existing_cand.marital_status = payload.marital_status
+        if payload.mother_tongue: existing_cand.mother_tongue = payload.mother_tongue
+        if payload.languages_known: existing_cand.languages_known = payload.languages_known
+        if payload.pf_number: existing_cand.pf_number = payload.pf_number
+        if payload.esi_number: existing_cand.esi_number = payload.esi_number
+        if payload.religion: existing_cand.religion = payload.religion
+        if payload.caste: existing_cand.caste = payload.caste
+        if payload.category: existing_cand.category = payload.category
+        if payload.native_state: existing_cand.native_state = payload.native_state
+        if payload.native_district: existing_cand.native_district = payload.native_district
+        if payload.identification_marks: existing_cand.identification_marks = payload.identification_marks
+        if payload.portal_password: existing_cand.portal_password = payload.portal_password
+        if payload.verification_config: existing_cand.verification_config = payload.verification_config
+        if payload.joining_form_data: existing_cand.joining_form_data = payload.joining_form_data
+        if payload.custom_fields: existing_cand.custom_fields = payload.custom_fields
+        if payload.specimen_signature: existing_cand.specimen_signature = payload.specimen_signature
         db.commit()
         db.refresh(existing_cand)
         return existing_cand
@@ -137,6 +158,7 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         },
         joining_form_data=joining_data,
         custom_fields=payload.custom_fields or {},
+        specimen_signature=payload.specimen_signature,
         created_at=datetime.utcnow()
     )
     
