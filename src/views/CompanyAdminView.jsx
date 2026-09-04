@@ -240,17 +240,34 @@ export const CompanyAdminView = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (selectedCandidateForVerification) setSelectedCandidateForVerification(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        if (inspectCandidate) setInspectCandidate(null);
+        else if (downloadingCandidate) setDownloadingCandidate(null);
+        else if (activeDrilldown) setActiveDrilldown(null);
         else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (viewingCertificateCandidate) setViewingCertificateCandidate(null);
+        else if (viewingBgvReportCandidate) setViewingBgvReportCandidate(null);
+        else if (showTourGuideModal) setShowTourGuideModal(false);
+        else if (showAddHrModal) setShowAddHrModal(false);
         else if (showPaymentModal) setShowPaymentModal(false);
-        else if (showExportModal) setShowExportModal(false);
+        else if (showRazorpayModal) setShowRazorpayModal(false);
         else if (showGatewaysModal) setShowGatewaysModal(false);
+        else if (showTermsModal) setShowTermsModal(false);
+        else if (showLegalHandbook) setShowLegalHandbook(false);
+        else if (showUniversalExportModal) setShowUniversalExportModal(false);
+        else if (governanceHr) setGovernanceHr(null);
+        else if (activatingHr) setActivatingHr(null);
+        else if (showCompTestEmailModal) setShowCompTestEmailModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCandidateForVerification, viewingCertCandidate, viewingDossierCandidate, showPaymentModal, showExportModal, showGatewaysModal]);
+  }, [
+    inspectCandidate, downloadingCandidate, activeDrilldown, viewingDossierCandidate,
+    viewingCertificateCandidate, viewingBgvReportCandidate, showTourGuideModal, showAddHrModal,
+    showPaymentModal, showRazorpayModal, showGatewaysModal, showTermsModal, showLegalHandbook,
+    showUniversalExportModal, governanceHr, activatingHr, showCompTestEmailModal
+  ]);
+
 
     return () => window.removeEventListener('tour_feature_action', handleTourAction);
   }, []);

@@ -453,7 +453,7 @@ export const HrExecutiveView = () => {
         else if (showAddCustomDocModal) setShowAddCustomDocModal(false);
         else if (dispatchingCandidate) setDispatchingCandidate(null);
         else if (viewingDossierCandidate) setViewingDossierCandidate(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (viewingCertificateCandidate) setViewingCertificateCandidate(null);
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
         else if (showFullJoiningModal) setShowFullJoiningModal(false);
         else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
@@ -465,10 +465,11 @@ export const HrExecutiveView = () => {
   }, [
     selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
     managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
-    dispatchingCandidate, viewingDossierCandidate, viewingCertCandidate,
+    dispatchingCandidate, viewingDossierCandidate, viewingCertificateCandidate,
     showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
     showGatewaysModal
   ]);
+
 
 
     return () => clearTimeout(timer);

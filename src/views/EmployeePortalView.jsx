@@ -103,14 +103,27 @@ export const EmployeePortalView = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (showJoiningModal) setShowJoiningModal(false);
-        else if (showFaceModal) setShowFaceModal(false);
-        else if (showDocPreview) setShowDocPreview(false);
+        if (showAadhaarOtpModal) setShowAadhaarOtpModal(false);
+        else if (showMobileOtpModal) setShowMobileOtpModal(false);
+        else if (showEmailOtpModal) setShowEmailOtpModal(false);
+        else if (showLivePhotoModal) setShowLivePhotoModal(false);
+        else if (showAiFaceMatchModal) setShowAiFaceMatchModal(false);
+        else if (showDocDownloader) setShowDocDownloader(false);
+        else if (showCertModal) setShowCertModal(false);
+        else if (showLaborDossierModal) setShowLaborDossierModal(false);
+        else if (showFullJoiningModal) setShowFullJoiningModal(false);
+        else if (showSignatureModal) setShowSignatureModal(false);
+        else if (showLegalHandbook) setShowLegalHandbook(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showJoiningModal, showFaceModal, showDocPreview]);
+  }, [
+    showAadhaarOtpModal, showMobileOtpModal, showEmailOtpModal, showLivePhotoModal,
+    showAiFaceMatchModal, showDocDownloader, showCertModal, showLaborDossierModal,
+    showFullJoiningModal, showSignatureModal, showLegalHandbook
+  ]);
+
 
     return () => {
       window.removeEventListener('online', updateNetworkStatus);

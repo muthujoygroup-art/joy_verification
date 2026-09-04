@@ -1055,18 +1055,38 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (selectedCompany) setSelectedCompany(null);
-        else if (selectedHr) setSelectedHr(null);
+        if (selectedTrackedEntity) setSelectedTrackedEntity(null);
+        else if (selectedDossierCandidate) setSelectedDossierCandidate(null);
+        else if (selectedCertCandidate) setSelectedCertCandidate(null);
+        else if (showAddCompanyModal) setShowAddCompanyModal(false);
+        else if (showTermsModal) setShowTermsModal(false);
+        else if (customTariffModalCompany) setCustomTariffModalCompany(null);
+        else if (topupModalCompany) setTopupModalCompany(null);
+        else if (showLegalHandbook) setShowLegalHandbook(false);
+        else if (showUniversalExportModal) setShowUniversalExportModal(false);
+        else if (downloadingCandidate) setDownloadingCandidate(null);
+        else if (activeDrilldown) setActiveDrilldown(null);
         else if (viewingDossierCandidate) setViewingDossierCandidate(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
-        else if (showInvoiceModal) setShowInvoiceModal(false);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
-        else if (showCustomReportModal) setShowCustomReportModal(false);
+        else if (viewingCertificateCandidate) setViewingCertificateCandidate(null);
+        else if (selectedLogForDetail) setSelectedLogForDetail(null);
+        else if (showSimulateErrorModal) setShowSimulateErrorModal(false);
+        else if (resolveModalLog) setResolveModalLog(null);
+        else if (viewingLegalDoc) setViewingLegalDoc(null);
+        else if (showAddDocModal) setShowAddDocModal(false);
+        else if (showSuperAdminRazorpayModal) setShowSuperAdminRazorpayModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCompany, selectedHr, viewingDossierCandidate, viewingCertCandidate, showInvoiceModal, showGatewaysModal, showCustomReportModal]);
+  }, [
+    selectedTrackedEntity, selectedDossierCandidate, selectedCertCandidate,
+    showAddCompanyModal, showTermsModal, customTariffModalCompany, topupModalCompany,
+    showLegalHandbook, showUniversalExportModal, downloadingCandidate, activeDrilldown,
+    viewingDossierCandidate, viewingCertificateCandidate, selectedLogForDetail,
+    showSimulateErrorModal, resolveModalLog, viewingLegalDoc, showAddDocModal,
+    showSuperAdminRazorpayModal
+  ]);
+
 
 
   return (
