@@ -5166,11 +5166,6 @@ export const HrExecutiveView = () => {
         </div>
       )}
 
-    </div>
-  );
-};
-
-
       {/* 📝 MODAL: ADD DYNAMIC CUSTOM TEXT FIELD */}
       {showAddCustomFieldModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
@@ -5298,3 +5293,6 @@ export const HrExecutiveView = () => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
