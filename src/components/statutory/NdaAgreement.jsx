@@ -4,7 +4,7 @@ export const NdaAgreement = ({ candidate, jf = {}, companyName = "JOY CORPORATE 
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
   const pan = c.panNo || jf.panNo || 'ABCDE1234F';
-  const aadhaar = c.aadhaarNo || jf.aadhaarNo || '7132 2641 6421';
+  const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
   const doj = c.doj || jf.doj || '2026-04-13';
   const designation = c.designation || jf.designation || 'Software Specialist';
   const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';

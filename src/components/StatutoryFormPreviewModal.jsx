@@ -50,21 +50,21 @@ export const StatutoryFormPreviewModal = ({
   }, [onClose]);
 
   const candidateData = {
-    name: formData.name || 'DHANA SRI',
-    email: formData.email || 'employee@joycorporatesolutions.com',
-    mobile: formData.mobile || '9150547581',
-    dob: formData.dob || '2005-07-21',
-    doj: formData.doj || '2026-04-13',
-    gender: formData.gender || 'Female',
-    maritalStatus: formData.maritalStatus || 'Married',
-    aadhaarNo: formData.aadhaarNo || '7132 2641 6421',
-    panNo: formData.panNo || 'ABCDE1234F',
-    uanEpf: formData.uanEpf || formData.pfNumber || '102266065538',
-    esiNumber: formData.esiNumber || '5611450865',
-    fatherName: formData.fatherName || 'SIVA KUMAR',
-    spouseName: formData.spouseName || 'SIVA KUMAR',
-    employeeNumber: formData.employeeNumber || formData.empId || 'JOY-2026-001',
-    designation: formData.designation || 'Software Engineer'
+    name: formData.name || 'Candidate Name',
+    email: formData.email || '',
+    mobile: formData.mobile || '',
+    dob: formData.dob || '',
+    doj: formData.doj || new Date().toISOString().split('T')[0],
+    gender: formData.gender || '',
+    maritalStatus: formData.maritalStatus || '',
+    aadhaarNo: formData.aadhaarNo || '',
+    panNo: formData.panNo || '',
+    uanEpf: formData.uanEpf || formData.pfNumber || '',
+    esiNumber: formData.esiNumber || '',
+    fatherName: formData.fatherName || '',
+    spouseName: formData.spouseName || '',
+    employeeNumber: formData.employeeNumber || formData.empId || '',
+    designation: formData.designation || ''
   };
 
   const formTitle = FORM_TITLES[formKey] || 'Statutory Compliance Document';

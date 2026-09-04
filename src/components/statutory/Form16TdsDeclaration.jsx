@@ -7,7 +7,7 @@ export const Form16TdsDeclaration = ({ candidate, jf = {}, companyName = "JOY CO
   const doj = c.doj || jf.doj || '2026-04-13';
   const designation = c.designation || jf.designation || 'Specialist';
   const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
-  const email = c.email || jf.email || 'employee@joycorporatesolutions.com';
+  const email = c.email || jf.email || '-';
   const mobile = c.mobile || jf.mobile || '9876543210';
   const prevOrg = jf.previousEmployer || 'Previous Organization Pvt Ltd';
   const regime = jf.taxRegime || 'New Tax Regime (u/s 115BAC - Default)';

@@ -2,20 +2,20 @@ import React from 'react';
 
 export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
-  const name = c.name || jf.fullName || 'DHANA SRI';
-  const fatherOrHusband = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || 'SIVA KUMAR';
-  const dob = c.dob || jf.dob || '2005-07-21';
+  const name = c.name || jf.fullName || 'Candidate Name';
+  const fatherOrHusband = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || '-';
+  const dob = c.dob || jf.dob || '-';
   const gender = c.gender || jf.gender || 'Female';
   const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
-  const mobile = c.mobile || jf.mobile || '9150547581';
-  const presentAddr = jf.presentAddress || 'Selva vinayagar store near, Kurumbapalayam, Cbe, TN - 641107';
-  const permAddr = jf.permanentAddress || 'Selva vinayagar store near, Kurumbapalayam, Cbe, TN - 641107';
-  const nomineeName = jf.nomineeName || c.spouseName || 'Selva kumar';
+  const mobile = c.mobile || jf.mobile || '-';
+  const presentAddr = jf.presentAddress || '-';
+  const permAddr = jf.permanentAddress || '-';
+  const nomineeName = jf.nomineeName || c.spouseName || '-';
   const nomineeRel = jf.nomineeRelation || 'Spouse';
-  const bankAcc = jf.accountNumber || jf.bankAccountNo || '7139197771';
-  const ifsc = jf.ifscCode || 'IDIB000R041';
+  const bankAcc = jf.accountNumber || jf.bankAccountNo || '-';
+  const ifsc = jf.ifscCode || '-';
   const branch = jf.branchName || 'Rajadhani';
-  const insNo = c.esiNumber || jf.esiNumber || '5611450865';
+  const insNo = c.esiNumber || jf.esiNumber || '-';
   const doj = c.doj || jf.doj || '2026-04-13';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 

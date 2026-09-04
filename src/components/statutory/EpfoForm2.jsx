@@ -2,14 +2,14 @@ import React from 'react';
 
 export const EpfoForm2 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
-  const name = c.name || jf.fullName || 'DHANA SRI';
-  const fatherOrSpouse = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || 'SIVA KUMAR';
-  const dob = c.dob || jf.dob || '2005-07-21';
-  const uan = c.uanEpf || jf.uanEpf || c.pfNumber || '7139197771';
+  const name = c.name || jf.fullName || 'Candidate Name';
+  const fatherOrSpouse = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || '-';
+  const dob = c.dob || jf.dob || '-';
+  const uan = c.uanEpf || jf.uanEpf || c.pfNumber || '-';
   const gender = c.gender || jf.gender || 'Female';
   const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
-  const address = jf.permanentAddress || 'Selva vinayagar store near, Kurumbapalayam, Coimbatore, Tamil Nadu - 641107';
-  const nomineeName = jf.nomineeName || c.spouseName || 'Siva Kumar';
+  const address = jf.permanentAddress || '-';
+  const nomineeName = jf.nomineeName || c.spouseName || '-';
   const nomineeRel = jf.nomineeRelation || 'Husband';
   const doj = c.doj || jf.doj || '2026-04-13';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;

@@ -6,7 +6,7 @@ export const PoshPolicyDeclaration = ({ candidate, jf = {}, companyName = "JOY C
   const doj = c.doj || jf.doj || '2026-04-13';
   const designation = c.designation || jf.designation || 'Specialist';
   const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
-  const email = c.email || jf.email || 'employee@joycorporatesolutions.com';
+  const email = c.email || jf.email || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
