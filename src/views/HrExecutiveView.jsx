@@ -5419,12 +5419,20 @@ export const HrExecutiveView = () => {
       />
 
       {/* 📁 HR UPLOADED ORIGINAL DOCUMENTS REPOSITORY MODAL */}
-      {viewingUploadedDocsCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-scaleIn">
+      {viewingUploadedDocsCandidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setViewingUploadedDocsCandidate(null);
+              setSelectedDocPreview(null);
+            }
+          }}
+        >
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-scaleIn my-auto relative z-10">
             
             {/* Modal Header */}
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
+            <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
                   <FolderDown className="w-6 h-6" />
@@ -5507,7 +5515,7 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between text-xs">
+            <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between text-xs shrink-0">
               <span className="text-[11px] text-slate-500 font-mono">Digital Retention: Stored for 60 Days per Fair Hiring Policy</span>
               <div className="flex items-center gap-2">
                 <button
@@ -5533,14 +5541,20 @@ export const HrExecutiveView = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 👁️ SINGLE DOCUMENT INSPECTION PREVIEW OVERLAY */}
-      {selectedDocPreview && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-scaleIn">
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+      {selectedDocPreview && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedDocPreview(null);
+          }}
+        >
+          <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-scaleIn my-auto relative z-10">
+            <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
               <div>
                 <h4 className="font-extrabold text-sm text-white">{selectedDocPreview.name}</h4>
                 <p className="text-[10px] text-slate-400">{selectedDocPreview.type} • {selectedDocPreview.format}</p>
@@ -5553,7 +5567,7 @@ export const HrExecutiveView = () => {
               </button>
             </div>
 
-            <div className="p-6 bg-slate-100 space-y-4 text-xs font-mono">
+            <div className="p-6 bg-slate-100 space-y-4 text-xs font-mono overflow-y-auto flex-1">
               <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm space-y-2.5">
                 <div className="flex justify-between border-b border-slate-100 pb-2 font-sans font-bold text-slate-900">
                   <span>Authentic Evidence Record</span>
@@ -5572,8 +5586,9 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            <div className="p-3 bg-white border-t border-slate-200 flex justify-end">
+            <div className="p-3 bg-white border-t border-slate-200 flex justify-end shrink-0">
               <button
+                type="button"
                 onClick={() => setSelectedDocPreview(null)}
                 className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer"
               >
@@ -5581,7 +5596,8 @@ export const HrExecutiveView = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 🔍 HR CANDIDATE SUBMISSION REVIEW & APPROVAL CONSOLE MODAL */}
