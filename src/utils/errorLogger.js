@@ -1,23 +1,26 @@
 /**
  * Central Error Logger & Telemetry Dispatcher for JOY Verification Portal
- * Transmits runtime exceptions, API failures, validation crashes, and unhandled promises
- * directly to the Super Admin PostgreSQL system_error_logs table.
+ * Safe implementation with strict recursion locks to prevent error cascades.
  */
 
-import { api } from '../services/api';
+let isLoggingInProgress = false;
 
 const sanitizeMetadata = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
-  const sanitized = { ...obj };
-  const sensitiveKeys = ['password', 'secret', 'secretKey', 'clientSecret', 'token', 'aadhaarNo'];
-  for (const key of Object.keys(sanitized)) {
-    if (sensitiveKeys.some(k => key.toLowerCase().includes(k.toLowerCase()))) {
-      if (typeof sanitized[key] === 'string') {
-        sanitized[key] = '••••••••';
+  try {
+    const sanitized = { ...obj };
+    const sensitiveKeys = ['password', 'secret', 'secretKey', 'clientSecret', 'token', 'aadhaarNo'];
+    for (const key of Object.keys(sanitized)) {
+      if (sensitiveKeys.some(k => key.toLowerCase().includes(k.toLowerCase()))) {
+        if (typeof sanitized[key] === 'string') {
+          sanitized[key] = '••••••••';
+        }
       }
     }
+    return sanitized;
+  } catch (e) {
+    return {};
   }
-  return sanitized;
 };
 
 /**
@@ -33,89 +36,115 @@ export const logPortalError = async ({
   userInfo = {},
   severity = 'Critical'
 }) => {
+  // Prevent infinite recursive logging loops
+  if (isLoggingInProgress) return;
+  isLoggingInProgress = true;
+
   try {
     const errorPayload = {
       portal,
       section,
       function_name: functionName,
       error_code: errorCode,
-      message: String(message).slice(0, 2000),
+      message: String(message || '').slice(0, 2000),
       stack_trace: stackTrace ? String(stackTrace).slice(0, 4000) : null,
       user_info: sanitizeMetadata(userInfo),
-      device_info: `${navigator.userAgent || ''} | Screen: ${window.innerWidth}x${window.innerHeight}`,
+      device_info: typeof window !== 'undefined' ? `${navigator.userAgent || ''} | Screen: ${window.innerWidth}x${window.innerHeight}` : '',
       severity
     };
 
-    console.warn(`🚨 [${portal}] Error Captured:`, errorPayload);
-    
-    // Dispatches to backend PostgreSQL without blocking UI
-    await api.reportErrorLog(errorPayload).catch(() => {});
+    // Use direct non-blocking fetch to avoid importing api.js and circular dependencies
+    if (typeof window !== 'undefined' && window.fetch) {
+      await fetch('/api/superadmin/system/error-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(errorPayload)
+      }).catch(() => {});
+    }
   } catch (err) {
-    console.error('Failed to dispatch portal error log:', err);
+    // Fail silently to never break user UI
+  } finally {
+    isLoggingInProgress = false;
   }
 };
 
 /**
- * Initializes global browser unhandled error & rejection listeners
+ * Initializes global browser unhandled error & rejection listeners safely
  */
 export const initGlobalErrorListeners = () => {
   if (typeof window === 'undefined') return;
 
   // 1. Catch uncaught synchronous JS runtime errors
   window.addEventListener('error', (event) => {
-    // Ignore benign resize observer or third-party extension errors
-    if (event.message?.includes('ResizeObserver') || event.message?.includes('Script error')) {
-      return;
-    }
+    try {
+      const msg = event.message || '';
+      // Ignore benign browser/extension noise and our own logger calls
+      if (
+        msg.includes('ResizeObserver') || 
+        msg.includes('Script error') || 
+        msg.includes('error-logs') ||
+        (event.filename && event.filename.includes('errorLogger'))
+      ) {
+        return;
+      }
 
-    const currentPath = window.location.pathname;
-    let portal = 'HR Executive Portal';
-    if (currentPath.includes('/candidate') || currentPath.includes('/verify') || currentPath.includes('employee_link')) {
-      portal = 'Employee Verification Link';
-    } else if (currentPath.includes('/company') || currentPath.includes('/hr-onboarding')) {
-      portal = 'Company Admin Portal';
-    } else if (currentPath.includes('/superadmin') || currentPath.includes('/admin')) {
-      portal = 'SuperAdmin Portal';
-    }
+      const currentPath = window.location.pathname || '';
+      let portal = 'HR Executive Portal';
+      if (currentPath.includes('/candidate') || currentPath.includes('/verify') || currentPath.includes('employee_link')) {
+        portal = 'Employee Verification Link';
+      } else if (currentPath.includes('/company') || currentPath.includes('/hr-onboarding')) {
+        portal = 'Company Admin Portal';
+      } else if (currentPath.includes('/superadmin') || currentPath.includes('/admin')) {
+        portal = 'SuperAdmin Portal';
+      }
 
-    logPortalError({
-      portal,
-      section: 'Global Window Error',
-      functionName: event.filename ? `${event.filename.split('/').pop()}:${event.lineno}:${event.colno}` : 'global_runtime',
-      errorCode: 'ERR_WINDOW_RUNTIME',
-      message: event.message || 'Uncaught Window Exception',
-      stackTrace: event.error?.stack || `${event.filename}:${event.lineno}:${event.colno}`,
-      severity: 'Critical'
-    });
+      logPortalError({
+        portal,
+        section: 'Global Window Error',
+        functionName: event.filename ? `${event.filename.split('/').pop()}:${event.lineno || 0}:${event.colno || 0}` : 'global_runtime',
+        errorCode: 'ERR_WINDOW_RUNTIME',
+        message: msg || 'Uncaught Window Exception',
+        stackTrace: event.error?.stack || `${event.filename || ''}:${event.lineno || 0}`,
+        severity: 'Critical'
+      });
+    } catch (e) {}
   });
 
-  // 2. Catch unhandled Promise rejections (e.g. failed fetch requests)
+  // 2. Catch unhandled Promise rejections safely
   window.addEventListener('unhandledrejection', (event) => {
-    const reason = event.reason;
-    const msg = reason?.message || String(reason || 'Unhandled Promise Rejection');
-    
-    if (msg.includes('ResizeObserver') || msg.includes('canceled')) {
-      return;
-    }
+    try {
+      const reason = event.reason;
+      const msg = reason?.message || String(reason || '');
+      
+      if (
+        !msg || 
+        msg.includes('ResizeObserver') || 
+        msg.includes('canceled') || 
+        msg.includes('error-logs') ||
+        msg.includes('Failed to fetch')
+      ) {
+        return;
+      }
 
-    const currentPath = window.location.pathname;
-    let portal = 'HR Executive Portal';
-    if (currentPath.includes('/candidate') || currentPath.includes('/verify')) {
-      portal = 'Employee Verification Link';
-    } else if (currentPath.includes('/company')) {
-      portal = 'Company Admin Portal';
-    } else if (currentPath.includes('/superadmin')) {
-      portal = 'SuperAdmin Portal';
-    }
+      const currentPath = window.location.pathname || '';
+      let portal = 'HR Executive Portal';
+      if (currentPath.includes('/candidate') || currentPath.includes('/verify')) {
+        portal = 'Employee Verification Link';
+      } else if (currentPath.includes('/company')) {
+        portal = 'Company Admin Portal';
+      } else if (currentPath.includes('/superadmin')) {
+        portal = 'SuperAdmin Portal';
+      }
 
-    logPortalError({
-      portal,
-      section: 'Async Promise Rejection',
-      functionName: 'unhandled_promise_rejection',
-      errorCode: 'ERR_UNHANDLED_PROMISE',
-      message: msg,
-      stackTrace: reason?.stack || null,
-      severity: 'High'
-    });
+      logPortalError({
+        portal,
+        section: 'Async Promise Rejection',
+        functionName: 'unhandled_promise_rejection',
+        errorCode: 'ERR_UNHANDLED_PROMISE',
+        message: msg,
+        stackTrace: reason?.stack || null,
+        severity: 'High'
+      });
+    } catch (e) {}
   });
 };
