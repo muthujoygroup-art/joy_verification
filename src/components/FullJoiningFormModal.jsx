@@ -57,6 +57,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const draftKey = `joy_joining_draft_${candidate?.id || candidate?.token || 'default'}`;
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
+
+  // ⚡ Debounced Auto-Save to localStorage across typing & network disconnects
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(formData));
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setLastAutoSaveTime(nowStr);
+      } catch (e) {}
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [formData, draftKey]);
+
   // Lock Body Scroll while Master Joining Form Modal is Open
   useEffect(() => {
     document.body.style.overflow = 'hidden';

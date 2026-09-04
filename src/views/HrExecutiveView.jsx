@@ -88,6 +88,192 @@ import {
   Zap
 } from 'lucide-react';
 
+// Helper to create clean default form data
+const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
+  name: '',
+  empId: '',
+  employeeNumber: '',
+  dob: '',
+  age: '',
+  doj: '',
+  motherTongue: '',
+  religion: 'Hindu',
+  caste: '',
+  category: 'General',
+  nativeState: '',
+  nativeDistrict: '',
+  identificationMarks: '',
+  pfNumber: '',
+  esiNumber: '',
+  email: '',
+  mobile: '',
+  alternateMobile: '',
+  aadhaarNo: '',
+  portalPassword: '1234',
+  status: 'Active',
+  isActive: true,
+  designation: 'Senior Software Engineer',
+  dept: 'Engineering & Software Architecture',
+  fatherName: '',
+  motherName: '',
+  spouseName: '',
+  gender: 'Male',
+  bloodGroup: 'O+',
+  maritalStatus: 'Married',
+  nationality: 'Indian',
+  languagesKnown: 'English (Fluent), Hindi (National)',
+  selfInterests: 'Coding & Open Source Development',
+  state: 'Karnataka',
+  city: 'Bengaluru',
+  area: 'Koramangala 4th Block, Bengaluru',
+  pincode: '560103',
+  presentAddress: '',
+  permanentAddress: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  qualificationCategory: 'Under Graduate (UG / Bachelor Degree)',
+  highestQualification: 'B.Tech / B.E. in Computer Science',
+  primarySkill: 'React JS, Node.js, Python, Cloud AWS',
+  college: 'BMS College of Engineering',
+  university: 'VTU Technological University',
+  passingYear: '2020',
+  percentage: '84.5%',
+  jobCategory: 'Information Technology & Software Services',
+  jobType: 'Full Time Permanent',
+  workLocation: 'Bengaluru Global Tech Hub (HQ)',
+  previousEmployer: 'Infosys Limited',
+  experienceYears: '4.5',
+  panNo: '',
+  drivingLicense: '',
+  passportNo: '',
+  voterId: '',
+  uanEpf: '',
+  esicNo: '',
+  bankName: 'HDFC Bank',
+  bankAccountNo: '',
+  ifscCode: 'HDFC0001234',
+  nomineeName: '',
+  nomineeRelation: 'Spouse',
+  companyId: currentCompany?.id || 'comp-joy',
+  hrId: activeHr?.id || 'hr-1',
+  employeeCategory: 'it_tech',
+  hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
+  
+  // Professional & Social Media Links
+  linkedInUrl: 'https://linkedin.com/in/muthukumar-dev',
+  githubUrl: 'https://github.com/muthukumar-dev',
+  portfolioUrl: 'https://muthukumar-portfolio.dev',
+  twitterUrl: '',
+
+  // Dynamic Multi-Entry Education Qualifications
+  educationList: [
+    { qualificationCategory: 'Under Graduate (UG / Bachelor Degree)', degreeName: 'B.Tech in Computer Science & Engineering', institutionName: 'PSG College of Technology, Coimbatore', university: 'Anna University', yearOfJoining: '2014', yearOfEnd: '2018', grade: '8.75 CGPA (85.2%)', passingYear: '2018' },
+    { qualificationCategory: 'Higher Secondary (12th / HSC)', degreeName: 'Higher Secondary (10+2 Science Stream)', institutionName: 'St. Joseph Higher Secondary School, Madurai', university: 'State Board', yearOfJoining: '2012', yearOfEnd: '2014', grade: '94.5% Distinction', passingYear: '2014' }
+  ],
+
+  // Dynamic Multi-Entry Prior Employment Experience
+  experienceList: [
+    { companyName: 'Infosys Limited', institutionName: 'Infosys Limited', address: 'Electronics City, Phase 1, Bengaluru', institutionAddress: 'Electronics City, Phase 1, Bengaluru', designation: 'Senior Software Engineer', periodOfService: '06/2021 - 07/2024 (3 Yrs 2 Mos)', salaryDrawn: '₹8,50,000 PA (₹62,000/mo)', reasonForLeaving: 'Career advancement & higher role scope', relievingStatus: 'Relieved with Full Notice ✓' }
+  ],
+  
+  // Dynamic Industry & Role-Specific Operational Details
+  industrySpecialization: {
+    industryType: 'it_tech',
+    techStack: 'React JS, Node.js, Python, AWS Cloud, PostgreSQL',
+    githubUrl: 'https://github.com/developer-demo',
+    portfolioUrl: 'https://portfolio-showcase.dev',
+    laptopAssetTag: 'ASSET-LT-2026-088 (MacBook Pro M3 Max)',
+    monitorAssetTag: 'MON-4K-27-041',
+    dualEmploymentDisclosure: 'No Dual Employment / 100% Full-Time Exclusive Commitment',
+    openSourceDisclosure: 'Personal open source contributions under MIT License',
+    plantLocation: 'Chennai Automotive Assembly Plant - Unit 3',
+    shopFloorUnit: 'Chassis & Robotic Welding Section 4',
+    shiftRoster: 'General Shift (9:00 AM - 5:30 PM)',
+    safetyShoeSize: 'UK 9 / EUR 43',
+    hardhatColor: 'Yellow (Floor Supervisor / Engineer)',
+    safetyTrainingCompleted: true,
+    occupationalHealthCertNo: 'MED-FIT-CHN-2026-912',
+    doctorRegNo: 'TN-MCI-48912',
+    gatePassId: 'GATE-CH-8812',
+    hazardTrainingDate: '2026-01-15',
+    cibilScoreRange: '780 - 820 (Excellent Credit Standing)',
+    cibilConsentAgreed: true,
+    amlComplianceStatus: 'Cleared - Zero Adverse Flagging',
+    sebiInsiderTradingClearance: 'No Active Trading in Company Client Portfolios',
+    certificationsBfsi: 'NISM Series VIII Equity Derivatives, IRDA Composite Broker',
+    fidelityBondLimit: '₹10,00,000 (Ten Lakhs Corporate Indemnity)',
+    familyDirectorships: 'None / Nil Commercial Conflict of Interest',
+    medicalCouncilRegNo: 'MCI-2018-091823 (Valid till 2028)',
+    nursingCouncilRegNo: '',
+    departmentWard: 'Intensive Care Unit (ICU) & Critical Care',
+    immunizationStatus: 'Hepatitis B (3 Doses Complete), Tetanus Toxoid 2026, COVID Booster',
+    gmpCleanroomProtocol: 'Cleared Sterile Class 100 Cleanroom Compliance',
+    lifeSupportCert: 'AHA Certified ACLS / BLS (Valid till Nov 2027)',
+    commercialDlBadgeNo: 'KA-01-TR-2021-98124',
+    badgeExpiryDate: '2029-12-31',
+    forkliftLicenseNo: 'MHE-FL-8819',
+    fleetGpsConsent: true,
+    routeExperience: 'Interstate Heavy Haulage (NH48 Golden Quadrilateral)',
+    policeNocNumber: 'POL-KA-BC-2026-5510',
+    fssaiCertNo: 'FSSAI-FSTAC-2026-8812',
+    foodHandlerHealthCard: 'Valid Annual Medical Health Card Issued',
+    uniformShirtSize: 'L (40 cm)',
+    uniformPantsSize: '34 Waist',
+    posCashAgreement: true,
+    storeShiftPreference: 'Morning & Weekend Peak Shifts (Sat-Sun Available)',
+    assignedStoreCode: 'RET-BLR-PHOENIX-04',
+    contractFormXIIIEnrollmentNo: 'CL-RA-2026-FORM-XIII-912',
+    contractorAgencyName: 'First Choice Manpower & Facility Solutions Pvt Ltd',
+    contractorLicenseNo: 'CL-LIC-KA-2024-8891',
+    workOrderPoNumber: 'PO-JOY-2026-CW-410',
+    esicSubCode: '52000889120010001',
+    wageRateClassification: 'Highly Skilled / Supervisor Grade Rate (₹1,150/Day)',
+    contractTenure: '2026-09-01 to 2027-08-31 (12 Months Renewable)'
+  },
+  statutoryFormsConfig: {
+    form16: true,
+    form11: true,
+    formF: true,
+    esicForm1: false,
+    nda: true,
+    posh: true,
+    nonCompete: true,
+    contractFormXIII: false
+  },
+  requiredDocumentsConfig: {
+    aadhaarCard: true,
+    panCard: true,
+    passport: true,
+    drivingLicense: false,
+    bankProof: true,
+    degreeMarksheet: true,
+    relievingLetter: true,
+    salarySlips: true,
+    signedNda: true
+  },
+  verificationConfig: {
+    aadhaar: true,
+    pan: false,
+    bankCheck: false,
+    drivingLicense: false,
+    voterId: false,
+    mobileOtp: false,
+    passport: false,
+    uan: false,
+    criminalCheck: false,
+    education: false,
+    directorship: false,
+    faceCapture: false
+  },
+  manualChecks: {
+    hrReferenceCompleted: true,
+    addressVerifiedPhysically: false
+  },
+  uploadedDocuments: {},
+  customFields: [],
+  customDocSlots: []
+});
+
 export const HrExecutiveView = () => {
   const { 
     currentUser,
@@ -223,199 +409,48 @@ export const HrExecutiveView = () => {
     daily_digest: false
   });
 
-  const [formData, setFormData] = useState({
-    name: '',
-    empId: '',
-    employeeNumber: '',
-    dob: '',
-    age: '',
-    doj: '',
-    motherTongue: '',
-    religion: 'Hindu',
-    caste: '',
-    category: 'General',
-    nativeState: '',
-    nativeDistrict: '',
-    identificationMarks: '',
-    pfNumber: '',
-    esiNumber: '',
-    email: '',
-    mobile: '',
-    alternateMobile: '',
-    aadhaarNo: '',
-    portalPassword: '1234',
-    status: 'Active',
-    isActive: true,
-    designation: 'Senior Software Engineer',
-    dept: 'Engineering & Software Architecture',
-    fatherName: '',
-    motherName: '',
-    spouseName: '',
-    gender: 'Male',
-    bloodGroup: 'O+',
-    maritalStatus: 'Married',
-    nationality: 'Indian',
-    languagesKnown: 'English (Fluent), Hindi (National)',
-    selfInterests: 'Coding & Open Source Development',
-    state: 'Karnataka',
-    city: 'Bengaluru',
-    area: 'Koramangala 4th Block, Bengaluru',
-    pincode: '560103',
-    presentAddress: '',
-    permanentAddress: '',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
-    qualificationCategory: 'Under Graduate (UG / Bachelor Degree)',
-    highestQualification: 'B.Tech / B.E. in Computer Science',
-    primarySkill: 'React JS, Node.js, Python, Cloud AWS',
-    college: 'BMS College of Engineering',
-    university: 'VTU Technological University',
-    passingYear: '2020',
-    percentage: '84.5%',
-    jobCategory: 'Information Technology & Software Services',
-    jobType: 'Full Time Permanent',
-    workLocation: 'Bengaluru Global Tech Hub (HQ)',
-    previousEmployer: 'Infosys Limited',
-    experienceYears: '4.5',
-    panNo: '',
-    drivingLicense: '',
-    passportNo: '',
-    voterId: '',
-    uanEpf: '',
-    esicNo: '',
-    bankName: 'HDFC Bank',
-    bankAccountNo: '',
-    ifscCode: 'HDFC0001234',
-    nomineeName: '',
-    nomineeRelation: 'Spouse',
-    companyId: currentCompany?.id || 'comp-joy',
-    hrId: activeHr.id,
-    employeeCategory: 'it_tech',
-    hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
-    
-    // Professional & Social Media Links
-    linkedInUrl: 'https://linkedin.com/in/muthukumar-dev',
-    githubUrl: 'https://github.com/muthukumar-dev',
-    portfolioUrl: 'https://muthukumar-portfolio.dev',
-    twitterUrl: '',
-
-    // Dynamic Multi-Entry Education Qualifications
-    educationList: [
-      { qualificationCategory: 'Under Graduate (UG / Bachelor Degree)', degreeName: 'B.Tech in Computer Science & Engineering', institutionName: 'PSG College of Technology, Coimbatore', university: 'Anna University', yearOfJoining: '2014', yearOfEnd: '2018', grade: '8.75 CGPA (85.2%)', passingYear: '2018' },
-      { qualificationCategory: 'Higher Secondary (12th / HSC)', degreeName: 'Higher Secondary (10+2 Science Stream)', institutionName: 'St. Joseph Higher Secondary School, Madurai', university: 'State Board', yearOfJoining: '2012', yearOfEnd: '2014', grade: '94.5% Distinction', passingYear: '2014' }
-    ],
-
-    // Dynamic Multi-Entry Prior Employment Experience
-    experienceList: [
-      { companyName: 'Infosys Limited', institutionName: 'Infosys Limited', address: 'Electronics City, Phase 1, Bengaluru', institutionAddress: 'Electronics City, Phase 1, Bengaluru', designation: 'Senior Software Engineer', periodOfService: '06/2021 - 07/2024 (3 Yrs 2 Mos)', salaryDrawn: '₹8,50,000 PA (₹62,000/mo)', reasonForLeaving: 'Career advancement & higher role scope', relievingStatus: 'Relieved with Full Notice ✓' }
-    ],
-    
-    // Dynamic Industry & Role-Specific Operational Details
-    industrySpecialization: {
-      industryType: 'it_tech',
-      // IT Fields
-      techStack: 'React JS, Node.js, Python, AWS Cloud, PostgreSQL',
-      githubUrl: 'https://github.com/developer-demo',
-      portfolioUrl: 'https://portfolio-showcase.dev',
-      laptopAssetTag: 'ASSET-LT-2026-088 (MacBook Pro M3 Max)',
-      monitorAssetTag: 'MON-4K-27-041',
-      dualEmploymentDisclosure: 'No Dual Employment / 100% Full-Time Exclusive Commitment',
-      openSourceDisclosure: 'Personal open source contributions under MIT License',
-      // Manufacturing Fields
-      plantLocation: 'Chennai Automotive Assembly Plant - Unit 3',
-      shopFloorUnit: 'Chassis & Robotic Welding Section 4',
-      shiftRoster: 'General Shift (9:00 AM - 5:30 PM)',
-      safetyShoeSize: 'UK 9 / EUR 43',
-      hardhatColor: 'Yellow (Floor Supervisor / Engineer)',
-      safetyTrainingCompleted: true,
-      occupationalHealthCertNo: 'MED-FIT-CHN-2026-912',
-      doctorRegNo: 'TN-MCI-48912',
-      gatePassId: 'GATE-CH-8812',
-      hazardTrainingDate: '2026-01-15',
-      // BFSI Fields
-      cibilScoreRange: '780 - 820 (Excellent Credit Standing)',
-      cibilConsentAgreed: true,
-      amlComplianceStatus: 'Cleared - Zero Adverse Flagging',
-      sebiInsiderTradingClearance: 'No Active Trading in Company Client Portfolios',
-      certificationsBfsi: 'NISM Series VIII Equity Derivatives, IRDA Composite Broker',
-      fidelityBondLimit: '₹10,00,000 (Ten Lakhs Corporate Indemnity)',
-      familyDirectorships: 'None / Nil Commercial Conflict of Interest',
-      // Healthcare Fields
-      medicalCouncilRegNo: 'MCI-2018-091823 (Valid till 2028)',
-      nursingCouncilRegNo: '',
-      departmentWard: 'Intensive Care Unit (ICU) & Critical Care',
-      immunizationStatus: 'Hepatitis B (3 Doses Complete), Tetanus Toxoid 2026, COVID Booster',
-      gmpCleanroomProtocol: 'Cleared Sterile Class 100 Cleanroom Compliance',
-      lifeSupportCert: 'AHA Certified ACLS / BLS (Valid till Nov 2027)',
-      // Logistics Fields
-      commercialDlBadgeNo: 'KA-01-TR-2021-98124',
-      badgeExpiryDate: '2029-12-31',
-      forkliftLicenseNo: 'MHE-FL-8819',
-      fleetGpsConsent: true,
-      routeExperience: 'Interstate Heavy Haulage (NH48 Golden Quadrilateral)',
-      policeNocNumber: 'POL-KA-BC-2026-5510',
-      // Retail Fields
-      fssaiCertNo: 'FSSAI-FSTAC-2026-8812',
-      foodHandlerHealthCard: 'Valid Annual Medical Health Card Issued',
-      uniformShirtSize: 'L (40 cm)',
-      uniformPantsSize: '34 Waist',
-      posCashAgreement: true,
-      storeShiftPreference: 'Morning & Weekend Peak Shifts (Sat-Sun Available)',
-      assignedStoreCode: 'RET-BLR-PHOENIX-04',
-      // Contractual Fields
-      contractFormXIIIEnrollmentNo: 'CL-RA-2026-FORM-XIII-912',
-      contractorAgencyName: 'First Choice Manpower & Facility Solutions Pvt Ltd',
-      contractorLicenseNo: 'CL-LIC-KA-2024-8891',
-      workOrderPoNumber: 'PO-JOY-2026-CW-410',
-      esicSubCode: '52000889120010001',
-      wageRateClassification: 'Highly Skilled / Supervisor Grade Rate (₹1,150/Day)',
-      contractTenure: '2026-09-01 to 2027-08-31 (12 Months Renewable)'
-    },
-    statutoryFormsConfig: {
-      form16: true,
-      form11: true,
-      formF: true,
-      esicForm1: false,
-      nda: true,
-      posh: true,
-      nonCompete: true,
-      contractFormXIII: false
-    },
-    requiredDocumentsConfig: {
-      aadhaarCard: true,
-      panCard: true,
-      passport: true,
-      drivingLicense: false,
-      bankProof: true,
-      degreeMarksheet: true,
-      relievingLetter: true,
-      salarySlips: true,
-      signedNda: true
-    },
-    verificationConfig: {
-      aadhaar: true,
-      pan: false,
-      bankCheck: false,
-      drivingLicense: false,
-      voterId: false,
-      mobileOtp: false,
-      passport: false,
-      uan: false,
-      criminalCheck: false,
-      education: false,
-      directorship: false,
-      faceCapture: false
-    },
-    manualChecks: {
-      hrReferenceCompleted: true,
-      addressVerifiedPhysically: false
-    },
-    uploadedDocuments: {},
-    customFields: [],
-    customDocSlots: []
+  const [formData, setFormData] = useState(() => {
+    try {
+      const savedDraft = localStorage.getItem('joy_hr_employee_draft_v1');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            ...getDefaultFormData(activeHr, currentCompany),
+            ...parsed,
+            companyId: currentCompany?.id || 'comp-joy',
+            hrId: activeHr?.id || 'hr-1'
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading saved HR draft from localStorage:', e);
+    }
+    return getDefaultFormData(activeHr, currentCompany);
   });
 
-  const [delegatedFieldsMap, setDelegatedFieldsMap] = useState({});
+  const [delegatedFieldsMap, setDelegatedFieldsMap] = useState(() => {
+    try {
+      const savedMap = localStorage.getItem('joy_hr_delegated_map_v1');
+      if (savedMap) {
+        return JSON.parse(savedMap) || {};
+      }
+    } catch (e) {}
+    return {};
+  });
+
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState(() => {
+    try {
+      return localStorage.getItem('joy_hr_draft_saved_time_v1') || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(() => {
+    return Boolean(localStorage.getItem('joy_hr_employee_draft_v1'));
+  });
+
 
   // Dynamic Upstream Verification & Data-Fetching Dependency Evaluator
   const readiness = useMemo(() => {
@@ -441,6 +476,39 @@ export const HrExecutiveView = () => {
       );
       return nextMap;
     });
+  };
+
+  // ⚡ Auto-Save Draft to LocalStorage across typing, reloads & disconnects
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem('joy_hr_employee_draft_v1', JSON.stringify(formData));
+        localStorage.setItem('joy_hr_delegated_map_v1', JSON.stringify(delegatedFieldsMap));
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        localStorage.setItem('joy_hr_draft_saved_time_v1', nowStr);
+        setLastAutoSaveTime(nowStr);
+      } catch (e) {
+        console.warn('Auto-save storage note:', e);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [formData, delegatedFieldsMap]);
+
+  // Clear Saved Draft & Start Fresh
+  const handleClearDraft = () => {
+    if (window.confirm('Are you sure you want to clear this saved draft and start fresh? All entered particulars in this form will be reset.')) {
+      try {
+        localStorage.removeItem('joy_hr_employee_draft_v1');
+        localStorage.removeItem('joy_hr_delegated_map_v1');
+        localStorage.removeItem('joy_hr_draft_saved_time_v1');
+      } catch (e) {}
+      setFormData(getDefaultFormData(activeHr, currentCompany));
+      setDelegatedFieldsMap({});
+      setLastAutoSaveTime(null);
+      setHasRestoredDraft(false);
+      showToast('🧹 Form draft cleared! Starting with a clean blank profile.');
+    }
   };
 
   const setAllFieldsMode = (mode) => {
@@ -1286,6 +1354,18 @@ export const HrExecutiveView = () => {
       delegatedFieldsMap,
       verificationReadiness: readiness
     });
+
+    // Clear saved draft on successful submission
+    try {
+      localStorage.removeItem('joy_hr_employee_draft_v1');
+      localStorage.removeItem('joy_hr_delegated_map_v1');
+      localStorage.removeItem('joy_hr_draft_saved_time_v1');
+    } catch (e) {}
+    setFormData(getDefaultFormData(activeHr, currentCompany));
+    setDelegatedFieldsMap({});
+    setLastAutoSaveTime(null);
+    setHasRestoredDraft(false);
+
     setShowAddForm(false);
     setActiveTab('pipeline');
   };
@@ -2316,6 +2396,26 @@ export const HrExecutiveView = () => {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+              {/* 💾 Live Auto-Save Indicator */}
+              <div 
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold shadow-2xs select-none"
+                title="All changes are automatically saved to local storage as you type"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-[11px]">{lastAutoSaveTime ? `Auto-Saved (${lastAutoSaveTime})` : 'Auto-Save Active ✓'}</span>
+              </div>
+
+              {/* Clear Draft / Reset */}
+              <button
+                type="button"
+                onClick={handleClearDraft}
+                className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 cursor-pointer shadow-2xs"
+                title="Clear saved draft and start fresh with blank form"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>Clear Draft</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -2342,6 +2442,41 @@ export const HrExecutiveView = () => {
           </div>
 
 
+
+                    {/* 💾 RESTORED DRAFT NOTICE BANNER */}
+          {hasRestoredDraft && (
+            <div className="p-3.5 bg-gradient-to-r from-amber-50 via-indigo-50/50 to-slate-50 border-2 border-amber-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-xs animate-fadeIn">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-amber-500 text-white rounded-xl shadow-xs shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <strong className="text-amber-950 block font-black text-xs">
+                    Draft Auto-Restored from Previous Session {lastAutoSaveTime ? `(Last saved at ${lastAutoSaveTime})` : ''}
+                  </strong>
+                  <span className="text-[11px] text-slate-600">
+                    Your previous work was saved automatically. You can continue typing where you left off or start fresh anytime.
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setHasRestoredDraft(false)}
+                  className="px-2.5 py-1 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 cursor-pointer text-[11px]"
+                >
+                  Dismiss ✕
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearDraft}
+                  className="px-2.5 py-1 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 cursor-pointer text-[11px] shadow-2xs"
+                >
+                  Clear Draft 🗑️
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* 💬 CUSTOM HR MESSAGE & INSTRUCTIONS FOR CANDIDATE */}
           <div className="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-3">
