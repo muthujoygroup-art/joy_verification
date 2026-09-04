@@ -2084,6 +2084,17 @@ export const HrExecutiveView = () => {
                             <span>JOY Certificate</span>
                           </button>
 
+                          {/* 4.5 Manage / Verify Documents Later */}
+                          <button
+                            type="button"
+                            onClick={() => setManagingDocVerifCandidate(cand)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
+                            title="Manage, check, and trigger live document verification for this employee"
+                          >
+                            <CheckSquare className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>Verify Docs ⚡</span>
+                          </button>
+
                           {/* 5. Dispatch Link Trigger */}
                           <button
                             data-tour-step={index === 0 ? 'hr-dispatch-btn' : undefined}
@@ -2160,70 +2171,7 @@ export const HrExecutiveView = () => {
             </button>
           </div>
 
-          {/* ⚡ ONBOARDING WORKFLOW SELECTION: HR FILL vs CANDIDATE LINK FILL */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-emerald-600" />
-                <span>Onboarding Form Filling Authority & Workflow Mode</span>
-              </label>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md uppercase">
-                {onboardingMode === 'hr_filled' ? 'Fast-Track HR Mode' : 'Candidate Self-Service Mode'}
-              </span>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              
-              {/* Option A: HR Pre-Fills Details */}
-              <div 
-                onClick={() => setOnboardingMode('hr_filled')}
-                className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
-                  onboardingMode === 'hr_filled'
-                    ? 'bg-emerald-50/80 border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <input 
-                  type="radio" 
-                  name="onboardingMode" 
-                  checked={onboardingMode === 'hr_filled'} 
-                  onChange={() => setOnboardingMode('hr_filled')}
-                  className="accent-emerald-600 mt-1 w-4 h-4"
-                />
-                <div>
-                  <strong className="text-slate-900 text-xs block font-extrabold">Option 1: HR Pre-fills All Form Particulars (Fast-Track)</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                    HR enters academic, banking, and address fields immediately. The candidate receives a magic verification link solely to authorize OTP and perform 3D face biometric liveness.
-                  </p>
-                </div>
-              </div>
-
-              {/* Option B: Candidate Fills on Magic Link */}
-              <div 
-                onClick={() => setOnboardingMode('candidate_filled')}
-                className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
-                  onboardingMode === 'candidate_filled'
-                    ? 'bg-indigo-50/80 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <input 
-                  type="radio" 
-                  name="onboardingMode" 
-                  checked={onboardingMode === 'candidate_filled'} 
-                  onChange={() => setOnboardingMode('candidate_filled')}
-                  className="accent-indigo-600 mt-1 w-4 h-4"
-                />
-                <div>
-                  <strong className="text-slate-900 text-xs block font-extrabold">Option 2: Candidate Self-Service via Magic Link (Recommended)</strong>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                    HR configures the mandatory document checklist & statutory agreements. The candidate fills their own details, uploads original document copies, and executes digital sign-off.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
 
           {/* 💬 CUSTOM HR MESSAGE & INSTRUCTIONS FOR CANDIDATE */}
           <div className="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-3">
@@ -2405,128 +2353,165 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            {/* 🎯 SMART REAL-TIME VERIFICATION & DATA-FETCHING READINESS DIAGNOSTICS HUD */}
-            <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-2xl shadow-md border border-indigo-500/30 space-y-3.5 animate-fadeIn">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            {/* 📋 MANDATORY DOCUMENT VERIFICATION SELECTION CHECKLIST */}
+            <div className="p-5 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white rounded-3xl shadow-lg border border-indigo-500/30 space-y-4 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-900/60 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-indigo-600/80 rounded-xl text-white shadow-xs">
-                    <ShieldCheck className="w-5 h-5" />
+                  <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-md">
+                    <CheckSquare className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-xs font-black uppercase tracking-wider text-white">
-                        Smart Verification & Data-Fetching Readiness Engine
-                      </h4>
-                      <span className="text-[9px] bg-emerald-400/20 text-emerald-300 font-bold px-2 py-0.5 rounded border border-emerald-400/30">
-                        Live Dependency Diagnostics
+                    <h4 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+                      <span>Document Verification Checklist</span>
+                      <span className="badge badge-emerald text-[9px] font-extrabold uppercase">
+                        Flexible Policy
                       </span>
-                    </div>
-                    <p className="text-[11px] text-slate-300 font-medium">
-                      Evaluates mandatory prerequisite fields in real-time. Highlights what can be verified immediately vs what the candidate will fill.
+                    </h4>
+                    <p className="text-[11px] text-indigo-200 font-medium">
+                      Select which original documents to verify now. Unchecked documents can still be saved & verified later by HR anytime.
                     </p>
                   </div>
                 </div>
 
-                {/* Completion Metric */}
-                <div className="flex items-center gap-2.5 self-start sm:self-auto bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block font-bold">Readiness Score</span>
-                    <span className="text-xs font-black text-emerald-400 font-mono">
-                      {readiness.readyChecks.length} / {readiness.totalChecks} Checks Ready ({readiness.completionScore}%)
-                    </span>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-black text-xs text-white">
-                    {readiness.completionScore}%
-                  </div>
+                {/* Quick Selection Presets */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        verificationConfig: {
+                          ...prev.verificationConfig,
+                          aadhaar: true,
+                          pan: true,
+                          bankCheck: true
+                        }
+                      }));
+                      showToast('⚡ Selected Core 3: Aadhaar, PAN & Bank Account!');
+                    }}
+                    className="btn btn-secondary text-[10px] py-1.5 px-2.5 font-bold bg-indigo-900/80 text-indigo-200 border-indigo-700 hover:bg-indigo-800 cursor-pointer"
+                  >
+                    ⚡ Core 3 (Aadhaar+PAN+Bank)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        verificationConfig: {
+                          aadhaar: true,
+                          pan: true,
+                          bankCheck: true,
+                          drivingLicense: true,
+                          voterId: true,
+                          mobileOtp: true,
+                          passport: true,
+                          uan: true,
+                          criminalCheck: true,
+                          education: true,
+                          directorship: false,
+                          faceCapture: true
+                        }
+                      }));
+                      showToast('✨ Selected all document verification gates!');
+                    }}
+                    className="btn btn-secondary text-[10px] py-1.5 px-2.5 font-bold bg-emerald-900/80 text-emerald-200 border-emerald-700 hover:bg-emerald-800 cursor-pointer"
+                  >
+                    ✨ Select All 10
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        verificationConfig: {
+                          aadhaar: false,
+                          pan: false,
+                          bankCheck: false,
+                          drivingLicense: false,
+                          voterId: false,
+                          mobileOtp: false,
+                          passport: false,
+                          uan: false,
+                          criminalCheck: false,
+                          education: false,
+                          directorship: false,
+                          faceCapture: false
+                        }
+                      }));
+                      showToast('⚪ Unchecked all verifications (Employee will save without verification)!');
+                    }}
+                    className="btn btn-secondary text-[10px] py-1.5 px-2 font-bold bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 cursor-pointer"
+                  >
+                    Uncheck All
+                  </button>
                 </div>
               </div>
 
-              {/* Split: Ready Checks (Green) & Missing Dependencies (Amber) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                {/* Box 1: Ready to Verify & Fetch Upstream Data Now */}
-                <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-emerald-300 flex items-center gap-1.5 text-xs">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Ready to Verify & Fetch Data ({readiness.readyChecks.length})</span>
-                    </span>
-                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-mono px-1.5 py-0.5 rounded font-bold">
-                      All Inputs Present ✓
-                    </span>
-                  </div>
-
-                  {readiness.readyChecks.length === 0 ? (
-                    <p className="text-[11px] text-slate-400 italic">No verification checks fully satisfied yet. Fill candidate details below.</p>
-                  ) : (
-                    <div className="flex flex-wrap gap-1.5">
-                      {readiness.readyChecks.map(check => (
-                        <div key={check.id} className="p-1.5 px-2 bg-emerald-900/60 border border-emerald-500/50 rounded-lg flex items-center gap-1.5 text-[11px]">
-                          <span>{check.icon}</span>
-                          <strong className="text-white font-bold">{check.shortName}</strong>
-                          <span className="text-emerald-300 text-[10px]">✓</span>
+              {/* Document Selection Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                {[
+                  { key: 'aadhaar', name: '1. Aadhaar UIDAI e-KYC', icon: '🪪', provider: 'UIDAI OTP Gateway', desc: 'UIDAI Biometric / OTP Authentication' },
+                  { key: 'pan', name: '2. Income Tax PAN Card', icon: '💳', provider: 'NSDL Direct Gateway', desc: 'Name, DOB & Aadhaar Seeding Match' },
+                  { key: 'bankCheck', name: '3. Bank Account & Penny Drop', icon: '🏦', provider: 'NPCI IMPS Gateway', desc: '₹1 Live Beneficiary Verification' },
+                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'EPFO Unified Portal', desc: 'Past Service & Moonlighting Clearance' },
+                  { key: 'drivingLicense', name: '5. Driving License Check', icon: '🚗', provider: 'MoRTH Sarathi API', desc: 'State Transport & Vehicle Classes' },
+                  { key: 'passport', name: '6. Passport Verification', icon: '✈️', provider: 'MEA Direct File API', desc: 'Passport Seeding & Nationality Check' },
+                  { key: 'voterId', name: '7. Voter ID Verification', icon: '🗳️', provider: 'Election Commission', desc: 'EPIC Number & Electoral Roll Audit' },
+                  { key: 'faceCapture', name: '8. 3D Face Biometric Liveness', icon: '👤', provider: 'AI Liveness Engine', desc: 'Anti-Spoofing & Aadhaar Face Match' },
+                  { key: 'education', name: '9. Educational Degree / Marksheet', icon: '🎓', provider: 'Academic Registry', desc: 'Highest Qualification Verification' },
+                  { key: 'criminalCheck', name: '10. Relieving / Experience Letter', icon: '💼', provider: 'Past Employer Audit', desc: 'Previous Work History & Relieving' }
+                ].map(item => {
+                  const isChecked = !!formData.verificationConfig?.[item.key];
+                  return (
+                    <label
+                      key={item.key}
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          verificationConfig: {
+                            ...(prev.verificationConfig || {}),
+                            [item.key]: !isChecked
+                          }
+                        }));
+                      }}
+                      className={`p-3 rounded-2xl border-2 transition-all flex items-start gap-2.5 cursor-pointer select-none ${
+                        isChecked 
+                          ? 'bg-indigo-900/60 border-indigo-400 ring-2 ring-indigo-400/20 shadow-sm' 
+                          : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 opacity-75'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}}
+                        className="accent-indigo-500 w-4 h-4 rounded mt-0.5 shrink-0"
+                      />
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-extrabold text-white text-xs truncate">{item.name}</span>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 ${
+                            isChecked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+                          }`}>
+                            {isChecked ? 'Selected ✓' : 'Verify Later'}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-[10px] text-emerald-200/80 leading-snug">
-                    💡 These upstream API checks have all mandatory parameters and can be executed synchronously or verified upon link creation.
-                  </p>
-                </div>
-
-                {/* Box 2: Missing Fields to Unlock Upstream Verification */}
-                <div className="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-amber-300 flex items-center gap-1.5 text-xs">
-                      <AlertCircle className="w-4 h-4 text-amber-400" />
-                      <span>Pending Requirements ({readiness.pendingChecks.length})</span>
-                    </span>
-                    <span className="text-[9px] bg-amber-500/20 text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
-                      Needs Missing Fields
-                    </span>
-                  </div>
-
-                  {readiness.pendingChecks.length === 0 ? (
-                    <p className="text-[11px] text-emerald-300 font-bold">🎉 All 9 Core Verification checks have prerequisite data populated!</p>
-                  ) : (
-                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                      {readiness.pendingChecks.map(check => (
-                        <div key={check.id} className="p-1.5 px-2 bg-slate-900/80 border border-amber-500/30 rounded-lg text-[11px] space-y-0.5">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-amber-200 flex items-center gap-1">
-                              <span>{check.icon}</span>
-                              <span>{check.name}</span>
-                            </span>
-                            <span className="text-[9px] text-slate-400">Section: {check.requiredFields[0]?.section}</span>
-                          </div>
-                          <div className="text-[10px] text-slate-300 flex items-center gap-1 flex-wrap">
-                            <span className="text-amber-400 font-medium">To verify, fill:</span>
-                            {check.missingFields.map((f, i) => (
-                              <span key={i} className="px-1.5 py-0.2 bg-amber-500/20 text-amber-200 border border-amber-400/40 rounded text-[9px] font-bold">
-                                {f.label}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-[10px] text-amber-200/80 leading-snug">
-                    📱 Any fields left unentered by HR will be highlighted with amber badges for the candidate to fill on their Magic Link.
-                  </p>
-                </div>
+                        <p className="text-[10px] text-slate-400 truncate">{item.desc}</p>
+                        <span className="text-[9px] text-indigo-300/80 font-mono block">{item.provider}</span>
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
 
-              {/* Visual Field Ownership Legend */}
-              <div className="p-2 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center justify-between text-[10px] flex-wrap gap-2">
-                <span className="text-slate-400 font-bold">🎨 Form Field Ownership Demarcation:</span>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <strong className="text-slate-200">Filled by HR 🏢 (Pre-filled for Candidate)</strong>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    <strong className="text-amber-300">To be filled by Candidate 📱 (Required via Link)</strong>
+              {/* Informative Reassurance Footer */}
+              <div className="p-2.5 bg-slate-900/80 rounded-xl border border-indigo-500/20 flex items-center justify-between text-[11px] text-indigo-200">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">💡</span>
+                  <span>
+                    <strong>Flexible Save Guarantee:</strong> Even if 0 verifications are selected, this employee will be saved successfully in the database. HR can verify any document later using the <strong>"⚡ Verify Docs"</strong> action!
                   </span>
                 </div>
               </div>
