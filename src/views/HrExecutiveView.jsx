@@ -244,6 +244,8 @@ export const HrExecutiveView = () => {
     alternateMobile: '',
     aadhaarNo: '',
     portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
     designation: 'Senior Software Engineer',
     dept: 'Engineering & Software Architecture',
     fatherName: '',
@@ -484,6 +486,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98111 22334',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Senior Full Stack Cloud Architect',
         dept: 'Engineering & Cloud Architecture',
         fatherName: 'Suresh Ramanathan',
@@ -570,6 +574,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98222 33445',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Plant Operations & Assembly Supervisor',
         dept: 'Automotive Manufacturing & Assembly',
         fatherName: 'Harbhajan Singh',
@@ -645,6 +651,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98333 44556',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Senior Investment & Credit Risk Analyst',
         dept: 'Corporate Banking & Risk Governance',
         fatherName: 'Anil Deshmukh',
@@ -717,6 +725,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98444 55667',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Senior Medical Officer & Clinical Specialist',
         dept: 'Emergency Medicine & Critical Care (ICU)',
         fatherName: 'Dr. Ramachandra Rao',
@@ -788,6 +798,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98555 66778',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Commercial Fleet Lead & Heavy Transport Driver',
         dept: 'Supply Chain Logistics & Fleet Operations',
         fatherName: 'Kuppusamy M',
@@ -859,6 +871,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98666 77889',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Store Manager & Customer Experience Lead',
         dept: 'Retail Operations & Merchandising',
         fatherName: 'Debabrata Roy',
@@ -931,6 +945,8 @@ export const HrExecutiveView = () => {
         alternateMobile: '+91 98777 88990',
         aadhaarNo: randomAadhaar,
         portalPassword: '1234',
+    status: 'Active',
+    isActive: true,
         designation: 'Contractual Maintenance Specialist & Facility Helper',
         dept: 'Facility Management, Security & Auxiliary Support',
         fatherName: 'Sharanappa Patil',
@@ -1844,8 +1860,11 @@ export const HrExecutiveView = () => {
                 className="form-select text-xs py-1.5 px-3 bg-white font-bold rounded-xl border-slate-200"
               >
                 <option value="All">All Statuses ({candidates.length})</option>
+                <option value="Active">🟢 Active ({candidates.filter(c => c.status?.toLowerCase() !== 'inactive').length})</option>
+                <option value="Inactive">⚪ Inactive ({candidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
                 <option value="Verified">Verified ({candidates.filter(c => c.status === 'Verified').length})</option>
-                <option value="In Verification">In Verification ({candidates.filter(c => c.status === 'In Verification').length})</option>
+                <option value="In Verification">In Verification ({candidates.filter(c => c.status === 'In Verification' || c.status === 'Pending').length})</option>
+                <option value="Submitted - Pending HR Review">Pending HR Review ({candidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
                 <option value="Draft">Draft ({candidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
               </select>
             </div>
@@ -1861,7 +1880,13 @@ export const HrExecutiveView = () => {
                   c.mobile?.includes(searchQuery) ||
                   c.aadhaarNo?.includes(searchQuery);
                 
-                const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+                const matchesStatus = statusFilter === 'All' 
+  ? true 
+  : statusFilter === 'Active' 
+    ? c.status?.toLowerCase() !== 'inactive' 
+    : statusFilter === 'Inactive' 
+      ? c.status?.toLowerCase() === 'inactive' 
+      : c.status === statusFilter;
                 return matchesSearch && matchesStatus;
               })
               .map((cand, index) => {
@@ -2026,6 +2051,25 @@ export const HrExecutiveView = () => {
                         <Smartphone className="w-3.5 h-3.5 shrink-0" />
                         <span className="truncate">Test Portal 👁️</span>
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const isInactive = cand.status?.toLowerCase() === 'inactive';
+                          const actionPrompt = isInactive ? 're-activate' : 'mark as Inactive';
+                          if (window.confirm(`Are you sure you want to ${actionPrompt} employee "${cand.name}"?`)) {
+                            toggleCandidateStatus(cand.id || cand.token);
+                          }
+                        }}
+                        className={`p-2 rounded-xl border flex items-center justify-center gap-1.5 cursor-pointer text-center col-span-2 font-black ${
+                          cand.status?.toLowerCase() === 'inactive'
+                            ? 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100 shadow-2xs'
+                            : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                        }`}
+                      >
+                        <Power className={`w-3.5 h-3.5 ${cand.status?.toLowerCase() === 'inactive' ? 'text-emerald-600' : 'text-slate-500'}`} />
+                        <span>{cand.status?.toLowerCase() === 'inactive' ? '🟢 Reactivate Employee Profile' : '⚪ Mark Employee Inactive'}</span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -2059,7 +2103,13 @@ export const HrExecutiveView = () => {
                       c.mobile?.includes(searchQuery) ||
                       c.aadhaarNo?.includes(searchQuery);
                     
-                    const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+                    const matchesStatus = statusFilter === 'All' 
+  ? true 
+  : statusFilter === 'Active' 
+    ? c.status?.toLowerCase() !== 'inactive' 
+    : statusFilter === 'Inactive' 
+      ? c.status?.toLowerCase() === 'inactive' 
+      : c.status === statusFilter;
                     return matchesSearch && matchesStatus;
                   })
                   .map((cand, index) => {

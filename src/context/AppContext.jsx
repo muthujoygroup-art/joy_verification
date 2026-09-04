@@ -1231,11 +1231,12 @@ export const AppProvider = ({ children }) => {
     try {
       const cand = candidates.find(c => c.id === candidateId || c.token === candidateId);
       const isCurrentlyInactive = cand?.status?.toLowerCase() === 'inactive';
-      const newStatus = specificStatus || (isCurrentlyInactive ? 'Pending' : 'Inactive');
+      const newStatus = specificStatus || (isCurrentlyInactive ? (cand?.previousStatus || 'Active') : 'Inactive');
+      const prevStatus = cand?.status || 'Active';
       
       // Update UI & LocalStorage Immediately
       setCandidates(prev => {
-        const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus } : c);
+        const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus, previousStatus: isCurrentlyInactive ? prevStatus : (c.previousStatus || prevStatus), isActive: newStatus !== 'Inactive' } : c);
         try {
           localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
         } catch (e) {}
