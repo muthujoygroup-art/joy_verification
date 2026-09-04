@@ -82,11 +82,7 @@ export const CompanyAdminView = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry');
-  // Smooth Dashboard Positioning on Tab Switches
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [activeTab, activeMainSection]);
- // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
+  // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -136,6 +132,43 @@ export const CompanyAdminView = () => {
     activation_password: '1234',
     send_email: true
   });
+
+  // 🏢 Company Profile Details & Statutory Uploads States
+  const [profileData, setProfileData] = useState({
+    cin_number: company?.cin_number || '',
+    gstin_number: company?.gstin_number || '',
+    company_pan: company?.company_pan || '',
+    registered_address: company?.registered_address || '',
+    industry_sector: company?.industry_sector || 'Information Technology (IT/ITeS)',
+    website: company?.website || ''
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [companyUploadedDocs, setCompanyUploadedDocs] = useState(company?.documents || {});
+
+  // 📧 Company Custom Email Gateway & SMTP States
+  const [compEmailConfig, setCompEmailConfig] = useState({
+    use_custom_smtp: false,
+    host: 'mail.joycorporatesolutions.com',
+    port: 465,
+    user: '',
+    password: '',
+    from_email: '',
+    from_name: company?.name || 'HR Recruitment Team',
+    use_ssl: true,
+    use_tls: false,
+    notification_rules: {
+      notify_hr_created: true,
+      notify_candidate_verified: true,
+      notify_discrepancies: true,
+      notify_low_balance: true
+    }
+  });
+  const [showCompSmtpPassword, setShowCompSmtpPassword] = useState(false);
+  const [isSavingCompEmail, setIsSavingCompEmail] = useState(false);
+  const [showCompTestEmailModal, setShowCompTestEmailModal] = useState(false);
+  const [compTestRecipient, setCompTestRecipient] = useState('');
+  const [isSendingCompTestEmail, setIsSendingCompTestEmail] = useState(false);
+  const [compTestEmailResult, setCompTestEmailResult] = useState(null);
 
   // Save Company Custom SMTP
   const handleSaveSmtp = async (e) => {
@@ -218,6 +251,11 @@ export const CompanyAdminView = () => {
       showToast(`❌ Failed to resend email: ${err.message}`, 'error');
     }
   };
+
+  // Smooth Dashboard Positioning on Tab Switches
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, activeMainSection]);
 
   // Listen to tour action events from Navbar / Tour Modal
   useEffect(() => {
@@ -340,42 +378,6 @@ export const CompanyAdminView = () => {
   const verifiedCount = (companyCandidates || []).filter(c => c.status === 'Verified').length;
   const pendingCount = (companyCandidates || []).filter(c => c.status !== 'Verified').length;
 
-  // 🏢 Company Profile Details & Statutory Uploads States
-  const [profileData, setProfileData] = useState({
-    cin_number: company?.cin_number || '',
-    gstin_number: company?.gstin_number || '',
-    company_pan: company?.company_pan || '',
-    registered_address: company?.registered_address || '',
-    industry_sector: company?.industry_sector || 'Information Technology (IT/ITeS)',
-    website: company?.website || ''
-  });
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
-  const [companyUploadedDocs, setCompanyUploadedDocs] = useState(company?.documents || {});
-
-  // 📧 Company Custom Email Gateway & SMTP States
-  const [compEmailConfig, setCompEmailConfig] = useState({
-    use_custom_smtp: false,
-    host: 'mail.joycorporatesolutions.com',
-    port: 465,
-    user: '',
-    password: '',
-    from_email: '',
-    from_name: company?.name || 'HR Recruitment Team',
-    use_ssl: true,
-    use_tls: false,
-    notification_rules: {
-      notify_hr_created: true,
-      notify_candidate_verified: true,
-      notify_discrepancies: true,
-      notify_low_balance: true
-    }
-  });
-  const [showCompSmtpPassword, setShowCompSmtpPassword] = useState(false);
-  const [isSavingCompEmail, setIsSavingCompEmail] = useState(false);
-  const [showCompTestEmailModal, setShowCompTestEmailModal] = useState(false);
-  const [compTestRecipient, setCompTestRecipient] = useState('');
-  const [isSendingCompTestEmail, setIsSendingCompTestEmail] = useState(false);
-  const [compTestEmailResult, setCompTestEmailResult] = useState(null);
 
   const handleToggleFeature = (featKey, val) => {
     const updated = {

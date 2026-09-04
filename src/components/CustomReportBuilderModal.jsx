@@ -22,16 +22,6 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
   const { candidates, companies, showToast } = useApp();
 
   const [reportScope, setReportScope] = useState(candidate ? 'individual' : initialScope);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
  // 'individual' | 'company' | 'overall'
   const [selectedCandidateId, setSelectedCandidateId] = useState(candidate ? candidate.id : (candidates[0]?.id || ''));
   const [selectedCompanyFilter, setSelectedCompanyFilter] = useState('all');
@@ -53,6 +43,17 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
     status: true,
     verificationDate: true
   });
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   const toggleField = (fieldKey) => {
     setSelectedFields(prev => ({ ...prev, [fieldKey]: !prev[fieldKey] }));

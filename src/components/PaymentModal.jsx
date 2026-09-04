@@ -24,6 +24,11 @@ export const PaymentModal = ({ company, onClose }) => {
   const totalAmountDue = rawSubtotal + gstAmount;
 
   const [paymentMethod, setPaymentMethod] = useState('upi');
+ // 'upi' | 'card' | 'netbanking'
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccessData, setPaymentSuccessData] = useState(
+    currentLedger.status === 'SETTLED ✅' ? currentLedger : null
+  );
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -34,11 +39,7 @@ export const PaymentModal = ({ company, onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 'upi' | 'card' | 'netbanking'
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentSuccessData, setPaymentSuccessData] = useState(
-    currentLedger.status === 'SETTLED ✅' ? currentLedger : null
-  );
+
 
   const handleProcessPayment = (e) => {
     e.preventDefault();

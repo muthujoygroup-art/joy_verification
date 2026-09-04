@@ -245,10 +245,23 @@ def _build_email_shell(
     action_button_html = ""
     if action_url and action_text:
         action_button_html = f"""
-        <div style="text-align: center; margin: 30px 0 20px 0;">
-            <a href="{action_url}" style="background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
-                {action_text} &rarr;
-            </a>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 28px 0 16px 0;">
+            <tr>
+                <td align="center">
+                    <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="center" bgcolor="#4f46e5" style="border-radius: 12px; background-color: #4f46e5; padding: 15px 36px;">
+                                <a href="{action_url}" target="_blank" style="font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; color: #ffffff !important; text-decoration: none; display: inline-block; letter-spacing: 0.3px;">
+                                    {action_text} &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div style="text-align: center; margin-top: 8px; margin-bottom: 20px; font-size: 11px; color: #64748b;">
+            Direct Link: <a href="{action_url}" target="_blank" style="color: #4f46e5; text-decoration: underline; word-break: break-all;">{action_url}</a>
         </div>
         """
 

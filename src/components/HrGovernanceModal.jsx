@@ -37,16 +37,6 @@ export const HrGovernanceModal = ({
   if (!isOpen || !hrUser) return null;
 
   const [activeTab, setActiveTab] = useState('profile');
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
  // 'profile' | 'education' | 'documents' | 'security' | 'legal'
 
   const personal = hrUser.personal_details || {};
@@ -81,6 +71,17 @@ export const HrGovernanceModal = ({
   const [sendPasswordEmail, setSendPasswordEmail] = useState(true);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   // 1. Save HR Profile Changes
   const handleSaveProfile = async (e) => {

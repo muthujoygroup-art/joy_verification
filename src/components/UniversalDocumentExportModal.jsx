@@ -34,16 +34,6 @@ export const UniversalDocumentExportModal = ({
 
   // Date Range State
   const [datePreset, setDatePreset] = useState('all');
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
  // 'today' | 'yesterday' | 'last7' | 'thisMonth' | 'lastMonth' | 'custom' | 'all'
   const [startDate, setStartDate] = useState('2026-08-01');
   const [endDate, setEndDate] = useState('2026-08-26');
@@ -59,6 +49,17 @@ export const UniversalDocumentExportModal = ({
   // Selection
   const [selectedCandidateIds, setSelectedCandidateIds] = useState([]);
   const [exportingFormat, setExportingFormat] = useState(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   // Handle Date Presets
   const handlePresetChange = (preset) => {

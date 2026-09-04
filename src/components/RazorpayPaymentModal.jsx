@@ -40,6 +40,14 @@ export const RazorpayPaymentModal = ({
 
   const [selectedPackage, setSelectedPackage] = useState(defaultAmount);
 
+  const [customAmount, setCustomAmount] = useState('');
+  const [isCustomMode, setIsCustomMode] = useState(false);
+  const [activePaymentTab, setActivePaymentTab] = useState('razorpay'); // 'razorpay' | 'link' | 'bank'
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccessData, setPaymentSuccessData] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -50,13 +58,6 @@ export const RazorpayPaymentModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [customAmount, setCustomAmount] = useState('');
-  const [isCustomMode, setIsCustomMode] = useState(false);
-  const [activePaymentTab, setActivePaymentTab] = useState('razorpay'); // 'razorpay' | 'link' | 'bank'
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentSuccessData, setPaymentSuccessData] = useState(null);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedAccount, setCopiedAccount] = useState(false);
 
   if (!isOpen) return null;
 

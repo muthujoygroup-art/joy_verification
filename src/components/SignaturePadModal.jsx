@@ -5,6 +5,10 @@ export const SignaturePadModal = ({ onSaveSignature, onClose, initialSignature =
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  const [hasDrawn, setHasDrawn] = useState(false);
+  const [uploadedSigUrl, setUploadedSigUrl] = useState(initialSignature);
+  const [activeMode, setActiveMode] = useState('draw');
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -14,10 +18,7 @@ export const SignaturePadModal = ({ onSaveSignature, onClose, initialSignature =
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
-
-  const [hasDrawn, setHasDrawn] = useState(false);
-  const [uploadedSigUrl, setUploadedSigUrl] = useState(initialSignature);
-  const [activeMode, setActiveMode] = useState('draw'); // 'draw' | 'upload'
+ // 'draw' | 'upload'
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -40,6 +40,10 @@ import { exportElementToPdf } from '../services/pdfExporter';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState(1);
+ // 1: Bio, 2: Role, 3: Edu & Exp, 4: Statutory & Health, 5: Attached Exhibits, 6: Complete All-in-One
+  const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
+  const [downloadSuccess, setDownloadSuccess] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -50,10 +54,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 1: Bio, 2: Role, 3: Edu & Exp, 4: Statutory & Health, 5: Attached Exhibits, 6: Complete All-in-One
-  const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
-  const [downloadSuccess, setDownloadSuccess] = useState(null);
-  const [isExporting, setIsExporting] = useState(false);
+
   // Lock Body Scroll while Dossier Modal is Open
   useEffect(() => {
     document.body.style.overflow = 'hidden';

@@ -18,16 +18,6 @@ import {
 export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, currentPhoto = null }) => {
   const [cameraActive, setCameraActive] = useState(false);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState(null);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState(currentPhoto);
@@ -39,6 +29,17 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
   const nativeCameraInputRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   // Sample high-quality verified demo portraits for quick 1-click test
   const demoPortraits = [

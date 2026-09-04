@@ -20,6 +20,13 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
   const { whatsappConfig, emailConfig, updateCommunicationGateways, showToast } = useApp();
 
   const [activeTab, setActiveTab] = useState('whatsapp');
+ // 'whatsapp' | 'email'
+
+  // WhatsApp Local Form State
+  const [waState, setWaState] = useState({ ...whatsappConfig });
+
+  // Email Local Form State
+  const [mailState, setMailState] = useState({ ...emailConfig });
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -30,13 +37,7 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 'whatsapp' | 'email'
 
-  // WhatsApp Local Form State
-  const [waState, setWaState] = useState({ ...whatsappConfig });
-
-  // Email Local Form State
-  const [mailState, setMailState] = useState({ ...emailConfig });
 
   const handleSaveConfig = (e) => {
     e.preventDefault();

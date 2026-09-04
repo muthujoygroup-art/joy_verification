@@ -174,12 +174,8 @@ export const SuperAdminView = () => {
     }
   };
 
-    const [tabCategory, setTabCategory] = useState('all');
-  // Smooth Dashboard Positioning on Tab Switches
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [activeTab, activeMainSection]);
- // 'all' | 'core' | 'infra' | 'governance'
+  const [tabCategory, setTabCategory] = useState('all');
+  // 'all' | 'core' | 'infra' | 'governance'
   // 🔍 Universal Profile ID & Omnisearch Tracker States (COMP001, COMP001HR001, COMP001EMP001)
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [selectedTrackedEntity, setSelectedTrackedEntity] = useState(null);
@@ -234,6 +230,14 @@ export const SuperAdminView = () => {
   });
   const [resolveModalLog, setResolveModalLog] = useState(null);
   const [resolutionNotesInput, setResolutionNotesInput] = useState(''); // 'all' | 'unresolved' | 'solved'
+
+  // 📊 Interactive Reports Center State
+  const [reportDomain, setReportDomain] = useState('kyc_verification'); // 'kyc_verification' | 'financial_billing' | 'tat_sla' | 'statutory_forms' | 'hr_pipeline' | 'dpdp_audit'
+  const [reportCompanyFilter, setReportCompanyFilter] = useState('all');
+  const [reportStatusFilter, setReportStatusFilter] = useState('all');
+  const [reportDateRange, setReportDateRange] = useState('all'); // 'all' | 'today' | 'last7' | 'thisMonth'
+  const [reportSearchQuery, setReportSearchQuery] = useState('');
+  const [reportAutoEmailEnabled, setReportAutoEmailEnabled] = useState(true);
 
   const defaultStatutoryDocs = [
     {
@@ -641,6 +645,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   };
 
+  // Smooth Dashboard Positioning on Tab Switches
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, activeMainSection]);
+
   useEffect(() => {
     loadCompanyRequests();
 
@@ -803,13 +812,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     updateApiConfig(gatewayKey, editApiConfig[gatewayKey]);
   };
 
-  // 📊 Interactive Reports Center State
-  const [reportDomain, setReportDomain] = useState('kyc_verification'); // 'kyc_verification' | 'financial_billing' | 'tat_sla' | 'statutory_forms' | 'hr_pipeline' | 'dpdp_audit'
-  const [reportCompanyFilter, setReportCompanyFilter] = useState('all');
-  const [reportStatusFilter, setReportStatusFilter] = useState('all');
-  const [reportDateRange, setReportDateRange] = useState('all'); // 'all' | 'today' | 'last7' | 'thisMonth'
-  const [reportSearchQuery, setReportSearchQuery] = useState('');
-  const [reportAutoEmailEnabled, setReportAutoEmailEnabled] = useState(true);
 
   // Dynamic Report Data Generator
   const generateInteractiveReportData = () => {

@@ -41,6 +41,8 @@ export const MetricDrilldownModal = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [statusFilter, setStatusFilter] = useState('all');
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -51,7 +53,6 @@ export const MetricDrilldownModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [statusFilter, setStatusFilter] = useState('all');
 
   if (!isOpen) return null;
 

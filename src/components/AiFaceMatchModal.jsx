@@ -199,6 +199,18 @@ export const AiFaceMatchModal = ({
   onConfirmMatch 
 }) => {
   const [analyzing, setAnalyzing] = useState(true);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showMeshOverlay, setShowMeshOverlay] = useState(true);
+  const [activeAadhaarPhoto, setActiveAadhaarPhoto] = useState(aadhaarPhotoUrl || null);
+  const [deepResult, setDeepResult] = useState({
+    matchScore: 0,
+    cosineSimilarity: 0,
+    boneGeometryConcordance: 0,
+    isPassed: false,
+    engine: 'Computing Biometric Vectors...'
+  });
+  const aadhaarFileInputRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -210,28 +222,11 @@ export const AiFaceMatchModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [showMeshOverlay, setShowMeshOverlay] = useState(true);
-  
-  // Real live Aadhaar photo state (allows on-the-fly upload if not fetched yet)
-  const [activeAadhaarPhoto, setActiveAadhaarPhoto] = useState(aadhaarPhotoUrl || null);
-  const aadhaarFileInputRef = useRef(null);
-
   useEffect(() => {
     if (aadhaarPhotoUrl) {
       setActiveAadhaarPhoto(aadhaarPhotoUrl);
     }
   }, [aadhaarPhotoUrl]);
-
-  // Real Biometric Result State (Initializes to computing state, NO false defaults)
-  const [deepResult, setDeepResult] = useState({
-    matchScore: 0,
-    cosineSimilarity: 0,
-    boneGeometryConcordance: 0,
-    isPassed: false,
-    engine: 'Computing Biometric Vectors...'
-  });
 
   const aadhaarImg = activeAadhaarPhoto;
   const liveImg = livePhotoUrl;

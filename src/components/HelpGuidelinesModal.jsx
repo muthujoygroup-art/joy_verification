@@ -30,6 +30,8 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
   
   const [activeGuideTab, setActiveGuideTab] = useState(defaultTab);
 
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -40,7 +42,6 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div 

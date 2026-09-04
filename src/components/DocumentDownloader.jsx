@@ -24,6 +24,11 @@ import { EmployeeProfileDossierModal } from './EmployeeProfileDossierModal';
 
 export const DocumentDownloader = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState('attached');
+ // 'attached' | 'generated'
+  const [showCertPreview, setShowCertPreview] = useState(false);
+  const [showDossierPreview, setShowDossierPreview] = useState(false);
+  const [selectedDocPreview, setSelectedDocPreview] = useState(null);
+  const [downloadSuccess, setDownloadSuccess] = useState(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -34,11 +39,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 'attached' | 'generated'
-  const [showCertPreview, setShowCertPreview] = useState(false);
-  const [showDossierPreview, setShowDossierPreview] = useState(false);
-  const [selectedDocPreview, setSelectedDocPreview] = useState(null);
-  const [downloadSuccess, setDownloadSuccess] = useState(null);
+
 
   if (!candidate) return null;
 

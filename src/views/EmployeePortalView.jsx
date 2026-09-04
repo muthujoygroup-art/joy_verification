@@ -73,8 +73,85 @@ export const EmployeePortalView = () => {
   const [showLaborDossierModal, setShowLaborDossierModal] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
+
+  // Aadhaar Live Data Fetching & e-KYC telemetry states
+  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
+  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
+  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
+  const [fetchedAadhaarProfile, setFetchedAadhaarProfile] = useState(null);
+  const [showAadhaarSuccessCard, setShowAadhaarSuccessCard] = useState(false);
+
+  const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
+  const [mobileInputOtp, setMobileInputOtp] = useState('');
+  const [emailInputOtp, setEmailInputOtp] = useState('');
+  const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
+
+  // 🔒 Security Passcode & 15-Minute Link Expiry States
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passcodeDigits, setPasscodeDigits] = useState('');
+  const [loadedDbPassword, setLoadedDbPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isUnlocking, setIsUnlocking] = useState(false);
+  const [passcodeError, setPasscodeError] = useState('');
+  const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+
+  const [activeCompanyFeatures, setActiveCompanyFeatures] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_company_features');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  const candidate = directCandidate || getActiveCandidate();
+  const isAllComplete = candidate?.status === 'Verified';
+
+  const { verificationConfig = {}, verificationsCompleted = {} } = candidate || {};
+  const candidateCompanyId = candidate?.companyId || candidate?.company_id;
+  const company = (companies && companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName)) || (companies && companies[0]) || {};
+  const companyFeatures = activeCompanyFeatures || company.features || {};
+
+  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
+  const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
+  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
+  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
+  const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
+  const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
+  const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);
+  const isPassportReq = (companyFeatures.passport === true) || (verificationConfig.passport === true);
+  const isUanReq = (companyFeatures.uan === true) || (verificationConfig.uan === true);
+
+  const requiredStepKeys = [
+    isAadhaarReq && 'aadhaar',
+    isMobileReq && 'mobile',
+    isEmailReq && 'email',
+    isFaceReq && 'face',
+    isPanReq && 'pan',
+    isBankReq && 'bankCheck',
+    isDlReq && 'drivingLicense',
+    isPassportReq && 'passport',
+    isUanReq && 'uan'
+  ].filter(Boolean);
+
+  const totalConfiguredSteps = requiredStepKeys.length || 1;
+  const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
+  const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
+
+  const portalReadiness = useMemo(() => {
+    if (!candidate) return {};
+    const jfd = candidate?.joiningFormData || {};
+    return evaluateVerificationReadiness({
+      ...candidate,
+      ...jfd,
+      name: candidate?.name || jfd.fullName,
+      accountNo: candidate?.bankAccountNo || jfd.accountNo,
+      ifscCode: candidate?.ifscCode || jfd.ifscCode
+    });
+  }, [candidate]);
 
   // 📶 Real-Time Network Speed & Latency Detector
   useEffect(() => {
@@ -132,40 +209,10 @@ export const EmployeePortalView = () => {
     showFullJoiningModal, showSignatureModal, showLegalHandbook
   ]);
 
-  // Aadhaar Live Data Fetching & e-KYC telemetry states
-  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
-  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
-  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
-  const [fetchedAadhaarProfile, setFetchedAadhaarProfile] = useState(null);
-  const [showAadhaarSuccessCard, setShowAadhaarSuccessCard] = useState(false);
-
-  const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
-  const [mobileInputOtp, setMobileInputOtp] = useState('');
-  const [emailInputOtp, setEmailInputOtp] = useState('');
-  const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
-  const [showLegalHandbook, setShowLegalHandbook] = useState(false);
-
-  // 🔒 Security Passcode & 15-Minute Link Expiry States
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passcodeDigits, setPasscodeDigits] = useState('');
-  const [loadedDbPassword, setLoadedDbPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isUnlocking, setIsUnlocking] = useState(false);
-  const [passcodeError, setPasscodeError] = useState('');
-  // Auto-unlock if valid p param is present in URL
   // Ensure portal strictly enforces manual PIN entry on arrival
   useEffect(() => {
     setIsUnlocked(false);
   }, []);
-  const [secondsRemaining, setSecondsRemaining] = useState(900); // 15 minutes = 900s
-
-  const [activeCompanyFeatures, setActiveCompanyFeatures] = useState(() => {
-    try {
-      const saved = localStorage.getItem('joy_company_features');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return null;
-  });
 
   useEffect(() => {
     const handleStorage = (e) => {
@@ -185,7 +232,7 @@ export const EmployeePortalView = () => {
     const tokenToFetch = urlParams.get('token') || selectedCandidateToken;
     if (tokenToFetch) {
       // Check local list first
-      const localCand = candidates.find(c => c.token === tokenToFetch);
+      const localCand = candidates && candidates.find(c => c.token === tokenToFetch);
       if (localCand) {
         setDirectCandidate(localCand);
         setLoadedDbPassword(localCand.portalPassword || localCand.portal_password || '');
@@ -226,53 +273,6 @@ export const EmployeePortalView = () => {
         });
     }
   }, [selectedCandidateToken, candidates]);
-
-  const candidate = directCandidate || getActiveCandidate();
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const isAllComplete = candidate?.status === 'Verified';
-
-  const { verificationConfig = {}, verificationsCompleted = {} } = candidate || {};
-  const candidateCompanyId = candidate?.companyId || candidate?.company_id;
-  const company = companies.find(c => c.id === candidateCompanyId || c.code === candidate?.companyName || c.name === candidate?.companyName) || companies[0] || {};
-  const companyFeatures = activeCompanyFeatures || company.features || {};
-
-  const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
-  const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
-  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
-  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
-  const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
-  const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
-  const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);
-  const isPassportReq = (companyFeatures.passport === true) || (verificationConfig.passport === true);
-  const isUanReq = (companyFeatures.uan === true) || (verificationConfig.uan === true);
-
-  const requiredStepKeys = [
-    isAadhaarReq && 'aadhaar',
-    isMobileReq && 'mobile',
-    isEmailReq && 'email',
-    isFaceReq && 'face',
-    isPanReq && 'pan',
-    isBankReq && 'bankCheck',
-    isDlReq && 'drivingLicense',
-    isPassportReq && 'passport',
-    isUanReq && 'uan'
-  ].filter(Boolean);
-
-  const totalConfiguredSteps = requiredStepKeys.length || 1;
-  const completedStepsCount = requiredStepKeys.filter(k => !!verificationsCompleted[k]).length;
-  const progressPercentage = totalConfiguredSteps > 0 ? Math.round((completedStepsCount / totalConfiguredSteps) * 100) : 100;
-
-  const portalReadiness = useMemo(() => {
-    if (!candidate) return {};
-    const jfd = candidate?.joiningFormData || {};
-    return evaluateVerificationReadiness({
-      ...candidate,
-      ...jfd,
-      name: candidate?.name || jfd.fullName,
-      accountNo: candidate?.bankAccountNo || jfd.accountNo,
-      ifscCode: candidate?.ifscCode || jfd.ifscCode
-    });
-  }, [candidate]);
 
   // 15-Minute Active Countdown Timer
   useEffect(() => {

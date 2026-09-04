@@ -25,6 +25,13 @@ export const CompanyActivationModal = ({ company, onClose }) => {
   const { showToast } = useApp();
   const [passcodeText, setPasscodeText] = useState('1234');
 
+  const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSentSuccess, setEmailSentSuccess] = useState(false);
+  const [isSendingSms, setIsSendingSms] = useState(false);
+  const [smsSentSuccess, setSmsSentSuccess] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -35,12 +42,6 @@ export const CompanyActivationModal = ({ company, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [emailSentSuccess, setEmailSentSuccess] = useState(false);
-  const [isSendingSms, setIsSendingSms] = useState(false);
-  const [smsSentSuccess, setSmsSentSuccess] = useState(false);
 
   useEffect(() => {
     if (company) {

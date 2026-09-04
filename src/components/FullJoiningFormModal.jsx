@@ -57,32 +57,26 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
   const draftKey = `joy_joining_draft_${candidate?.id || candidate?.token || 'default'}`;
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (previewDoc) setPreviewDoc(null);
-        else if (showAadhaarOtpModal) setShowAadhaarOtpModal(false);
-        else if (showMobileOtpModal) setShowMobileOtpModal(false);
-        else if (showEmailOtpModal) setShowEmailOtpModal(false);
-        else if (showSignatureModal) setShowSignatureModal(false);
-        else if (onClose) onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, previewDoc, showAadhaarOtpModal, showMobileOtpModal, showEmailOtpModal, showSignatureModal]);
+  // OTP Verification States
+  const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
+  const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
+  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
+  
+  // Aadhaar Live Data Fetching & e-KYC telemetry states
+  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
+  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
+  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
 
-  const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
+  const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
+  const [mobileInputOtp, setMobileInputOtp] = useState('');
+  const [emailInputOtp, setEmailInputOtp] = useState('');
 
-  // Lock Body Scroll while Master Joining Form Modal is Open
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+  const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
+  const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
+  const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
 
 
   const jfd = candidate?.joiningFormData || {};
@@ -307,23 +301,29 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     return defaults;
   });
 
-  // OTP Verification States
-  const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
-  const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
-  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
-  
-  // Aadhaar Live Data Fetching & e-KYC telemetry states
-  const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
-  const [aadhaarFetchProgress, setAadhaarFetchProgress] = useState(0);
-  const [aadhaarFetchStep, setAadhaarFetchStep] = useState(0);
 
-  const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
-  const [mobileInputOtp, setMobileInputOtp] = useState('');
-  const [emailInputOtp, setEmailInputOtp] = useState('');
+  // Lock Body Scroll while Master Joining Form Modal is Open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
-  const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
-  const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
-  const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (previewDoc) setPreviewDoc(null);
+        else if (showAadhaarOtpModal) setShowAadhaarOtpModal(false);
+        else if (showMobileOtpModal) setShowMobileOtpModal(false);
+        else if (showEmailOtpModal) setShowEmailOtpModal(false);
+        else if (showSignatureModal) setShowSignatureModal(false);
+        else if (onClose) onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, previewDoc, showAadhaarOtpModal, showMobileOtpModal, showEmailOtpModal, showSignatureModal]);
 
   // ⚡ Debounced Auto-Save to localStorage across typing & network disconnects
   useEffect(() => {

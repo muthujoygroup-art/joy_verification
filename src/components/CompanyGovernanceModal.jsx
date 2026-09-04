@@ -39,16 +39,6 @@ export const CompanyGovernanceModal = ({
   if (!isOpen || !company) return null;
 
   const [activeTab, setActiveTab] = useState('profile');
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
  // 'profile' | 'security' | 'documents' | 'legal'
 
   // Corporate Profile State
@@ -76,6 +66,17 @@ export const CompanyGovernanceModal = ({
   const [sendPasswordEmail, setSendPasswordEmail] = useState(true);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   // 1. Save Corporate Profile
   const handleSaveProfile = async (e) => {

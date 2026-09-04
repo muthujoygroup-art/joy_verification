@@ -6,6 +6,12 @@ export const InvoiceModal = ({ company, onClose }) => {
 
   const [billedCount, setBilledCount] = useState(company.verifiedCountThisMonth || 100);
 
+  const [ratePerUnit, setRatePerUnit] = useState(company.pricePerVerification || 120);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [gstTaxPercent, setGstTaxPercent] = useState(18);
+  const [customRemarks, setCustomRemarks] = useState('Standard monthly metered verification billing statement.');
+  const [isEditingControls, setIsEditingControls] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -16,11 +22,6 @@ export const InvoiceModal = ({ company, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const [ratePerUnit, setRatePerUnit] = useState(company.pricePerVerification || 120);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [gstTaxPercent, setGstTaxPercent] = useState(18);
-  const [customRemarks, setCustomRemarks] = useState('Standard monthly metered verification billing statement.');
-  const [isEditingControls, setIsEditingControls] = useState(false);
 
   const invoiceNumber = `JDV-INV-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   

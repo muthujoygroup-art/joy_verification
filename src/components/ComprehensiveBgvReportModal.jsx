@@ -43,6 +43,9 @@ export const ComprehensiveBgvReportModal = ({
   hrName = "PRAVEEN B" 
 }) => {
   const [activeApiTab, setActiveApiTab] = useState('all');
+ // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -53,9 +56,7 @@ export const ComprehensiveBgvReportModal = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+
 
   if (!candidate) return null;
 

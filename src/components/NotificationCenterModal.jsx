@@ -45,6 +45,9 @@ export const NotificationCenterModal = ({ onClose }) => {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('feed');
+ // 'feed' | 'settings'
+  const [feedCategoryFilter, setFeedCategoryFilter] = useState('all'); // 'all' | 'expiry' | 'verification' | 'billing' | 'system'
+  const [dossierCandidate, setDossierCandidate] = useState(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -55,9 +58,7 @@ export const NotificationCenterModal = ({ onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
- // 'feed' | 'settings'
-  const [feedCategoryFilter, setFeedCategoryFilter] = useState('all'); // 'all' | 'expiry' | 'verification' | 'billing' | 'system'
-  const [dossierCandidate, setDossierCandidate] = useState(null);
+
 
   // Map employee_link role to candidate
   const roleKey = currentRole === 'employee_link' ? 'candidate' : currentRole;

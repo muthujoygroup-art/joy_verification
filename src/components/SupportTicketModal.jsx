@@ -20,16 +20,6 @@ export const SupportTicketModal = ({ onClose }) => {
   const { supportTickets, addSupportTicket, currentRole, currentUser, companies, showToast } = useApp();
 
   const [activeTab, setActiveTab] = useState('tickets');
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
  // 'tickets' | 'newticket' | 'feedback'
 
   // New Ticket Form State
@@ -42,6 +32,17 @@ export const SupportTicketModal = ({ onClose }) => {
   // Feedback Form State
   const [starRating, setStarRating] = useState(5);
   const [feedbackText, setFeedbackText] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
 
   const handleRaiseTicketSubmit = (e) => {
     e.preventDefault();
