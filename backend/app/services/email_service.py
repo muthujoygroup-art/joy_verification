@@ -107,6 +107,7 @@ def send_smtp_email(
     text_content: Optional[str] = None,
     company_id: Optional[str] = None,
     custom_config: Optional[Dict[str, Any]] = None,
+    reply_to: Optional[str] = None,
     db=None
 ) -> Dict[str, Any]:
     """
@@ -148,6 +149,8 @@ def send_smtp_email(
         msg["Subject"] = subject
         msg["From"] = f"{cfg['from_name']} <{cfg['from_email']}>"
         msg["To"] = to_email
+        if reply_to:
+            msg["Reply-To"] = reply_to
         msg["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
 
         # Plaintext fallback
@@ -617,10 +620,25 @@ def send_candidate_onboarding_email(
     company_name: str,
     company_id: Optional[str] = None,
     designation: str = "Associate",
+    sender_hr_name: Optional[str] = None,
+    sender_hr_email: Optional[str] = None,
+    custom_smtp: Optional[Dict[str, Any]] = None,
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
+
+    hr_badge_html = ""
+    if sender_hr_name or sender_hr_email:
+        hr_info = f"<strong>{sender_hr_name}</strong>" if sender_hr_name else "HR Executive"
+        if sender_hr_email:
+            hr_info += f" (<a href='mailto:{sender_hr_email}' style='color: #4f46e5; text-decoration: underline;'>{sender_hr_email}</a>)"
+        hr_badge_html = f"""
+        <div style="background-color: #f1f5f9; border-left: 4px solid #4f46e5; border-radius: 8px; padding: 10px 14px; font-size: 11px; color: #334155; margin-bottom: 16px;">
+            👤 <strong>Issued & Dispatched by HR:</strong> {hr_info}<br>
+            🏢 <strong>Organization:</strong> {company_name}
+        </div>
+        """
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
@@ -629,6 +647,7 @@ def send_candidate_onboarding_email(
     <p>
         Congratulations on your selection for the role of <strong>{designation}</strong> at <strong>{company_name}</strong>!
     </p>
+    {hr_badge_html}
     <p>
         As part of the statutory onboarding protocol, please complete your digital identity verification and statutory form disclosures (EPFO / ESIC) through the secure link below.
     </p>
@@ -659,17 +678,27 @@ def send_candidate_onboarding_email(
     </div>
     """
 
+    sender_brand = f"{sender_hr_name} via {company_name}" if sender_hr_name else company_name
+
     html = _build_email_shell(
         header_title=f"Onboarding Verification - {company_name}",
         badge_text="EMPLOYEE ONBOARDING INVITATION",
         content_html=content,
         action_url=verify_url,
         action_text="Start Verification & Complete Forms",
-        sender_brand=company_name
+        sender_brand=sender_brand
     )
 
     subject = f"📱 Onboarding Verification Link - {company_name} ({candidate_name})"
-    return send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
+    return send_smtp_email(
+        to_email=candidate_email,
+        subject=subject,
+        html_content=html,
+        company_id=company_id,
+        custom_config=custom_smtp,
+        reply_to=sender_hr_email,
+        db=db
+    )
 
 
 # =============================================================================

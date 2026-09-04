@@ -194,6 +194,15 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         if new_candidate.email:
             comp_obj = db.query(Company).filter(Company.id == new_candidate.company_id).first() if new_candidate.company_id else None
             comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+            
+            hr_name = None
+            hr_email = None
+            if new_candidate.hr_id:
+                hr_user = db.query(HR).filter(HR.id == new_candidate.hr_id).first()
+                if hr_user:
+                    hr_name = hr_user.name
+                    hr_email = hr_user.email
+
             send_candidate_onboarding_email(
                 candidate_name=new_candidate.name,
                 candidate_code=new_candidate.emp_id or hierarchical_emp_code,
@@ -201,7 +210,10 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
                 token=new_candidate.token,
                 security_pin=new_candidate.portal_password or "1234",
                 company_name=comp_name,
+                company_id=new_candidate.company_id,
                 designation=new_candidate.designation or "Associate",
+                sender_hr_name=hr_name,
+                sender_hr_email=hr_email,
                 db=db
             )
     except Exception as e:
@@ -216,31 +228,55 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     """
     channel = payload.get("channel", "email") # 'email' | 'whatsapp' | 'sms'
     candidate_id = payload.get("candidate_id")
+    hr_email = payload.get("hr_email")
+    hr_name = payload.get("hr_name")
+    hr_id = payload.get("hr_id")
+    candidate_email = payload.get("candidate_email")
+    custom_smtp = payload.get("custom_smtp")
     
     candidate = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
+    # Update candidate email if entered on the fly in modal
+    if candidate_email and candidate_email.strip() and candidate_email != candidate.email:
+        candidate.email = candidate_email.strip()
+        db.commit()
+        db.refresh(candidate)
+
     comp_obj = db.query(Company).filter(Company.id == candidate.company_id).first() if candidate.company_id else None
     comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
     
+    if not hr_name and (hr_id or candidate.hr_id):
+        hr_user = db.query(HR).filter(HR.id == (hr_id or candidate.hr_id)).first()
+        if hr_user:
+            hr_name = hr_user.name
+            hr_email = hr_email or hr_user.email
+
     email_res = None
-    if candidate.email:
+    target_email = candidate.email or candidate_email
+    if target_email:
         email_res = send_candidate_onboarding_email(
             candidate_name=candidate.name,
             candidate_code=candidate.emp_id or candidate.employee_number or "COMP001EMP001",
-            candidate_email=candidate.email,
+            candidate_email=target_email,
             token=candidate.token,
             security_pin=candidate.portal_password or "1234",
             company_name=comp_name,
+            company_id=candidate.company_id,
             designation=candidate.designation or "Associate",
+            sender_hr_name=hr_name,
+            sender_hr_email=hr_email,
+            custom_smtp=custom_smtp,
             db=db
         )
+        candidate.status = "Link Sent"
+        db.commit()
 
     return {
         "success": True,
         "channel": channel,
-        "message": f"Onboarding invitation email dispatched to {candidate.email} (PIN: {candidate.portal_password or '1234'}).",
+        "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {candidate.portal_password or '1234'}).",
         "email_result": email_res
     }
 

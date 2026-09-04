@@ -5267,6 +5267,8 @@ export const HrExecutiveView = () => {
       {dispatchingCandidate && (
         <QrCodeModal 
           candidate={dispatchingCandidate}
+          activeHr={activeHr}
+          hrPreferences={hrPreferences}
           onClose={() => setDispatchingCandidate(null)}
           onCopyLink={handleCopyLink}
           isCopied={copiedToken === dispatchingCandidate.token}

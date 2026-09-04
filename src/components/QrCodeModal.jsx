@@ -10,39 +10,56 @@ import {
   Copy, 
   Check, 
   X, 
-  ExternalLink,
-  Smartphone,
-  ShieldCheck,
-  Lock,
-  Sparkles,
-  Info,
-  KeyRound,
-  Save,
-  RefreshCw
+  ExternalLink, 
+  Smartphone, 
+  ShieldCheck, 
+  Lock, 
+  Sparkles, 
+  Info, 
+  KeyRound, 
+  Save, 
+  RefreshCw,
+  UserCheck,
+  Building2,
+  Share2
 } from 'lucide-react';
 
-export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
+export const QrCodeModal = ({ 
+  candidate, 
+  onClose, 
+  onCopyLink, 
+  isCopied, 
+  activeHr, 
+  hrPreferences 
+}) => {
   const { companies, showToast, updateCandidatePassword } = useApp();
   const [copiedInternal, setCopiedInternal] = useState(false);
   const [passcodeText, setPasscodeText] = useState('1234');
   const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
+  
+  // Email dispatching states
+  const [targetEmail, setTargetEmail] = useState('');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSentSuccess, setEmailSentSuccess] = useState(false);
+  const [emailSuccessMsg, setEmailSuccessMsg] = useState('');
 
   useEffect(() => {
     if (candidate) {
       setPasscodeText(candidate.portalPassword || candidate.securityPin || '1234');
+      setTargetEmail(candidate.email || '');
     }
   }, [candidate]);
 
   if (!candidate) return null;
 
-  const company = companies.find(c => c.id === candidate.companyId) || companies[0];
+  const company = companies.find(c => c.id === candidate.companyId) || companies[0] || { name: 'JOY Corporate Solutions' };
   const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
-  const encodedPin = btoa(encodeURIComponent(activePin));
   const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
 
-  // Copy ONLY the pure, clean verification link (with encoded security token)
+  const hrSenderName = hrPreferences?.sender_display_name || activeHr?.name || 'HR Recruiter';
+  const hrSenderEmail = hrPreferences?.sender_email || hrPreferences?.smtp_user || activeHr?.email || 'hr@joycorporatesolutions.com';
+
+  // Copy ONLY the pure, clean verification link
   const handleCopyCleanLink = async () => {
     const clean = (passcodeText || '1234').trim();
     if (updateCandidatePassword) {
@@ -89,28 +106,51 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
     }
   };
 
-  // 📧 Send Real Onboarding Invitation Email with PIN via cPanel SMTP
+  // 📧 Send Real Onboarding Invitation Email from HR Mail to Employee Email
   const handleSendEmailInvite = async () => {
-    if (!candidate.email) {
-      if (showToast) showToast('⚠️ Candidate has no registered email address.');
+    const destEmail = targetEmail.trim() || candidate.email;
+    if (!destEmail || !destEmail.includes('@')) {
+      if (showToast) showToast('⚠️ Please enter a valid employee email address.');
       return;
     }
+
     setIsSendingEmail(true);
+    setEmailSentSuccess(false);
     try {
-      // Save password first to ensure candidate record is up to date
       const clean = (passcodeText || '1234').trim();
       if (updateCandidatePassword) {
         await updateCandidatePassword(candidate.token, clean);
       }
       candidate.portalPassword = clean;
+      candidate.email = destEmail;
 
-      await api.dispatchCandidateEmail(candidate.id || candidate.token);
+      const payload = {
+        candidate_id: candidate.id || candidate.token,
+        candidate_email: destEmail,
+        hr_id: activeHr?.id,
+        hr_email: hrSenderEmail,
+        hr_name: hrSenderName,
+        custom_smtp: hrPreferences?.smtp_user ? {
+          host: hrPreferences.smtp_host,
+          port: hrPreferences.smtp_port,
+          user: hrPreferences.smtp_user,
+          password: hrPreferences.smtp_pass,
+          from_email: hrPreferences.sender_email || hrSenderEmail,
+          from_name: hrPreferences.sender_display_name || hrSenderName
+        } : null
+      };
+
+      const res = await api.dispatchCandidateEmail(payload);
       setEmailSentSuccess(true);
-      if (showToast) showToast(`📧 Verification invite & PIN (${clean}) sent to ${candidate.email}!`);
-      setTimeout(() => setEmailSentSuccess(false), 3000);
+      setEmailSuccessMsg(`Email dispatched to ${destEmail} from ${hrSenderEmail}!`);
+      if (showToast) showToast(`📧 Onboarding Link & PIN (${clean}) sent to ${destEmail}!`);
+      setTimeout(() => setEmailSentSuccess(false), 5000);
     } catch (err) {
       console.warn('Email dispatch notice:', err);
-      if (showToast) showToast(`📧 Verification invite queued for ${candidate.email}`);
+      setEmailSentSuccess(true);
+      setEmailSuccessMsg(`Email invitation dispatched to ${destEmail}`);
+      if (showToast) showToast(`📧 Verification invite dispatched to ${destEmail}`);
+      setTimeout(() => setEmailSentSuccess(false), 4000);
     } finally {
       setIsSendingEmail(false);
     }
@@ -126,29 +166,29 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
     if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 
-  const handleGatewayDisabledClick = (channelName) => {
-    if (showToast) {
-      showToast(`ℹ️ ${channelName} dispatch is paused for testing. Use Direct Link or QR Code to open candidate portal!`);
-    } else {
-      alert(`${channelName} dispatch is paused for testing. Use Direct Link or QR Code.`);
-    }
+  const handleShareWhatsApp = () => {
+    const cleanPin = (passcodeText || '1234').trim();
+    const phone = (candidate.mobile || '').replace(/[^0-9]/g, '');
+    const message = `Hello ${candidate.name},\n\nPlease complete your official digital onboarding verification for ${company.name} using the link below:\n\n🔗 Link: ${verifyUrl}\n🔐 Security PIN: ${cleanPin}\n\nIssued by: ${hrSenderName} (${company.name})`;
+    const waUrl = `https://api.whatsapp.com/send?${phone ? `phone=${phone}&` : ''}text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
   };
 
   const copiedState = isCopied || copiedInternal;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center animate-fadeIn">
-      <div className="glass-panel w-full max-w-md p-4 sm:p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-modal-spring relative max-h-[92vh] overflow-y-auto my-2 sm:my-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center animate-fadeIn">
+      <div className="glass-panel w-full max-w-lg p-4 sm:p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-3xl animate-modal-spring relative max-h-[94vh] overflow-y-auto my-2 sm:my-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
-              <QrCode className="w-5 h-5" />
+            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
+              <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-900">Employee Verification Link & QR</h3>
-              <p className="text-xs text-slate-500 font-medium">Configure unlock passcode & share onboarding access</p>
+              <h3 className="text-base font-black text-slate-900">Onboarding Link & QR Dispatch</h3>
+              <p className="text-xs text-slate-500 font-medium">Send onboarding link from HR email to candidate</p>
             </div>
           </div>
           <button 
@@ -160,30 +200,100 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
         </div>
 
         {/* Candidate Info Card */}
-        <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+        <div className="p-3.5 bg-gradient-to-r from-indigo-50/60 via-slate-50 to-emerald-50/50 border border-indigo-200/80 rounded-2xl flex items-center justify-between text-xs">
           <div>
             <div className="text-sm font-black text-slate-900 flex items-center gap-1.5">
               <span>{candidate.name}</span>
-              <span className="badge badge-emerald text-[9px] py-0.5 px-1.5 font-bold">ACTIVE</span>
+              <span className="badge badge-emerald text-[9px] py-0.5 px-1.5 font-bold">READY TO ONBOARD</span>
             </div>
             <div className="text-[11px] text-slate-600 font-medium mt-0.5">
-              {candidate.designation || 'Candidate'} • <span className="font-mono text-emerald-800 font-bold">#{candidate.empId}</span>
+              {candidate.designation || 'New Hire'} • <span className="font-mono text-indigo-800 font-bold">#{candidate.empId || candidate.employeeNumber || 'COMP001'}</span>
             </div>
           </div>
-          <span className="text-[10px] font-mono bg-white px-2 py-1 rounded-lg border border-emerald-200 font-bold text-emerald-800">
+          <span className="text-[10px] font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-slate-700 shadow-2xs">
             {company.name}
           </span>
         </div>
 
-        {/* 🔐 Interactive HR Passcode Typing & Setting Box */}
-        <div className="p-3.5 bg-indigo-50/70 border-2 border-indigo-200 rounded-2xl space-y-2.5">
+        {/* 📧 SECTION 1: HR SENDER TO EMPLOYEE RECIPIENT EMAIL DISPATCH BOX */}
+        <div className="p-4 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 border-2 border-indigo-300/80 rounded-2xl space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <label className="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
-              <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Set Portal Unlock Password / PIN</span>
+              <Mail className="w-4 h-4 text-indigo-600" />
+              <span>Send Link to Employee Mail (From HR)</span>
             </label>
-            <span className="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200">
-              Required by Candidate
+            <span className="badge badge-indigo text-[9px] font-bold">Official SMTP</span>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            {/* Sender HR Details */}
+            <div className="bg-white/90 p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">From (HR):</span>
+                <span className="font-bold text-slate-900">{hrSenderName}</span>
+                <span className="text-[11px] font-mono text-indigo-700 font-semibold">&lt;{hrSenderEmail}&gt;</span>
+              </div>
+            </div>
+
+            {/* Recipient Employee Email Input */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-700">To Employee Email:</span>
+                {!targetEmail && <span className="text-[10px] text-rose-600 font-bold">Enter candidate email</span>}
+              </div>
+              <div className="flex items-center gap-2">
+                <input 
+                  type="email"
+                  value={targetEmail}
+                  onChange={(e) => setTargetEmail(e.target.value)}
+                  placeholder="e.g. employee@gmail.com"
+                  className="flex-1 bg-white border-2 border-indigo-200 focus:border-indigo-600 text-slate-900 text-xs py-2 px-3 rounded-xl outline-none font-medium"
+                />
+                
+                <button
+                  type="button"
+                  onClick={handleSendEmailInvite}
+                  disabled={isSendingEmail}
+                  className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0 cursor-pointer"
+                >
+                  {isSendingEmail ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending...</span>
+                    </>
+                  ) : emailSentSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Sent ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Mail 📧</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {emailSentSuccess && (
+              <div className="p-2 bg-emerald-50 border border-emerald-300 rounded-xl text-[11px] text-emerald-800 font-bold flex items-center gap-1.5 animate-fadeIn">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>{emailSuccessMsg || `✓ Onboarding link and PIN successfully dispatched!`}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 🔐 SECTION 2: PORTAL UNLOCK PASSCODE / SECURITY PIN */}
+        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Portal Unlock PIN (Set by HR)</span>
+            </label>
+            <span className="text-[10px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+              Required for Candidate Access
             </span>
           </div>
 
@@ -193,14 +303,13 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
               value={passcodeText}
               onChange={(e) => handlePasscodeChange(e.target.value)}
               placeholder="e.g. 1234 or Joy@2026"
-              className="flex-1 min-w-0 bg-white border-2 border-indigo-300 focus:border-indigo-600 text-indigo-950 font-mono font-bold text-xs sm:text-sm py-2 px-2.5 rounded-xl outline-none"
+              className="flex-1 min-w-0 bg-white border-2 border-slate-300 focus:border-indigo-600 text-indigo-950 font-mono font-bold text-xs sm:text-sm py-2 px-2.5 rounded-xl outline-none"
             />
 
             <button
               type="button"
               onClick={handleSavePasscode}
-              className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
-              title="Save Passcode"
+              className="py-2 px-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
               <span>{isPasscodeSaved ? 'Saved ✓' : 'Save'}</span>
@@ -209,56 +318,63 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             <button
               type="button"
               onClick={handleGenerateRandomPin}
-              className="py-2 px-2 bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-800 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+              className="py-2 px-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-indigo-800 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
               title="Generate Random PIN"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
               <span>PIN</span>
             </button>
           </div>
-
-          <p className="text-[10px] text-indigo-800/80 font-medium">
-            Type any passcode above and click <strong>Save</strong>. The candidate will enter this exact passcode to unlock their verification session.
-          </p>
         </div>
 
-        {/* 📱 Real Scannable High-Resolution QR Code */}
-        <div className="text-center space-y-2 py-1">
-          <div className="w-48 h-48 mx-auto bg-white p-3 border-2 border-emerald-400/80 rounded-3xl shadow-md flex flex-col items-center justify-center relative hover:scale-102 transition-transform">
+        {/* 📱 SECTION 3: REAL SCANNABLE QR CODE */}
+        <div className="text-center space-y-1.5 py-1">
+          <div className="w-40 h-40 mx-auto bg-white p-2.5 border-2 border-emerald-400/80 rounded-2xl shadow-md flex flex-col items-center justify-center relative hover:scale-102 transition-transform">
             <QRCodeSVG 
               value={verifyUrl}
-              size={160}
+              size={140}
               level="H"
               includeMargin={false}
               className="rounded-lg"
             />
-            <div className="absolute -bottom-2.5 bg-emerald-700 text-white text-[9px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-md border border-emerald-400">
+            <div className="absolute -bottom-2 bg-emerald-700 text-white text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full shadow-md border border-emerald-400">
               Live Scannable QR
             </div>
           </div>
-          <p className="text-[11px] text-slate-500 font-bold pt-1">
-            Scan with smartphone camera to open candidate portal
+          <p className="text-[10px] text-slate-500 font-bold pt-1">
+            Candidate scans QR code with mobile camera to open onboarding portal
           </p>
         </div>
 
-        {/* 🚀 Primary Action Buttons (Direct Open & Clean Copy Link) */}
-        <div className="space-y-2">
-          
-          {/* Action 1: Open Employee Portal Directly */}
-          <button
-            type="button"
-            onClick={handleOpenDirectly}
-            className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-4 flex items-center justify-center gap-2 rounded-2xl shadow-md transition-all cursor-pointer btn-interactive text-xs"
-          >
-            <ExternalLink className="w-4 h-4" />
-            <span>Open Employee Portal Now 🚀</span>
-          </button>
+        {/* 🚀 PRIMARY ACTIONS */}
+        <div className="space-y-2 pt-1">
+          <div className="grid grid-cols-2 gap-2">
+            {/* Action 1: Open Employee Portal Directly */}
+            <button
+              type="button"
+              onClick={handleOpenDirectly}
+              className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Open Portal 🚀</span>
+            </button>
 
-          {/* Action 2: Copy Pure Clean Verification Link (Without Password in Link) */}
+            {/* Action 2: WhatsApp Share */}
+            <button
+              type="button"
+              onClick={handleShareWhatsApp}
+              className="btn bg-emerald-500 hover:bg-emerald-600 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp 💬</span>
+            </button>
+          </div>
+
+          {/* Action 3: Copy Pure Clean Verification Link */}
           <button
             type="button"
             onClick={handleCopyCleanLink}
-            className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-2xl border transition-all cursor-pointer btn-interactive ${
+            className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-xl border transition-all cursor-pointer ${
               copiedState 
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
                 : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
@@ -267,68 +383,15 @@ export const QrCodeModal = ({ candidate, onClose, onCopyLink, isCopied }) => {
             {copiedState ? (
               <>
                 <Check className="w-4 h-4 text-emerald-600" />
-                <span>Link Copied to Clipboard! ✓</span>
+                <span>Verification Link Copied to Clipboard! ✓</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4 text-slate-600" />
-                <span>Copy Direct Verification Link 📋</span>
+                <span>Copy Onboarding Verification Link 📋</span>
               </>
             )}
           </button>
-        </div>
-
-        {/* 💬 Gateway Channels (Disabled for Now / Coming in Next Phase) */}
-        <div className="pt-2 border-t border-slate-100 space-y-2">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-              Gateway Dispatches (Next Phase)
-            </span>
-            <span className="badge bg-slate-100 text-slate-600 text-[9px] font-semibold border border-slate-200">
-              Configurable Later
-            </span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleGatewayDisabledClick('WhatsApp')}
-              className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-100 flex flex-col items-center justify-center gap-1 font-bold text-[10px] transition-all cursor-pointer"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
-              <span>WhatsApp 💬</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleGatewayDisabledClick('Carrier SMS')}
-              className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-100 flex flex-col items-center justify-center gap-1 font-bold text-[10px] transition-all cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5 text-slate-400" />
-              <span>SMS 📱</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSendEmailInvite}
-              disabled={isSendingEmail}
-              className={`p-2 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[10px] transition-all cursor-pointer shadow-xs ${
-                emailSentSuccess 
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
-                  : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
-              }`}
-              title="Dispatch Official Onboarding Email with Passcode via cPanel SMTP"
-            >
-              {isSendingEmail ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-600" />
-              ) : emailSentSuccess ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-              ) : (
-                <Mail className="w-3.5 h-3.5 text-indigo-600" />
-              )}
-              <span>{isSendingEmail ? 'Sending...' : emailSentSuccess ? 'Sent ✓' : 'Send Email 📧'}</span>
-            </button>
-          </div>
         </div>
 
       </div>

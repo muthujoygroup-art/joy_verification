@@ -551,10 +551,13 @@ export const api = {
       body: JSON.stringify({ to_email: toEmail, smtp_config: smtpConfig }),
     });
   },
-  dispatchCandidateEmail: (candidateId) => {
+  dispatchCandidateEmail: (dispatchData) => {
+    const payload = typeof dispatchData === 'object' 
+      ? { channel: 'email', ...dispatchData }
+      : { channel: 'email', candidate_id: dispatchData };
     return request('/hr/dispatch-link', {
       method: 'POST',
-      body: JSON.stringify({ channel: 'email', candidate_id: candidateId }),
+      body: JSON.stringify(payload),
     });
   },
 

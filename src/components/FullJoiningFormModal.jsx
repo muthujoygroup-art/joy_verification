@@ -60,18 +60,6 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const draftKey = `joy_joining_draft_${candidate?.id || candidate?.token || 'default'}`;
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
 
-  // ⚡ Debounced Auto-Save to localStorage across typing & network disconnects
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        localStorage.setItem(draftKey, JSON.stringify(formData));
-        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        setLastAutoSaveTime(nowStr);
-      } catch (e) {}
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [formData, draftKey]);
-
   // Lock Body Scroll while Master Joining Form Modal is Open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -320,6 +308,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
   const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
   const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+
+  // ⚡ Debounced Auto-Save to localStorage across typing & network disconnects
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(formData));
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setLastAutoSaveTime(nowStr);
+      } catch (e) {}
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [formData, draftKey]);
 
   // Universal Document File Upload Handler
   const handleFileUpload = (docKey, file, customTitle = '') => {
