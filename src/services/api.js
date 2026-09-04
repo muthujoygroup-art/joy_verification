@@ -288,13 +288,32 @@ export const api = {
       method: 'DELETE',
     });
   },
-  getLogs: () => request('/superadmin/logs', {}, true),
-  toggleLogSolved: (logId, solved, resolvedBy = 'Super Admin') => {
+  getLogs: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/superadmin/logs${query ? `?${query}` : ''}`, {}, false);
+  },
+  reportErrorLog: (errorData) => request('/superadmin/system/error-logs', {
+    method: 'POST',
+    body: JSON.stringify(errorData),
+  }),
+  toggleLogSolved: (logId, solved, resolvedBy = 'Super Admin', resolutionNotes = null) => {
     requestCache.clear();
     return request(`/superadmin/logs/${logId}/toggle`, {
       method: 'PUT',
-      body: JSON.stringify({ solved, resolved_by: resolvedBy }),
+      body: JSON.stringify({ solved, resolved_by: resolvedBy, resolution_notes: resolutionNotes }),
     });
+  },
+  simulateTestError: (payload) => request('/superadmin/logs/simulate-test-error', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  purgeSolvedLogs: () => {
+    requestCache.clear();
+    return request('/superadmin/logs/purge-solved', { method: 'POST' });
+  },
+  deleteLog: (logId) => {
+    requestCache.clear();
+    return request(`/superadmin/logs/${logId}`, { method: 'DELETE' });
   },
   getSuperAdminStats: () => request('/superadmin/stats', {}, true),
   

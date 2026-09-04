@@ -1,3 +1,4 @@
+import { initGlobalErrorListeners } from '../utils/errorLogger';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 
@@ -805,12 +806,22 @@ export const AppProvider = ({ children }) => {
           setSystemErrorLogs(logs.map(l => ({
             id: l.id,
             timestamp: l.timestamp,
+            portal: l.portal || 'HR Executive Portal',
             section: l.section,
+            functionName: l.function_name,
             event: l.error_code,
+            errorCode: l.error_code,
             details: l.message,
-            severity: l.severity,
+            message: l.message,
+            stackTrace: l.stack_trace,
+            userInfo: l.user_info || {},
+            ipAddress: l.ip_address,
+            deviceInfo: l.device_info,
+            severity: l.severity || 'Critical',
             solved: l.solved,
-            resolvedTimestamp: l.resolved_at
+            resolvedTimestamp: l.resolved_at,
+            resolvedBy: l.resolved_by,
+            resolutionNotes: l.resolution_notes
           })));
         }
 
@@ -879,6 +890,7 @@ export const AppProvider = ({ children }) => {
       }
     };
 
+    try { initGlobalErrorListeners(); } catch (e) {}
     fetchBackendData();
   }, []);
 
@@ -1519,18 +1531,98 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Toggle Error Log Solved
-  const toggleLogSolvedStatus = async (logId) => {
+  // Fetch System Logs with Multi-Criteria Filtering
+  const fetchSystemLogs = async (params = {}) => {
+    try {
+      const logs = await api.getLogs(params);
+      if (logs && Array.isArray(logs)) {
+        const mapped = logs.map(l => ({
+          id: l.id,
+          timestamp: l.timestamp,
+          portal: l.portal || 'HR Executive Portal',
+          section: l.section,
+          functionName: l.function_name,
+          event: l.error_code,
+          errorCode: l.error_code,
+          details: l.message,
+          message: l.message,
+          stackTrace: l.stack_trace,
+          userInfo: l.user_info || {},
+          ipAddress: l.ip_address,
+          deviceInfo: l.device_info,
+          severity: l.severity || 'Critical',
+          solved: l.solved,
+          resolvedTimestamp: l.resolved_at,
+          resolvedBy: l.resolved_by,
+          resolutionNotes: l.resolution_notes
+        }));
+        setSystemErrorLogs(mapped);
+        return mapped;
+      }
+    } catch (err) {
+      console.warn('Error fetching system logs:', err);
+    }
+    return [];
+  };
+
+  // Toggle Error Log Solved Status with Resolution Notes
+  const toggleLogSolvedStatus = async (logId, notes = null) => {
     let newSolved = false;
+    const current = systemErrorLogs.find(l => l.id === logId);
+    newSolved = !current?.solved;
+
     setSystemErrorLogs(prev => prev.map(log => {
       if (log.id !== logId) return log;
-      newSolved = !log.solved;
-      return { ...log, solved: newSolved, resolvedTimestamp: newSolved ? new Date().toLocaleTimeString() : null };
+      return { 
+        ...log, 
+        solved: newSolved, 
+        resolvedTimestamp: newSolved ? new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST' : null,
+        resolvedBy: newSolved ? (currentUser?.name || 'Super Admin') : null,
+        resolutionNotes: notes || log.resolutionNotes
+      };
     }));
-    showToast(`Log issue #${logId} updated to ${newSolved ? 'SOLVED ✅' : 'UNRESOLVED 🔴'}`);
+    showToast(`Log #${logId} marked as ${newSolved ? 'SOLVED ✅' : 'UNRESOLVED 🔴'}`);
     try {
-      await api.toggleLogSolved(logId, newSolved);
-    } catch (err) {}
+      await api.toggleLogSolved(logId, newSolved, currentUser?.name || 'Super Admin', notes);
+    } catch (err) {
+      console.warn('Backend toggle log error:', err);
+    }
+  };
+
+  // Simulate Test Error for Live Audit Validation
+  const simulateTestError = async (payload) => {
+    try {
+      const res = await api.simulateTestError(payload);
+      showToast('⚡ Simulated test error captured and logged!');
+      await fetchSystemLogs();
+      return res;
+    } catch (err) {
+      showToast('Simulation failed: ' + err.message, 'error');
+    }
+  };
+
+  // Purge Solved Logs
+  const purgeSolvedLogs = async () => {
+    try {
+      const res = await api.purgeSolvedLogs();
+      showToast(res.message || '🧹 Purged resolved error logs!');
+      setSystemErrorLogs(prev => prev.filter(l => !l.solved));
+      return true;
+    } catch (err) {
+      showToast('Purge error: ' + err.message, 'error');
+    }
+  };
+
+  // Delete Single Log
+  const deleteSingleLog = async (logId) => {
+    try {
+      await api.deleteLog(logId);
+      setSystemErrorLogs(prev => prev.filter(l => l.id !== logId));
+      showToast(`Log #${logId} deleted.`);
+      return true;
+    } catch (err) {
+      showToast('Delete error: ' + err.message, 'error');
+    }
   };
 
   // Support Tickets
@@ -2227,6 +2319,10 @@ export const AppProvider = ({ children }) => {
       removeMasterDropdownOption,
       systemErrorLogs,
       toggleLogSolvedStatus,
+      fetchSystemLogs,
+      simulateTestError,
+      purgeSolvedLogs,
+      deleteSingleLog,
       supportTickets,
       addSupportTicket,
       addTicketReply,

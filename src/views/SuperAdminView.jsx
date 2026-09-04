@@ -111,7 +111,11 @@ export const SuperAdminView = () => {
     addMasterDropdownOption, 
     removeMasterDropdownOption, 
     systemErrorLogs, 
-    toggleLogSolvedStatus, 
+    toggleLogSolvedStatus,
+    fetchSystemLogs,
+    simulateTestError,
+    purgeSolvedLogs,
+    deleteSingleLog, 
     supportTickets, 
     addTicketReply, 
     companyPaymentLedger, 
@@ -206,6 +210,21 @@ export const SuperAdminView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
 
   const [logFilterStatus, setLogFilterStatus] = useState('all'); // 'all' | 'unresolved' | 'solved'
+  const [logTimeframe, setLogTimeframe] = useState('all'); // 'today' | '24h' | '7d' | 'all'
+  const [logPortalFilter, setLogPortalFilter] = useState('all');
+  const [logSeverityFilter, setLogSeverityFilter] = useState('all');
+  const [logSearchQuery, setLogSearchQuery] = useState('');
+  const [selectedLogForDetail, setSelectedLogForDetail] = useState(null);
+  const [showSimulateErrorModal, setShowSimulateErrorModal] = useState(false);
+  const [simulatePayload, setSimulatePayload] = useState({
+    portal: 'HR Executive Portal',
+    function_name: 'create_candidate_profile',
+    error_code: 'ERR_CANDIDATE_CREATION_TIMEOUT',
+    message: 'Form validation failed: Employee PAN format is invalid or duplicate.',
+    severity: 'Critical'
+  });
+  const [resolveModalLog, setResolveModalLog] = useState(null);
+  const [resolutionNotesInput, setResolutionNotesInput] = useState(''); // 'all' | 'unresolved' | 'solved'
 
   const defaultStatutoryDocs = [
     {
@@ -4279,48 +4298,652 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         </div>
       )}
 
-      {/* TAB 11: ERROR LOGS & ISSUE TRACKER */}
-      {activeTab === 'issuelogs' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-rose-600" />
-                <span>Section Error Logs & Issue Tracker</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Monitor system errors across all sections and toggle Solved / Unresolved status</p>
-            </div>
+      {/* TAB 11: MULTI-PORTAL ERROR LOGS & AUDIT COMMAND CENTER */}
+      {activeTab === 'issuelogs' && (() => {
+        const portalList = ['all', 'HR Executive Portal', 'Employee Verification Link', 'Company Admin Portal', 'SuperAdmin Portal', 'API Gateway Service', 'Email Gateway'];
+        const severityList = ['all', 'Critical', 'High', 'Medium', 'Low', 'Info'];
 
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-              <button onClick={() => setLogFilterStatus('all')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-600'}`}>All</button>
-              <button onClick={() => setLogFilterStatus('unresolved')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white font-bold' : 'text-slate-600'}`}>Unresolved</button>
-              <button onClick={() => setLogFilterStatus('solved')} className={`px-3 py-1 rounded-lg ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-600'}`}>Solved</button>
-            </div>
-          </div>
+        const processedLogs = (systemErrorLogs || []).filter(log => {
+          // Status filter
+          if (logFilterStatus === 'unresolved' && log.solved) return false;
+          if (logFilterStatus === 'solved' && !log.solved) return false;
 
-          <div className="space-y-3">
-            {filteredLogs.map(log => (
-              <div key={log.id} className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${log.solved ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`}>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 text-xs">#{log.id} • {log.section}</span>
-                    <span className={`badge text-[9px] ${log.severity === 'Critical' ? 'badge-rose' : 'badge-amber'}`}>{log.severity}</span>
+          // Portal filter
+          if (logPortalFilter !== 'all' && !(log.portal || '').toLowerCase().includes(logPortalFilter.toLowerCase())) return false;
+
+          // Severity filter
+          if (logSeverityFilter !== 'all' && (log.severity || '').toLowerCase() !== logSeverityFilter.toLowerCase()) return false;
+
+          // Timeframe filter
+          if (logTimeframe !== 'all') {
+            try {
+              const now = new Date();
+              const logDate = new Date(log.timestamp.replace(' IST', '').replace(' UTC', ''));
+              const diffHours = (now - logDate) / (1000 * 60 * 60);
+              if (logTimeframe === 'today' && logDate.toDateString() !== now.toDateString()) return false;
+              if (logTimeframe === '24h' && diffHours > 24) return false;
+              if (logTimeframe === '7d' && diffHours > 168) return false;
+            } catch (e) {}
+          }
+
+          // Search query
+          if (logSearchQuery.trim()) {
+            const q = logSearchQuery.toLowerCase();
+            const inMsg = (log.message || log.details || '').toLowerCase().includes(q);
+            const inSec = (log.section || '').toLowerCase().includes(q);
+            const inCode = (log.errorCode || log.event || '').toLowerCase().includes(q);
+            const inFunc = (log.functionName || '').toLowerCase().includes(q);
+            const inPortal = (log.portal || '').toLowerCase().includes(q);
+            const inId = (log.id || '').toLowerCase().includes(q);
+            if (!inMsg && !inSec && !inCode && !inFunc && !inPortal && !inId) return false;
+          }
+
+          return true;
+        });
+
+        const criticalUnresolved = (systemErrorLogs || []).filter(l => !l.solved && (l.severity === 'Critical' || l.severity === 'High')).length;
+        const totalLogsCount = (systemErrorLogs || []).length;
+        const solvedCount = (systemErrorLogs || []).filter(l => l.solved).length;
+        const resolutionRate = totalLogsCount > 0 ? Math.round((solvedCount / totalLogsCount) * 100) : 100;
+
+        const handleExportLogsCsv = () => {
+          const headers = ['Log ID', 'Timestamp', 'Portal', 'Section', 'Function', 'Error Code', 'Severity', 'Message', 'Solved', 'Resolved At', 'Resolved By'];
+          const rows = processedLogs.map(l => [
+            `"${l.id}"`,
+            `"${l.timestamp}"`,
+            `"${l.portal || 'HR Executive Portal'}"`,
+            `"${l.section || ''}"`,
+            `"${l.functionName || ''}"`,
+            `"${l.errorCode || l.event || ''}"`,
+            `"${l.severity || 'Critical'}"`,
+            `"${(l.message || l.details || '').replace(/"/g, '""')}"`,
+            `"${l.solved ? 'YES' : 'NO'}"`,
+            `"${l.resolvedTimestamp || ''}"`,
+            `"${l.resolvedBy || ''}"`
+          ]);
+          const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", `JOY_System_Error_Audit_Logs_${new Date().toISOString().substring(0, 10)}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        };
+
+        return (
+          <div className="space-y-6">
+            {/* 1. TOP TELEMETRY KPI METRICS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total System Errors</span>
+                  <div className="p-2 rounded-xl bg-slate-800 text-slate-300">
+                    <Activity className="w-5 h-5" />
                   </div>
-                  <p className="text-slate-700 text-xs font-medium">{log.event}: {log.details}</p>
-                  <span className="text-[10px] text-slate-400 font-mono">{log.timestamp} • Company: {log.company}</span>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-white">{totalLogsCount}</span>
+                  <span className="text-xs text-slate-400">Recorded across platform</span>
+                </div>
+              </div>
+
+              <div className={`p-5 rounded-2xl border shadow-sm relative overflow-hidden ${
+                criticalUnresolved > 0 
+                  ? 'bg-gradient-to-br from-rose-950 via-rose-900 to-slate-950 text-white border-rose-800' 
+                  : 'bg-gradient-to-br from-slate-900 to-slate-950 text-white border-slate-800'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                    {criticalUnresolved > 0 && <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>}
+                    Unresolved Critical Issues
+                  </span>
+                  <div className="p-2 rounded-xl bg-rose-900/60 text-rose-300">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-rose-200">{criticalUnresolved}</span>
+                  <span className="text-xs text-rose-300/80">Require Admin attention</span>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Resolution Rate</span>
+                  <div className="p-2 rounded-xl bg-emerald-950 text-emerald-300">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-emerald-300">{resolutionRate}%</span>
+                  <span className="text-xs text-slate-400">{solvedCount} of {totalLogsCount} solved</span>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-sky-400">Portal Coverage</span>
+                  <div className="p-2 rounded-xl bg-sky-950 text-sky-300">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-2xl font-black text-sky-200">7 Active Portals</span>
+                  <span className="text-[10px] text-slate-400">24/7 Monitored</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. ADVANCED CONTROL & FILTERING HUD */}
+            <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <AlertCircle className="w-6 h-6 text-rose-600" />
+                    <span>Real-Time System Health & Error Audit HUD</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Centralized diagnostic telemetry across HR Portal, Employee Verification, Company Admin, API Gateways & SMTP Services.
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => toggleLogSolvedStatus(log.id)}
-                  className={`btn text-xs py-1.5 px-3 font-bold ${log.solved ? 'btn-secondary text-emerald-800' : 'btn-superadmin'}`}
-                >
-                  {log.solved ? 'Mark Unresolved' : 'Mark Solved ✅'}
-                </button>
+                {/* Quick Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSimulateErrorModal(true)}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 cursor-pointer shadow-xs"
+                    title="Simulate a test error from any portal to verify live capture"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>⚡ Simulate Test Error</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportLogsCsv}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-700 bg-slate-100 border-slate-300 hover:bg-slate-200 cursor-pointer shadow-xs"
+                    title="Export filtered logs as CSV"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Export CSV</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to purge all resolved logs?')) {
+                        purgeSolvedLogs();
+                      }
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-300 hover:bg-rose-100 cursor-pointer shadow-xs"
+                    title="Clear resolved logs"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Purge Solved</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fetchSystemLogs()}
+                    className="btn btn-superadmin text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer shadow-xs"
+                    title="Refresh logs from PostgreSQL"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Refresh</span>
+                  </button>
+                </div>
               </div>
-            ))}
+
+              {/* Filtering Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
+                {/* Search Bar */}
+                <div className="relative col-span-1 sm:col-span-2">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    value={logSearchQuery}
+                    onChange={(e) => setLogSearchQuery(e.target.value)}
+                    placeholder="Search by error code, function, message, ID..."
+                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium"
+                  />
+                  {logSearchQuery && (
+                    <button onClick={() => setLogSearchQuery('')} className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 text-xs">✕</button>
+                  )}
+                </div>
+
+                {/* Timeframe Filter */}
+                <div>
+                  <select
+                    value={logTimeframe}
+                    onChange={(e) => setLogTimeframe(e.target.value)}
+                    className="w-full py-1.5 px-3 text-xs bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-700 focus:bg-white"
+                  >
+                    <option value="all">🌐 Timeframe: All Time</option>
+                    <option value="today">⚡ Today Only</option>
+                    <option value="24h">📅 Last 24 Hours</option>
+                    <option value="7d">🗓️ Last 7 Days</option>
+                  </select>
+                </div>
+
+                {/* Portal Filter */}
+                <div>
+                  <select
+                    value={logPortalFilter}
+                    onChange={(e) => setLogPortalFilter(e.target.value)}
+                    className="w-full py-1.5 px-3 text-xs bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-700 focus:bg-white"
+                  >
+                    <option value="all">🏢 All Portals</option>
+                    <option value="HR Executive Portal">🏢 HR Executive Portal</option>
+                    <option value="Employee Verification Link">📱 Employee Verification Link</option>
+                    <option value="Company Admin Portal">🏛️ Company Admin Portal</option>
+                    <option value="SuperAdmin Portal">⚡ SuperAdmin Portal</option>
+                    <option value="API Gateway Service">🔌 API Gateway Service</option>
+                    <option value="Email Gateway">✉️ Email / SMTP Gateway</option>
+                  </select>
+                </div>
+
+                {/* Status Filter */}
+                <div>
+                  <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-300 text-xs font-bold">
+                    <button
+                      onClick={() => setLogFilterStatus('all')}
+                      className={`flex-1 py-1 rounded-lg transition-all ${logFilterStatus === 'all' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      All ({totalLogsCount})
+                    </button>
+                    <button
+                      onClick={() => setLogFilterStatus('unresolved')}
+                      className={`flex-1 py-1 rounded-lg transition-all ${logFilterStatus === 'unresolved' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      Active ({criticalUnresolved})
+                    </button>
+                    <button
+                      onClick={() => setLogFilterStatus('solved')}
+                      className={`flex-1 py-1 rounded-lg transition-all ${logFilterStatus === 'solved' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      Solved ({solvedCount})
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. LOGS STREAM LIST / CARDS */}
+              <div className="space-y-3 pt-2">
+                {processedLogs.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-300 rounded-2xl">
+                    <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-2 opacity-80" />
+                    <h4 className="text-sm font-extrabold text-slate-800">No System Errors Matching Criteria</h4>
+                    <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                      All platform functions across HR, Candidate Link, and API Gateway services are operating normally with 0 matching exceptions.
+                    </p>
+                  </div>
+                ) : (
+                  processedLogs.map(log => {
+                    const isCrit = (log.severity || '').toLowerCase() === 'critical';
+                    const isHigh = (log.severity || '').toLowerCase() === 'high';
+
+                    return (
+                      <div
+                        key={log.id}
+                        className={`p-4 rounded-2xl border transition-all duration-200 hover:shadow-md ${
+                          log.solved 
+                            ? 'bg-emerald-50/40 border-emerald-200' 
+                            : isCrit 
+                              ? 'bg-rose-50/50 border-rose-300 ring-1 ring-rose-200' 
+                              : isHigh 
+                                ? 'bg-amber-50/50 border-amber-300' 
+                                : 'bg-slate-50/60 border-slate-200'
+                        }`}
+                      >
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+                          <div className="space-y-1.5 flex-1 min-w-0">
+                            {/* Top Meta Badges */}
+                            <div className="flex flex-wrap items-center gap-2 text-xs">
+                              <span className="font-mono font-black text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-300 shadow-2xs">
+                                #{log.id}
+                              </span>
+
+                              <span className="px-2 py-0.5 rounded-lg font-bold text-[11px] bg-slate-800 text-white flex items-center gap-1 shadow-2xs">
+                                <span>{log.portal || 'HR Executive Portal'}</span>
+                              </span>
+
+                              {log.section && (
+                                <span className="px-2 py-0.5 rounded-lg font-bold text-[11px] bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                  {log.section} {log.functionName ? `➔ ${log.functionName}()` : ''}
+                                </span>
+                              )}
+
+                              <span className={`badge font-bold text-[10px] ${
+                                isCrit ? 'badge-rose' : isHigh ? 'badge-amber' : 'badge-slate'
+                              }`}>
+                                {log.severity || 'Critical'}
+                              </span>
+
+                              {log.solved ? (
+                                <span className="badge badge-emerald font-bold text-[10px] flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> SOLVED
+                                </span>
+                              ) : (
+                                <span className="badge badge-rose font-bold text-[10px] flex items-center gap-1 animate-pulse">
+                                  🔴 UNRESOLVED
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Error Code & Details */}
+                            <div className="pt-0.5">
+                              <div className="font-mono font-bold text-xs text-rose-700 flex items-center gap-1.5">
+                                <span>[{log.errorCode || log.event || 'ERR_SYSTEM'}]</span>
+                              </div>
+                              <p className="text-slate-800 text-xs font-semibold mt-0.5 leading-relaxed break-words">
+                                {log.message || log.details}
+                              </p>
+                            </div>
+
+                            {/* Footer Timestamp & Context */}
+                            <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 font-mono pt-1">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-slate-400" />
+                                <strong>{log.timestamp}</strong>
+                              </span>
+
+                              {log.userInfo?.candidate_token && (
+                                <span>Candidate Token: <strong className="text-indigo-600">{log.userInfo.candidate_token}</strong></span>
+                              )}
+
+                              {log.userInfo?.user_email && (
+                                <span>User: <strong>{log.userInfo.user_email}</strong></span>
+                              )}
+
+                              {log.resolvedTimestamp && (
+                                <span className="text-emerald-700 font-bold">
+                                  Resolved: {log.resolvedTimestamp} by {log.resolvedBy || 'Super Admin'}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Action Controls */}
+                          <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
+                            {(log.stackTrace || log.stack_trace) && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedLogForDetail(log)}
+                                className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold flex items-center gap-1 text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                                title="View Technical Stack Trace & Payload"
+                              >
+                                <FileCode className="w-3.5 h-3.5" />
+                                <span>Trace</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!log.solved) {
+                                  setResolveModalLog(log);
+                                  setResolutionNotesInput('');
+                                } else {
+                                  toggleLogSolvedStatus(log.id);
+                                }
+                              }}
+                              className={`btn text-xs py-1.5 px-3 font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                                log.solved 
+                                  ? 'btn-secondary text-slate-700 bg-white border-slate-300 hover:bg-slate-100' 
+                                  : 'btn-emerald shadow-xs'
+                              }`}
+                            >
+                              {log.solved ? (
+                                <>
+                                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                                  <span>Reopen</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Check className="w-3.5 h-3.5 text-white" />
+                                  <span>Mark Solved</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Delete error log #${log.id}?`)) {
+                                  deleteSingleLog(log.id);
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete log record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* 4. MODAL: TECHNICAL STACK TRACE & DIAGNOSTICS */}
+            {selectedLogForDetail && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+                <div className="bg-slate-900 border border-slate-700 text-white w-full max-w-3xl max-h-[85vh] rounded-3xl p-6 space-y-4 shadow-2xl flex flex-col animate-modal-spring">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1.5 rounded-lg bg-rose-950 text-rose-400 border border-rose-800">
+                        <AlertTriangle className="w-4 h-4" />
+                      </span>
+                      <div>
+                        <h4 className="font-extrabold text-sm text-white">Diagnostic Trace • #{selectedLogForDetail.id}</h4>
+                        <p className="text-[11px] text-slate-400 font-mono">{selectedLogForDetail.portal} ➔ {selectedLogForDetail.section}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setSelectedLogForDetail(null)} className="text-slate-400 hover:text-white text-lg cursor-pointer">✕</button>
+                  </div>
+
+                  <div className="space-y-3 overflow-y-auto flex-1 pr-1 font-mono text-xs">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Error Message</span>
+                      <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-rose-300">
+                        {selectedLogForDetail.message || selectedLogForDetail.details}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Stack Trace & Function Telemetry</span>
+                      <pre className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed text-[11px]">
+                        {selectedLogForDetail.stackTrace || selectedLogForDetail.stack_trace || 'No detailed traceback captured.'}
+                      </pre>
+                    </div>
+
+                    {selectedLogForDetail.userInfo && Object.keys(selectedLogForDetail.userInfo).length > 0 && (
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">User & Client Metadata</span>
+                        <pre className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-indigo-300 overflow-x-auto text-[11px]">
+                          {JSON.stringify(selectedLogForDetail.userInfo, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 border-t border-slate-800 pt-3">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(JSON.stringify(selectedLogForDetail, null, 2));
+                        showToast('Diagnostic details copied to clipboard!');
+                      }}
+                      className="btn btn-secondary text-xs py-2 px-3 text-slate-200 bg-slate-800 border-slate-700 hover:bg-slate-700"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy JSON</span>
+                    </button>
+                    <button
+                      onClick={() => setSelectedLogForDetail(null)}
+                      className="btn btn-superadmin text-xs py-2 px-4"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 5. MODAL: MARK AS RESOLVED WITH NOTES */}
+            {resolveModalLog && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+                <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl animate-modal-spring border border-slate-200">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Resolve Error #{resolveModalLog.id}</span>
+                    </h4>
+                    <button onClick={() => setResolveModalLog(null)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+                  </div>
+
+                  <p className="text-xs text-slate-600 font-medium">
+                    You are resolving issue: <strong className="text-slate-800">[{resolveModalLog.errorCode || resolveModalLog.event}]</strong>
+                  </p>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Resolution Notes (Optional)</label>
+                    <textarea
+                      value={resolutionNotesInput}
+                      onChange={(e) => setResolutionNotesInput(e.target.value)}
+                      placeholder="e.g. Cleared duplicate candidate record in DB, verified API key credentials..."
+                      className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 h-24"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => setResolveModalLog(null)}
+                      className="btn btn-secondary text-xs py-2 px-3"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await toggleLogSolvedStatus(resolveModalLog.id, resolutionNotesInput);
+                        setResolveModalLog(null);
+                      }}
+                      className="btn btn-emerald text-xs py-2 px-4 shadow-md font-bold cursor-pointer"
+                    >
+                      Confirm Solved ✅
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 6. MODAL: SIMULATE TEST ERROR */}
+            {showSimulateErrorModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+                <div className="bg-white text-slate-900 w-full max-w-lg rounded-3xl p-6 space-y-4 shadow-2xl animate-modal-spring border border-slate-200">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>Simulate Real-Time Portal Error Log</span>
+                    </h4>
+                    <button onClick={() => setShowSimulateErrorModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+                  </div>
+
+                  <p className="text-xs text-slate-500 font-medium">
+                    Select the origin portal and parameters to inject a live diagnostic exception into the PostgreSQL database.
+                  </p>
+
+                  <div className="space-y-3 text-xs">
+                    <div>
+                      <label className="font-bold text-slate-700 block mb-1">Originating Portal</label>
+                      <select
+                        value={simulatePayload.portal}
+                        onChange={(e) => setSimulatePayload({ ...simulatePayload, portal: e.target.value })}
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-bold"
+                      >
+                        <option value="HR Executive Portal">🏢 HR Executive Portal</option>
+                        <option value="Employee Verification Link">📱 Employee Verification Link</option>
+                        <option value="Company Admin Portal">🏛️ Company Admin Portal</option>
+                        <option value="API Gateway Service">🔌 API Gateway Service (CoinCircleTrust / Sandbox)</option>
+                        <option value="Email Gateway">✉️ Email / SMTP Gateway</option>
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Target Function</label>
+                        <input
+                          type="text"
+                          value={simulatePayload.function_name}
+                          onChange={(e) => setSimulatePayload({ ...simulatePayload, function_name: e.target.value })}
+                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-bold text-slate-700 block mb-1">Error Code</label>
+                        <input
+                          type="text"
+                          value={simulatePayload.error_code}
+                          onChange={(e) => setSimulatePayload({ ...simulatePayload, error_code: e.target.value })}
+                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs text-rose-700 font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-slate-700 block mb-1">Severity Level</label>
+                      <select
+                        value={simulatePayload.severity}
+                        onChange={(e) => setSimulatePayload({ ...simulatePayload, severity: e.target.value })}
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-bold"
+                      >
+                        <option value="Critical">🔴 Critical</option>
+                        <option value="High">🟠 High</option>
+                        <option value="Medium">🟡 Medium</option>
+                        <option value="Low">🔵 Low / Info</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-bold text-slate-700 block mb-1">Error Description</label>
+                      <textarea
+                        value={simulatePayload.message}
+                        onChange={(e) => setSimulatePayload({ ...simulatePayload, message: e.target.value })}
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs h-16"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowSimulateErrorModal(false)}
+                      className="btn btn-secondary text-xs py-2 px-3"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await simulateTestError(simulatePayload);
+                        setShowSimulateErrorModal(false);
+                      }}
+                      className="btn btn-superadmin text-xs py-2 px-4 font-bold shadow-md cursor-pointer"
+                    >
+                      Trigger Test Exception ⚡
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* TAB 12: PLATFORM GUIDELINES */}
       {activeTab === 'guidelines' && (

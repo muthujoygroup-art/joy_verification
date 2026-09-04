@@ -5,15 +5,22 @@ from backend.app.database import Base
 class SystemErrorLog(Base):
     __tablename__ = "system_error_logs"
 
-    id = Column(String(50), primary_key=True, index=True) # 'LOG-901'
+    id = Column(String(50), primary_key=True, index=True) # e.g. 'ERR-2026-0904-8921'
     timestamp = Column(String(50), nullable=False)
-    section = Column(String(100), nullable=False)
-    error_code = Column(String(50), nullable=False)
+    portal = Column(String(100), default="HR Executive Portal") # 'HR Executive Portal' | 'Employee Portal' | 'Company Admin Portal' | 'SuperAdmin Portal' | 'API Gateway Service' | 'Email Gateway'
+    section = Column(String(100), nullable=False) # e.g. 'Candidate Creation' | 'Aadhaar e-KYC' | 'PAN Verification'
+    function_name = Column(String(100), nullable=True) # e.g. 'create_candidate', 'verify_pan_live', 'send_otp'
+    error_code = Column(String(50), nullable=False) # e.g. 'ERR_VALIDATION_FAILED', 'ERR_GATEWAY_TIMEOUT'
     message = Column(Text, nullable=False)
-    severity = Column(String(50), default="Warning") # 'Info' | 'Warning' | 'Critical'
+    stack_trace = Column(Text, nullable=True)
+    user_info = Column(JSON, default=dict) # {"user_email": "...", "candidate_token": "...", "company_name": "..."}
+    ip_address = Column(String(50), nullable=True)
+    device_info = Column(String(255), nullable=True)
+    severity = Column(String(50), default="Critical") # 'Critical' | 'High' | 'Medium' | 'Low' | 'Info'
     solved = Column(Boolean, default=False)
     resolved_at = Column(DateTime, nullable=True)
     resolved_by = Column(String(100), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
 
 
 class SystemSetting(Base):

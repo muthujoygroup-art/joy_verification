@@ -15,7 +15,7 @@ from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErr
 from backend.app.schemas import (
     CompanyCreate, CompanyResponse, CompanyUpdateFeatures,
     ApiConfigCreate, ApiConfigResponse, ApiConfigUpdate, ApiConfigToggle,
-    SystemErrorLogResponse, SystemErrorLogToggle
+    SystemErrorLogResponse, SystemErrorLogToggle, SystemErrorLogInboundPayload
 )
 
 router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
@@ -375,13 +375,98 @@ def delete_api_config(provider_key: str, db: Session = Depends(get_db)):
     return {"success": True, "message": f"API Provider '{cfg.display_name}' deleted successfully."}
 
 @router.get("/logs", response_model=List[SystemErrorLogResponse])
-def get_system_logs(db: Session = Depends(get_db)):
-    """Fetch all platform diagnostic and error logs"""
-    return db.query(SystemErrorLog).order_by(SystemErrorLog.id.desc()).all()
+def get_system_logs(
+    timeframe: Optional[str] = "all",
+    portal: Optional[str] = None,
+    severity: Optional[str] = None,
+    solved: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Fetch platform diagnostic & error logs across all portals with multi-criteria filtering
+    """
+    query = db.query(SystemErrorLog)
+
+    # 1. Portal Filter
+    if portal and portal != "All" and portal != "all":
+        query = query.filter(SystemErrorLog.portal.ilike(f"%{portal}%"))
+
+    # 2. Severity Filter
+    if severity and severity != "All" and severity != "all":
+        query = query.filter(SystemErrorLog.severity.ilike(severity))
+
+    # 3. Solved / Unresolved Filter
+    if solved == "true" or solved == "resolved":
+        query = query.filter(SystemErrorLog.solved == True)
+    elif solved == "false" or solved == "unresolved":
+        query = query.filter(SystemErrorLog.solved == False)
+
+    # 4. Search Filter
+    if search and search.strip():
+        s = f"%{search.strip()}%"
+        query = query.filter(
+            (SystemErrorLog.message.ilike(s)) |
+            (SystemErrorLog.section.ilike(s)) |
+            (SystemErrorLog.error_code.ilike(s)) |
+            (SystemErrorLog.function_name.ilike(s)) |
+            (SystemErrorLog.portal.ilike(s)) |
+            (SystemErrorLog.id.ilike(s))
+        )
+
+    logs = query.order_by(SystemErrorLog.timestamp.desc(), SystemErrorLog.id.desc()).all()
+
+    # 5. Timeframe Filtering (in Python for precise string/date parsing)
+    if timeframe and timeframe != "all":
+        now = datetime.utcnow()
+        filtered = []
+        for l in logs:
+            try:
+                # Format: "2026-09-04 10:25:34 IST" or UTC
+                ts_clean = l.timestamp.split(" IST")[0].split(" UTC")[0].strip()
+                log_dt = datetime.strptime(ts_clean, "%Y-%m-%d %H:%M:%S")
+                diff = (now - log_dt).total_seconds()
+                
+                if timeframe == "today" and log_dt.date() == now.date():
+                    filtered.append(l)
+                elif timeframe == "24h" and diff <= 86400:
+                    filtered.append(l)
+                elif timeframe == "7d" and diff <= 7 * 86400:
+                    filtered.append(l)
+                elif timeframe == "30d" and diff <= 30 * 86400:
+                    filtered.append(l)
+            except Exception:
+                filtered.append(l)
+        return filtered
+
+    return logs
+
+@router.post("/system/error-logs", response_model=SystemErrorLogResponse)
+def report_frontend_error_log(payload: SystemErrorLogInboundPayload, db: Session = Depends(get_db)):
+    """
+    Inbound endpoint for Client Portals (HR Portal, Employee Verification Link, Company Admin)
+    to report runtime errors, API timeouts, or unhandled exceptions into the Super Admin audit log.
+    """
+    entry = record_system_error_log(
+        section=payload.section,
+        error_code=payload.error_code or "ERR_FRONTEND_EXCEPTION",
+        message=payload.message,
+        portal=payload.portal or "HR Executive Portal",
+        function_name=payload.function_name,
+        stack_trace=payload.stack_trace,
+        user_info=payload.user_info,
+        ip_address=payload.ip_address,
+        device_info=payload.device_info,
+        severity=payload.severity or "Critical",
+        db=db
+    )
+    if not entry:
+        raise HTTPException(status_code=500, detail="Failed to save error log")
+    return entry
 
 @router.put("/logs/{log_id}/toggle")
 def toggle_log_solved_status(log_id: str, payload: SystemErrorLogToggle, db: Session = Depends(get_db)):
-    """Mark system error logs as Solved or Unresolved"""
+    """Mark system error logs as Solved or Unresolved with optional resolution notes"""
     log_item = db.query(SystemErrorLog).filter(SystemErrorLog.id == log_id).first()
     if not log_item:
         raise HTTPException(status_code=404, detail="Log entry not found")
@@ -389,9 +474,51 @@ def toggle_log_solved_status(log_id: str, payload: SystemErrorLogToggle, db: Ses
     log_item.solved = payload.solved
     log_item.resolved_at = datetime.utcnow() if payload.solved else None
     log_item.resolved_by = payload.resolved_by if payload.solved else None
+    if payload.resolution_notes is not None:
+        log_item.resolution_notes = payload.resolution_notes
+        
     db.commit()
     db.refresh(log_item)
-    return {"success": True, "log": log_item}
+    return {"success": True, "message": f"Log {log_id} marked as {'Solved' if payload.solved else 'Unresolved'}", "log": log_item}
+
+@router.post("/logs/simulate-test-error")
+def simulate_test_error_log(payload: dict = None, db: Session = Depends(get_db)):
+    """Simulates a live test error from any chosen portal to verify real-time log capturing"""
+    portal = payload.get("portal", "HR Executive Portal") if payload else "HR Executive Portal"
+    function_name = payload.get("function_name", "create_candidate_profile") if payload else "create_candidate_profile"
+    error_code = payload.get("error_code", "ERR_CANDIDATE_CREATION_SIMULATION") if payload else "ERR_CANDIDATE_CREATION_SIMULATION"
+    message = payload.get("message", "Simulated diagnostic exception: Form submission validation timeout during live test.") if payload else "Simulated diagnostic exception: Form submission validation timeout during live test."
+    severity = payload.get("severity", "Critical") if payload else "Critical"
+
+    entry = record_system_error_log(
+        section="Diagnostic Simulator",
+        error_code=error_code,
+        message=message,
+        portal=portal,
+        function_name=function_name,
+        stack_trace=f"Traceback (most recent call last):\n  File 'src/views/HrExecutiveView.jsx', line 234, in {function_name}\n  SimulatedError: {message}",
+        user_info={"test_mode": True, "simulated_by": "Super Admin Console", "time": datetime.utcnow().isoformat()},
+        severity=severity,
+        db=db
+    )
+    return {"success": True, "message": f"Test error simulated for '{portal}'", "log": entry}
+
+@router.post("/logs/purge-solved")
+def purge_solved_logs(db: Session = Depends(get_db)):
+    """Deletes all logs that have been resolved/solved by Super Admin"""
+    deleted_count = db.query(SystemErrorLog).filter(SystemErrorLog.solved == True).delete()
+    db.commit()
+    return {"success": True, "message": f"Purged {deleted_count} resolved error logs.", "deleted_count": deleted_count}
+
+@router.delete("/logs/{log_id}")
+def delete_single_log(log_id: str, db: Session = Depends(get_db)):
+    """Deletes a specific log entry from the database"""
+    log_item = db.query(SystemErrorLog).filter(SystemErrorLog.id == log_id).first()
+    if not log_item:
+        raise HTTPException(status_code=404, detail="Log entry not found")
+    db.delete(log_item)
+    db.commit()
+    return {"success": True, "message": f"Log {log_id} deleted successfully"}
 
 @router.get("/stats")
 def get_superadmin_telemetry(db: Session = Depends(get_db)):

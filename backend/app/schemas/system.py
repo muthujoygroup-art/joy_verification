@@ -5,20 +5,40 @@ from datetime import datetime
 class SystemErrorLogResponse(BaseModel):
     id: str
     timestamp: str
+    portal: Optional[str] = "HR Executive Portal"
     section: str
+    function_name: Optional[str] = None
     error_code: str
     message: str
+    stack_trace: Optional[str] = None
+    user_info: Optional[Dict[str, Any]] = None
+    ip_address: Optional[str] = None
+    device_info: Optional[str] = None
     severity: str
     solved: bool
     resolved_at: Optional[datetime] = None
     resolved_by: Optional[str] = None
+    resolution_notes: Optional[str] = None
 
     class Config:
         from_attributes = True
 
+class SystemErrorLogInboundPayload(BaseModel):
+    portal: Optional[str] = "HR Executive Portal"
+    section: str
+    function_name: Optional[str] = None
+    error_code: Optional[str] = "ERR_GENERIC"
+    message: str
+    stack_trace: Optional[str] = None
+    user_info: Optional[Dict[str, Any]] = None
+    ip_address: Optional[str] = None
+    device_info: Optional[str] = None
+    severity: Optional[str] = "Critical"
+
 class SystemErrorLogToggle(BaseModel):
     solved: bool
     resolved_by: Optional[str] = "Super Admin"
+    resolution_notes: Optional[str] = None
 
 class ApiConfigCreate(BaseModel):
     provider_key: str

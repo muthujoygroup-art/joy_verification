@@ -20,7 +20,7 @@ from backend.app.schemas.ticket import (
     SupportTicketCreate, SupportTicketResponse, TicketReplyCreate, TicketReplyResponse
 )
 from backend.app.schemas.system import (
-    SystemErrorLogResponse, SystemErrorLogToggle,
+    SystemErrorLogResponse, SystemErrorLogToggle, SystemErrorLogInboundPayload,
     ApiConfigCreate, ApiConfigUpdate, ApiConfigToggle, ApiConfigResponse,
     RoleSettingsUpdate, PlatformGuidelineUpdate
 )
