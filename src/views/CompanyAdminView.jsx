@@ -1,19 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (selectedCandidateForVerification) setSelectedCandidateForVerification(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
-        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
-        else if (showPaymentModal) setShowPaymentModal(false);
-        else if (showExportModal) setShowExportModal(false);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCandidateForVerification, viewingCertCandidate, viewingDossierCandidate, showPaymentModal, showExportModal, showGatewaysModal]);
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -252,6 +237,21 @@ export const CompanyAdminView = () => {
       }
     };
     window.addEventListener('tour_feature_action', handleTourAction);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedCandidateForVerification) setSelectedCandidateForVerification(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (showPaymentModal) setShowPaymentModal(false);
+        else if (showExportModal) setShowExportModal(false);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCandidateForVerification, viewingCertCandidate, viewingDossierCandidate, showPaymentModal, showExportModal, showGatewaysModal]);
+
     return () => window.removeEventListener('tour_feature_action', handleTourAction);
   }, []);
 

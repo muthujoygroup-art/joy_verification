@@ -1,19 +1,7 @@
 import { logPortalError } from '../utils/errorLogger';
 import { SignaturePadModal } from '../components/SignaturePadModal';
 import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
-import React, { useState, useEffect, useMemo } from 'react';
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (showJoiningModal) setShowJoiningModal(false);
-        else if (showFaceModal) setShowFaceModal(false);
-        else if (showDocPreview) setShowDocPreview(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showJoiningModal, showFaceModal, showDocPreview]);
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
@@ -112,6 +100,18 @@ export const EmployeePortalView = () => {
     if (conn) {
       conn.addEventListener('change', updateNetworkStatus);
     }
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (showJoiningModal) setShowJoiningModal(false);
+        else if (showFaceModal) setShowFaceModal(false);
+        else if (showDocPreview) setShowDocPreview(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showJoiningModal, showFaceModal, showDocPreview]);
+
     return () => {
       window.removeEventListener('online', updateNetworkStatus);
       window.removeEventListener('offline', updateNetworkStatus);

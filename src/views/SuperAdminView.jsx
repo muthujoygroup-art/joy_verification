@@ -1,20 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (selectedCompany) setSelectedCompany(null);
-        else if (selectedHr) setSelectedHr(null);
-        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
-        else if (showInvoiceModal) setShowInvoiceModal(false);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
-        else if (showCustomReportModal) setShowCustomReportModal(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCompany, selectedHr, viewingDossierCandidate, viewingCertCandidate, showInvoiceModal, showGatewaysModal, showCustomReportModal]);
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -1068,6 +1052,22 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       setIsSendingTestEmail(false);
     }
   };
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedCompany) setSelectedCompany(null);
+        else if (selectedHr) setSelectedHr(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (showInvoiceModal) setShowInvoiceModal(false);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+        else if (showCustomReportModal) setShowCustomReportModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCompany, selectedHr, viewingDossierCandidate, viewingCertCandidate, showInvoiceModal, showGatewaysModal, showCustomReportModal]);
+
 
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">

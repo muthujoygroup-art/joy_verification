@@ -249,33 +249,6 @@ export const HrExecutiveView = () => {
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (selectedDocPreview) setSelectedDocPreview(null);
-        else if (viewingUploadedDocsCandidate) setViewingUploadedDocsCandidate(null);
-        else if (reviewingCandidate) { setReviewingCandidate(null); setShowCorrectionInput(false); }
-        else if (managingDocVerifCandidate) setManagingDocVerifCandidate(null);
-        else if (showAddCustomFieldModal) setShowAddCustomFieldModal(false);
-        else if (showAddCustomDocModal) setShowAddCustomDocModal(false);
-        else if (dispatchingCandidate) setDispatchingCandidate(null);
-        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
-        else if (viewingCertCandidate) setViewingCertCandidate(null);
-        else if (showUniversalExportModal) setShowUniversalExportModal(false);
-        else if (showFullJoiningModal) setShowFullJoiningModal(false);
-        else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
-    managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
-    dispatchingCandidate, viewingDossierCandidate, viewingCertCandidate,
-    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
-    showGatewaysModal
-  ]);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
@@ -469,6 +442,34 @@ export const HrExecutiveView = () => {
         console.warn('Auto-save storage note:', e);
       }
     }, 400);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedDocPreview) setSelectedDocPreview(null);
+        else if (viewingUploadedDocsCandidate) setViewingUploadedDocsCandidate(null);
+        else if (reviewingCandidate) { setReviewingCandidate(null); setShowCorrectionInput(false); }
+        else if (managingDocVerifCandidate) setManagingDocVerifCandidate(null);
+        else if (showAddCustomFieldModal) setShowAddCustomFieldModal(false);
+        else if (showAddCustomDocModal) setShowAddCustomDocModal(false);
+        else if (dispatchingCandidate) setDispatchingCandidate(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (showUniversalExportModal) setShowUniversalExportModal(false);
+        else if (showFullJoiningModal) setShowFullJoiningModal(false);
+        else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
+    managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
+    dispatchingCandidate, viewingDossierCandidate, viewingCertCandidate,
+    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
+    showGatewaysModal
+  ]);
+
 
     return () => clearTimeout(timer);
   }, [formData, delegatedFieldsMap]);
