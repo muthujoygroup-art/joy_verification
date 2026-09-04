@@ -186,22 +186,41 @@ export const evaluateVerificationReadiness = (formData = {}) => {
  * If field is explicitly delegated or empty -> 'delegated_to_employee'
  */
 export const getFieldOwnershipStatus = (fieldName, fieldValue, delegatedFieldsMap = {}) => {
-  const isExplicitlyDelegated = !!delegatedFieldsMap[fieldName];
-  const hasValue = !!(fieldValue && fieldValue.toString().trim().length > 0);
+  // If explicitly overridden in delegatedFieldsMap:
+  if (delegatedFieldsMap && delegatedFieldsMap[fieldName] !== undefined) {
+    const isLinkDelegated = Boolean(delegatedFieldsMap[fieldName]);
+    if (isLinkDelegated) {
+      return {
+        status: 'employee',
+        label: 'To be filled by Candidate via Link 📱',
+        badgeClass: 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200',
+        borderClass: 'border-amber-300 bg-amber-50/25'
+      };
+    } else {
+      return {
+        status: 'hr',
+        label: 'Filled by HR 🖥️',
+        badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200',
+        borderClass: 'border-slate-300 bg-white'
+      };
+    }
+  }
 
-  if (isExplicitlyDelegated || !hasValue) {
+  // Default heuristic when not explicitly toggled:
+  const hasValue = !!(fieldValue && fieldValue.toString().trim().length > 0);
+  if (!hasValue) {
     return {
       status: 'employee',
-      label: 'To be filled by Employee via Link 📱',
-      badgeClass: 'bg-amber-100 text-amber-900 border-amber-300',
-      borderClass: 'border-amber-300 bg-amber-50/20'
+      label: 'To be filled by Candidate via Link 📱',
+      badgeClass: 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200',
+      borderClass: 'border-amber-300 bg-amber-50/25'
     };
   }
 
   return {
     status: 'hr',
-    label: 'Filled by HR 🏢',
-    badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+    label: 'Filled by HR 🖥️',
+    badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200',
     borderClass: 'border-slate-300 bg-white'
   };
 };

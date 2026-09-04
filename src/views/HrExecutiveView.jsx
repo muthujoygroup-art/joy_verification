@@ -425,10 +425,47 @@ export const HrExecutiveView = () => {
   }, [formData]);
 
   const toggleFieldDelegation = (fieldName) => {
-    setDelegatedFieldsMap(prev => ({
-      ...prev,
-      [fieldName]: !prev[fieldName]
-    }));
+    setDelegatedFieldsMap(prev => {
+      const currentOwnership = getFieldOwnershipStatus(fieldName, formData[fieldName], prev);
+      const nextIsLink = currentOwnership.status === 'hr';
+      const nextMap = {
+        ...prev,
+        [fieldName]: nextIsLink
+      };
+      showToast(
+        nextIsLink 
+          ? `📱 Delegated "${fieldName}" to Candidate via Link` 
+          : `🖥️ Switched "${fieldName}" to HR Typed Entry`
+      );
+      return nextMap;
+    });
+  };
+
+  const setAllFieldsMode = (mode) => {
+    if (mode === 'reset') {
+      setDelegatedFieldsMap({});
+      showToast('🔄 Reset all form field delegations to smart defaults!');
+      return;
+    }
+
+    const allFieldKeys = [
+      'name', 'empId', 'employeeNumber', 'doj', 'fatherName', 'motherName', 'dob', 'age',
+      'gender', 'maritalStatus', 'bloodGroup', 'motherTongue', 'religion', 'caste', 'category',
+      'identificationMarks', 'spouseName', 'languagesKnown', 'selfInterests', 'mobile',
+      'alternateMobile', 'email', 'aadhaarNo', 'nativeState', 'nativeDistrict', 'state', 'city',
+      'area', 'pincode', 'presentAddress', 'permanentAddress', 'linkedInUrl', 'githubUrl',
+      'portfolioUrl', 'twitterUrl', 'jobCategory', 'jobType', 'dept', 'designation', 'panNo',
+      'passportNo', 'uanEpf', 'drivingLicense', 'bankName', 'bankAccountNo', 'nomineeName',
+      'nomineeRelation', 'insuranceDependents'
+    ];
+
+    const isLink = mode === 'link';
+    const newMap = {};
+    allFieldKeys.forEach(k => {
+      newMap[k] = isLink;
+    });
+    setDelegatedFieldsMap(newMap);
+    showToast(isLink ? '📱 All form fields switched to Candidate Link mode!' : '🖥️ All form fields switched to HR Typed mode!');
   };
 
   // 1-Click Multi-Industry Mock / Demo Profile Auto-Fill Engine
@@ -975,18 +1012,30 @@ export const HrExecutiveView = () => {
 
   const renderFieldLabel = (label, fieldKey, isRequired = false) => {
     const ownership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
+    const isHr = ownership.status === 'hr';
     return (
       <div className="flex items-center justify-between gap-1 mb-1">
-        <span className="text-slate-700 font-bold leading-tight">
-          {label} {isRequired && <span className="text-rose-500">*</span>}
-        </span>
-        <span 
-          onClick={() => toggleFieldDelegation(fieldKey)}
-          title="Click to toggle HR-filled vs Candidate Link-delegated"
-          className={`text-[8px] font-black px-1.5 py-0.2 rounded border cursor-pointer select-none transition-all ${ownership.badgeClass}`}
+        <label className="text-slate-700 font-bold leading-tight flex items-center gap-1 cursor-pointer">
+          <span>{label}</span>
+          {isRequired && <span className="text-rose-500 font-black">*</span>}
+        </label>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFieldDelegation(fieldKey);
+          }}
+          title={isHr ? "Currently: Filled by HR. Click to switch to Candidate Link 📱" : "Currently: Delegated to Link. Click to switch to HR Typed 🖥️"}
+          className={`text-[9px] font-black px-2 py-0.5 rounded-full border cursor-pointer select-none transition-all flex items-center gap-1 shadow-2xs hover:scale-105 active:scale-95 ${
+            isHr
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 ring-1 ring-emerald-400/30'
+              : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 ring-1 ring-amber-400/30'
+          }`}
         >
-          {ownership.status === 'hr' ? 'HR 🏢' : 'Link 📱'}
-        </span>
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: isHr ? '#059669' : '#d97706' }} />
+          <span>{isHr ? 'HR 🖥️' : 'Link 📱'}</span>
+        </button>
       </div>
     );
   };
@@ -2585,6 +2634,47 @@ export const HrExecutiveView = () => {
                     <strong>Flexible Save Guarantee:</strong> Even if 0 verifications are selected, this employee will be saved successfully in the database. HR can verify any document later using the <strong>"⚡ Verify Docs"</strong> action!
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* 🎛️ GLOBAL FIELD DELEGATION CONTROLLER TOOLBAR */}
+            <div className="p-3 bg-gradient-to-r from-slate-50 via-indigo-50/60 to-slate-50 border-2 border-indigo-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs shadow-2xs">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-indigo-600 text-white rounded-lg shrink-0">
+                  <Sliders className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-indigo-950 font-black block leading-tight">Field Entry & Link Delegation Control</span>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    Click any <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300 text-[10px]">HR 🖥️</span> or <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold border border-amber-300 text-[10px]">Link 📱</span> badge to toggle individual fields, or use 1-click batch controls:
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setAllFieldsMode('hr')}
+                  className="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold border border-emerald-300 cursor-pointer text-[11px] flex items-center gap-1 shadow-2xs transition-all hover:scale-105 active:scale-95"
+                  title="Set all form fields as HR-typed"
+                >
+                  <span>🖥️ All HR-Typed</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAllFieldsMode('link')}
+                  className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-amber-300 cursor-pointer text-[11px] flex items-center gap-1 shadow-2xs transition-all hover:scale-105 active:scale-95"
+                  title="Delegate all form fields to Candidate Link"
+                >
+                  <span>📱 All Candidate Link</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAllFieldsMode('reset')}
+                  className="px-2 py-1 rounded-xl bg-white hover:bg-slate-100 text-slate-600 font-bold border border-slate-300 cursor-pointer text-[10px]"
+                  title="Reset to smart defaults"
+                >
+                  <span>🔄 Reset</span>
+                </button>
               </div>
             </div>
 
