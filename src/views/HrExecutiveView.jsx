@@ -3,6 +3,12 @@ import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, 
 import { EpfoForm11 } from '../components/statutory/EpfoForm11';
 import { EpfoForm2 } from '../components/statutory/EpfoForm2';
 import { EsicForm1 } from '../components/statutory/EsicForm1';
+import { Form16TdsDeclaration } from '../components/statutory/Form16TdsDeclaration';
+import { GratuityFormF } from '../components/statutory/GratuityFormF';
+import { NdaAgreement } from '../components/statutory/NdaAgreement';
+import { PoshPolicyDeclaration } from '../components/statutory/PoshPolicyDeclaration';
+import { NonCompeteAgreement } from '../components/statutory/NonCompeteAgreement';
+import { ContractFormXIII } from '../components/statutory/ContractFormXIII';
 import React, { useState, useEffect, useMemo } from 'react';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -203,14 +209,14 @@ export const HrExecutiveView = () => {
   const [hrPreferences, setHrPreferences] = useState({
     notification_email: activeHr.email || '',
     cc_email: '',
-    sender_display_name: `${activeHr.name} (${currentCompany.name})`,
+    sender_display_name: `${activeHr.name} (${currentCompany?.name || 'Joy Corporate Solutions'})`,
     sender_email: activeHr.email || '',
     smtp_host: 'mail.joycorporatesolutions.com',
     smtp_port: 465,
     smtp_user: activeHr.email || '',
     smtp_password: '',
     use_custom_smtp: true,
-    custom_signature: `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany.name}`,
+    custom_signature: `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany?.name || 'Joy Corporate Solutions'}`,
     auto_email_candidate_link: true,
     notify_on_candidate_verified: true,
     notify_on_red_flags: true,
@@ -280,7 +286,7 @@ export const HrExecutiveView = () => {
     ifscCode: 'HDFC0001234',
     nomineeName: '',
     nomineeRelation: 'Spouse',
-    companyId: currentCompany.id,
+    companyId: currentCompany?.id || 'comp-joy',
     hrId: activeHr.id,
     employeeCategory: 'it_tech',
     hrCustomMessage: 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please fill out all required onboarding sections, upload your original KYC & academic certificates, and complete verification by this week.',
@@ -484,7 +490,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'HDFC0001234',
         nomineeName: 'Sunita Ramanathan',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'it_tech',
         hrCustomMessage: 'Welcome to the Software Engineering Division! Please complete all 10 onboarding sections, upload your academic degrees, and execute the IP Assignment NDA.',
@@ -570,7 +576,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'SBIN0001892',
         nomineeName: 'Simran Kaur',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'manufacturing',
         hrCustomMessage: 'Welcome to the Industrial Manufacturing Division! Please review shop floor safety standards, provide your PPE shoe sizes, and complete occupational medical fitness.',
@@ -645,7 +651,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'ICIC0000011',
         nomineeName: 'Rohit Deshmukh',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'bfsi',
         hrCustomMessage: 'Welcome to Corporate Banking & Risk Governance! Please sign your CIBIL consent, SEBI Insider Trading clearance, and upload your NISM certifications.',
@@ -717,7 +723,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'UTIB0000041',
         nomineeName: 'Dr. Vikram Rao',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'healthcare',
         hrCustomMessage: 'Welcome to the Medical & Clinical Operations Team! Please provide your State Medical Council registration, vaccination history, and ACLS certification.',
@@ -788,7 +794,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'CNRB0001049',
         nomineeName: 'Vasanthi M',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'logistics',
         hrCustomMessage: 'Welcome to the Logistics & Supply Chain Division! Please provide your Commercial Driving License badge number, GPS telematics consent, and Police NOC.',
@@ -859,7 +865,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'KKBK0000412',
         nomineeName: 'Debabrata Roy',
         nomineeRelation: 'Father (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'retail_hospitality',
         hrCustomMessage: 'Welcome to the Retail & Customer Experience Team! Please review the Food Safety Standards, provide your uniform size, and sign the POS cash agreement.',
@@ -931,7 +937,7 @@ export const HrExecutiveView = () => {
         ifscCode: 'UBIN0552011',
         nomineeName: 'Kavitha Patil',
         nomineeRelation: 'Spouse (100% Share)',
-        companyId: currentCompany.id,
+        companyId: currentCompany?.id || 'comp-joy',
         hrId: activeHr.id,
         employeeCategory: 'contractual',
         hrCustomMessage: 'Welcome to the Facility & Operations Team! Please provide your Contractor Agency details, Contract Labor Form XIII registration, and ESIC sub-code.',
@@ -1238,7 +1244,7 @@ export const HrExecutiveView = () => {
             ...prev,
             ...res.preferences,
             notification_email: res.preferences.notification_email || activeHr.email || '',
-            sender_display_name: res.preferences.sender_display_name || `${activeHr.name} (${currentCompany.name})`,
+            sender_display_name: res.preferences.sender_display_name || `${activeHr.name} (${currentCompany?.name || 'Joy Corporate Solutions'})`,
             sender_email: res.preferences.sender_email || activeHr.email || '',
             smtp_user: res.preferences.smtp_user || activeHr.email || ''
           }));
@@ -1266,7 +1272,7 @@ export const HrExecutiveView = () => {
         from_name: hrPreferences.sender_display_name || activeHr.name,
         use_ssl: true
       };
-      const res = await api.testCompanySmtpDispatch(currentCompany.id, testSmtpEmail, cfg);
+      const res = await api.testCompanySmtpDispatch(currentCompany?.id || 'comp-joy', testSmtpEmail, cfg);
       showToast(res.message || `📧 Test email sent to ${testSmtpEmail}!`);
     } catch (err) {
       showToast(`❌ SMTP Test Failed: ${err.message}`, 'error');
@@ -1284,7 +1290,7 @@ export const HrExecutiveView = () => {
     }
     setIsUpdatingHrPassword(true);
     try {
-      const res = await api.updateHrPassword(currentCompany.id, activeHr.id, hrNewPassword, false);
+      const res = await api.updateHrPassword(currentCompany?.id || 'comp-joy', activeHr.id, hrNewPassword, false);
       showToast(res.message || '🔐 Workstation login password updated successfully!');
       setHrNewPassword('');
     } catch (err) {
@@ -1321,13 +1327,13 @@ export const HrExecutiveView = () => {
             <div className="flex flex-wrap items-center gap-2">
               <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
               <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
-                • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany.name})</span>
+                • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany?.name || 'Joy Corporate Solutions'})</span>
               </span>
               <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
-                👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany.code || 'COMP001'}HR001`}
+                👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany?.code || 'COMP001'}HR001`}
               </span>
               <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
-                🏢 Company: {currentCompany.code || 'COMP001'}
+                🏢 Company: {currentCompany?.code || 'COMP001'}
               </span>
             </div>
             <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
@@ -1410,6 +1416,11 @@ export const HrExecutiveView = () => {
                   onClick={() => {
                     setActiveMainSection(cat.id);
                     setActiveTab(cat.defaultTab);
+                    if (cat.id === 'profiler_dispatch') {
+                      setShowAddForm(true);
+                    } else {
+                      setShowAddForm(false);
+                    }
                   }}
                   className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
                     isSelected 
@@ -1452,7 +1463,7 @@ export const HrExecutiveView = () => {
               {activeMainSection === 'pipeline_dossiers' && (
                 <>
                   <button
-                    onClick={() => setActiveTab('pipeline')}
+                    onClick={() => { setActiveMainSection('pipeline_dossiers'); setActiveTab('pipeline'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
@@ -1467,7 +1478,7 @@ export const HrExecutiveView = () => {
               {activeMainSection === 'profiler_dispatch' && (
                 <>
                   <button
-                    onClick={() => setActiveTab('profiler')}
+                    onClick={() => { setActiveMainSection('profiler_dispatch'); setActiveTab('profiler'); setShowAddForm(true); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
@@ -1482,7 +1493,7 @@ export const HrExecutiveView = () => {
               {activeMainSection === 'statutory_settings' && (
                 <>
                   <button
-                    onClick={() => setActiveTab('analytics')}
+                    onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('analytics'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
@@ -1491,7 +1502,7 @@ export const HrExecutiveView = () => {
                     <span>1. Telemetry & TAT Analytics</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('settings')}
+                    onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('settings'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
                     }`}
@@ -1510,6 +1521,7 @@ export const HrExecutiveView = () => {
               onClick={() => {
                 setActiveMainSection('profiler_dispatch');
                 setActiveTab('profiler');
+                setShowAddForm(true);
               }}
               className="px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md"
             >
@@ -1532,7 +1544,7 @@ export const HrExecutiveView = () => {
           color="emerald" 
           onClick={() => setActiveDrilldown({
             title: 'Active Candidate Employee Profiles',
-            subtitle: `All candidate profiles managed under ${currentCompany.name}`,
+            subtitle: `All candidate profiles managed under ${currentCompany?.name || 'Joy Corporate Solutions'}`,
             metricValue: `${candidates.length} Profiles`,
             metricType: 'hr_active',
             data: candidates.map(c => ({
@@ -1541,7 +1553,7 @@ export const HrExecutiveView = () => {
               mobile: c.mobile,
               email: c.email,
               dept: c.designation || 'Specialist',
-              companyName: currentCompany.name,
+              companyName: currentCompany?.name || 'Joy Corporate Solutions',
               status: c.status,
               verificationDate: c.verificationDate || 'Recent',
               token: c.token
@@ -1565,7 +1577,7 @@ export const HrExecutiveView = () => {
               mobile: c.mobile,
               email: c.email,
               dept: c.designation || 'Specialist',
-              companyName: currentCompany.name,
+              companyName: currentCompany?.name || 'Joy Corporate Solutions',
               status: c.status,
               verificationDate: c.verificationDate || 'Dispatched',
               token: c.token
@@ -1589,7 +1601,7 @@ export const HrExecutiveView = () => {
               mobile: c.mobile,
               email: c.email,
               dept: c.designation || 'Specialist',
-              companyName: currentCompany.name,
+              companyName: currentCompany?.name || 'Joy Corporate Solutions',
               status: 'Verified',
               verificationDate: c.verificationDate || 'Completed',
               token: c.token
@@ -1613,7 +1625,7 @@ export const HrExecutiveView = () => {
               mobile: c.mobile,
               email: c.email,
               dept: c.designation || 'Specialist',
-              companyName: currentCompany.name,
+              companyName: currentCompany?.name || 'Joy Corporate Solutions',
               status: c.status || 'Draft',
               token: c.token
             }))
@@ -2204,15 +2216,30 @@ export const HrExecutiveView = () => {
               <p className="text-xs text-slate-500 font-medium">Fill in employee information manually or click Auto-Fill Mock Profile for instant 1-click testing</p>
             </div>
 
-            {/* ⚡ Instant 1-Click Mock Auto-Fill Button */}
-            <button
-              type="button"
-              onClick={handleAutoFillMockData}
-              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm self-start sm:self-auto"
-            >
-              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
-              <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMainSection('pipeline_dossiers');
+                  setActiveTab('pipeline');
+                  setShowAddForm(false);
+                }}
+                className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-700 bg-white border-slate-300 hover:bg-slate-50 cursor-pointer"
+                title="Return to Candidate Pipeline table"
+              >
+                <span>← Back to Pipeline</span>
+              </button>
+
+              {/* ⚡ Instant 1-Click Mock Auto-Fill Button */}
+              <button
+                type="button"
+                onClick={handleAutoFillMockData}
+                className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm"
+              >
+                <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+                <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
+              </button>
+            </div>
           </div>
 
 
@@ -4434,7 +4461,7 @@ export const HrExecutiveView = () => {
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-              <button type="button" onClick={() => setActiveTab('pipeline')} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+              <button type="button" onClick={() => { setActiveMainSection('pipeline_dossiers'); setActiveTab('pipeline'); setShowAddForm(false); }} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
               <button type="submit" className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md cursor-pointer">
                 <Send className="w-4 h-4" />
                 <span>Save Profile & Generate Onboarding Link 🚀</span>
@@ -4597,9 +4624,9 @@ export const HrExecutiveView = () => {
                     <label className="block font-bold text-slate-700 mb-1">Recruiter Display Name</label>
                     <input 
                       type="text" 
-                      value={hrPreferences.sender_display_name || `${activeHr.name} (${currentCompany.name})`}
+                      value={hrPreferences.sender_display_name || `${activeHr.name} (${currentCompany?.name || 'Joy Corporate Solutions'})`}
                       onChange={(e) => setHrPreferences({ ...hrPreferences, sender_display_name: e.target.value })}
-                      placeholder={`${activeHr.name} (${currentCompany.name})`}
+                      placeholder={`${activeHr.name} (${currentCompany?.name || 'Joy Corporate Solutions'})`}
                       className="form-input font-bold"
                     />
                   </div>
@@ -4670,7 +4697,7 @@ export const HrExecutiveView = () => {
                 <label className="block font-bold text-slate-700 mb-1">Custom Recruiter Email Signature & Disclaimer</label>
                 <textarea 
                   rows={2}
-                  value={hrPreferences.custom_signature || `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany.name}`}
+                  value={hrPreferences.custom_signature || `Best regards,\n${activeHr.name}\n${activeHr.dept || 'Human Resources'}\n${currentCompany?.name || 'Joy Corporate Solutions'}`}
                   onChange={(e) => setHrPreferences({ ...hrPreferences, custom_signature: e.target.value })}
                   placeholder={`Best regards,\n${activeHr.name} | Talent Acquisition`}
                   className="form-input text-xs font-mono"
@@ -5340,8 +5367,8 @@ export const HrExecutiveView = () => {
 
       {/* 🌟 STATUTORY FORM LIVE PREVIEW MODAL */}
       {activePreviewStatutoryForm && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-xs animate-fadeIn" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-          <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-xs animate-fadeIn" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col my-auto">
             
             {/* Modal Header */}
             <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
@@ -5349,8 +5376,16 @@ export const HrExecutiveView = () => {
                 <span className="px-2.5 py-0.5 rounded-md bg-purple-500 text-white font-mono font-bold text-xs uppercase shadow-sm">
                   Live Statutory Form Preview
                 </span>
-                <span className="text-xs text-slate-200 font-bold">
-                  {activePreviewStatutoryForm === 'form11' ? 'EPFO Form 11 (New Declaration Form)' : activePreviewStatutoryForm === 'form2' ? 'EPFO Form 2 Revised (Nomination & Family Particulars)' : activePreviewStatutoryForm === 'esicForm1' ? 'ESIC Form 1 (Declaration & Temporary ID Card)' : activePreviewStatutoryForm === 'form16' ? 'Form 16 / TDS Declaration' : activePreviewStatutoryForm === 'formF' ? 'Form F (Payment of Gratuity Act 1972)' : activePreviewStatutoryForm === 'nda' ? 'Non-Disclosure Agreement (NDA)' : activePreviewStatutoryForm === 'posh' ? 'POSH Policy & Code of Conduct' : activePreviewStatutoryForm === 'nonCompete' ? 'Non-Compete & Non-Solicit Agreement' : 'Contract Labor Act Form XIII'}
+                <span className="text-xs text-slate-200 font-bold truncate max-w-xs sm:max-w-md">
+                  {activePreviewStatutoryForm === 'form11' ? 'EPFO Form 11 (New Declaration Form)' :
+                   activePreviewStatutoryForm === 'form2' ? 'EPFO Form 2 Revised (Nomination & Family Particulars)' :
+                   activePreviewStatutoryForm === 'esicForm1' ? 'ESIC Form 1 (Declaration & Temporary ID Card)' :
+                   activePreviewStatutoryForm === 'form16' ? 'Form 16 / TDS Declaration (Form 12B)' :
+                   activePreviewStatutoryForm === 'formF' ? 'Form F (Payment of Gratuity Act 1972)' :
+                   activePreviewStatutoryForm === 'nda' ? 'Non-Disclosure Agreement (NDA)' :
+                   activePreviewStatutoryForm === 'posh' ? 'POSH Policy & Code of Conduct' :
+                   activePreviewStatutoryForm === 'nonCompete' ? 'Non-Compete & Non-Solicit Covenant' :
+                   'Contract Labor Act Form XIII (Employment Card)'}
                 </span>
               </div>
               <button
@@ -5384,28 +5419,28 @@ export const HrExecutiveView = () => {
                 <EsicForm1 candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
               )}
 
-              {!['form11', 'form2', 'esicForm1'].includes(activePreviewStatutoryForm) && (
-                <div className="p-8 bg-white border-2 border-indigo-200 rounded-2xl text-center space-y-4 shadow-sm">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto border border-indigo-100 shadow-2xs">
-                    <FileText className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-black text-slate-900 uppercase">
-                      {activePreviewStatutoryForm.toUpperCase()} STATUTORY COMPLIANCE AGREEMENT
-                    </h4>
-                    <p className="text-xs text-slate-500 font-mono mt-0.5">
-                      Statutory Contract Registry ID: JOY-COMPL-2026-{(formData.name || 'CAND').replace(/\s+/g, '-').toUpperCase()}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 text-left space-y-2 leading-relaxed max-w-xl mx-auto">
-                    <p>
-                      This official statutory document is established under the statutory rules of <strong>{currentCompany.name}</strong> for <strong>{formData.name || 'Candidate'}</strong> (Designation: <strong>{formData.designation || 'Specialist'}</strong>, Dept: <strong>{formData.dept || 'Engineering'}</strong>).
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      All terms, declarations, and employer-employee statutory covenants are automatically generated, digitally executed, and stamped with ISO 27001 & DPDP Act 2023 compliance upon link completion.
-                    </p>
-                  </div>
-                </div>
+              {activePreviewStatutoryForm === 'form16' && (
+                <Form16TdsDeclaration candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, panNo: formData.panNo, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
+              )}
+
+              {activePreviewStatutoryForm === 'formF' && (
+                <GratuityFormF candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, dob: formData.dob, doj: formData.doj, gender: formData.gender, maritalStatus: formData.maritalStatus, fatherName: formData.fatherName, spouseName: formData.spouseName, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
+              )}
+
+              {activePreviewStatutoryForm === 'nda' && (
+                <NdaAgreement candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, panNo: formData.panNo, aadhaarNo: formData.aadhaarNo, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
+              )}
+
+              {activePreviewStatutoryForm === 'posh' && (
+                <PoshPolicyDeclaration candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
+              )}
+
+              {activePreviewStatutoryForm === 'nonCompete' && (
+                <NonCompeteAgreement candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
+              )}
+
+              {activePreviewStatutoryForm === 'contractFormXIII' && (
+                <ContractFormXIII candidate={{ name: formData.name, email: formData.email, mobile: formData.mobile, doj: formData.doj, fatherName: formData.fatherName, employeeNumber: formData.employeeNumber || formData.empId, designation: formData.designation }} jf={formData} companyName={currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'} />
               )}
             </div>
 
