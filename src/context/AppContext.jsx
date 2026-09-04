@@ -34,7 +34,13 @@ export const AppProvider = ({ children }) => {
       const saved = localStorage.getItem('joy_candidates_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          const clean = parsed.filter(c => c && c.empId !== 'JOY-2026-001' && c.token !== 'cand-token-001' && !c.name?.toUpperCase().includes('MUTHUKUMAR'));
+          if (clean.length !== parsed.length) {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(clean));
+          }
+          return clean;
+        }
       }
     } catch (e) {}
     return INITIAL_CANDIDATES;
@@ -897,7 +903,7 @@ export const AppProvider = ({ children }) => {
   // Sync candidates to localStorage for cross-tab persistence
   useEffect(() => {
     try {
-      if (candidates && candidates.length > 0) {
+      if (Array.isArray(candidates)) {
         localStorage.setItem('joy_candidates_v1', JSON.stringify(candidates));
       }
     } catch (e) {}
@@ -1264,13 +1270,26 @@ export const AppProvider = ({ children }) => {
   // Clear All Local and Database Candidates (Clean Slate)
   const clearAllCandidates = async () => {
     try {
+      const currentList = [...candidates];
       setCandidates([]);
       try {
         localStorage.removeItem('joy_candidates_v1');
+        localStorage.setItem('joy_candidates_v1', JSON.stringify([]));
       } catch (e) {}
+      
+      for (const cand of currentList) {
+        if (cand.id || cand.token) {
+          try {
+            await api.deleteCandidate(cand.id || cand.token);
+          } catch (e) {}
+        }
+      }
       showToast('🧹 All candidate profiles cleared! Ready for new original employees.');
       return true;
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Error clearing candidates:', e);
+      return false;
+    }
   };
 
   // Delete Candidate Profile from PostgreSQL & State

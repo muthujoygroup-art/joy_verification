@@ -1907,6 +1907,22 @@ export const HrExecutiveView = () => {
             </div>
             
             <div className="flex items-center gap-2 self-start flex-wrap">
+              {candidates.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('⚠️ Are you sure you want to clear ALL candidate records? This will delete all candidate profiles, test data, and documents for a clean slate.')) {
+                      clearAllCandidates();
+                    }
+                  }}
+                  className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-rose-800 bg-rose-50 border-rose-200 hover:bg-rose-100 shadow-2xs cursor-pointer"
+                  title="Wipe all test/old candidate records for a clean slate"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Clean Slate 🧹</span>
+                </button>
+              )}
+
               <button
                 onClick={() => setShowUniversalExportModal(true)}
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
@@ -2167,6 +2183,19 @@ export const HrExecutiveView = () => {
                         <Power className={`w-3.5 h-3.5 ${cand.status?.toLowerCase() === 'inactive' ? 'text-emerald-600' : 'text-slate-500'}`} />
                         <span>{cand.status?.toLowerCase() === 'inactive' ? '🟢 Reactivate Employee Profile' : '⚪ Mark Employee Inactive'}</span>
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`⚠️ Permanently delete employee "${cand.name}" (#${cand.empId || cand.id})?\n\nThis will remove all candidate information, statutory forms, and background verification records.`)) {
+                            deleteCandidate(cand.id || cand.token);
+                          }
+                        }}
+                        className="p-2 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 flex items-center justify-center gap-1.5 cursor-pointer text-center col-span-2 font-bold text-xs shadow-2xs"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                        <span>🗑️ Delete Employee Profile</span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -2387,6 +2416,21 @@ export const HrExecutiveView = () => {
                           >
                             <Power className={`w-3.5 h-3.5 ${cand.status?.toLowerCase() === 'inactive' ? 'text-emerald-600' : 'text-slate-500'}`} />
                             <span>{cand.status?.toLowerCase() === 'inactive' ? 'Activate' : 'Inactive'}</span>
+                          </button>
+
+                          {/* 6. Delete Candidate Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`⚠️ Permanently delete employee "${cand.name}" (#${cand.empId || cand.id})?\n\nThis will delete all background verification records, forms, and uploaded documents.`)) {
+                                deleteCandidate(cand.id || cand.token);
+                              }
+                            }}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 shadow-2xs cursor-pointer"
+                            title="Permanently delete this employee profile"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Delete</span>
                           </button>
                         </div>
                       </td>
