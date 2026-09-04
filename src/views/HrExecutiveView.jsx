@@ -10,6 +10,7 @@ import { PoshPolicyDeclaration } from '../components/statutory/PoshPolicyDeclara
 import { NonCompeteAgreement } from '../components/statutory/NonCompeteAgreement';
 import { ContractFormXIII } from '../components/statutory/ContractFormXIII';
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -5584,12 +5585,20 @@ export const HrExecutiveView = () => {
       )}
 
       {/* 🔍 HR CANDIDATE SUBMISSION REVIEW & APPROVAL CONSOLE MODAL */}
-      {reviewingCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-scaleIn my-auto">
+      {reviewingCandidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setReviewingCandidate(null);
+              setShowCorrectionInput(false);
+            }
+          }}
+        >
+          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-scaleIn my-auto relative z-10">
             
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
               <div className="flex items-center gap-3.5">
                 <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
                   <CheckCircle2 className="w-7 h-7" />
@@ -5613,7 +5622,7 @@ export const HrExecutiveView = () => {
                   setReviewingCandidate(null);
                   setShowCorrectionInput(false);
                   setCorrectionNotes('');
-                }}
+                }} 
                 className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 cursor-pointer"
               >
                 <X className="w-6 h-6" />
@@ -5762,7 +5771,7 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* Modal Footer Review Decisions */}
-            <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shrink-0">
               <span className="text-[11px] text-slate-500 font-mono">
                 HR Review Authority: {activeHr?.name || 'Priya Sundaram'}
               </span>
@@ -5800,13 +5809,19 @@ export const HrExecutiveView = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 🌟 STATUTORY FORM LIVE PREVIEW MODAL */}
-      {activePreviewStatutoryForm && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-xs animate-fadeIn" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-          <div className="w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col my-auto">
+      {activePreviewStatutoryForm && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActivePreviewStatutoryForm(null);
+          }}
+        >
+          <div className="w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col my-auto relative z-10 animate-modal-spring">
             
             {/* Modal Header */}
             <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
@@ -5895,13 +5910,19 @@ export const HrExecutiveView = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
-      {managingDocVerifCandidate && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 w-full max-w-2xl rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring max-h-[92vh] overflow-hidden flex flex-col my-auto">
+      {managingDocVerifCandidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setManagingDocVerifCandidate(null);
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-2xl rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring max-h-[92vh] overflow-hidden flex flex-col my-auto relative z-10">
             
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
@@ -6039,13 +6060,19 @@ export const HrExecutiveView = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 📝 MODAL: ADD DYNAMIC CUSTOM TEXT FIELD */}
-      {showAddCustomFieldModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring">
+      {showAddCustomFieldModal && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddCustomFieldModal(false);
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring my-auto relative z-10">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-600" />
@@ -6112,13 +6139,19 @@ export const HrExecutiveView = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 📂 MODAL: ADD DYNAMIC CUSTOM DOCUMENT SLOT */}
-      {showAddCustomDocModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring">
+      {showAddCustomDocModal && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddCustomDocModal(false);
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring my-auto relative z-10">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <FolderDown className="w-4 h-4 text-emerald-600" />
@@ -6167,7 +6200,8 @@ export const HrExecutiveView = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
