@@ -1,7 +1,13 @@
 import { EpfoForm11 } from './statutory/EpfoForm11';
 import { EpfoForm2 } from './statutory/EpfoForm2';
 import { EsicForm1 } from './statutory/EsicForm1';
-import React, { useState } from 'react';
+import { Form16TdsDeclaration } from './statutory/Form16TdsDeclaration';
+import { GratuityFormF } from './statutory/GratuityFormF';
+import { NdaAgreement } from './statutory/NdaAgreement';
+import { PoshPolicyDeclaration } from './statutory/PoshPolicyDeclaration';
+import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
+import { ContractFormXIII } from './statutory/ContractFormXIII';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   Download, 
@@ -689,18 +695,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           {/* ========================================================================= */}
           {/* SECTION B: CONSECUTIVE FULL-PAGE ATTACHED DOCUMENT EXHIBITS (ANNEXURES) */}
           {/* ========================================================================= */}
-                    {/* SECTION 5: STATUTORY MANUFACTURING & LABOR FORMS (EPFO FORM 11, FORM 2 REVISED, ESIC FORM 1) */}
+                    {/* SECTION 5: STATUTORY MANUFACTURING & LABOR FORMS */}
           {(activeTab === 5 || activeTab === 7 || isExporting) && (
             <div className="space-y-6">
+              <div className="bg-purple-900 text-white text-xs font-bold px-3 py-2 rounded-md flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-amber-400" />
+                  <span className="font-black">SECTION 5: STATUTORY LABOR & REGULATORY DECLARATION FORMS</span>
+                </div>
+                <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded font-mono">9 Statutory Forms Compiled</span>
+              </div>
+
               {/* Form 1: EPFO Form 11 */}
               <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
-                <div className="bg-purple-900 text-white text-xs font-bold px-3 py-2 rounded-md flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-amber-400" />
-                    <span className="font-black">SECTION 5: STATUTORY LABOR & REGULATORY DECLARATION FORMS</span>
-                  </div>
-                  <span className="text-[10px] bg-purple-950 px-2 py-0.5 rounded font-mono">EPFO Form 11</span>
-                </div>
                 <div className="flex items-center gap-2 font-bold text-slate-800 text-xs pt-1">
                   <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">1</span>
                   <span>EPFO Form No. 11 — New Declaration Form (EPF 1952 & EPS 1995)</span>
@@ -724,6 +731,60 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <span>ESIC Form 1 — Declaration Form, Family Particulars & Temporary Identification Card (TIC)</span>
                 </div>
                 <EsicForm1 candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 4: Form 16 / TDS Declaration */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">4</span>
+                  <span>Form 16 / TDS Form 12B — Income Tax Salary & Deductions Statutory Declaration</span>
+                </div>
+                <Form16TdsDeclaration candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 5: Form F Gratuity */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">5</span>
+                  <span>Form 'F' — Payment of Gratuity Act 1972 Statutory Nomination & Share Form</span>
+                </div>
+                <GratuityFormF candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 6: NDA Agreement */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">6</span>
+                  <span>Non-Disclosure & Proprietary IP Information Binding Agreement (NDA)</span>
+                </div>
+                <NdaAgreement candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 7: POSH Policy Declaration */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">7</span>
+                  <span>POSH Act 2013 — Workplace Safety Policy & Zero Tolerance Pledge</span>
+                </div>
+                <PoshPolicyDeclaration candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 8: Non-Compete Agreement */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">8</span>
+                  <span>Enterprise Trade Secret Protection — Non-Compete & Non-Solicit Covenant</span>
+                </div>
+                <NonCompeteAgreement candidate={c} jf={jf} companyName={companyName} />
+              </div>
+
+              {/* Form 9: Contract Form XIII */}
+              <div className="pdf-page-block bg-white p-2 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-800 text-xs">
+                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono">9</span>
+                  <span>Contract Labour Act Form XIII — Rule 76 Statutory Employment Card</span>
+                </div>
+                <ContractFormXIII candidate={c} jf={jf} companyName={companyName} />
               </div>
             </div>
           )}

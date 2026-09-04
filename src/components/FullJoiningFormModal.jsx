@@ -2,7 +2,13 @@ import { SignaturePadModal } from './SignaturePadModal';
 import { EpfoForm11 } from './statutory/EpfoForm11';
 import { EpfoForm2 } from './statutory/EpfoForm2';
 import { EsicForm1 } from './statutory/EsicForm1';
-import React, { useState, useMemo } from 'react';
+import { Form16TdsDeclaration } from './statutory/Form16TdsDeclaration';
+import { GratuityFormF } from './statutory/GratuityFormF';
+import { NdaAgreement } from './statutory/NdaAgreement';
+import { PoshPolicyDeclaration } from './statutory/PoshPolicyDeclaration';
+import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
+import { ContractFormXIII } from './statutory/ContractFormXIII';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
 import { 
@@ -2702,7 +2708,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
 
         
-          {/* SECTION 12: MANUFACTURING & STATUTORY COMPLIANCE FORMS (EPFO 11, FORM 2, ESIC 1) */}
+          {/* SECTION 12: MANUFACTURING & STATUTORY COMPLIANCE FORMS (ALL 9 STATUTORY FORMS) */}
           {activeSection === 'statutory_forms' && (
             <div className="space-y-6 animate-tab-switch">
               <div className="flex items-center justify-between border-b border-purple-100 pb-2">
@@ -2711,7 +2717,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <span>Section 12: Statutory Manufacturing & Labor Compliance Declaration Forms</span>
                 </h3>
                 <span className="text-[10px] bg-purple-100 text-purple-900 px-2 py-0.5 rounded font-mono font-bold">
-                  EPFO Form 11 • Form 2 Revised • ESIC Form 1
+                  9 Statutory Forms Ready
                 </span>
               </div>
 
@@ -2759,6 +2765,78 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
                 </div>
                 <EsicForm1 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber }} jf={formData} />
+              </div>
+
+              {/* Form 4: Form 16 / TDS */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">4</span>
+                    Form 16 / TDS Form 12B — Income Tax Salary & Deductions Declaration
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <Form16TdsDeclaration candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, panNo: formData.panNo }} jf={formData} />
+              </div>
+
+              {/* Form 5: Gratuity Form F */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">5</span>
+                    Form 'F' — Payment of Gratuity Act 1972 Statutory Nomination Form
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <GratuityFormF candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus }} jf={formData} />
+              </div>
+
+              {/* Form 6: NDA Agreement */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">6</span>
+                    Non-Disclosure & Proprietary IP Information Agreement (NDA)
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <NdaAgreement candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, panNo: formData.panNo, aadhaarNo: formData.aadhaarNo }} jf={formData} />
+              </div>
+
+              {/* Form 7: POSH Policy */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">7</span>
+                    POSH Act 2013 — Workplace Safety Policy & Conduct Code
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <PoshPolicyDeclaration candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email }} jf={formData} />
+              </div>
+
+              {/* Form 8: Non-Compete */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">8</span>
+                    Enterprise Trade Secret — Non-Compete & Non-Solicit Covenant
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <NonCompeteAgreement candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email }} jf={formData} />
+              </div>
+
+              {/* Form 9: Contract Form XIII */}
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">9</span>
+                    Contract Labour Act Form XIII — Rule 76 Statutory Employment Card
+                  </strong>
+                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
+                </div>
+                <ContractFormXIII candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email }} jf={formData} />
               </div>
             </div>
           )}
@@ -2805,7 +2883,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
         )}
 
-        {/* Mandatory Aadhaar OTP Modal */}
+                {/* Mandatory Aadhaar OTP Modal */}
         {showAadhaarOtpModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
             <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl">
@@ -2844,69 +2922,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <button type="button" onClick={() => setShowAadhaarOtpModal(false)} className="btn btn-secondary text-xs font-bold">Cancel</button>
                   <button type="submit" className="btn btn-superadmin text-xs">Verify & Confirm Aadhaar</button>
                 </div>
-              
-          {/* SECTION 12: MANUFACTURING & STATUTORY COMPLIANCE FORMS (EPFO 11, FORM 2, ESIC 1) */}
-          {activeSection === 'statutory_forms' && (
-            <div className="space-y-6 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-purple-100 pb-2">
-                <h3 className="font-extrabold text-sm text-purple-800 uppercase tracking-wider flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-purple-600" />
-                  <span>Section 12: Statutory Manufacturing & Labor Compliance Declaration Forms</span>
-                </h3>
-                <span className="text-[10px] bg-purple-100 text-purple-900 px-2 py-0.5 rounded font-mono font-bold">
-                  EPFO Form 11 • Form 2 Revised • ESIC Form 1
-                </span>
-              </div>
-
-              <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-950 flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="block text-purple-900">Auto-Generated Statutory Compliance Documents:</strong>
-                  <span>
-                    These forms are generated automatically using the candidate's statutory profile, UAN/PF accounts, nominee declarations, and family particulars. These documents are compiled into the official <strong>Profile PDF Dossier</strong> upon submission.
-                  </span>
-                </div>
-              </div>
-
-              {/* Form 1: EPFO Form 11 */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">1</span>
-                    EPFO Form No. 11 — New Declaration Form
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm11 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 2: EPFO Form 2 Revised */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">2</span>
-                    EPFO Form 2 (Revised) — Nomination & Declaration (EPF & EPS)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm2 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 3: ESIC Form 1 */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">3</span>
-                    ESIC Form 1 — Declaration Form & Temporary Identity Card (TIC)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EsicForm1 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber }} jf={formData} />
-              </div>
-            </div>
-          )}
-
-        </form>
+              </form>
             </div>
           </div>
         )}
@@ -2950,69 +2966,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <button type="button" onClick={() => setShowMobileOtpModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
                   <button type="submit" className="btn btn-company text-xs cursor-pointer">Confirm Mobile OTP</button>
                 </div>
-              
-          {/* SECTION 12: MANUFACTURING & STATUTORY COMPLIANCE FORMS (EPFO 11, FORM 2, ESIC 1) */}
-          {activeSection === 'statutory_forms' && (
-            <div className="space-y-6 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-purple-100 pb-2">
-                <h3 className="font-extrabold text-sm text-purple-800 uppercase tracking-wider flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-purple-600" />
-                  <span>Section 12: Statutory Manufacturing & Labor Compliance Declaration Forms</span>
-                </h3>
-                <span className="text-[10px] bg-purple-100 text-purple-900 px-2 py-0.5 rounded font-mono font-bold">
-                  EPFO Form 11 • Form 2 Revised • ESIC Form 1
-                </span>
-              </div>
-
-              <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-950 flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="block text-purple-900">Auto-Generated Statutory Compliance Documents:</strong>
-                  <span>
-                    These forms are generated automatically using the candidate's statutory profile, UAN/PF accounts, nominee declarations, and family particulars. These documents are compiled into the official <strong>Profile PDF Dossier</strong> upon submission.
-                  </span>
-                </div>
-              </div>
-
-              {/* Form 1: EPFO Form 11 */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">1</span>
-                    EPFO Form No. 11 — New Declaration Form
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm11 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 2: EPFO Form 2 Revised */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">2</span>
-                    EPFO Form 2 (Revised) — Nomination & Declaration (EPF & EPS)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm2 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 3: ESIC Form 1 */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">3</span>
-                    ESIC Form 1 — Declaration Form & Temporary Identity Card (TIC)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EsicForm1 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber }} jf={formData} />
-              </div>
-            </div>
-          )}
-
-        </form>
+              </form>
             </div>
           </div>
         )}
@@ -3056,69 +3010,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <button type="button" onClick={() => setShowEmailOtpModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
                   <button type="submit" className="btn btn-secondary text-xs bg-purple-600 text-white hover:bg-purple-700 cursor-pointer">Confirm Email OTP</button>
                 </div>
-              
-          {/* SECTION 12: MANUFACTURING & STATUTORY COMPLIANCE FORMS (EPFO 11, FORM 2, ESIC 1) */}
-          {activeSection === 'statutory_forms' && (
-            <div className="space-y-6 animate-tab-switch">
-              <div className="flex items-center justify-between border-b border-purple-100 pb-2">
-                <h3 className="font-extrabold text-sm text-purple-800 uppercase tracking-wider flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-purple-600" />
-                  <span>Section 12: Statutory Manufacturing & Labor Compliance Declaration Forms</span>
-                </h3>
-                <span className="text-[10px] bg-purple-100 text-purple-900 px-2 py-0.5 rounded font-mono font-bold">
-                  EPFO Form 11 • Form 2 Revised • ESIC Form 1
-                </span>
-              </div>
-
-              <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-950 flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="block text-purple-900">Auto-Generated Statutory Compliance Documents:</strong>
-                  <span>
-                    These forms are generated automatically using the candidate's statutory profile, UAN/PF accounts, nominee declarations, and family particulars. These documents are compiled into the official <strong>Profile PDF Dossier</strong> upon submission.
-                  </span>
-                </div>
-              </div>
-
-              {/* Form 1: EPFO Form 11 */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">1</span>
-                    EPFO Form No. 11 — New Declaration Form
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm11 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 2: EPFO Form 2 Revised */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">2</span>
-                    EPFO Form 2 (Revised) — Nomination & Declaration (EPF & EPS)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EpfoForm2 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, uanEpf: formData.uanEpf }} jf={formData} />
-              </div>
-
-              {/* Form 3: ESIC Form 1 */}
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center justify-between">
-                  <strong className="text-xs text-slate-800 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono font-bold">3</span>
-                    ESIC Form 1 — Declaration Form & Temporary Identity Card (TIC)
-                  </strong>
-                  <span className="badge badge-emerald text-[9px]">Auto-Synced ✓</span>
-                </div>
-                <EsicForm1 candidate={{ ...candidate, name: formData.fullName, doj: formData.doj, mobile: formData.mobile, email: formData.email, gender: formData.gender, maritalStatus: formData.maritalStatus, aadhaarNo: formData.aadhaarNo, panNo: formData.panNo, esiNumber: formData.esiNumber }} jf={formData} />
-              </div>
-            </div>
-          )}
-
-        </form>
+              </form>
             </div>
           </div>
         )}
