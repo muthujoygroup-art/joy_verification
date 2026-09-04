@@ -108,6 +108,20 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           { qualificationCategory: 'Secondary School (10th / SSLC)', degreeName: 'Secondary School Leaving Certificate', institutionName: 'St. Joseph High School', university: 'State Board', passingYear: '2014', grade: '91.0%' }
         ];
 
+  // Dynamic Custom Fields Extraction
+  const rawCustomFields = jf.customFields || c.customFields || c.custom_fields || c.customFieldsList || [];
+  const customFieldsArray = Array.isArray(rawCustomFields)
+    ? rawCustomFields
+    : typeof rawCustomFields === 'object' && rawCustomFields !== null
+      ? Object.entries(rawCustomFields).map(([k, v]) => ({
+          key: k,
+          label: typeof v === 'object' ? (v.label || k) : k,
+          value: typeof v === 'object' ? (v.value || '-') : String(v || '-'),
+          type: typeof v === 'object' ? (v.type || 'text') : 'text',
+          required: typeof v === 'object' ? !!v.required : false
+        }))
+      : [];
+
   // Dynamic Multi-Row Previous Employment Experience
   const expList = (Array.isArray(jf.experienceList) && jf.experienceList.length > 0)
     ? jf.experienceList
@@ -434,6 +448,31 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                       <div className="text-slate-900 text-xs leading-relaxed mt-0.5">{jf.permanentAddress || 'No 15, North Car Street, Madurai, Tamil Nadu - 625001'}</div>
                     </div>
                   </div>
+
+                  {/* Dynamic Custom Form Fields Adaptation in Profile PDF */}
+                  {customFieldsArray.length > 0 && (
+                    <div className="col-span-3 pt-3 border-t border-slate-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Custom Enterprise Attributes & Additional Form Particulars</span>
+                        </span>
+                        <span className="text-[10px] bg-indigo-50 text-indigo-800 font-bold px-2 py-0.5 rounded border border-indigo-200">
+                          {customFieldsArray.length} Custom Field{customFieldsArray.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                        {customFieldsArray.map((cf, idx) => (
+                          <div key={idx} className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                            <span className="text-[10px] text-slate-500 block font-medium">{cf.label}</span>
+                            <div className="font-bold text-slate-900 text-xs mt-0.5 break-all">
+                              {cf.value || '<Not Provided>'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

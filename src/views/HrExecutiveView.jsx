@@ -4081,6 +4081,129 @@ export const HrExecutiveView = () => {
                   })}
                 </div>
               </div>
+
+              {/* 🌟 SUB-SECTION C: DYNAMIC CUSTOM COMPANY DOCUMENT SLOTS */}
+              <div className="space-y-3 pt-3 border-t border-sky-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-sky-700" />
+                    <span className="text-xs font-black text-slate-800 uppercase tracking-wide">
+                      C. Dynamic Custom Company Document Slots ({(formData.customDocSlots || []).length} Slots)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCustomDocModal(true)}
+                    className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-sky-900 bg-sky-100 hover:bg-sky-200 border-sky-300 shadow-xs cursor-pointer self-start sm:self-auto"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-sky-700" />
+                    <span>+ Add Custom Document Slot</span>
+                  </button>
+                </div>
+
+                {(formData.customDocSlots || []).length === 0 ? (
+                  <div className="p-3 bg-white/70 border border-dashed border-sky-300 rounded-xl text-center space-y-1">
+                    <p className="text-xs text-slate-600 font-medium">
+                      No custom document slots added yet. Need candidate to upload specialized certificates (e.g. COVID Booster, Specialized Trade License, NDA Scan)?
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCustomDocModal(true)}
+                      className="text-xs text-sky-700 font-bold hover:underline cursor-pointer inline-flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Click here to + Add Custom Document Slot</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    {(formData.customDocSlots || []).map((slot) => {
+                      const uploaded = (formData.uploadedDocuments || {})[slot.id || slot.key];
+                      return (
+                        <div
+                          key={slot.id || slot.key}
+                          className={`p-3 rounded-2xl border-2 transition-all space-y-2.5 ${
+                            uploaded
+                              ? 'bg-emerald-50/90 border-emerald-300 shadow-xs'
+                              : 'bg-white border-sky-300 hover:border-sky-400'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-lg">📁</span>
+                              <div className="min-w-0">
+                                <h5 className="font-extrabold text-slate-900 text-xs truncate" title={slot.title}>
+                                  {slot.title}
+                                </h5>
+                                <p className="text-[10px] text-slate-500 line-clamp-1" title={slot.desc}>
+                                  {slot.desc || 'Specialized company document'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomDocSlot(slot.id || slot.key)}
+                              className="text-rose-400 hover:text-rose-700 p-1 text-xs cursor-pointer shrink-0"
+                              title="Delete this custom document slot"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          {uploaded ? (
+                            <div className="p-2 bg-emerald-100/70 border border-emerald-300 rounded-xl space-y-1">
+                              <div className="flex items-center justify-between text-[11px] font-bold text-emerald-900">
+                                <span className="truncate flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                  <span className="truncate">{uploaded.name}</span>
+                                </span>
+                                <span className="text-[10px] bg-emerald-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                                  {uploaded.file_size_kb} KB
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between pt-1 border-t border-emerald-200 text-[10px]">
+                                <label className="text-emerald-800 hover:text-emerald-950 font-bold cursor-pointer underline">
+                                  Replace File
+                                  <input
+                                    type="file"
+                                    className="hidden"
+                                    accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                    onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => removeUploadedDoc(slot.id || slot.key)}
+                                  className="text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                                >
+                                  ✕ Remove File
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                              <span className="text-[10px] text-slate-500 italic">
+                                Candidate can upload on link 📱
+                              </span>
+                              <label className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 cursor-pointer shrink-0">
+                                <Upload className="w-3 h-3 text-sky-600" />
+                                <span>HR Upload</span>
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                  onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
+                                />
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* SECTION 9: Mandatory Upstream API Identity Verification Checks */}
@@ -4171,6 +4294,226 @@ export const HrExecutiveView = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* ✨ SECTION 11: DYNAMIC CUSTOM FORM FIELDS & CUSTOM DOCUMENT SLOTS BUILDER */}
+            <div className="p-4 sm:p-5 bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-slate-50 border-2 border-indigo-300 rounded-2xl space-y-4 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-200 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-xs">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-black text-indigo-950 uppercase tracking-wider">
+                        11. Dynamic Custom Form Fields & Document Slots Builder
+                      </h4>
+                      <span className="text-[10px] bg-indigo-100 text-indigo-800 font-extrabold px-2 py-0.5 rounded-md border border-indigo-200">
+                        {(formData.customFields || []).length} Custom Fields • {(formData.customDocSlots || []).length} Document Slots
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Add company-specific custom text fields or custom document upload requirements. You can pre-fill values now or delegate them to candidate via magic onboarding link!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCustomFieldModal(true)}
+                    className="btn btn-superadmin text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Add Text Field</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCustomDocModal(true)}
+                    className="btn btn-hrexecutive text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Add Document Slot</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 📝 ACTIVE CUSTOM TEXT FIELDS GRID */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-indigo-600" />
+                    <span>Active Custom Text Fields ({(formData.customFields || []).length})</span>
+                  </span>
+                  {(formData.customFields || []).length > 0 && (
+                    <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                      Adaptive PDF Integration Active ✓
+                    </span>
+                  )}
+                </div>
+
+                {(formData.customFields || []).length === 0 ? (
+                  <div className="p-3.5 bg-white/80 border border-dashed border-indigo-200 rounded-xl text-center space-y-1">
+                    <p className="text-xs text-slate-500 font-medium">
+                      No custom text fields added yet. Click <strong className="text-indigo-700">+ Add Text Field</strong> above to add company-specific data points (e.g. Asset Serial Number, Uniform Size, Shift Preference, Blood Pressure, etc.).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    {(formData.customFields || []).map((field) => (
+                      <div
+                        key={field.id}
+                        className="p-3 bg-white rounded-xl border border-indigo-200 shadow-2xs space-y-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="font-extrabold text-slate-900 text-xs truncate">
+                              {field.label} {field.required && <span className="text-rose-500">*</span>}
+                            </span>
+                            <span className="text-[9px] bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-mono uppercase font-bold shrink-0">
+                              {field.type || 'text'}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCustomField(field.id)}
+                            className="text-rose-400 hover:text-rose-700 p-0.5 text-xs cursor-pointer shrink-0"
+                            title="Delete this custom field"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <div>
+                          <input
+                            type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : field.type === 'email' ? 'email' : 'text'}
+                            placeholder={`Enter ${field.label}...`}
+                            value={field.value || ''}
+                            onChange={(e) => handleUpdateCustomFieldValue(field.id, e.target.value)}
+                            className="form-input text-xs font-bold w-full bg-slate-50 focus:bg-white"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+                          <span className={field.value ? 'text-emerald-700 font-bold' : 'text-slate-400'}>
+                            {field.value ? '🏢 Pre-filled by HR' : '📱 Candidate will fill via Link'}
+                          </span>
+                          <span className={`px-1.5 py-0.2 rounded font-bold ${field.required ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600'}`}>
+                            {field.required ? 'Mandatory' : 'Optional'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 📂 ACTIVE CUSTOM DOCUMENT SLOTS GRID */}
+              <div className="space-y-2 pt-2 border-t border-indigo-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <FolderDown className="w-4 h-4 text-emerald-600" />
+                    <span>Active Custom Document Upload Slots ({(formData.customDocSlots || []).length})</span>
+                  </span>
+                  {(formData.customDocSlots || []).length > 0 && (
+                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      Exhibits & Dossier PDF Ready ✓
+                    </span>
+                  )}
+                </div>
+
+                {(formData.customDocSlots || []).length === 0 ? (
+                  <div className="p-3.5 bg-white/80 border border-dashed border-emerald-200 rounded-xl text-center space-y-1">
+                    <p className="text-xs text-slate-500 font-medium">
+                      No custom document slots added yet. Click <strong className="text-emerald-700">+ Add Document Slot</strong> above to request specialized certificates or documents (e.g. Vaccination Proof, NDA Copy, Specific Trade Licenses).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    {(formData.customDocSlots || []).map((slot) => {
+                      const uploaded = (formData.uploadedDocuments || {})[slot.id || slot.key];
+                      return (
+                        <div
+                          key={slot.id || slot.key}
+                          className={`p-3 rounded-xl border-2 transition-all space-y-2 ${
+                            uploaded
+                              ? 'bg-emerald-50/90 border-emerald-300 shadow-xs'
+                              : 'bg-white border-indigo-200 hover:border-indigo-300'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <h5 className="font-extrabold text-slate-900 text-xs truncate">
+                                📄 {slot.title}
+                              </h5>
+                              <p className="text-[10px] text-slate-500 line-clamp-1">
+                                {slot.desc || 'Company specific document requirement'}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomDocSlot(slot.id || slot.key)}
+                              className="text-rose-400 hover:text-rose-700 p-0.5 text-xs cursor-pointer shrink-0"
+                              title="Delete this document slot"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          {uploaded ? (
+                            <div className="p-2 bg-emerald-100/70 border border-emerald-300 rounded-lg space-y-1">
+                              <div className="flex items-center justify-between text-[11px] font-bold text-emerald-900">
+                                <span className="truncate flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                  <span className="truncate">{uploaded.name}</span>
+                                </span>
+                                <span className="text-[10px] bg-emerald-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                                  {uploaded.file_size_kb} KB
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between pt-1 border-t border-emerald-200 text-[10px]">
+                                <label className="text-emerald-800 hover:text-emerald-950 font-bold cursor-pointer underline">
+                                  Replace File
+                                  <input
+                                    type="file"
+                                    className="hidden"
+                                    accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                    onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => removeUploadedDoc(slot.id || slot.key)}
+                                  className="text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                                >
+                                  ✕ Remove File
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                              <span className="text-[10px] text-slate-500 italic">
+                                Candidate uploads on link 📱
+                              </span>
+                              <label className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 cursor-pointer shrink-0">
+                                <Upload className="w-3 h-3 text-emerald-600" />
+                                <span>HR Upload</span>
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                  onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
+                                />
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -216,7 +216,9 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       contractFormXIIIEnrollmentNo: candSpec.contractFormXIIIEnrollmentNo || 'CL-RA-2026-FORM-XIII-912',
       contractorAgencyName: candSpec.contractorAgencyName || 'First Choice Manpower Solutions Pvt Ltd',
       workOrderPoNumber: candSpec.workOrderPoNumber || 'PO-JOY-2026-CW-410'
-    }
+    },
+    customFields: candidate?.customFields || candidate?.custom_fields || jfd.customFields || [],
+    customDocSlots: candidate?.customDocSlots || jfd.customDocSlots || []
   });
 
   // OTP Verification States
@@ -2584,6 +2586,74 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       <div>
                         <strong className="text-xs block">All Universal KYC & Employment Exhibits Ready</strong>
                         <p className="text-[10px] text-indigo-700">Digital signatures, NDA, and sovereign ID proofs will be compiled into the Profile PDF Annexure.</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dynamic Custom Company Document Slots */}
+                  {Array.isArray(formData.customDocSlots) && formData.customDocSlots.length > 0 && (
+                    <div className="col-span-full space-y-2.5 pt-3 border-t border-indigo-200">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black text-indigo-900 uppercase tracking-wide flex items-center gap-1.5">
+                          <FolderDown className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Custom Company Document Requirements ({formData.customDocSlots.length} Slots)</span>
+                        </h4>
+                        <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                          Company Specific
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                        {formData.customDocSlots.map((doc) => {
+                          const uploaded = (formData.uploadedDocuments || {})[doc.id || doc.key];
+                          return (
+                            <div key={doc.id || doc.key} className="p-3.5 rounded-2xl border-2 bg-indigo-50/40 border-indigo-200 flex flex-col justify-between gap-2.5">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-xl">📁</span>
+                                  <div className="min-w-0">
+                                    <strong className="text-slate-900 font-bold text-xs block truncate">{doc.title}</strong>
+                                    <p className="text-[10px] text-slate-500 line-clamp-1">{doc.desc}</p>
+                                  </div>
+                                </div>
+                                <span className="badge badge-indigo text-[8px] uppercase">Specialized</span>
+                              </div>
+
+                              {uploaded ? (
+                                <div className="bg-white p-2 rounded-xl border border-emerald-200 flex items-center justify-between gap-2 text-[10px]">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                    <span className="font-mono font-bold text-emerald-950 truncate">{uploaded.name}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewDoc(uploaded)}
+                                      className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+                                      title="Preview document"
+                                    >
+                                      <Eye className="w-3 h-3" />
+                                    </button>
+                                    <label className="text-indigo-700 hover:text-indigo-900 font-bold cursor-pointer underline text-[10px]">
+                                      Replace
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                        onChange={(e) => handleFileUpload(doc.id || doc.key, e.target.files?.[0], doc.title)}
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+                              ) : (
+                                <label className="flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-indigo-100 border border-indigo-300 rounded-xl cursor-pointer text-indigo-700 font-bold text-xs">
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Upload Document</span>
+                                  <input type="file" onChange={(e) => handleFileUpload(doc.id || doc.key, e.target.files?.[0], doc.title)} className="hidden" />
+                                </label>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
