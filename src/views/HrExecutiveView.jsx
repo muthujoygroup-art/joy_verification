@@ -5164,3 +5164,132 @@ export const HrExecutiveView = () => {
     </div>
   );
 };
+
+
+      {/* 📝 MODAL: ADD DYNAMIC CUSTOM TEXT FIELD */}
+      {showAddCustomFieldModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <span>+ Add Dynamic Custom Text Field</span>
+              </h4>
+              <button onClick={() => setShowAddCustomFieldModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Field Title / Label *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Asset Serial Number, Blood Pressure, Uniform Size"
+                  value={legacyFieldLabel}
+                  onChange={(e) => setLegacyFieldLabel(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white font-bold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Data Type</label>
+                  <select
+                    value={legacyFieldType}
+                    onChange={(e) => setLegacyFieldType(e.target.value)}
+                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-bold"
+                  >
+                    <option value="text">Text (Single Line)</option>
+                    <option value="number">Number / Integer</option>
+                    <option value="date">Date Picker</option>
+                    <option value="email">Email Address</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Mandatory?</label>
+                  <select
+                    value={legacyFieldRequired ? 'yes' : 'no'}
+                    onChange={(e) => setLegacyFieldRequired(e.target.value === 'yes')}
+                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-bold"
+                  >
+                    <option value="yes">Yes (Required)</option>
+                    <option value="no">No (Optional)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowAddCustomFieldModal(false)}
+                className="btn btn-secondary text-xs py-2 px-3 font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleAddLegacyCustomField}
+                className="btn btn-superadmin text-xs py-2 px-4 font-bold shadow-md cursor-pointer"
+              >
+                + Add Field
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 📂 MODAL: ADD DYNAMIC CUSTOM DOCUMENT SLOT */}
+      {showAddCustomDocModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                <FolderDown className="w-4 h-4 text-emerald-600" />
+                <span>+ Add Custom Document Upload Slot</span>
+              </h4>
+              <button onClick={() => setShowAddCustomDocModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Document Title *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. COVID Vaccine Certificate, NDA Acceptance, Form 16"
+                  value={newDocTitle}
+                  onChange={(e) => setNewDocTitle(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Description & Instructions for Candidate</label>
+                <textarea
+                  placeholder="e.g. Please upload clear scanned PDF copy signed by authorized physician."
+                  value={newDocDesc}
+                  onChange={(e) => setNewDocDesc(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs h-20"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowAddCustomDocModal(false)}
+                className="btn btn-secondary text-xs py-2 px-3 font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleAddCustomDocSlot}
+                className="btn btn-emerald text-xs py-2 px-4 font-bold shadow-md cursor-pointer"
+              >
+                + Create Document Slot
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
