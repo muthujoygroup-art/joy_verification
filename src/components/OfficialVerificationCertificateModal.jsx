@@ -20,6 +20,17 @@ import { exportElementToPdf } from '../services/pdfExporter';
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
   const [isExporting, setIsExporting] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+
   if (!candidate) return null;
 
   const isFullyVerified = candidate.status === 'Verified' || candidate.status === 'VERIFIED';
@@ -62,8 +73,16 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
-      <div className="bg-white w-full max-w-3xl max-h-[94vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 p-4 sm:p-8 space-y-5 sm:space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none animate-modal-spring">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white w-full max-w-3xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 relative my-auto text-slate-900 print:border-none print:shadow-none print:max-w-none animate-modal-spring overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        
+        {/* Sticky Action Header Controls (Hidden on Print) */}
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between print:hidden">
         
         {/* Action Header Controls (Hidden on Print) */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">
@@ -92,6 +111,9 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg cursor-pointer">✕</button>
           </div>
         </div>
+
+        {/* Scrollable Certificate Content Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-5 sm:space-y-6">
 
         {/* Certificate Decorative Border Container */}
         <div id="printable-official-certificate" className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden bg-white ${
@@ -355,7 +377,9 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           <span className="font-bold text-indigo-600">JOY CORPORATE SOLUTIONS PVT LTD • All Rights Reserved</span>
         </div>
 
+        </div>
       </div>
+    </div>
     </div>
   );
 };

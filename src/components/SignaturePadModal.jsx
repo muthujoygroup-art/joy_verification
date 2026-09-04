@@ -4,6 +4,17 @@ import { Pen, Upload, RotateCcw, Check, X, ShieldCheck } from 'lucide-react';
 export const SignaturePadModal = ({ onSaveSignature, onClose, initialSignature = null }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [hasDrawn, setHasDrawn] = useState(false);
   const [uploadedSigUrl, setUploadedSigUrl] = useState(initialSignature);
   const [activeMode, setActiveMode] = useState('draw'); // 'draw' | 'upload'
@@ -90,7 +101,12 @@ export const SignaturePadModal = ({ onSaveSignature, onClose, initialSignature =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden text-slate-900 space-y-4 p-5 sm:p-6">
         
         {/* Header */}

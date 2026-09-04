@@ -36,7 +36,18 @@ export const HrGovernanceModal = ({
 }) => {
   if (!isOpen || !hrUser) return null;
 
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'education' | 'documents' | 'security' | 'legal'
+  const [activeTab, setActiveTab] = useState('profile');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'profile' | 'education' | 'documents' | 'security' | 'legal'
 
   const personal = hrUser.personal_details || {};
   const employment = hrUser.employment_details || {};
@@ -159,8 +170,13 @@ export const HrGovernanceModal = ({
   const isActive = hrUser.status === 'Active';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
         
         {/* HEADER */}
         <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between border-b border-indigo-900/50">

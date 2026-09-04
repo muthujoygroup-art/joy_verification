@@ -1,4 +1,19 @@
 import React, { useState, useEffect } from 'react';
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedCandidateForVerification) setSelectedCandidateForVerification(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (showPaymentModal) setShowPaymentModal(false);
+        else if (showExportModal) setShowExportModal(false);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCandidateForVerification, viewingCertCandidate, viewingDossierCandidate, showPaymentModal, showExportModal, showGatewaysModal]);
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
@@ -2831,7 +2846,7 @@ export const CompanyAdminView = () => {
 
       {/* Inspect Candidate Modal */}
       {inspectCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-xl p-6 space-y-6 border-slate-200 bg-white text-slate-900">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
@@ -2862,7 +2877,7 @@ export const CompanyAdminView = () => {
 
             {/* Add HR Onboarding Modal */}
       {showAddHrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
@@ -2973,7 +2988,7 @@ export const CompanyAdminView = () => {
 
       {/* HR Link & PIN Modal */}
       {activatingHr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-black flex items-center gap-2">
@@ -3127,7 +3142,7 @@ export const CompanyAdminView = () => {
     
       {/* 🏢 COMPANY TEST EMAIL TRANSMISSION MODAL */}
       {showCompTestEmailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">

@@ -24,6 +24,17 @@ import {
 export const CompanyActivationModal = ({ company, onClose }) => {
   const { showToast } = useApp();
   const [passcodeText, setPasscodeText] = useState('1234');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
@@ -117,7 +128,12 @@ export const CompanyActivationModal = ({ company, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-6 space-y-4 animate-modal-spring text-slate-900">
         
         {/* Header */}

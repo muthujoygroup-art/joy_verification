@@ -1,4 +1,20 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedCompany) setSelectedCompany(null);
+        else if (selectedHr) setSelectedHr(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (showInvoiceModal) setShowInvoiceModal(false);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+        else if (showCustomReportModal) setShowCustomReportModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCompany, selectedHr, viewingDossierCandidate, viewingCertCandidate, showInvoiceModal, showGatewaysModal, showCustomReportModal]);
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -4740,7 +4756,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             {/* 4. MODAL: TECHNICAL STACK TRACE & DIAGNOSTICS */}
             {selectedLogForDetail && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+              <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
                 <div className="bg-slate-900 border border-slate-700 text-white w-full max-w-3xl max-h-[85vh] rounded-3xl p-6 space-y-4 shadow-2xl flex flex-col animate-modal-spring">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
@@ -4804,7 +4820,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             {/* 5. MODAL: MARK AS RESOLVED WITH NOTES */}
             {resolveModalLog && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+              <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
                 <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl animate-modal-spring border border-slate-200">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
@@ -4853,7 +4869,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             {/* 6. MODAL: SIMULATE TEST ERROR */}
             {showSimulateErrorModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+              <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
                 <div className="bg-white text-slate-900 w-full max-w-lg rounded-3xl p-6 space-y-4 shadow-2xl animate-modal-spring border border-slate-200">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
@@ -5660,7 +5676,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -5881,7 +5897,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* Edit Custom Company Terms Modal */}
       {editingCustomTermsCompany && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
@@ -5959,7 +5975,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* 🛠️ COMPREHENSIVE COMPANY FEATURE FLAGS & GATEWAY GOVERNANCE MODAL */}
       {editingFeaturesCompany && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn overflow-y-auto">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 border-2 border-indigo-500/30 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring my-auto">
             
             {/* Modal Header */}
@@ -6214,7 +6230,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* Add Master Default Field Modal */}
       {showAddMasterFieldModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold flex items-center gap-2">
@@ -6381,7 +6397,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       
       {/* ➕ ADD NEW API PROVIDER MODAL */}
       {showAddApiModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -6629,7 +6645,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* ✏️ CONFIGURE / EDIT API PROVIDER MODAL */}
       {showEditApiModal && selectedEditProvider && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -6761,7 +6777,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       
       {/* 🔍 CANDIDATE GRANULAR API CALL AUDIT & DOCUMENT LEDGER MODAL */}
       {showCandidateDetailModal && selectedCandidateDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
             
             {/* Modal Header */}
@@ -6966,7 +6982,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     
       {/* 📧 TEST EMAIL TRANSMISSION MODAL */}
       {showTestEmailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">

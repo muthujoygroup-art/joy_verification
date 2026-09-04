@@ -17,6 +17,17 @@ import {
 
 export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, currentPhoto = null }) => {
   const [cameraActive, setCameraActive] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState(null);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState(currentPhoto);
@@ -204,7 +215,12 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-amber-300 bg-white text-slate-900 shadow-2xl rounded-2xl">
         
         {/* Header */}

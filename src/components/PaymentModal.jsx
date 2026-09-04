@@ -23,7 +23,18 @@ export const PaymentModal = ({ company, onClose }) => {
   const gstAmount = Math.round(rawSubtotal * 0.18);
   const totalAmountDue = rawSubtotal + gstAmount;
 
-  const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'netbanking'
+  const [paymentMethod, setPaymentMethod] = useState('upi');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'upi' | 'card' | 'netbanking'
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(
     currentLedger.status === 'SETTLED ✅' ? currentLedger : null
@@ -49,8 +60,18 @@ export const PaymentModal = ({ company, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="glass-panel w-full max-w-xl p-4 sm:p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl my-auto animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="glass-panel w-full max-w-xl max-h-[92vh] flex flex-col border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl relative z-10 overflow-hidden my-auto animate-fadeIn"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky Header */}
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between shadow-2xs">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -63,8 +84,11 @@ export const PaymentModal = ({ company, onClose }) => {
               <p className="text-xs text-slate-500 font-medium">Direct billing payment settlement between Company Admin & Super Admin</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg p-1 hover:bg-slate-100 rounded-lg cursor-pointer">✕</button>
         </div>
+
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
 
         {/* Invoice Summary Banner */}
         <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
@@ -222,7 +246,9 @@ export const PaymentModal = ({ company, onClose }) => {
           </form>
         )}
 
+        </div>
       </div>
+    </div>
     </div>
   );
 };

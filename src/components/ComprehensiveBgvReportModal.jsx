@@ -42,7 +42,18 @@ export const ComprehensiveBgvReportModal = ({
   companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED", 
   hrName = "PRAVEEN B" 
 }) => {
-  const [activeApiTab, setActiveApiTab] = useState('all'); // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
+  const [activeApiTab, setActiveApiTab] = useState('all');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
   const [copiedLink, setCopiedLink] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -280,8 +291,13 @@ export const ComprehensiveBgvReportModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 animate-modal-spring">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 animate-modal-spring relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Control Bar */}
         <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">

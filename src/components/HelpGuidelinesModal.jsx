@@ -29,11 +29,32 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
   const defaultTab = initialRole || (roleView === 'employee_link' ? 'candidate' : roleView === 'hrexecutive' ? 'hr' : roleView === 'company' ? 'company' : 'superadmin');
   
   const [activeGuideTab, setActiveGuideTab] = useState(defaultTab);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-      <div className="glass-panel w-full max-w-4xl p-4 sm:p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl my-auto animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="glass-panel w-full max-w-4xl max-h-[92vh] flex flex-col border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl relative z-10 overflow-hidden my-auto animate-fadeIn"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky Header */}
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 space-y-3 shadow-2xs">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -169,6 +190,7 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
           </button>
         </div>
 
+        </div>
       </div>
     </div>
   );

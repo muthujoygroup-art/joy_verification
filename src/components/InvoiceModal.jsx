@@ -5,6 +5,17 @@ export const InvoiceModal = ({ company, onClose }) => {
   if (!company) return null;
 
   const [billedCount, setBilledCount] = useState(company.verifiedCountThisMonth || 100);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [ratePerUnit, setRatePerUnit] = useState(company.pricePerVerification || 120);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [gstTaxPercent, setGstTaxPercent] = useState(18);
@@ -24,11 +35,19 @@ export const InvoiceModal = ({ company, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="glass-panel w-full max-w-4xl max-h-[95vh] overflow-y-auto border border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl my-auto">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="glass-panel w-full max-w-4xl max-h-[92vh] flex flex-col border border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl relative z-10 overflow-hidden my-auto" onClick={(e) => e.stopPropagation()}>
+        
+        {/* Sticky Modal Header Controls Bar */}
+        <div className="shrink-0 sticky top-0 z-20 p-4 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50 no-print">
         
         {/* Modal Header Controls Bar */}
-        <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50 no-print">
+        
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-indigo-100 text-indigo-700 font-bold">
               <FileText className="w-5 h-5" />
@@ -262,7 +281,7 @@ export const InvoiceModal = ({ company, onClose }) => {
 
         </div>
 
+        </div>
       </div>
-    </div>
   );
 };

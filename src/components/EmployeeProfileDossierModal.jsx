@@ -39,7 +39,18 @@ import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
-  const [activeTab, setActiveTab] = useState(1); // 1: Bio, 2: Role, 3: Edu & Exp, 4: Statutory & Health, 5: Attached Exhibits, 6: Complete All-in-One
+  const [activeTab, setActiveTab] = useState(1);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 1: Bio, 2: Role, 3: Edu & Exp, 4: Statutory & Health, 5: Attached Exhibits, 6: Complete All-in-One
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -209,11 +220,15 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-6 flex justify-center items-start sm:items-center print:p-0 print:bg-white animate-fadeIn">
-      <div className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-4 sm:p-7 space-y-5 text-slate-900 relative my-2 sm:my-auto print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}>
+      <div className="bg-white w-full max-w-5xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 text-slate-900 relative my-auto print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring overflow-hidden" onClick={(e) => e.stopPropagation()}>
         
         {/* Action Header Controls (Hidden on Print) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 print:hidden">
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 space-y-3 print:hidden shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="badge badge-cyan text-[10px]">Complete Master Profile Dossier</span>
             <span className="text-xs text-slate-500 font-bold">• Full Profile + All Attached Document Exhibits ({attachedExhibits.length} Exhibits)</span>
@@ -916,6 +931,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         </div>
 
       </div>
+    </div>
     </div>
   );
 };

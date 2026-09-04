@@ -21,7 +21,18 @@ import {
 export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'overall', onClose }) => {
   const { candidates, companies, showToast } = useApp();
 
-  const [reportScope, setReportScope] = useState(candidate ? 'individual' : initialScope); // 'individual' | 'company' | 'overall'
+  const [reportScope, setReportScope] = useState(candidate ? 'individual' : initialScope);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'individual' | 'company' | 'overall'
   const [selectedCandidateId, setSelectedCandidateId] = useState(candidate ? candidate.id : (candidates[0]?.id || ''));
   const [selectedCompanyFilter, setSelectedCompanyFilter] = useState('all');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
@@ -222,11 +233,18 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-      <div className="glass-panel w-full max-w-3xl p-4 sm:p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl my-auto animate-fadeIn">
-        
-        {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="glass-panel w-full max-w-3xl max-h-[92vh] flex flex-col border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl relative z-10 overflow-hidden my-auto animate-fadeIn"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky Modal Header */}
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between shadow-2xs">
           <div className="flex items-center gap-2.5">
             <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-800 font-bold shadow-sm">
               <Sliders className="w-6 h-6" />
@@ -239,6 +257,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg">✕</button>
         </div>
 
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <form onSubmit={handleGenerateReport} className="space-y-5 text-xs">
           
           {/* STEP 1: REPORT PERSPECTIVE / SCOPE SELECTOR */}
@@ -430,7 +449,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
           </div>
 
         </form>
-
+        </div>
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ export const StatutoryFormPreviewModal = ({
   const modalContent = (
     <div 
       id="statutory-modal-overlay"
-      className="fixed inset-0 z-[999999] flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white"
+      className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
       style={{
         position: 'fixed',
         top: 0,
@@ -82,7 +82,7 @@ export const StatutoryFormPreviewModal = ({
         zIndex: 999999,
         backgroundColor: 'rgba(2, 6, 23, 0.85)',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
         padding: '16px'
       }}
@@ -93,7 +93,7 @@ export const StatutoryFormPreviewModal = ({
       }}
     >
       <div 
-        className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col my-auto relative z-10 print:border-none print:shadow-none print:max-w-none"
+        className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-2 border-indigo-500 overflow-hidden flex flex-col relative z-10 my-auto print:border-none print:shadow-none print:max-w-none"
         style={{
           maxHeight: '92vh',
           width: '100%',

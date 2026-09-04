@@ -134,7 +134,7 @@ export const LiveVerificationProgressModal = ({
   const TipIcon = currentTip.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn select-none">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn select-none">
       <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl w-full max-w-xl overflow-hidden relative animate-modal-spring">
         
         {/* Top Vibrant Ambient Gradient Bar */}

@@ -23,7 +23,18 @@ import { OfficialVerificationCertificateModal } from './OfficialVerificationCert
 import { EmployeeProfileDossierModal } from './EmployeeProfileDossierModal';
 
 export const DocumentDownloader = ({ candidate, onClose }) => {
-  const [activeTab, setActiveTab] = useState('attached'); // 'attached' | 'generated'
+  const [activeTab, setActiveTab] = useState('attached');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'attached' | 'generated'
   const [showCertPreview, setShowCertPreview] = useState(false);
   const [showDossierPreview, setShowDossierPreview] = useState(false);
   const [selectedDocPreview, setSelectedDocPreview] = useState(null);
@@ -134,7 +145,12 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn">
+      <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && onClose) onClose();
+      }}
+    >
         <div className="bg-white w-full max-w-3xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
           
           {/* Header */}
@@ -368,7 +384,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
 
       {/* 👁️ DOCUMENT FULL RESOLUTION PREVIEW MODAL */}
       {selectedDocPreview && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-60 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-md animate-fadeIn">
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-scaleIn">
             <div className="flex items-center justify-between p-4 bg-slate-900 text-white border-b border-slate-800">
               <div className="flex items-center gap-2.5">

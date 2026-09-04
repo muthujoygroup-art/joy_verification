@@ -248,6 +248,35 @@ export const HrExecutiveView = () => {
   const [showGatewaysModal, setShowGatewaysModal] = useState(false);
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (selectedDocPreview) setSelectedDocPreview(null);
+        else if (viewingUploadedDocsCandidate) setViewingUploadedDocsCandidate(null);
+        else if (reviewingCandidate) { setReviewingCandidate(null); setShowCorrectionInput(false); }
+        else if (managingDocVerifCandidate) setManagingDocVerifCandidate(null);
+        else if (showAddCustomFieldModal) setShowAddCustomFieldModal(false);
+        else if (showAddCustomDocModal) setShowAddCustomDocModal(false);
+        else if (dispatchingCandidate) setDispatchingCandidate(null);
+        else if (viewingDossierCandidate) setViewingDossierCandidate(null);
+        else if (viewingCertCandidate) setViewingCertCandidate(null);
+        else if (showUniversalExportModal) setShowUniversalExportModal(false);
+        else if (showFullJoiningModal) setShowFullJoiningModal(false);
+        else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
+    managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
+    dispatchingCandidate, viewingDossierCandidate, viewingCertCandidate,
+    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
+    showGatewaysModal
+  ]);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
@@ -5360,7 +5389,7 @@ export const HrExecutiveView = () => {
       {/* 📁 HR UPLOADED ORIGINAL DOCUMENTS REPOSITORY MODAL */}
       {viewingUploadedDocsCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setViewingUploadedDocsCandidate(null);
@@ -5487,7 +5516,7 @@ export const HrExecutiveView = () => {
       {/* 👁️ SINGLE DOCUMENT INSPECTION PREVIEW OVERLAY */}
       {selectedDocPreview && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedDocPreview(null);
           }}
@@ -5542,7 +5571,7 @@ export const HrExecutiveView = () => {
       {/* 🔍 HR CANDIDATE SUBMISSION REVIEW & APPROVAL CONSOLE MODAL */}
       {reviewingCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setReviewingCandidate(null);
@@ -5781,7 +5810,7 @@ export const HrExecutiveView = () => {
       {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
       {managingDocVerifCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setManagingDocVerifCandidate(null);
           }}
@@ -5931,7 +5960,7 @@ export const HrExecutiveView = () => {
       {/* 📝 MODAL: ADD DYNAMIC CUSTOM TEXT FIELD */}
       {showAddCustomFieldModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowAddCustomFieldModal(false);
           }}
@@ -6010,7 +6039,7 @@ export const HrExecutiveView = () => {
       {/* 📂 MODAL: ADD DYNAMIC CUSTOM DOCUMENT SLOT */}
       {showAddCustomDocModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowAddCustomDocModal(false);
           }}

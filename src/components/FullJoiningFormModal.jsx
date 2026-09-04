@@ -58,6 +58,22 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const draftKey = `joy_joining_draft_${candidate?.id || candidate?.token || 'default'}`;
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (previewDoc) setPreviewDoc(null);
+        else if (showAadhaarOtpModal) setShowAadhaarOtpModal(false);
+        else if (showMobileOtpModal) setShowMobileOtpModal(false);
+        else if (showEmailOtpModal) setShowEmailOtpModal(false);
+        else if (showSignatureModal) setShowSignatureModal(false);
+        else if (onClose) onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, previewDoc, showAadhaarOtpModal, showMobileOtpModal, showEmailOtpModal, showSignatureModal]);
+
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
 
   // Lock Body Scroll while Master Joining Form Modal is Open
@@ -583,11 +599,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
-      <div className="glass-panel w-full max-w-4xl max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
-        
-        {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="glass-panel w-full max-w-4xl max-h-[92vh] flex flex-col border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl relative z-10 overflow-hidden animate-modal-spring"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky Modal Header */}
+        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between shadow-2xs">
           <div>
             <div className="flex items-center gap-2">
               <span className="badge badge-purple text-[10px]">CiteHR Enterprise Format</span>
@@ -595,8 +618,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             </div>
             <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">Exhaustive Employee / Labor Profile Joining Form</h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg p-1 cursor-pointer btn-interactive">✕</button>
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-2 rounded-xl text-lg font-bold cursor-pointer transition-colors btn-interactive"
+            title="Close Form (Esc)"
+          >
+            ✕
+          </button>
         </div>
+
+        {/* Scrollable Modal Content Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5">
 
         {/* Mandatory OTP Verification Status Bar */}
         <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
@@ -2910,10 +2943,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           )}
 
         </form>
+        </div>
 
         {/* 👁️ CANDIDATE DOCUMENT PREVIEW MODAL */}
         {previewDoc && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-60 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
             <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn">
               <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
                 <div>
@@ -2953,7 +2987,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
                 {/* Mandatory Aadhaar OTP Modal */}
         {showAadhaarOtpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
             <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="text-base font-extrabold flex items-center gap-2">
@@ -2997,7 +3031,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
         {/* Mandatory Mobile OTP Modal */}
         {showMobileOtpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
             <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="text-base font-extrabold flex items-center gap-2">
@@ -3041,7 +3075,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
         {/* Mandatory Email OTP Modal */}
         {showEmailOtpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
             <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="text-base font-extrabold flex items-center gap-2">
@@ -3085,7 +3119,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
         {/* 📡 ENGAGING REAL-TIME UIDAI e-KYC DATA FETCHING RADAR MODAL */}
         {isFetchingAadhaarData && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg">
+          <div className="fixed inset-0 z-60 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-lg animate-fadeIn">
             <div className="bg-slate-950 text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border-2 border-indigo-500/40 shadow-2xl space-y-6 relative overflow-hidden text-center animate-scaleIn">
               
               {/* Ambient Background Glow & Radar Pulse */}

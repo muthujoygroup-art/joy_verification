@@ -19,7 +19,18 @@ import {
 export const CommunicationGatewaysModal = ({ onClose }) => {
   const { whatsappConfig, emailConfig, updateCommunicationGateways, showToast } = useApp();
 
-  const [activeTab, setActiveTab] = useState('whatsapp'); // 'whatsapp' | 'email'
+  const [activeTab, setActiveTab] = useState('whatsapp');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'whatsapp' | 'email'
 
   // WhatsApp Local Form State
   const [waState, setWaState] = useState({ ...whatsappConfig });
@@ -38,7 +49,12 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="glass-panel w-full max-w-3xl p-4 sm:p-6 space-y-5 border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl my-auto animate-fadeIn">
         
         {/* Modal Header */}

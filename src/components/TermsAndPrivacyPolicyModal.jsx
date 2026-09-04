@@ -19,7 +19,18 @@ import {
 } from 'lucide-react';
 
 export const TermsAndPrivacyPolicyModal = ({ isOpen, onClose, companyName = 'Enterprise Employer', onAccept = null }) => {
-  const [activeLegalTab, setActiveLegalTab] = useState('point_in_time'); // 'point_in_time' | 'terms' | 'privacy' | 'audit_guarantee'
+  const [activeLegalTab, setActiveLegalTab] = useState('point_in_time');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+ // 'point_in_time' | 'terms' | 'privacy' | 'audit_guarantee'
 
   if (!isOpen) return null;
 
@@ -28,7 +39,12 @@ export const TermsAndPrivacyPolicyModal = ({ isOpen, onClose, companyName = 'Ent
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 p-6 sm:p-8 space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
         
         {/* Header (Screen View) */}

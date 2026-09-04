@@ -10,7 +10,7 @@ export const SessionInactivityModal = ({ isOpen, remainingSeconds = 300, onExten
   const timeFormatted = `${mins}:${secs.toString().padStart(2, '0')}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
       <div className="glass-panel w-full max-w-md p-6 space-y-5 border-amber-300 bg-white text-slate-900 shadow-2xl rounded-2xl text-center">
         
         <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto border-2 border-amber-300 animate-bounce">

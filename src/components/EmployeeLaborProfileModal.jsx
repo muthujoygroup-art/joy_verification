@@ -17,6 +17,16 @@ import {
 import { api } from '../services/api';
 
 export const EmployeeLaborProfileModal = ({ candidate, onClose }) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!candidate) return null;
 
   const handleDownloadPdf = () => {
@@ -38,7 +48,12 @@ export const EmployeeLaborProfileModal = ({ candidate, onClose }) => {
   const facePhoto = c.faceImages?.straight || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 p-6 sm:p-8 space-y-6 my-auto text-slate-900 relative print:border-none print:shadow-none print:max-w-none">
         
         {/* Action Header Controls (Hidden on Print) */}
@@ -219,7 +234,7 @@ export const EmployeeLaborProfileModal = ({ candidate, onClose }) => {
 
         </div>
 
+        </div>
       </div>
-    </div>
   );
 };

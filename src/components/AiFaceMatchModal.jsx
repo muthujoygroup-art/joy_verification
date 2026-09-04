@@ -199,6 +199,17 @@ export const AiFaceMatchModal = ({
   onConfirmMatch 
 }) => {
   const [analyzing, setAnalyzing] = useState(true);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [showMeshOverlay, setShowMeshOverlay] = useState(true);
@@ -358,7 +369,12 @@ export const AiFaceMatchModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="glass-panel w-full max-w-3xl max-h-[94vh] overflow-y-auto p-4 sm:p-7 space-y-4 sm:space-y-5 border-2 border-indigo-500/40 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto relative animate-modal-spring">
         
         {/* Top Gradient Ribbon */}
