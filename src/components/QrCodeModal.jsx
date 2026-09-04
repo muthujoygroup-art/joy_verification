@@ -55,6 +55,7 @@ export const QrCodeModal = ({
   const company = companies.find(c => c.id === candidate.companyId) || companies[0] || { name: 'JOY Corporate Solutions' };
   const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
   const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
+  const isLinkCopied = Boolean(isCopied || copiedInternal);
 
   const hrSenderName = hrPreferences?.sender_display_name || activeHr?.name || 'HR Recruiter';
   const hrSenderEmail = hrPreferences?.sender_email || hrPreferences?.smtp_user || activeHr?.email || 'hr@joycorporatesolutions.com';
@@ -413,12 +414,12 @@ export const QrCodeModal = ({
               type="button"
               onClick={handleCopyCleanLink}
               className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-xl border transition-all cursor-pointer ${
-                copiedState 
+                isLinkCopied 
                   ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
                   : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
               }`}
             >
-              {copiedState ? (
+              {isLinkCopied ? (
                 <>
                   <Check className="w-4 h-4 text-emerald-600" />
                   <span>Verification Link Copied to Clipboard! ✓</span>
