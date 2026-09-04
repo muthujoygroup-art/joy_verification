@@ -157,6 +157,16 @@ export const HrExecutiveView = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
 
+  // Dynamic Custom Fields State
+  const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
+  const [legacyFieldType, setLegacyFieldType] = useState('text');
+  const [legacyFieldRequired, setLegacyFieldRequired] = useState(false);
+  const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
+
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocDesc, setNewDocDesc] = useState('');
+  const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
+
   // Dynamic HR Recruiter & Employer Company Resolution (Resolves from live logged-in session)
   const activeHr = (currentUser && (currentUser.role === 'hrexecutive' || currentUser.role === 'hr' || currentUser.email))
     ? {
@@ -1019,15 +1029,7 @@ export const HrExecutiveView = () => {
     };
   }, [isAnyModalOpen]);
 
-  // Dynamic Custom Fields State & Handlers
-  const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
-  const [legacyFieldType, setLegacyFieldType] = useState('text');
-  const [legacyFieldRequired, setLegacyFieldRequired] = useState(false);
-  const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
-
-  const [newDocTitle, setNewDocTitle] = useState('');
-  const [newDocDesc, setNewDocDesc] = useState('');
-  const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
+  // Dynamic Custom Fields Handlers
 
   const handleAddLegacyCustomField = () => {
     if (!legacyFieldLabel.trim()) return;
