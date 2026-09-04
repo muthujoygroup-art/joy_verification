@@ -1157,6 +1157,7 @@ export const AppProvider = ({ children }) => {
         manual_checks: candidateData.manualChecks,
         joining_form_data: candidateData.joiningFormData || candidateData,
         custom_fields: candidateData.customFields || candidateData.custom_fields || {},
+        face_images: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
         documents: candidateData.documents || candidateData.uploadedDocumentsList || []
       });
 
@@ -1193,7 +1194,8 @@ export const AppProvider = ({ children }) => {
         portalPassword: created.portal_password || candidatePin,
         verificationConfig: created.verification_config || {},
         verificationsCompleted: created.verifications_completed || {},
-        faceImages: created.face_images || { straight: null, left: null, right: null },
+        photo: created.face_images?.straight || candidateData.photo || null,
+        faceImages: created.face_images || candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
         manualChecks: created.manual_checks || {},
         joiningFormData: created.joining_form_data || {},
         customFields: created.custom_fields || candidateData.customFields || {},
@@ -1213,7 +1215,8 @@ export const AppProvider = ({ children }) => {
         status: 'Link Sent',
         portalPassword: candidatePin,
         verificationsCompleted: { aadhaar: false, mobile: false, face: false },
-        faceImages: { straight: null, left: null, right: null },
+        photo: candidateData.photo || null,
+        faceImages: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
         verificationDate: null,
         ...candidateData
       };

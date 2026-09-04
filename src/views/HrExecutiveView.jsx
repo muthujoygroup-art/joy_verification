@@ -15,6 +15,7 @@ import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
 import { DocumentDownloader } from '../components/DocumentDownloader';
 import { QrCodeModal } from '../components/QrCodeModal';
+import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
@@ -305,6 +306,7 @@ export const HrExecutiveView = () => {
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
+  const [showHrLivePhotoModal, setShowHrLivePhotoModal] = useState(false);
   
   // Document preview states
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
@@ -1346,14 +1348,28 @@ export const HrExecutiveView = () => {
       };
     });
 
-    addCandidate({
+    const candidatePayload = {
       ...formData,
+      photo: formData.photo || null,
+      livePhoto: formData.photo || null,
+      faceImages: formData.photo ? { straight: formData.photo, left: formData.photo, right: formData.photo } : (formData.faceImages || { straight: null, left: null, right: null }),
       customFields: customFieldsMap,
       custom_fields: customFieldsMap,
       documents: docsList,
       uploadedDocumentsList: docsList,
       delegatedFieldsMap,
       verificationReadiness: readiness
+    };
+
+    addCandidate(candidatePayload).then(createdToken => {
+      const dispatchedCandidate = {
+        ...candidatePayload,
+        id: `emp-${Date.now()}`,
+        token: (typeof createdToken === 'string' ? createdToken : createdToken?.token) || `tok_${formData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100+Math.random()*900)}`,
+        status: 'Link Sent',
+        portalPassword: formData.portalPassword || '1234'
+      };
+      setDispatchingCandidate(dispatchedCandidate);
     });
 
     // Clear saved draft on successful submission
@@ -2865,11 +2881,98 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* SECTION 1: Personal & Demographic Particulars */}
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                <User className="w-4 h-4 text-emerald-600" />
-                <span>1. Personal, Demographic & Application Form Particulars</span>
-              </h4>
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
+                  <User className="w-4 h-4 text-emerald-600" />
+                  <span>1. Personal, Demographic & Application Form Particulars</span>
+                </h4>
+                <span className="badge badge-emerald text-[10px] font-black self-start sm:self-auto">Profile Identity Header</span>
+              </div>
+
+              {/* 📸 Real-Time Live Photo Capture & WebCam Snapper Card */}
+              <div className="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-fadeIn">
+                <div className="flex items-center gap-3.5">
+                  <div className="relative shrink-0">
+                    {formData.photo ? (
+                      <div className="relative">
+                        <img 
+                          src={formData.photo} 
+                          alt="Employee" 
+                          className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400 shadow-md"
+                        />
+                        <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 shadow-sm">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-2xl bg-indigo-900/60 border-2 border-dashed border-indigo-400/50 flex flex-col items-center justify-center text-indigo-300">
+                        <Camera className="w-6 h-6" />
+                        <span className="text-[9px] font-bold mt-0.5">No Photo</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-sm text-white">Employee Photo & Live Biometric</span>
+                      <span className="badge badge-indigo text-[9px] font-bold">HR WebCam / Candidate Selfie</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-medium mt-0.5">
+                      {formData.photo ? (
+                        <span className="text-emerald-300 font-bold">✓ Live Photo Attached (Will be bound to Profile PDF & Certificate)</span>
+                      ) : (
+                        <span>Snap live photo via WebCam now, upload a photo file, or let candidate take selfie from their magic link.</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap shrink-0 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowHrLivePhotoModal(true)}
+                    className="btn btn-primary text-xs py-2 px-3 flex items-center gap-1.5 font-black bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-sm cursor-pointer transition-all hover:scale-105 active:scale-95"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>{formData.photo ? '📸 Retake WebCam Photo' : '📸 Capture Live Photo (WebCam)'}</span>
+                  </button>
+
+                  <label className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-200 bg-slate-800 border-slate-700 hover:bg-slate-700 cursor-pointer">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload File</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (re) => {
+                            setFormData(prev => ({ ...prev, photo: re.target.result }));
+                            showToast('📸 Employee photo uploaded and attached to profile!');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+
+                  {formData.photo && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, photo: null }));
+                        showToast('Photo removed.');
+                      }}
+                      className="p-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 cursor-pointer"
+                      title="Remove Photo"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
               
               {/* Row 1: Names & Codes */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
@@ -5161,6 +5264,20 @@ export const HrExecutiveView = () => {
             </div>
           </form>
         </div>
+      )}
+
+            {/* 📸 Dedicated HR Live WebCam Photo Capture Modal */}
+      {showHrLivePhotoModal && (
+        <LivePhotoCaptureModal
+          isOpen={showHrLivePhotoModal}
+          currentPhoto={formData.photo}
+          onClose={() => setShowHrLivePhotoModal(false)}
+          onPhotoCaptured={(photoUrl) => {
+            setFormData(prev => ({ ...prev, photo: photoUrl }));
+            setShowHrLivePhotoModal(false);
+            showToast('📸 Live employee photo captured and attached to profile!');
+          }}
+        />
       )}
 
       {/* Multi-Channel QR Code & Link Dispatcher Modal */}
