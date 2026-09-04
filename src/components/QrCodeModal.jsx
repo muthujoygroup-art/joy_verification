@@ -127,11 +127,18 @@ export const QrCodeModal = ({
 
       const payload = {
         candidate_id: candidate.id || candidate.token,
+        token: candidate.token,
         candidate_email: destEmail,
+        candidate_name: candidate.name,
+        candidate_code: candidate.empId || candidate.employeeNumber || candidate.emp_id || 'JOY-EMP-001',
+        security_pin: clean,
+        company_id: candidate.companyId || (company && company.id),
+        company_name: company?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+        designation: candidate.designation || 'Associate',
         hr_id: activeHr?.id,
         hr_email: hrSenderEmail,
         hr_name: hrSenderName,
-        custom_smtp: hrPreferences?.smtp_user ? {
+        custom_smtp: hrPreferences?.smtp_user && hrPreferences?.smtp_pass ? {
           host: hrPreferences.smtp_host,
           port: hrPreferences.smtp_port,
           user: hrPreferences.smtp_user,
@@ -142,16 +149,18 @@ export const QrCodeModal = ({
       };
 
       const res = await api.dispatchCandidateEmail(payload);
-      setEmailSentSuccess(true);
-      setEmailSuccessMsg(`Email dispatched to ${destEmail} from ${hrSenderEmail}!`);
-      if (showToast) showToast(`📧 Onboarding Link & PIN (${clean}) sent to ${destEmail}!`);
-      setTimeout(() => setEmailSentSuccess(false), 5000);
+      if (res && res.success) {
+        setEmailSentSuccess(true);
+        setEmailSuccessMsg(`Email delivered to ${destEmail} (PIN: ${clean})!`);
+        if (showToast) showToast(`📧 Onboarding Link & PIN (${clean}) sent to ${destEmail}!`);
+        setTimeout(() => setEmailSentSuccess(false), 6000);
+      } else {
+        throw new Error(res?.error || 'Email delivery failed');
+      }
     } catch (err) {
       console.warn('Email dispatch notice:', err);
-      setEmailSentSuccess(true);
-      setEmailSuccessMsg(`Email invitation dispatched to ${destEmail}`);
-      if (showToast) showToast(`📧 Verification invite dispatched to ${destEmail}`);
-      setTimeout(() => setEmailSentSuccess(false), 4000);
+      setEmailSentSuccess(false);
+      if (showToast) showToast(`❌ Email failed: ${err.message || 'SMTP delivery issue'}`, 'error');
     } finally {
       setIsSendingEmail(false);
     }

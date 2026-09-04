@@ -16,71 +16,22 @@ logging.basicConfig(level=logging.INFO)
 # =============================================================================
 # 🏢 TENANT-AWARE SMTP CONFIGURATION RESOLVER
 # =============================================================================
-def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Retrieves SMTP settings:
-    1. If company_id is provided, looks for custom company SMTP gateway.
-    2. Falls back to Master Super Admin cPanel SMTP (admin@joycorporatesolutions.com).
-    3. Falls back to environment settings.
-    """
-    # 👑 Master Super Admin cPanel Defaults
+def get_master_smtp_config(db=None) -> Dict[str, Any]:
+    """Retrieves the Master Super Admin cPanel SMTP configuration with stored credentials"""
     config = {
         "host": settings.SMTP_HOST or "mail.joycorporatesolutions.com",
         "port": int(settings.SMTP_PORT or 465),
         "user": settings.SMTP_USER or "admin@joycorporatesolutions.com",
-        "password": settings.SMTP_PASSWORD or "",
+        "password": settings.SMTP_PASSWORD or "Joyson@5610",
         "use_ssl": True if int(settings.SMTP_PORT or 465) == 465 else False,
         "use_tls": True if int(settings.SMTP_PORT or 465) == 587 else False,
         "from_email": settings.EMAILS_FROM_EMAIL or "admin@joycorporatesolutions.com",
         "from_name": settings.EMAILS_FROM_NAME or "JOY Corporate Solutions BGV",
-        "mode": "master_cpanel" # 'master_cpanel' | 'custom_company'
+        "mode": "master_cpanel"
     }
-
     if db:
         try:
             from backend.app.models.system import CommunicationGateway
-            
-            # Step 1: Check if company has custom SMTP settings stored in Company.features or CommunicationGateway
-            if company_id:
-                from backend.app.models.company import Company
-                comp_obj = db.query(Company).filter(Company.id == company_id).first()
-                if comp_obj and comp_obj.features and comp_obj.features.get("smtp_settings"):
-                    sd = comp_obj.features["smtp_settings"]
-                    if sd.get("use_custom_smtp") or sd.get("host"):
-                        return {
-                            "host": sd.get("host") or config["host"],
-                            "port": int(sd.get("port") or config["port"]),
-                            "user": sd.get("user") or sd.get("username") or config["user"],
-                            "password": sd.get("password") or config["password"],
-                            "from_email": sd.get("from_email") or config["from_email"],
-                            "from_name": sd.get("from_name") or f"{comp_obj.name} - Verification Portal",
-                            "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
-                            "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
-                            "mode": "custom_company",
-                            "company_id": company_id
-                        }
-
-                comp_gw = db.query(CommunicationGateway).filter(
-                    CommunicationGateway.gateway_type == "email_smtp",
-                    CommunicationGateway.company_id == company_id,
-                    CommunicationGateway.is_active == True
-                ).first()
-                if comp_gw and comp_gw.settings_data and comp_gw.settings_data.get("use_custom_smtp"):
-                    sd = comp_gw.settings_data
-                    return {
-                        "host": sd.get("host") or config["host"],
-                        "port": int(sd.get("port") or config["port"]),
-                        "user": sd.get("user") or config["user"],
-                        "password": sd.get("password") or config["password"],
-                        "from_email": sd.get("from_email") or config["from_email"],
-                        "from_name": sd.get("from_name") or config["from_name"],
-                        "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
-                        "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
-                        "mode": "custom_company",
-                        "company_id": company_id
-                    }
-
-            # Step 2: Check Master Super Admin cPanel SMTP Gateway
             master_gw = db.query(CommunicationGateway).filter(
                 (CommunicationGateway.gateway_type == "email_smtp") | (CommunicationGateway.id == "gw_email_smtp"),
                 CommunicationGateway.is_active == True
@@ -90,15 +41,71 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
                 config["host"] = sd.get("host") or config["host"]
                 config["port"] = int(sd.get("port") or config["port"])
                 config["user"] = sd.get("user") or config["user"]
-                config["password"] = sd.get("password") or config["password"]
+                if sd.get("password"):
+                    config["password"] = sd.get("password")
                 config["from_email"] = sd.get("from_email") or config["from_email"]
                 config["from_name"] = sd.get("from_name") or config["from_name"]
                 config["use_ssl"] = bool(sd.get("use_ssl", config["port"] == 465))
                 config["use_tls"] = bool(sd.get("use_tls", config["port"] == 587))
         except Exception as e:
+            logger.warning(f"Could not load master gateway from DB: {e}")
+    return config
+
+def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Retrieves SMTP settings:
+    1. If company_id is provided and has custom SMTP with valid password, uses custom company SMTP.
+    2. Otherwise falls back to Master Super Admin cPanel SMTP (admin@joycorporatesolutions.com).
+    """
+    master_config = get_master_smtp_config(db)
+
+    if db and company_id:
+        try:
+            from backend.app.models.system import CommunicationGateway
+            from backend.app.models.company import Company
+
+            # Step 1: Check if company has custom SMTP settings stored in Company.features
+            comp_obj = db.query(Company).filter(Company.id == company_id).first()
+            if comp_obj and comp_obj.features and comp_obj.features.get("smtp_settings"):
+                sd = comp_obj.features["smtp_settings"]
+                # Only use custom if explicitly enabled AND has password
+                if sd.get("use_custom_smtp") and sd.get("password") and sd.get("host"):
+                    return {
+                        "host": sd.get("host") or master_config["host"],
+                        "port": int(sd.get("port") or master_config["port"]),
+                        "user": sd.get("user") or sd.get("username") or master_config["user"],
+                        "password": sd.get("password"),
+                        "from_email": sd.get("from_email") or master_config["from_email"],
+                        "from_name": sd.get("from_name") or f"{comp_obj.name} - Verification Portal",
+                        "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
+                        "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                        "mode": "custom_company",
+                        "company_id": company_id
+                    }
+
+            comp_gw = db.query(CommunicationGateway).filter(
+                CommunicationGateway.gateway_type == "email_smtp",
+                CommunicationGateway.company_id == company_id,
+                CommunicationGateway.is_active == True
+            ).first()
+            if comp_gw and comp_gw.settings_data and comp_gw.settings_data.get("use_custom_smtp") and comp_gw.settings_data.get("password"):
+                sd = comp_gw.settings_data
+                return {
+                    "host": sd.get("host") or master_config["host"],
+                    "port": int(sd.get("port") or master_config["port"]),
+                    "user": sd.get("user") or master_config["user"],
+                    "password": sd.get("password"),
+                    "from_email": sd.get("from_email") or master_config["from_email"],
+                    "from_name": sd.get("from_name") or master_config["from_name"],
+                    "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
+                    "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                    "mode": "custom_company",
+                    "company_id": company_id
+                }
+        except Exception as e:
             logger.warning(f"Could not resolve custom SMTP gateway from database: {e}")
 
-    return config
+    return master_config
 
 def send_smtp_email(
     to_email: str,
@@ -111,13 +118,13 @@ def send_smtp_email(
     db=None
 ) -> Dict[str, Any]:
     """
-    Core function to send an email via resolved SMTP gateway (Master cPanel or Company Custom).
+    Core function to send an email via resolved SMTP gateway with automatic fallback to Master cPanel SMTP.
     """
     if not to_email or "@" not in to_email:
         logger.warning(f"Skipping email dispatch: invalid recipient address '{to_email}'")
         return {"success": False, "error": "Invalid recipient email"}
 
-    if custom_config and isinstance(custom_config, dict) and custom_config.get("user"):
+    if custom_config and isinstance(custom_config, dict) and custom_config.get("user") and custom_config.get("password"):
         cfg = {
             "host": custom_config.get("host") or "mail.joycorporatesolutions.com",
             "port": int(custom_config.get("port") or 465),
@@ -182,11 +189,38 @@ def send_smtp_email(
         return {"success": True, "to": to_email, "subject": subject, "mode": cfg["mode"]}
 
     except smtplib.SMTPAuthenticationError as auth_err:
-        err_str = f"Authentication Rejected (535): Incorrect password for {cfg['user']}. Please check your cPanel webmail password and save settings."
-        logger.error(f"❌ [SMTP AUTH ERROR - Mode: {cfg['mode']}] {err_str}")
+        err_str = f"Authentication Rejected (535): Incorrect password for {cfg['user']}."
+        logger.warning(f"⚠️ [SMTP AUTH ERROR - Mode: {cfg['mode']}] {err_str} Attempting Master cPanel fallback...")
+        if cfg.get("mode") != "master_cpanel":
+            master_cfg = get_master_smtp_config(db)
+            if master_cfg.get("password") and master_cfg.get("user") != cfg.get("user"):
+                return send_smtp_email(
+                    to_email=to_email,
+                    subject=subject,
+                    html_content=html_content,
+                    text_content=text_content,
+                    company_id=None,
+                    custom_config=master_cfg,
+                    reply_to=reply_to or cfg.get("from_email"),
+                    db=db
+                )
         return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
     except Exception as e:
         logger.error(f"❌ [SMTP ERROR - Mode: {cfg['mode']}] Failed to send email to {to_email}: {e}")
+        if cfg.get("mode") != "master_cpanel":
+            master_cfg = get_master_smtp_config(db)
+            if master_cfg.get("password") and master_cfg.get("user") != cfg.get("user"):
+                logger.warning(f"⚠️ Retrying dispatch via Master cPanel SMTP...")
+                return send_smtp_email(
+                    to_email=to_email,
+                    subject=subject,
+                    html_content=html_content,
+                    text_content=text_content,
+                    company_id=None,
+                    custom_config=master_cfg,
+                    reply_to=reply_to or cfg.get("from_email"),
+                    db=db
+                )
         record_system_error_log(
             section="Email Gateway",
             error_code="ERR_SMTP_DISPATCH",
