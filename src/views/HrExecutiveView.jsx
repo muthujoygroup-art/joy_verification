@@ -80,13 +80,18 @@ import {
   Users,
   X,
   Zap
-} from 'lucide-react';;
+} from 'lucide-react';
 
 export const HrExecutiveView = () => {
   const { 
     currentUser,
     candidates, 
+    setCandidates,
     addCandidate, 
+    deleteCandidate,
+    toggleCandidateStatus,
+    clearAllCandidates,
+    verifyCandidateLiveDocument,
     setRoleView, 
     showToast, 
     hrUsers, 
