@@ -442,6 +442,10 @@ export const HrExecutiveView = () => {
         console.warn('Auto-save storage note:', e);
       }
     }, 400);
+
+    return () => clearTimeout(timer);
+  }, [formData, delegatedFieldsMap]);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -469,11 +473,6 @@ export const HrExecutiveView = () => {
     showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
     showGatewaysModal
   ]);
-
-
-
-    return () => clearTimeout(timer);
-  }, [formData, delegatedFieldsMap]);
 
   // Clear Saved Draft & Start Fresh
   const handleClearDraft = () => {

@@ -220,7 +220,7 @@ export const CompanyAdminView = () => {
   };
 
   // Listen to tour action events from Navbar / Tour Modal
-  React.useEffect(() => {
+  useEffect(() => {
     const handleTourAction = (e) => {
       const payload = e.detail;
       if (!payload) return;
@@ -237,6 +237,9 @@ export const CompanyAdminView = () => {
       }
     };
     window.addEventListener('tour_feature_action', handleTourAction);
+    return () => window.removeEventListener('tour_feature_action', handleTourAction);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -267,10 +270,6 @@ export const CompanyAdminView = () => {
     showPaymentModal, showRazorpayModal, showGatewaysModal, showTermsModal, showLegalHandbook,
     showUniversalExportModal, governanceHr, activatingHr, showCompTestEmailModal
   ]);
-
-
-    return () => window.removeEventListener('tour_feature_action', handleTourAction);
-  }, []);
 
   // Robust Tenant-Aware Company Resolution (Never returns undefined)
   const resolvedCompany = (Array.isArray(companies) && companies.length > 0)

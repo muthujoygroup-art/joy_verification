@@ -100,6 +100,14 @@ export const EmployeePortalView = () => {
     if (conn) {
       conn.addEventListener('change', updateNetworkStatus);
     }
+
+    return () => {
+      window.removeEventListener('online', updateNetworkStatus);
+      window.removeEventListener('offline', updateNetworkStatus);
+      if (conn) conn.removeEventListener('change', updateNetworkStatus);
+    };
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -123,14 +131,6 @@ export const EmployeePortalView = () => {
     showAiFaceMatchModal, showDocDownloader, showCertModal, showLaborDossierModal,
     showFullJoiningModal, showSignatureModal, showLegalHandbook
   ]);
-
-
-    return () => {
-      window.removeEventListener('online', updateNetworkStatus);
-      window.removeEventListener('offline', updateNetworkStatus);
-      if (conn) conn.removeEventListener('change', updateNetworkStatus);
-    };
-  }, []);
 
   // Aadhaar Live Data Fetching & e-KYC telemetry states
   const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
