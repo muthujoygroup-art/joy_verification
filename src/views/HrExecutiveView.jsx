@@ -32,6 +32,7 @@ import {
   BarChart3,
   Briefcase,
   Building2,
+  Camera,
   Check,
   CheckCircle2,
   CheckSquare,

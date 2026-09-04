@@ -64,6 +64,7 @@ import {
   Power,
   Receipt,
   RefreshCw,
+  RotateCcw,
   Save,
   Scale,
   ScrollText,
