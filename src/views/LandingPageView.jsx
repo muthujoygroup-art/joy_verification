@@ -64,7 +64,6 @@ import confetti from 'canvas-confetti';
 export const LandingPageView = () => {
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
@@ -330,30 +329,30 @@ export const LandingPageView = () => {
     },
     {
       q: 'How does JOY eliminate ghost workers and duplicate billing by contractors?',
-      a: 'Contractors often bill companies for non-existent "ghost workers". JOY uses biometric facial liveness and Aadhaar cryptographic deduplication to ensure every worker on your plant floor is authentic, unique, and legally verified.'
+      a: 'JOY uses AI facial recognition and government biometric deduplication across all contractor submissions. If a worker is already active in another plant or submitted by another contractor under a different name, JOY instantly flags the duplicate, stopping fraudulent double billing.'
     },
     {
       q: 'How does the platform prevent fake experience certificates and moonlighting?',
-      a: 'We connect directly to authorized government employment repositories to retrieve authenticated service records, tenures, and past employer legal entities, immediately exposing overlapping dual employment.'
+      a: 'JOY performs direct, authenticated EPFO career history passbook audits. It retrieves exact EPFO employer establishment codes, dates of joining/exit, and monthly PF deposits—instantly exposing overlapping full-time employment dates (moonlighting) and fake service letters.'
     },
     {
       q: 'Do candidates or blue-collar workers need to install any mobile application?',
-      a: 'No app download is needed. Workers and candidates open a responsive web link directly through WhatsApp, SMS, or on-spot QR code scan on any smartphone.'
+      a: 'No application installation is needed! The verification workflow operates 100% via secure, lightweight browser magic links sent via WhatsApp or SMS. It runs smoothly even on entry-level 4G/5G Android and iOS smartphones.'
     },
     {
       q: 'Are the background reports and labor dossiers compliant with CLRA & DPDP Act 2023?',
-      a: 'Yes. Every verification report is generated with SHA-256 cryptographic hashing, dual-logo authority certification, and full compliance with the Contract Labour (Regulation & Abolition) Act and the Digital Personal Data Protection (DPDP) Act 2023.'
+      a: 'Yes. Every verification report is ISO 27001:2022 certified, DPDP Act 2023 compliant with digital candidate consent trails, and formats seamlessly into official CLRA Form XIII labor registers for statutory labor officer inspections.'
     },
     {
-      q: 'How do client portals and role-based logins work?',
-      a: 'Click "Client Login" at the top to access dedicated consoles: Super Admin (/superadmin), Corporate Company Admin (/company), or HR Recruiter Workstation (/hr).'
+      q: 'How does JOY ensure enterprise data protection & DPDP Act 2023 compliance?',
+      a: 'JOY enforces strict DPDP Act 2023 consent architecture, zero-retention raw biometric storage, end-to-end 256-bit TLS encryption, and immutable cryptographic audit trails. All candidate data is processed exclusively for HR verification purposes with automatic purpose-limitation controls.'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white antialiased">
       
-      {/* 🌐 TOP ENTERPRISE NAVIGATION BAR */}
+      {/* 🌟 ENTERPRISE NAVIGATION HEADER */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
           
@@ -400,23 +399,22 @@ export const LandingPageView = () => {
             <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
           </nav>
 
-          {/* Action CTAs */}
+          {/* Action CTAs (Marketing First - No login URLs) */}
           <div className="flex items-center gap-2.5 shrink-0">
+            <a
+              href="#simulator"
+              className="btn btn-secondary text-xs py-2 px-3.5 font-bold hidden sm:flex items-center gap-1.5 cursor-pointer hover:border-indigo-300"
+            >
+              <Play className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
+              <span>Try Simulator</span>
+            </a>
+
             <button
               onClick={() => setShowDemoModal(true)}
-              className="btn btn-secondary text-xs py-2 px-3.5 font-bold hidden md:flex items-center gap-1.5 cursor-pointer hover:border-indigo-300"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Book Demo</span>
-            </button>
-
-            {/* Client Login Button (Opens Modal instead of cluttering page) */}
-            <button
-              onClick={() => setShowLoginModal(true)}
               className="btn btn-superadmin text-xs py-2 px-4 font-black shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-102 transition-transform"
             >
-              <Lock className="w-3.5 h-3.5 text-indigo-200" />
-              <span>Client Login</span>
+              <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+              <span>Book Live Demo 🚀</span>
             </button>
 
             {/* Mobile Hamburger Button */}
@@ -485,109 +483,166 @@ export const LandingPageView = () => {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setShowLoginModal(true);
-                }}
-                className="btn btn-superadmin w-full text-xs py-2.5 font-black justify-center cursor-pointer shadow-md"
-              >
-                <Lock className="w-3.5 h-3.5 mr-1" />
-                <span>Access Client Portals</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
                   setShowDemoModal(true);
                 }}
-                className="btn btn-secondary w-full text-xs py-2.5 font-bold justify-center cursor-pointer"
+                className="btn btn-superadmin w-full text-xs py-3 font-black justify-center cursor-pointer shadow-md"
               >
-                Schedule Enterprise Demo 🚀
+                <Sparkles className="w-4 h-4 mr-1 text-yellow-300" />
+                <span>Schedule Enterprise Live Demo 🚀</span>
               </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* 🚀 HIGH-CONVERTING HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 border-b border-slate-200">
+      {/* 🚀 HIGH-CONVERTING 3D ANIMATED HERO SECTION */}
+      <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 border-b border-slate-200">
         
         {/* Animated Background Ambient Orbs */}
         <div className="absolute top-10 left-1/4 w-[500px] h-[350px] bg-gradient-to-tr from-indigo-300/25 via-sky-200/25 to-purple-200/25 blur-3xl rounded-full pointer-events-none animate-pulse-glow" />
         <div className="absolute bottom-10 right-1/4 w-[400px] h-[300px] bg-gradient-to-bl from-amber-200/25 via-teal-200/20 to-sky-200/25 blur-3xl rounded-full pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-7">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-indigo-200 text-indigo-950 text-xs font-black shadow-sm backdrop-blur-sm animate-float-slow">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-            <span>JOY TrueProfile — Enterprise Labor Profile Creation & Verification Platform</span>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Column: Hero Text & CTAs (7 Cols) */}
+            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+              
+              {/* Pill Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-indigo-200 text-indigo-950 text-xs font-black shadow-sm backdrop-blur-sm animate-float-slow">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                <span>JOY TrueProfile — Enterprise Labor Profile Creation & Verification</span>
+              </div>
 
-          {/* Hero Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
-            Create & Verify Complete Labor Profiles in{' '}
-            <span className="animated-gradient-text">
-              Under 45 Seconds
-            </span>
-          </h1>
+              {/* Hero Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
+                Create & Verify Complete Labor Profiles in{' '}
+                <span className="animated-gradient-text">
+                  Under 45 Seconds
+                </span>
+              </h1>
 
-          <p className="text-sm sm:text-base text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
-            Eliminate ghost workers, contractor fraud, and paper onboarding. Instantly create certified digital labor profiles, conduct government repository checks, and generate audit-ready dossiers on any smartphone.
-          </p>
+              <p className="text-sm sm:text-base text-slate-600 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
+                Eliminate ghost workers, contractor fraud, and paper onboarding. Instantly create certified digital labor profiles, conduct government repository checks, and generate audit-ready dossiers on any smartphone.
+              </p>
 
-          {/* Hero CTAs */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5">
-            <button
-              onClick={() => setShowDemoModal(true)}
-              className="btn btn-superadmin text-xs sm:text-sm py-3.5 px-7 font-black shadow-xl flex items-center gap-2 cursor-pointer hover:scale-103 transition-transform"
-            >
-              <span>Schedule Live Demo 🚀</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              {/* Hero CTAs */}
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
+                <button
+                  onClick={() => setShowDemoModal(true)}
+                  className="btn btn-superadmin text-xs sm:text-sm py-3.5 px-7 font-black shadow-xl flex items-center gap-2 cursor-pointer hover:scale-103 transition-transform"
+                >
+                  <span>Schedule Live Demo 🚀</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
 
-            <a
-              href="#labor-solutions"
-              className="btn btn-secondary text-xs sm:text-sm py-3.5 px-6 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300"
-            >
-              <HardHat className="w-4 h-4 text-amber-500" />
-              <span>Explore Labor Solutions</span>
-            </a>
+                <a
+                  href="#labor-solutions"
+                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-6 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300"
+                >
+                  <HardHat className="w-4 h-4 text-amber-500" />
+                  <span>Explore Labor Solutions</span>
+                </a>
 
-            <a
-              href="#simulator"
-              className="btn btn-secondary text-xs sm:text-sm py-3.5 px-5 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300 text-slate-700"
-            >
-              <Play className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
-              <span>Live Simulator</span>
-            </a>
-          </div>
+                <a
+                  href="#simulator"
+                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-5 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300 text-slate-700"
+                >
+                  <Play className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
+                  <span>Live Simulator</span>
+                </a>
+              </div>
 
-          {/* Floating Trust Metrics Grid */}
-          <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-3.5 max-w-4xl mx-auto">
-            <div className="glass-panel p-3.5 bg-white/95 border border-slate-200/90 rounded-2xl shadow-2xs text-center space-y-1">
-              <div className="text-xl sm:text-2xl font-black text-indigo-700 font-mono">500,000+</div>
-              <div className="text-[11px] text-slate-500 font-bold">Workers & Hires Verified</div>
+              {/* Metrics Highlights */}
+              <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto lg:mx-0">
+                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
+                  <div className="text-lg sm:text-xl font-black text-indigo-700 font-mono">500k+</div>
+                  <div className="text-[10px] text-slate-500 font-bold">Workers Verified</div>
+                </div>
+
+                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
+                  <div className="text-lg sm:text-xl font-black text-emerald-700 font-mono">&lt; 45s</div>
+                  <div className="text-[10px] text-slate-500 font-bold">Verification Speed</div>
+                </div>
+
+                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
+                  <div className="text-lg sm:text-xl font-black text-amber-600 font-mono">0 Ghost</div>
+                  <div className="text-[10px] text-slate-500 font-bold">Deduplication Rate</div>
+                </div>
+
+                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
+                  <div className="text-lg sm:text-xl font-black text-purple-700 font-mono">DPDP & ISO</div>
+                  <div className="text-[10px] text-slate-500 font-bold">100% Compliant</div>
+                </div>
+              </div>
+
             </div>
 
-            <div className="glass-panel p-3.5 bg-white/95 border border-slate-200/90 rounded-2xl shadow-2xs text-center space-y-1">
-              <div className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">&lt; 45 Seconds</div>
-              <div className="text-[11px] text-slate-500 font-bold">Average Verification Speed</div>
+            {/* Right Column: 3D Holographic Verification Card (5 Cols) */}
+            <div className="lg:col-span-5 perspective-container flex justify-center">
+              <div className="relative w-full max-w-md card-3d-interactive floating-3d-hero">
+                
+                {/* 3D Visual Box */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-200/80 bg-slate-900 group">
+                  
+                  {/* Live Laser Scanline Beam Animation */}
+                  <div className="animate-scanline" />
+
+                  {/* 3D Generated Asset */}
+                  <img
+                    src="/assets/3d/hero_3d_verification.jpg"
+                    alt="3D Biometric Labor Verification Smart Card"
+                    className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  />
+
+                  {/* Holographic Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Bottom Float Overlay Info */}
+                  <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/15 text-white flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-sm">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black">UIDAI & NSDL Verified</div>
+                        <div className="text-[10px] text-emerald-400 font-mono">Biometric Match: 99.8%</div>
+                      </div>
+                    </div>
+                    <span className="badge badge-emerald text-[9px] font-black uppercase">ACTIVE PASSPORT</span>
+                  </div>
+
+                </div>
+
+                {/* Floating 3D Badge 1: Top Right */}
+                <div className="absolute -top-3 -right-3 p-3 rounded-2xl bg-white shadow-xl border border-indigo-200 text-slate-900 flex items-center gap-2 animate-float-reverse">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+                    <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-black leading-tight">45-Second TAT</div>
+                    <div className="text-[9px] text-slate-500 font-medium">Instant Mobile KYC</div>
+                  </div>
+                </div>
+
+                {/* Floating 3D Badge 2: Bottom Left */}
+                <div className="absolute -bottom-3 -left-3 p-2.5 rounded-2xl bg-white shadow-xl border border-emerald-200 text-slate-900 flex items-center gap-2 animate-float-slow">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-800">Zero Ghost Workers</span>
+                </div>
+
+              </div>
             </div>
 
-            <div className="glass-panel p-3.5 bg-white/95 border border-slate-200/90 rounded-2xl shadow-2xs text-center space-y-1">
-              <div className="text-xl sm:text-2xl font-black text-amber-600 font-mono">0 Ghost Workers</div>
-              <div className="text-[11px] text-slate-500 font-bold">Biometric Deduplication</div>
-            </div>
-
-            <div className="glass-panel p-3.5 bg-white/95 border border-slate-200/90 rounded-2xl shadow-2xs text-center space-y-1">
-              <div className="text-xl sm:text-2xl font-black text-purple-700 font-mono">ISO 27001</div>
-              <div className="text-[11px] text-slate-500 font-bold">CLRA & DPDP Compliant</div>
-            </div>
           </div>
 
         </div>
       </section>
 
-      {/* 👷 LABOR MANAGEMENT & VERIFICATION SUITE */}
+      {/* 👷 LABOR MANAGEMENT & VERIFICATION SUITE WITH 3D VISUALS */}
       <section id="labor-solutions" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
           
@@ -632,145 +687,181 @@ export const LandingPageView = () => {
 
           {/* TAB 1: BLUE-COLLAR & CONTRACT LABOR MANAGEMENT */}
           {activeSolutionTab === 'labor' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
               
-              <div className="glass-panel p-6 sm:p-7 bg-amber-50/30 border-2 border-amber-200/80 rounded-3xl space-y-4 hover:border-amber-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-amber-200">
-                  <Smartphone className="w-6 h-6" />
+              {/* 3D Labor Visual (5 cols) */}
+              <div className="lg:col-span-5 perspective-container flex justify-center">
+                <div className="w-full max-w-md card-3d-interactive relative">
+                  <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-200 bg-white">
+                    <img
+                      src="/assets/3d/labor_3d_management.jpg"
+                      alt="3D Industrial Contract Labor Management Station"
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="p-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <HardHat className="w-5 h-5" />
+                        <div>
+                          <div className="text-xs font-black">Industrial Labor Gate Pass</div>
+                          <div className="text-[10px] text-amber-100">CLRA Form XIII Automated</div>
+                        </div>
+                      </div>
+                      <span className="badge bg-white text-amber-900 text-[9px] font-black">100% AUDIT PASS</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  45-Second Mobile Onboarding
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Workers authenticate via WhatsApp, SMS, or on-spot QR code directly on their smartphone. Zero app download required, making it 100% accessible for plant and field workers.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-amber-900 border-t border-amber-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              </div>
+
+              {/* Labor Feature Cards (7 cols) */}
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <div className="glass-panel p-5 bg-amber-50/40 border-2 border-amber-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-sm">
+                    <Smartphone className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-black text-slate-900">45s Mobile Onboarding</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Workers authenticate via WhatsApp, SMS, or QR magic links. Zero app download required, 100% accessible on any phone.
+                  </p>
+                  <div className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 pt-1 border-t border-amber-200">
+                    <Check className="w-3.5 h-3.5 text-amber-600" />
                     <span>Instant Aadhaar OTP & Live Selfie</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>Works on 2G/3G/4G Basic Smartphones</span>
-                  </div>
                 </div>
-              </div>
 
-              <div className="glass-panel p-6 sm:p-7 bg-emerald-50/30 border-2 border-emerald-200/80 rounded-3xl space-y-4 hover:border-emerald-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-emerald-200">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  Zero Ghost Workers & Fraud Prevention
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Eliminate duplicate contractor billing and fake worker identities. Cryptographic deduplication and AI facial biometrics ensure only verified physical laborers are registered.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-emerald-900 border-t border-emerald-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>National Court & Criminal Records Screen</span>
+                <div className="glass-panel p-5 bg-emerald-50/40 border-2 border-emerald-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <Fingerprint className="w-5 h-5" />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>MoRTH Heavy Vehicle Driver License Check</span>
+                  <h3 className="text-sm font-black text-slate-900">Ghost Worker Shield</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Biometric deduplication flags duplicate worker profiles across contractors and plant gates, ending double-billing fraud.
+                  </p>
+                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-1 border-t border-emerald-200">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>0 Duplicate Worker Records</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="glass-panel p-6 sm:p-7 bg-indigo-50/30 border-2 border-indigo-200/80 rounded-3xl space-y-4 hover:border-indigo-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-200">
-                  <FileCheck className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  CLRA Compliance & Digital Worker Passes
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Stay 100% audit-ready for state labor inspections. Generate instant 5-page labor dossiers, digital worker ID cards with QR codes, and automated statutory wage compliance reports.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-indigo-900 border-t border-indigo-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                    <span>Day-1 Bank IMPS Penny Drop Wage Check</span>
+                <div className="glass-panel p-5 bg-indigo-50/40 border-2 border-indigo-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <CreditCard className="w-5 h-5" />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                    <span>1-Click Labor Audit Reports Export</span>
+                  <h3 className="text-sm font-black text-slate-900">IMPS Bank Penny Drop</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Instantly verifies candidate bank account and official beneficiary name via ₹1 IMPS penny drop for wage transfers.
+                  </p>
+                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-1 border-t border-indigo-200">
+                    <Check className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>100% Name Match with Aadhaar</span>
                   </div>
                 </div>
+
+                <div className="glass-panel p-5 bg-purple-50/40 border-2 border-purple-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <QrCode className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-black text-slate-900">QR Digital Worker Passes</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Generates encrypted digital worker passes with QR code verification and automatic CLRA compliance reports for labor officers.
+                  </p>
+                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-1 border-t border-purple-200">
+                    <Check className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Instant Gate Turnstile Access</span>
+                  </div>
+                </div>
+
               </div>
 
             </div>
           )}
 
-          {/* TAB 2: CORPORATE & WHITE-COLLAR WORKFORCE */}
+          {/* TAB 2: CORPORATE & WHITE-COLLAR BGV */}
           {activeSolutionTab === 'corporate' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
               
-              <div className="glass-panel p-6 sm:p-7 bg-indigo-50/30 border-2 border-indigo-200/80 rounded-3xl space-y-4 hover:border-indigo-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-200">
-                  <Briefcase className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  EPFO Career History & Moonlighting Audit
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Direct connection to government employment repositories exposes real tenures, past employer legal names, and overlapping employment periods to eliminate moonlighting.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-indigo-900 border-t border-indigo-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                    <span>Zero Resume Inflation & Fake Certificates</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                    <span>100% Exact Date of Joining & Relieving</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="glass-panel p-6 sm:p-7 bg-sky-50/30 border-2 border-sky-200/80 rounded-3xl space-y-4 hover:border-sky-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-sky-600 text-white flex items-center justify-center font-black shadow-md shadow-sky-200">
-                  <CreditCard className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  Instant ₹1 IMPS Bank Penny Drop
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Real-time bank account validation matches candidate legal names against bank records, ensuring zero salary transfer failures on Day-1 payroll.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-sky-900 border-t border-sky-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-                    <span>Validates IFSC, Branch & Account Active Status</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-                    <span>Fuzzy Legal Name Match Algorithm</span>
+              {/* 3D Corporate Visual (5 cols) */}
+              <div className="lg:col-span-5 perspective-container flex justify-center">
+                <div className="w-full max-w-md card-3d-interactive relative">
+                  <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-200 bg-white">
+                    <img
+                      src="/assets/3d/corporate_3d_bgv.jpg"
+                      alt="3D Corporate Executive Background Verification Workstation"
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="p-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5" />
+                        <div>
+                          <div className="text-xs font-black">Executive Background Dossier</div>
+                          <div className="text-[10px] text-indigo-100">EPFO Career History Audited</div>
+                        </div>
+                      </div>
+                      <span className="badge bg-white text-indigo-900 text-[9px] font-black">ZERO MOONLIGHTING</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="glass-panel p-6 sm:p-7 bg-purple-50/30 border-2 border-purple-200/80 rounded-3xl space-y-4 hover:border-purple-400 transition-all card-hover-lift">
-                <div className="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black shadow-md shadow-purple-200">
-                  <Award className="w-6 h-6" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
-                  Dual-Logo 360° Certified PDF Reports
-                </h3>
-                <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                  Generate beautiful, executive-ready background screening dossiers with JOY Corporate verification seal, employer company logo, and QR code verification.
-                </p>
-                <div className="space-y-1.5 pt-2 text-[11px] font-bold text-purple-900 border-t border-purple-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                    <span>Encrypted Document Vault Storage</span>
+              {/* Corporate Feature Cards (7 cols) */}
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <div className="glass-panel p-5 bg-indigo-50/40 border-2 border-indigo-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <FileText className="w-5 h-5" />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                    <span>60-Day DPDP Auto-Purge Lifecycle</span>
+                  <h3 className="text-sm font-black text-slate-900">EPFO Employment Audit</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Direct authenticated EPFO passbook verification retrieves exact tenure, establishment codes, and catches moonlighting.
+                  </p>
+                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-1 border-t border-indigo-200">
+                    <Check className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Eliminates Fake Experience Letters</span>
                   </div>
                 </div>
+
+                <div className="glass-panel p-5 bg-purple-50/40 border-2 border-purple-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-black text-slate-900">National Court Checks</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Comprehensive legal records search across High Courts, District Courts, and Tribunals nationwide for clean hiring.
+                  </p>
+                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-1 border-t border-purple-200">
+                    <Check className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Instant FIR & Case Search</span>
+                  </div>
+                </div>
+
+                <div className="glass-panel p-5 bg-emerald-50/40 border-2 border-emerald-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <Eye className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-black text-slate-900">AI Face Liveness Match</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Anti-spoofing facial recognition matches live candidate webcam selfie against Aadhaar photo with 99.8% precision.
+                  </p>
+                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-1 border-t border-emerald-200">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Active Blink & Head-Tilt Checks</span>
+                  </div>
+                </div>
+
+                <div className="glass-panel p-5 bg-sky-50/40 border-2 border-sky-200 rounded-3xl space-y-3 card-hover-lift">
+                  <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-black text-slate-900">5-Page Audit Dossier</h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                    Generates official PDF background dossiers with digital signatures, QR validation links, and board-ready evidence.
+                  </p>
+                  <div className="text-[11px] font-bold text-sky-900 flex items-center gap-1.5 pt-1 border-t border-sky-200">
+                    <Check className="w-3.5 h-3.5 text-sky-600" />
+                    <span>One-Click Export & Download</span>
+                  </div>
+                </div>
+
               </div>
 
             </div>
@@ -779,179 +870,279 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* ⚡ PROPRIETARY VERIFICATION ENGINE & REPOSITORIES */}
+      {/* ⚡ INSTANT VERIFICATION SPEED ENGINE WITH 3D ASSET */}
       <section id="verification-engine" className="py-16 sm:py-24 bg-slate-900 text-white relative overflow-hidden">
-        
-        {/* Glow Accents */}
-        <div className="absolute top-0 right-10 w-96 h-96 bg-indigo-500/20 blur-3xl rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-96 h-96 bg-amber-500/10 blur-3xl rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14 relative z-10">
-          
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <span className="badge badge-purple text-xs font-black uppercase tracking-wider">Proprietary Technology</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white">
-              JOY Proprietary Multi-Source Verification Engine
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 font-medium">
-              Direct integration with government-authorized digital trust repositories, biometric neural networks, and banking rails.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-xs">
-            
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center font-bold">
-                <Fingerprint className="w-5 h-5" />
-              </div>
-              <h4 className="font-black text-sm text-white">UIDAI Aadhaar OTP & XML</h4>
-              <p className="text-slate-400 text-[11px] leading-relaxed">
-                Cryptographic authentication of resident identity, verified legal name, date of birth, gender, and certified permanent address.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center font-bold">
-                <Briefcase className="w-5 h-5" />
-              </div>
-              <h4 className="font-black text-sm text-white">EPFO Career History Passbook</h4>
-              <p className="text-slate-400 text-[11px] leading-relaxed">
-                Complete employment timeline authentication, company establishment names, joining/exit dates, and moonlighting detection.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold">
-                <CreditCard className="w-5 h-5" />
-              </div>
-              <h4 className="font-black text-sm text-white">NPCI IMPS Bank Penny Drop</h4>
-              <p className="text-slate-400 text-[11px] leading-relaxed">
-                Real-time ₹1 IMPS bank validation verifying bank branch, IFSC code, account active status, and beneficiary legal name.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-sky-600/30 text-sky-400 flex items-center justify-center font-bold">
-                <Truck className="w-5 h-5" />
-              </div>
-              <h4 className="font-black text-sm text-white">MoRTH Driver License & Court</h4>
-              <p className="text-slate-400 text-[11px] leading-relaxed">
-                National Sarathi driver license validation (LMV, HGV, Transport) and national criminal & court record screening.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 🎮 INTERACTIVE LIVE SIMULATOR / PLAYGROUND */}
-      <section id="simulator" className="py-16 sm:py-24 bg-slate-950 text-white relative overflow-hidden border-b border-slate-800">
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
           
-          <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <span className="badge badge-emerald text-xs font-black uppercase tracking-wider">Interactive Playground</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white">
-              Experience the Live Verification Engine
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-medium">
-              Select a persona below to see how our engine automatically executes multi-point checks in parallel.
-            </p>
-          </div>
-
-          {/* Simulator Box */}
-          <div className="max-w-4xl mx-auto glass-panel p-6 sm:p-8 bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl shadow-2xl space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Role Selectors */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-              <div className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-                Select Persona:
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {Object.keys(sampleRoles).map((roleKey) => (
-                  <button
-                    key={roleKey}
-                    onClick={() => handleRunSimulator(roleKey)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      selectedRoleSample === roleKey 
-                        ? 'bg-indigo-600 text-white shadow-md' 
-                        : 'bg-white/10 text-slate-300 hover:bg-white/20'
-                    }`}
-                  >
-                    {sampleRoles[roleKey].title}
-                  </button>
-                ))}
+            {/* Left 3D Smartphone Speed Asset (5 cols) */}
+            <div className="lg:col-span-5 perspective-container flex justify-center">
+              <div className="w-full max-w-md card-3d-interactive floating-3d-hero">
+                <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500/50 bg-slate-950 relative group">
+                  <div className="animate-scanline" />
+                  <img
+                    src="/assets/3d/speed_3d_instant.jpg"
+                    alt="3D 45-Second Rapid Verification Smartphone"
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="p-4 bg-slate-950/90 border-t border-white/10 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                      <span className="text-xs font-black text-white">Rapid Government Sync</span>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-indigo-400">TAT: 45 SECONDS</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Candidate Live Banner */}
-            <div className="bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div>
-                <span className="text-slate-400 font-bold block text-[11px]">Testing Subject:</span>
-                <span className="text-sm font-black text-white">{sampleRoles[selectedRoleSample].candidateName}</span>
-                <span className="badge badge-purple text-[9px] ml-2 font-bold">{sampleRoles[selectedRoleSample].badge}</span>
+            {/* Right Side: Verification Checks Matrix (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              <div className="space-y-2">
+                <span className="badge badge-cyan text-xs font-black uppercase tracking-wider">Multi-Source Engine</span>
+                <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
+                  Direct Verification Across Official Repositories
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400 font-medium">
+                  JOY connects with government-authorized digital identity and employment databases with zero manual paperwork.
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="badge badge-emerald text-[10px] font-black">
-                  {simulating ? 'Processing Verifications ⌛' : '100% Repository Checks Passed ✓'}
-                </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {[
+                  { title: 'UIDAI Aadhaar OTP & Address', desc: 'Instant OTP verification with masked demographic match and verified pin-code address.' },
+                  { title: 'NSDL & Income Tax PAN Match', desc: 'Validates official PAN status, legal candidate full name, and father name match.' },
+                  { title: 'EPFO Service Passbook Audit', desc: 'Authenticates Universal Account Number (UAN), past employer history, and PF records.' },
+                  { title: 'MoRTH Transport Driving License', desc: 'Verifies commercial, heavy goods (HGV), and driver transport license validity.' },
+                  { title: 'Bank IMPS Penny Drop', desc: 'Deposits ₹1 to active bank account to verify legal beneficiary name and IFSC.' },
+                  { title: 'National Criminal & Court Records', desc: 'Searches e-Courts records across District, High Courts, and National Tribunals.' }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-1.5 hover:border-indigo-500 transition-colors">
+                    <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{item.title}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 🛡️ TRUST, DPDP ACT & CYBER SECURITY SECTION WITH 3D SHIELD */}
+      <section className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Content (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              <span className="badge badge-emerald text-xs font-black uppercase tracking-wider">Enterprise Trust & Security</span>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Bank-Grade Security with DPDP Act 2023 Compliance
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                JOY TrueProfile is built strictly for enterprise corporate standards. We operate on zero-retention raw biometric architecture with candidate consent logging and ISO 27001 data encryption.
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+                  <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900">DPDP Act 2023 Digital Consent Architecture</h4>
+                    <p className="text-[11px] text-slate-500 font-medium">Every candidate verification captures explicit, timestamped digital consent with purpose limitation.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+                  <div className="p-2 rounded-xl bg-indigo-100 text-indigo-800 font-bold">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900">ISO 27001:2022 Certified Infrastructure</h4>
+                    <p className="text-[11px] text-slate-500 font-medium">All sensitive data in transit and at rest is secured with 256-bit TLS encryption.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+                  <div className="p-2 rounded-xl bg-purple-100 text-purple-800 font-bold">
+                    <Scale className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900">100% CLRA Audit Pass Rate</h4>
+                    <p className="text-[11px] text-slate-500 font-medium">Standardized labor registers and candidate dossiers for government statutory inspections.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
                 <button
-                  onClick={() => handleRunSimulator(selectedRoleSample)}
-                  className="btn btn-superadmin text-[11px] py-1.5 px-3 font-bold cursor-pointer"
+                  onClick={() => setShowLegalHandbook(true)}
+                  className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 cursor-pointer hover:border-purple-300"
                 >
-                  Re-test ⚡
+                  <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Open DPDP Compliance Handbook 🛡️</span>
                 </button>
               </div>
             </div>
 
-            {/* Checks Execution Pipeline Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {sampleRoles[selectedRoleSample].checks.map((c, i) => {
-                const isPassed = simStep >= i + 1;
+            {/* Right 3D Shield (5 cols) */}
+            <div className="lg:col-span-5 perspective-container flex justify-center">
+              <div className="w-full max-w-md card-3d-interactive floating-3d-hero">
+                <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-emerald-300/80 bg-white">
+                  <img
+                    src="/assets/3d/security_3d_shield.jpg"
+                    alt="3D DPDP Act 2023 Security & Cyber Vault Shield"
+                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-black">DPDP 2023 Certified</div>
+                      <div className="text-[10px] text-emerald-400">Zero-Retention Biometric Vault</div>
+                    </div>
+                    <span className="badge badge-emerald text-[9px] font-black">SECURE VAULT ✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 🎯 INTERACTIVE LIVE VERIFICATION SIMULATOR */}
+      <section id="simulator" className="py-16 sm:py-24 bg-slate-950 text-white relative overflow-hidden">
+        
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
+          
+          <div className="text-center space-y-3">
+            <span className="badge badge-purple text-xs font-black uppercase tracking-wider">Experience Live Speed</span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
+              Interactive 45-Second Verification Simulator
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium max-w-2xl mx-auto">
+              Select a workforce role below and experience how JOY authenticates identity, employment, and legal records in real-time.
+            </p>
+          </div>
+
+          {/* Role Selectors */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { key: 'laborer', label: '👷 Contract Factory Laborer', badge: 'Blue-Collar' },
+              { key: 'driver', label: '🚚 Logistics Fleet Driver', badge: 'MoRTH DL' },
+              { key: 'executive', label: '💼 Enterprise Manager', badge: 'EPFO BGV' }
+            ].map((role) => (
+              <button
+                key={role.key}
+                onClick={() => handleRunSimulator(role.key)}
+                className={`p-3 sm:px-5 sm:py-3 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border ${
+                  selectedRoleSample === role.key
+                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg scale-102'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <span>{role.label}</span>
+                <span className="text-[10px] opacity-75 font-mono">({role.badge})</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Simulated Active Dossier Card */}
+          <div className="glass-panel p-6 sm:p-8 bg-slate-900/90 border-2 border-slate-800 rounded-3xl shadow-2xl space-y-6 max-w-3xl mx-auto relative overflow-hidden">
+            
+            {/* Live Scanning Laser Beam Animation */}
+            {simulating && <div className="animate-scanline" />}
+
+            {/* Candidate Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                  {sampleRoles[selectedRoleSample].candidateName[0]}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black">{sampleRoles[selectedRoleSample].candidateName}</h3>
+                    <span className="badge badge-emerald text-[9px] font-black">SAMPLE RECORD</span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-medium">{sampleRoles[selectedRoleSample].title}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleRunSimulator(selectedRoleSample)}
+                disabled={simulating}
+                className="btn btn-superadmin text-xs py-2.5 px-4 font-black flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
+              >
+                <Play className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
+                <span>{simulating ? 'Running Live Check...' : 'Re-Run Live Simulator ⚡'}</span>
+              </button>
+            </div>
+
+            {/* Checks Execution Matrix */}
+            <div className="space-y-2.5">
+              {sampleRoles[selectedRoleSample].checks.map((chk, idx) => {
+                const isPassed = !simulating || simStep > idx;
+                const isCurrent = simulating && simStep === idx;
+
                 return (
                   <div 
-                    key={i} 
-                    className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                    key={idx} 
+                    className={`p-3 sm:p-3.5 rounded-2xl flex items-center justify-between text-xs transition-all ${
                       isPassed 
-                        ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' 
-                        : 'bg-white/5 border-white/10 text-slate-400'
+                        ? 'bg-slate-800/80 border border-emerald-500/30 text-slate-200' 
+                        : isCurrent 
+                          ? 'bg-indigo-950/70 border border-indigo-500 text-indigo-200 animate-pulse'
+                          : 'bg-slate-950/50 border border-slate-900 text-slate-500 opacity-50'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-6 h-6 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-                        isPassed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-400 animate-spin-slow'
-                      }`}>
-                        {isPassed ? '✓' : i + 1}
-                      </div>
-                      <div>
-                        <span className="font-extrabold text-xs block text-white">{c.name}</span>
-                        <span className="text-[11px] text-emerald-400 font-medium">{isPassed ? c.status : 'Authenticating...'}</span>
-                      </div>
+                      {isPassed ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      ) : isCurrent ? (
+                        <Clock className="w-4 h-4 text-indigo-400 animate-spin shrink-0" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border border-slate-700 shrink-0" />
+                      )}
+                      <span className="font-bold">{chk.name}</span>
                     </div>
 
-                    <span className="text-[10px] font-mono text-slate-400 shrink-0">
-                      {isPassed ? `⏱️ ${c.time}` : '⌛ ...'}
-                    </span>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className={`font-mono text-[11px] font-bold ${isPassed ? 'text-emerald-400' : 'text-slate-500'}`}>
+                        {isPassed ? chk.status : isCurrent ? 'Validating...' : 'Pending'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+                        {chk.time}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Footer Directive */}
-            <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <span className="text-slate-400 font-medium">
-                📄 Verified outputs automatically assemble into an official <strong>360° Certified Labor/Candidate Dossier</strong> with QR verification.
-              </span>
-
+            {/* Complete Banner */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-emerald-950/40 p-4 rounded-2xl border border-emerald-500/30">
+              <div className="flex items-center gap-2 text-emerald-300 font-bold">
+                <CheckCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span>Verification Complete — Audit-Ready 5-Page Dossier Generated!</span>
+              </div>
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="btn btn-hrexecutive text-xs py-2 px-4 font-black shadow-md shrink-0 flex items-center gap-1.5 cursor-pointer"
+                className="btn btn-secondary text-xs py-1.5 px-3 bg-white text-slate-900 font-bold hover:bg-slate-100 cursor-pointer shrink-0"
               >
-                <span>Request Custom Pipeline</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                Request Enterprise Access 🚀
               </button>
             </div>
 
@@ -960,65 +1151,80 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* ⭐ VERIFIED CLIENT REVIEWS & TESTIMONIALS */}
+      {/* ⭐ VERIFIED ENTERPRISE CLIENT REVIEWS */}
       <section id="reviews" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-black">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span>4.9 / 5.0 Rating from 450+ Enterprises & Staffing Firms</span>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+            <div className="space-y-2 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="badge badge-amber text-xs font-black uppercase tracking-wider">4.9 / 5.0 Rating</span>
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                  ))}
+                </div>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Trusted by Leading Industrial Plants & HR Leaders
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                Read authentic feedback from corporate compliance officers, manufacturing plant heads, and staffing agencies.
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Trusted by Leading Employers & Staffing Leaders
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium">
-              Read authentic feedback from HR Directors, Plant Operations Managers, and Staffing Agencies who trust JOY.
-            </p>
 
-            {/* Category Filter Pills & Submit Review Button */}
-            <div className="pt-3 flex flex-wrap items-center justify-center gap-2">
-              <button
-                onClick={() => setReviewCategory('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  reviewCategory === 'all' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                All Reviews ({reviewsList.length})
-              </button>
-              <button
-                onClick={() => setReviewCategory('labor')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  reviewCategory === 'labor' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                Factory & Contract Labor
-              </button>
-              <button
-                onClick={() => setReviewCategory('logistics')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  reviewCategory === 'logistics' ? 'bg-sky-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                Logistics & Drivers
-              </button>
-              <button
-                onClick={() => setReviewCategory('corporate')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  reviewCategory === 'corporate' ? 'bg-purple-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                Corporate & IT
-              </button>
+            <button
+              onClick={() => setShowReviewModal(true)}
+              className="btn btn-superadmin text-xs py-2.5 px-5 font-black flex items-center gap-2 cursor-pointer shrink-0 shadow-md"
+            >
+              <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" />
+              <span>Submit Verified Review ⭐</span>
+            </button>
+          </div>
 
-              <button
-                onClick={() => setShowReviewModal(true)}
-                className="btn btn-secondary text-xs py-1.5 px-3.5 font-bold flex items-center gap-1.5 ml-2 cursor-pointer bg-white hover:bg-slate-100 border-indigo-200 text-indigo-700"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Write a Review ✍️</span>
-              </button>
-            </div>
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs">
+            <button
+              onClick={() => setReviewCategory('all')}
+              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+                reviewCategory === 'all'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              All Reviews ({reviewsList.length})
+            </button>
+            <button
+              onClick={() => setReviewCategory('labor')}
+              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+                reviewCategory === 'labor'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              👷 Factory & Contract Labor
+            </button>
+            <button
+              onClick={() => setReviewCategory('logistics')}
+              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+                reviewCategory === 'logistics'
+                  ? 'bg-sky-600 text-white shadow-sm'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              🚚 Driver & Logistics Fleet
+            </button>
+            <button
+              onClick={() => setReviewCategory('corporate')}
+              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+                reviewCategory === 'corporate'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              💼 White-Collar & IT
+            </button>
           </div>
 
           {/* Reviews Grid */}
@@ -1285,7 +1491,7 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-            {/* 📰 KNOWLEDGE BASE & COMPLIANCE ARTICLES */}
+      {/* 📰 KNOWLEDGE BASE & COMPLIANCE ARTICLES */}
       <section id="blog" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -1422,7 +1628,7 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* 🏢 ENTERPRISE FOOTER */}
+      {/* 🏢 ENTERPRISE FOOTER (Marketing First - Zero Portal Logins) */}
       <footer className="bg-slate-950 text-slate-400 py-12 sm:py-16 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
@@ -1442,19 +1648,13 @@ export const LandingPageView = () => {
             </div>
 
             <div className="space-y-2">
-              <h5 className="font-extrabold text-white uppercase tracking-wider text-[11px]">Direct Portal Access</h5>
-              <div className="flex flex-col space-y-1.5 font-semibold">
-                <button 
-                  onClick={() => setShowLoginModal(true)} 
-                  className="text-left text-indigo-400 hover:underline cursor-pointer flex items-center gap-1"
-                >
-                  <Lock className="w-3 h-3" />
-                  <span>Client Login Gateway</span>
-                </button>
-                <Link to="/superadmin" className="hover:text-white transition-colors">👑 Master Admin Portal</Link>
-                <Link to="/company" className="hover:text-white transition-colors">🏢 Corporate Employer Console</Link>
-                <Link to="/hr" className="hover:text-white transition-colors">👩‍💼 HR Recruiter Workstation</Link>
-                <Link to="/verify" className="hover:text-white transition-colors">📱 Candidate Verification Gateway</Link>
+              <h5 className="font-extrabold text-white uppercase tracking-wider text-[11px]">Enterprise Capabilities</h5>
+              <div className="flex flex-col space-y-1.5 font-semibold text-slate-400">
+                <a href="#labor-solutions" className="hover:text-amber-400 transition-colors">👷 Contract Labor Management</a>
+                <a href="#verification-engine" className="hover:text-indigo-400 transition-colors">⚡ Instant 45s Identity Verification</a>
+                <a href="#labor-solutions" className="hover:text-purple-400 transition-colors">📊 EPFO Career Passbook Audits</a>
+                <a href="#simulator" className="hover:text-emerald-400 transition-colors">🎯 Live Biometric Simulator</a>
+                <Link to="/blog" className="hover:text-sky-400 transition-colors">📰 Knowledge Base & Legal Guides</Link>
               </div>
             </div>
 
@@ -1499,112 +1699,9 @@ export const LandingPageView = () => {
         </div>
       </footer>
 
-      {/* 🔐 CLIENT LOGIN SELECTOR MODAL (Popup cleanly instead of cluttering page) */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center animate-fadeIn">
-          <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 relative text-slate-900 animate-scaleIn">
-            
-            <button 
-              onClick={() => setShowLoginModal(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <img src="/joy_logo.png" alt="JOY Logo" className="w-10 h-10 object-contain" />
-              <div>
-                <h3 className="font-black text-lg text-slate-900">Select Portal to Sign In</h3>
-                <p className="text-xs text-slate-500 font-medium">JOY CORPORATE SOLUTIONS PVT LTD</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              
-              <Link
-                to="/superadmin"
-                onClick={() => setShowLoginModal(false)}
-                className="p-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 border border-indigo-200 transition-all space-y-2 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-xs">
-                    <Crown className="w-4 h-4" />
-                  </div>
-                  <span className="badge badge-purple text-[9px]">Master Console</span>
-                </div>
-                <div>
-                  <h4 className="font-black text-sm text-indigo-950 group-hover:text-indigo-700">Super Admin Portal</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Master governance, corporate tariffs, and live telemetry.</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/company"
-                onClick={() => setShowLoginModal(false)}
-                className="p-4 rounded-2xl bg-sky-50/70 hover:bg-sky-100/90 border border-sky-200 transition-all space-y-2 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-sky-600 text-white shadow-xs">
-                    <Building2 className="w-4 h-4" />
-                  </div>
-                  <span className="badge badge-cyan text-[9px]">Employer</span>
-                </div>
-                <div>
-                  <h4 className="font-black text-sm text-sky-950 group-hover:text-sky-700">Company Admin Portal</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Workforce registry, recruiter oversight, and GST invoices.</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/hr"
-                onClick={() => setShowLoginModal(false)}
-                className="p-4 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200 transition-all space-y-2 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-emerald-600 text-white shadow-xs">
-                    <UserCheck className="w-4 h-4" />
-                  </div>
-                  <span className="badge badge-emerald text-[9px]">Recruiter</span>
-                </div>
-                <div>
-                  <h4 className="font-black text-sm text-emerald-950 group-hover:text-emerald-700">HR Executive Workstation</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Candidate profiler, WhatsApp dispatch, and 360° dossiers.</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/verify?token=tok_karan_903"
-                onClick={() => setShowLoginModal(false)}
-                className="p-4 rounded-2xl bg-amber-50/70 hover:bg-amber-100/90 border border-amber-200 transition-all space-y-2 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-xl bg-amber-600 text-white shadow-xs">
-                    <Smartphone className="w-4 h-4" />
-                  </div>
-                  <span className="badge badge-amber text-[9px]">Candidate</span>
-                </div>
-                <div>
-                  <h4 className="font-black text-sm text-amber-950 group-hover:text-amber-700">Candidate Token Portal</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Passwordless Aadhaar OTP and AI camera verification.</p>
-                </div>
-              </Link>
-
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-              <Link to="/login" onClick={() => setShowLoginModal(false)} className="text-indigo-600 font-bold hover:underline">
-                Go to Universal Login Screen ➔
-              </Link>
-              <span className="text-slate-400">Encrypted 256-Bit SSL</span>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* 📑 LIVE DEMO REQUEST MODAL */}
+      {/* 🚀 BOOK A LIVE ENTERPRISE DEMO MODAL */}
       {showDemoModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5 relative text-slate-900 mt-10">
             
             <button 
@@ -1615,10 +1712,12 @@ export const LandingPageView = () => {
             </button>
 
             <div className="flex items-center gap-3">
-              <img src="/joy_logo.png" alt="JOY Logo" className="w-10 h-10 object-contain" />
+              <div className="p-2.5 rounded-2xl bg-indigo-600 text-white font-bold">
+                <Sparkles className="w-6 h-6" />
+              </div>
               <div>
-                <h3 className="font-black text-lg text-slate-900">Schedule an Enterprise Demo</h3>
-                <p className="text-xs text-slate-500 font-medium">JOY CORPORATE SOLUTIONS PVT LTD</p>
+                <h3 className="font-black text-lg text-slate-900">Book Enterprise Demo</h3>
+                <p className="text-xs text-slate-500 font-medium">Experience automated workforce verification live</p>
               </div>
             </div>
 
@@ -1734,7 +1833,7 @@ export const LandingPageView = () => {
                 <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
                 <h4 className="font-extrabold text-slate-900 text-sm">Thank You for Your Feedback!</h4>
                 <p className="text-xs text-slate-600 font-medium">
-                  Your review has been successfully submitted and added to our verified reviews section.
+                  Your review has been successfully submitted and will appear in our verified reviews once moderated.
                 </p>
               </div>
             ) : (
@@ -1787,11 +1886,10 @@ export const LandingPageView = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-700 font-bold mb-1">Company / Organization *</label>
+                    <label className="block text-slate-700 font-bold mb-1">Company Legal Name</label>
                     <input 
                       type="text" 
-                      required 
-                      placeholder="Tata Steel / Swiggy / Wipro"
+                      placeholder="Titan Industrial Logistics"
                       value={reviewForm.company}
                       onChange={(e) => setReviewForm({ ...reviewForm, company: e.target.value })}
                       className="form-input py-2.5"
@@ -1799,28 +1897,28 @@ export const LandingPageView = () => {
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 font-bold mb-1">Industry Sector</label>
+                    <label className="block text-slate-700 font-bold mb-1">Industry Category</label>
                     <select
                       value={reviewForm.industry}
                       onChange={(e) => setReviewForm({ ...reviewForm, industry: e.target.value })}
                       className="form-select py-2.5 text-xs font-bold"
                     >
-                      <option value="labor">Factory & Contract Labor</option>
-                      <option value="logistics">Logistics & Fleet Transport</option>
-                      <option value="corporate">Corporate & IT Enterprise</option>
+                      <option value="labor">Contract / Industrial Labor</option>
+                      <option value="logistics">Logistics & Fleet Drivers</option>
+                      <option value="corporate">Corporate / IT / BFSI</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Your Review & Feedback *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Your Feedback & Experience *</label>
                   <textarea 
-                    rows={4}
-                    required 
-                    placeholder="Describe how JOY improved your hiring speed, labor compliance, or fraud prevention..."
+                    rows="3"
+                    required
+                    placeholder="Share how JOY TrueProfile improved your onboarding TAT, eliminated fraud, or streamlined compliance..."
                     value={reviewForm.comment}
                     onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                    className="form-textarea py-2 text-xs"
+                    className="form-input py-2.5"
                   />
                 </div>
 
@@ -1836,17 +1934,22 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* Statutory Legal & DPDP Compliance Handbook Modal */}
+      {/* ⚖️ LEGAL & COMPLIANCE HANDBOOK MODAL */}
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
       />
 
-      {/* ⚡ Razorpay Verification Wallet Recharge Modal */}
+      {/* 💳 RAZORPAY VERIFICATION RECHARGE MODAL */}
       <RazorpayPaymentModal
         isOpen={showLandingRazorpayModal}
         onClose={() => setShowLandingRazorpayModal(false)}
-        defaultAmount={landingSelectedAmount}
+        rechargeAmount={landingSelectedAmount}
+        onSuccess={() => {
+          setShowLandingRazorpayModal(false);
+          confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+          alert('Verification wallet recharge successful!');
+        }}
       />
 
     </div>

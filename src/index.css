@@ -523,6 +523,65 @@ body[data-role="employee_link"] {
   box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.12), 0 10px 15px -5px rgba(15, 23, 42, 0.04);
 }
 
+/* 3D Depth & Interactive Hover Classes */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.card-3d-interactive {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.card-3d-interactive:hover {
+  transform: translateY(-8px) rotateX(3deg) rotateY(-2deg) scale(1.02);
+  box-shadow: 0 30px 60px -15px rgba(79, 70, 229, 0.2), 0 15px 25px -5px rgba(15, 23, 42, 0.08);
+}
+
+.floating-3d-hero {
+  animation: floatSlow 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.floating-3d-hero-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes scanlineBeam {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 100%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.animate-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #38bdf8, #10b981, transparent);
+  box-shadow: 0 0 15px #6366f1, 0 0 30px #38bdf8;
+  animation: scanlineBeam 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.glow-pill-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+}
+
+.glow-pill-indigo {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
