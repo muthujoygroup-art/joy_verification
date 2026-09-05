@@ -1,21 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
-import { LandingPageView } from './views/LandingPageView';
-import { LoginView } from './views/LoginView';
-import { SuperAdminView } from './views/SuperAdminView';
-import { CompanyAdminView } from './views/CompanyAdminView';
-import { HrExecutiveView } from './views/HrExecutiveView';
-import { EmployeePortalView } from './views/EmployeePortalView';
-import { CompanyActivationView } from './views/CompanyActivationView';
-import { HrActivationView } from './views/HrActivationView';
-import { BlogView } from './views/BlogView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { CheckCircle2 } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+
+// Route-Level Code Splitting & Security Chunk Isolation (Lazy Loading)
+const LandingPageView = lazy(() => import('./views/LandingPageView').then(m => ({ default: m.LandingPageView })));
+const LoginView = lazy(() => import('./views/LoginView').then(m => ({ default: m.LoginView })));
+const SuperAdminView = lazy(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })));
+const CompanyAdminView = lazy(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })));
+const HrExecutiveView = lazy(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })));
+const EmployeePortalView = lazy(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })));
+const CompanyActivationView = lazy(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })));
+const HrActivationView = lazy(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })));
+const BlogView = lazy(() => import('./views/BlogView').then(m => ({ default: m.BlogView })));
+
+// Loading Fallback Component
+const RouteLoadingSpinner = () => (
+  <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+    <div className="w-10 h-10 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
+    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Loading Secure Workspace...</span>
+  </div>
+);
 
 // Wrapper for Super Admin Route (/superadmin)
 const SuperAdminRoute = () => {
@@ -81,7 +91,6 @@ const CandidateRoute = () => {
     if (token) {
       setSelectedCandidateToken(token);
     }
-    // If token exists in URL and candidate not logged in, auto-login via magic token
     if (token && (!currentUser || currentRole !== 'employee_link')) {
       loginUser('employee_link', { token });
     }
@@ -99,94 +108,55 @@ const CandidateRoute = () => {
   );
 };
 
-// Wrapper for Generic /login Route
-const GenericLoginRoute = () => {
-  const { currentRole, currentUser } = useApp();
-  if (currentUser) {
-    if (currentRole === 'superadmin') return <Navigate to="/superadmin" replace />;
-    if (currentRole === 'company') return <Navigate to="/company" replace />;
-    if (currentRole === 'hrexecutive') return <Navigate to="/hr" replace />;
-    if (currentRole === 'employee_link') return <Navigate to="/verify" replace />;
-  }
-  return <LoginView initialRole="superadmin" />;
-};
-
-// Main Routing Container with Inactivity and Toast Modals
-const MainApp = () => {
-  const { 
-    currentRole, 
-    toastMessage, 
-    showInactivityWarning, 
-    inactivityCountdown, 
-    refreshUserSession, 
-    logoutUser 
-  } = useApp();
-
-  useEffect(() => {
-    if (currentRole) {
-      document.body.setAttribute('data-role', currentRole);
-    } else {
-      document.body.removeAttribute('data-role');
-    }
-  }, [currentRole]);
-
-  return (
-    <>
-      <Routes>
-        {/* Main Root URL: Public Enterprise Marketing & Services Homepage */}
-        <Route path="/" element={<LandingPageView />} />
-
-        {/* Dedicated Sub-Portal Direct URLs */}
-        <Route path="/superadmin/*" element={<SuperAdminRoute />} />
-        <Route path="/company/*" element={<CompanyRoute />} />
-        <Route path="/hr/*" element={<HrRoute />} />
-        <Route path="/company-activation" element={<CompanyActivationView />} />
-        <Route path="/hr-activation" element={<HrActivationView />} />
-        <Route path="/verify" element={<CandidateRoute />} />
-        <Route path="/candidate" element={<CandidateRoute />} />
-        <Route path="/login" element={<GenericLoginRoute />} />
-        <Route path="/blog" element={<BlogView />} />
-        <Route path="/blog/:slug" element={<BlogView />} />
-
-        {/* Catch-All Unknown Routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-
-      {/* Global Inactivity Warning Modal */}
-      <SessionInactivityModal
-        isOpen={showInactivityWarning}
-        countdownSeconds={inactivityCountdown}
-        onStayLoggedIn={refreshUserSession}
-        onLogoutNow={logoutUser}
-      />
-
-      {/* Global Interactive Guided Tour Spotlight */}
-      <GuidedTourSpotlight />
-      <InteractiveTourGuideModal />
-
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
-          <div className="glass-panel px-4 py-3 border-emerald-300 bg-emerald-50 text-emerald-900 text-xs font-semibold rounded-xl shadow-xl flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>{toastMessage.msg}</span>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export function App() {
+export const App = () => {
   return (
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
-          <MainApp />
+          <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between overflow-x-hidden">
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <Routes>
+                {/* 1. Public Marketing Landing Page (No Portal URLs Leaked) */}
+                <Route path="/" element={<LandingPageView />} />
+
+                {/* 2. Public Knowledge Hub / Blog */}
+                <Route path="/blog" element={<BlogView />} />
+
+                {/* 3. Role-Based Login Workstations */}
+                <Route path="/login" element={<LoginView />} />
+                <Route path="/superadmin/login" element={<LoginView initialRole="superadmin" />} />
+                <Route path="/company/login" element={<LoginView initialRole="company" />} />
+                <Route path="/hr/login" element={<LoginView initialRole="hrexecutive" />} />
+
+                {/* 4. Authenticated & Role-Gated Portal Dashboards */}
+                <Route path="/superadmin/*" element={<SuperAdminRoute />} />
+                <Route path="/company/*" element={<CompanyRoute />} />
+                <Route path="/hr/*" element={<HrRoute />} />
+
+                {/* 5. Mobile Candidate Verification Magic Links */}
+                <Route path="/verify" element={<CandidateRoute />} />
+                <Route path="/candidate" element={<CandidateRoute />} />
+
+                {/* 6. Onboarding & Activation Flows */}
+                <Route path="/activate" element={<CompanyActivationView />} />
+                <Route path="/activate-company" element={<CompanyActivationView />} />
+                <Route path="/activate-hr" element={<HrActivationView />} />
+
+                {/* 7. Fallback Wildcard Redirect */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+
+            {/* Global Security & Inactivity Session Shield */}
+            <SessionInactivityModal />
+
+            {/* Guided Tour Spotlight */}
+            <GuidedTourSpotlight />
+          </div>
         </BrowserRouter>
       </AppProvider>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;

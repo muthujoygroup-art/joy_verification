@@ -6,8 +6,32 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/',
   plugins: [react(), tailwindcss()],
+  build: {
+    sourcemap: false, // Ensure source maps are never generated or exposed to the public
+    minify: true,
+    cssMinify: true,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('canvas-confetti') || id.includes('dompurify') || id.includes('html2canvas')) {
+              return 'vendor-utils';
+            }
+            return 'vendor-core';
+          }
+        }
+      }
+    }
+  },
   server: {
-    host: true, // Listens on all addresses including LAN and IPv6/IPv4
+    host: true,
     port: 5173,
     strictPort: true,
     cors: true,
@@ -27,4 +51,4 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   }
-})
+});
