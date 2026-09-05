@@ -1190,3 +1190,117 @@ body[data-role="employee_link"] {
   }
 }
 
+
+
+/* ==============================================================================
+ * ULTRA-HIGH-END AESTHETICS (WAABI.AI & BLOOM INSPIRED DARK TECH & GLASS)
+ * ============================================================================== */
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.08); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes soundwaveBar {
+  0%, 100% { height: 4px; }
+  50% { height: 28px; }
+}
+
+@keyframes neonShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes laserSweepVertical {
+  0% { top: 0%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-radar-sweep {
+  animation: radarSweep 4s linear infinite;
+  transform-origin: center center;
+}
+
+.animate-laser-vertical {
+  animation: laserSweepVertical 2.5s ease-in-out infinite;
+}
+
+.animate-neon-shimmer {
+  background-size: 200% 200%;
+  animation: neonShimmer 4s ease infinite;
+}
+
+/* Soundwave Visualizer Bars */
+.soundwave-1 { animation: soundwaveBar 0.8s ease-in-out infinite; }
+.soundwave-2 { animation: soundwaveBar 1.1s ease-in-out 0.2s infinite; }
+.soundwave-3 { animation: soundwaveBar 0.7s ease-in-out 0.4s infinite; }
+.soundwave-4 { animation: soundwaveBar 1.3s ease-in-out 0.1s infinite; }
+.soundwave-5 { animation: soundwaveBar 0.9s ease-in-out 0.3s infinite; }
+.soundwave-6 { animation: soundwaveBar 1.2s ease-in-out 0.5s infinite; }
+
+/* Waabi & Bloom Signature Glowing Accents */
+.glow-neon-pink {
+  box-shadow: 0 0 30px rgba(255, 44, 107, 0.45), 0 0 60px rgba(255, 44, 107, 0.2);
+}
+
+.glow-neon-cyan {
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.45), 0 0 60px rgba(6, 182, 212, 0.2);
+}
+
+.glow-neon-emerald {
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.45), 0 0 60px rgba(16, 185, 129, 0.2);
+}
+
+.glow-neon-violet {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.45), 0 0 60px rgba(139, 92, 246, 0.2);
+}
+
+/* Dark Frosted Glassmorphism */
+.glass-dark-card {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-dark-card:hover {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 25px 60px -10px rgba(99, 102, 241, 0.2), 0 0 30px rgba(99, 102, 241, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Isometric Tech Background Grid */
+.bg-tech-grid-dark {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.bg-radial-gradient-hero {
+  background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.18) 0%, rgba(6, 182, 212, 0.1) 35%, transparent 70%);
+}
