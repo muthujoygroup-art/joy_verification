@@ -477,10 +477,10 @@ export const LandingPageView = () => {
       </div>
 
       {/* ==============================================================================
-       * 1. FLOATING PILL FROSTED GLASS HEADER
+       * 1. STICKY TOP HEADER (ZERO OVERLAPPING GUARANTEE)
        * ============================================================================== */}
-      <header className="fixed top-4 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
-        <nav className="pointer-events-auto max-w-6xl w-full mx-auto backdrop-blur-2xl bg-slate-900/90 border border-slate-700/80 shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-full px-5 py-3 flex items-center justify-between transition-all duration-300">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-2xl bg-[#070b14]/90 border-b border-slate-800/80 px-4 py-3 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           
           {/* Brand Logo with Glowing Shield */}
           <div className="flex items-center gap-3">
@@ -500,7 +500,7 @@ export const LandingPageView = () => {
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-1 bg-slate-950/70 border border-slate-800 px-3 py-1.5 rounded-full">
+          <div className="hidden lg:flex items-center gap-1 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full">
             <a href="#solutions" className="px-3.5 py-1 text-xs font-semibold text-slate-300 hover:text-cyan-400 hover:bg-slate-800/70 rounded-full transition-all">
               Solutions
             </a>
@@ -525,7 +525,7 @@ export const LandingPageView = () => {
           <div className="hidden sm:flex items-center gap-3">
             <a
               href="#interactive-lab"
-              className="px-4 py-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-950 hover:bg-slate-850 border border-slate-700/80 rounded-full transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-full transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Zap className="w-3.5 h-3.5 text-cyan-400" />
               <span>Try Simulator</span>
@@ -543,17 +543,17 @@ export const LandingPageView = () => {
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-300 hover:text-white bg-slate-950 border border-slate-800 rounded-full"
+              className="p-2 text-slate-300 hover:text-white bg-slate-900 border border-slate-800 rounded-full"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-3xl pt-24 px-6 flex flex-col gap-4 animate-fadeIn lg:hidden">
+        <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-3xl pt-20 px-6 flex flex-col gap-4 animate-fadeIn lg:hidden">
           <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-3">
             Solutions Overview
           </a>
@@ -583,8 +583,8 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 2. BALANCED 2-COLUMN HERO SECTION
        * ============================================================================== */}
-      <section className="relative z-10 pt-28 pb-16 lg:pt-36 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <section className="relative z-10 pt-10 pb-16 lg:pt-16 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* Left Column: Hero Typography & Actions */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
@@ -597,7 +597,7 @@ export const LandingPageView = () => {
             </div>
 
             {/* Main Title */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12] mb-6 font-outfit">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15] mb-6 font-outfit">
               Create & Verify <br className="hidden sm:inline" />
               Complete Labor Profiles in{' '}
               <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -622,7 +622,7 @@ export const LandingPageView = () => {
 
               <a
                 href="#interactive-lab"
-                className="w-full sm:w-auto px-6 py-4 text-sm font-bold text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 hover:border-cyan-500/50"
+                className="w-full sm:w-auto px-6 py-4 text-sm font-bold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 hover:border-cyan-500/50"
               >
                 <Zap className="w-4 h-4 text-cyan-400" />
                 <span>Launch Biometric Lab ⚡</span>
@@ -662,7 +662,7 @@ export const LandingPageView = () => {
               onMouseMove={handleMouseMoveHero}
               onMouseLeave={handleMouseLeaveHero}
               style={tiltStyle}
-              className="relative w-full max-w-md bg-slate-900/90 p-2 rounded-3xl border border-cyan-500/30 shadow-[0_25px_60px_rgba(0,0,0,0.8),0_0_50px_rgba(6,182,212,0.25)] transition-all group"
+              className="relative w-full max-w-[420px] bg-slate-900/90 p-3 rounded-3xl border border-cyan-500/30 shadow-[0_25px_60px_rgba(0,0,0,0.8),0_0_50px_rgba(6,182,212,0.25)] transition-all group"
             >
               {/* 3D Smart Card Image with Laser Scan Beam */}
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-[4/3]">
@@ -795,7 +795,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 4. LIVE INDIA WORKFORCE RADAR (INTERACTIVE MAP & TELEMETRY STREAM)
        * ============================================================================== */}
-      <section id="live-radar" className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section id="live-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
             <Radio className="w-3.5 h-3.5 animate-pulse" />
@@ -910,7 +910,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 5. THE "TRUEPROFILE ENGINE STUDIO" (INTERACTIVE LIVE SIMULATOR)
        * ============================================================================== */}
-      <section id="interactive-lab" className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section id="interactive-lab" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-950 border border-indigo-800 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-4">
@@ -1078,7 +1078,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 6. DYNAMIC ROI & SAVINGS CALCULATOR
        * ============================================================================== */}
-      <section id="roi-calculator" className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section id="roi-calculator" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-4">
@@ -1211,7 +1211,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 7. MODULAR BENTO GRID SOLUTIONS (WITH 3D ASSETS)
        * ============================================================================== */}
-      <section id="solutions" className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section id="solutions" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
@@ -1348,7 +1348,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 8. VERIFIED REVIEWS & TESTIMONIALS
        * ============================================================================== */}
-      <section id="reviews" className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section id="reviews" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-400 text-xs font-bold uppercase tracking-wider mb-4">
             <Star className="w-3.5 h-3.5 fill-amber-400" />
@@ -1408,7 +1408,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 9. FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION)
        * ============================================================================== */}
-      <section id="faq" className="relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto">
+      <section id="faq" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto">
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
             <HelpCircle className="w-3.5 h-3.5" />
