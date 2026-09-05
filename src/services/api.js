@@ -659,4 +659,102 @@ export const api = {
 
   // System & Security Telemetry
   getSecurityMetrics: () => request('/system/security-metrics', {}, true),
+
+  // Public & Admin Inquiries / Leads Pipeline
+  submitInquiry: (data) => request('/inquiries', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  getAllInquiries: (status) => request(`/inquiries/all${status ? `?status=${status}` : ''}`),
+  updateInquiryStatus: (id, status, notes) => {
+    requestCache.clear();
+    return request(`/inquiries/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, notes }),
+    });
+  },
+  deleteInquiry: (id) => {
+    requestCache.clear();
+    return request(`/inquiries/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Public & Admin Client Reviews Pipeline
+  getPublicReviews: (category) => request(`/reviews/public${category && category !== 'all' ? `?category=${category}` : ''}`, {}, true),
+  submitReview: (data) => request('/reviews/submit', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  getAllReviewsAdmin: (status) => request(`/reviews/admin/all${status ? `?status=${status}` : ''}`),
+  moderateReview: (id, status, is_featured) => {
+    requestCache.clear();
+    return request(`/reviews/admin/${id}/moderate`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, is_featured }),
+    });
+  },
+  deleteReview: (id) => {
+    requestCache.clear();
+    return request(`/reviews/admin/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Knowledge Base / Blog CMS Engine
+  getPublicBlogPosts: (params) => {
+    const q = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return request(`/blog/public${q}`, {}, true);
+  },
+  getPublicBlogPostBySlug: (slug) => request(`/blog/public/${slug}`, {}, true),
+  getAllBlogPostsAdmin: () => request('/blog/admin/all'),
+  createBlogPostAdmin: (data) => {
+    requestCache.clear();
+    return request('/blog/admin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  updateBlogPostAdmin: (id, data) => {
+    requestCache.clear();
+    return request(`/blog/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+  deleteBlogPostAdmin: (id) => {
+    requestCache.clear();
+    return request(`/blog/admin/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Super Admin API Consumption Reports & Direct Credit Adjustment
+  getApiConsumptionReport: () => request('/superadmin/reports/api-consumption'),
+  adjustCompanyCredits: (companyId, amount, adjustment_type, reason) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/adjust-credits`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, adjustment_type, reason }),
+    });
+  },
+
+  // Error Telemetry & Real-Time Log Auditing
+  getSuperAdminErrorLogs: (params) => {
+    const q = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return request(`/superadmin/error-logs${q}`);
+  },
+  resolveErrorLog: (id, resolved_by) => {
+    requestCache.clear();
+    return request(`/superadmin/error-logs/${id}/resolve`, {
+      method: 'PUT',
+      body: JSON.stringify({ resolved_by }),
+    });
+  },
+  clearErrorLogs: () => {
+    requestCache.clear();
+    return request('/superadmin/error-logs/clear', {
+      method: 'DELETE',
+    });
+  },
 };

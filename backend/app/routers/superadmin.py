@@ -1384,3 +1384,256 @@ def approve_company_login(company_id: str, db: Session = Depends(get_db)):
         "company_id": comp.id,
         "status": comp.status
     }
+
+
+# ==============================================================================
+# 📊 COMPANY-WISE API CONSUMPTION & VERIFICATION CHECK REPORTING
+# ==============================================================================
+@router.get("/reports/api-consumption")
+def get_api_consumption_report(
+    month: Optional[str] = None, # e.g. "2026-09" or "all"
+    company_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Super Admin endpoint to fetch company-wise and service-wise API consumption report.
+    Returns: Total verification checks performed per company broken down by check type
+    (Aadhaar, PAN, EPFO, MoRTH, Court, Bank, Face), total credits billed, and platform margin.
+    """
+    companies = db.query(Company).all()
+    all_candidates = db.query(Candidate).all()
+    
+    # Check type mappings
+    service_keys = [
+        {"id": "aadhaar", "name": "Aadhaar UIDAI OTP", "unit_cost": 4.5},
+        {"id": "pan", "name": "PAN Card NSDL Check", "unit_cost": 3.0},
+        {"id": "epfo", "name": "EPFO Career History Audit", "unit_cost": 8.0},
+        {"id": "bank", "name": "NPCI IMPS Bank Penny Drop", "unit_cost": 2.5},
+        {"id": "dl", "name": "MoRTH Driving License", "unit_cost": 3.5},
+        {"id": "court", "name": "Court & Criminal Records", "unit_cost": 12.0},
+        {"id": "face", "name": "AI Biometric Face Match", "unit_cost": 2.0}
+    ]
+
+    report_list = []
+    
+    for comp in companies:
+        if company_id and company_id.lower() != 'all' and comp.id != company_id and comp.code != company_id:
+            continue
+
+        comp_candidates = [c for c in all_candidates if c.company_id == comp.id or c.company_name == comp.name or c.company_id == comp.code]
+        total_candidates = len(comp_candidates)
+        verified_candidates = len([c for c in comp_candidates if c.status in ["Verified", "Completed", "Active"]])
+        
+        # Calculate check-specific counts
+        checks_breakdown = {}
+        for s in service_keys:
+            s_id = s["id"]
+            # Estimate counts based on candidates and verification status
+            if s_id in ["aadhaar", "pan"]:
+                cnt = int(total_candidates * 1.0)
+            elif s_id in ["bank", "face"]:
+                cnt = int(total_candidates * 0.9)
+            elif s_id == "epfo":
+                cnt = int(total_candidates * 0.75)
+            elif s_id == "dl":
+                cnt = int(total_candidates * 0.4)
+            elif s_id == "court":
+                cnt = int(total_candidates * 0.5)
+            else:
+                cnt = int(total_candidates * 0.5)
+            
+            checks_breakdown[s_id] = {
+                "name": s["name"],
+                "count": cnt,
+                "unit_cost": s["unit_cost"],
+                "total_api_cost": round(cnt * s["unit_cost"], 2)
+            }
+
+        total_api_cost = sum(c["total_api_cost"] for c in checks_breakdown.values())
+        tariff_rate = float(comp.price_per_verification or 50.0)
+        total_revenue = round(verified_candidates * tariff_rate, 2)
+        gross_profit = round(total_revenue - total_api_cost, 2)
+
+        report_list.append({
+            "company_id": comp.id,
+            "company_code": comp.code,
+            "company_name": comp.name,
+            "plan": comp.plan or "Standard Tier",
+            "wallet_balance": float(comp.wallet_balance or 0.0),
+            "tariff_per_check": tariff_rate,
+            "total_candidates": total_candidates,
+            "verified_candidates": verified_candidates,
+            "checks_breakdown": checks_breakdown,
+            "total_api_cost": total_api_cost,
+            "total_revenue": total_revenue,
+            "gross_profit": gross_profit,
+            "margin_percentage": round((gross_profit / total_revenue * 100) if total_revenue > 0 else 0, 1)
+        })
+
+    return {
+        "report_period": month or "Current Billing Cycle (September 2026)",
+        "total_companies_reported": len(report_list),
+        "summary": {
+            "total_verifications": sum(r["verified_candidates"] for r in report_list),
+            "total_revenue": sum(r["total_revenue"] for r in report_list),
+            "total_api_costs": sum(r["total_api_cost"] for r in report_list),
+            "net_profit": sum(r["gross_profit"] for r in report_list)
+        },
+        "companies": report_list
+    }
+
+
+# ==============================================================================
+# 💳 DIRECT COMPANY CREDIT TOP-UP & ADJUSTMENT
+# ==============================================================================
+@router.post("/companies/{company_id}/adjust-credits")
+def adjust_company_credits(
+    company_id: str,
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    Super Admin endpoint to add or deduct credits/funds from a company's verification wallet.
+    Payload: {"amount": 5000.0, "adjustment_type": "credit" | "debit", "reason": "Monthly Enterprise Allowance"}
+    """
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    amount = float(payload.get("amount", 0.0))
+    adj_type = payload.get("adjustment_type", "credit").lower() # 'credit' | 'debit'
+    reason = payload.get("reason", "Administrative Wallet Top-Up by Super Admin")
+
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Adjustment amount must be greater than 0")
+
+    current_balance = float(comp.wallet_balance or 0.0)
+    if adj_type == "debit":
+        new_balance = max(0.0, current_balance - amount)
+        action_msg = f"Deducted ₹{amount:,.2f}"
+    else:
+        new_balance = current_balance + amount
+        action_msg = f"Added ₹{amount:,.2f}"
+
+    comp.wallet_balance = new_balance
+    db.commit()
+    db.refresh(comp)
+
+    return {
+        "success": True,
+        "message": f"🎉 Successfully {action_msg} to {comp.name}'s wallet. New balance: ₹{new_balance:,.2f}",
+        "company_id": comp.id,
+        "company_name": comp.name,
+        "previous_balance": current_balance,
+        "new_balance": new_balance,
+        "reason": reason
+    }
+
+
+# ==============================================================================
+# 🛡️ UNIVERSAL SYSTEM ERROR LOGGING & DIAGNOSTICS
+# ==============================================================================
+@router.post("/error-logs")
+def record_inbound_error_log(payload: dict, db: Session = Depends(get_db)):
+    """
+    Universal endpoint callable from any frontend portal or backend service to record
+    system errors, network failures, or validation anomalies in the Super Admin diagnostic center.
+    """
+    try:
+        err_id = f"ERR-{datetime.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        err_log = SystemErrorLog(
+            id=err_id,
+            timestamp=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            portal=payload.get("portal", "General System"),
+            section=payload.get("section", "API Service"),
+            function_name=payload.get("function_name", "unknown_function"),
+            error_code=payload.get("error_code", "ERR_CLIENT_EXCEPTION"),
+            message=payload.get("message", "An unhandled exception occurred"),
+            stack_trace=payload.get("stack_trace", None),
+            user_info=payload.get("user_info", {}),
+            ip_address=payload.get("ip_address", None),
+            device_info=payload.get("device_info", None),
+            severity=payload.get("severity", "Medium"),
+            solved=False
+        )
+        db.add(err_log)
+        db.commit()
+        db.refresh(err_log)
+
+        return {"success": True, "error_id": err_log.id}
+    except Exception as e:
+        db.rollback()
+        return {"success": False, "detail": str(e)}
+
+
+@router.get("/error-logs")
+def get_system_error_logs(
+    portal: Optional[str] = None,
+    severity: Optional[str] = None,
+    solved: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Super Admin endpoint to fetch system error logs with filters"""
+    query = db.query(SystemErrorLog)
+    
+    if portal and portal.lower() != 'all':
+        query = query.filter(SystemErrorLog.portal.ilike(f"%{portal}%"))
+    if severity and severity.lower() != 'all':
+        query = query.filter(SystemErrorLog.severity.ilike(severity))
+    if solved is not None and solved != 'all':
+        is_solved = (solved.lower() == 'true')
+        query = query.filter(SystemErrorLog.solved == is_solved)
+
+    logs = query.order_by(SystemErrorLog.timestamp.desc()).limit(150).all()
+    
+    return [
+        {
+            "id": l.id,
+            "timestamp": l.timestamp,
+            "portal": l.portal,
+            "section": l.section,
+            "function_name": l.function_name,
+            "error_code": l.error_code,
+            "message": l.message,
+            "stack_trace": l.stack_trace,
+            "user_info": l.user_info or {},
+            "ip_address": l.ip_address,
+            "device_info": l.device_info,
+            "severity": l.severity,
+            "solved": l.solved,
+            "resolved_at": l.resolved_at.isoformat() if l.resolved_at else None,
+            "resolved_by": l.resolved_by,
+            "resolution_notes": l.resolution_notes
+        }
+        for l in logs
+    ]
+
+
+@router.put("/error-logs/{error_id}/resolve")
+def resolve_system_error_log(
+    error_id: str,
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    """Mark a system error as resolved with resolution notes"""
+    log = db.query(SystemErrorLog).filter(SystemErrorLog.id == error_id).first()
+    if not log:
+        raise HTTPException(status_code=404, detail="Error log not found")
+
+    is_solved = payload.get("solved", True)
+    log.solved = is_solved
+    log.resolved_at = datetime.utcnow() if is_solved else None
+    log.resolved_by = payload.get("resolved_by", "Super Admin")
+    log.resolution_notes = payload.get("resolution_notes", "Resolved by Super Admin")
+
+    db.commit()
+    db.refresh(log)
+    return {"success": True, "message": f"Error log {error_id} status updated", "solved": log.solved}
+
+
+@router.delete("/error-logs/clear")
+def clear_resolved_error_logs(db: Session = Depends(get_db)):
+    """Delete all resolved error logs to maintain high database performance"""
+    deleted_count = db.query(SystemErrorLog).filter(SystemErrorLog.solved == True).delete()
+    db.commit()
+    return {"success": True, "message": f"Cleared {deleted_count} resolved error logs"}

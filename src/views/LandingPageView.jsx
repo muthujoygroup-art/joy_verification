@@ -51,10 +51,14 @@ import {
   Fingerprint,
   MessageSquare,
   ThumbsUp,
-  Quote
+  Quote,
+  BookOpen,
+  WifiOff
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { checkNetworkBeforeAction } from '../utils/networkChecker';
+import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 
 export const LandingPageView = () => {
@@ -79,11 +83,14 @@ export const LandingPageView = () => {
   // Demo Form State
   const [demoForm, setDemoForm] = useState({ name: '', company: '', email: '', phone: '', hires: '200-1000', workforceType: 'both' });
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   // Review Form State
   const [reviewForm, setReviewForm] = useState({ name: '', company: '', role: '', industry: 'labor', rating: 5, comment: '' });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewCategory, setReviewCategory] = useState('all');
+  const [publicArticles, setPublicArticles] = useState([]);
 
   // Interactive Live Simulator State
   const [selectedRoleSample, setSelectedRoleSample] = useState('laborer');
@@ -156,14 +163,39 @@ export const LandingPageView = () => {
   const monthlySavings = traditionalAgencyCost - monthlyCost;
   const hoursSaved = Math.round(monthlyHires * 3.8); // 3.8 hours of manual paperwork saved per onboarding
 
-  const handleDemoSubmit = (e) => {
+  const handleInitiateRecharge = (amount) => {
+    if (!checkNetworkBeforeAction('initiating verification recharge')) return;
+    setLandingSelectedAmount(amount);
+    setShowLandingRazorpayModal(true);
+  };
+
+  const handleDemoSubmit = async (e) => {
     e.preventDefault();
-    setDemoSubmitted(true);
-    confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-    setTimeout(() => {
-      setShowDemoModal(false);
-      setDemoSubmitted(false);
-    }, 3000);
+    if (!checkNetworkBeforeAction('submitting demo inquiry')) return;
+    try {
+      setDemoLoading(true);
+      await api.submitInquiry({
+        name: demoForm.name,
+        company: demoForm.company,
+        email: demoForm.email,
+        phone: demoForm.phone,
+        estimated_monthly_hires: demoForm.hires,
+        workforce_type: demoForm.workforceType,
+        source: 'landing_demo_modal'
+      });
+      setDemoSubmitted(true);
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      setTimeout(() => {
+        setShowDemoModal(false);
+        setDemoSubmitted(false);
+        setDemoForm({ name: '', company: '', email: '', phone: '', hires: '200-1000', workforceType: 'both' });
+      }, 3000);
+    } catch (err) {
+      console.error('Demo request error:', err);
+      alert(err.message || 'Unable to submit demo inquiry. Please check your internet connection.');
+    } finally {
+      setDemoLoading(false);
+    }
   };
 
   // Initial Verified Reviews Data
@@ -218,31 +250,73 @@ export const LandingPageView = () => {
     }
   ]);
 
-  const handleReviewSubmit = (e) => {
-    e.preventDefault();
-    if (!reviewForm.name || !reviewForm.comment) return;
-    
-    const newRev = {
-      id: Date.now(),
-      name: reviewForm.name,
-      role: reviewForm.role || 'HR / Operations Leader',
-      company: reviewForm.company || 'Enterprise Client',
-      category: reviewForm.industry,
-      rating: reviewForm.rating,
-      date: 'Just now',
-      title: 'Verified Client Feedback',
-      content: reviewForm.comment,
-      stats: 'Verified Enterprise Client ✓'
+  // Load live approved public reviews and latest blog articles
+  useEffect(() => {
+    const fetchLandingData = async () => {
+      try {
+        const revRes = await api.getPublicReviews();
+        if (revRes && revRes.reviews && revRes.reviews.length > 0) {
+          const formatted = revRes.reviews.map(r => ({
+            id: r.id,
+            name: r.client_name,
+            role: r.designation,
+            company: r.company_name,
+            category: r.industry_category || 'labor',
+            rating: r.rating || 5,
+            date: r.created_at ? new Date(r.created_at).toLocaleDateString() : 'Verified',
+            title: r.review_title || 'Verified Enterprise Experience',
+            content: r.review_text,
+            stats: r.verified_metric || 'Verified Enterprise Client ✓'
+          }));
+          setReviewsList(formatted);
+        }
+      } catch (err) {
+        // Silently use pre-seeded verified reviews
+      }
+
+      try {
+        const blogRes = await api.getPublicBlogPosts({ limit: 3 });
+        if (blogRes && blogRes.articles && blogRes.articles.length > 0) {
+          setPublicArticles(blogRes.articles);
+        }
+      } catch (err) {
+        // Silently fallback
+      }
     };
 
-    setReviewsList([newRev, ...reviewsList]);
-    setReviewSubmitted(true);
-    confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-    setTimeout(() => {
-      setShowReviewModal(false);
-      setReviewSubmitted(false);
-      setReviewForm({ name: '', company: '', role: '', industry: 'labor', rating: 5, comment: '' });
-    }, 2500);
+    fetchLandingData();
+  }, []);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment) return;
+    if (!checkNetworkBeforeAction('submitting review')) return;
+
+    try {
+      setReviewLoading(true);
+      await api.submitReview({
+        client_name: reviewForm.name,
+        company_name: reviewForm.company || 'Enterprise Client',
+        designation: reviewForm.role || 'HR / Operations Leader',
+        industry_category: reviewForm.industry,
+        rating: reviewForm.rating,
+        review_title: 'Verified Client Feedback',
+        review_text: reviewForm.comment,
+      });
+
+      setReviewSubmitted(true);
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      setTimeout(() => {
+        setShowReviewModal(false);
+        setReviewSubmitted(false);
+        setReviewForm({ name: '', company: '', role: '', industry: 'labor', rating: 5, comment: '' });
+      }, 3000);
+    } catch (err) {
+      console.error('Review submission error:', err);
+      alert(err.message || 'Unable to submit review. Please try again.');
+    } finally {
+      setReviewLoading(false);
+    }
   };
 
   const filteredReviews = reviewCategory === 'all' 
@@ -313,6 +387,10 @@ export const LandingPageView = () => {
             </a>
             <a href="#verification-engine" className="hover:text-indigo-600 transition-colors">Verification Suite</a>
             <a href="#simulator" className="hover:text-indigo-600 transition-colors">Live Simulator</a>
+            <Link to="/blog" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
+              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Knowledge Base</span>
+            </Link>
             <a href="#reviews" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
               <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
               <span>Reviews (4.9★)</span>
@@ -1108,10 +1186,7 @@ export const LandingPageView = () => {
               </div>
 
               <button
-                onClick={() => {
-                  setLandingSelectedAmount(2500);
-                  setShowLandingRazorpayModal(true);
-                }}
+                onClick={() => handleInitiateRecharge(2500)}
                 className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
               >
                 <span>Recharge ₹2,500 via Razorpay ⚡</span>
@@ -1158,10 +1233,7 @@ export const LandingPageView = () => {
               </div>
 
               <button
-                onClick={() => {
-                  setLandingSelectedAmount(5000);
-                  setShowLandingRazorpayModal(true);
-                }}
+                onClick={() => handleInitiateRecharge(5000)}
                 className="btn btn-superadmin w-full text-xs py-3.5 font-black justify-center shadow-lg cursor-pointer hover:scale-102 transition-transform"
               >
                 <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
@@ -1201,16 +1273,113 @@ export const LandingPageView = () => {
               </div>
 
               <button
-                onClick={() => {
-                  setLandingSelectedAmount(15000);
-                  setShowLandingRazorpayModal(true);
-                }}
+                onClick={() => handleInitiateRecharge(15000)}
                 className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
               >
                 <span>Recharge ₹15,000 via Razorpay ⚡</span>
               </button>
             </div>
 
+          </div>
+
+        </div>
+      </section>
+
+            {/* 📰 KNOWLEDGE BASE & COMPLIANCE ARTICLES */}
+      <section id="blog" className="py-16 sm:py-24 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+            <div className="space-y-2 max-w-2xl">
+              <span className="badge badge-indigo text-xs font-black uppercase tracking-wider">Compliance & Intelligence</span>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Latest Workforce Verification Insights
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                Authoritative legal guides, compliance checklists, and anti-fraud case studies from JOY Corporate Solutions.
+              </p>
+            </div>
+
+            <Link 
+              to="/blog" 
+              className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 group shrink-0"
+            >
+              <span>Explore Knowledge Hub</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(publicArticles.length > 0 ? publicArticles : [
+              {
+                id: 1,
+                slug: 'contract-labor-regulation-clra-compliance-guide-2026',
+                title: 'Contract Labor Regulation Act (CLRA) 2026: Complete Corporate Compliance Guide',
+                category: 'Labor Law & CLRA',
+                read_time_minutes: 5,
+                excerpt: 'Everything Indian manufacturing plants and staffing agencies need to prevent heavy statutory penalties and ghost contractor billing.',
+                author_name: 'Adv. Suresh Nair',
+                author_role: 'Senior Industrial Labor Law Counsel'
+              },
+              {
+                id: 2,
+                slug: 'detecting-dual-employment-moonlighting-epfo-passbook-audit',
+                title: 'Detecting Dual Employment & Moonlighting via EPFO Career Audits',
+                category: 'White-Collar BGV',
+                read_time_minutes: 4,
+                excerpt: 'How leading IT & BFSI enterprises catch overlapping service records and fake experience certificates with authenticated EPFO passbook audits.',
+                author_name: 'Pooja Kashyap',
+                author_role: 'VP – Talent Risk & Enterprise Security'
+              },
+              {
+                id: 3,
+                slug: 'dpdp-act-2023-candidate-consent-background-screening',
+                title: 'DPDP Act 2023: Candidate Consent & Data Privacy in Background Screening',
+                category: 'Data Privacy & DPDP',
+                read_time_minutes: 6,
+                excerpt: 'A step-by-step breakdown of digital consent architecture, purpose limitation, and automated audit trails under the new Data Protection Act.',
+                author_name: 'Dr. Arvind Mahadevan',
+                author_role: 'Chief Information Security Officer'
+              }
+            ]).map((art) => (
+              <div 
+                key={art.id || art.slug}
+                className="glass-panel p-6 bg-slate-50 border border-slate-200 rounded-3xl hover:border-indigo-300 hover:shadow-lg transition-all flex flex-col justify-between space-y-4 group"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="badge badge-purple text-[10px] font-bold">{art.category}</span>
+                    <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{art.read_time_minutes || 5} min read</span>
+                    </span>
+                  </div>
+
+                  <Link to={`/blog/${art.slug}`}>
+                    <h3 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                      {art.title}
+                    </h3>
+                  </Link>
+
+                  <p className="text-xs text-slate-600 font-medium line-clamp-3 leading-relaxed">
+                    {art.excerpt}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-bold text-slate-800 block text-xs">{art.author_name}</span>
+                    <span className="text-[10px] text-slate-400 font-medium block">{art.author_role}</span>
+                  </div>
+                  <Link 
+                    to={`/blog/${art.slug}`}
+                    className="p-2 rounded-xl bg-white border border-slate-200 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
@@ -1527,8 +1696,8 @@ export const LandingPageView = () => {
                 </div>
 
                 <div className="pt-2">
-                  <button type="submit" className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer">
-                    <span>Submit Demo Request 🚀</span>
+                  <button type="submit" disabled={demoLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50">
+                    <span>{demoLoading ? 'Submitting Request...' : 'Submit Demo Request 🚀'}</span>
                   </button>
                 </div>
               </form>
@@ -1656,8 +1825,8 @@ export const LandingPageView = () => {
                 </div>
 
                 <div className="pt-2">
-                  <button type="submit" className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer">
-                    <span>Submit Verified Review 🌟</span>
+                  <button type="submit" disabled={reviewLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50">
+                    <span>{reviewLoading ? 'Submitting Review...' : 'Submit Verified Review 🌟'}</span>
                   </button>
                 </div>
               </form>

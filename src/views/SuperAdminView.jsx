@@ -17,6 +17,10 @@ import { OfficialLegalDocumentViewerModal } from '../components/OfficialLegalDoc
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { UniversalEntityTrackerModal } from '../components/UniversalEntityTrackerModal';
+import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
+import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
+import { BlogCmsConsole } from '../components/BlogCmsConsole';
+import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import {
   Activity,
@@ -1242,7 +1246,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: Building2,
                 colorClass: 'from-indigo-600 to-indigo-800',
                 activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: '4 Sub-Sections',
+                badgeText: '6 Sub-Sections',
                 defaultTab: 'analytics'
               },
               {
@@ -1372,6 +1376,24 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     <Scale className="w-3.5 h-3.5" />
                     <span>4. Terms & Agreements</span>
                   </button>
+                  <button
+                    onClick={() => setActiveTab('inquiries')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'inquiries' ? 'bg-sky-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                    }`}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>5. Demo Inquiries & Leads</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('reviews')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'reviews' ? 'bg-amber-500 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                    }`}
+                  >
+                    <Star className="w-3.5 h-3.5" />
+                    <span>6. Client Reviews Moderation</span>
+                  </button>
                 </>
               )}
 
@@ -1419,6 +1441,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   >
                     <CreditCard className="w-3.5 h-3.5" />
                     <span>1. Metered Invoicing & Razorpay</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('consumption_margins')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'consumption_margins' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                    }`}
+                  >
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>2. API Consumption & Margins</span>
                   </button>
                 </>
               )}
@@ -1513,6 +1544,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     <BookOpen className="w-3.5 h-3.5" />
                     <span>5. Guidelines</span>
                   </button>
+                  <button
+                    onClick={() => setActiveTab('blog_cms')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'blog_cms' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>6. Blog / Knowledge Hub CMS</span>
+                  </button>
                 </>
               )}
 
@@ -1535,6 +1575,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* TAB 1: PLATFORM STATISTICS & COMPANY-WISE PROFIT MARGIN ANALYTICS */}
             {/* ========================================================================= */}
+      {/* ENTERPRISE ADD-ON CONSOLES: INQUIRIES, REVIEWS, CMS, CONSUMPTION */}
+      {/* ========================================================================= */}
+      {activeTab === 'inquiries' && <LeadsInquiriesConsole />}
+      {activeTab === 'reviews' && <ReviewsModerationConsole />}
+      {activeTab === 'consumption_margins' && <ApiConsumptionMarginConsole />}
+      {activeTab === 'blog_cms' && <BlogCmsConsole />}
+
+      {/* ========================================================================= */}
       {/* TAB 0: UNIVERSAL OMNISEARCH & HIERARCHICAL PROFILE ID TRACKER */}
       {/* ========================================================================= */}
       {activeTab === 'omnisearch' && (

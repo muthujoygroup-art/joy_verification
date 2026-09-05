@@ -8,6 +8,9 @@ from backend.app.routers.tickets import router as tickets_router
 from backend.app.routers.billing import router as billing_router
 from backend.app.routers.documents import router as documents_router
 from backend.app.routers.settings import router as settings_router
+from backend.app.routers.inquiries import router as inquiries_router
+from backend.app.routers.reviews import router as reviews_router
+from backend.app.routers.blog import router as blog_router
 
 __all__ = [
     "auth_router",
@@ -19,5 +22,9 @@ __all__ = [
     "tickets_router",
     "billing_router",
     "documents_router",
-    "settings_router"
+    "settings_router",
+    "inquiries_router",
+    "reviews_router",
+    "blog_router"
 ]
+

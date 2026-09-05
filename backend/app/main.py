@@ -15,7 +15,10 @@ from backend.app.routers import (
     tickets_router,
     billing_router,
     documents_router,
-    settings_router
+    settings_router,
+    inquiries_router,
+    reviews_router,
+    blog_router
 )
 
 from backend.app.services.security_service import EnterpriseSecurityMiddleware, fast_cache, global_rate_limiter
@@ -208,7 +211,8 @@ async def global_catchall_exception_handler(request: Request, exc: Exception):
 all_routers = [
     auth_router, superadmin_router, company_router, hr_router,
     verification_router, master_data_router, tickets_router,
-    billing_router, documents_router, settings_router
+    billing_router, documents_router, settings_router,
+    inquiries_router, reviews_router, blog_router
 ]
 
 for r in all_routers:

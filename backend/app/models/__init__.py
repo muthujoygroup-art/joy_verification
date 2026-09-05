@@ -10,6 +10,9 @@ from backend.app.models.master_data import MasterDataOption, MasterFormField
 from backend.app.models.billing import Invoice, PaymentRecord
 from backend.app.models.ticket import SupportTicket, TicketReply
 from backend.app.models.system import SystemErrorLog, SystemSetting, PlatformGuideline, CommunicationGateway
+from backend.app.models.inquiry import LeadInquiry
+from backend.app.models.review import ClientReview
+from backend.app.models.blog import BlogPost
 
 __all__ = [
     "SuperAdminUser",
@@ -32,5 +35,8 @@ __all__ = [
     "SystemErrorLog",
     "SystemSetting",
     "PlatformGuideline",
-    "CommunicationGateway"
+    "CommunicationGateway",
+    "LeadInquiry",
+    "ClientReview",
+    "BlogPost"
 ]

@@ -10,6 +10,7 @@ import { HrExecutiveView } from './views/HrExecutiveView';
 import { EmployeePortalView } from './views/EmployeePortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
 import { HrActivationView } from './views/HrActivationView';
+import { BlogView } from './views/BlogView';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModal';
@@ -144,6 +145,8 @@ const MainApp = () => {
         <Route path="/verify" element={<CandidateRoute />} />
         <Route path="/candidate" element={<CandidateRoute />} />
         <Route path="/login" element={<GenericLoginRoute />} />
+        <Route path="/blog" element={<BlogView />} />
+        <Route path="/blog/:slug" element={<BlogView />} />
 
         {/* Catch-All Unknown Routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
