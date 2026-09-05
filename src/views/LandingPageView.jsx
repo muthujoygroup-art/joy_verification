@@ -287,20 +287,20 @@ export const LandingPageView = () => {
           <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
             <img 
               src="/joy_logo.png" 
-              alt="JOY CORPORATE SOLUTIONS PVT LTD Logo" 
+              alt="JOY TrueProfile Logo" 
               className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform" 
             />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-sm sm:text-lg lg:text-xl text-slate-900 tracking-tight leading-none">
-                  JOY CORPORATE
+                  JOY <span className="text-indigo-600">TrueProfile</span>
                 </span>
                 <span className="badge badge-purple text-[8px] sm:text-[9px] py-0.5 px-1.5 font-black shrink-0">
                   PVT LTD
                 </span>
               </div>
-              <p className="text-[9px] sm:text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider mt-0.5">
-                Labor Management & Verification
+              <p className="text-[9px] sm:text-[11px] text-slate-500 font-extrabold uppercase tracking-wider mt-0.5">
+                Labor Profile Creation & Verification
               </p>
             </div>
           </Link>
@@ -441,19 +441,19 @@ export const LandingPageView = () => {
           {/* Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-indigo-200 text-indigo-950 text-xs font-black shadow-sm backdrop-blur-sm animate-float-slow">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-            <span>India's #1 Enterprise Labor Management & Verification Engine</span>
+            <span>JOY TrueProfile — Enterprise Labor Profile Creation & Verification Platform</span>
           </div>
 
           {/* Hero Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
-            Easy Labor Management & Instant Verification in{' '}
+            Create & Verify Complete Labor Profiles in{' '}
             <span className="animated-gradient-text">
               Under 45 Seconds
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
-            Eliminate ghost workers, contractor fraud, and paper onboarding. Instantly verify contract laborers, factory staff, drivers, and corporate employees via WhatsApp & SMS with audit-ready certified dossiers.
+            Eliminate ghost workers, contractor fraud, and paper onboarding. Instantly create certified digital labor profiles, conduct government repository checks, and generate audit-ready dossiers on any smartphone.
           </p>
 
           {/* Hero CTAs */}

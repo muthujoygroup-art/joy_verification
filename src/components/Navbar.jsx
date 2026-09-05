@@ -113,18 +113,18 @@ export const Navbar = () => {
               <div className="shrink-0">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <h1 className="font-black text-sm sm:text-base tracking-tight text-slate-900 leading-none whitespace-nowrap">
-                    JOY CORPORATE SOLUTIONS
+                    JOY <span className="text-indigo-600">TrueProfile</span>
                   </h1>
                   <span className={`badge ${currentTheme.badgeClass} text-[8.5px] sm:text-[9px] py-0.5 px-2 font-black shrink-0 whitespace-nowrap hidden sm:inline-flex`}>
                     {currentTheme.label}
                   </span>
                 </div>
                 <div className="text-[10px] text-slate-600 hidden lg:flex items-center gap-2 mt-1 font-bold uppercase tracking-wider whitespace-nowrap">
-                  <span className="text-indigo-800 font-extrabold">Enterprise Identity & 360° BGV Platform</span>
+                  <span className="text-indigo-800 font-extrabold">Labor Profile Creation & 360° BGV Platform</span>
                   <span className="text-slate-300">•</span>
                   <span className="text-emerald-700 font-bold flex items-center gap-1 shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    ISO 27001 & DPDP Gateway
+                    ISO 27001 & CLRA Compliant
                   </span>
                 </div>
               </div>
