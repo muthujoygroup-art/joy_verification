@@ -166,15 +166,15 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   return (
     <>
       <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && onClose) onClose();
-      }}
-    >
-        <div className="bg-white w-full max-w-3xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto animate-modal-spring">
+        className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center animate-fadeIn"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && onClose) onClose();
+        }}
+      >
+        <div className="bg-white w-full max-w-3xl h-[92vh] max-h-[92vh] flex flex-col border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl animate-modal-spring overflow-hidden">
           
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          {/* Sticky Fixed Header */}
+          <div className="shrink-0 bg-white p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-20">
             <div className="flex items-center gap-2.5">
               <div className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-xs">
                 <Package className="w-5 h-5" />
@@ -192,17 +192,26 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
 
             <div className="flex items-center gap-2">
               <button 
+                type="button"
                 onClick={handleDownloadAllAttachedDocsZip}
                 className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download All ({displayDocs.length} Docs)</span>
               </button>
-              <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer">
+              <button 
+                type="button"
+                onClick={onClose} 
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Close"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
+
+          {/* Scrollable Body Container */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-slate-50/20">
 
           {/* Success Banner */}
           {downloadSuccess && (
@@ -399,6 +408,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
             <button onClick={onClose} className="btn btn-secondary text-xs font-bold cursor-pointer">Close Window</button>
           </div>
 
+          </div>
         </div>
       </div>
 

@@ -12,7 +12,8 @@ import {
   Lock,
   Sparkles,
   AlertTriangle,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
@@ -30,7 +31,6 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-
   if (!candidate) return null;
 
   const isFullyVerified = candidate.status === 'Verified' || candidate.status === 'VERIFIED';
@@ -46,8 +46,6 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const facePassed = !!verifs.face;
   const panPassed = !!verifs.pan;
   const bankPassed = !!verifs.bank || !!verifs.bankCheck;
-
-
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);
@@ -74,18 +72,18 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget && typeof onClose === 'function') onClose();
       }}
     >
-      <div className="bg-white w-full max-w-3xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 relative my-auto text-slate-900 print:border-none print:shadow-none print:max-w-none animate-modal-spring overflow-hidden" onClick={(e) => e.stopPropagation()}>
+      <div 
+        className="bg-white w-full max-w-3xl h-[92vh] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 relative text-slate-900 print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring overflow-hidden" 
+        onClick={(e) => e.stopPropagation()}
+      >
         
-        {/* Sticky Action Header Controls (Hidden on Print) */}
-        <div className="shrink-0 sticky top-0 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between print:hidden">
-        
-        {/* Action Header Controls (Hidden on Print) */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 print:hidden">
+        {/* Sticky Fixed Header (Hidden on Print) */}
+        <div className="shrink-0 bg-white/95 backdrop-blur-sm p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between print:hidden z-30">
           <div className="flex items-center gap-2">
             <span className={`badge text-[10px] ${isFullyVerified ? 'badge-purple' : 'badge-amber'}`}>
               {isFullyVerified ? 'Official Compliance Certificate' : 'Provisional Certificate (Pending Verification)'}
@@ -94,6 +92,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handlePrint}
               className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
               title="Print Certificate"
@@ -102,69 +101,88 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               <span>Print</span>
             </button>
             <button
+              type="button"
               onClick={handleDownloadPdf}
-              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+              disabled={isExporting}
+              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-75"
             >
-              <Download className="w-4 h-4" />
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               <span>{isExporting ? "Compiling PDF..." : "Download Official PDF"}</span>
             </button>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 ml-2 text-lg cursor-pointer">✕</button>
+            <button 
+              type="button"
+              onClick={onClose} 
+              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
         {/* Scrollable Certificate Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-5 sm:space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-5 sm:space-y-6 bg-slate-50/40 print:p-0 print:bg-white print:overflow-visible">
 
-        {/* Certificate Decorative Border Container */}
-        <div id="printable-official-certificate" className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden bg-white ${
-          isFullyVerified 
-            ? 'border-indigo-600/30 bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30' 
-            : 'border-amber-400/50 bg-gradient-to-b from-amber-50/30 via-white to-slate-50/40'
-        }`}>
-          
-          {/* Subtle Background Watermark */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
-            <ShieldCheck className="w-96 h-96 text-indigo-900" />
-          </div>
-
-          {/* Top Brand Dual-Logo Header Block */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-indigo-100 pb-4 relative z-10">
-            {/* Logo 1: JOY Corporate Solutions Logo */}
-            <div className="p-2 rounded-2xl bg-white border-2 border-indigo-100 shadow-sm flex items-center justify-center shrink-0">
-              <img 
-                src="/joy_logo.png" 
-                alt="JOY Logo" 
-                className="w-14 h-14 object-contain" 
-              />
-            </div>
-
-            {/* Central Authority Header */}
-            <div className="text-center space-y-1">
-              <h1 className="text-lg sm:text-xl font-black text-indigo-950 tracking-tight">
-                JOY CORPORATE SOLUTIONS PRIVATE LIMITED
-              </h1>
-              <p className="text-[11px] font-extrabold text-indigo-600 tracking-widest uppercase">
-                Enterprise Identity Verification & Compliance Division
-              </p>
-              <p className="text-[9.5px] text-slate-500 font-semibold">
-                CIN: U74999KA2026PTC098214 • ISO 27001:2022 Certified Government Gateway Partner
-              </p>
-            </div>
-
-            {/* Logo 2: Employer Company Logo */}
-            <div className="p-3 rounded-xl bg-sky-700 text-white flex flex-col items-center justify-center font-black shadow-md min-w-[130px]">
-              <Building2 className="w-6 h-6 mb-0.5 text-sky-200" />
-              <span className="text-[10px] uppercase font-bold tracking-widest text-sky-200">EMPLOYER</span>
-              <span className="text-xs font-black text-white text-center leading-tight">{companyName.split(' ')[0]}</span>
-            </div>
-          </div>
-
-          {/* Certificate Identification Banner */}
-          <div className={`border rounded-xl p-3 flex flex-wrap items-center justify-between text-xs font-semibold gap-2 relative z-10 ${
+          {/* Certificate Decorative Border Container */}
+          <div id="printable-official-certificate" className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden bg-white shadow-xs ${
             isFullyVerified 
-              ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900' 
-              : 'bg-amber-50/90 border-amber-300 text-amber-950'
+              ? 'border-indigo-600/30 bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30' 
+              : 'border-amber-400/50 bg-gradient-to-b from-amber-50/30 via-white to-slate-50/40'
           }`}>
+            
+            {/* Subtle Background Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+              <ShieldCheck className="w-96 h-96 text-indigo-900" />
+            </div>
+
+            {/* Top Brand Dual-Logo Header Block */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-indigo-100 pb-4 relative z-10">
+              {/* Logo 1: JOY Corporate Solutions Logo */}
+              <div className="p-2 rounded-2xl bg-white border-2 border-indigo-100 shadow-sm flex items-center justify-center shrink-0">
+                <img 
+                  src="/joy_logo.png" 
+                  alt="JOY Logo" 
+                  className="w-14 h-14 object-contain" 
+                />
+              </div>
+
+              {/* Central Authority Header */}
+              <div className="text-center space-y-1">
+                <h1 className="text-lg sm:text-xl font-black text-indigo-950 tracking-tight">
+                  JOY CORPORATE SOLUTIONS PRIVATE LIMITED
+                </h1>
+                <p className="text-[11px] font-extrabold text-indigo-600 tracking-widest uppercase">
+                  Enterprise Identity Verification & Compliance Division
+                </p>
+                <p className="text-[9.5px] text-slate-500 font-semibold">
+                  CIN: U74999KA2026PTC098214 • ISO 27001:2022 Certified Government Gateway Partner
+                </p>
+              </div>
+
+              {/* Logo 2: Candidate Live Verified Photo & QR Seal */}
+              <div className="flex items-center gap-2.5 shrink-0">
+                {candidate.faceImages?.straight ? (
+                  <div className="w-14 h-16 rounded-xl border-2 border-indigo-200 overflow-hidden shadow-xs bg-slate-100">
+                    <img 
+                      src={candidate.faceImages.straight} 
+                      alt="Candidate Face" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                ) : (
+                  <div className="p-2 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-indigo-600 flex items-center justify-center">
+                    <QrCode className="w-10 h-10" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Certificate Identification Banner */}
+            <div className={`border rounded-xl p-3 flex flex-wrap items-center justify-between text-xs font-semibold gap-2 relative z-10 ${
+              isFullyVerified 
+                ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900' 
+                : 'bg-amber-50/90 border-amber-300 text-amber-950'
+            }`}>
             <div>
               <span className="text-slate-500 font-medium">Certificate Ref: </span>
               <strong className="font-mono text-indigo-700">{certId}</strong>
@@ -369,17 +387,16 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </div>
           </div>
 
-        </div>
+          </div>
 
-        {/* Footer Note */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100 print:hidden">
-          <span>Official digital verification record valid under Information Technology Act, 2000.</span>
-          <span className="font-bold text-indigo-600">JOY CORPORATE SOLUTIONS PVT LTD • All Rights Reserved</span>
-        </div>
+          {/* Footer Note */}
+          <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100 print:hidden">
+            <span>Official digital verification record valid under Information Technology Act, 2000.</span>
+            <span className="font-bold text-indigo-600">JOY CORPORATE SOLUTIONS PVT LTD • All Rights Reserved</span>
+          </div>
 
         </div>
       </div>
-    </div>
     </div>
   );
 };
