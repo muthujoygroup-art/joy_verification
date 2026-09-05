@@ -167,6 +167,26 @@ export const CompanyAdminView = () => {
     website: company?.website || ''
   });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Save Company Master Profile & Statutory Credentials
+  const handleSaveCompanyProfile = async (e) => {
+    e?.preventDefault();
+    setIsSavingProfile(true);
+    try {
+      const payload = {
+        ...profileData,
+        documents: companyUploadedDocs
+      };
+      const res = await api.updateCompanyProfile(company.id, payload);
+      showToast(res.message || '💾 Company profile details and statutory credentials saved successfully!');
+    } catch (err) {
+      showToast(`❌ Failed to save profile: ${err.message}`, 'error');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+
   const [companyUploadedDocs, setCompanyUploadedDocs] = useState(company?.documents || {});
 
   // 📧 Company Custom Email Gateway & SMTP States

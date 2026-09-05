@@ -449,6 +449,31 @@ def update_hr_password(company_id: str, hr_id: str, payload: dict, db: Session =
         "email_sent": email_sent
     }
 
+
+@router.put("/{company_id}/profile")
+def update_company_own_profile(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update detailed company profile and statutory documents"""
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    if payload.get("cin_number") is not None: comp.cin_number = payload["cin_number"].strip()
+    if payload.get("gstin_number") is not None: comp.gstin_number = payload["gstin_number"].strip()
+    if payload.get("company_pan") is not None: comp.company_pan = payload["company_pan"].strip()
+    if payload.get("registered_address") is not None: comp.registered_address = payload["registered_address"].strip()
+    if payload.get("industry_sector") is not None: comp.industry_sector = payload["industry_sector"].strip()
+    if payload.get("website") is not None: comp.website = payload["website"].strip()
+    if payload.get("documents") is not None: comp.documents = {**(comp.documents or {}), **payload["documents"]}
+
+    db.commit()
+    db.refresh(comp)
+
+    return {
+        "success": True,
+        "message": "Company master profile details and statutory credentials saved successfully!",
+        "company": format_company_dict(comp)
+    }
+
 @router.put("/{company_id}/hr-users/{hr_id}/profile")
 def update_hr_profile(company_id: str, hr_id: str, payload: dict, db: Session = Depends(get_db)):
     """Update detailed HR recruiter profile information"""

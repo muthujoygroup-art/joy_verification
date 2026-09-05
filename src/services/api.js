@@ -577,9 +577,14 @@ export const api = {
   },
   updateCompanyProfile: (companyId, profileData) => {
     requestCache.clear();
-    return request(`/superadmin/companies/${companyId}/profile`, {
+    return request(`/company/${companyId}/profile`, {
       method: 'PUT',
       body: JSON.stringify(profileData),
+    }).catch(() => {
+      return request(`/superadmin/companies/${companyId}/profile`, {
+        method: 'PUT',
+        body: JSON.stringify(profileData),
+      });
     });
   },
   updateHrStatus: (companyId, hrId, status) => {
