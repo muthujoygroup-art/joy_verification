@@ -102,7 +102,7 @@ export const LandingPageView = () => {
       badge: 'Blue-Collar & Contract Labor',
       candidateName: 'Karan Verma',
       checks: [
-        { name: 'Aadhaar Identity & Address Verification', status: 'UIDAI Authenticated ✓', time: '1.1s' },
+        { name: 'UIDAI Aadhaar Identity & Address Verification', status: 'UIDAI Authenticated ✓', time: '1.1s' },
         { name: 'Ghost Worker & Biometric Deduplication', status: 'Unique Record (0 Duplicates) ✓', time: '0.9s' },
         { name: 'National Court & Police Criminal Records', status: 'Clean Background (0 Cases) ✓', time: '1.8s' },
         { name: 'Daily Wage Bank IMPS Penny Drop', status: 'Active (SBI Bank) Match 100% ✓', time: '1.4s' },
@@ -114,7 +114,7 @@ export const LandingPageView = () => {
       badge: 'Logistics & Transportation',
       candidateName: 'Vikram Singh',
       checks: [
-        { name: 'Aadhaar Identity & Address Verification', status: 'UIDAI Authenticated ✓', time: '1.0s' },
+        { name: 'UIDAI Aadhaar Identity & Address Verification', status: 'UIDAI Authenticated ✓', time: '1.0s' },
         { name: 'MoRTH Commercial Transport License', status: 'Valid Heavy Goods Vehicle (HGV) ✓', time: '1.6s' },
         { name: 'National Criminal & Traffic Court Check', status: 'Zero Violations / Clean ✓', time: '1.7s' },
         { name: 'Bank IMPS Penny Drop Name Match', status: 'Active (PNB Bank) ✓', time: '1.3s' },
@@ -352,66 +352,59 @@ export const LandingPageView = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white antialiased">
       
-      {/* 🌟 ENTERPRISE NAVIGATION HEADER */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+      {/* 🌟 FLOATING PILL NAVIGATION BAR (Waabi.ai / Bloom Style) */}
+      <div className="sticky top-4 z-50 px-4 sm:px-6 max-w-6xl mx-auto w-full">
+        <header className="backdrop-blur-2xl bg-white/85 border border-slate-200/80 shadow-xl shadow-slate-900/5 rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between transition-all">
           
-          {/* Official Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
+          {/* Brand Logo & Pill */}
+          <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
             <img 
               src="/joy_logo.png" 
               alt="JOY TrueProfile Logo" 
-              className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform" 
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-transform" 
             />
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-sm sm:text-lg lg:text-xl text-slate-900 tracking-tight leading-none">
-                  JOY <span className="text-indigo-600">TrueProfile</span>
-                </span>
-                <span className="badge badge-purple text-[8px] sm:text-[9px] py-0.5 px-1.5 font-black shrink-0">
-                  PVT LTD
-                </span>
-              </div>
-              <p className="text-[9px] sm:text-[11px] text-slate-500 font-extrabold uppercase tracking-wider mt-0.5">
-                Labor Profile Creation & Verification
-              </p>
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight">
+                JOY <span className="text-indigo-600">TrueProfile</span>
+              </span>
+              <span className="badge badge-purple text-[8px] py-0.5 px-1.5 font-black shrink-0 hidden sm:inline-block">
+                PVT LTD
+              </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-6 text-xs font-bold text-slate-600">
+          <nav className="hidden lg:flex items-center gap-5 text-xs font-bold text-slate-600">
             <a href="#labor-solutions" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
               <HardHat className="w-3.5 h-3.5 text-amber-500" />
-              <span>Labor Management</span>
+              <span>Solutions</span>
             </a>
-            <a href="#verification-engine" className="hover:text-indigo-600 transition-colors">Verification Suite</a>
-            <a href="#simulator" className="hover:text-indigo-600 transition-colors">Live Simulator</a>
-            <Link to="/blog" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Knowledge Base</span>
-            </Link>
+            <a href="#verification-engine" className="hover:text-indigo-600 transition-colors">Engine</a>
+            <a href="#simulator" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
+              <Play className="w-3 h-3 text-indigo-500 fill-indigo-500" />
+              <span>Simulator</span>
+            </a>
+            <Link to="/blog" className="hover:text-indigo-600 transition-colors">Knowledge Hub</Link>
             <a href="#reviews" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
               <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              <span>Reviews (4.9★)</span>
+              <span>Reviews</span>
             </a>
-            <a href="#roi-calculator" className="hover:text-indigo-600 transition-colors">ROI Calculator</a>
-            <a href="#pricing" className="hover:text-indigo-600 transition-colors">Credits</a>
-            <a href="#faq" className="hover:text-indigo-600 transition-colors">FAQ</a>
+            <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
           </nav>
 
-          {/* Action CTAs (Marketing First - No login URLs) */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          {/* Action CTAs */}
+          <div className="flex items-center gap-2 shrink-0">
             <a
               href="#simulator"
-              className="btn btn-secondary text-xs py-2 px-3.5 font-bold hidden sm:flex items-center gap-1.5 cursor-pointer hover:border-indigo-300"
+              className="btn btn-secondary text-xs py-1.5 px-3 font-bold hidden md:flex items-center gap-1 cursor-pointer hover:border-indigo-300 rounded-full"
             >
-              <Play className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
+              <Zap className="w-3 h-3 text-indigo-600" />
               <span>Try Simulator</span>
             </a>
 
             <button
               onClick={() => setShowDemoModal(true)}
-              className="btn btn-superadmin text-xs py-2 px-4 font-black shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-102 transition-transform"
+              className="btn text-xs py-2 px-4 sm:px-5 font-black text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-md shadow-indigo-500/25 rounded-full flex items-center gap-1.5 cursor-pointer hover:scale-103 transition-transform"
             >
               <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
               <span>Book Live Demo 🚀</span>
@@ -420,23 +413,23 @@ export const LandingPageView = () => {
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+              className="lg:hidden p-2 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
               title="Toggle Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
 
-        </div>
+        </header>
 
         {/* Mobile Dropdown Drawer */}
         {mobileMenuOpen && (
-          <div className="xl:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-4 py-5 space-y-4 animate-drawerSlide text-xs font-bold shadow-2xl">
+          <div className="lg:hidden mt-2 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl p-4 space-y-3 animate-drawerSlide text-xs font-bold shadow-2xl">
             <div className="grid grid-cols-2 gap-2 text-slate-700">
               <a 
                 href="#labor-solutions" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 hover:text-amber-800 transition-colors text-center border border-slate-100 flex items-center justify-center gap-1.5"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-amber-50 text-center border border-slate-100 flex items-center justify-center gap-1.5"
               >
                 <HardHat className="w-3.5 h-3.5 text-amber-500" />
                 <span>Labor Solutions</span>
@@ -444,48 +437,48 @@ export const LandingPageView = () => {
               <a 
                 href="#verification-engine" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-center border border-slate-100"
               >
-                Verification Suite
+                Verification Engine
               </a>
               <a 
                 href="#simulator" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-center border border-slate-100"
               >
                 Live Simulator
               </a>
               <a 
                 href="#reviews" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 hover:text-amber-600 transition-colors text-center border border-slate-100 flex items-center justify-center gap-1.5"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-amber-50 text-center border border-slate-100 flex items-center justify-center gap-1.5"
               >
                 <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                 <span>Client Reviews</span>
               </a>
               <a 
-                href="#roi-calculator" 
+                href="#pricing" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-center border border-slate-100"
               >
-                ROI Calculator
+                Prepaid Pricing
               </a>
               <a 
                 href="#faq" 
                 onClick={() => setMobileMenuOpen(false)} 
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-center border border-slate-100"
+                className="p-2.5 rounded-2xl bg-slate-50 hover:bg-indigo-50 text-center border border-slate-100"
               >
                 FAQ
               </a>
             </div>
 
-            <div className="pt-2 flex flex-col gap-2">
+            <div className="pt-2">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   setShowDemoModal(true);
                 }}
-                className="btn btn-superadmin w-full text-xs py-3 font-black justify-center cursor-pointer shadow-md"
+                className="btn btn-superadmin w-full text-xs py-3 font-black justify-center cursor-pointer shadow-md rounded-2xl"
               >
                 <Sparkles className="w-4 h-4 mr-1 text-yellow-300" />
                 <span>Schedule Enterprise Live Demo 🚀</span>
@@ -493,29 +486,32 @@ export const LandingPageView = () => {
             </div>
           </div>
         )}
-      </header>
+      </div>
 
-      {/* 🚀 HIGH-CONVERTING 3D ANIMATED HERO SECTION */}
-      <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 border-b border-slate-200">
+      {/* 🚀 HIGH-CONVERTING HERO SECTION (Waabi.ai Atmospheric Perspective) */}
+      <section className="relative overflow-hidden pt-8 pb-16 sm:pt-14 sm:pb-24 bg-gradient-to-b from-indigo-50/50 via-white to-slate-50 border-b border-slate-200">
         
-        {/* Animated Background Ambient Orbs */}
-        <div className="absolute top-10 left-1/4 w-[500px] h-[350px] bg-gradient-to-tr from-indigo-300/25 via-sky-200/25 to-purple-200/25 blur-3xl rounded-full pointer-events-none animate-pulse-glow" />
-        <div className="absolute bottom-10 right-1/4 w-[400px] h-[300px] bg-gradient-to-bl from-amber-200/25 via-teal-200/20 to-sky-200/25 blur-3xl rounded-full pointer-events-none" />
+        {/* Background Dot & Mesh Pattern */}
+        <div className="absolute inset-0 bg-tech-dots opacity-40 pointer-events-none" />
+        
+        {/* Ambient Gradient Orbs */}
+        <div className="absolute top-0 left-1/3 w-[600px] h-[380px] bg-gradient-to-tr from-indigo-300/20 via-sky-300/15 to-purple-300/20 blur-3xl rounded-full pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-10 right-1/4 w-[450px] h-[320px] bg-gradient-to-bl from-amber-200/20 via-emerald-200/15 to-indigo-200/20 blur-3xl rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* Left Column: Hero Text & CTAs (7 Cols) */}
+            {/* Left Column: Headline, Copy & CTAs (7 Cols) */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Pill Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-indigo-200 text-indigo-950 text-xs font-black shadow-sm backdrop-blur-sm animate-float-slow">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                <span>JOY TrueProfile — Enterprise Labor Profile Creation & Verification</span>
+              {/* Live Status Pill */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-indigo-200/80 text-indigo-950 text-xs font-bold shadow-sm backdrop-blur-md animate-float-slow">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>🟢 Live Verification: 500,000+ Workers Verified across India</span>
               </div>
 
-              {/* Hero Headline */}
+              {/* Main Bold Title */}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
                 Create & Verify Complete Labor Profiles in{' '}
                 <span className="animated-gradient-text">
@@ -527,59 +523,53 @@ export const LandingPageView = () => {
                 Eliminate ghost workers, contractor fraud, and paper onboarding. Instantly create certified digital labor profiles, conduct government repository checks, and generate audit-ready dossiers on any smartphone.
               </p>
 
-              {/* Hero CTAs */}
+              {/* Action Buttons */}
               <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="btn btn-superadmin text-xs sm:text-sm py-3.5 px-7 font-black shadow-xl flex items-center gap-2 cursor-pointer hover:scale-103 transition-transform"
+                  className="btn text-xs sm:text-sm py-3.5 px-7 font-black text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-xl shadow-indigo-500/25 rounded-full flex items-center gap-2 cursor-pointer hover:scale-103 transition-transform"
                 >
-                  <span>Schedule Live Demo 🚀</span>
+                  <span>Book Live Demo 🚀</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <a
                   href="#labor-solutions"
-                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-6 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300"
+                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-6 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-200 rounded-full"
                 >
                   <HardHat className="w-4 h-4 text-amber-500" />
-                  <span>Explore Labor Solutions</span>
+                  <span>Explore Solutions</span>
                 </a>
 
                 <a
                   href="#simulator"
-                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-5 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-300 text-slate-700"
+                  className="btn btn-secondary text-xs sm:text-sm py-3.5 px-5 font-bold flex items-center gap-2 cursor-pointer bg-white hover:bg-slate-50 shadow-sm border-slate-200 text-slate-700 rounded-full"
                 >
                   <Play className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
                   <span>Live Simulator</span>
                 </a>
               </div>
 
-              {/* Metrics Highlights */}
-              <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto lg:mx-0">
-                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
-                  <div className="text-lg sm:text-xl font-black text-indigo-700 font-mono">500k+</div>
-                  <div className="text-[10px] text-slate-500 font-bold">Workers Verified</div>
-                </div>
-
-                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
-                  <div className="text-lg sm:text-xl font-black text-emerald-700 font-mono">&lt; 45s</div>
-                  <div className="text-[10px] text-slate-500 font-bold">Verification Speed</div>
-                </div>
-
-                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
-                  <div className="text-lg sm:text-xl font-black text-amber-600 font-mono">0 Ghost</div>
-                  <div className="text-[10px] text-slate-500 font-bold">Deduplication Rate</div>
-                </div>
-
-                <div className="glass-panel p-3 bg-white/95 border border-slate-200 rounded-2xl shadow-2xs text-center space-y-0.5">
-                  <div className="text-lg sm:text-xl font-black text-purple-700 font-mono">DPDP & ISO</div>
-                  <div className="text-[10px] text-slate-500 font-bold">100% Compliant</div>
-                </div>
+              {/* Interactive Role Latency Chips */}
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-[11px] font-bold text-slate-600">
+                <span className="text-slate-400 font-mono uppercase text-[10px]">Instant TAT:</span>
+                <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs flex items-center gap-1">
+                  <Zap className="w-3 h-3 text-amber-500" />
+                  <span>Factory Labor: 0.9s</span>
+                </span>
+                <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs flex items-center gap-1">
+                  <Truck className="w-3 h-3 text-sky-500" />
+                  <span>Fleet Driver: 1.2s</span>
+                </span>
+                <span className="px-3 py-1 rounded-full bg-white border border-slate-200 shadow-2xs flex items-center gap-1">
+                  <Building2 className="w-3 h-3 text-purple-500" />
+                  <span>Corporate BGV: 2.1s</span>
+                </span>
               </div>
 
             </div>
 
-            {/* Right Column: 3D Holographic Verification Card (5 Cols) */}
+            {/* Right Column: 3D Holographic Verification Stage (5 Cols) */}
             <div className="lg:col-span-5 perspective-container flex justify-center">
               <div className="relative w-full max-w-md card-3d-interactive floating-3d-hero">
                 
@@ -642,12 +632,36 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* 👷 LABOR MANAGEMENT & VERIFICATION SUITE WITH 3D VISUALS */}
+      {/* 🌐 INFINITE MARQUEE TRUST TICKER (Waabi.ai Style) */}
+      <div className="bg-slate-950 text-white py-4 overflow-hidden border-y border-slate-800 relative z-20">
+        <div className="animate-marquee items-center gap-10 text-xs font-mono font-bold text-slate-300">
+          <span className="flex items-center gap-2 text-indigo-400 shrink-0">⚡ UIDAI AADHAAR OTP & ADDRESS</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-emerald-400 shrink-0">⚡ NSDL INCOME TAX PAN AUTHENTICATION</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-amber-400 shrink-0">⚡ EPFO CAREER PASSBOOK AUDIT</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-sky-400 shrink-0">⚡ MORTH COMMERCIAL DRIVING LICENSE</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-purple-400 shrink-0">⚡ NPCI / IMPS ₹1 BANK PENNY DROP</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-rose-400 shrink-0">⚡ NATIONAL E-COURTS & POLICE RECORDS</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-emerald-400 shrink-0">🛡️ ISO 27001:2022 CERTIFIED</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-indigo-400 shrink-0">⚖️ DPDP ACT 2023 COMPLIANT</span>
+          <span className="text-slate-600 shrink-0">•</span>
+          <span className="flex items-center gap-2 text-amber-400 shrink-0">🏗️ CLRA FORM XIII STATUTORY PASSES</span>
+          <span className="text-slate-600 shrink-0">•</span>
+        </div>
+      </div>
+
+      {/* 🍱 SOLUTIONS BENTO GRID (Waabi / Apple Inspired) */}
       <section id="labor-solutions" className="py-16 sm:py-24 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <span className="badge badge-amber text-xs font-black uppercase tracking-wider">Workforce & Compliance Suite</span>
+            <span className="badge badge-amber text-xs font-black uppercase tracking-wider">Enterprise Workforce Suite</span>
             <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
               Tailored Solutions for Every Workforce Model
             </h2>
@@ -657,115 +671,113 @@ export const LandingPageView = () => {
 
             {/* Interactive Solution Switcher */}
             <div className="pt-4 flex justify-center">
-              <div className="inline-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
+              <div className="inline-flex p-1.5 rounded-full bg-slate-100 border border-slate-200 shadow-inner">
                 <button
                   onClick={() => setActiveSolutionTab('labor')}
-                  className={`px-4 sm:px-6 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`px-5 sm:px-7 py-2 rounded-full text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
                     activeSolutionTab === 'labor'
                       ? 'bg-amber-500 text-white shadow-md'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <HardHat className="w-4 h-4" />
-                  <span>Blue-Collar & Contract Labor</span>
+                  <span>Contract & Factory Labor</span>
                 </button>
 
                 <button
                   onClick={() => setActiveSolutionTab('corporate')}
-                  className={`px-4 sm:px-6 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`px-5 sm:px-7 py-2 rounded-full text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
                     activeSolutionTab === 'corporate'
                       ? 'bg-indigo-600 text-white shadow-md'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Building2 className="w-4 h-4" />
-                  <span>Corporate & White-Collar</span>
+                  <span>Corporate & Executive BGV</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* TAB 1: BLUE-COLLAR & CONTRACT LABOR MANAGEMENT */}
+          {/* TAB 1: CONTRACT LABOR MANAGEMENT BENTO */}
           {activeSolutionTab === 'labor' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch animate-fadeIn">
               
-              {/* 3D Labor Visual (5 cols) */}
-              <div className="lg:col-span-5 perspective-container flex justify-center">
-                <div className="w-full max-w-md card-3d-interactive relative">
-                  <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-200 bg-white">
-                    <img
-                      src="/assets/3d/labor_3d_management.jpg"
-                      alt="3D Industrial Contract Labor Management Station"
-                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="p-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <HardHat className="w-5 h-5" />
-                        <div>
-                          <div className="text-xs font-black">Industrial Labor Gate Pass</div>
-                          <div className="text-[10px] text-amber-100">CLRA Form XIII Automated</div>
-                        </div>
+              {/* 3D Visual Bento Card (5 Cols) */}
+              <div className="lg:col-span-5 perspective-container flex">
+                <div className="w-full card-3d-interactive rounded-3xl overflow-hidden shadow-xl border-2 border-amber-200 bg-white flex flex-col justify-between">
+                  <img
+                    src="/assets/3d/labor_3d_management.jpg"
+                    alt="3D Industrial Contract Labor Management Station"
+                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="p-5 bg-gradient-to-r from-amber-500 to-amber-600 text-white flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <HardHat className="w-5 h-5" />
+                      <div>
+                        <div className="text-xs font-black">Industrial Labor Gate Pass</div>
+                        <div className="text-[10px] text-amber-100">CLRA Form XIII Automated</div>
                       </div>
-                      <span className="badge bg-white text-amber-900 text-[9px] font-black">100% AUDIT PASS</span>
                     </div>
+                    <span className="badge bg-white text-amber-900 text-[9px] font-black">100% AUDIT PASS</span>
                   </div>
                 </div>
               </div>
 
-              {/* Labor Feature Cards (7 cols) */}
+              {/* 4 Feature Bento Cards (7 Cols in 2x2 Grid) */}
               <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                <div className="glass-panel p-5 bg-amber-50/40 border-2 border-amber-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-amber-50/40 border border-amber-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black shadow-sm">
                     <Smartphone className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">45s Mobile Onboarding</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Workers authenticate via WhatsApp, SMS, or QR magic links. Zero app download required, 100% accessible on any phone.
                   </p>
-                  <div className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 pt-1 border-t border-amber-200">
+                  <div className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 pt-2 border-t border-amber-200/60">
                     <Check className="w-3.5 h-3.5 text-amber-600" />
                     <span>Instant Aadhaar OTP & Live Selfie</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-emerald-50/40 border-2 border-emerald-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-emerald-50/40 border border-emerald-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
                     <Fingerprint className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">Ghost Worker Shield</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Biometric deduplication flags duplicate worker profiles across contractors and plant gates, ending double-billing fraud.
                   </p>
-                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-1 border-t border-emerald-200">
+                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-2 border-t border-emerald-200/60">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
                     <span>0 Duplicate Worker Records</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-indigo-50/40 border-2 border-indigo-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-indigo-50/40 border border-indigo-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">IMPS Bank Penny Drop</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Instantly verifies candidate bank account and official beneficiary name via ₹1 IMPS penny drop for wage transfers.
                   </p>
-                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-1 border-t border-indigo-200">
+                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-2 border-t border-indigo-200/60">
                     <Check className="w-3.5 h-3.5 text-indigo-600" />
                     <span>100% Name Match with Aadhaar</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-purple-50/40 border-2 border-purple-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-purple-50/40 border border-purple-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
                     <QrCode className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">QR Digital Worker Passes</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Generates encrypted digital worker passes with QR code verification and automatic CLRA compliance reports for labor officers.
                   </p>
-                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-1 border-t border-purple-200">
+                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-2 border-t border-purple-200/60">
                     <Check className="w-3.5 h-3.5 text-purple-600" />
                     <span>Instant Gate Turnstile Access</span>
                   </div>
@@ -776,87 +788,85 @@ export const LandingPageView = () => {
             </div>
           )}
 
-          {/* TAB 2: CORPORATE & WHITE-COLLAR BGV */}
+          {/* TAB 2: CORPORATE & EXECUTIVE BGV BENTO */}
           {activeSolutionTab === 'corporate' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch animate-fadeIn">
               
-              {/* 3D Corporate Visual (5 cols) */}
-              <div className="lg:col-span-5 perspective-container flex justify-center">
-                <div className="w-full max-w-md card-3d-interactive relative">
-                  <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-200 bg-white">
-                    <img
-                      src="/assets/3d/corporate_3d_bgv.jpg"
-                      alt="3D Corporate Executive Background Verification Workstation"
-                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="p-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5" />
-                        <div>
-                          <div className="text-xs font-black">Executive Background Dossier</div>
-                          <div className="text-[10px] text-indigo-100">EPFO Career History Audited</div>
-                        </div>
+              {/* 3D Visual Bento Card (5 Cols) */}
+              <div className="lg:col-span-5 perspective-container flex">
+                <div className="w-full card-3d-interactive rounded-3xl overflow-hidden shadow-xl border-2 border-indigo-200 bg-white flex flex-col justify-between">
+                  <img
+                    src="/assets/3d/corporate_3d_bgv.jpg"
+                    alt="3D Corporate Executive Background Verification Workstation"
+                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="p-5 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <Building2 className="w-5 h-5" />
+                      <div>
+                        <div className="text-xs font-black">Executive Background Dossier</div>
+                        <div className="text-[10px] text-indigo-100">EPFO Career History Audited</div>
                       </div>
-                      <span className="badge bg-white text-indigo-900 text-[9px] font-black">ZERO MOONLIGHTING</span>
                     </div>
+                    <span className="badge bg-white text-indigo-900 text-[9px] font-black">ZERO MOONLIGHTING</span>
                   </div>
                 </div>
               </div>
 
-              {/* Corporate Feature Cards (7 cols) */}
+              {/* 4 Feature Bento Cards (7 Cols in 2x2 Grid) */}
               <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                <div className="glass-panel p-5 bg-indigo-50/40 border-2 border-indigo-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-indigo-50/40 border border-indigo-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
                     <FileText className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">EPFO Employment Audit</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Direct authenticated EPFO passbook verification retrieves exact tenure, establishment codes, and catches moonlighting.
                   </p>
-                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-1 border-t border-indigo-200">
+                  <div className="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5 pt-2 border-t border-indigo-200/60">
                     <Check className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Eliminates Fake Experience Letters</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-purple-50/40 border-2 border-purple-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-purple-50/40 border border-purple-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">
                     <Scale className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">National Court Checks</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Comprehensive legal records search across High Courts, District Courts, and Tribunals nationwide for clean hiring.
                   </p>
-                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-1 border-t border-purple-200">
+                  <div className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5 pt-2 border-t border-purple-200/60">
                     <Check className="w-3.5 h-3.5 text-purple-600" />
                     <span>Instant FIR & Case Search</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-emerald-50/40 border-2 border-emerald-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-emerald-50/40 border border-emerald-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
                     <Eye className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">AI Face Liveness Match</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Anti-spoofing facial recognition matches live candidate webcam selfie against Aadhaar photo with 99.8% precision.
                   </p>
-                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-1 border-t border-emerald-200">
+                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 pt-2 border-t border-emerald-200/60">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Active Blink & Head-Tilt Checks</span>
                   </div>
                 </div>
 
-                <div className="glass-panel p-5 bg-sky-50/40 border-2 border-sky-200 rounded-3xl space-y-3 card-hover-lift">
-                  <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm">
+                <div className="glass-panel p-5 bg-sky-50/40 border border-sky-200 rounded-3xl space-y-3 glow-card-interactive">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm">
                     <Award className="w-5 h-5" />
                   </div>
                   <h3 className="text-sm font-black text-slate-900">5-Page Audit Dossier</h3>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">
                     Generates official PDF background dossiers with digital signatures, QR validation links, and board-ready evidence.
                   </p>
-                  <div className="text-[11px] font-bold text-sky-900 flex items-center gap-1.5 pt-1 border-t border-sky-200">
+                  <div className="text-[11px] font-bold text-sky-900 flex items-center gap-1.5 pt-2 border-t border-sky-200/60">
                     <Check className="w-3.5 h-3.5 text-sky-600" />
                     <span>One-Click Export & Download</span>
                   </div>
@@ -870,9 +880,11 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* ⚡ INSTANT VERIFICATION SPEED ENGINE WITH 3D ASSET */}
+      {/* ⚡ INSTANT VERIFICATION SPEED ENGINE (Waabi Dark Theme) */}
       <section id="verification-engine" className="py-16 sm:py-24 bg-slate-900 text-white relative overflow-hidden">
         
+        <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -880,7 +892,7 @@ export const LandingPageView = () => {
             {/* Left 3D Smartphone Speed Asset (5 cols) */}
             <div className="lg:col-span-5 perspective-container flex justify-center">
               <div className="w-full max-w-md card-3d-interactive floating-3d-hero">
-                <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500/50 bg-slate-950 relative group">
+                <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500/40 bg-slate-950 relative group">
                   <div className="animate-scanline" />
                   <img
                     src="/assets/3d/speed_3d_instant.jpg"
@@ -913,17 +925,22 @@ export const LandingPageView = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {[
-                  { title: 'UIDAI Aadhaar OTP & Address', desc: 'Instant OTP verification with masked demographic match and verified pin-code address.' },
-                  { title: 'NSDL & Income Tax PAN Match', desc: 'Validates official PAN status, legal candidate full name, and father name match.' },
-                  { title: 'EPFO Service Passbook Audit', desc: 'Authenticates Universal Account Number (UAN), past employer history, and PF records.' },
-                  { title: 'MoRTH Transport Driving License', desc: 'Verifies commercial, heavy goods (HGV), and driver transport license validity.' },
-                  { title: 'Bank IMPS Penny Drop', desc: 'Deposits ₹1 to active bank account to verify legal beneficiary name and IFSC.' },
-                  { title: 'National Criminal & Court Records', desc: 'Searches e-Courts records across District, High Courts, and National Tribunals.' }
+                  { title: 'UIDAI Aadhaar OTP & Address', desc: 'Instant OTP verification with masked demographic match and verified pin-code address.', tat: '1.1s' },
+                  { title: 'NSDL & Income Tax PAN Match', desc: 'Validates official PAN status, legal candidate full name, and father name match.', tat: '1.0s' },
+                  { title: 'EPFO Service Passbook Audit', desc: 'Authenticates Universal Account Number (UAN), past employer history, and PF records.', tat: '2.2s' },
+                  { title: 'MoRTH Transport Driving License', desc: 'Verifies commercial, heavy goods (HGV), and driver transport license validity.', tat: '1.6s' },
+                  { title: 'Bank IMPS Penny Drop', desc: 'Deposits ₹1 to active bank account to verify legal beneficiary name and IFSC.', tat: '1.4s' },
+                  { title: 'National Criminal & Court Records', desc: 'Searches e-Courts records across District, High Courts, and National Tribunals.', tat: '1.8s' }
                 ].map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-1.5 hover:border-indigo-500 transition-colors">
-                    <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>{item.title}</span>
+                  <div key={idx} className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 space-y-1.5 hover:border-indigo-500 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <div className="flex items-center gap-2 text-indigo-300">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>{item.title}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                        {item.tat}
+                      </span>
                     </div>
                     <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
                       {item.desc}
@@ -932,6 +949,134 @@ export const LandingPageView = () => {
                 ))}
               </div>
 
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 🎯 INTERACTIVE LIVE VERIFICATION SIMULATOR TERMINAL */}
+      <section id="simulator" className="py-16 sm:py-24 bg-slate-950 text-white relative overflow-hidden">
+        
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
+          
+          <div className="text-center space-y-3">
+            <span className="badge badge-purple text-xs font-black uppercase tracking-wider">Interactive Terminal</span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
+              45-Second Live Verification Terminal
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium max-w-2xl mx-auto">
+              Select a workforce role below and experience how JOY authenticates identity, employment, and legal records in real-time.
+            </p>
+          </div>
+
+          {/* Role Selectors */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { key: 'laborer', label: '👷 Contract Factory Laborer', badge: 'Blue-Collar' },
+              { key: 'driver', label: '🚚 Logistics Fleet Driver', badge: 'MoRTH DL' },
+              { key: 'executive', label: '💼 Enterprise Manager', badge: 'EPFO BGV' }
+            ].map((role) => (
+              <button
+                key={role.key}
+                onClick={() => handleRunSimulator(role.key)}
+                className={`p-3 sm:px-5 sm:py-3 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border ${
+                  selectedRoleSample === role.key
+                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg scale-102'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <span>{role.label}</span>
+                <span className="text-[10px] opacity-75 font-mono">({role.badge})</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Simulated Active Dossier Card */}
+          <div className="glass-panel p-6 sm:p-8 bg-slate-900/90 border-2 border-slate-800 rounded-3xl shadow-2xl space-y-6 max-w-3xl mx-auto relative overflow-hidden">
+            
+            {/* Live Scanning Laser Beam Animation */}
+            {simulating && <div className="animate-scanline" />}
+
+            {/* Candidate Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+                  {sampleRoles[selectedRoleSample].candidateName[0]}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black">{sampleRoles[selectedRoleSample].candidateName}</h3>
+                    <span className="badge badge-emerald text-[9px] font-black">SAMPLE RECORD</span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-medium">{sampleRoles[selectedRoleSample].title}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleRunSimulator(selectedRoleSample)}
+                disabled={simulating}
+                className="btn btn-superadmin text-xs py-2.5 px-4 font-black flex items-center gap-1.5 cursor-pointer self-start sm:self-auto rounded-full"
+              >
+                <Play className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
+                <span>{simulating ? 'Running Live Check...' : 'Re-Run Live Simulator ⚡'}</span>
+              </button>
+            </div>
+
+            {/* Checks Execution Matrix */}
+            <div className="space-y-2.5">
+              {sampleRoles[selectedRoleSample].checks.map((chk, idx) => {
+                const isPassed = !simulating || simStep > idx;
+                const isCurrent = simulating && simStep === idx;
+
+                return (
+                  <div 
+                    key={idx} 
+                    className={`p-3 sm:p-3.5 rounded-2xl flex items-center justify-between text-xs transition-all ${
+                      isPassed 
+                        ? 'bg-slate-800/80 border border-emerald-500/30 text-slate-200' 
+                        : isCurrent 
+                          ? 'bg-indigo-950/70 border border-indigo-500 text-indigo-200 animate-pulse'
+                          : 'bg-slate-950/50 border border-slate-900 text-slate-500 opacity-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {isPassed ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      ) : isCurrent ? (
+                        <Clock className="w-4 h-4 text-indigo-400 animate-spin shrink-0" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border border-slate-700 shrink-0" />
+                      )}
+                      <span className="font-bold">{chk.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className={`font-mono text-[11px] font-bold ${isPassed ? 'text-emerald-400' : 'text-slate-500'}`}>
+                        {isPassed ? chk.status : isCurrent ? 'Validating...' : 'Pending'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+                        {chk.time}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Complete Banner */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-emerald-950/40 p-4 rounded-2xl border border-emerald-500/30">
+              <div className="flex items-center gap-2 text-emerald-300 font-bold">
+                <CheckCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span>Verification Complete — Audit-Ready 5-Page Dossier Generated!</span>
+              </div>
+              <button
+                onClick={() => setShowDemoModal(true)}
+                className="btn btn-secondary text-xs py-1.5 px-4 bg-white text-slate-900 font-bold hover:bg-slate-100 cursor-pointer shrink-0 rounded-full"
+              >
+                Request Enterprise Access 🚀
+              </button>
             </div>
 
           </div>
@@ -990,7 +1135,7 @@ export const LandingPageView = () => {
               <div className="pt-2">
                 <button
                   onClick={() => setShowLegalHandbook(true)}
-                  className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 cursor-pointer hover:border-purple-300"
+                  className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 cursor-pointer hover:border-purple-300 rounded-full"
                 >
                   <BookOpen className="w-3.5 h-3.5 text-purple-600" />
                   <span>Open DPDP Compliance Handbook 🛡️</span>
@@ -1023,136 +1168,8 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* 🎯 INTERACTIVE LIVE VERIFICATION SIMULATOR */}
-      <section id="simulator" className="py-16 sm:py-24 bg-slate-950 text-white relative overflow-hidden">
-        
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
-          
-          <div className="text-center space-y-3">
-            <span className="badge badge-purple text-xs font-black uppercase tracking-wider">Experience Live Speed</span>
-            <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
-              Interactive 45-Second Verification Simulator
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-medium max-w-2xl mx-auto">
-              Select a workforce role below and experience how JOY authenticates identity, employment, and legal records in real-time.
-            </p>
-          </div>
-
-          {/* Role Selectors */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              { key: 'laborer', label: '👷 Contract Factory Laborer', badge: 'Blue-Collar' },
-              { key: 'driver', label: '🚚 Logistics Fleet Driver', badge: 'MoRTH DL' },
-              { key: 'executive', label: '💼 Enterprise Manager', badge: 'EPFO BGV' }
-            ].map((role) => (
-              <button
-                key={role.key}
-                onClick={() => handleRunSimulator(role.key)}
-                className={`p-3 sm:px-5 sm:py-3 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 border ${
-                  selectedRoleSample === role.key
-                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg scale-102'
-                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <span>{role.label}</span>
-                <span className="text-[10px] opacity-75 font-mono">({role.badge})</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Simulated Active Dossier Card */}
-          <div className="glass-panel p-6 sm:p-8 bg-slate-900/90 border-2 border-slate-800 rounded-3xl shadow-2xl space-y-6 max-w-3xl mx-auto relative overflow-hidden">
-            
-            {/* Live Scanning Laser Beam Animation */}
-            {simulating && <div className="animate-scanline" />}
-
-            {/* Candidate Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                  {sampleRoles[selectedRoleSample].candidateName[0]}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base sm:text-lg font-black">{sampleRoles[selectedRoleSample].candidateName}</h3>
-                    <span className="badge badge-emerald text-[9px] font-black">SAMPLE RECORD</span>
-                  </div>
-                  <p className="text-xs text-slate-400 font-medium">{sampleRoles[selectedRoleSample].title}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleRunSimulator(selectedRoleSample)}
-                disabled={simulating}
-                className="btn btn-superadmin text-xs py-2.5 px-4 font-black flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-              >
-                <Play className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
-                <span>{simulating ? 'Running Live Check...' : 'Re-Run Live Simulator ⚡'}</span>
-              </button>
-            </div>
-
-            {/* Checks Execution Matrix */}
-            <div className="space-y-2.5">
-              {sampleRoles[selectedRoleSample].checks.map((chk, idx) => {
-                const isPassed = !simulating || simStep > idx;
-                const isCurrent = simulating && simStep === idx;
-
-                return (
-                  <div 
-                    key={idx} 
-                    className={`p-3 sm:p-3.5 rounded-2xl flex items-center justify-between text-xs transition-all ${
-                      isPassed 
-                        ? 'bg-slate-800/80 border border-emerald-500/30 text-slate-200' 
-                        : isCurrent 
-                          ? 'bg-indigo-950/70 border border-indigo-500 text-indigo-200 animate-pulse'
-                          : 'bg-slate-950/50 border border-slate-900 text-slate-500 opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      {isPassed ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      ) : isCurrent ? (
-                        <Clock className="w-4 h-4 text-indigo-400 animate-spin shrink-0" />
-                      ) : (
-                        <div className="w-4 h-4 rounded-full border border-slate-700 shrink-0" />
-                      )}
-                      <span className="font-bold">{chk.name}</span>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className={`font-mono text-[11px] font-bold ${isPassed ? 'text-emerald-400' : 'text-slate-500'}`}>
-                        {isPassed ? chk.status : isCurrent ? 'Validating...' : 'Pending'}
-                      </span>
-                      <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
-                        {chk.time}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Complete Banner */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-emerald-950/40 p-4 rounded-2xl border border-emerald-500/30">
-              <div className="flex items-center gap-2 text-emerald-300 font-bold">
-                <CheckCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span>Verification Complete — Audit-Ready 5-Page Dossier Generated!</span>
-              </div>
-              <button
-                onClick={() => setShowDemoModal(true)}
-                className="btn btn-secondary text-xs py-1.5 px-3 bg-white text-slate-900 font-bold hover:bg-slate-100 cursor-pointer shrink-0"
-              >
-                Request Enterprise Access 🚀
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ⭐ VERIFIED ENTERPRISE CLIENT REVIEWS */}
-      <section id="reviews" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
+      {/* ⭐ VERIFIED ENTERPRISE CLIENT REVIEWS (Wall of Love) */}
+      <section id="reviews" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* Header */}
@@ -1176,7 +1193,7 @@ export const LandingPageView = () => {
 
             <button
               onClick={() => setShowReviewModal(true)}
-              className="btn btn-superadmin text-xs py-2.5 px-5 font-black flex items-center gap-2 cursor-pointer shrink-0 shadow-md"
+              className="btn btn-superadmin text-xs py-2.5 px-5 font-black flex items-center gap-2 cursor-pointer shrink-0 shadow-md rounded-full"
             >
               <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" />
               <span>Submit Verified Review ⭐</span>
@@ -1187,40 +1204,40 @@ export const LandingPageView = () => {
           <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs">
             <button
               onClick={() => setReviewCategory('all')}
-              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full font-black transition-all cursor-pointer whitespace-nowrap ${
                 reviewCategory === 'all'
                   ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
               }`}
             >
               All Reviews ({reviewsList.length})
             </button>
             <button
               onClick={() => setReviewCategory('labor')}
-              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full font-black transition-all cursor-pointer whitespace-nowrap ${
                 reviewCategory === 'labor'
                   ? 'bg-amber-500 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
               }`}
             >
               👷 Factory & Contract Labor
             </button>
             <button
               onClick={() => setReviewCategory('logistics')}
-              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full font-black transition-all cursor-pointer whitespace-nowrap ${
                 reviewCategory === 'logistics'
                   ? 'bg-sky-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
               }`}
             >
               🚚 Driver & Logistics Fleet
             </button>
             <button
               onClick={() => setReviewCategory('corporate')}
-              className={`px-4 py-2 rounded-xl font-black transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full font-black transition-all cursor-pointer whitespace-nowrap ${
                 reviewCategory === 'corporate'
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
               }`}
             >
               💼 White-Collar & IT
@@ -1232,7 +1249,7 @@ export const LandingPageView = () => {
             {filteredReviews.map((rev) => (
               <div 
                 key={rev.id} 
-                className="glass-panel p-6 sm:p-7 bg-white border-2 border-slate-200 rounded-3xl shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                className="glass-panel p-6 sm:p-7 bg-slate-50/70 border-2 border-slate-200/90 rounded-3xl shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -1253,7 +1270,7 @@ export const LandingPageView = () => {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs">
                   <div>
                     <h4 className="font-black text-slate-900 text-xs">{rev.name}</h4>
                     <p className="text-[11px] text-slate-500 font-medium">{rev.role} • <strong className="text-slate-700">{rev.company}</strong></p>
@@ -1268,7 +1285,7 @@ export const LandingPageView = () => {
       </section>
 
       {/* 💰 ROI & COST SAVINGS CALCULATOR */}
-      <section id="roi-calculator" className="py-16 sm:py-24 bg-white border-b border-slate-200">
+      <section id="roi-calculator" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center space-y-2 max-w-2xl mx-auto">
@@ -1281,7 +1298,7 @@ export const LandingPageView = () => {
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto glass-panel p-6 sm:p-10 bg-slate-50 border-2 border-slate-200 rounded-3xl shadow-md space-y-8">
+          <div className="max-w-3xl mx-auto glass-panel p-6 sm:p-10 bg-white border-2 border-slate-200 rounded-3xl shadow-md space-y-8">
             
             {/* Slider */}
             <div className="space-y-4">
@@ -1310,13 +1327,13 @@ export const LandingPageView = () => {
 
             {/* Calculations Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-200">
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 text-center space-y-1">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-1">
                 <span className="text-slate-400 text-[11px] uppercase font-bold block">Rate Per Verification</span>
                 <span className="text-2xl font-black text-slate-900 font-mono">₹{currentPrice}</span>
                 <span className="text-[10px] text-emerald-700 font-bold block">All Repository Checks Included</span>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 text-center space-y-1">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-1">
                 <span className="text-slate-400 text-[11px] uppercase font-bold block">Estimated Monthly Cost</span>
                 <span className="text-2xl font-black text-indigo-700 font-mono">₹{monthlyCost.toLocaleString('en-IN')}</span>
                 <span className="text-[10px] text-slate-500 block">per month</span>
@@ -1332,7 +1349,7 @@ export const LandingPageView = () => {
             <div className="flex justify-center pt-2">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="btn btn-superadmin text-xs py-3.5 px-8 font-black shadow-md flex items-center gap-2 cursor-pointer"
+                className="btn btn-superadmin text-xs py-3.5 px-8 font-black shadow-md flex items-center gap-2 cursor-pointer rounded-full"
               >
                 <span>Request Custom Enterprise Quote</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1344,7 +1361,7 @@ export const LandingPageView = () => {
         </div>
       </section>
 
-      {/* 💳 TRANSPARENT VERIFICATION CREDITS & PRICING PLANS */}
+      {/* 💳 PREPAID VERIFICATION CREDITS & PRICING PLANS */}
       <section id="pricing" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -1393,7 +1410,7 @@ export const LandingPageView = () => {
 
               <button
                 onClick={() => handleInitiateRecharge(2500)}
-                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
+                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer rounded-full"
               >
                 <span>Recharge ₹2,500 via Razorpay ⚡</span>
               </button>
@@ -1440,7 +1457,7 @@ export const LandingPageView = () => {
 
               <button
                 onClick={() => handleInitiateRecharge(5000)}
-                className="btn btn-superadmin w-full text-xs py-3.5 font-black justify-center shadow-lg cursor-pointer hover:scale-102 transition-transform"
+                className="btn btn-superadmin w-full text-xs py-3.5 font-black justify-center shadow-lg cursor-pointer hover:scale-102 transition-transform rounded-full"
               >
                 <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
                 <span>Recharge ₹5,000 (Razorpay) ⚡</span>
@@ -1480,7 +1497,7 @@ export const LandingPageView = () => {
 
               <button
                 onClick={() => handleInitiateRecharge(15000)}
-                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer"
+                className="btn btn-secondary w-full text-xs py-3 font-bold justify-center cursor-pointer rounded-full"
               >
                 <span>Recharge ₹15,000 via Razorpay ⚡</span>
               </button>
@@ -1492,7 +1509,7 @@ export const LandingPageView = () => {
       </section>
 
       {/* 📰 KNOWLEDGE BASE & COMPLIANCE ARTICLES */}
-      <section id="blog" className="py-16 sm:py-24 bg-white border-b border-slate-200">
+      <section id="blog" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
@@ -1508,7 +1525,7 @@ export const LandingPageView = () => {
 
             <Link 
               to="/blog" 
-              className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 group shrink-0"
+              className="btn btn-secondary text-xs py-2.5 px-5 font-bold flex items-center gap-2 group shrink-0 rounded-full"
             >
               <span>Explore Knowledge Hub</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1550,7 +1567,7 @@ export const LandingPageView = () => {
             ]).map((art) => (
               <div 
                 key={art.id || art.slug}
-                className="glass-panel p-6 bg-slate-50 border border-slate-200 rounded-3xl hover:border-indigo-300 hover:shadow-lg transition-all flex flex-col justify-between space-y-4 group"
+                className="glass-panel p-6 bg-white border border-slate-200 rounded-3xl hover:border-indigo-300 hover:shadow-lg transition-all flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -1572,14 +1589,14 @@ export const LandingPageView = () => {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                   <div>
                     <span className="font-bold text-slate-800 block text-xs">{art.author_name}</span>
                     <span className="text-[10px] text-slate-400 font-medium block">{art.author_role}</span>
                   </div>
                   <Link 
                     to={`/blog/${art.slug}`}
-                    className="p-2 rounded-xl bg-white border border-slate-200 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs"
+                    className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs"
                   >
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -1592,7 +1609,7 @@ export const LandingPageView = () => {
       </section>
 
       {/* ❓ SEARCH-OPTIMIZED FAQ ACCORDION */}
-      <section id="faq" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
+      <section id="faq" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="text-center space-y-2">
@@ -1606,7 +1623,7 @@ export const LandingPageView = () => {
             {faqs.map((faq, idx) => (
               <div 
                 key={idx} 
-                className="glass-panel p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs transition-all"
+                className="glass-panel p-5 bg-slate-50 border border-slate-200 rounded-2xl shadow-2xs transition-all"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
@@ -1617,7 +1634,7 @@ export const LandingPageView = () => {
                 </button>
 
                 {openFaq === idx && (
-                  <p className="text-xs text-slate-600 font-medium mt-3 pt-3 border-t border-slate-100 leading-relaxed animate-fadeIn">
+                  <p className="text-xs text-slate-600 font-medium mt-3 pt-3 border-t border-slate-200 leading-relaxed animate-fadeIn">
                     {faq.a}
                   </p>
                 )}
@@ -1795,7 +1812,7 @@ export const LandingPageView = () => {
                 </div>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={demoLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50">
+                  <button type="submit" disabled={demoLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50 rounded-full">
                     <span>{demoLoading ? 'Submitting Request...' : 'Submit Demo Request 🚀'}</span>
                   </button>
                 </div>
@@ -1923,7 +1940,7 @@ export const LandingPageView = () => {
                 </div>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={reviewLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50">
+                  <button type="submit" disabled={reviewLoading} className="btn btn-superadmin text-xs py-3 w-full font-black shadow-md cursor-pointer disabled:opacity-50 rounded-full">
                     <span>{reviewLoading ? 'Submitting Review...' : 'Submit Verified Review 🌟'}</span>
                   </button>
                 </div>
