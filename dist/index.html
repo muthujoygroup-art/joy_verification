@@ -158,13 +158,41 @@
 
     <!-- Razorpay Checkout Integration -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script type="module" crossorigin src="/assets/index-BsxlPTi0.js"></script>
+    <!-- Tailwind CSS Engine & Enterprise Brand Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Plus Jakarta Sans', 'Outfit', 'sans-serif'],
+              outfit: ['Outfit', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+            },
+            colors: {
+              brand: {
+                dark: '#0f223d',
+                orange: '#f58220',
+                cyan: '#00a3c4',
+                card: 'rgba(255, 255, 255, 0.95)',
+                indigo: '#4f46e5',
+                emerald: '#059669',
+                amber: '#d97706',
+                rose: '#e11d48'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-BgXjshfu.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-hePW80VL.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-core-CsLRevrH.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-react-DoXRf63p.js">
     <link rel="modulepreload" crossorigin href="/assets/api-PkT7DQcy.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-utils-DKvfl8Ry.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-YNPLLyC9.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DfvHc2M6.css">
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased font-sans">
     <div id="root"></div>
