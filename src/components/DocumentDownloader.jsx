@@ -166,12 +166,12 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   return (
     <>
       <div 
-        className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center animate-fadeIn"
+        className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto flex flex-col items-center justify-start sm:justify-center animate-fadeIn"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) onClose();
         }}
       >
-        <div className="bg-white w-full max-w-3xl h-[92vh] max-h-[92vh] flex flex-col border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl animate-modal-spring overflow-hidden">
+        <div className="bg-white w-full max-w-3xl h-[94vh] max-h-[94vh] flex flex-col border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto overflow-hidden shrink-0">
           
           {/* Sticky Fixed Header */}
           <div className="shrink-0 bg-white p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-20">

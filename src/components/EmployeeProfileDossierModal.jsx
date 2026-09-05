@@ -276,22 +276,22 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto flex flex-col items-center justify-start sm:justify-center print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && typeof onClose === 'function') onClose();
       }}
     >
       <div 
-        className="bg-white w-full max-w-5xl h-[92vh] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 text-slate-900 relative print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring overflow-hidden" 
+        className="bg-white w-full max-w-5xl h-[94vh] max-h-[94vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 text-slate-900 my-auto relative print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 overflow-hidden shrink-0" 
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Action Header Controls (Sticky Fixed at Top, Hidden on Print) */}
-        <div className="shrink-0 bg-white/95 backdrop-blur-sm p-4 sm:p-5 border-b border-slate-200 z-30 flex flex-col gap-3 shadow-2xs print:hidden">
+        <div className="shrink-0 bg-white border-b border-slate-200 z-50 p-3 sm:p-4 flex flex-col gap-2.5 shadow-sm print:hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="badge badge-cyan text-[10px]">Complete Master Profile Dossier</span>
-              <span className="text-xs text-slate-500 font-bold">
+              <span className="badge badge-cyan text-[10px] font-bold">Complete Master Profile Dossier</span>
+              <span className="text-xs text-slate-700 font-bold">
                 • {candidateName} (#{c.employeeNumber || c.empId || c.uniqueProfileId || 'EMP-2026'}) {attachedExhibits.length > 0 ? `• ${attachedExhibits.length} Exhibits` : ''}
               </span>
             </div>
@@ -300,25 +300,25 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               <button 
                 type="button" 
                 onClick={handlePrint} 
-                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer print:hidden"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold py-2 px-3.5 rounded-xl flex items-center gap-1.5 transition-all text-xs cursor-pointer print:hidden"
                 title="Print Complete Multi-Page Dossier (with Annexures)"
               >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print Official Packet</span>
+                <Printer className="w-3.5 h-3.5 text-slate-600" />
+                <span>Print Packet</span>
               </button>
               <button 
                 type="button" 
                 onClick={handleDownloadPdf} 
                 disabled={isExporting}
-                className="btn btn-hrexecutive text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer print:hidden disabled:opacity-75"
+                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-2 px-4 rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg transition-all text-xs cursor-pointer print:hidden disabled:opacity-75"
               >
-                {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                <span>{isExporting ? "Compiling Master PDF..." : "Download Master Dossier PDF"}</span>
+                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span>{isExporting ? "Compiling Master PDF..." : "Download Dossier (PDF)"}</span>
               </button>
               <button 
                 type="button" 
                 onClick={onClose} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer print:hidden"
+                className="text-slate-400 hover:text-slate-800 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer print:hidden"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -326,64 +326,64 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
             </div>
           </div>
 
-          {/* Tab Navigation (Hidden on Print) */}
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold flex-wrap print:hidden">
+          {/* Tab Navigation (Horizontal Scrolling, Hidden on Print) */}
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs font-bold overflow-x-auto whitespace-nowrap scrollbar-none print:hidden">
             <button 
               type="button"
               onClick={() => setActiveTab(1)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 1 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${activeTab === 1 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               1. Demographics
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(2)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 2 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${activeTab === 2 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               2. Role & Sector
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(3)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 3 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${activeTab === 3 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               3. Edu & Exp
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(4)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${activeTab === 4 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer shrink-0 ${activeTab === 4 ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               4. Statutory & Bank
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(5)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 5 ? 'bg-purple-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 shrink-0 ${activeTab === 5 ? 'bg-purple-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               <Scale className="w-3.5 h-3.5 text-amber-300" />
-              <span>5. Statutory Forms (Form 11, 2, ESIC 1)</span>
+              <span>5. Statutory Forms</span>
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(6)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 6 ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 shrink-0 ${activeTab === 6 ? 'bg-indigo-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               <FolderDown className="w-3.5 h-3.5" />
-              <span>6. Attached Exhibits ({attachedExhibits.length})</span>
+              <span>6. Exhibits ({attachedExhibits.length})</span>
             </button>
             <button 
               type="button"
               onClick={() => setActiveTab(7)} 
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 ${activeTab === 7 ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${activeTab === 7 ? 'bg-emerald-700 text-white shadow-sm font-black' : 'text-slate-600 hover:text-slate-900'}`}
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>7. Complete Master PDF (Profile + Forms + Exhibits) 📄</span>
+              <span>7. Complete Master PDF 📄</span>
             </button>
           </div>
 
           {downloadSuccess && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2 animate-fadeIn print:hidden">
+            <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2 animate-fadeIn print:hidden">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{downloadSuccess}</span>
             </div>
@@ -393,6 +393,39 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         {/* Scrollable Modal Content Container */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 overscroll-contain bg-slate-50/50 print:p-0 print:bg-white print:overflow-visible">
           
+          {/* In-Document Floating Download PDF Action Banner */}
+          <div className="max-w-[840px] mx-auto mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border border-emerald-200 shadow-xs flex items-center justify-between gap-3 flex-wrap print:hidden">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                <FileCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs text-slate-900">Official Master Employee Profile Dossier</h4>
+                <p className="text-[10px] text-slate-600 font-mono">UIDAI, EPFO, NSDL & NPCI Cryptographically Verified</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all shadow-2xs cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadPdf}
+                disabled={isExporting}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3.5 rounded-xl flex items-center gap-1.5 text-xs shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-75"
+              >
+                {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                <span>{isExporting ? "Generating PDF..." : "Download Official PDF"}</span>
+              </button>
+            </div>
+          </div>
+
           {/* ========================================================================= */}
           {/* PRINTABLE MASTER DOSSIER ROOT CONTAINER */}
           {/* ========================================================================= */}
@@ -1109,8 +1142,40 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
         </div>
 
+        {/* Sticky Bottom Bar for instant PDF download at all scroll positions */}
+        <div className="shrink-0 bg-white/95 backdrop-blur-md p-3 sm:p-4 border-t border-slate-200 z-30 flex items-center justify-between gap-3 shadow-md print:hidden">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-bold text-slate-700">
+              {candidateName} • Master Profile Dossier
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button 
+              type="button" 
+              onClick={handlePrint} 
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Packet</span>
+            </button>
+            <button 
+              type="button" 
+              onClick={handleDownloadPdf} 
+              disabled={isExporting}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-4 rounded-xl flex items-center gap-1.5 text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-75"
+            >
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              <span>{isExporting ? "Compiling Master PDF..." : "Download Master Dossier (PDF)"}</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
+
+export default EmployeeProfileDossierModal;
 
