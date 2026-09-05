@@ -80,6 +80,30 @@ export const CompanyAdminView = () => {
     showToast
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
+
+  // Robust Tenant-Aware Company Resolution (Never returns undefined)
+  const resolvedCompany = (Array.isArray(companies) && companies.length > 0)
+    ? (companies.find(c => c.id === selectedCompanyId || c.id === currentUser?.companyId || c.email === currentUser?.email) || companies[0])
+    : (currentUser?.company || {
+        id: currentUser?.companyId || 'comp-joy',
+        name: currentUser?.companyName || 'Joy Corporate Solutions Pvt Ltd',
+        code: 'COMP001',
+        email: currentUser?.email || 'info@joycorporatesolutions.com',
+        plan: 'Enterprise Platinum',
+        features: {},
+        documents: {}
+      });
+
+  const company = resolvedCompany || {
+    id: 'comp-joy',
+    name: 'Joy Corporate Solutions Pvt Ltd',
+    code: 'COMP001',
+    email: 'info@joycorporatesolutions.com',
+    plan: 'Enterprise Platinum',
+    features: {},
+    documents: {}
+  };
+
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry');
   // 'telemetry' | 'registry' | 'hrteam' | 'dochub' | 'billing_wallet' | 'hr_permissions'
@@ -309,28 +333,7 @@ export const CompanyAdminView = () => {
     showUniversalExportModal, governanceHr, activatingHr, showCompTestEmailModal
   ]);
 
-  // Robust Tenant-Aware Company Resolution (Never returns undefined)
-  const resolvedCompany = (Array.isArray(companies) && companies.length > 0)
-    ? (companies.find(c => c.id === selectedCompanyId || c.id === currentUser?.companyId || c.email === currentUser?.email) || companies[0])
-    : (currentUser?.company || {
-        id: currentUser?.companyId || 'comp-joy',
-        name: currentUser?.companyName || 'Joy Corporate Solutions Pvt Ltd',
-        code: 'COMP001',
-        email: currentUser?.email || 'info@joycorporatesolutions.com',
-        plan: 'Enterprise Platinum',
-        features: {},
-        documents: {}
-      });
 
-  const company = resolvedCompany || {
-    id: 'comp-joy',
-    name: 'Joy Corporate Solutions Pvt Ltd',
-    code: 'COMP001',
-    email: 'info@joycorporatesolutions.com',
-    plan: 'Enterprise Platinum',
-    features: {},
-    documents: {}
-  };
 
   const companyHrUsers = (hrUsers || []).filter(h => h.companyId === company.id);
 
