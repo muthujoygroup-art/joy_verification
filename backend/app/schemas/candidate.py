@@ -1,6 +1,18 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, Dict, Any, List
 from datetime import datetime
+
+class CandidateDocumentResponse(BaseModel):
+    id: str
+    candidate_id: Optional[str] = None
+    title: str
+    doc_type: Optional[str] = "general"
+    file_format: Optional[str] = "pdf"
+    file_path: Optional[str] = ""
+    file_size_kb: Optional[float] = 0.0
+    created_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 class CandidateBase(BaseModel):
     name: str
@@ -35,7 +47,9 @@ class CandidateBase(BaseModel):
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Any] = None
     specimen_signature: Optional[str] = None
-    documents: Optional[List[Dict[str, Any]]] = None
+    documents: Optional[List[CandidateDocumentResponse]] = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 class CandidateCreate(CandidateBase):
     pass
@@ -82,8 +96,20 @@ class CandidateResponse(CandidateBase):
     portal_password: Optional[str] = "1234"
     verifications_completed: Dict[str, Any]
     face_images: Dict[str, Any]
+    verified_attributes: Optional[Dict[str, Any]] = {}
+    aadhaar_data: Optional[Dict[str, Any]] = {}
+    pan_data: Optional[Dict[str, Any]] = {}
+    bank_data: Optional[Dict[str, Any]] = {}
+    dl_data: Optional[Dict[str, Any]] = {}
+    epfo_data: Optional[Dict[str, Any]] = {}
+    passport_data: Optional[Dict[str, Any]] = {}
+    face_match_data: Optional[Dict[str, Any]] = {}
+    court_record_data: Optional[Dict[str, Any]] = {}
+    risk_score: Optional[float] = 0.0
+    bgv_verdict: Optional[str] = "Pending"
+    discrepancies_detected: Optional[List[Any]] = []
+    documents: Optional[List[CandidateDocumentResponse]] = []
     verification_date: Optional[datetime] = None
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

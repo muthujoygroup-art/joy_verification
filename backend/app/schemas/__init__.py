@@ -3,7 +3,7 @@ from backend.app.schemas.company import (
     HrUserCreate, HrUserResponse
 )
 from backend.app.schemas.candidate import (
-    CandidateCreate, CandidateUpdate, CandidateResponse
+    CandidateCreate, CandidateUpdate, CandidateResponse, CandidateDocumentResponse
 )
 from backend.app.schemas.verification import (
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,

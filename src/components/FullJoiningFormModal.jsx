@@ -51,10 +51,25 @@ import {
   Trash2
 } from 'lucide-react';
 
+const FORM_SECTIONS = [
+  { id: 'personal', label: '1. Profile & Bio', icon: User },
+  { id: 'address', label: '2. Native & Address', icon: MapPin },
+  { id: 'govt', label: '3. Statutory & Bank', icon: CreditCard },
+  { id: 'education', label: '4. Education (Multi)', icon: GraduationCap },
+  { id: 'nominee', label: '5. Family & Nominee', icon: Users },
+  { id: 'employment', label: '6. Work Experience', icon: Briefcase },
+  { id: 'achievements', label: '7. Achievements', icon: Award },
+  { id: 'health_lifestyle', label: '8. Health & Background', icon: HeartPulse },
+  { id: 'group_relations', label: '9. Group Relations', icon: ShieldCheck },
+  { id: 'industry', label: '10. Industry Matrix', icon: Cpu },
+  { id: 'documents', label: '11. Documents & Sign', icon: FolderDown },
+  { id: 'statutory_forms', label: '12. Statutory Forms (EPFO / ESIC)', icon: Scale }
+];
+
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
   const { updateCandidateVerification, submitCandidateJoiningForm, showToast, masterDropdownOptions } = useApp();
 
-  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_agreements'
+  const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_forms'
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
@@ -77,6 +92,31 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const [aadhaarVerified, setAadhaarVerified] = useState(candidate?.verificationsCompleted?.aadhaar || false);
   const [mobileVerified, setMobileVerified] = useState(candidate?.verificationsCompleted?.mobile || false);
   const [emailVerified, setEmailVerified] = useState(candidate?.verificationsCompleted?.email || false);
+
+  const currentSectionIndex = FORM_SECTIONS.findIndex(s => s.id === activeSection);
+
+  const handlePrevSection = () => {
+    if (currentSectionIndex > 0) {
+      setActiveSection(FORM_SECTIONS[currentSectionIndex - 1].id);
+    }
+  };
+
+  const handleNextSection = () => {
+    if (currentSectionIndex < FORM_SECTIONS.length - 1) {
+      setActiveSection(FORM_SECTIONS[currentSectionIndex + 1].id);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(draftKey, JSON.stringify(formData));
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLastAutoSaveTime(nowStr);
+      showToast('💾 Application draft progress saved successfully!');
+    } catch (e) {
+      showToast('Draft saved to local storage.', 'info');
+    }
+  };
 
 
   const jfd = candidate?.joiningFormData || {};
@@ -337,17 +377,26 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     return () => clearTimeout(timer);
   }, [formData, draftKey]);
 
-  // Universal Document File Upload Handler
+  // Universal Document File Upload Handler (Image & PDF Support)
   const handleFileUpload = (docKey, file, customTitle = '') => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
+      const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
+      const isPng = file.type.includes('png') || file.name.toLowerCase().endsWith('.png');
+      const isWebp = file.type.includes('webp') || file.name.toLowerCase().endsWith('.webp');
+      const mimeType = isPdf ? 'application/pdf' : isPng ? 'image/png' : isWebp ? 'image/webp' : 'image/jpeg';
+      const fileExt = isPdf ? 'pdf' : isPng ? 'png' : isWebp ? 'webp' : 'jpg';
+
       const fileData = {
         name: file.name,
-        type: file.type.includes('pdf') ? 'application/pdf' : file.type.includes('png') ? 'image/png' : 'image/jpeg',
+        type: mimeType,
         size: `${Math.round(file.size / 1024)} KB`,
-        file_size_kb: Math.round(file.size / 1024),
+        file_size_kb: Math.round(file.size / 1024) || 1,
+        file_format: fileExt,
         dataUrl: e.target.result,
+        file_path: e.target.result,
+        data: e.target.result,
         title: customTitle || file.name,
         uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
         verified: true,
@@ -361,7 +410,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           [docKey]: fileData
         }
       }));
-      showToast(`✓ Uploaded ${file.name} successfully!`);
+      showToast(`✓ Uploaded ${file.name} (${fileExt.toUpperCase()}) successfully!`);
     };
     reader.readAsDataURL(file);
   };
@@ -532,7 +581,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   };
 
   const handleFinalFormSubmit = (e) => {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     if (!aadhaarVerified || !mobileVerified) {
       alert('Mandatory OTP Verification Required: Please complete both Aadhaar OTP and Mobile OTP verification before submitting.');
       return;
@@ -540,6 +589,8 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
     if (candidate?.token) {
       submitCandidateJoiningForm(candidate.token, formData);
+    } else if (candidate?.id) {
+      updateCandidateVerification(candidate.id, 'joiningForm', true);
     }
 
     if (onSubmitComplete) {
@@ -735,22 +786,9 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           </div>
         </div>
 
-        {/* Form Section Navigation Tabs (11 Comprehensive Sections) */}
+        {/* Form Section Navigation Tabs (12 Comprehensive Sections) */}
         <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto no-scrollbar text-xs font-bold gap-1 shadow-2xs">
-          {[
-            { id: 'personal', label: '1. Profile & Bio', icon: User },
-            { id: 'address', label: '2. Native & Address', icon: MapPin },
-            { id: 'govt', label: '3. Statutory & Bank', icon: CreditCard },
-            { id: 'education', label: '4. Education (Multi)', icon: GraduationCap },
-            { id: 'nominee', label: '5. Family & Nominee', icon: Users },
-            { id: 'employment', label: '6. Work Experience', icon: Briefcase },
-            { id: 'achievements', label: '7. Achievements', icon: Award },
-            { id: 'health_lifestyle', label: '8. Health & Background', icon: HeartPulse },
-            { id: 'group_relations', label: '9. Group Relations', icon: ShieldCheck },
-            { id: 'industry', label: '10. Industry Matrix', icon: Cpu },
-            { id: 'documents', label: '11. Documents & Sign', icon: FolderDown },
-            { id: 'statutory_forms', label: '12. Statutory Forms (EPFO / ESIC)', icon: Scale }
-          ].map(tab => {
+          {FORM_SECTIONS.map((tab, idx) => {
             const Icon = tab.icon;
             const isActive = activeSection === tab.id;
             return (
@@ -2943,6 +2981,56 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           )}
 
         </form>
+        </div>
+
+        {/* Sticky Action Navigation Footer Bar */}
+        <div className="shrink-0 sticky bottom-0 z-20 bg-white/95 backdrop-blur-sm p-3 sm:p-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shadow-lg rounded-b-2xl sm:rounded-b-3xl">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handlePrevSection}
+              disabled={currentSectionIndex === 0}
+              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ← Previous Section
+            </button>
+            <span className="text-[11px] text-slate-500 font-bold hidden sm:inline">
+              Section {currentSectionIndex + 1} of {FORM_SECTIONS.length}: <strong className="text-slate-700">{FORM_SECTIONS[currentSectionIndex]?.label}</strong>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {lastAutoSaveTime && (
+              <span className="text-[10px] text-slate-400 font-mono hidden md:inline">
+                Draft auto-saved at {lastAutoSaveTime}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Save Progress</span>
+            </button>
+            {currentSectionIndex < FORM_SECTIONS.length - 1 ? (
+              <button
+                type="button"
+                onClick={handleNextSection}
+                className="btn btn-company text-xs py-2 px-4 flex items-center gap-1.5 font-bold cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+              >
+                <span>Next Section →</span>
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={handleFinalFormSubmit}
+              className="btn btn-superadmin text-xs py-2 px-5 flex items-center gap-2 font-black cursor-pointer bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md rounded-xl"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Confirm & Submit Application</span>
+            </button>
+          </div>
         </div>
 
         {/* 👁️ CANDIDATE DOCUMENT PREVIEW MODAL */}

@@ -163,18 +163,26 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           { companyName: 'Wipro Enterprises Pvt Ltd', designation: 'Systems Architect', periodOfService: '15-Dec-2023 to 31-Jul-2026', salaryDrawn: '₹11,50,000 PA', relievingStatus: 'Service Certificate Verified ✓' }
         ];
 
-  // Construct attached documents list for exhibits
+  // Construct attached documents list for exhibits (DB records + JSON Form data)
   const attachedDocsMap = jf.uploadedDocuments || c.uploadedDocuments || {};
-  const rawList = Array.isArray(c.documents) && c.documents.length > 0
-    ? c.documents
+  const rawList = (Array.isArray(c.documents) && c.documents.length > 0)
+    ? c.documents.map(d => ({
+        id: d.id || d.document_type || d.type,
+        title: d.title || (d.document_type ? d.document_type.replace(/([A-Z])/g, ' $1').toUpperCase() : 'DOCUMENT EXHIBIT'),
+        name: d.file_name || d.name || `${d.document_type || 'document'}.pdf`,
+        doc_type: d.document_type || d.doc_type || d.type,
+        file_format: (d.file_format || (d.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : d.file_name?.toLowerCase().endsWith('.png') ? 'PNG' : 'JPG')).toUpperCase(),
+        file_size_kb: d.file_size_kb || 450,
+        file_path: d.file_path || d.dataUrl || d.data || ''
+      }))
     : Object.entries(attachedDocsMap).map(([key, val]) => ({
         id: key,
-        title: val.title || key.toUpperCase(),
+        title: val.title || key.replace(/([A-Z])/g, ' $1').toUpperCase(),
         name: val.name || `${key}_document.pdf`,
         doc_type: val.type || key,
-        file_format: val.file_format || 'PDF',
+        file_format: (val.file_format || (val.type?.includes('pdf') ? 'PDF' : val.type?.includes('png') ? 'PNG' : 'JPG')).toUpperCase(),
         file_size_kb: val.file_size_kb || 450,
-        file_path: val.file_path || val.data || ''
+        file_path: val.dataUrl || val.file_path || val.data || ''
       }));
 
   const attachedExhibits = rawList.length > 0 ? rawList : [
@@ -186,6 +194,40 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     { id: 'annex-6', title: 'Last 3 Months Salary Slips & Form 16', name: 'Salary_Slips_Q1_2026.pdf', file_format: 'PDF', file_size_kb: 890.0, doc_type: 'salary', file_path: '' },
     { id: 'annex-7', title: 'Signed Employer NDA & Confidentiality Covenant', name: 'Executed_NDA_Agreement.pdf', file_format: 'PDF', file_size_kb: 640.0, doc_type: 'nda', file_path: '' }
   ];
+
+  const handleDownloadExhibit = (doc) => {
+    if (doc.file_path && doc.file_path.startsWith('data:')) {
+      const link = document.createElement('a');
+      link.href = doc.file_path;
+      link.download = doc.name || `${doc.title}.${doc.file_format?.toLowerCase() || 'pdf'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (doc.file_path) {
+      const link = document.createElement('a');
+      link.href = doc.file_path;
+      link.download = doc.name || `${doc.title}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const isImageDoc = (doc) => {
+    return (
+      (doc.file_path && doc.file_path.startsWith('data:image')) ||
+      ['PNG', 'JPG', 'JPEG', 'WEBP'].includes(doc.file_format?.toUpperCase())
+    );
+  };
+
+  const isPdfDoc = (doc) => {
+    return (
+      (doc.file_path && doc.file_path.startsWith('data:application/pdf')) ||
+      doc.file_format?.toUpperCase() === 'PDF' ||
+      doc.name?.toLowerCase().endsWith('.pdf')
+    );
+  };
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);
@@ -319,6 +361,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
             <span>{downloadSuccess}</span>
           </div>
         )}
+        </div>
 
         {/* ========================================================================= */}
         {/* PRINTABLE MASTER DOSSIER ROOT CONTAINER */}
@@ -870,9 +913,22 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                         </p>
                       </div>
 
-                      <div className="text-right">
-                        <span className="badge badge-emerald text-[10px]">VERIFIED ATTACHMENT ✓</span>
-                        <p className="text-[10px] text-slate-400 font-mono mt-1">{generatedTimestamp.split(' ')[0]}</p>
+                      <div className="text-right flex items-center gap-2">
+                        {doc.file_path ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadExhibit(doc)}
+                            className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold print:hidden cursor-pointer hover:bg-sky-50 hover:text-sky-800"
+                            title="Download original uploaded file"
+                          >
+                            <Download className="w-3 h-3 text-sky-600" />
+                            <span>Download Exhibit</span>
+                          </button>
+                        ) : null}
+                        <div>
+                          <span className="badge badge-emerald text-[10px]">VERIFIED ATTACHMENT ✓</span>
+                          <p className="text-[10px] text-slate-400 font-mono mt-1">{generatedTimestamp.split(' ')[0]}</p>
+                        </div>
                       </div>
                     </div>
 
@@ -892,14 +948,77 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                       </div>
                     </div>
 
-                    {/* High-Resolution Document Display Frame */}
-                    <div className="p-8 sm:p-12 rounded-2xl bg-gradient-to-br from-sky-50/60 via-slate-50 to-indigo-50/50 border-2 border-dashed border-sky-300 flex flex-col items-center justify-center text-center space-y-4 min-h-[380px]">
-                      {doc.file_path && doc.file_path.startsWith('data:image') ? (
-                        <img 
-                          src={doc.file_path} 
-                          alt={doc.title} 
-                          className="max-h-[500px] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain"
-                        />
+                    {/* High-Resolution Document Display Frame (Images & PDFs) */}
+                    <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-sky-50/60 via-slate-50 to-indigo-50/50 border-2 border-dashed border-sky-300 flex flex-col items-center justify-center text-center space-y-4 min-h-[360px]">
+                      {isImageDoc(doc) && doc.file_path ? (
+                        <div className="space-y-3 w-full flex flex-col items-center">
+                          <img 
+                            src={doc.file_path} 
+                            alt={doc.title} 
+                            className="max-h-[520px] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain bg-white p-1"
+                          />
+                          <div className="flex items-center gap-2 print:hidden">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const win = window.open();
+                                if (win) {
+                                  win.document.write(`<img src="${doc.file_path}" style="max-width:100%;height:auto;margin:20px auto;display:block;" />`);
+                                }
+                              }}
+                              className="btn btn-secondary text-xs py-1 px-3 flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>View Full Size Image</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadExhibit(doc)}
+                              className="btn btn-company text-xs py-1 px-3 flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              <span>Download Image</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : isPdfDoc(doc) && doc.file_path ? (
+                        <div className="w-full max-w-md bg-white p-6 rounded-2xl border-2 border-sky-200 shadow-md space-y-4 text-center">
+                          <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center shadow-sm">
+                            <FileText className="w-8 h-8" />
+                          </div>
+                          <div className="space-y-1">
+                            <h3 className="text-base font-bold text-slate-900">{doc.title}</h3>
+                            <p className="text-xs text-slate-600 font-mono">📄 {doc.name} ({doc.file_size_kb || 450} KB • PDF Document)</p>
+                            <span className="badge badge-emerald text-[10px] mt-1">DPDP 2023 & ISO 27001 Encrypted Exhibit ✓</span>
+                          </div>
+                          <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 print:hidden">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (doc.file_path.startsWith('data:')) {
+                                  const win = window.open('');
+                                  if (win) {
+                                    win.document.write(`<iframe src="${doc.file_path}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                                  }
+                                } else {
+                                  window.open(doc.file_path, '_blank');
+                                }
+                              }}
+                              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Open PDF in Tab</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadExhibit(doc)}
+                              className="btn btn-company text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              <span>Download PDF</span>
+                            </button>
+                          </div>
+                        </div>
                       ) : (
                         <>
                           <div className="w-20 h-20 rounded-3xl bg-white border-2 border-sky-300 text-sky-700 flex items-center justify-center shadow-md">
@@ -932,7 +1051,6 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         </div>
 
       </div>
-    </div>
     </div>
   );
 };

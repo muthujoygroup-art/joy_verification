@@ -44,17 +44,26 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   if (!candidate) return null;
 
   // Extract all attached documents from multiple possible locations (DB relations, JSON store, HR uploads)
-  const attachedDocsMap = candidate.joiningFormData?.uploadedDocuments || candidate.uploadedDocuments || {};
-  const attachedDocsList = Array.isArray(candidate.documents) && candidate.documents.length > 0
-    ? candidate.documents
+  const jf = candidate.joiningFormData || candidate.joining_form_data || candidate.submittedFormData || {};
+  const attachedDocsMap = jf.uploadedDocuments || candidate.uploadedDocuments || {};
+  const attachedDocsList = (Array.isArray(candidate.documents) && candidate.documents.length > 0)
+    ? candidate.documents.map(d => ({
+        id: d.id || d.document_type || d.type,
+        title: d.title || (d.document_type ? d.document_type.replace(/([A-Z])/g, ' $1').toUpperCase() : 'DOCUMENT EXHIBIT'),
+        name: d.file_name || d.name || `${d.document_type || 'document'}.pdf`,
+        doc_type: d.document_type || d.doc_type || d.type,
+        file_format: (d.file_format || (d.file_name?.toLowerCase().endsWith('.pdf') ? 'pdf' : d.file_name?.toLowerCase().endsWith('.png') ? 'png' : 'jpg')).toLowerCase(),
+        file_size_kb: d.file_size_kb || 450.0,
+        file_path: d.file_path || d.dataUrl || d.data || ''
+      }))
     : Object.entries(attachedDocsMap).map(([key, val]) => ({
         id: key,
-        title: val.title || key.toUpperCase(),
+        title: val.title || key.replace(/([A-Z])/g, ' $1').toUpperCase(),
         name: val.name || `${key}_document.pdf`,
         doc_type: val.type || key,
-        file_format: val.file_format || val.name?.split('.').pop() || 'pdf',
+        file_format: (val.file_format || (val.type?.includes('pdf') ? 'pdf' : val.type?.includes('png') ? 'png' : 'jpg')).toLowerCase(),
         file_size_kb: val.file_size_kb || 450.0,
-        file_path: val.file_path || val.data || ''
+        file_path: val.dataUrl || val.file_path || val.data || ''
       }));
 
   // Fallback demo documents if none uploaded yet
@@ -96,17 +105,27 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
     if (doc.file_path && doc.file_path.startsWith('data:')) {
       const link = document.createElement('a');
       link.href = doc.file_path;
-      link.download = doc.name || `${doc.title}.pdf`;
+      link.download = doc.name || `${doc.title}.${doc.file_format || 'pdf'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (doc.file_path) {
+      const link = document.createElement('a');
+      link.href = doc.file_path;
+      link.download = doc.name || `${doc.title}.${doc.file_format || 'pdf'}`;
+      link.target = '_blank';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } else {
-      // Create simulated PDF download
-      const blob = new Blob([`Official Verification Document: ${doc.title}\nCandidate: ${candidate.name}\nStatus: Verified Encrypted Vault`], { type: 'application/pdf' });
+      // Create simulated download
+      const ext = doc.file_format || 'pdf';
+      const mime = ext === 'pdf' ? 'application/pdf' : ext === 'png' ? 'image/png' : 'image/jpeg';
+      const blob = new Blob([`Official Verification Document: ${doc.title}\nCandidate: ${candidate.name}\nStatus: Verified Encrypted Vault`], { type: mime });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = doc.name || `${doc.title}.pdf`;
+      link.download = doc.name || `${doc.title}.${ext}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

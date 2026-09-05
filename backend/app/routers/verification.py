@@ -501,10 +501,17 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
 @router.post("/submit-joining")
 def submit_joining_form(payload: CompleteVerificationPayload, db: Session = Depends(get_db)):
     """
-    Candidate submits comprehensive joining form particulars, uploaded documents,
+    Candidate submits comprehensive joining form particulars, uploaded documents (PDF / Image),
     9 statutory declarations, and specimen signature via onboarding magic link.
-    Persists data and sets status to 'Submitted - Pending HR Review'.
+    Persists data, synchronizes candidate columns, saves attached documents to PostgreSQL,
+    and sets status to 'Submitted - Pending HR Review'.
     """
+    try:
+        from backend.app.database import apply_runtime_migrations
+        apply_runtime_migrations(db.get_bind())
+    except Exception:
+        pass
+
     candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -513,47 +520,87 @@ def submit_joining_form(payload: CompleteVerificationPayload, db: Session = Depe
     candidate.joining_form_data = jfd
 
     # Sync top-level demographic columns
-    if jfd.get("fullName"): candidate.name = jfd["fullName"]
-    if jfd.get("empId"): candidate.emp_id = jfd["empId"]
-    if jfd.get("employeeNumber"): candidate.employee_number = jfd["employeeNumber"]
-    if jfd.get("dob"): candidate.dob = jfd["dob"]
-    if jfd.get("doj"): candidate.doj = jfd["doj"]
+    if jfd.get("fullName"): candidate.name = str(jfd["fullName"]).strip()
+    if jfd.get("empId"): candidate.emp_id = str(jfd["empId"]).strip()
+    if jfd.get("employeeNumber"): candidate.employee_number = str(jfd["employeeNumber"]).strip()
+    if jfd.get("designation"): candidate.designation = str(jfd["designation"]).strip()
+    if jfd.get("dept") or jfd.get("department"): candidate.dept = str(jfd.get("dept") or jfd.get("department")).strip()
+    if jfd.get("mobile"): candidate.mobile = str(jfd["mobile"]).strip()
+    if jfd.get("email"): candidate.email = str(jfd["email"]).strip()
+    if jfd.get("aadhaarNo"): candidate.aadhaar_no = str(jfd["aadhaarNo"]).strip()
+    if jfd.get("dob"): candidate.dob = str(jfd["dob"]).strip()
+    if jfd.get("doj"): candidate.doj = str(jfd["doj"]).strip()
     if jfd.get("age"): candidate.age = int(jfd["age"]) if str(jfd["age"]).isdigit() else candidate.age
-    if jfd.get("gender"): candidate.gender = jfd["gender"]
-    if jfd.get("maritalStatus"): candidate.marital_status = jfd["maritalStatus"]
-    if jfd.get("motherTongue"): candidate.mother_tongue = jfd["motherTongue"]
-    if jfd.get("languagesKnown"): candidate.languages_known = jfd["languagesKnown"]
-    if jfd.get("pfNumber") or jfd.get("uanEpf"): candidate.pf_number = jfd.get("pfNumber") or jfd.get("uanEpf")
-    if jfd.get("esiNumber") or jfd.get("esicNo"): candidate.esi_number = jfd.get("esiNumber") or jfd.get("esicNo")
-    if jfd.get("religion"): candidate.religion = jfd["religion"]
-    if jfd.get("caste"): candidate.caste = jfd["caste"]
-    if jfd.get("category"): candidate.category = jfd["category"]
-    if jfd.get("nativeState") or jfd.get("state"): candidate.native_state = jfd.get("nativeState") or jfd.get("state")
-    if jfd.get("nativeDistrict") or jfd.get("city"): candidate.native_district = jfd.get("nativeDistrict") or jfd.get("city")
-    if jfd.get("identificationMarks"): candidate.identification_marks = jfd["identificationMarks"]
-    if jfd.get("employeeType"): candidate.employee_type = jfd["employeeType"]
+    if jfd.get("gender"): candidate.gender = str(jfd["gender"]).strip()
+    if jfd.get("maritalStatus"): candidate.marital_status = str(jfd["maritalStatus"]).strip()
+    if jfd.get("motherTongue"): candidate.mother_tongue = str(jfd["motherTongue"]).strip()
+    if jfd.get("languagesKnown"): candidate.languages_known = str(jfd["languagesKnown"]).strip()
+    if jfd.get("pfNumber") or jfd.get("uanEpf"): candidate.pf_number = str(jfd.get("pfNumber") or jfd.get("uanEpf")).strip()
+    if jfd.get("esiNumber") or jfd.get("esicNo"): candidate.esi_number = str(jfd.get("esiNumber") or jfd.get("esicNo")).strip()
+    if jfd.get("religion"): candidate.religion = str(jfd["religion"]).strip()
+    if jfd.get("caste"): candidate.caste = str(jfd["caste"]).strip()
+    if jfd.get("category"): candidate.category = str(jfd["category"]).strip()
+    if jfd.get("nativeState") or jfd.get("state"): candidate.native_state = str(jfd.get("nativeState") or jfd.get("state")).strip()
+    if jfd.get("nativeDistrict") or jfd.get("city"): candidate.native_district = str(jfd.get("nativeDistrict") or jfd.get("city")).strip()
+    if jfd.get("identificationMarks"): candidate.identification_marks = str(jfd["identificationMarks"]).strip()
+    if jfd.get("employeeType") or jfd.get("employeeCategory"): candidate.employee_type = str(jfd.get("employeeType") or jfd.get("employeeCategory")).strip()
+    if jfd.get("customFields") or jfd.get("custom_fields"): candidate.custom_fields = jfd.get("customFields") or jfd.get("custom_fields")
     if jfd.get("signature") or jfd.get("specimenSignature") or payload.specimen_signature:
         candidate.specimen_signature = payload.specimen_signature or jfd.get("signature") or jfd.get("specimenSignature")
 
-    # Save attached documents
+    # Save attached documents (Image & PDF formats)
     docs = payload.documents or jfd.get("documents") or jfd.get("uploadedDocuments")
     if docs:
         if isinstance(docs, dict):
             docs = list(docs.values())
         for doc in docs:
             if isinstance(doc, dict) and (doc.get("title") or doc.get("name")):
-                doc_id = f"doc-{uuid.uuid4().hex[:8]}"
-                cand_doc = CandidateDocument(
-                    id=doc_id,
-                    candidate_id=candidate.id,
-                    title=doc.get("title") or doc.get("name") or "Candidate Submitted Document",
-                    doc_type=doc.get("doc_type") or doc.get("type") or "general",
-                    file_format=doc.get("file_format") or doc.get("format") or "pdf",
-                    file_path=doc.get("file_path") or doc.get("data") or doc.get("url") or "",
-                    file_size_kb=float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0),
-                    created_at=datetime.utcnow()
-                )
-                db.add(cand_doc)
+                doc_title = str(doc.get("title") or doc.get("name") or "Candidate Submitted Document").strip()
+                doc_type = str(doc.get("doc_type") or doc.get("type") or "general").strip()
+                file_path = str(doc.get("file_path") or doc.get("dataUrl") or doc.get("data") or doc.get("url") or "").strip()
+                raw_fmt = str(doc.get("file_format") or doc.get("format") or "").lower()
+                if not raw_fmt:
+                    if "pdf" in str(doc.get("type", "")).lower() or "pdf" in file_path[:30].lower():
+                        raw_fmt = "pdf"
+                    elif "png" in str(doc.get("type", "")).lower() or "png" in file_path[:30].lower():
+                        raw_fmt = "png"
+                    elif "jpeg" in str(doc.get("type", "")).lower() or "jpg" in str(doc.get("type", "")).lower() or "jpeg" in file_path[:30].lower():
+                        raw_fmt = "jpg"
+                    else:
+                        raw_fmt = "pdf"
+                
+                raw_size = doc.get("file_size_kb") or doc.get("size_kb") or doc.get("size") or 0.0
+                if isinstance(raw_size, str):
+                    try:
+                        raw_size = float(raw_size.replace("KB", "").replace("kb", "").strip() or 0.0)
+                    except Exception:
+                        raw_size = 0.0
+                file_size = float(raw_size or 0.0)
+
+                # Check if existing document by candidate_id and (title or doc_type) to avoid duplicates
+                existing_doc = db.query(CandidateDocument).filter(
+                    CandidateDocument.candidate_id == candidate.id,
+                    (CandidateDocument.title == doc_title) | (CandidateDocument.doc_type == doc_type)
+                ).first()
+                if existing_doc:
+                    existing_doc.title = doc_title
+                    if file_path:
+                        existing_doc.file_path = file_path
+                    existing_doc.file_format = raw_fmt
+                    existing_doc.file_size_kb = file_size or existing_doc.file_size_kb
+                else:
+                    doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+                    cand_doc = CandidateDocument(
+                        id=doc_id,
+                        candidate_id=candidate.id,
+                        title=doc_title,
+                        doc_type=doc_type,
+                        file_format=raw_fmt,
+                        file_path=file_path,
+                        file_size_kb=file_size,
+                        created_at=datetime.utcnow()
+                    )
+                    db.add(cand_doc)
 
     candidate.status = payload.status or "Submitted - Pending HR Review"
     
