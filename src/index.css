@@ -1304,3 +1304,50 @@ body[data-role="employee_link"] {
 .bg-radial-gradient-hero {
   background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.18) 0%, rgba(6, 182, 212, 0.1) 35%, transparent 70%);
 }
+
+
+/* ==============================================================================
+ * CAPRICORN 01 ZAGATO PRECISION ENGINEERING DESIGN UTILITIES
+ * ============================================================================== */
+
+.font-mono-tech {
+  font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', monospace;
+}
+
+.tracking-zagato {
+  letter-spacing: 0.22em;
+}
+
+.tracking-zagato-wide {
+  letter-spacing: 0.35em;
+}
+
+.border-hairline-light {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.border-hairline-dark {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.btn-zagato-luxury {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-zagato-luxury:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.zagato-metric-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
