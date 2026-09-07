@@ -274,8 +274,8 @@ def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db:
     db.refresh(comp)
     return {"success": True, "message": f"Updated features for {comp.name}", "features": comp.features}
 
-def ensure_api_config_schema(db: Session = None):
-    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL"""
+def ensure_api_config_schema(db: Optional[Session] = None):
+    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL using AUTOCOMMIT"""
     from sqlalchemy import text
     from backend.app.database import engine
     ddl_statements = [
@@ -287,7 +287,7 @@ def ensure_api_config_schema(db: Session = None):
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED';",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[\"aadhaar\", \"pan\", \"bank\", \"dl\", \"passport\", \"uan\", \"face\"]'::json;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]'::json;",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
@@ -295,26 +295,21 @@ def ensure_api_config_schema(db: Session = None):
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}'::json, response_summary JSON DEFAULT '{}'::json, error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}'::json, response_summary JSON DEFAULT '{}'::json, error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100);",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}'::json;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}'::json;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;"
     ]
-    if db:
-        try:
-            for s in ddl_statements:
-                try:
-                    db.execute(text(s))
-                except Exception:
-                    pass
-            db.commit()
-            return
-        except Exception:
-            db.rollback()
-    
     try:
-        with engine.begin() as conn:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
             for s in ddl_statements:
                 try:
                     conn.execute(text(s))
-                except Exception:
+                except Exception as ex:
                     pass
     except Exception as e:
         print(f"Error in ensure_api_config_schema: {e}")
@@ -430,7 +425,7 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
     import traceback
     
     # 1. Preemptively run schema assurance
-    ensure_api_config_schema(db)
+    ensure_api_config_schema()
     
     try:
         # Search by exact key or sanitized slug
@@ -491,35 +486,37 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
         }
     except Exception as e:
         db.rollback()
-        # Direct SQL Auto-Healing Fallback
+        # Direct SQL Auto-Healing Fallback with isolated AUTOCOMMIT connection
         try:
-            ensure_api_config_schema(db)
+            from backend.app.database import engine
+            ensure_api_config_schema()
             target_key = "server2_coincircle" if ("coincircle" in provider_key.lower() or "server2" in provider_key.lower() or "neev" in provider_key.lower()) else provider_key
             dname = payload.display_name or ("Server 2: CoinCircleTrust Gateways" if target_key == "server2_coincircle" else provider_key)
             eurl = payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct"
             akey = payload.api_key or ""
             skey = payload.secret_key or ""
             
-            db.execute(text("""
-                INSERT INTO api_configurations (provider_key, display_name, endpoint_url, api_key, secret_key, status, is_active, is_primary, last_synced)
-                VALUES (:pkey, :dname, :eurl, :akey, :skey, 'CONNECTED', TRUE, TRUE, CURRENT_TIMESTAMP)
-                ON CONFLICT (provider_key) DO UPDATE SET
-                    display_name = COALESCE(EXCLUDED.display_name, api_configurations.display_name),
-                    endpoint_url = EXCLUDED.endpoint_url,
-                    api_key = EXCLUDED.api_key,
-                    secret_key = COALESCE(EXCLUDED.secret_key, api_configurations.secret_key),
-                    status = 'CONNECTED',
-                    is_active = TRUE,
-                    is_primary = TRUE,
-                    last_synced = CURRENT_TIMESTAMP;
-            """), {
-                "pkey": target_key,
-                "dname": dname,
-                "eurl": eurl,
-                "akey": akey,
-                "skey": skey
-            })
-            db.commit()
+            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as autocommit_conn:
+                autocommit_conn.execute(text("""
+                    INSERT INTO api_configurations (provider_key, display_name, endpoint_url, api_key, secret_key, status, is_active, is_primary, last_synced)
+                    VALUES (:pkey, :dname, :eurl, :akey, :skey, 'CONNECTED', TRUE, TRUE, CURRENT_TIMESTAMP)
+                    ON CONFLICT (provider_key) DO UPDATE SET
+                        display_name = COALESCE(EXCLUDED.display_name, api_configurations.display_name),
+                        endpoint_url = EXCLUDED.endpoint_url,
+                        api_key = EXCLUDED.api_key,
+                        secret_key = COALESCE(EXCLUDED.secret_key, api_configurations.secret_key),
+                        status = 'CONNECTED',
+                        is_active = TRUE,
+                        is_primary = TRUE,
+                        last_synced = CURRENT_TIMESTAMP;
+                """), {
+                    "pkey": target_key,
+                    "dname": dname,
+                    "eurl": eurl,
+                    "akey": akey,
+                    "skey": skey
+                })
+                
             return {
                 "success": True,
                 "message": f"Updated {target_key} credentials via database auto-healing successfully.",
@@ -531,7 +528,6 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
                 "status": "CONNECTED"
             }
         except Exception as e2:
-            db.rollback()
             tr2 = traceback.format_exc()
             print(f"Fallback error updating API config: {e2}\n{tr2}")
             return JSONResponse(

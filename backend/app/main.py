@@ -176,12 +176,12 @@ def on_startup():
             "ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';",
             "ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"
         ]
-        for stmt in migration_statements:
-            try:
-                with engine.begin() as conn:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            for stmt in migration_statements:
+                try:
                     conn.execute(text(stmt))
-            except Exception:
-                pass
+                except Exception:
+                    pass
     except Exception:
         pass
 
