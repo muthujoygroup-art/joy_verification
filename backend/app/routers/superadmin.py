@@ -274,11 +274,21 @@ def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db:
     db.refresh(comp)
     return {"success": True, "message": f"Updated features for {comp.name}", "features": comp.features}
 
+def get_direct_db_connection():
+    """Establishes an isolated, standalone psycopg2 connection with AUTOCOMMIT enabled"""
+    import psycopg2
+    from backend.app.config import settings
+    dsn = settings.DATABASE_URL
+    if dsn.startswith('postgresql+psycopg2://'):
+        dsn = dsn.replace('postgresql+psycopg2://', 'postgresql://')
+    conn = psycopg2.connect(dsn)
+    conn.autocommit = True
+    return conn
+
 def ensure_api_config_schema(db: Optional[Session] = None):
     """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL using raw DBAPI AUTOCOMMIT"""
-    from backend.app.database import engine
     ddl_statements = [
-        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL, secret_key VARCHAR(255), webhook_url VARCHAR(255), sandbox_mode BOOLEAN DEFAULT FALSE, rate_limit_per_min INTEGER DEFAULT 120, status VARCHAR(50) DEFAULT 'CONNECTED', is_active BOOLEAN DEFAULT TRUE, is_primary BOOLEAN DEFAULT FALSE, supported_services JSON DEFAULT '[]', provider_type VARCHAR(100) DEFAULT 'Institutional Gateway', description TEXT, ping_latency_ms INTEGER DEFAULT 62, monthly_quota INTEGER DEFAULT 10000, monthly_used INTEGER DEFAULT 0, last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255)",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE",
@@ -304,16 +314,15 @@ def ensure_api_config_schema(db: Optional[Session] = None):
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT"
     ]
     try:
-        raw_conn = engine.raw_connection()
-        raw_conn.autocommit = True
-        cursor = raw_conn.cursor()
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
         for s in ddl_statements:
             try:
-                cursor.execute(s)
+                cur.execute(s)
             except Exception:
                 pass
-        cursor.close()
-        raw_conn.close()
+        cur.close()
+        conn.close()
     except Exception as e:
         print(f"Error in ensure_api_config_schema: {e}")
 
@@ -324,118 +333,110 @@ except Exception:
     pass
 
 @router.get("/api-configs")
-def get_api_configurations(db: Session = Depends(get_db)):
+def get_api_configurations():
     """Telemetry & credentials for API SETU, Sandbox API, Coincircletrust, etc."""
     ensure_api_config_schema()
     try:
-        cfgs = db.query(ApiConfiguration).order_by(ApiConfiguration.is_primary.desc(), ApiConfiguration.provider_key.asc()).all()
-        return [
-            {
-                "provider_key": c.provider_key,
-                "display_name": c.display_name,
-                "endpoint_url": c.endpoint_url,
-                "api_key": c.api_key,
-                "secret_key": getattr(c, 'secret_key', None),
-                "webhook_url": getattr(c, 'webhook_url', None),
-                "sandbox_mode": getattr(c, 'sandbox_mode', False),
-                "rate_limit_per_min": getattr(c, 'rate_limit_per_min', 120),
-                "status": getattr(c, 'status', 'CONNECTED'),
-                "is_active": getattr(c, 'is_active', True),
-                "is_primary": getattr(c, 'is_primary', False),
-                "supported_services": getattr(c, 'supported_services', []),
-                "provider_type": getattr(c, 'provider_type', 'Institutional Gateway'),
-                "description": getattr(c, 'description', None),
-                "ping_latency_ms": getattr(c, 'ping_latency_ms', 62),
-                "monthly_quota": getattr(c, 'monthly_quota', 10000),
-                "monthly_used": getattr(c, 'monthly_used', 0),
-                "last_synced": c.last_synced.isoformat() if getattr(c, 'last_synced', None) else None
-            }
-            for c in cfgs
-        ]
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
+        c_names = [r[0] for r in cur.fetchall()]
+        
+        cur.execute("SELECT * FROM api_configurations ORDER BY is_primary DESC, provider_key ASC")
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        result = []
+        for r in rows:
+            r_dict = dict(zip(c_names, r))
+            result.append({
+                "provider_key": r_dict.get("provider_key"),
+                "display_name": r_dict.get("display_name", "API Provider"),
+                "endpoint_url": r_dict.get("endpoint_url", "https://apis.coincircletrust.com/api/v1/apiProduct"),
+                "api_key": r_dict.get("api_key", ""),
+                "secret_key": r_dict.get("secret_key"),
+                "webhook_url": r_dict.get("webhook_url"),
+                "sandbox_mode": r_dict.get("sandbox_mode", False),
+                "rate_limit_per_min": r_dict.get("rate_limit_per_min", 120),
+                "status": r_dict.get("status", "CONNECTED"),
+                "is_active": r_dict.get("is_active", True),
+                "is_primary": r_dict.get("is_primary", False),
+                "supported_services": r_dict.get("supported_services", []),
+                "provider_type": r_dict.get("provider_type", "Institutional Gateway"),
+                "description": r_dict.get("description"),
+                "ping_latency_ms": r_dict.get("ping_latency_ms", 62),
+                "monthly_quota": r_dict.get("monthly_quota", 10000),
+                "monthly_used": r_dict.get("monthly_used", 0),
+                "last_synced": r_dict.get("last_synced").isoformat() if r_dict.get("last_synced") else None
+            })
+        return result
     except Exception as e:
-        print(f"Fallback querying api_configurations: {e}")
-        try:
-            from backend.app.database import engine
-            raw_conn = engine.raw_connection()
-            raw_conn.autocommit = True
-            cursor = raw_conn.cursor()
-            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
-            c_names = [r[0] for r in cursor.fetchall()]
-            
-            cursor.execute("SELECT * FROM api_configurations")
-            rows = cursor.fetchall()
-            cursor.close()
-            raw_conn.close()
-            
-            result = []
-            for r in rows:
-                r_dict = dict(zip(c_names, r))
-                result.append({
-                    "provider_key": r_dict.get("provider_key"),
-                    "display_name": r_dict.get("display_name", "API Provider"),
-                    "endpoint_url": r_dict.get("endpoint_url", "https://apis.coincircletrust.com/api/v1/apiProduct"),
-                    "api_key": r_dict.get("api_key", ""),
-                    "secret_key": r_dict.get("secret_key"),
-                    "webhook_url": r_dict.get("webhook_url"),
-                    "sandbox_mode": r_dict.get("sandbox_mode", False),
-                    "rate_limit_per_min": r_dict.get("rate_limit_per_min", 120),
-                    "status": r_dict.get("status", "CONNECTED"),
-                    "is_active": r_dict.get("is_active", True),
-                    "is_primary": r_dict.get("is_primary", False),
-                    "supported_services": r_dict.get("supported_services", []),
-                    "provider_type": r_dict.get("provider_type", "Institutional Gateway"),
-                    "description": r_dict.get("description"),
-                    "ping_latency_ms": r_dict.get("ping_latency_ms", 62),
-                    "monthly_quota": r_dict.get("monthly_quota", 10000),
-                    "monthly_used": r_dict.get("monthly_used", 0),
-                    "last_synced": r_dict.get("last_synced").isoformat() if r_dict.get("last_synced") else None
-                })
-            return result
-        except Exception:
-            return []
+        print(f"Error querying api_configurations: {e}")
+        return []
 
-@router.post("/api-configs", response_model=ApiConfigResponse)
-def create_api_configuration(payload: ApiConfigCreate, db: Session = Depends(get_db)):
+@router.post("/api-configs")
+def create_api_configuration(payload: ApiConfigCreate):
     """Super Admin onboarding of a new third-party verification API provider"""
-    ensure_api_config_schema(db)
-    existing = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == payload.provider_key).first()
-    if existing:
-        raise HTTPException(status_code=400, detail=f"API Provider with key '{payload.provider_key}' already exists.")
-    
-    if payload.is_primary:
-        # Reset other providers' primary status
-        db.query(ApiConfiguration).update({"is_primary": False})
-
-    new_cfg = ApiConfiguration(
-        provider_key=payload.provider_key,
-        display_name=payload.display_name,
-        endpoint_url=payload.endpoint_url,
-        api_key=payload.api_key,
-        secret_key=payload.secret_key,
-        webhook_url=payload.webhook_url,
-        sandbox_mode=payload.sandbox_mode or False,
-        rate_limit_per_min=payload.rate_limit_per_min or 120,
-        status=payload.status or "CONNECTED",
-        is_active=payload.is_active if payload.is_active is not None else True,
-        is_primary=payload.is_primary or False,
-        supported_services=payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"],
-        provider_type=payload.provider_type or "Institutional Gateway",
-        description=payload.description,
-        monthly_quota=payload.monthly_quota or 10000,
-        monthly_used=0,
-        ping_latency_ms=62,
-        last_synced=datetime.utcnow()
-    )
-    db.add(new_cfg)
-    db.commit()
-    db.refresh(new_cfg)
-    return new_cfg
+    try:
+        ensure_api_config_schema()
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("SELECT provider_key FROM api_configurations WHERE provider_key = %s", (payload.provider_key,))
+        if cur.fetchone():
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=400, detail=f"API Provider with key '{payload.provider_key}' already exists.")
+            
+        if payload.is_primary:
+            cur.execute("UPDATE api_configurations SET is_primary = FALSE")
+            
+        import json
+        services_json = json.dumps(payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"])
+        
+        cur.execute("""
+            INSERT INTO api_configurations (
+                provider_key, display_name, endpoint_url, api_key, secret_key,
+                webhook_url, sandbox_mode, rate_limit_per_min, status,
+                is_active, is_primary, supported_services, provider_type,
+                description, monthly_quota, monthly_used, ping_latency_ms, last_synced
+            ) VALUES (
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, 0, 62, CURRENT_TIMESTAMP
+            )
+        """, (
+            payload.provider_key,
+            payload.display_name,
+            payload.endpoint_url,
+            payload.api_key,
+            payload.secret_key,
+            payload.webhook_url,
+            payload.sandbox_mode or False,
+            payload.rate_limit_per_min or 120,
+            payload.status or "CONNECTED",
+            payload.is_active if payload.is_active is not None else True,
+            payload.is_primary or False,
+            services_json,
+            payload.provider_type or "Institutional Gateway",
+            payload.description,
+            payload.monthly_quota or 10000
+        ))
+        
+        cur.close()
+        conn.close()
+        return {"success": True, "message": f"API Provider '{payload.display_name}' created successfully.", "provider_key": payload.provider_key}
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"success": False, "detail": str(e)}
 
 @router.put("/api-configs/{provider_key}")
-def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session = Depends(get_db)):
-    """Update API Gateway credentials, endpoints, sandbox mode or rate limits (or auto-create if missing)"""
+def update_api_config(provider_key: str, payload: ApiConfigUpdate):
+    """Update API Gateway credentials, endpoints, sandbox mode or rate limits (standalone psycopg2 autocommit)"""
     from fastapi.responses import JSONResponse
-    from backend.app.database import engine
     import traceback
     
     clean_key = provider_key.strip().lower().replace(' ', '_')
@@ -448,13 +449,9 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
     is_act = payload.is_active if payload.is_active is not None else True
     
     try:
-        raw_conn = engine.raw_connection()
-        try:
-            raw_conn.rollback()
-        except Exception:
-            pass
-        raw_conn.autocommit = True
-        cursor = raw_conn.cursor()
+        ensure_api_config_schema()
+        conn = get_direct_db_connection()
+        cursor = conn.cursor()
         
         # 1. Guarantee table exists
         cursor.execute("""
@@ -530,7 +527,7 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
         """, (target_key, dname, eurl, akey, skey, is_act, is_prim))
         
         cursor.close()
-        raw_conn.close()
+        conn.close()
         
         return {
             "success": True,
@@ -551,63 +548,86 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
         )
 
 @router.put("/api-configs/{provider_key}/toggle")
-def toggle_api_config(provider_key: str, payload: ApiConfigToggle, db: Session = Depends(get_db)):
-    """Instantly Enable or Disable an API Provider (e.g. during maintenance or latency failover)"""
-    ensure_api_config_schema(db)
+def toggle_api_config(provider_key: str, payload: ApiConfigToggle):
+    """Instantly Enable or Disable an API Provider"""
     clean_key = provider_key.strip().lower().replace(' ', '_')
-    cfg = db.query(ApiConfiguration).filter(
-        (ApiConfiguration.provider_key == provider_key) |
-        (ApiConfiguration.provider_key == clean_key)
-    ).first()
-    if not cfg:
-        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
-    
-    cfg.is_active = payload.is_active
-    cfg.status = "CONNECTED" if payload.is_active else "DISABLED"
-    cfg.last_synced = datetime.utcnow()
-    db.commit()
-    db.refresh(cfg)
-    status_str = "ENABLED (Active)" if cfg.is_active else "DISABLED (Offline)"
-    return {
-        "success": True,
-        "message": f"{cfg.display_name} is now {status_str}",
-        "provider_key": cfg.provider_key,
-        "is_active": cfg.is_active,
-        "status": cfg.status
-    }
+    try:
+        ensure_api_config_schema()
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE api_configurations 
+            SET is_active = %s, status = %s, last_synced = CURRENT_TIMESTAMP
+            WHERE provider_key = %s OR provider_key = %s
+            RETURNING display_name, is_active, status
+        """, (payload.is_active, "CONNECTED" if payload.is_active else "DISABLED", provider_key, clean_key))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        dname = row[0] if row else provider_key
+        act = row[1] if row else payload.is_active
+        st = row[2] if row else ("CONNECTED" if payload.is_active else "DISABLED")
+        status_str = "ENABLED (Active)" if act else "DISABLED (Offline)"
+        return {
+            "success": True,
+            "message": f"{dname} is now {status_str}",
+            "provider_key": provider_key,
+            "is_active": act,
+            "status": st
+        }
+    except Exception as e:
+        return {"success": False, "detail": str(e)}
 
 @router.put("/api-configs/{provider_key}/primary")
-def set_primary_api_config(provider_key: str, db: Session = Depends(get_db)):
+def set_primary_api_config(provider_key: str):
     """Set specified API provider as the Primary Active Verification Engine for all checks"""
-    ensure_api_config_schema(db)
-    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
-    if not cfg:
-        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
-    
-    # Demote all others
-    db.query(ApiConfiguration).update({"is_primary": False})
-    cfg.is_primary = True
-    cfg.is_active = True
-    cfg.status = "CONNECTED"
-    cfg.last_synced = datetime.utcnow()
-    db.commit()
-    db.refresh(cfg)
-    return {"success": True, "message": f"{cfg.display_name} is now the PRIMARY active verification engine.", "config": cfg}
+    try:
+        ensure_api_config_schema()
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE api_configurations SET is_primary = FALSE")
+        cur.execute("""
+            UPDATE api_configurations 
+            SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', last_synced = CURRENT_TIMESTAMP
+            WHERE provider_key = %s
+            RETURNING display_name, endpoint_url, is_active, is_primary
+        """, (provider_key,))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        dname = row[0] if row else provider_key
+        return {
+            "success": True,
+            "message": f"{dname} is now the PRIMARY active verification engine.",
+            "provider_key": provider_key,
+            "is_primary": True
+        }
+    except Exception as e:
+        return {"success": False, "detail": str(e)}
 
 @router.delete("/api-configs/{provider_key}")
-def delete_api_config(provider_key: str, db: Session = Depends(get_db)):
+def delete_api_config(provider_key: str):
     """Delete a custom added API Provider"""
     if provider_key in ("server1_sandbox", "server2_coincircle"):
         raise HTTPException(status_code=400, detail="System default providers (Sandbox / CoinCircle) cannot be deleted. You can disable them instead.")
     
-    ensure_api_config_schema(db)
-    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
-    if not cfg:
-        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
-    
-    db.delete(cfg)
-    db.commit()
-    return {"success": True, "message": f"API Provider '{cfg.display_name}' deleted successfully."}
+    try:
+        ensure_api_config_schema()
+        conn = get_direct_db_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM api_configurations WHERE provider_key = %s RETURNING display_name", (provider_key,))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not row:
+            raise HTTPException(status_code=404, detail="API Gateway configuration not found")
+        return {"success": True, "message": f"API Provider '{row[0]}' deleted successfully."}
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"success": False, "detail": str(e)}
 
 
 class GatewayTestEndpointPayload(BaseModel):
