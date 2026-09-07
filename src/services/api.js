@@ -288,6 +288,18 @@ export const api = {
       method: 'DELETE',
     });
   },
+  validateApiGatewayCredentials: (endpointUrl, apiKey) => request('/superadmin/api-gateway/validate-credentials', {
+    method: 'POST',
+    body: JSON.stringify({ endpoint_url: endpointUrl, api_key: apiKey }),
+  }),
+  testApiGatewayEndpoint: (endpointSlug, payload) => request('/superadmin/api-gateway/test-endpoint', {
+    method: 'POST',
+    body: JSON.stringify({ endpoint_slug: endpointSlug, payload }),
+  }),
+  testApiGatewayConnection: () => request('/superadmin/api-gateway/test-connection', {
+    method: 'POST',
+  }),
+  getApiGatewayCatalogue: () => request('/superadmin/api-gateway/catalogue', {}, true),
   getLogs: (params = {}) => {
     const query = new URLSearchParams(params).toString();
     return request(`/superadmin/logs${query ? `?${query}` : ''}`, {}, false);

@@ -64,16 +64,24 @@ export default function ApiGatewayConfigModal({
   };
 
   const handleTestConnection = async () => {
+    if (!formData.api_key.trim()) {
+      setTestStatus({
+        success: false,
+        message: 'Please enter your CoinCircle API Key before testing.',
+        latency: 0
+      });
+      return;
+    }
     setIsTesting(true);
     setTestStatus(null);
     try {
-      // Test basic connectivity via the test runner
-      const res = await api.testApiGatewayEndpoint('/pan-basic', { pan_number: 'ABCDE1234F' });
+      // Validate the exact endpoint URL and API Key live against CoinCircle
+      const res = await api.validateApiGatewayCredentials(formData.endpoint_url, formData.api_key);
       setTestStatus({
-        success: res.success || res.http_ok || (res.response_data && res.response_data.requestId),
-        message: res.success ? 'Gateway connection verified! (HTTP 200 OK)' : (res.error_message || 'Gateway connected (Authentication response received)'),
-        latency: res.latency_ms || 65,
-        details: res.response_data
+        success: res.success,
+        message: res.message || (res.success ? 'Gateway API Key verified & active! (HTTP 200 OK)' : 'Authentication failed with CoinCircle'),
+        latency: res.latency_ms || 85,
+        details: res.raw_response
       });
     } catch (err) {
       setTestStatus({

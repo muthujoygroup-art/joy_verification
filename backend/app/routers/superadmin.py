@@ -699,6 +699,48 @@ def execute_api_gateway_test(payload: GatewayTestEndpointPayload, db: Session = 
     return result
 
 
+class ValidateCredentialsPayload(BaseModel):
+    endpoint_url: Optional[str] = "https://apis.coincircletrust.com/api/v1/apiProduct"
+    api_key: str
+
+@router.post("/api-gateway/validate-credentials")
+def validate_api_gateway_credentials(payload: ValidateCredentialsPayload):
+    """Directly tests an API Key against the live CoinCircleTrust endpoint without requiring it to be saved first"""
+    from backend.app.services.live_verification_service import _call_neev_api
+    clean_key = (payload.api_key or "").strip()
+    if not clean_key:
+        return {
+            "success": False,
+            "is_online": True,
+            "is_authenticated": False,
+            "status_code": 400,
+            "latency_ms": 0,
+            "message": "Please enter an API Key to test."
+        }
+        
+    provider_mock = {
+        "name": "Live Credential Validator",
+        "endpoint_url": payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct",
+        "api_key": clean_key
+    }
+    
+    ok, res, latency_ms, err_msg = _call_neev_api(
+        endpoint_slug="/mobile360",
+        payload_data={"mobile_number": "9942817491"},
+        provider_info=provider_mock,
+        timeout_sec=10
+    )
+    
+    return {
+        "success": ok,
+        "is_online": True,
+        "is_authenticated": ok,
+        "status_code": 200 if ok else (401 if ("Invalid" in (err_msg or "") or "API key" in (err_msg or "")) else 400),
+        "latency_ms": latency_ms,
+        "message": "Key is active and verified by CoinCircle!" if ok else (err_msg or "Authentication failed"),
+        "raw_response": res
+    }
+
 @router.post("/api-gateway/test-connection")
 def test_api_gateway_connection(db: Session = Depends(get_db)):
     """Tests live connection to the active configured API gateway and validates base URL and API key"""
