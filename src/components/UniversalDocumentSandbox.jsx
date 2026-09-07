@@ -83,7 +83,7 @@ export const SANDBOX_MODULES = [
     endpoints: [
       { slug: '/uan-to-employment-profile', name: 'UAN Profile & Moonlighting Audit', defaultPayload: { uan: '101239019283' }, desc: 'Full member KYC, active establishments, and dual employment check.' },
       { slug: '/uan-to-employment-history-v3', name: 'UAN Service History V3', defaultPayload: { uan: '101239019283' }, desc: 'All past companies, DOJs, DOEs, and resignation reasons.' },
-      { slug: '/esic-data', name: 'ESIC Social Security Data', defaultPayload: { esic_number: '3100098451', dob: '1996-05-15' }, desc: 'Employee State Insurance Corporation registration check.' }
+      { slug: '/esic-data', name: 'ESIC Social Security Data', defaultPayload: { id_type: 'MOBILE', mobile: '8610597895' }, desc: 'Employee State Insurance Corporation (ESIC) member records by Mobile or UAN.' }
     ]
   },
   {

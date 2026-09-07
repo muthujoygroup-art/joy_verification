@@ -716,10 +716,10 @@ NEEV_81_ENDPOINTS = [
         "category": "Employment & UAN",
         "path": "/esic-data",
         "sample": {
-            "esic_number": "3100098451",
-            "dob": "1996-05-15"
+            "id_type": "MOBILE",
+            "mobile": "9942817491"
         },
-        "desc": "Employee State Insurance Corporation member verification."
+        "desc": "Employee State Insurance Corporation (ESIC) member records by Mobile or UAN."
     },
     {
         "id": 72,

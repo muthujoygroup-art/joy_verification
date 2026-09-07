@@ -1342,12 +1342,21 @@ def verify_esic_live(
     if not candidate:
         return False, "Candidate not found", None
 
-    provider_info = get_active_provider_info(db)
-    clean_esi = "".join(filter(str.isdigit, esic_number)) or "3100098451"
+    target_mobile = candidate.mobile or "9942817491"
+    clean_esi = "".join(filter(str.isdigit, str(esic_number or "")))
+    
+    if len(clean_esi) == 10 and clean_esi[0] in "6789":
+        esic_payload = {"id_type": "MOBILE", "mobile": clean_esi}
+    elif len(clean_esi) == 12:
+        esic_payload = {"id_type": "UAN", "uan": clean_esi}
+    elif clean_esi:
+        esic_payload = {"id_type": "ACCOUNT_NUMBER", "account_number": clean_esi}
+    else:
+        esic_payload = {"id_type": "MOBILE", "mobile": target_mobile}
 
     live_ok, live_res, latency, err_msg = _call_neev_api(
         endpoint_slug="/esic-data",
-        payload_data={"esic_number": clean_esi, "dob": dob or "1996-05-15"},
+        payload_data=esic_payload,
         provider_info=provider_info
     )
 
