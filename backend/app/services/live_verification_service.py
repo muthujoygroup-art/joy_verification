@@ -129,6 +129,8 @@ def _call_neev_api(
     - Body: Flat JSON top-level object
     Returns: (is_success, response_json_or_data, latency_ms, error_message)
     """
+    import requests
+    
     api_key = (provider_info.get("api_key") if provider_info else None) or settings.COINCIRCLE_API_KEY or ""
     base_url = (provider_info.get("endpoint_url") if provider_info else None) or DEFAULT_COINCIRCLE_ENDPOINT
 
@@ -138,7 +140,12 @@ def _call_neev_api(
         return False, None, 15, "API Key not configured"
 
     # Construct clean URL
-    clean_base = base_url.rstrip('/')
+    clean_base = base_url.strip().rstrip('/')
+    if clean_base.startswith("http://"):
+        clean_base = clean_base.replace("http://", "https://", 1)
+    elif not clean_base.startswith("https://"):
+        clean_base = "https://" + clean_base.lstrip("/")
+
     clean_slug = endpoint_slug.strip().lstrip('/')
     if not clean_slug.startswith("apiProduct") and "/apiProduct" not in clean_base:
         url = f"{clean_base}/{clean_slug}" if clean_base.endswith("/apiProduct") else f"{clean_base}/apiProduct/{clean_slug}"
@@ -148,32 +155,34 @@ def _call_neev_api(
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
+        "User-Agent": "JoyVerification-Engine/2.0",
         "x-api-key": api_key
     }
 
     start_time = time.time()
     try:
-        data_bytes = json.dumps(payload_data).encode("utf-8")
-        req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=timeout_sec) as response:
-            latency_ms = max(1, int((time.time() - start_time) * 1000))
-            raw_body = response.read().decode("utf-8")
-            res_json = json.loads(raw_body)
-            logger.info(f"Neev API Gateway SUCCESS: {endpoint_slug} (HTTP {response.status}, Latency: {latency_ms}ms)")
-            return True, res_json, latency_ms, None
-    except urllib.error.HTTPError as he:
+        resp = requests.post(url, json=payload_data, headers=headers, timeout=timeout_sec, allow_redirects=True)
         latency_ms = max(1, int((time.time() - start_time) * 1000))
-        err_msg = ""
-        err_json = None
+        
         try:
-            err_body = he.read().decode("utf-8")
-            err_json = json.loads(err_body)
-            err_msg = err_json.get("message") or err_json.get("detail") or str(err_body)
-            logger.warning(f"Neev API HTTP Error {he.code} for '{url}': {err_msg}")
+            res_json = resp.json()
         except Exception:
-            err_msg = f"HTTP {he.code}: {he.reason}"
-            logger.warning(f"Neev API HTTP Error {he.code} for '{url}'")
-        return False, err_json, latency_ms, err_msg
+            res_json = {"raw_response": resp.text}
+
+        if resp.status_code == 200:
+            logger.info(f"Neev API Gateway SUCCESS: {endpoint_slug} (HTTP 200, Latency: {latency_ms}ms)")
+            return True, res_json, latency_ms, None
+        else:
+            err_msg = ""
+            if isinstance(res_json, dict):
+                err_msg = res_json.get("message") or res_json.get("error") or res_json.get("detail") or str(res_json)
+            if not err_msg:
+                err_msg = f"HTTP {resp.status_code}: {resp.reason}"
+            logger.warning(f"Neev API Gateway error HTTP {resp.status_code} for '{url}': {err_msg}")
+            return False, res_json, latency_ms, err_msg
+    except requests.exceptions.Timeout:
+        latency_ms = max(1, int((time.time() - start_time) * 1000))
+        return False, None, latency_ms, "Gateway request timed out (20s)"
     except Exception as e:
         latency_ms = max(1, int((time.time() - start_time) * 1000))
         logger.warning(f"Neev API live call to '{url}' failed: {e}")
