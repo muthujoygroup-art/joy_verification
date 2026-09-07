@@ -299,6 +299,9 @@ export const api = {
   testApiGatewayConnection: () => request('/superadmin/api-gateway/test-connection', {
     method: 'POST',
   }),
+  runFullApiGatewayAudit: () => request('/superadmin/api-gateway/run-full-audit', {
+    method: 'POST',
+  }),
   getApiGatewayCatalogue: () => request('/superadmin/api-gateway/catalogue', {}, true),
   getLogs: (params = {}) => {
     const query = new URLSearchParams(params).toString();

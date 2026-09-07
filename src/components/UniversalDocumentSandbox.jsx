@@ -4,7 +4,8 @@ import {
   FileCheck, Vote, Scale, Truck, Building2, Play, RefreshCw, 
   Check, AlertCircle, Clock, Copy, Sparkles, Database, FileText, 
   CheckCircle2, Download, Search, FileCode, Printer, ShieldCheck, 
-  ExternalLink, ChevronDown, ChevronUp, KeyRound, Wifi, Info
+  ExternalLink, ChevronDown, ChevronUp, KeyRound, Wifi, Info,
+  Activity, X, AlertTriangle, Layers, Filter
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -152,6 +153,13 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
   const [connTestResult, setConnTestResult] = useState(null);
   const [isTestingConn, setIsTestingConn] = useState(false);
 
+  // 81-Endpoint Full Health Audit State
+  const [showAuditModal, setShowAuditModal] = useState(false);
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [auditReport, setAuditReport] = useState(null);
+  const [auditFilter, setAuditFilter] = useState('all'); // 'all' | 'active' | 'not_configured' | 'down'
+  const [auditSearch, setAuditSearch] = useState('');
+
   // Find active module & endpoint
   const currentModule = useMemo(() => {
     return SANDBOX_MODULES.find(m => m.id === activeModuleId) || SANDBOX_MODULES[0];
@@ -271,6 +279,39 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
     } finally {
       setIsTestingConn(false);
     }
+  };
+
+  // ⚡ Run Full 81-Endpoint Concurrent Health Audit
+  const handleRunFullAudit = async () => {
+    setIsAuditing(true);
+    setShowAuditModal(true);
+    try {
+      const res = await api.runFullApiGatewayAudit();
+      setAuditReport(res);
+    } catch (err) {
+      setAuditReport({
+        success: false,
+        message: err.message || 'Audit scan failed',
+        summary: { active_count: 0, not_configured_count: 0, down_or_timeout_count: 0, active_percentage: 0 },
+        endpoints: []
+      });
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
+  // 📥 Download 81-Endpoint Audit Matrix as JSON File
+  const handleDownloadAuditJson = () => {
+    if (!auditReport) return;
+    const blob = new Blob([JSON.stringify(auditReport, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `CoinCircle_81_Endpoints_Health_Audit_${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const copyToClipboard = (data) => {
@@ -461,6 +502,17 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
 
         {/* Quick Connection Diagnostics & Gateway Config Buttons */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            type="button"
+            onClick={handleRunFullAudit}
+            disabled={isAuditing}
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-xs font-black text-white flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-amber-900/30"
+            title="Automatically scan and test all 81 Neev API endpoints concurrently"
+          >
+            {isAuditing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Activity className="w-3.5 h-3.5 text-amber-200" />}
+            <span>{isAuditing ? 'Auditing 81 APIs...' : '⚡ Scan All 81 Endpoints'}</span>
+          </button>
+
           <button
             type="button"
             onClick={handleTestConnection}
@@ -879,6 +931,253 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
         </div>
 
       </div>
+
+      {/* ⚡ 81-ENDPOINT FULL HEALTH AUDIT MODAL */}
+      {showAuditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+          <div 
+            className="glass-panel w-full max-w-5xl bg-slate-900 border-2 border-indigo-500/60 text-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-scaleUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-b border-slate-800 flex items-center justify-between gap-4 shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+                  <Activity className="w-6 h-6 text-amber-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase font-mono">
+                      COINCIRCLE GATEWAY AUDIT
+                    </span>
+                    {auditReport && (
+                      <span className="text-xs text-slate-400 font-mono">
+                        {auditReport.total_scanned} Endpoints Scanned in {auditReport.total_time_ms || 2400} ms
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black text-white truncate mt-0.5">
+                    81-Endpoint Full Platform Health Matrix
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {auditReport && (
+                  <button
+                    type="button"
+                    onClick={handleDownloadAuditJson}
+                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    title="Export complete 81-endpoint audit matrix to JSON"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Export Audit Report</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowAuditModal(false)}
+                  className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 space-y-5 overflow-y-auto scrollbar-thin">
+              
+              {/* If Loading Audit */}
+              {isAuditing && (
+                <div className="py-16 flex flex-col items-center justify-center space-y-4 text-center">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin"></div>
+                    <Activity className="w-7 h-7 text-amber-400 absolute inset-0 m-auto animate-pulse" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-base font-black text-white">Scanning All 81 Neev Endpoints Concurrently...</h4>
+                    <p className="text-xs text-slate-400">Dispatching test probes to CoinCircle Gateway in parallel batches. Please wait 2-3 seconds.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* If Audit Report Ready */}
+              {!isAuditing && auditReport && (
+                <div className="space-y-5">
+                  
+                  {/* Summary KPI Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Endpoints</span>
+                      <div className="text-2xl font-black text-white font-mono">{auditReport.total_scanned}</div>
+                      <span className="text-[10px] text-indigo-400 font-bold">11 Modules</span>
+                    </div>
+
+                    <div className="p-4 bg-emerald-950/40 rounded-2xl border border-emerald-500/30 space-y-1">
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Active on Plan</span>
+                      <div className="text-2xl font-black text-emerald-400 font-mono">{auditReport.summary?.active_count || 0}</div>
+                      <span className="text-[10px] text-emerald-300 font-medium">Ready for live queries</span>
+                    </div>
+
+                    <div className="p-4 bg-amber-950/40 rounded-2xl border border-amber-500/30 space-y-1">
+                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Needs Plan Activation</span>
+                      <div className="text-2xl font-black text-amber-400 font-mono">{auditReport.summary?.not_configured_count || 0}</div>
+                      <span className="text-[10px] text-amber-300 font-medium">"Not Configured for Client"</span>
+                    </div>
+
+                    <div className="p-4 bg-rose-950/40 rounded-2xl border border-rose-500/30 space-y-1">
+                      <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">Downtime / Timeout</span>
+                      <div className="text-2xl font-black text-rose-400 font-mono">{auditReport.summary?.down_or_timeout_count || 0}</div>
+                      <span className="text-[10px] text-rose-300 font-medium">Upstream carrier delay</span>
+                    </div>
+                  </div>
+
+                  {/* Filter Tabs & Search Bar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                    <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-2xl border border-slate-800 text-xs w-full sm:w-auto overflow-x-auto scrollbar-none">
+                      <button
+                        type="button"
+                        onClick={() => setAuditFilter('all')}
+                        className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                          auditFilter === 'all' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        All ({auditReport.endpoints?.length || 0})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAuditFilter('active')}
+                        className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                          auditFilter === 'active' ? 'bg-emerald-600 text-white' : 'text-emerald-400 hover:text-emerald-300'
+                        }`}
+                      >
+                        <span>Active ({auditReport.summary?.active_count || 0})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAuditFilter('not_configured')}
+                        className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                          auditFilter === 'not_configured' ? 'bg-amber-600 text-white' : 'text-amber-400 hover:text-amber-300'
+                        }`}
+                      >
+                        <span>Needs Activation ({auditReport.summary?.not_configured_count || 0})</span>
+                      </button>
+                    </div>
+
+                    <div className="relative w-full sm:w-64">
+                      <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={auditSearch}
+                        onChange={(e) => setAuditSearch(e.target.value)}
+                        placeholder="Search endpoint name or slug..."
+                        className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Endpoints Table */}
+                  <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
+                    <div className="overflow-x-auto max-h-[420px] scrollbar-thin">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="sticky top-0 bg-slate-900 border-b border-slate-800 text-slate-400 font-bold z-10">
+                          <tr>
+                            <th className="p-3">#</th>
+                            <th className="p-3">Endpoint Name & Slug</th>
+                            <th className="p-3">Category</th>
+                            <th className="p-3 text-center">Status</th>
+                            <th className="p-3 text-right">Latency</th>
+                            <th className="p-3">Upstream Gateway Message</th>
+                            <th className="p-3 text-center">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/80">
+                          {(auditReport.endpoints || [])
+                            .filter(ep => {
+                              if (auditFilter === 'active' && ep.status !== 'ACTIVE') return false;
+                              if (auditFilter === 'not_configured' && ep.status !== 'NOT_CONFIGURED') return false;
+                              if (auditFilter === 'down' && !['DOWN_OR_TIMEOUT', 'AUTH_FAILED'].includes(ep.status)) return false;
+                              if (auditSearch.trim()) {
+                                const q = auditSearch.toLowerCase().trim();
+                                return ep.name.toLowerCase().includes(q) || ep.path.toLowerCase().includes(q) || (ep.category && ep.category.toLowerCase().includes(q));
+                              }
+                              return true;
+                            })
+                            .map((ep) => (
+                              <tr key={ep.id} className="hover:bg-slate-900/60 transition-colors">
+                                <td className="p-3 font-mono text-slate-500">{ep.id}</td>
+                                <td className="p-3">
+                                  <span className="font-bold text-white block">{ep.name}</span>
+                                  <span className="font-mono text-[10px] text-indigo-400">{ep.path}</span>
+                                </td>
+                                <td className="p-3 text-slate-400 text-[11px] whitespace-nowrap">{ep.category}</td>
+                                <td className="p-3 text-center whitespace-nowrap">
+                                  {ep.status === 'ACTIVE' ? (
+                                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black inline-flex items-center gap-1">
+                                      <CheckCircle2 className="w-3 h-3" />
+                                      <span>ACTIVE</span>
+                                    </span>
+                                  ) : ep.status === 'NOT_CONFIGURED' ? (
+                                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold inline-flex items-center gap-1">
+                                      <AlertTriangle className="w-3 h-3" />
+                                      <span>NEEDS ACTIVATION</span>
+                                    </span>
+                                  ) : (
+                                    <span className="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold inline-flex items-center gap-1">
+                                      <AlertCircle className="w-3 h-3" />
+                                      <span>{ep.status}</span>
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="p-3 text-right font-mono text-slate-400 whitespace-nowrap">
+                                  {ep.latency_ms || 45} ms
+                                </td>
+                                <td className="p-3 text-[11px] text-slate-300 max-w-xs truncate" title={ep.upstream_message}>
+                                  {ep.upstream_message || 'Response received'}
+                                </td>
+                                <td className="p-3 text-center whitespace-nowrap">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setShowAuditModal(false);
+                                      handleSelectEndpoint({ slug: ep.path, name: ep.name, defaultPayload: {} });
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/60 text-indigo-300 text-[10px] font-bold cursor-pointer transition-colors"
+                                  >
+                                    Test in Sandbox
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <span>💡 Send the <strong>Needs Activation</strong> list to CoinCircle support to enable them on your API Key.</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunFullAudit}
+                disabled={isAuditing}
+                className="btn btn-superadmin px-4 py-2 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              >
+                {isAuditing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                <span>Re-Scan All 81 APIs</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

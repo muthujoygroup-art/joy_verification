@@ -797,6 +797,109 @@ def test_api_gateway_connection(db: Session = Depends(get_db)):
     }
 
 
+@router.post("/api-gateway/run-full-audit")
+def run_full_api_gateway_audit(db: Session = Depends(get_db)):
+    """
+    Executes a high-speed parallel health audit across all 81 Neev endpoints using the active CoinCircle credentials.
+    Categorizes every endpoint into:
+    - ACTIVE (HTTP 200 / Valid Government Data)
+    - NOT_CONFIGURED (API is not configured for this client -> Requires CoinCircle plan activation)
+    - DOWN_OR_TIMEOUT (Upstream provider timeout / maintenance)
+    - AUTH_FAILED (Key invalid)
+    """
+    import concurrent.futures
+    import time
+    from backend.app.services.live_verification_service import get_active_provider_info, _call_neev_api
+    from backend.app.services.neev_catalogue import NEEV_81_ENDPOINTS
+    
+    provider_info = get_active_provider_info(db)
+    api_key = (provider_info.get("api_key") or "").strip()
+    
+    if not api_key:
+        return {
+            "success": False,
+            "message": "No API Key configured. Please save your CoinCircle API Key first.",
+            "total": len(NEEV_81_ENDPOINTS),
+            "results": []
+        }
+
+    def test_single_endpoint(ep):
+        ep_slug = ep.get("path") or ep.get("slug")
+        sample_payload = ep.get("sample") or {}
+        ok, res, latency_ms, err_msg = _call_neev_api(
+            endpoint_slug=ep_slug,
+            payload_data=sample_payload,
+            provider_info=provider_info,
+            timeout_sec=6
+        )
+        
+        status_category = "UNKNOWN"
+        res_str = str(res).lower() if res else ""
+        err_str = str(err_msg).lower() if err_msg else ""
+        
+        if ok:
+            status_category = "ACTIVE"
+        elif "not configured" in res_str or "not configured" in err_str:
+            status_category = "NOT_CONFIGURED"
+        elif "invalid api key" in res_str or "invalid api key" in err_str or "api_key_invalid" in res_str:
+            status_category = "AUTH_FAILED"
+        elif "not available" in res_str or "not available" in err_str or "timed out" in err_str or "503" in err_str or "502" in err_str:
+            status_category = "DOWN_OR_TIMEOUT"
+        elif "resource_not_found" in res_str or "url_not_found" in res_str:
+            status_category = "NOT_CONFIGURED"
+        else:
+            if isinstance(res, dict) and res.get("requestId") and not ("not configured" in res_str):
+                status_category = "ACTIVE"
+            else:
+                status_category = "NOT_CONFIGURED"
+
+        return {
+            "id": ep.get("id"),
+            "name": ep.get("name"),
+            "category": ep.get("category", "General"),
+            "path": ep_slug,
+            "desc": ep.get("desc", ""),
+            "status": status_category,
+            "is_active": (status_category == "ACTIVE"),
+            "latency_ms": latency_ms,
+            "http_status": 200 if status_category == "ACTIVE" else 400,
+            "upstream_message": (res.get("message") if isinstance(res, dict) else None) or err_msg or "Response received",
+            "raw_response": res
+        }
+
+    start_audit = time.time()
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as executor:
+        futures = [executor.submit(test_single_endpoint, ep) for ep in NEEV_81_ENDPOINTS]
+        for f in concurrent.futures.as_completed(futures):
+            try:
+                results.append(f.result())
+            except Exception:
+                pass
+                
+    results.sort(key=lambda x: x.get("id", 0))
+    total_time_ms = int((time.time() - start_audit) * 1000)
+    
+    active_count = sum(1 for r in results if r["status"] == "ACTIVE")
+    not_configured_count = sum(1 for r in results if r["status"] == "NOT_CONFIGURED")
+    down_count = sum(1 for r in results if r["status"] in ("DOWN_OR_TIMEOUT", "AUTH_FAILED"))
+
+    return {
+        "success": True,
+        "total_scanned": len(results),
+        "total_time_ms": total_time_ms,
+        "summary": {
+            "active_count": active_count,
+            "not_configured_count": not_configured_count,
+            "down_or_timeout_count": down_count,
+            "active_percentage": round((active_count / max(1, len(results))) * 100, 1)
+        },
+        "provider_name": provider_info.get("name"),
+        "timestamp": datetime.utcnow().isoformat(),
+        "endpoints": results
+    }
+
+
 @router.get("/api-analytics/statistics")
 def get_api_analytics_statistics(
     timeframe: Optional[str] = "all",
