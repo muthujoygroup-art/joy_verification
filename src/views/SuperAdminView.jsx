@@ -22,6 +22,8 @@ import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import NeevApiLiveTesterConsole from '../components/NeevApiLiveTesterConsole';
+import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
+import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import {
   Activity,
@@ -3158,6 +3160,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <div className="flex items-center gap-2.5 flex-wrap self-start sm:self-auto">
                   <button
                     type="button"
+                    onClick={() => {
+                      const primary = providerList.find(p => p.isPrimary || p.is_primary) || providerList.find(p => p.key === 'server2_coincircle') || providerList[0];
+                      setSelectedEditProvider(primary);
+                      setShowEditApiModal(true);
+                    }}
+                    className="btn btn-secondary text-xs py-2.5 px-4 font-black border-indigo-300 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 shadow-xs cursor-pointer flex items-center gap-2 btn-interactive"
+                  >
+                    <KeyRound className="w-4 h-4 text-indigo-600" />
+                    <span>Update API Key & Base URL</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => setShowAddApiModal(true)}
                     className="btn btn-superadmin text-xs py-2.5 px-4 font-black shadow-md cursor-pointer flex items-center gap-2 btn-interactive"
                   >
@@ -3455,8 +3470,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             }}
                             className="btn btn-superadmin text-xs py-1.5 px-3 font-black shadow-md cursor-pointer flex items-center gap-1.5"
                           >
-                            <Edit className="w-3.5 h-3.5" />
-                            <span>Configure</span>
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>Edit Key & Base URL</span>
                           </button>
 
                           {!isSystemDefault && (
@@ -3482,6 +3497,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 })}
               </div>
             </div>
+
+            {/* UNIVERSAL DOCUMENT & MOBILE NUMBER LIVE TESTING SANDBOX */}
+            <UniversalDocumentSandbox />
 
             {/* NEEV API 81-ENDPOINT LIVE INTERACTIVE TESTING SUITE */}
             <NeevApiLiveTesterConsole activeProvider={primaryProvider} />
@@ -6717,135 +6735,20 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         </div>
       )}
 
-      {/* ✏️ CONFIGURE / EDIT API PROVIDER MODAL */}
-      {showEditApiModal && selectedEditProvider && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
-            
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-50 text-purple-600 rounded-2xl">
-                  <Edit className="w-6 h-6" />
-                </div>
-                <div>
-                  <span className="badge badge-purple text-[10px] font-black">CREDENTIALS & CONFIGURATION</span>
-                  <h3 className="text-xl font-black text-slate-900">Configure {selectedEditProvider.name || selectedEditProvider.key}</h3>
-                </div>
-              </div>
-              <button 
-                type="button" 
-                onClick={() => {
-                  setShowEditApiModal(false);
-                  setSelectedEditProvider(null);
-                }}
-                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                updateApiConfig(selectedEditProvider.key, selectedEditProvider);
-                setShowEditApiModal(false);
-                setSelectedEditProvider(null);
-              }}
-              className="space-y-4 text-xs"
-            >
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Display Name</label>
-                <input
-                  type="text"
-                  required
-                  value={selectedEditProvider.name || selectedEditProvider.displayName || ''}
-                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, name: e.target.value }))}
-                  className="form-input text-xs font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">API Key / Client ID *</label>
-                <input
-                  type="text"
-                  required
-                  value={selectedEditProvider.apiKey || selectedEditProvider.clientId || ''}
-                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, apiKey: e.target.value, clientId: e.target.value }))}
-                  className="form-input text-xs font-mono font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Secret Key / Secret Token</label>
-                <input
-                  type="password"
-                  value={selectedEditProvider.secretKey || selectedEditProvider.clientSecret || ''}
-                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, secretKey: e.target.value, clientSecret: e.target.value }))}
-                  className="form-input text-xs font-mono"
-                  placeholder="Paste secret key..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Base Endpoint URL *</label>
-                <input
-                  type="text"
-                  required
-                  value={selectedEditProvider.endpointUrl || ''}
-                  onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, endpointUrl: e.target.value }))}
-                  className="form-input text-xs font-mono text-slate-700"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Environment Mode</label>
-                  <select
-                    value={selectedEditProvider.mode || 'Production (Live Mode)'}
-                    onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, mode: e.target.value }))}
-                    className="form-select text-xs font-bold"
-                  >
-                    <option value="Production (Live Mode)">Production (Live Mode)</option>
-                    <option value="Sandbox / Staging Mode">Sandbox / Staging Mode</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Rate Limit (req/min)</label>
-                  <input
-                    type="number"
-                    value={selectedEditProvider.rateLimitPerMin || 120}
-                    onChange={(e) => setSelectedEditProvider(prev => ({ ...prev, rateLimitPerMin: parseInt(e.target.value) || 120 }))}
-                    className="form-input text-xs font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowEditApiModal(false);
-                    setSelectedEditProvider(null);
-                  }}
-                  className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-superadmin text-xs py-2 px-6 font-black shadow-md cursor-pointer flex items-center gap-2"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Save Changes</span>
-                </button>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
+      {/* ✏️ CONFIGURE / EDIT API GATEWAY CREDENTIALS & BASE URL MODAL */}
+      <ApiGatewayConfigModal
+        isOpen={showEditApiModal && !!selectedEditProvider}
+        onClose={() => {
+          setShowEditApiModal(false);
+          setSelectedEditProvider(null);
+        }}
+        providerKey={selectedEditProvider?.key || selectedEditProvider?.id || 'server2_coincircle'}
+        providerData={selectedEditProvider}
+        onSaveSuccess={(pKey, pData) => {
+          updateApiConfig(pKey, pData);
+          showToast(`⚡ ${pData.display_name || pKey} credentials & base URL synchronized with database!`);
+        }}
+      />
 
 
       
