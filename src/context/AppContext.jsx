@@ -1945,9 +1945,9 @@ export const AppProvider = ({ children }) => {
 
   const updateApiConfig = async (gatewayKey, newConfig) => {
     try {
-      const apiKeyVal = (newConfig.apiKey || newConfig.clientId || '').trim();
-      const secretKeyVal = (newConfig.secretKey || newConfig.clientSecret || '').trim();
-      const endpointVal = (newConfig.endpointUrl || 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct').trim();
+      const apiKeyVal = (newConfig.apiKey || newConfig.clientId || newConfig.api_key || '').trim();
+      const secretKeyVal = (newConfig.secretKey || newConfig.clientSecret || newConfig.secret_key || '').trim();
+      const endpointVal = (newConfig.endpointUrl || newConfig.endpoint_url || 'https://apis.coincircletrust.com/api/v1/apiProduct').trim();
       const nameVal = newConfig.name || newConfig.displayName || 'CoinCircleTrust Gateways';
       const modeVal = newConfig.mode || 'Production (Live Mode)';
       const isSandbox = modeVal.includes('Sandbox');

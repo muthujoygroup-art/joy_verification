@@ -317,23 +317,84 @@ def create_api_configuration(payload: ApiConfigCreate, db: Session = Depends(get
 
 @router.put("/api-configs/{provider_key}")
 def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session = Depends(get_db)):
-    """Update API Gateway credentials, endpoints, sandbox mode or rate limits"""
-    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
-    if not cfg:
-        raise HTTPException(status_code=404, detail="API Gateway configuration not found")
-        
-    for k, v in payload.dict(exclude_unset=True).items():
-        setattr(cfg, k, v)
-        
-    cfg.last_synced = datetime.utcnow()
-    db.commit()
-    db.refresh(cfg)
-    return {"success": True, "message": f"Updated {cfg.display_name} credentials", "config": cfg}
+    """Update API Gateway credentials, endpoints, sandbox mode or rate limits (or auto-create if missing)"""
+    from fastapi.responses import JSONResponse
+    import traceback
+    
+    try:
+        # Search by exact key or sanitized slug
+        clean_key = provider_key.strip().lower().replace(' ', '_')
+        cfg = db.query(ApiConfiguration).filter(
+            (ApiConfiguration.provider_key == provider_key) |
+            (ApiConfiguration.provider_key == clean_key)
+        ).first()
+
+        # Fallback aliases
+        if not cfg:
+            if "coincircle" in clean_key or "server2" in clean_key or "neev" in clean_key:
+                cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == "server2_coincircle").first()
+            elif "sandbox" in clean_key or "server1" in clean_key:
+                cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == "server1_sandbox").first()
+
+        # If still not found, create new configuration record
+        if not cfg:
+            cfg = ApiConfiguration(
+                provider_key=clean_key or "server2_coincircle",
+                display_name=payload.display_name or provider_key,
+                endpoint_url=payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct",
+                api_key=payload.api_key or "",
+                secret_key=payload.secret_key or "",
+                webhook_url=payload.webhook_url,
+                sandbox_mode=payload.sandbox_mode or False,
+                rate_limit_per_min=payload.rate_limit_per_min or 5000,
+                monthly_quota=payload.monthly_quota or 50000,
+                status=payload.status or "CONNECTED",
+                is_active=payload.is_active if payload.is_active is not None else True,
+                is_primary=payload.is_primary if payload.is_primary is not None else (clean_key == "server2_coincircle"),
+                supported_services=payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"],
+                last_synced=datetime.utcnow()
+            )
+            db.add(cfg)
+        else:
+            # Update all provided fields
+            update_data = payload.dict(exclude_unset=True)
+            for k, v in update_data.items():
+                if v is not None:
+                    setattr(cfg, k, v)
+            if payload.is_primary:
+                db.query(ApiConfiguration).filter(ApiConfiguration.provider_key != cfg.provider_key).update({"is_primary": False})
+            cfg.last_synced = datetime.utcnow()
+
+        db.commit()
+        db.refresh(cfg)
+
+        return {
+            "success": True,
+            "message": f"Updated {cfg.display_name} credentials and Base URL in database successfully.",
+            "provider_key": cfg.provider_key,
+            "display_name": cfg.display_name,
+            "endpoint_url": cfg.endpoint_url,
+            "is_active": cfg.is_active,
+            "is_primary": cfg.is_primary,
+            "status": cfg.status
+        }
+    except Exception as e:
+        db.rollback()
+        tr = traceback.format_exc()
+        print(f"Error updating API config: {e}\n{tr}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "detail": f"Database error updating API config: {str(e)}"}
+        )
 
 @router.put("/api-configs/{provider_key}/toggle")
 def toggle_api_config(provider_key: str, payload: ApiConfigToggle, db: Session = Depends(get_db)):
     """Instantly Enable or Disable an API Provider (e.g. during maintenance or latency failover)"""
-    cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == provider_key).first()
+    clean_key = provider_key.strip().lower().replace(' ', '_')
+    cfg = db.query(ApiConfiguration).filter(
+        (ApiConfiguration.provider_key == provider_key) |
+        (ApiConfiguration.provider_key == clean_key)
+    ).first()
     if not cfg:
         raise HTTPException(status_code=404, detail="API Gateway configuration not found")
     
@@ -343,7 +404,13 @@ def toggle_api_config(provider_key: str, payload: ApiConfigToggle, db: Session =
     db.commit()
     db.refresh(cfg)
     status_str = "ENABLED (Active)" if cfg.is_active else "DISABLED (Offline)"
-    return {"success": True, "message": f"{cfg.display_name} is now {status_str}", "config": cfg}
+    return {
+        "success": True,
+        "message": f"{cfg.display_name} is now {status_str}",
+        "provider_key": cfg.provider_key,
+        "is_active": cfg.is_active,
+        "status": cfg.status
+    }
 
 @router.put("/api-configs/{provider_key}/primary")
 def set_primary_api_config(provider_key: str, db: Session = Depends(get_db)):
