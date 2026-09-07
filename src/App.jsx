@@ -8,16 +8,52 @@ import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModa
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { RefreshCw } from 'lucide-react';
 
-// Route-Level Code Splitting & Security Chunk Isolation (Lazy Loading)
-const LandingPageView = lazy(() => import('./views/LandingPageView').then(m => ({ default: m.LandingPageView })));
-const LoginView = lazy(() => import('./views/LoginView').then(m => ({ default: m.LoginView })));
-const SuperAdminView = lazy(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })));
-const CompanyAdminView = lazy(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })));
-const HrExecutiveView = lazy(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })));
-const EmployeePortalView = lazy(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })));
-const CompanyActivationView = lazy(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })));
-const HrActivationView = lazy(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })));
-const BlogView = lazy(() => import('./views/BlogView').then(m => ({ default: m.BlogView })));
+// Resilient Lazy Loader with Automatic Chunk Reload & Cache-Busting Recovery
+function lazyWithRetry(componentImport, chunkName = 'chunk') {
+  return lazy(async () => {
+    const isRetried = window.sessionStorage.getItem(`chunk_retry_${chunkName}`);
+
+    try {
+      const component = await componentImport();
+      window.sessionStorage.removeItem(`chunk_retry_${chunkName}`);
+      return component;
+    } catch (error) {
+      console.warn(`Dynamic chunk import failed for [${chunkName}]:`, error);
+
+      // If this is the first failure in current session, clear caches and reload
+      if (!isRetried) {
+        window.sessionStorage.setItem(`chunk_retry_${chunkName}`, 'true');
+
+        if ('caches' in window) {
+          try {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+          } catch (e) {
+            console.warn('Failed clearing caches on chunk error:', e);
+          }
+        }
+
+        window.location.reload();
+        return new Promise(() => {}); // Keep Suspense active until reload completes
+      }
+
+      // If already retried and failed again, bubble to ErrorBoundary
+      window.sessionStorage.removeItem(`chunk_retry_${chunkName}`);
+      throw error;
+    }
+  });
+}
+
+// Route-Level Code Splitting & Security Chunk Isolation (Resilient Lazy Loading)
+const LandingPageView = lazyWithRetry(() => import('./views/LandingPageView').then(m => ({ default: m.LandingPageView })), 'LandingPageView');
+const LoginView = lazyWithRetry(() => import('./views/LoginView').then(m => ({ default: m.LoginView })), 'LoginView');
+const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })), 'SuperAdminView');
+const CompanyAdminView = lazyWithRetry(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })), 'CompanyAdminView');
+const HrExecutiveView = lazyWithRetry(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })), 'HrExecutiveView');
+const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })), 'EmployeePortalView');
+const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
+const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
+const BlogView = lazyWithRetry(() => import('./views/BlogView').then(m => ({ default: m.BlogView })), 'BlogView');
 
 // Loading Fallback Component
 const RouteLoadingSpinner = () => (

@@ -9,6 +9,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Cache Control: Prevent stale HTML chunk references -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Vite Dynamic Import Preload Error Auto-Recovery -->
+    <script>
+      window.addEventListener('vite:preloadError', function(event) {
+        event.preventDefault();
+        console.warn('Vite preload chunk mismatch detected. Reloading for latest build assets...');
+        window.location.reload();
+      });
+    </script>
+
     <!-- Primary High-Impact SEO Meta Tags -->
     <title>JOY TrueProfile — Enterprise Labor Profile Creation, Management & Verification Platform</title>
     <meta name="title" content="JOY TrueProfile — Enterprise Labor Profile Creation, Management & Verification Platform" />
