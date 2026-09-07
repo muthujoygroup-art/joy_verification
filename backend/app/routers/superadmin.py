@@ -12,6 +12,8 @@ from backend.app.services.email_service import send_company_welcome_email
 from pydantic import BaseModel
 from backend.app.database import get_db
 from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
+from backend.app.services.live_verification_service import test_generic_neev_endpoint
+from backend.app.services.neev_catalogue import NEEV_81_ENDPOINTS
 from backend.app.schemas import (
     CompanyCreate, CompanyResponse, CompanyUpdateFeatures,
     ApiConfigCreate, ApiConfigResponse, ApiConfigUpdate, ApiConfigToggle,
@@ -373,6 +375,33 @@ def delete_api_config(provider_key: str, db: Session = Depends(get_db)):
     db.delete(cfg)
     db.commit()
     return {"success": True, "message": f"API Provider '{cfg.display_name}' deleted successfully."}
+
+
+class GatewayTestEndpointPayload(BaseModel):
+    endpoint_slug: str
+    payload: Optional[Dict[str, Any]] = None
+
+@router.get("/api-gateway/catalogue")
+def get_api_gateway_catalogue():
+    """Returns the full 81-endpoint catalogue from the Neev API Integration Guide with sample payloads and metadata"""
+    return {
+        "success": True,
+        "total": len(NEEV_81_ENDPOINTS),
+        "base_url": "https://apis.coincircletrust.com/api/v1/apiProduct",
+        "auth_header": "x-api-key",
+        "endpoints": NEEV_81_ENDPOINTS
+    }
+
+@router.post("/api-gateway/test-endpoint")
+def execute_api_gateway_test(payload: GatewayTestEndpointPayload, db: Session = Depends(get_db)):
+    """Executes a real-time live test against any of the 81 Neev endpoints using the SuperAdmin active API key"""
+    result = test_generic_neev_endpoint(
+        db=db,
+        endpoint_slug=payload.endpoint_slug,
+        payload=payload.payload or {}
+    )
+    return result
+
 
 @router.get("/logs", response_model=List[SystemErrorLogResponse])
 def get_system_logs(

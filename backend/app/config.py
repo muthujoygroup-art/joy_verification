@@ -69,12 +69,12 @@ class Settings(BaseSettings):
     SANDBOX_MODE: str = os.getenv("SANDBOX_MODE", "production") # 'production' | 'sandbox'
     
     # -------------------------------------------------------------
-    # 🛡️ SERVER 2: CoinCircleTrust API Gateway (47+ Dual Employment & Compliance APIs)
+    # 🛡️ SERVER 2: CoinCircleTrust API Gateway (Neev 81 APIs)
     # -------------------------------------------------------------
     COINCIRCLE_API_KEY: str = os.getenv("COINCIRCLE_API_KEY", os.getenv("COINCIRCLE_CLIENT_ID", ""))
     COINCIRCLE_CLIENT_ID: str = os.getenv("COINCIRCLE_CLIENT_ID", os.getenv("COINCIRCLE_API_KEY", ""))
     COINCIRCLE_SECRET_KEY: str = os.getenv("COINCIRCLE_SECRET_KEY", "")
-    COINCIRCLE_BASE_URL: str = os.getenv("COINCIRCLE_BASE_URL", "https://api.coincircletrust.com")
+    COINCIRCLE_BASE_URL: str = os.getenv("COINCIRCLE_BASE_URL", "https://apis.coincircletrust.com/api/v1/apiProduct")
     COINCIRCLE_MODE: str = os.getenv("COINCIRCLE_MODE", "production") # 'production' | 'staging'
     
     # -------------------------------------------------------------

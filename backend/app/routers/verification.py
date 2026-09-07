@@ -24,6 +24,10 @@ from backend.app.services.live_verification_service import (
     verify_driving_license_live,
     verify_epfo_uan_live,
     verify_passport_live,
+    verify_voter_id_live,
+    verify_court_records_live,
+    verify_vehicle_rc_live,
+    verify_esic_live,
     save_and_enrich_candidate_verification
 )
 
@@ -59,6 +63,26 @@ class VerifyEpfoRequest(BaseModel):
 class VerifyPassportRequest(BaseModel):
     token: str
     passport_number: str
+    dob: Optional[str] = "1996-05-15"
+
+class VerifyVoterRequest(BaseModel):
+    token: str
+    voter_id: str
+    dob: Optional[str] = "1996-05-15"
+
+class VerifyCourtRequest(BaseModel):
+    token: str
+    name: Optional[str] = None
+    father_name: Optional[str] = None
+    address: Optional[str] = None
+
+class VerifyVehicleRcRequest(BaseModel):
+    token: str
+    rc_number: str
+
+class VerifyEsicRequest(BaseModel):
+    token: str
+    esic_number: str
     dob: Optional[str] = "1996-05-15"
 
 class SetPasswordRequest(BaseModel):
@@ -270,6 +294,38 @@ def endpoint_verify_epfo(payload: VerifyEpfoRequest, db: Session = Depends(get_d
 def endpoint_verify_passport(payload: VerifyPassportRequest, db: Session = Depends(get_db)):
     """Verifies Indian Passport with MEA Passport Seva registry and stores validity"""
     success, msg, data = verify_passport_live(db, payload.token, payload.passport_number, payload.dob)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg, "data": data}
+
+@router.post("/verify-voter-id")
+def endpoint_verify_voter_id(payload: VerifyVoterRequest, db: Session = Depends(get_db)):
+    """Verifies Voter ID (EPIC) with Election Commission of India registry"""
+    success, msg, data = verify_voter_id_live(db, payload.token, payload.voter_id, payload.dob)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg, "data": data}
+
+@router.post("/verify-court-records")
+def endpoint_verify_court_records(payload: VerifyCourtRequest, db: Session = Depends(get_db)):
+    """Searches real-time criminal and civil litigation records across Indian e-Courts"""
+    success, msg, data = verify_court_records_live(db, payload.token, payload.name, payload.father_name, payload.address)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg, "data": data}
+
+@router.post("/verify-vehicle-rc")
+def endpoint_verify_vehicle_rc(payload: VerifyVehicleRcRequest, db: Session = Depends(get_db)):
+    """Verifies Vehicle Registration Certificate (RC) with MoRTH Vahan database"""
+    success, msg, data = verify_vehicle_rc_live(db, payload.token, payload.rc_number)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg, "data": data}
+
+@router.post("/verify-esic")
+def endpoint_verify_esic(payload: VerifyEsicRequest, db: Session = Depends(get_db)):
+    """Verifies ESIC Insurance details and employer registrations"""
+    success, msg, data = verify_esic_live(db, payload.token, payload.esic_number, payload.dob)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}

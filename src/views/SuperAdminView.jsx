@@ -21,6 +21,7 @@ import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
 import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
+import NeevApiLiveTesterConsole from '../components/NeevApiLiveTesterConsole';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import {
   Activity,
@@ -577,7 +578,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     server2_coincircle: {
       clientId: apiConfigurations.server2_coincircle?.clientId || 'CCT_CORP_VERIF_882910',
       clientSecret: apiConfigurations.server2_coincircle?.clientSecret || 'cct_sec_JoyCircleTrust_9921_xK',
-      endpointUrl: apiConfigurations.server2_coincircle?.endpointUrl || 'https://bdnfqngav5.ap-south-1.awsapprunner.com/apiProduct',
+      endpointUrl: apiConfigurations.server2_coincircle?.endpointUrl || 'https://apis.coincircletrust.com/api/v1/apiProduct',
       status: apiConfigurations.server2_coincircle?.status || 'Online',
       mode: apiConfigurations.server2_coincircle?.mode || 'Production (Live Mode)'
     }
@@ -3481,6 +3482,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 })}
               </div>
             </div>
+
+            {/* NEEV API 81-ENDPOINT LIVE INTERACTIVE TESTING SUITE */}
+            <NeevApiLiveTesterConsole activeProvider={primaryProvider} />
 
             {/* LIVE TIME-FILTERED COMPANY-WISE API TELEMETRY & FINANCIAL REVENUE CALCULATOR */}
             <div className="glass-panel p-6 border-indigo-200 bg-white rounded-3xl space-y-5 shadow-sm">

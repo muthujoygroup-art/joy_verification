@@ -96,6 +96,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const bankData = attrs.bankCheck || attrs.bank || {};
   const dlData = attrs.drivingLicense || attrs.dl || {};
   const epfoData = attrs.uan || attrs.epfo || {};
+  const voterData = attrs.voter_id || attrs.voterId || {};
+  const passportData = attrs.passport || attrs.passport_verification || {};
+  const courtData = attrs.courtRecords || attrs.court_records || {};
+  const rcData = attrs.rc_details || attrs.rcDetails || {};
+  const esicData = attrs.esic || attrs.esic_data || {};
 
   // Clean, Dynamic Attributes Resolution (Removing fake mock fallbacks)
   const candidateName = jf.fullName || jf.name || c.name || '-';
@@ -131,9 +136,14 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const branch = jf.branchName || jf.bankBranch || bankData.branch || '-';
   const panNo = jf.panNo || panData.pan_number || c.panNo || '-';
   const aadhaarNo = jf.aadhaarNo || aadhData.masked_aadhaar || c.aadhaarNo || '-';
+  const dlNo = jf.dlNo || dlData.dl_number || c.dlNo || '-';
+  const passportNo = jf.passportNo || passportData.passport_number || passportData.fileNumber || c.passportNo || '-';
+  const voterId = jf.voterId || voterData.voter_id || voterData.epic_number || c.voterId || '-';
   const uanNo = jf.uanEpf || jf.pfNumber || epfoData.uan || c.uanEpf || c.pfNumber || '-';
   const pfNum = jf.pfNumber || c.pfNumber || uanNo || '-';
-  const esiNum = jf.esiNumber || jf.esicNo || c.esiNumber || '-';
+  const esiNum = jf.esiNumber || jf.esicNo || esicData.esic_number || c.esiNumber || '-';
+  const vehicleRcNo = jf.rcNumber || rcData.rc_number || c.rcNumber || '-';
+  const courtVerdict = jf.courtRecordStatus || courtData.verdict || c.courtRecordStatus || 'Clear / Verified';
   const nomineeName = jf.nomineeName || (maritalStatus === 'Married' ? (jf.spouseName || c.spouseName || '-') : (jf.fatherName || c.fatherName || '-'));
   const nomineeRelation = jf.nomineeRelation || (maritalStatus === 'Married' ? 'Spouse' : 'Father');
   const nomineePhone = jf.nomineePhone || jf.emergencyContactPhone || mobile;

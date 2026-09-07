@@ -440,6 +440,27 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ token, passport_number: passportNumber, dob }),
   }),
+  verifyVoterIdLive: (token, voterId, dob = '1996-05-15') => request('/verification/verify-voter-id', {
+    method: 'POST',
+    body: JSON.stringify({ token, voter_id: voterId, dob }),
+  }),
+  verifyCourtRecordsLive: (token, name, fatherName, address) => request('/verification/verify-court-records', {
+    method: 'POST',
+    body: JSON.stringify({ token, name, father_name: fatherName, address }),
+  }),
+  verifyVehicleRcLive: (token, rcNumber) => request('/verification/verify-vehicle-rc', {
+    method: 'POST',
+    body: JSON.stringify({ token, rc_number: rcNumber }),
+  }),
+  verifyEsicLive: (token, esicNumber, dob = '1996-05-15') => request('/verification/verify-esic', {
+    method: 'POST',
+    body: JSON.stringify({ token, esic_number: esicNumber, dob }),
+  }),
+  getApiGatewayCatalogue: () => request('/superadmin/api-gateway/catalogue', {}, true),
+  testApiGatewayEndpoint: (endpointSlug, payload) => request('/superadmin/api-gateway/test-endpoint', {
+    method: 'POST',
+    body: JSON.stringify({ endpoint_slug: endpointSlug, payload }),
+  }),
   getVerificationRecords: (token) => request(`/verification/candidate/${token}/records`),
 
   // Master Data & Custom Form Fields
@@ -763,3 +784,5 @@ export const api = {
     });
   },
 };
+
+export default api;
