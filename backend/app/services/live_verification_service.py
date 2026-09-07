@@ -1411,6 +1411,108 @@ def verify_corporate_cin_gst_live(
 
 
 # =============================================================================
+# 📊 TELEMETRY LEDGER & ENDPOINT CATEGORIZATION
+# =============================================================================
+def categorize_endpoint(endpoint_slug: str) -> str:
+    """Categorizes any Neev / Government API endpoint into one of the 11 official modules"""
+    slug = endpoint_slug.lower().strip()
+    if any(k in slug for k in ["mobile", "phone", "telecom"]):
+        return "Mobile Number Checks"
+    elif any(k in slug for k in ["pan", "crif", "itr", "cibil", "credit"]):
+        return "PAN Card Checks"
+    elif any(k in slug for k in ["aadhaar", "uidai", "ckyc"]):
+        return "Aadhaar UIDAI Checks"
+    elif any(k in slug for k in ["bank", "account", "ifsc", "upi", "imps", "penny"]):
+        return "Bank & UPI Penny Drop"
+    elif any(k in slug for k in ["driving", "dl", "sarathi"]):
+        return "Driving License (MoRTH)"
+    elif any(k in slug for k in ["uan", "epfo", "pf", "esic", "employment"]):
+        return "EPFO UAN & Dual Employment"
+    elif any(k in slug for k in ["court", "criminal", "case", "ecourt", "litigation"]):
+        return "Court & Criminal Records"
+    elif any(k in slug for k in ["passport", "mea"]):
+        return "Passport Verification"
+    elif any(k in slug for k in ["voter", "epic", "election"]):
+        return "Voter ID (ECI)"
+    elif any(k in slug for k in ["rc", "vehicle", "vahan", "challan", "fastag"]):
+        return "Vehicle RC & Challan"
+    elif any(k in slug for k in ["cin", "gst", "din", "udyam", "mca", "director", "company"]):
+        return "Corporate MCA & GSTIN"
+    return "Identity & General KYC"
+
+
+def record_api_call_log(
+    db: Session,
+    endpoint_slug: str,
+    payload: Dict[str, Any],
+    response_data: Optional[Dict[str, Any]],
+    is_success: bool,
+    latency_ms: int,
+    http_status: int = 200,
+    initiator_role: str = "superadmin",
+    initiator_id: Optional[str] = None,
+    company_id: Optional[str] = None,
+    cost_incurred: float = 4.0,
+    error_message: Optional[str] = None
+) -> Optional[str]:
+    """
+    Persists an immutable audit log entry of every API execution into PostgreSQL (api_call_logs table).
+    Provides real-time multi-perspective usage statistics.
+    """
+    try:
+        from backend.app.models.api_call_log import ApiCallLog
+        from backend.app.models.api_config import ApiConfiguration
+        
+        log_id = f"apilog_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        cat = categorize_endpoint(endpoint_slug)
+        
+        # Extract primary input identifier
+        input_id = None
+        for key in ["mobile_number", "mobile", "pan", "pan_number", "aadhaar_number", "account_number", "driving_license_number", "uan", "fileNumber", "rc_number", "cin", "gstin"]:
+            if key in payload and payload[key]:
+                val = str(payload[key])
+                if key == "aadhaar_number" and len(val) >= 8:
+                    input_id = f"XXXXXXXX{val[-4:]}"
+                else:
+                    input_id = val
+                break
+        
+        log_entry = ApiCallLog(
+            id=log_id,
+            endpoint_slug=endpoint_slug,
+            category=cat,
+            initiator_role=initiator_role,
+            initiator_id=initiator_id or "SuperAdmin Live Sandbox",
+            company_id=company_id,
+            status="SUCCESS" if is_success else "FAILED",
+            http_status=http_status,
+            latency_ms=latency_ms,
+            cost_incurred=cost_incurred,
+            input_identifier=input_id,
+            request_payload={k: v for k, v in payload.items() if k not in ['api_key', 'secret_key']},
+            response_summary={"status": "OK" if is_success else "ERROR", "message": error_message or "API executed"},
+            error_message=error_message,
+            timestamp=datetime.utcnow()
+        )
+        db.add(log_entry)
+        
+        # Increment monthly_used on active ApiConfiguration
+        provider = db.query(ApiConfiguration).filter(ApiConfiguration.is_active == True).first()
+        if provider:
+            provider.monthly_used = (provider.monthly_used or 0) + 1
+            
+        db.commit()
+        return log_id
+    except Exception as e:
+        logger.warning(f"Failed to record api_call_log: {e}")
+        try:
+            db.rollback()
+        except Exception:
+            pass
+        return None
+
+
+# =============================================================================
 # 🧪 12. DYNAMIC SUPERADMIN 81-ENDPOINT TEST RUNNER
 # =============================================================================
 def test_generic_neev_endpoint(
@@ -1420,6 +1522,7 @@ def test_generic_neev_endpoint(
 ) -> Dict[str, Any]:
     """
     Executes a real-time live diagnostic test for any of the 81 Neev endpoints from the SuperAdmin console.
+    Logs telemetry into api_call_logs table in PostgreSQL.
     """
     provider_info = get_active_provider_info(db)
     clean_slug = endpoint_slug.strip()
@@ -1432,13 +1535,33 @@ def test_generic_neev_endpoint(
         provider_info=provider_info
     )
 
+    http_status = 200 if live_ok else (401 if "API key" in (err_msg or "") else 400)
+    
+    # Record telemetry in database
+    log_id = record_api_call_log(
+        db=db,
+        endpoint_slug=clean_slug,
+        payload=payload,
+        response_data=live_res,
+        is_success=live_ok,
+        latency_ms=latency_ms,
+        http_status=http_status,
+        initiator_role="superadmin",
+        initiator_id="SuperAdmin Live Sandbox",
+        cost_incurred=4.0,
+        error_message=err_msg
+    )
+
     return {
         "success": live_ok,
+        "log_id": log_id,
         "endpoint_slug": clean_slug,
+        "category": categorize_endpoint(clean_slug),
         "gateway_url": f"{provider_info.get('endpoint_url', DEFAULT_COINCIRCLE_ENDPOINT).rstrip('/')}{clean_slug}",
         "provider_name": provider_info.get("name"),
         "latency_ms": latency_ms,
         "http_ok": live_ok,
+        "http_status": http_status,
         "response_data": live_res or {"error": err_msg or "Failed to receive valid JSON from endpoint"},
         "error_message": err_msg,
         "timestamp": datetime.utcnow().isoformat()

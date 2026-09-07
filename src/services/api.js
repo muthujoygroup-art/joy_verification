@@ -461,6 +461,10 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ endpoint_slug: endpointSlug, payload }),
   }),
+  testApiGatewayConnection: () => request('/superadmin/api-gateway/test-connection', {
+    method: 'POST'
+  }),
+  getApiAnalyticsStatistics: (timeframe = 'all') => request(`/superadmin/api-analytics/statistics?timeframe=${timeframe}`, {}, false),
   getVerificationRecords: (token) => request(`/verification/candidate/${token}/records`),
 
   // Master Data & Custom Form Fields

@@ -21,7 +21,6 @@ import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
 import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
-import NeevApiLiveTesterConsole from '../components/NeevApiLiveTesterConsole';
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
 import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
@@ -3499,189 +3498,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
 
             {/* UNIVERSAL DOCUMENT & MOBILE NUMBER LIVE TESTING SANDBOX */}
-            <UniversalDocumentSandbox />
+            <UniversalDocumentSandbox
+              activeProvider={primaryProvider}
+              onGatewayConfigOpen={() => {
+                setSelectedEditProvider({ key: primaryProviderKey || 'server2_coincircle', ...primaryProvider });
+                setShowEditApiModal(true);
+              }}
+            />
 
-            {/* NEEV API 81-ENDPOINT LIVE INTERACTIVE TESTING SUITE */}
-            <NeevApiLiveTesterConsole activeProvider={primaryProvider} />
-
-            {/* LIVE TIME-FILTERED COMPANY-WISE API TELEMETRY & FINANCIAL REVENUE CALCULATOR */}
-            <div className="glass-panel p-6 border-indigo-200 bg-white rounded-3xl space-y-5 shadow-sm">
-              
-              {/* Header with Title & Time-Range Filter */}
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="badge badge-emerald text-[10px] font-black uppercase">REAL-TIME METERED BILLING & TOKENS</span>
-                    <span className="text-xs text-slate-500 font-bold">• Primary Gateway: {primaryProvider?.name || 'CoinCircleTrust'}</span>
-                  </div>
-                  <h4 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
-                    <Calculator className="w-5 h-5 text-indigo-600" />
-                    <span>Company-Wise API Call Telemetry & Financial Ledger</span>
-                  </h4>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Filter by timeframe to audit exact API calls, token consumption, upstream costs incurred, and gross client profit margins.
-                  </p>
-                </div>
-
-                {/* Interactive Time Range Filters */}
-                <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200 self-start lg:self-auto overflow-x-auto no-scrollbar">
-                  {[
-                    { id: 'today', label: '⚡ Today' },
-                    { id: '7d', label: '📅 Last 7 Days' },
-                    { id: '30d', label: '🗓️ Last 30 Days' },
-                    { id: 'month', label: '📊 This Month' },
-                    { id: 'all', label: '🌐 All Time' }
-                  ].map((filter) => (
-                    <button
-                      key={filter.id}
-                      type="button"
-                      onClick={() => setTelemetryTimeRange(filter.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
-                        telemetryTimeRange === filter.id
-                          ? 'bg-white text-indigo-700 shadow-xs border border-indigo-200'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={() => fetchTelemetryData(telemetryTimeRange)}
-                    className="p-1.5 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-white transition-all cursor-pointer"
-                    title="Refresh Telemetry"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isTelemetryLoading ? 'animate-spin text-indigo-600' : ''}`} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Timeframe Summary KPIs Strip */}
-              {(() => {
-                const compStats = companyTelemetry?.companies || [];
-                const totalCalls = companyTelemetry?.summary?.total_api_calls || compStats.reduce((acc, c) => acc + c.total_api_calls, 0) || companies.reduce((acc, c) => acc + (c.verifiedCountThisMonth * 6), 0);
-                const totalCost = companyTelemetry?.summary?.total_upstream_cost || compStats.reduce((acc, c) => acc + c.upstream_cost, 0) || (totalCalls * 4.0);
-                const totalRev = companyTelemetry?.summary?.total_billed_revenue || compStats.reduce((acc, c) => acc + c.billed_revenue, 0) || companies.reduce((acc, c) => acc + (c.verifiedCountThisMonth * c.pricePerVerification), 0);
-                const grossProfit = totalRev - totalCost;
-                const margin = totalRev > 0 ? ((grossProfit / totalRev) * 100).toFixed(1) : '80.0';
-
-                return (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
-                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Total API Calls ({telemetryTimeRange.toUpperCase()})</span>
-                      <strong className="text-base sm:text-lg font-black text-indigo-900 mt-0.5 block font-mono">{totalCalls.toLocaleString()} calls</strong>
-                      <span className="text-[10px] text-slate-500 font-medium">Across {companies.length} client accounts</span>
-                    </div>
-
-                    <div className="p-3.5 bg-rose-50/70 rounded-2xl border border-rose-200">
-                      <span className="text-[10px] text-rose-700 font-bold uppercase block">Upstream Gateway Cost</span>
-                      <strong className="text-base sm:text-lg font-black text-rose-900 mt-0.5 block font-mono">₹{totalCost.toFixed(2)}</strong>
-                      <span className="text-[10px] text-rose-700 font-medium">@ ₹4.00 avg / API call</span>
-                    </div>
-
-                    <div className="p-3.5 bg-emerald-50/70 rounded-2xl border border-emerald-200">
-                      <span className="text-[10px] text-emerald-700 font-bold uppercase block">Billed Client Tariff</span>
-                      <strong className="text-base sm:text-lg font-black text-emerald-900 mt-0.5 block font-mono">₹{totalRev.toFixed(2)}</strong>
-                      <span className="text-[10px] text-emerald-700 font-bold">Gross Invoiced Revenue</span>
-                    </div>
-
-                    <div className="p-3.5 bg-purple-50/70 rounded-2xl border border-purple-200">
-                      <span className="text-[10px] text-purple-700 font-bold uppercase block">Net Margin & SLA</span>
-                      <strong className="text-base sm:text-lg font-black text-purple-900 mt-0.5 block font-mono">+{margin}% Profit</strong>
-                      <span className="text-[10px] text-purple-700 font-bold">58 ms avg gateway latency</span>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Calculations Table */}
-              <div className="border border-slate-200 rounded-2xl overflow-x-auto no-scrollbar shadow-xs bg-white">
-                <table className="w-full text-left text-xs border-collapse min-w-[850px]">
-                  <thead className="bg-slate-50 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider font-mono">
-                    <tr>
-                      <th className="p-3.5">Enterprise Client</th>
-                      <th className="p-3.5 text-center">Enrolled / Verified</th>
-                      <th className="p-3.5 text-center">Total API Calls</th>
-                      <th className="p-3.5">Document Call Distribution</th>
-                      <th className="p-3.5 text-right">Upstream Cost</th>
-                      <th className="p-3.5 text-right">Billed Revenue</th>
-                      <th className="p-3.5 text-center">Gross Margin</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {(() => {
-                      const telemetryList = companyTelemetry?.companies || [];
-                      
-                      return companies.map((comp) => {
-                        const tel = telemetryList.find(t => t.company_id === comp.id);
-                        const totalCalls = tel?.total_api_calls || (comp.verifiedCountThisMonth * 6) || 18;
-                        const upstreamCost = tel?.upstream_cost || (totalCalls * 4.00);
-                        const verifiedVol = tel?.verified_candidates ?? comp.verifiedCountThisMonth ?? 0;
-                        const billedRevenue = tel?.billed_revenue || (verifiedVol * (comp.pricePerVerification || 120));
-                        const grossProfit = billedRevenue - upstreamCost;
-                        const marginPct = billedRevenue > 0 ? ((grossProfit / billedRevenue) * 100).toFixed(1) : '80.0';
-                        const docs = tel?.doc_breakdown || {
-                          aadhaar: Math.round(totalCalls * 0.28),
-                          pan: Math.round(totalCalls * 0.18),
-                          bankCheck: Math.round(totalCalls * 0.18),
-                          drivingLicense: Math.round(totalCalls * 0.12),
-                          uan: Math.round(totalCalls * 0.16)
-                        };
-
-                        return (
-                          <tr key={comp.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="p-3.5">
-                              <strong className="text-slate-900 font-black text-xs block">{comp.name}</strong>
-                              <span className="text-[10px] text-slate-500 font-mono">Code: {comp.code} • Plan: {comp.plan}</span>
-                            </td>
-                            <td className="p-3.5 text-center font-mono">
-                              <span className="font-bold text-slate-800">{verifiedVol}</span>
-                              <span className="text-slate-400 text-[10px] block">checks</span>
-                            </td>
-                            <td className="p-3.5 text-center font-mono">
-                              <span className="font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200 text-[11px]">
-                                {totalCalls} calls
-                              </span>
-                            </td>
-                            <td className="p-3.5">
-                              <div className="flex items-center gap-1 flex-wrap text-[9px] font-mono">
-                                <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold" title="Aadhaar UIDAI Calls">
-                                  UIDAI: {docs.aadhaar || 0}
-                                </span>
-                                <span className="px-1.5 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200 font-bold" title="NSDL PAN Calls">
-                                  PAN: {docs.pan || 0}
-                                </span>
-                                <span className="px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-bold" title="NPCI Bank Drop Calls">
-                                  IMPS: {docs.bankCheck || 0}
-                                </span>
-                                <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold" title="MoRTH DL Calls">
-                                  DL: {docs.drivingLicense || 0}
-                                </span>
-                                <span className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold" title="EPFO UAN Calls">
-                                  EPFO: {docs.uan || 0}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="p-3.5 text-right font-mono font-bold text-rose-700">
-                              ₹{upstreamCost.toFixed(2)}
-                            </td>
-                            <td className="p-3.5 text-right font-mono font-black text-emerald-700">
-                              ₹{billedRevenue.toFixed(2)}
-                            </td>
-                            <td className="p-3.5 text-center">
-                              <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-black text-[11px] shadow-2xs">
-                                +{marginPct}%
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      });
-                    })()}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            {/* FULL-SPECTRUM API USAGE & TELEMETRY STATISTICS CONSOLE (5 PERSPECTIVES) */}
+            <ApiConsumptionMarginConsole />
 
 
             {/* 👤 GRANULAR EMPLOYEE / CANDIDATE-LEVEL API CONSUMPTION & DOCUMENT LEDGER */}

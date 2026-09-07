@@ -403,6 +403,227 @@ def execute_api_gateway_test(payload: GatewayTestEndpointPayload, db: Session = 
     return result
 
 
+@router.post("/api-gateway/test-connection")
+def test_api_gateway_connection(db: Session = Depends(get_db)):
+    """Tests live connection to the active configured API gateway and validates base URL and API key"""
+    import time
+    from backend.app.services.live_verification_service import get_active_provider_info, _call_neev_api
+    provider = get_active_provider_info(db)
+    
+    ok, res, latency_ms, err_msg = _call_neev_api(
+        endpoint_slug="/mobile360",
+        payload_data={"mobile_number": "9942817491"},
+        provider_info=provider,
+        timeout_sec=10
+    )
+    
+    return {
+        "success": ok,
+        "provider_name": provider.get("name"),
+        "endpoint_url": provider.get("endpoint_url"),
+        "api_key_configured": bool(provider.get("api_key")),
+        "api_key_masked": f"{provider.get('api_key')[:6]}...{provider.get('api_key')[-4:]}" if provider.get("api_key") and len(provider.get("api_key")) > 10 else "Not set",
+        "latency_ms": latency_ms,
+        "http_ok": ok,
+        "error_message": err_msg,
+        "gateway_response": res or {"detail": err_msg or "Connected to endpoint"}
+    }
+
+
+@router.get("/api-analytics/statistics")
+def get_api_analytics_statistics(
+    timeframe: Optional[str] = "all",
+    db: Session = Depends(get_db)
+):
+    """
+    Computes comprehensive, real-time API call statistics across 5 distinct operational perspectives:
+    1. Universal Overview & Financial Ledger (Total calls, Success rate, Latency, Cost)
+    2. Document / 11 Category Breakdown (Mobile 360, PAN, Aadhaar, Bank, DL, EPFO, Court, Passport, Voter, Vehicle, Corporate)
+    3. Initiator Role Perspective (SuperAdmin Sandbox, HR BGV, Candidate Magic Link, Company Admin)
+    4. Client Company Volume Breakdown
+    5. Top Consumed Endpoints & Live Activity Stream
+    """
+    from backend.app.models.api_call_log import ApiCallLog
+    now = datetime.utcnow()
+    query = db.query(ApiCallLog)
+
+    if timeframe == "today":
+        start_date = datetime(now.year, now.month, now.day)
+        query = query.filter(ApiCallLog.timestamp >= start_date)
+    elif timeframe == "7d":
+        start_date = now - timedelta(days=7)
+        query = query.filter(ApiCallLog.timestamp >= start_date)
+    elif timeframe == "30d" or timeframe == "thisMonth":
+        start_date = datetime(now.year, now.month, 1)
+        query = query.filter(ApiCallLog.timestamp >= start_date)
+
+    all_logs = query.order_by(ApiCallLog.timestamp.desc()).all()
+    total_calls = len(all_logs)
+
+    # 1. Summary Overview
+    success_calls = sum(1 for l in all_logs if l.status == "SUCCESS" or (l.http_status and l.http_status < 400))
+    failed_calls = total_calls - success_calls
+    success_rate = round((success_calls / total_calls * 100.0), 1) if total_calls > 0 else 100.0
+    avg_latency = round(sum(l.latency_ms or 50 for l in all_logs) / total_calls) if total_calls > 0 else 55
+    total_cost = round(sum(l.cost_incurred or 4.0 for l in all_logs), 2)
+    
+    today_start = datetime(now.year, now.month, now.day)
+    today_calls = sum(1 for l in all_logs if l.timestamp >= today_start)
+    month_start = datetime(now.year, now.month, 1)
+    month_calls = sum(1 for l in all_logs if l.timestamp >= month_start)
+
+    # 2. Category Breakdown (11 Modules)
+    all_categories = [
+        "Mobile Number Checks", "PAN Card Checks", "Aadhaar UIDAI Checks",
+        "Bank & UPI Penny Drop", "Driving License (MoRTH)", "EPFO UAN & Dual Employment",
+        "Court & Criminal Records", "Passport Verification", "Voter ID (ECI)",
+        "Vehicle RC & Challan", "Corporate MCA & GSTIN"
+    ]
+    category_counts = {}
+    for cat in all_categories:
+        category_counts[cat] = {"category": cat, "total": 0, "success": 0, "failed": 0, "total_latency": 0, "cost": 0.0}
+
+    for l in all_logs:
+        c = l.category if l.category in category_counts else "Identity & General KYC"
+        if c not in category_counts:
+            category_counts[c] = {"category": c, "total": 0, "success": 0, "failed": 0, "total_latency": 0, "cost": 0.0}
+        category_counts[c]["total"] += 1
+        if l.status == "SUCCESS" or (l.http_status and l.http_status < 400):
+            category_counts[c]["success"] += 1
+        else:
+            category_counts[c]["failed"] += 1
+        category_counts[c]["total_latency"] += (l.latency_ms or 50)
+        category_counts[c]["cost"] += (l.cost_incurred or 4.0)
+
+    category_stats = []
+    for cat, data in category_counts.items():
+        t = data["total"]
+        category_stats.append({
+            "category": cat,
+            "total_calls": t,
+            "success_calls": data["success"],
+            "failed_calls": data["failed"],
+            "success_rate": round((data["success"] / t * 100.0), 1) if t > 0 else 100.0,
+            "avg_latency_ms": round(data["total_latency"] / t) if t > 0 else 55,
+            "cost": round(data["cost"], 2),
+            "percentage": round((t / total_calls * 100.0), 1) if total_calls > 0 else 0.0
+        })
+    category_stats.sort(key=lambda x: x["total_calls"], reverse=True)
+
+    # 3. Role / Initiator Perspective
+    role_labels = {
+        "superadmin": "SuperAdmin Live Testing & Sandbox",
+        "hr": "HR Executive Candidate BGV",
+        "company": "Company Admin Onboarding",
+        "candidate": "Candidate Self-Verification Magic Links",
+        "system": "Automated Batch & Webhooks"
+    }
+    role_counts = {}
+    for l in all_logs:
+        r = (l.initiator_role or "superadmin").lower()
+        if r not in role_counts:
+            role_counts[r] = {"role": r, "label": role_labels.get(r, r.capitalize()), "total": 0, "success": 0, "cost": 0.0}
+        role_counts[r]["total"] += 1
+        if l.status == "SUCCESS" or (l.http_status and l.http_status < 400):
+            role_counts[r]["success"] += 1
+        role_counts[r]["cost"] += (l.cost_incurred or 4.0)
+
+    role_stats = []
+    for r, data in role_counts.items():
+        t = data["total"]
+        role_stats.append({
+            "role": r,
+            "label": data["label"],
+            "total_calls": t,
+            "success_calls": data["success"],
+            "cost": round(data["cost"], 2),
+            "percentage": round((t / total_calls * 100.0), 1) if total_calls > 0 else 0.0
+        })
+    role_stats.sort(key=lambda x: x["total_calls"], reverse=True)
+
+    # 4. Client Company Volume Breakdown
+    company_counts = {}
+    for l in all_logs:
+        cid = l.company_id or "Direct / SuperAdmin"
+        if cid not in company_counts:
+            company_counts[cid] = {"company_id": cid, "total": 0, "cost": 0.0}
+        company_counts[cid]["total"] += 1
+        company_counts[cid]["cost"] += (l.cost_incurred or 4.0)
+
+    company_stats = []
+    for cid, data in company_counts.items():
+        company_stats.append({
+            "company_id": cid,
+            "total_calls": data["total"],
+            "cost": round(data["cost"], 2),
+            "percentage": round((data["total"] / total_calls * 100.0), 1) if total_calls > 0 else 0.0
+        })
+    company_stats.sort(key=lambda x: x["total_calls"], reverse=True)
+
+    # 5. Top Endpoints
+    endpoint_counts = {}
+    for l in all_logs:
+        ep = l.endpoint_slug
+        if ep not in endpoint_counts:
+            endpoint_counts[ep] = {"endpoint_slug": ep, "category": l.category, "total": 0, "success": 0, "total_latency": 0}
+        endpoint_counts[ep]["total"] += 1
+        if l.status == "SUCCESS" or (l.http_status and l.http_status < 400):
+            endpoint_counts[ep]["success"] += 1
+        endpoint_counts[ep]["total_latency"] += (l.latency_ms or 50)
+
+    top_endpoints = []
+    for ep, data in endpoint_counts.items():
+        t = data["total"]
+        top_endpoints.append({
+            "endpoint_slug": ep,
+            "category": data["category"],
+            "total_calls": t,
+            "success_rate": round((data["success"] / t * 100.0), 1) if t > 0 else 100.0,
+            "avg_latency_ms": round(data["total_latency"] / t) if t > 0 else 55
+        })
+    top_endpoints.sort(key=lambda x: x["total_calls"], reverse=True)
+    top_endpoints = top_endpoints[:10]
+
+    # 6. Recent Live Activity Ledger (Latest 25 calls)
+    recent_stream = [
+        {
+            "id": l.id,
+            "endpoint_slug": l.endpoint_slug,
+            "category": l.category,
+            "initiator_role": l.initiator_role,
+            "initiator_id": l.initiator_id,
+            "status": l.status,
+            "http_status": l.http_status,
+            "latency_ms": l.latency_ms,
+            "cost_incurred": l.cost_incurred,
+            "input_identifier": l.input_identifier,
+            "error_message": l.error_message,
+            "timestamp": l.timestamp.isoformat() if l.timestamp else None
+        }
+        for l in all_logs[:25]
+    ]
+
+    return {
+        "success": True,
+        "timeframe": timeframe,
+        "summary": {
+            "total_calls": total_calls,
+            "success_calls": success_calls,
+            "failed_calls": failed_calls,
+            "success_rate": success_rate,
+            "avg_latency_ms": avg_latency,
+            "total_cost": total_cost,
+            "today_calls": today_calls,
+            "month_calls": month_calls
+        },
+        "by_category": category_stats,
+        "by_role": role_stats,
+        "by_company": company_stats,
+        "top_endpoints": top_endpoints,
+        "recent_stream": recent_stream
+    }
+
+
 @router.get("/logs", response_model=List[SystemErrorLogResponse])
 def get_system_logs(
     timeframe: Optional[str] = "all",

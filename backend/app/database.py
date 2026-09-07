@@ -134,7 +134,8 @@ def apply_runtime_migrations(target_engine):
         "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;",
         "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);",
         "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';",
-        "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"
+        "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
+        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}', response_summary JSON DEFAULT '{}', error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
     ]
     for stmt in migrations:
         try:

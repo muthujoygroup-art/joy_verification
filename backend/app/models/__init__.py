@@ -12,6 +12,7 @@ from backend.app.models.ticket import SupportTicket, TicketReply
 from backend.app.models.system import SystemErrorLog, SystemSetting, PlatformGuideline, CommunicationGateway
 from backend.app.models.inquiry import LeadInquiry
 from backend.app.models.review import ClientReview
+from backend.app.models.api_call_log import ApiCallLog
 from backend.app.models.blog import BlogPost
 
 __all__ = [
@@ -22,6 +23,7 @@ __all__ = [
     "Candidate",
     "CandidateDocument",
     "VerificationRecord",
+    "ApiCallLog",
     "ActiveSession",
     "AuditTrailLog",
     "ApiConfiguration",
