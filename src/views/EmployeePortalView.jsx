@@ -665,10 +665,10 @@ export const EmployeePortalView = () => {
       )}
       
       {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR */}
-      <div className="p-3.5 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-md border border-slate-800">
+      <div className="p-3.5 bg-amber-50/90 text-slate-900 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs border border-amber-200">
         <div className="flex items-center gap-2">
-          <span className="text-amber-400 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4" />
+          <span className="text-amber-800 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-amber-600" />
             <span>Switch Candidate Scenario:</span>
           </span>
         </div>
@@ -682,15 +682,15 @@ export const EmployeePortalView = () => {
                 onClick={() => setSelectedCandidateToken(c.token)}
                 className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 cursor-pointer ${
                   isSelected 
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white ring-2 ring-indigo-400 shadow-sm scale-102'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
+                    ? 'bg-amber-600 text-white ring-2 ring-amber-400 shadow-sm scale-102'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200 shadow-2xs'
                 }`}
               >
                 <span>{c.name}</span>
                 <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
-                  c.status === 'Submitted - Pending HR Review' ? 'bg-amber-400 text-amber-950 animate-pulse' :
-                  c.status === 'Corrections Requested' ? 'bg-rose-400 text-rose-950' :
-                  c.status === 'Verified' ? 'bg-emerald-400 text-emerald-950' : 'bg-slate-600 text-white'
+                  c.status === 'Submitted - Pending HR Review' ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse' :
+                  c.status === 'Corrections Requested' ? 'bg-rose-100 text-rose-900 border border-rose-300' :
+                  c.status === 'Verified' ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
                 }`}>
                   {c.status === 'Submitted - Pending HR Review' ? 'Pending HR Review' : c.status}
                 </span>

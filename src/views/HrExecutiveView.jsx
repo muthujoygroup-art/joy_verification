@@ -1744,11 +1744,11 @@ export const HrExecutiveView = () => {
           </div>
 
           {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-950 text-white shadow-2xl border-2 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
               
-              <span className="text-[11px] font-black text-slate-950 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-emerald-400 shadow-md shrink-0">
+              <span className="text-[11px] font-black text-emerald-900 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-emerald-100 border border-emerald-200 shadow-2xs shrink-0">
                 SUB-SECTIONS:
               </span>
 
@@ -1758,7 +1758,7 @@ export const HrExecutiveView = () => {
                   <button
                     onClick={() => { setActiveMainSection('pipeline_dossiers'); setActiveTab('pipeline'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Smartphone className="w-3.5 h-3.5" />
@@ -1773,7 +1773,7 @@ export const HrExecutiveView = () => {
                   <button
                     onClick={() => { setActiveMainSection('profiler_dispatch'); setActiveTab('profiler'); setShowAddForm(true); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
@@ -1788,7 +1788,7 @@ export const HrExecutiveView = () => {
                   <button
                     onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('analytics'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
@@ -1797,7 +1797,7 @@ export const HrExecutiveView = () => {
                   <button
                     onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('settings'); setShowAddForm(false); }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Settings className="w-3.5 h-3.5" />
@@ -1816,9 +1816,9 @@ export const HrExecutiveView = () => {
                 setActiveTab('profiler');
                 setShowAddForm(true);
               }}
-              className="px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md"
+              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
             >
-              <UserPlus className="w-3.5 h-3.5 text-slate-950" />
+              <UserPlus className="w-3.5 h-3.5 text-white" />
               <span>+ New Profile</span>
             </button>
 

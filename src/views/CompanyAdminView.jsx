@@ -658,11 +658,11 @@ export const CompanyAdminView = () => {
           </div>
 
           {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-950 text-white shadow-2xl border-2 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
               
-              <span className="text-[11px] font-black text-slate-950 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-cyan-400 shadow-md shrink-0">
+              <span className="text-[11px] font-black text-sky-900 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-sky-100 border border-sky-200 shadow-2xs shrink-0">
                 SUB-SECTIONS:
               </span>
 
@@ -672,7 +672,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('registry')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
@@ -681,7 +681,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('telemetry')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
@@ -696,7 +696,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('hrteam')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Users className="w-3.5 h-3.5" />
@@ -705,7 +705,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('hr_permissions')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
@@ -720,7 +720,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('profile_details')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
@@ -729,7 +729,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('dochub')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <FolderDown className="w-3.5 h-3.5" />
@@ -744,7 +744,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('billing_wallet')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <CreditCard className="w-3.5 h-3.5" />
@@ -753,7 +753,7 @@ export const CompanyAdminView = () => {
                   <button
                     onClick={() => setActiveTab('settings')}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 border border-slate-800'
+                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <Mail className="w-3.5 h-3.5" />
@@ -768,7 +768,7 @@ export const CompanyAdminView = () => {
             <button
               type="button"
               onClick={() => setShowRazorpayModal(true)}
-              className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md"
+              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span>Recharge ⚡</span>
