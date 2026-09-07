@@ -411,6 +411,55 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     }
 
 
+@router.put("/candidates/{candidate_id}", response_model=CandidateResponse)
+def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Session = Depends(get_db)):
+    """
+    Updates an existing candidate/employee profile particulars including name, contact,
+    IDs, statutory forms data, verification configs, and security passcode.
+    """
+    cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    if payload.name is not None: cand.name = payload.name
+    if payload.emp_id is not None: cand.emp_id = payload.emp_id
+    if payload.employee_number is not None: cand.employee_number = payload.employee_number
+    if payload.email is not None: cand.email = payload.email
+    if payload.mobile is not None: cand.mobile = payload.mobile
+    if payload.aadhaar_no is not None: cand.aadhaar_no = payload.aadhaar_no
+    if payload.designation is not None: cand.designation = payload.designation
+    if payload.dept is not None: cand.dept = payload.dept
+    if payload.employee_type is not None: cand.employee_type = payload.employee_type
+    if payload.dob is not None: cand.dob = payload.dob
+    if payload.doj is not None: cand.doj = payload.doj
+    if payload.age is not None: cand.age = payload.age
+    if payload.gender is not None: cand.gender = payload.gender
+    if payload.marital_status is not None: cand.marital_status = payload.marital_status
+    if payload.mother_tongue is not None: cand.mother_tongue = payload.mother_tongue
+    if payload.languages_known is not None: cand.languages_known = payload.languages_known
+    if payload.pf_number is not None: cand.pf_number = payload.pf_number
+    if payload.esi_number is not None: cand.esi_number = payload.esi_number
+    if payload.religion is not None: cand.religion = payload.religion
+    if payload.caste is not None: cand.caste = payload.caste
+    if payload.category is not None: cand.category = payload.category
+    if payload.native_state is not None: cand.native_state = payload.native_state
+    if payload.native_district is not None: cand.native_district = payload.native_district
+    if payload.identification_marks is not None: cand.identification_marks = payload.identification_marks
+    if payload.status is not None: cand.status = payload.status
+    if payload.portal_password is not None: cand.portal_password = payload.portal_password
+    if payload.verification_config is not None: cand.verification_config = payload.verification_config
+    if payload.verifications_completed is not None: cand.verifications_completed = payload.verifications_completed
+    if payload.face_images is not None: cand.face_images = payload.face_images
+    if payload.manual_checks is not None: cand.manual_checks = payload.manual_checks
+    if payload.joining_form_data is not None: cand.joining_form_data = payload.joining_form_data
+    if payload.custom_fields is not None: cand.custom_fields = payload.custom_fields
+    if payload.specimen_signature is not None: cand.specimen_signature = payload.specimen_signature
+
+    db.commit()
+    db.refresh(cand)
+    return cand
+
+
 @router.put("/candidates/{candidate_id}/status")
 def toggle_candidate_status(candidate_id: str, payload: dict, db: Session = Depends(get_db)):
     """Set candidate verification status: 'Verified' | 'Link Sent' | 'In Verification' | 'Inactive' | 'Discontinued' | 'Withdrawn'"""

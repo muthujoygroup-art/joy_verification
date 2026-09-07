@@ -21,7 +21,8 @@ import {
   RefreshCw,
   UserCheck,
   Building2,
-  Share2
+  Share2,
+  FileEdit
 } from 'lucide-react';
 
 export const QrCodeModal = ({ 
@@ -30,7 +31,8 @@ export const QrCodeModal = ({
   onCopyLink, 
   isCopied, 
   activeHr, 
-  hrPreferences 
+  hrPreferences,
+  onEditProfile
 }) => {
   const { companies, showToast, updateCandidatePassword } = useApp();
   const [copiedInternal, setCopiedInternal] = useState(false);
@@ -451,15 +453,29 @@ export const QrCodeModal = ({
         </div>
 
         {/* Sticky Fixed Footer */}
-        <div className="p-3 sm:p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={handleOpenMailClient}
-            className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-slate-600"
-          >
-            <Mail className="w-3.5 h-3.5" />
-            <span>Open Email Client</span>
-          </button>
+        <div className="p-3 sm:p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleOpenMailClient}
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-slate-600"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Open Email Client</span>
+            </button>
+
+            {onEditProfile && (
+              <button
+                type="button"
+                onClick={() => onEditProfile(candidate)}
+                className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 font-bold shadow-2xs cursor-pointer"
+                title="Edit this employee profile information directly"
+              >
+                <FileEdit className="w-3.5 h-3.5 text-amber-600" />
+                <span>Edit Profile ✏️</span>
+              </button>
+            )}
+          </div>
           
           <button
             type="button"

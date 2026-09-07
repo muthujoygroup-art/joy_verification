@@ -1274,6 +1274,110 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Update Candidate / Employee Profile Particulars (Persists to PostgreSQL)
+  const updateCandidate = async (candidateIdOrToken, updatedData) => {
+    const candidatePin = updatedData.portalPassword || updatedData.securityPin || '1234';
+    try {
+      const updated = await api.updateCandidate(candidateIdOrToken, {
+        name: updatedData.name,
+        emp_id: updatedData.empId,
+        employee_number: updatedData.employeeNumber || updatedData.empId,
+        email: updatedData.email,
+        mobile: updatedData.mobile,
+        aadhaar_no: updatedData.aadhaarNo,
+        designation: updatedData.designation,
+        dept: updatedData.dept,
+        employee_type: updatedData.employeeCategory || updatedData.employeeType || 'it_tech',
+        dob: updatedData.dob,
+        doj: updatedData.doj,
+        age: parseInt(updatedData.age) || null,
+        gender: updatedData.gender,
+        marital_status: updatedData.maritalStatus,
+        mother_tongue: updatedData.motherTongue,
+        languages_known: updatedData.languagesKnown,
+        pf_number: updatedData.pfNumber || updatedData.uanEpf,
+        esi_number: updatedData.esiNumber || updatedData.esicNo,
+        religion: updatedData.religion,
+        caste: updatedData.caste,
+        category: updatedData.category,
+        native_state: updatedData.nativeState,
+        native_district: updatedData.nativeDistrict,
+        identification_marks: updatedData.identificationMarks,
+        portal_password: candidatePin,
+        verification_config: updatedData.verificationConfig,
+        manual_checks: updatedData.manualChecks,
+        joining_form_data: updatedData.joiningFormData || updatedData,
+        custom_fields: updatedData.customFields || updatedData.custom_fields || {},
+        face_images: updatedData.faceImages || (updatedData.photo ? { straight: updatedData.photo, left: updatedData.photo, right: updatedData.photo } : undefined),
+        status: updatedData.status
+      });
+
+      setCandidates(prev => {
+        const nextList = prev.map(c => {
+          if (c.id === candidateIdOrToken || c.token === candidateIdOrToken) {
+            return {
+              ...c,
+              ...updatedData,
+              id: updated.id || c.id,
+              token: updated.token || c.token,
+              name: updated.name || updatedData.name,
+              empId: updated.emp_id || updatedData.empId,
+              employeeNumber: updated.employee_number || updatedData.employeeNumber || updatedData.empId,
+              email: updated.email || updatedData.email,
+              mobile: updated.mobile || updatedData.mobile,
+              aadhaarNo: updated.aadhaar_no || updatedData.aadhaarNo,
+              designation: updated.designation || updatedData.designation,
+              dept: updated.dept || updatedData.dept,
+              employeeType: updated.employee_type || updatedData.employeeType,
+              dob: updated.dob || updatedData.dob,
+              doj: updated.doj || updatedData.doj,
+              age: updated.age || updatedData.age,
+              gender: updated.gender || updatedData.gender,
+              maritalStatus: updated.marital_status || updatedData.maritalStatus,
+              motherTongue: updated.mother_tongue || updatedData.motherTongue,
+              languagesKnown: updated.languages_known || updatedData.languagesKnown,
+              pfNumber: updated.pf_number || updatedData.pfNumber,
+              esiNumber: updated.esi_number || updatedData.esiNumber,
+              portalPassword: updated.portal_password || candidatePin,
+              verificationConfig: updated.verification_config || updatedData.verificationConfig,
+              joiningFormData: updated.joining_form_data || updatedData.joiningFormData || updatedData,
+              customFields: updated.custom_fields || updatedData.customFields,
+              documents: updatedData.documents || updatedData.uploadedDocumentsList || c.documents || []
+            };
+          }
+          return c;
+        });
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
+
+      showToast(`✅ Profile for ${updatedData.name || 'employee'} updated successfully!`);
+      return updated;
+    } catch (err) {
+      console.warn('Backend updateCandidate sync failed, applying locally:', err);
+      setCandidates(prev => {
+        const nextList = prev.map(c => {
+          if (c.id === candidateIdOrToken || c.token === candidateIdOrToken) {
+            return {
+              ...c,
+              ...updatedData,
+              portalPassword: candidatePin
+            };
+          }
+          return c;
+        });
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
+      showToast(`✅ Profile for ${updatedData.name || 'employee'} updated!`);
+      return { id: candidateIdOrToken, ...updatedData };
+    }
+  };
+
 
 
   // Toggle Candidate Status between Active (Pending/Verified) and Inactive
@@ -2417,6 +2521,7 @@ export const AppProvider = ({ children }) => {
       candidates,
       setCandidates,
       addCandidate,
+      updateCandidate,
       deleteCandidate,
       toggleCandidateStatus,
       clearAllCandidates,

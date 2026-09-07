@@ -228,6 +228,7 @@ export const HrExecutiveView = () => {
     candidates, 
     setCandidates,
     addCandidate, 
+    updateCandidate,
     deleteCandidate,
     toggleCandidateStatus,
     clearAllCandidates,
@@ -249,8 +250,8 @@ export const HrExecutiveView = () => {
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
 
-
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingCandidate, setEditingCandidate] = useState(null);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
@@ -1304,10 +1305,156 @@ export const HrExecutiveView = () => {
     });
   };
 
+  const handleStartEditCandidate = (cand) => {
+    if (!cand) return;
+    setEditingCandidate(cand);
+
+    // Convert custom_fields map/object into array if necessary
+    let customFieldsArray = [];
+    const sourceCustom = cand.customFields || cand.custom_fields || cand.joiningFormData?.customFields;
+    if (Array.isArray(sourceCustom)) {
+      customFieldsArray = sourceCustom;
+    } else if (sourceCustom && typeof sourceCustom === 'object') {
+      customFieldsArray = Object.entries(sourceCustom).map(([k, v]) => ({
+        id: k,
+        key: k,
+        label: (typeof v === 'object' && v?.label) ? v.label : k,
+        type: (typeof v === 'object' && v?.type) ? v.type : 'text',
+        required: (typeof v === 'object' && v?.required !== undefined) ? v.required : false,
+        value: (typeof v === 'object' && v?.value !== undefined) ? v.value : (typeof v === 'string' ? v : '')
+      }));
+    }
+
+    // Convert uploaded documents to map
+    let uploadedDocsMap = {};
+    const sourceDocs = cand.uploadedDocuments || cand.uploadedDocumentsList || cand.documents || cand.joiningFormData?.uploadedDocuments;
+    if (Array.isArray(sourceDocs)) {
+      sourceDocs.forEach(d => {
+        if (d && (d.doc_type || d.type || d.id || d.title)) {
+          const k = d.doc_type || d.type || d.id || d.title;
+          uploadedDocsMap[k] = d;
+        }
+      });
+    } else if (sourceDocs && typeof sourceDocs === 'object') {
+      uploadedDocsMap = sourceDocs;
+    }
+
+    const jf = cand.joiningFormData || {};
+
+    setFormData({
+      ...getDefaultFormData(activeHr, currentCompany),
+      ...jf,
+      name: cand.name || jf.name || '',
+      empId: cand.empId || cand.employeeNumber || jf.empId || '',
+      employeeNumber: cand.employeeNumber || cand.empId || jf.employeeNumber || '',
+      dob: cand.dob || jf.dob || '',
+      age: cand.age || jf.age || '',
+      doj: cand.doj || jf.doj || '',
+      motherTongue: cand.motherTongue || jf.motherTongue || '',
+      religion: cand.religion || jf.religion || '',
+      caste: cand.caste || jf.caste || '',
+      category: cand.category || jf.category || '',
+      nativeState: cand.nativeState || jf.nativeState || '',
+      nativeDistrict: cand.nativeDistrict || jf.nativeDistrict || '',
+      identificationMarks: cand.identificationMarks || jf.identificationMarks || '',
+      pfNumber: cand.pfNumber || cand.uanEpf || jf.pfNumber || jf.uanEpf || '',
+      esiNumber: cand.esiNumber || cand.esicNo || jf.esiNumber || jf.esicNo || '',
+      email: cand.email || jf.email || '',
+      mobile: cand.mobile || jf.mobile || '',
+      alternateMobile: cand.alternateMobile || jf.alternateMobile || '',
+      aadhaarNo: cand.aadhaarNo || jf.aadhaarNo || '',
+      portalPassword: cand.portalPassword || jf.portalPassword || '1234',
+      status: cand.status || 'Active',
+      designation: cand.designation || jf.designation || '',
+      dept: cand.dept || jf.dept || '',
+      fatherName: cand.fatherName || jf.fatherName || '',
+      motherName: cand.motherName || jf.motherName || '',
+      spouseName: cand.spouseName || jf.spouseName || '',
+      gender: cand.gender || jf.gender || 'Male',
+      bloodGroup: cand.bloodGroup || jf.bloodGroup || '',
+      maritalStatus: cand.maritalStatus || jf.maritalStatus || 'Single',
+      nationality: cand.nationality || jf.nationality || 'Indian',
+      languagesKnown: cand.languagesKnown || jf.languagesKnown || '',
+      selfInterests: cand.selfInterests || jf.selfInterests || '',
+      state: cand.state || jf.state || '',
+      city: cand.city || jf.city || '',
+      area: cand.area || jf.area || '',
+      pincode: cand.pincode || jf.pincode || '',
+      presentAddress: cand.presentAddress || jf.presentAddress || '',
+      permanentAddress: cand.permanentAddress || jf.permanentAddress || '',
+      emergencyContactName: cand.emergencyContactName || jf.emergencyContactName || '',
+      emergencyContactPhone: cand.emergencyContactPhone || jf.emergencyContactPhone || '',
+      qualificationCategory: cand.qualificationCategory || jf.qualificationCategory || '',
+      highestQualification: cand.highestQualification || jf.highestQualification || '',
+      primarySkill: cand.primarySkill || jf.primarySkill || '',
+      college: cand.college || jf.college || '',
+      university: cand.university || jf.university || '',
+      passingYear: cand.passingYear || jf.passingYear || '',
+      percentage: cand.percentage || jf.percentage || '',
+      jobCategory: cand.jobCategory || jf.jobCategory || '',
+      jobType: cand.jobType || jf.jobType || 'Full Time Permanent',
+      workLocation: cand.workLocation || jf.workLocation || '',
+      previousEmployer: cand.previousEmployer || jf.previousEmployer || '',
+      experienceYears: cand.experienceYears || jf.experienceYears || '',
+      panNo: cand.panNo || cand.panNumber || jf.panNo || '',
+      drivingLicense: cand.drivingLicense || jf.drivingLicense || '',
+      passportNo: cand.passportNo || jf.passportNo || '',
+      voterId: cand.voterId || jf.voterId || '',
+      uanEpf: cand.uanEpf || cand.pfNumber || jf.uanEpf || '',
+      esicNo: cand.esicNo || cand.esiNumber || jf.esicNo || '',
+      bankName: cand.bankName || jf.bankName || '',
+      bankAccountNo: cand.bankAccountNo || jf.bankAccountNo || '',
+      ifscCode: cand.ifscCode || jf.ifscCode || '',
+      nomineeName: cand.nomineeName || jf.nomineeName || '',
+      nomineeRelation: cand.nomineeRelation || jf.nomineeRelation || '',
+      companyId: cand.companyId || currentCompany?.id || 'comp-joy',
+      hrId: cand.hrId || activeHr?.id || 'hr-1',
+      employeeCategory: cand.employeeType || cand.employeeCategory || jf.employeeCategory || 'it_tech',
+      hrCustomMessage: cand.hrCustomMessage || jf.hrCustomMessage || '',
+      linkedInUrl: cand.linkedInUrl || jf.linkedInUrl || '',
+      githubUrl: cand.githubUrl || jf.githubUrl || '',
+      portfolioUrl: cand.portfolioUrl || jf.portfolioUrl || '',
+      twitterUrl: cand.twitterUrl || jf.twitterUrl || '',
+      educationList: Array.isArray(cand.educationList) ? cand.educationList : (Array.isArray(jf.educationList) ? jf.educationList : []),
+      experienceList: Array.isArray(cand.experienceList) ? cand.experienceList : (Array.isArray(jf.experienceList) ? jf.experienceList : []),
+      industrySpecialization: cand.industrySpecialization || jf.industrySpecialization || {},
+      statutoryFormsConfig: cand.statutoryFormsConfig || jf.statutoryFormsConfig || {
+        form11: true, form2: true, esicForm1: true, form16: true, formF: true, nda: true, posh: true, nonCompete: true, contractFormXIII: false
+      },
+      requiredDocumentsConfig: cand.requiredDocumentsConfig || jf.requiredDocumentsConfig || {
+        aadhaarCard: true, panCard: true, passport: false, drivingLicense: false, bankProof: true, degreeMarksheet: true, relievingLetter: false, salarySlips: false, signedNda: false
+      },
+      verificationConfig: cand.verificationConfig || {
+        aadhaar: true, pan: false, bankCheck: false, drivingLicense: false, voterId: false, mobileOtp: false, passport: false, uan: false, criminalCheck: false, education: false, directorship: false, faceCapture: false
+      },
+      manualChecks: cand.manualChecks || jf.manualChecks || { hrReferenceCompleted: true, addressVerifiedPhysically: false },
+      uploadedDocuments: uploadedDocsMap,
+      customFields: customFieldsArray,
+      customDocSlots: cand.customDocSlots || jf.customDocSlots || [],
+      photo: cand.photo || cand.faceImages?.straight || null,
+      livePhoto: cand.photo || cand.faceImages?.straight || null,
+      faceImages: cand.faceImages || (cand.photo ? { straight: cand.photo, left: cand.photo, right: cand.photo } : { straight: null, left: null, right: null })
+    });
+
+    setDelegatedFieldsMap(cand.delegatedFieldsMap || jf.delegatedFieldsMap || {});
+    setShowAddForm(true);
+    setActiveTab('profiler');
+    showToast(`✏️ Editing profile for ${cand.name} (#${cand.empId || cand.id})`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCandidate(null);
+    setFormData(getDefaultFormData(activeHr, currentCompany));
+    setDelegatedFieldsMap({});
+    setShowAddForm(false);
+    setActiveTab('pipeline');
+  };
+
   const handleCreateCandidateSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!formData.name || !formData.name.trim()) {
-      showToast('⚠️ Please enter the Candidate Full Name to generate profile & link.');
+      showToast('⚠️ Please enter the Candidate Full Name to save profile & link.');
       return;
     }
 
@@ -1337,16 +1484,24 @@ export const HrExecutiveView = () => {
       verificationReadiness: readiness
     };
 
-    addCandidate(candidatePayload).then(createdToken => {
-      const dispatchedCandidate = {
-        ...candidatePayload,
-        id: `emp-${Date.now()}`,
-        token: (typeof createdToken === 'string' ? createdToken : createdToken?.token) || `tok_${formData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100+Math.random()*900)}`,
-        status: 'Link Sent',
-        portalPassword: formData.portalPassword || '1234'
-      };
-      setDispatchingCandidate(dispatchedCandidate);
-    });
+    if (editingCandidate) {
+      const targetId = editingCandidate.id || editingCandidate.token;
+      updateCandidate(targetId, candidatePayload).then(() => {
+        showToast(`✅ Profile for "${formData.name}" successfully updated!`);
+      });
+      setEditingCandidate(null);
+    } else {
+      addCandidate(candidatePayload).then(createdToken => {
+        const dispatchedCandidate = {
+          ...candidatePayload,
+          id: `emp-${Date.now()}`,
+          token: (typeof createdToken === 'string' ? createdToken : createdToken?.token) || `tok_${formData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100+Math.random()*900)}`,
+          status: 'Link Sent',
+          portalPassword: formData.portalPassword || '1234'
+        };
+        setDispatchingCandidate(dispatchedCandidate);
+      });
+    }
 
     // Clear saved draft on successful submission
     try {
@@ -2143,6 +2298,15 @@ export const HrExecutiveView = () => {
 
                       <button
                         type="button"
+                        onClick={() => handleStartEditCandidate(cand)}
+                        className="p-2 rounded-xl bg-amber-50 text-amber-950 border border-amber-300 hover:bg-amber-100 flex items-center justify-center gap-1.5 cursor-pointer text-center col-span-2 font-black shadow-2xs"
+                      >
+                        <FileEdit className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>✏️ Edit Employee Profile</span>
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={() => {
                           const isInactive = cand.status?.toLowerCase() === 'inactive';
                           const actionPrompt = isInactive ? 're-activate' : 'mark as Inactive';
@@ -2352,6 +2516,17 @@ export const HrExecutiveView = () => {
                             <span>Verify Docs ⚡</span>
                           </button>
 
+                          {/* 4.8 Edit Employee Profile Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleStartEditCandidate(cand)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-2xs cursor-pointer"
+                            title="Edit employee particulars, credentials, and verification gates"
+                          >
+                            <FileEdit className="w-3.5 h-3.5 text-amber-600" />
+                            <span>Edit Profile</span>
+                          </button>
+
                           {/* 5. Dispatch Link Trigger */}
                           <button
                             data-tour-step={index === 0 ? 'hr-dispatch-btn' : undefined}
@@ -2424,12 +2599,28 @@ export const HrExecutiveView = () => {
         <div className="glass-panel p-4 sm:p-6 border-emerald-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <span className="badge badge-emerald text-[10px] mb-1">Candidate Profiler</span>
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-emerald-600" />
-                <span>Create Comprehensive Employee Profile & Dispatch Verification Link</span>
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">Fill in employee information manually or click Auto-Fill Mock Profile for instant 1-click testing</p>
+              {editingCandidate ? (
+                <>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="badge bg-amber-500 text-white font-black text-[10px]">✏️ EDIT MODE</span>
+                    <span className="text-[11px] text-amber-900 font-bold font-mono">Token: {editingCandidate.token}</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <FileEdit className="w-5 h-5 text-amber-600" />
+                    <span>Edit Profile: {formData.name || editingCandidate.name} (#{formData.empId || editingCandidate.empId || 'EMP'})</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">Update candidate information, credentials, and verification gates. Changes save directly to DB.</p>
+                </>
+              ) : (
+                <>
+                  <span className="badge badge-emerald text-[10px] mb-1">Candidate Profiler</span>
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <Sliders className="w-5 h-5 text-emerald-600" />
+                    <span>Create Comprehensive Employee Profile & Dispatch Verification Link</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">Fill in employee information manually or click Auto-Fill Mock Profile for instant 1-click testing</p>
+                </>
+              )}
             </div>
 
             <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
@@ -2442,20 +2633,32 @@ export const HrExecutiveView = () => {
                 <span className="text-[11px]">{lastAutoSaveTime ? `Auto-Saved (${lastAutoSaveTime})` : 'Auto-Save Active ✓'}</span>
               </div>
 
-              {/* Clear Draft / Reset */}
-              <button
-                type="button"
-                onClick={handleClearDraft}
-                className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 cursor-pointer shadow-2xs"
-                title="Clear saved draft and start fresh with blank form"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                <span>Clear Draft</span>
-              </button>
+              {editingCandidate ? (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 cursor-pointer shadow-2xs"
+                  title="Discard changes and exit edit mode"
+                >
+                  <X className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Cancel Edit ✕</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleClearDraft}
+                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 cursor-pointer shadow-2xs"
+                  title="Clear saved draft and start fresh with blank form"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Clear Draft</span>
+                </button>
+              )}
 
               <button
                 type="button"
                 onClick={() => {
+                  if (editingCandidate) setEditingCandidate(null);
                   setActiveMainSection('pipeline_dossiers');
                   setActiveTab('pipeline');
                   setShowAddForm(false);
@@ -2466,15 +2669,16 @@ export const HrExecutiveView = () => {
                 <span>← Back to Pipeline</span>
               </button>
 
-              {/* ⚡ Instant 1-Click Mock Auto-Fill Button */}
-              <button
-                type="button"
-                onClick={handleAutoFillMockData}
-                className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm"
-              >
-                <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
-                <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
-              </button>
+              {!editingCandidate && (
+                <button
+                  type="button"
+                  onClick={handleAutoFillMockData}
+                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm"
+                >
+                  <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+                  <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -4853,11 +5057,47 @@ export const HrExecutiveView = () => {
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-              <button type="button" onClick={() => { setActiveMainSection('pipeline_dossiers'); setActiveTab('pipeline'); setShowAddForm(false); }} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
-              <button type="submit" className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md cursor-pointer">
-                <Send className="w-4 h-4" />
-                <span>Save Profile & Generate Onboarding Link 🚀</span>
+              <button 
+                type="button" 
+                onClick={() => { 
+                  if (editingCandidate) setEditingCandidate(null);
+                  setActiveMainSection('pipeline_dossiers'); 
+                  setActiveTab('pipeline'); 
+                  setShowAddForm(false); 
+                }} 
+                className="btn btn-secondary text-xs font-bold cursor-pointer"
+              >
+                Cancel
               </button>
+              
+              {editingCandidate ? (
+                <div className="flex items-center gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs flex items-center gap-2 font-black shadow-md cursor-pointer"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Update Employee Profile 💾</span>
+                  </button>
+
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      handleCreateCandidateSubmit();
+                      setDispatchingCandidate(editingCandidate);
+                    }}
+                    className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md cursor-pointer"
+                  >
+                    <QrCode className="w-4 h-4" />
+                    <span>Save & Dispatch Link 📲</span>
+                  </button>
+                </div>
+              ) : (
+                <button type="submit" className="btn btn-hrexecutive text-xs flex items-center gap-2 font-bold shadow-md cursor-pointer">
+                  <Send className="w-4 h-4" />
+                  <span>Save Profile & Generate Onboarding Link 🚀</span>
+                </button>
+              )}
             </div>
 
           </form>
@@ -5300,6 +5540,10 @@ export const HrExecutiveView = () => {
           activeHr={activeHr}
           hrPreferences={hrPreferences}
           onClose={() => setDispatchingCandidate(null)}
+          onEditProfile={(cand) => {
+            setDispatchingCandidate(null);
+            handleStartEditCandidate(cand);
+          }}
           onCopyLink={handleCopyLink}
           isCopied={copiedToken === dispatchingCandidate.token}
         />
