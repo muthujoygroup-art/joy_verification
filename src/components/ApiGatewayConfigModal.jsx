@@ -22,7 +22,6 @@ export default function ApiGatewayConfigModal({
     display_name: '',
     endpoint_url: 'https://apis.coincircletrust.com/api/v1/apiProduct',
     api_key: '',
-    secret_key: '',
     webhook_url: 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
     mode: 'Production (Live Mode)',
     rate_limit_per_min: 5000,
@@ -32,7 +31,6 @@ export default function ApiGatewayConfigModal({
   });
 
   const [showApiKey, setShowApiKey] = useState(false);
-  const [showSecretKey, setShowSecretKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testStatus, setTestStatus] = useState(null);
@@ -45,7 +43,6 @@ export default function ApiGatewayConfigModal({
         display_name: providerData.name || providerData.display_name || 'Server 2: CoinCircleTrust Gateways (Neev 81 APIs)',
         endpoint_url: providerData.endpointUrl || providerData.endpoint_url || 'https://apis.coincircletrust.com/api/v1/apiProduct',
         api_key: providerData.apiKey || providerData.api_key || providerData.clientId || '',
-        secret_key: providerData.secretKey || providerData.secret_key || providerData.clientSecret || '',
         webhook_url: providerData.webhookUrl || providerData.webhook_url || 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
         mode: providerData.mode || (providerData.sandbox_mode ? 'Sandbox / Staging' : 'Production (Live Mode)'),
         rate_limit_per_min: providerData.rateLimitPerMin || providerData.rate_limit_per_min || 5000,
@@ -103,7 +100,6 @@ export default function ApiGatewayConfigModal({
         display_name: formData.display_name.trim(),
         endpoint_url: formData.endpoint_url.trim(),
         api_key: formData.api_key.trim(),
-        secret_key: formData.secret_key.trim(),
         webhook_url: formData.webhook_url.trim(),
         sandbox_mode: formData.mode.includes('Sandbox'),
         rate_limit_per_min: parseInt(formData.rate_limit_per_min) || 5000,
@@ -285,34 +281,6 @@ export default function ApiGatewayConfigModal({
             <p className="text-[10px] text-slate-400 font-medium">
               Used automatically across all 81 candidate verification checks and SuperAdmin live diagnostic sandboxes.
             </p>
-          </div>
-
-          {/* Secondary / Secret Key (Optional) */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-slate-400" />
-                <span>Secret Key / Client Secret (Optional)</span>
-              </span>
-              <span className="text-[10px] text-slate-500">For dual-token signature providers</span>
-            </label>
-            
-            <div className="relative">
-              <input
-                type={showSecretKey ? "text" : "password"}
-                value={formData.secret_key}
-                onChange={(e) => setFormData({ ...formData, secret_key: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-2xl text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500 pr-12"
-                placeholder="Optional Secret Key"
-              />
-              <button
-                type="button"
-                onClick={() => setShowSecretKey(!showSecretKey)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white cursor-pointer"
-              >
-                {showSecretKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
           </div>
 
           {/* Operational Controls: Mode, Rate Limit, Primary Toggle */}

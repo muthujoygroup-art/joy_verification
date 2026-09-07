@@ -435,142 +435,120 @@ def create_api_configuration(payload: ApiConfigCreate, db: Session = Depends(get
 def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session = Depends(get_db)):
     """Update API Gateway credentials, endpoints, sandbox mode or rate limits (or auto-create if missing)"""
     from fastapi.responses import JSONResponse
-    from sqlalchemy import text
+    from backend.app.database import engine
     import traceback
     
-    # 1. Preemptively run schema assurance
-    ensure_api_config_schema()
+    clean_key = provider_key.strip().lower().replace(' ', '_')
+    target_key = "server2_coincircle" if ("coincircle" in clean_key or "server2" in clean_key or "neev" in clean_key) else (clean_key or "server2_coincircle")
+    dname = payload.display_name or ("Server 2: CoinCircleTrust Gateways (Neev 81 APIs)" if target_key == "server2_coincircle" else provider_key)
+    eurl = payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct"
+    akey = (payload.api_key or "").strip()
+    skey = (payload.secret_key or "").strip()
+    is_prim = payload.is_primary if payload.is_primary is not None else (target_key == "server2_coincircle")
+    is_act = payload.is_active if payload.is_active is not None else True
     
     try:
-        # Search by exact key or sanitized slug
-        clean_key = provider_key.strip().lower().replace(' ', '_')
-        cfg = db.query(ApiConfiguration).filter(
-            (ApiConfiguration.provider_key == provider_key) |
-            (ApiConfiguration.provider_key == clean_key)
-        ).first()
-
-        # Fallback aliases
-        if not cfg:
-            if "coincircle" in clean_key or "server2" in clean_key or "neev" in clean_key:
-                cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == "server2_coincircle").first()
-            elif "sandbox" in clean_key or "server1" in clean_key:
-                cfg = db.query(ApiConfiguration).filter(ApiConfiguration.provider_key == "server1_sandbox").first()
-
-        # If still not found, create new configuration record
-        if not cfg:
-            cfg = ApiConfiguration(
-                provider_key=clean_key or "server2_coincircle",
-                display_name=payload.display_name or provider_key,
-                endpoint_url=payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct",
-                api_key=payload.api_key or "",
-                secret_key=payload.secret_key or "",
-                webhook_url=payload.webhook_url,
-                sandbox_mode=payload.sandbox_mode or False,
-                rate_limit_per_min=payload.rate_limit_per_min or 5000,
-                monthly_quota=payload.monthly_quota or 50000,
-                status=payload.status or "CONNECTED",
-                is_active=payload.is_active if payload.is_active is not None else True,
-                is_primary=payload.is_primary if payload.is_primary is not None else (clean_key == "server2_coincircle"),
-                supported_services=payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"],
-                last_synced=datetime.utcnow()
-            )
-            db.add(cfg)
-        else:
-            # Update all provided fields
-            update_data = payload.dict(exclude_unset=True)
-            for k, v in update_data.items():
-                if v is not None:
-                    setattr(cfg, k, v)
-            if payload.is_primary:
-                db.query(ApiConfiguration).filter(ApiConfiguration.provider_key != cfg.provider_key).update({"is_primary": False})
-            cfg.last_synced = datetime.utcnow()
-
-        db.commit()
-        db.refresh(cfg)
-
-        return {
-            "success": True,
-            "message": f"Updated {cfg.display_name} credentials and Base URL in database successfully.",
-            "provider_key": cfg.provider_key,
-            "display_name": cfg.display_name,
-            "endpoint_url": cfg.endpoint_url,
-            "is_active": cfg.is_active,
-            "is_primary": cfg.is_primary,
-            "status": cfg.status
-        }
-    except Exception as e:
-        db.rollback()
-        # Direct SQL Auto-Healing Fallback with isolated DBAPI AUTOCOMMIT and dynamic column query
+        raw_conn = engine.raw_connection()
         try:
-            from backend.app.database import engine
-            target_key = "server2_coincircle" if ("coincircle" in provider_key.lower() or "server2" in provider_key.lower() or "neev" in provider_key.lower()) else provider_key
-            dname = payload.display_name or ("Server 2: CoinCircleTrust Gateways" if target_key == "server2_coincircle" else provider_key)
-            eurl = payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct"
-            akey = payload.api_key or ""
-            skey = payload.secret_key or ""
-            
-            raw_conn = engine.raw_connection()
-            raw_conn.autocommit = True
-            cursor = raw_conn.cursor()
-            
-            # Ensure essential columns exist directly
+            raw_conn.rollback()
+        except Exception:
+            pass
+        raw_conn.autocommit = True
+        cursor = raw_conn.cursor()
+        
+        # 1. Guarantee table exists
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS api_configurations (
+                provider_key VARCHAR(50) PRIMARY KEY,
+                display_name VARCHAR(100) NOT NULL,
+                endpoint_url VARCHAR(255) NOT NULL,
+                api_key VARCHAR(255) NOT NULL,
+                secret_key VARCHAR(255),
+                webhook_url VARCHAR(255),
+                sandbox_mode BOOLEAN DEFAULT FALSE,
+                rate_limit_per_min INTEGER DEFAULT 120,
+                status VARCHAR(50) DEFAULT 'CONNECTED',
+                is_active BOOLEAN DEFAULT TRUE,
+                is_primary BOOLEAN DEFAULT FALSE,
+                supported_services JSON DEFAULT '[]',
+                provider_type VARCHAR(100) DEFAULT 'Institutional Gateway',
+                description TEXT,
+                ping_latency_ms INTEGER DEFAULT 62,
+                monthly_quota INTEGER DEFAULT 10000,
+                monthly_used INTEGER DEFAULT 0,
+                last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # 2. Guarantee columns
+        cols_to_add = [
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255)",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED'",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]'",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway'",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+        for stmt in cols_to_add:
             try:
-                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE")
-                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE")
-                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)")
-                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED'")
-                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+                cursor.execute(stmt)
             except Exception:
                 pass
-            
-            # Fetch existing columns from PostgreSQL
-            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
-            c_names = set([r[0] for r in cursor.fetchall()])
-            
-            row_dict = {
-                "provider_key": target_key,
-                "display_name": dname,
-                "endpoint_url": eurl,
-                "api_key": akey,
-                "secret_key": skey,
-                "status": "CONNECTED",
-                "is_active": True,
-                "is_primary": True,
-                "last_synced": datetime.utcnow()
-            }
-            valid_items = {k: v for k, v in row_dict.items() if k in c_names}
-            cols = list(valid_items.keys())
-            placeholders = ["%s"] * len(cols)
-            val_list = [valid_items[k] for k in cols]
-            update_clauses = [f"{k} = EXCLUDED.{k}" for k in cols if k != "provider_key"]
-            
-            sql = f"""
-                INSERT INTO api_configurations ({', '.join(cols)})
-                VALUES ({', '.join(placeholders)})
-                ON CONFLICT (provider_key) DO UPDATE SET
-                    {', '.join(update_clauses)}
-            """
-            cursor.execute(sql, val_list)
-            cursor.close()
-            raw_conn.close()
-            
-            return {
-                "success": True,
-                "message": f"Updated {target_key} credentials via database auto-healing successfully.",
-                "provider_key": target_key,
-                "display_name": dname,
-                "endpoint_url": eurl,
-                "is_active": True,
-                "is_primary": True,
-                "status": "CONNECTED"
-            }
-        except Exception as e2:
-            tr2 = traceback.format_exc()
-            print(f"Fallback error updating API config: {e2}\n{tr2}")
-            return JSONResponse(
-                status_code=500,
-                content={"success": False, "detail": f"Database error updating API config: {str(e2)}"}
-            )
+                
+        # 3. If primary, demote other providers
+        if is_prim:
+            try:
+                cursor.execute("UPDATE api_configurations SET is_primary = FALSE WHERE provider_key != %s", (target_key,))
+            except Exception:
+                pass
+                
+        # 4. Upsert configuration
+        cursor.execute("""
+            INSERT INTO api_configurations (
+                provider_key, display_name, endpoint_url, api_key, secret_key, status, is_active, is_primary, last_synced
+            ) VALUES (
+                %s, %s, %s, %s, %s, 'CONNECTED', %s, %s, CURRENT_TIMESTAMP
+            ) ON CONFLICT (provider_key) DO UPDATE SET
+                display_name = COALESCE(EXCLUDED.display_name, api_configurations.display_name),
+                endpoint_url = EXCLUDED.endpoint_url,
+                api_key = EXCLUDED.api_key,
+                secret_key = COALESCE(EXCLUDED.secret_key, api_configurations.secret_key),
+                status = 'CONNECTED',
+                is_active = EXCLUDED.is_active,
+                is_primary = EXCLUDED.is_primary,
+                last_synced = CURRENT_TIMESTAMP
+        """, (target_key, dname, eurl, akey, skey, is_act, is_prim))
+        
+        cursor.close()
+        raw_conn.close()
+        
+        return {
+            "success": True,
+            "message": f"Updated {dname} credentials and Base URL in database successfully.",
+            "provider_key": target_key,
+            "display_name": dname,
+            "endpoint_url": eurl,
+            "is_active": is_act,
+            "is_primary": is_prim,
+            "status": "CONNECTED"
+        }
+    except Exception as e:
+        tr = traceback.format_exc()
+        print(f"Error updating API config: {e}\n{tr}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "detail": f"Database error updating API config: {str(e)}"}
+        )
 
 @router.put("/api-configs/{provider_key}/toggle")
 def toggle_api_config(provider_key: str, payload: ApiConfigToggle, db: Session = Depends(get_db)):
