@@ -34,7 +34,10 @@ import {
   FolderLock,
   Layers,
   ChevronRight,
-  Sliders
+  Sliders,
+  ChevronDown,
+  Lock,
+  Zap
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -48,6 +51,7 @@ export const Navbar = () => {
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [portalSwitcherOpen, setPortalSwitcherOpen] = useState(false);
   const location = useLocation();
 
   const roleKey = currentRole === 'employee_link' ? 'candidate' : currentRole;
@@ -146,6 +150,62 @@ export const Navbar = () => {
                 <Home className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span>Home 🌐</span>
               </Link>
+
+              {/* Quick Role Switcher Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setPortalSwitcherOpen(!portalSwitcherOpen)}
+                  className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-blue-900 bg-blue-50 hover:bg-blue-100 font-bold border border-blue-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                  title="Switch Active Portal or View Other Roles"
+                >
+                  <Zap className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>Switch ⚡</span>
+                  <ChevronDown className="w-3 h-3 text-blue-500 shrink-0" />
+                </button>
+
+                {portalSwitcherOpen && (
+                  <div
+                    className="absolute left-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150 text-left"
+                    onMouseLeave={() => setPortalSwitcherOpen(false)}
+                  >
+                    <div className="px-3 py-1 font-mono text-[9px] uppercase tracking-wider font-bold text-slate-400 border-b border-slate-100">
+                      Switch Active Console
+                    </div>
+                    <Link
+                      to="/login?role=superadmin"
+                      onClick={() => setPortalSwitcherOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-800 hover:text-indigo-900 transition-colors"
+                    >
+                      <Crown className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span className="text-xs font-bold">Super Admin</span>
+                    </Link>
+                    <Link
+                      to="/login?role=company"
+                      onClick={() => setPortalSwitcherOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-800 hover:text-sky-900 transition-colors"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                      <span className="text-xs font-bold">Company Admin</span>
+                    </Link>
+                    <Link
+                      to="/login?role=hrexecutive"
+                      onClick={() => setPortalSwitcherOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 transition-colors"
+                    >
+                      <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="text-xs font-bold">HR Executive</span>
+                    </Link>
+                    <Link
+                      to="/login?role=employee_link"
+                      onClick={() => setPortalSwitcherOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-800 hover:text-amber-900 transition-colors"
+                    >
+                      <Smartphone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span className="text-xs font-bold">Candidate Portal</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
               
               {/* Interactive Guided Tour & Feature Guide Dropdown Button */}
               <button

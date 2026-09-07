@@ -72,20 +72,63 @@ import confetti from 'canvas-confetti';
 export const LandingPageView = () => {
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showPassModal, setShowPassModal] = useState(false);
 
   // Hero 3D Card Parallax Tilt State
   const [tiltStyle, setTiltStyle] = useState({});
   const heroCardRef = useRef(null);
 
-  // Hero Interactive Biometric Scan Simulation State
+  // Hero Interactive Multi-Worker Personas & Biometric State
+  const [activePersona, setActivePersona] = useState('aryan');
   const [heroScanning, setHeroScanning] = useState(false);
   const [heroScanComplete, setHeroScanComplete] = useState(false);
   const [heroScanProgress, setHeroScanProgress] = useState(0);
+  const [heroScanStage, setHeroScanStage] = useState('idle'); // 'idle' | 'liveness' | 'epfo' | 'bank' | 'complete'
+
+  const heroPersonas = {
+    aryan: {
+      name: 'Aryan Sharma',
+      role: 'Automotive Assembly Specialist',
+      contractor: 'Apex Manpower Services Pvt Ltd',
+      hub: 'Sriperumbudur Auto Corridor, TN',
+      uidai: 'XXXX-XXXX-9012',
+      uan: '1014-9921-8841',
+      bank: 'State Bank of India (Acc: ••••4419)',
+      gateId: 'JOY-LBR-SRI-9452',
+      image: '/assets/3d/hero_3d_verification.jpg',
+      statutoryPass: 'CLRA Form XVI Certified'
+    },
+    pooja: {
+      name: 'Pooja Verma',
+      role: '3PL Logistics & Fulfillment Lead',
+      contractor: 'FastTrack Workforce Solutions',
+      hub: 'Bhiwandi Logistics Hub, MH',
+      uidai: 'XXXX-XXXX-4811',
+      uan: '1019-3382-7104',
+      bank: 'HDFC Bank (Acc: ••••1092)',
+      gateId: 'JOY-LBR-BHW-3108',
+      image: '/assets/3d/labor_3d_management.jpg',
+      statutoryPass: 'Supply Chain Gate Pass'
+    },
+    rajesh: {
+      name: 'Rajesh Kumar',
+      role: 'Commercial Heavy Fleet Driver',
+      contractor: 'National Supply Transporters',
+      hub: 'Sanand Industrial Cluster, GJ',
+      uidai: 'XXXX-XXXX-6523',
+      uan: '1008-7712-4490',
+      bank: 'ICICI Bank (Acc: ••••8831)',
+      gateId: 'JOY-LBR-SND-1150',
+      image: '/assets/3d/corporate_3d_bgv.jpg',
+      statutoryPass: 'Commercial Transport Pass'
+    }
+  };
 
   // Interactive Spec Customizer Tab State (Capricorn Zagato Style)
   const [activeSpecCategory, setActiveSpecCategory] = useState('performance');
@@ -96,6 +139,7 @@ export const LandingPageView = () => {
   // ROI Calculator State
   const [monthlyHires, setMonthlyHires] = useState(500);
   const [workforceType, setWorkforceType] = useState('mixed');
+  const [contractorTurnover, setContractorTurnover] = useState(25); // 25% annual churn
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState(0);
@@ -188,22 +232,29 @@ export const LandingPageView = () => {
     setHeroScanning(true);
     setHeroScanComplete(false);
     setHeroScanProgress(0);
+    setHeroScanStage('liveness');
 
     let current = 0;
     const interval = setInterval(() => {
       current += 5;
       setHeroScanProgress(current);
-      if (current >= 100) {
+
+      if (current >= 35 && current < 70) {
+        setHeroScanStage('epfo');
+      } else if (current >= 70 && current < 100) {
+        setHeroScanStage('bank');
+      } else if (current >= 100) {
         clearInterval(interval);
         setHeroScanning(false);
         setHeroScanComplete(true);
+        setHeroScanStage('complete');
         confetti({
-          particleCount: 50,
-          spread: 60,
+          particleCount: 60,
+          spread: 70,
           origin: { y: 0.6 }
         });
       }
-    }, 70);
+    }, 60);
   };
 
   // Trigger Interactive Engine Simulator
@@ -338,6 +389,16 @@ export const LandingPageView = () => {
       accuracy: '99.97%',
       recentEvent: 'Contractor agency monthly muster roll matched against EPFO UAN contributions.',
       topCheck: 'EPFO UAN Dual Employment Radar'
+    },
+    chakan: {
+      name: 'Chakan-Talegaon Industrial Hub',
+      state: 'Maharashtra',
+      tag: 'Automotive & Heavy Engineering',
+      activePasses: '24,600 Active Badges',
+      avgTat: '0.75 Seconds',
+      accuracy: '99.98%',
+      recentEvent: 'Major Tier-1 auto plant completed contractor statutory audit across 850 workers.',
+      topCheck: 'UIDAI Aadhaar + Police Clearance Verification'
     }
   };
 
@@ -510,52 +571,124 @@ export const LandingPageView = () => {
       </div>
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION (SEAMLESS STICKY GLASS HEADER)
+       * 1. TOP NAVIGATION (SEAMLESS STICKY GLASS HEADER WITH PORTAL SWITCHER)
        * ============================================================================== */}
       <header className="sticky top-0 z-50 w-full backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-4 sm:px-8 py-3 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           
           {/* Logo Brand */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
               <span className="text-lg font-black tracking-tight text-slate-900 flex items-center gap-1.5 font-outfit">
-                JOY <span className="text-cyan-600">TrueProfile</span>
+                JOY <span className="text-blue-600">TrueProfile</span>
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 block -mt-0.5 font-semibold">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 block -mt-0.5 font-bold">
                 AI Labor Verification Engine
               </span>
             </div>
           </a>
 
           {/* Center Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-6 font-mono text-xs text-slate-600 font-medium">
-            <a href="#solutions" className="hover:text-cyan-600 transition-colors">Solutions</a>
-            <a href="#craft" className="hover:text-cyan-600 transition-colors">Architecture</a>
-            <a href="#specs" className="hover:text-cyan-600 transition-colors">Specifications</a>
-            <a href="#interactive-lab" className="hover:text-cyan-600 transition-colors">Simulator</a>
-            <a href="#live-radar" className="hover:text-cyan-600 transition-colors">India Radar</a>
-            <a href="#roi-calculator" className="hover:text-cyan-600 transition-colors">ROI Calculator</a>
-            <a href="#reviews" className="hover:text-cyan-600 transition-colors">Client Reviews</a>
-            <a href="#knowledge-hub" className="hover:text-cyan-600 transition-colors">Knowledge Hub</a>
-            <a href="#faq" className="hover:text-cyan-600 transition-colors">FAQ</a>
+          <nav className="hidden xl:flex items-center gap-6 font-mono text-xs text-slate-600 font-semibold">
+            <a href="#solutions" className="hover:text-blue-600 transition-colors">Solutions</a>
+            <a href="#craft" className="hover:text-blue-600 transition-colors">Architecture</a>
+            <a href="#specs" className="hover:text-blue-600 transition-colors">Specifications</a>
+            <a href="#interactive-lab" className="hover:text-blue-600 transition-colors">Simulator</a>
+            <a href="#live-radar" className="hover:text-blue-600 transition-colors">India Radar</a>
+            <a href="#roi-calculator" className="hover:text-blue-600 transition-colors">ROI Calculator</a>
+            <a href="#reviews" className="hover:text-blue-600 transition-colors">Client Reviews</a>
+            <a href="#knowledge-hub" className="hover:text-blue-600 transition-colors">Knowledge Hub</a>
+            <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
           </nav>
 
-          {/* Right Action CTAs */}
+          {/* Right Action CTAs & Portal Switcher */}
           <div className="hidden sm:flex items-center gap-3">
+            
+            {/* Portal Login Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-100/90 hover:bg-slate-200/80 border border-slate-300 transition-all flex items-center gap-1.5 shadow-2xs"
+              >
+                <Lock className="w-3.5 h-3.5 text-blue-600" />
+                <span>Portals & Login</span>
+                <ChevronDown className="w-3 h-3 text-slate-500" />
+              </button>
+
+              {portalDropdownOpen && (
+                <div 
+                  className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  onMouseLeave={() => setPortalDropdownOpen(false)}
+                >
+                  <div className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider font-bold text-slate-400 border-b border-slate-100">
+                    Direct Portal Access
+                  </div>
+                  <a
+                    href="/login?role=superadmin"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-800 hover:text-indigo-900 transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <Crown className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">Super Admin Console</div>
+                      <div className="text-[10px] text-slate-500">Platform Control & Margins</div>
+                    </div>
+                  </a>
+                  <a
+                    href="/login?role=company"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-800 hover:text-sky-900 transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                      <Building2 className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">Company Admin Portal</div>
+                      <div className="text-[10px] text-slate-500">Corporate Quotas & HR Teams</div>
+                    </div>
+                  </a>
+                  <a
+                    href="/login?role=hrexecutive"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <UserCheck className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">HR Executive Workstation</div>
+                      <div className="text-[10px] text-slate-500">Candidate Profiler & Links</div>
+                    </div>
+                  </a>
+                  <a
+                    href="/login?role=employee_link"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-800 hover:text-amber-900 transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                      <Smartphone className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">Candidate Mobile Link</div>
+                      <div className="text-[10px] text-slate-500">Passwordless Self-Verification</div>
+                    </div>
+                  </a>
+                </div>
+              )}
+            </div>
+
             <a
               href="#interactive-lab"
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-cyan-700 bg-white border border-slate-300 hover:border-cyan-400 hover:bg-cyan-50/50 shadow-2xs transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-white border border-slate-300 hover:border-blue-400 hover:bg-blue-50/50 shadow-2xs transition-all flex items-center gap-1.5"
             >
-              <Zap className="w-3.5 h-3.5 text-cyan-600" />
+              <Zap className="w-3.5 h-3.5 text-blue-600" />
               <span>Try Simulator</span>
             </a>
             
             <button
               onClick={() => setShowDemoModal(true)}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md shadow-cyan-600/20 hover:shadow-cyan-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -574,19 +707,26 @@ export const LandingPageView = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="xl:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
-            <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Solutions</a>
-            <a href="#craft" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Architecture</a>
-            <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Specifications</a>
-            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Simulator Studio</a>
-            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">India Telemetry Radar</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">ROI Calculator</a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Reviews</a>
-            <a href="#knowledge-hub" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">Knowledge Hub</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-cyan-600 font-medium">FAQ</a>
-            <div className="pt-2 flex flex-col gap-2">
+            <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Solutions</a>
+            <a href="#craft" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Architecture</a>
+            <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Specifications</a>
+            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Simulator Studio</a>
+            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">India Telemetry Radar</a>
+            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">ROI Calculator</a>
+            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Reviews</a>
+            <a href="#knowledge-hub" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Knowledge Hub</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">FAQ</a>
+            
+            <div className="pt-2 border-t border-slate-200 flex flex-col gap-2">
+              <a
+                href="/login?role=hrexecutive"
+                className="w-full py-2 rounded-xl font-bold text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 text-center border border-slate-300"
+              >
+                Portals & Login
+              </a>
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-cyan-600 hover:bg-cyan-700 text-center shadow-sm"
+                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-blue-600 hover:bg-blue-700 text-center shadow-sm"
               >
                 Book Live Demo
               </button>
@@ -596,17 +736,17 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: BALANCED 2-COLUMN WITH 3D PERSPECTIVE CARD
+       * 2. HERO SECTION: BALANCED 2-COLUMN WITH 3D PERSPECTIVE CARD & MULTI-PERSONA LAB
        * ============================================================================== */}
-      <section className="relative z-10 pt-10 pb-16 lg:pt-16 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
+      <section className="relative z-10 pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* Left Column: Value Proposition & CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
             {/* Live Telemetry Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-800 font-mono text-xs mb-6 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-cyan-600 animate-pulse"></span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-mono text-xs mb-6 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
               <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Verified Across 34 Indian Industrial Hubs</span>
             </div>
 
@@ -614,7 +754,7 @@ export const LandingPageView = () => {
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.12] mb-6 font-outfit">
               Create & Verify <br className="hidden sm:inline" />
               Complete Labor Profiles <br />
-              <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
                 in Under 45 Seconds
               </span>
             </h1>
@@ -628,7 +768,7 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-xl shadow-cyan-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                className="px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>Book Live Demo</span>
                 <ArrowRight className="w-4 h-4" />
@@ -636,15 +776,15 @@ export const LandingPageView = () => {
 
               <a
                 href="#interactive-lab"
-                className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-cyan-500 hover:bg-cyan-50/50 shadow-xs transition-all flex items-center gap-2"
+                className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
               >
-                <Zap className="w-4 h-4 text-cyan-600" />
+                <Zap className="w-4 h-4 text-blue-600" />
                 <span>Launch Biometric Lab</span>
               </a>
 
               <button
                 onClick={() => setShowLegalHandbook(true)}
-                className="px-4 py-3.5 rounded-xl font-semibold text-xs text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs transition-all flex items-center gap-1.5"
+                className="px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <FileText className="w-3.5 h-3.5 text-indigo-600" />
                 <span>Statutory Handbook</span>
@@ -653,50 +793,77 @@ export const LandingPageView = () => {
 
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 w-full max-w-lg">
-              <div>
-                <div className="text-2xl sm:text-3xl font-black text-cyan-600 font-outfit">0.8s</div>
-                <div className="text-xs text-slate-500 font-medium mt-0.5">Turnstile Gate Pass</div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
+                <div className="text-2xl sm:text-3xl font-black text-blue-600 font-outfit">0.8s</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Turnstile Gate Pass</div>
               </div>
-              <div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
                 <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">100%</div>
-                <div className="text-xs text-slate-500 font-medium mt-0.5">Zero Ghost Workers</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Zero Ghost Workers</div>
               </div>
-              <div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
                 <div className="text-2xl sm:text-3xl font-black text-indigo-600 font-outfit">45s</div>
-                <div className="text-xs text-slate-500 font-medium mt-0.5">WhatsApp KYC TAT</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">WhatsApp KYC TAT</div>
               </div>
             </div>
 
           </div>
 
-          {/* Right Column: 3D Perspective Card Stage */}
+          {/* Right Column: 3D Perspective Card Stage with Persona Switcher */}
           <div className="lg:col-span-5 relative">
-            <div className="relative max-w-[420px] mx-auto">
+            <div className="relative max-w-[430px] mx-auto">
               
+              {/* Persona Switcher Tabs */}
+              <div className="flex items-center justify-between p-1 bg-slate-100/90 rounded-2xl border border-slate-200 mb-3 font-mono text-[11px] font-bold">
+                {[
+                  { id: 'aryan', label: '👷 Assembly Line' },
+                  { id: 'pooja', label: '📦 3PL Warehouse' },
+                  { id: 'rajesh', label: '🚚 Fleet Driver' }
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      setActivePersona(p.id);
+                      setHeroScanComplete(false);
+                      setHeroScanStage('idle');
+                    }}
+                    className={`flex-1 py-1.5 px-2 rounded-xl transition-all ${
+                      activePersona === p.id
+                        ? 'bg-white text-blue-700 shadow-xs border border-slate-200 font-extrabold'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
               {/* Glowing Background Ring */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-80"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-80 pointer-events-none"></div>
               
               <div
                 ref={heroCardRef}
                 onMouseMove={handleMouseMoveHero}
                 onMouseLeave={handleMouseLeaveHero}
                 style={tiltStyle}
-                className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-2xl p-2.5 backdrop-blur-xl"
+                className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-2xl p-3 backdrop-blur-xl transition-all"
               >
                 {/* 3D Smart Card Image */}
-                <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 border border-slate-200">
+                <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-900 border border-slate-200">
                   <img
-                    src="/assets/3d/hero_3d_verification.jpg"
+                    src={heroPersonas[activePersona].image}
                     alt="JOY TrueProfile Digital Labor Identity Card"
                     className="w-full h-full object-cover"
                   />
                   
                   {/* Animated Laser Scan Beam */}
-                  <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#06B6D4,0_0_30px_#6366F1] animate-laser-vertical pointer-events-none"></div>
+                  {heroScanning && (
+                    <div className="absolute inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#06B6D4,0_0_40px_#6366F1] animate-laser-vertical pointer-events-none z-10"></div>
+                  )}
 
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
-                    <Fingerprint className="w-3 h-3 text-cyan-600" />
+                    <Fingerprint className="w-3 h-3 text-blue-600" />
                     <span>UIDAI Biometric Verified</span>
                   </div>
 
@@ -704,39 +871,75 @@ export const LandingPageView = () => {
                     <Zap className="w-3 h-3 text-emerald-600" />
                     <span>45s TAT</span>
                   </div>
+
+                  {/* Candidate Info Overlay at bottom of image */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent p-3 pt-6 text-white font-sans">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-bold text-white font-outfit">{heroPersonas[activePersona].name}</h4>
+                        <p className="text-[10px] text-slate-300 font-mono">{heroPersonas[activePersona].role}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block px-2 py-0.5 rounded bg-blue-500/30 border border-blue-400/40 text-[9px] font-mono text-cyan-300 font-bold">
+                          {heroPersonas[activePersona].gateId}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Card Telemetry Footer */}
+                {/* Card Telemetry & Live Verification Stages Footer */}
                 <div className="p-3.5 bg-slate-50 rounded-xl mt-2 border border-slate-200 flex flex-col gap-2.5">
-                  <div className="flex items-center justify-between font-mono text-[10px]">
-                    <span className="text-slate-600">Biometric Match: <span className="text-emerald-700 font-bold">99.98%</span></span>
-                    <span className="text-cyan-700 font-semibold">ID: #JOY-WM1-9452</span>
-                  </div>
                   
-                  <div className="flex items-center justify-between font-mono text-[9px] text-slate-500">
-                    <span>CRYPTOGRAPHIC CHECKSUM</span>
-                    <span className="text-indigo-700 font-semibold">SHA-256 VERIFIED</span>
+                  {/* Verification Pipeline Checks */}
+                  <div className="grid grid-cols-3 gap-1.5 font-mono text-[9px]">
+                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
+                      heroScanStage === 'liveness' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
+                    }`}>
+                      1. AI Liveness
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '99.98% ✓' : 'UIDAI Match'}</span>
+                    </div>
+
+                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
+                      heroScanStage === 'epfo' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
+                    }`}>
+                      2. EPFO UAN
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '0 Overlaps ✓' : 'Dual Scan'}</span>
+                    </div>
+
+                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
+                      heroScanStage === 'bank' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
+                    }`}>
+                      3. Bank ₹1
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '100% Match ✓' : 'IMPS Drop'}</span>
+                    </div>
+                  </div>
+
+                  {/* Cryptographic SHA-256 Checksum */}
+                  <div className="flex items-center justify-between font-mono text-[9px] text-slate-500 pt-1 border-t border-slate-200">
+                    <span>STATUTORY LEDGER</span>
+                    <span className="text-indigo-700 font-bold">SHA-256 TAMPER-PROOF</span>
                   </div>
 
                   {/* Interactive Biometric Test Button */}
                   <button
                     onClick={triggerHeroBiometricScan}
                     disabled={heroScanning}
-                    className="w-full py-2.5 rounded-lg text-xs font-bold font-mono uppercase tracking-wider text-cyan-900 bg-cyan-100 hover:bg-cyan-200 border border-cyan-300 transition-all flex items-center justify-center gap-2 mt-1 shadow-2xs"
+                    className="w-full py-2.5 rounded-lg text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
                   >
                     {heroScanning ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-700" />
-                        <span>Querying Central Repositories ({heroScanProgress}%)...</span>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
+                        <span>Scanning Govt Repositories ({heroScanProgress}%)...</span>
                       </>
                     ) : heroScanComplete ? (
                       <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-800">Biometric Clearance Passed ✓ (Retest)</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>Pass Issued: {heroPersonas[activePersona].statutoryPass} ✓ (Retest)</span>
                       </>
                     ) : (
                       <>
-                        <Zap className="w-3.5 h-3.5 text-cyan-700" />
+                        <Zap className="w-3.5 h-3.5 text-white" />
                         <span>Trigger Live Biometric Scan Test</span>
                       </>
                     )}
@@ -1172,28 +1375,28 @@ export const LandingPageView = () => {
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="font-mono text-xs uppercase tracking-wider text-cyan-700 font-bold mb-3 flex items-center gap-2">
+          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2">
             <DollarSign className="w-3.5 h-3.5" />
-            <span>ENTERPRISE VALUE ENGINE</span>
+            <span>ENTERPRISE VALUE & STATUTORY ROI ENGINE</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-outfit mb-3">
-            Calculate Your Monthly Verification ROI
+            Calculate Your Plant & Enterprise Savings
           </h2>
           <p className="text-slate-600 text-sm">
-            Discover how much your enterprise saves by replacing slow manual background verification with instant cryptographic checks.
+            Discover how much your enterprise saves by replacing slow manual background verification with instant cryptographic checks and automated CLRA Form XVI passes.
           </p>
         </div>
 
         {/* ROI Calculator Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xl">
           
           {/* Controls Left Column */}
-          <div className="lg:col-span-6 flex flex-col gap-6">
+          <div className="lg:col-span-6 flex flex-col justify-between gap-6">
             
             {/* Workforce Type Selector */}
             <div>
-              <label className="font-mono text-xs uppercase tracking-wider text-slate-600 font-bold block mb-3">
-                Select Workforce Structure
+              <label className="font-mono text-xs uppercase tracking-wider text-slate-700 font-bold block mb-3">
+                1. Select Workforce Structure
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -1204,9 +1407,9 @@ export const LandingPageView = () => {
                   <button
                     key={item.id}
                     onClick={() => setWorkforceType(item.id)}
-                    className={`p-3 rounded-xl border text-xs font-bold transition-all ${
+                    className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                       workforceType === item.id
-                        ? 'bg-cyan-50 border-cyan-500 text-cyan-900 shadow-xs'
+                        ? 'bg-blue-50 border-blue-500 text-blue-900 shadow-xs ring-1 ring-blue-400'
                         : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                     }`}
                   >
@@ -1216,13 +1419,13 @@ export const LandingPageView = () => {
               </div>
             </div>
 
-            {/* Slider Monthly Hires */}
+            {/* Slider 1: Monthly Hires */}
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-600 font-bold">
-                  Monthly Candidates / Workers Onboarded
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-mono text-xs uppercase tracking-wider text-slate-700 font-bold">
+                  2. Monthly Candidate Onboarding Volume
                 </label>
-                <span className="font-mono text-lg font-black text-cyan-700">
+                <span className="font-mono text-base sm:text-lg font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
                   {monthlyHires.toLocaleString()} workers / mo
                 </span>
               </div>
@@ -1233,65 +1436,129 @@ export const LandingPageView = () => {
                 step="50"
                 value={monthlyHires}
                 onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-600 border border-slate-300"
+                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 border border-slate-300"
               />
-              <div className="flex justify-between font-mono text-[10px] text-slate-500 font-semibold mt-2">
-                <span>50 / mo</span>
-                <span>1,000 / mo</span>
-                <span>2,500 / mo</span>
-                <span>5,000+ / mo</span>
+              {/* Quick Presets */}
+              <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <span className="text-[10px] font-mono text-slate-400 font-bold mr-1">PRESETS:</span>
+                {[250, 500, 1000, 2500, 5000].map((preset) => (
+                  <button
+                    key={preset}
+                    onClick={() => setMonthlyHires(preset)}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border transition-colors ${
+                      monthlyHires === preset ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {preset.toLocaleString()}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Explanatory Note */}
-            <div className="p-4 rounded-xl bg-cyan-50/50 border border-cyan-200 font-mono text-xs text-slate-700 flex items-start gap-3">
-              <HelpCircle className="w-4 h-4 text-cyan-600 shrink-0 mt-0.5" />
+            {/* Slider 2: Contractor Turnover Rate */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-mono text-xs uppercase tracking-wider text-slate-700 font-bold">
+                  3. Annual Contractor Churn / Turnover
+                </label>
+                <span className="font-mono text-base font-black text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-200">
+                  {contractorTurnover}% / year
+                </span>
+              </div>
+              <input
+                type="range"
+                min="5"
+                max="60"
+                step="5"
+                value={contractorTurnover}
+                onChange={(e) => setContractorTurnover(Number(e.target.value))}
+                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 border border-slate-300"
+              />
+              <div className="flex justify-between font-mono text-[10px] text-slate-400 font-semibold mt-1">
+                <span>5% (Low Churn)</span>
+                <span>25% (Industry Avg)</span>
+                <span>60% (High Churn)</span>
+              </div>
+            </div>
+
+            {/* Benchmark Note */}
+            <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 font-mono text-xs text-slate-700 flex items-start gap-2.5">
+              <HelpCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <span>
-                Based on standard Indian enterprise screening averages: ₹1,800/person manual agency BGV vs ₹250/person JOY TrueProfile automated statutory verification.
+                Statutory Benchmark: ₹1,800/person agency manual BGV vs ₹250/person JOY TrueProfile sub-45s automated verification.
               </span>
             </div>
 
           </div>
 
           {/* Savings Output Right Column */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xl">
+          <div className="lg:col-span-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
             
             <div>
               <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">
-                ESTIMATED MONTHLY SAVINGS
+                TOTAL ESTIMATED ANNUAL VALUE CREATED
               </span>
-              <div className="text-4xl sm:text-5xl font-black text-white font-outfit tracking-tight">
-                ₹{totalMonthlySavings.toLocaleString('en-IN')}
-                <span className="text-sm font-normal text-slate-400 ml-2">/ month</span>
+              <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
+                ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
+                <span className="text-xs sm:text-sm font-normal text-slate-400 ml-2">/ year</span>
               </div>
-              <div className="text-xs font-mono text-slate-400 mt-1">
-                (₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} annual net savings)
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-5">
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold">HR Admin Hours Saved</span>
-                <div className="text-xl font-bold text-cyan-400 font-outfit mt-0.5">
-                  {hoursSavedPerMonth.toLocaleString()} hrs / mo
-                </div>
-              </div>
-
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold">Ghost Invoices Blocked</span>
-                <div className="text-xl font-bold text-fuchsia-400 font-outfit mt-0.5">
-                  ~{ghostWorkerPrevented} phantom workers
-                </div>
+              <div className="text-xs font-mono text-emerald-400 mt-1 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Payback Period: Under 12 Business Days</span>
               </div>
             </div>
 
-            <button
-              onClick={() => setShowDemoModal(true)}
-              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25"
-            >
-              <span>Unlock These Savings For Your Plant</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* 4 KPI Grid */}
+            <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
+              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
+                <div className="text-lg font-bold text-cyan-300 font-outfit mt-0.5">
+                  ₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span>
+                </div>
+              </div>
+
+              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
+                <div className="text-lg font-bold text-fuchsia-300 font-outfit mt-0.5">
+                  ~{ghostWorkerPrevented * 12} workers
+                </div>
+              </div>
+
+              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
+                <div className="text-lg font-bold text-emerald-300 font-outfit mt-0.5">
+                  {(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr
+                </div>
+              </div>
+
+              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">CLRA Penalty Risk Reduction</span>
+                <div className="text-lg font-bold text-amber-300 font-outfit mt-0.5">
+                  100% Protected
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                onClick={() => setShowDemoModal(true)}
+                className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 cursor-pointer"
+              >
+                <span>Unlock These Savings</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => {
+                  confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+                  alert(`✅ Executive ROI Business Case generated for ${monthlyHires.toLocaleString()} monthly hires! Estimated Annual Savings: ₹${((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}`);
+                }}
+                className="py-3.5 px-4 rounded-xl font-bold text-xs text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-cyan-400" />
+                <span>Export ROI Summary</span>
+              </button>
+            </div>
 
           </div>
 

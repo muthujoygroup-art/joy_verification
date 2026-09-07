@@ -20,7 +20,8 @@ import {
   Fingerprint,
   ArrowLeft,
   Info,
-  Check
+  Check,
+  Zap
 } from 'lucide-react';
 
 export const LoginView = ({ initialRole = 'superadmin' }) => {
@@ -211,6 +212,46 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     }
   };
 
+  // Instant 1-Click Demo Login Handler for Stakeholders & Testers
+  const handleQuickDemoLogin = async (roleKey) => {
+    setSelectedRoleTab(roleKey);
+    setLoginError('');
+    setIsLoading(true);
+    try {
+      if (roleKey === 'superadmin') {
+        setEmailInput('admin@joycorporatesolutions.com');
+        setPasswordInput('admin123');
+        await loginUser('superadmin', { email: 'admin@joycorporatesolutions.com', password: 'admin123' });
+        navigate('/superadmin');
+      } else if (roleKey === 'company') {
+        const comp = (companies || [])[0] || { id: 'comp_1', email: 'muthukumar@joyglobalcorp.com' };
+        const compEmail = comp.email || 'muthukumar@joyglobalcorp.com';
+        setEmailInput(compEmail);
+        setPasswordInput('company123');
+        await loginUser('company', { email: compEmail, password: 'company123', companyId: comp.id });
+        navigate('/company');
+      } else if (roleKey === 'hrexecutive') {
+        const hr = (hrUsers || [])[0] || { id: 'hr_1', email: 'muthujoygroup@gmail.com' };
+        const hrEmail = hr.email || 'muthujoygroup@gmail.com';
+        setEmailInput(hrEmail);
+        setPasswordInput('hr123');
+        await loginUser('hrexecutive', { email: hrEmail, password: 'hr123', hrId: hr.id });
+        navigate('/hr');
+      } else if (roleKey === 'employee_link') {
+        const firstCand = (candidates || [])[0] || { token: 'DEMO-TOK-7821', portalPassword: '1234' };
+        const tok = firstCand.token || 'DEMO-TOK-7821';
+        setCandidateTokenInput(tok);
+        setCandidatePinInput('1234');
+        await loginUser('employee_link', { token: tok });
+        navigate(`/verify?token=${tok}`);
+      }
+    } catch (err) {
+      setLoginError(err.message || 'Demo authentication failed.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-6 sm:py-10 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
       
@@ -268,10 +309,73 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           </p>
         </div>
 
+        {/* ⚡ 1-Click Instant Demo Login Access Bar */}
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 border border-blue-200 p-4 rounded-2xl shadow-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-blue-600" />
+              <span className="font-mono text-xs font-bold text-slate-800 uppercase tracking-wider">
+                ⚡ 1-Click Instant Demo Login (For Evaluators & Reviewers)
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-500 font-medium">Click any role below to test instantly</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button
+              onClick={() => handleQuickDemoLogin('superadmin')}
+              disabled={isLoading}
+              className="p-2.5 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 hover:border-indigo-400 text-left transition-all shadow-2xs group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5">
+                <Crown className="w-3.5 h-3.5 text-indigo-600" />
+                <span className="text-xs font-bold text-slate-900">Super Admin</span>
+              </div>
+              <div className="text-[10px] text-slate-500 font-mono mt-0.5">admin@joycorp...</div>
+            </button>
+
+            <button
+              onClick={() => handleQuickDemoLogin('company')}
+              disabled={isLoading}
+              className="p-2.5 rounded-xl bg-white hover:bg-sky-50 border border-sky-200 hover:border-sky-400 text-left transition-all shadow-2xs group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-sky-600" />
+                <span className="text-xs font-bold text-slate-900">Company Admin</span>
+              </div>
+              <div className="text-[10px] text-slate-500 font-mono mt-0.5">muthukumar@joy...</div>
+            </button>
+
+            <button
+              onClick={() => handleQuickDemoLogin('hrexecutive')}
+              disabled={isLoading}
+              className="p-2.5 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 hover:border-emerald-400 text-left transition-all shadow-2xs group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-xs font-bold text-slate-900">HR Executive</span>
+              </div>
+              <div className="text-[10px] text-slate-500 font-mono mt-0.5">muthujoygroup@...</div>
+            </button>
+
+            <button
+              onClick={() => handleQuickDemoLogin('employee_link')}
+              disabled={isLoading}
+              className="p-2.5 rounded-xl bg-white hover:bg-amber-50 border border-amber-200 hover:border-amber-400 text-left transition-all shadow-2xs group cursor-pointer"
+            >
+              <div className="flex items-center gap-1.5">
+                <Smartphone className="w-3.5 h-3.5 text-amber-600" />
+                <span className="text-xs font-bold text-slate-900">Candidate Link</span>
+              </div>
+              <div className="text-[10px] text-slate-500 font-mono mt-0.5">PIN: 1234</div>
+            </button>
+          </div>
+        </div>
+
         {/* 4 Multi-Role Access Selector Cards */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 uppercase tracking-wider px-1">
-            <span>Select Access Portal</span>
+            <span>Or Choose Role & Authenticate</span>
             <span className="text-indigo-600 font-bold hidden sm:inline">Hierarchical RBAC Architecture</span>
           </div>
 
