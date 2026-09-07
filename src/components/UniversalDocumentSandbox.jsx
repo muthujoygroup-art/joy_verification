@@ -148,7 +148,7 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
   const [isLoading, setIsLoading] = useState(false);
   const [testResult, setTestResult] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
-  const [showRawJson, setShowRawJson] = useState(false);
+  const [showRawJson, setShowRawJson] = useState(true);
   const [connTestResult, setConnTestResult] = useState(null);
   const [isTestingConn, setIsTestingConn] = useState(false);
 
@@ -797,32 +797,61 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
 
               {/* Formatted Extracted Attribute Cards */}
               {testResult.response_data && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
                     Verified Profile Output Attributes
                   </span>
+                  
+                  {/* Summary Status Badges */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
                     <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-0.5">
                       <span className="text-[10px] text-slate-500 font-bold block">Status Message</span>
-                      <span className="font-bold text-slate-200 truncate block">
-                        {testResult.response_data.message || testResult.response_data.status || (testResult.success ? 'Verified Authentic ✓' : 'Received')}
+                      <span className={`font-bold truncate block ${testResult.success ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {testResult.response_data.message || testResult.response_data.status || testResult.error_message || (testResult.success ? 'Verified Authentic ✓' : 'Response Received')}
                       </span>
                     </div>
 
                     <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-0.5">
                       <span className="text-[10px] text-slate-500 font-bold block">Request ID</span>
                       <span className="font-mono text-[11px] font-bold text-indigo-300 truncate block">
-                        {testResult.response_data.requestId || testResult.response_data.transaction_id || 'REQ-NEEV-8829'}
+                        {testResult.response_data.requestId || testResult.response_data.transaction_id || testResult.log_id || 'REQ-NEEV-8829'}
                       </span>
                     </div>
 
                     <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-0.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">Verification Seal</span>
+                      <span className="text-[10px] text-slate-500 font-bold block">Gateway Connection</span>
                       <span className="font-mono text-[11px] font-bold text-emerald-300 truncate block">
-                        DPDP-SHA256-OK
+                        ONLINE ({testResult.latency_ms || 45}ms)
                       </span>
                     </div>
                   </div>
+
+                  {/* Extracted Demographic / Document Fields */}
+                  {testResult.response_data.data && typeof testResult.response_data.data === 'object' && Object.keys(testResult.response_data.data).length > 0 && (
+                    <div className="p-3.5 bg-slate-900/70 rounded-xl border border-indigo-500/20 space-y-2">
+                      <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider block">
+                        Extracted Document Profile Fields
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+                        {Object.entries(testResult.response_data.data).map(([k, v]) => {
+                          if (typeof v === 'object' && v !== null) {
+                            return (
+                              <div key={k} className="col-span-full p-2.5 bg-slate-950/60 rounded-lg border border-slate-800 text-xs">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">{k.replace(/_/g, ' ')}</span>
+                                <pre className="text-[11px] font-mono text-emerald-300 whitespace-pre-wrap">{JSON.stringify(v, null, 2)}</pre>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div key={k} className="p-2.5 bg-slate-950/60 rounded-lg border border-slate-800 text-xs flex flex-col justify-center">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">{k.replace(/_/g, ' ')}</span>
+                              <span className="font-mono font-bold text-slate-200 truncate mt-0.5">{String(v)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
