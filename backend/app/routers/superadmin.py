@@ -275,42 +275,45 @@ def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db:
     return {"success": True, "message": f"Updated features for {comp.name}", "features": comp.features}
 
 def ensure_api_config_schema(db: Optional[Session] = None):
-    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL using AUTOCOMMIT"""
-    from sqlalchemy import text
+    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL using raw DBAPI AUTOCOMMIT"""
     from backend.app.database import engine
     ddl_statements = [
-        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL);",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255);",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255);",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED';",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]'::json;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}'::json, response_summary JSON DEFAULT '{}'::json, error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100);",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}'::json;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}'::json;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;"
+        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL)",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255)",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED'",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]'",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway'",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}', response_summary JSON DEFAULT '{}', error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100)",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}'",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}'",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT"
     ]
     try:
-        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
-            for s in ddl_statements:
-                try:
-                    conn.execute(text(s))
-                except Exception as ex:
-                    pass
+        raw_conn = engine.raw_connection()
+        raw_conn.autocommit = True
+        cursor = raw_conn.cursor()
+        for s in ddl_statements:
+            try:
+                cursor.execute(s)
+            except Exception:
+                pass
+        cursor.close()
+        raw_conn.close()
     except Exception as e:
         print(f"Error in ensure_api_config_schema: {e}")
 
@@ -323,7 +326,7 @@ except Exception:
 @router.get("/api-configs")
 def get_api_configurations(db: Session = Depends(get_db)):
     """Telemetry & credentials for API SETU, Sandbox API, Coincircletrust, etc."""
-    ensure_api_config_schema(db)
+    ensure_api_config_schema()
     try:
         cfgs = db.query(ApiConfiguration).order_by(ApiConfiguration.is_primary.desc(), ApiConfiguration.provider_key.asc()).all()
         return [
@@ -332,51 +335,62 @@ def get_api_configurations(db: Session = Depends(get_db)):
                 "display_name": c.display_name,
                 "endpoint_url": c.endpoint_url,
                 "api_key": c.api_key,
-                "secret_key": c.secret_key,
-                "webhook_url": c.webhook_url,
-                "sandbox_mode": c.sandbox_mode,
-                "rate_limit_per_min": c.rate_limit_per_min,
-                "status": c.status,
-                "is_active": c.is_active,
-                "is_primary": c.is_primary,
-                "supported_services": c.supported_services or [],
-                "provider_type": c.provider_type or "Institutional Gateway",
-                "description": c.description,
-                "ping_latency_ms": c.ping_latency_ms or 62,
-                "monthly_quota": c.monthly_quota or 10000,
-                "monthly_used": c.monthly_used or 0,
-                "last_synced": c.last_synced.isoformat() if c.last_synced else None
+                "secret_key": getattr(c, 'secret_key', None),
+                "webhook_url": getattr(c, 'webhook_url', None),
+                "sandbox_mode": getattr(c, 'sandbox_mode', False),
+                "rate_limit_per_min": getattr(c, 'rate_limit_per_min', 120),
+                "status": getattr(c, 'status', 'CONNECTED'),
+                "is_active": getattr(c, 'is_active', True),
+                "is_primary": getattr(c, 'is_primary', False),
+                "supported_services": getattr(c, 'supported_services', []),
+                "provider_type": getattr(c, 'provider_type', 'Institutional Gateway'),
+                "description": getattr(c, 'description', None),
+                "ping_latency_ms": getattr(c, 'ping_latency_ms', 62),
+                "monthly_quota": getattr(c, 'monthly_quota', 10000),
+                "monthly_used": getattr(c, 'monthly_used', 0),
+                "last_synced": c.last_synced.isoformat() if getattr(c, 'last_synced', None) else None
             }
             for c in cfgs
         ]
     except Exception as e:
         print(f"Fallback querying api_configurations: {e}")
-        from sqlalchemy import text
         try:
-            rows = db.execute(text("SELECT provider_key, display_name, endpoint_url, api_key, secret_key, webhook_url, sandbox_mode, rate_limit_per_min, status, is_active, is_primary, supported_services, provider_type, description, ping_latency_ms, monthly_quota, monthly_used, last_synced FROM api_configurations ORDER BY is_primary DESC, provider_key ASC")).fetchall()
-            return [
-                {
-                    "provider_key": r[0],
-                    "display_name": r[1],
-                    "endpoint_url": r[2],
-                    "api_key": r[3],
-                    "secret_key": r[4],
-                    "webhook_url": r[5],
-                    "sandbox_mode": r[6],
-                    "rate_limit_per_min": r[7],
-                    "status": r[8],
-                    "is_active": r[9],
-                    "is_primary": r[10],
-                    "supported_services": r[11] if r[11] else [],
-                    "provider_type": r[12] or "Institutional Gateway",
-                    "description": r[13],
-                    "ping_latency_ms": r[14] or 62,
-                    "monthly_quota": r[15] or 10000,
-                    "monthly_used": r[16] or 0,
-                    "last_synced": r[17].isoformat() if r[17] else None
-                }
-                for r in rows
-            ]
+            from backend.app.database import engine
+            raw_conn = engine.raw_connection()
+            raw_conn.autocommit = True
+            cursor = raw_conn.cursor()
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
+            c_names = [r[0] for r in cursor.fetchall()]
+            
+            cursor.execute("SELECT * FROM api_configurations")
+            rows = cursor.fetchall()
+            cursor.close()
+            raw_conn.close()
+            
+            result = []
+            for r in rows:
+                r_dict = dict(zip(c_names, r))
+                result.append({
+                    "provider_key": r_dict.get("provider_key"),
+                    "display_name": r_dict.get("display_name", "API Provider"),
+                    "endpoint_url": r_dict.get("endpoint_url", "https://apis.coincircletrust.com/api/v1/apiProduct"),
+                    "api_key": r_dict.get("api_key", ""),
+                    "secret_key": r_dict.get("secret_key"),
+                    "webhook_url": r_dict.get("webhook_url"),
+                    "sandbox_mode": r_dict.get("sandbox_mode", False),
+                    "rate_limit_per_min": r_dict.get("rate_limit_per_min", 120),
+                    "status": r_dict.get("status", "CONNECTED"),
+                    "is_active": r_dict.get("is_active", True),
+                    "is_primary": r_dict.get("is_primary", False),
+                    "supported_services": r_dict.get("supported_services", []),
+                    "provider_type": r_dict.get("provider_type", "Institutional Gateway"),
+                    "description": r_dict.get("description"),
+                    "ping_latency_ms": r_dict.get("ping_latency_ms", 62),
+                    "monthly_quota": r_dict.get("monthly_quota", 10000),
+                    "monthly_used": r_dict.get("monthly_used", 0),
+                    "last_synced": r_dict.get("last_synced").isoformat() if r_dict.get("last_synced") else None
+                })
+            return result
         except Exception:
             return []
 
@@ -486,37 +500,60 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate, db: Session =
         }
     except Exception as e:
         db.rollback()
-        # Direct SQL Auto-Healing Fallback with isolated AUTOCOMMIT connection
+        # Direct SQL Auto-Healing Fallback with isolated DBAPI AUTOCOMMIT and dynamic column query
         try:
             from backend.app.database import engine
-            ensure_api_config_schema()
             target_key = "server2_coincircle" if ("coincircle" in provider_key.lower() or "server2" in provider_key.lower() or "neev" in provider_key.lower()) else provider_key
             dname = payload.display_name or ("Server 2: CoinCircleTrust Gateways" if target_key == "server2_coincircle" else provider_key)
             eurl = payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct"
             akey = payload.api_key or ""
             skey = payload.secret_key or ""
             
-            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as autocommit_conn:
-                autocommit_conn.execute(text("""
-                    INSERT INTO api_configurations (provider_key, display_name, endpoint_url, api_key, secret_key, status, is_active, is_primary, last_synced)
-                    VALUES (:pkey, :dname, :eurl, :akey, :skey, 'CONNECTED', TRUE, TRUE, CURRENT_TIMESTAMP)
-                    ON CONFLICT (provider_key) DO UPDATE SET
-                        display_name = COALESCE(EXCLUDED.display_name, api_configurations.display_name),
-                        endpoint_url = EXCLUDED.endpoint_url,
-                        api_key = EXCLUDED.api_key,
-                        secret_key = COALESCE(EXCLUDED.secret_key, api_configurations.secret_key),
-                        status = 'CONNECTED',
-                        is_active = TRUE,
-                        is_primary = TRUE,
-                        last_synced = CURRENT_TIMESTAMP;
-                """), {
-                    "pkey": target_key,
-                    "dname": dname,
-                    "eurl": eurl,
-                    "akey": akey,
-                    "skey": skey
-                })
-                
+            raw_conn = engine.raw_connection()
+            raw_conn.autocommit = True
+            cursor = raw_conn.cursor()
+            
+            # Ensure essential columns exist directly
+            try:
+                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE")
+                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE")
+                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)")
+                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED'")
+                cursor.execute("ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+            except Exception:
+                pass
+            
+            # Fetch existing columns from PostgreSQL
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
+            c_names = set([r[0] for r in cursor.fetchall()])
+            
+            row_dict = {
+                "provider_key": target_key,
+                "display_name": dname,
+                "endpoint_url": eurl,
+                "api_key": akey,
+                "secret_key": skey,
+                "status": "CONNECTED",
+                "is_active": True,
+                "is_primary": True,
+                "last_synced": datetime.utcnow()
+            }
+            valid_items = {k: v for k, v in row_dict.items() if k in c_names}
+            cols = list(valid_items.keys())
+            placeholders = ["%s"] * len(cols)
+            val_list = [valid_items[k] for k in cols]
+            update_clauses = [f"{k} = EXCLUDED.{k}" for k in cols if k != "provider_key"]
+            
+            sql = f"""
+                INSERT INTO api_configurations ({', '.join(cols)})
+                VALUES ({', '.join(placeholders)})
+                ON CONFLICT (provider_key) DO UPDATE SET
+                    {', '.join(update_clauses)}
+            """
+            cursor.execute(sql, val_list)
+            cursor.close()
+            raw_conn.close()
+            
             return {
                 "success": True,
                 "message": f"Updated {target_key} credentials via database auto-healing successfully.",
