@@ -491,6 +491,12 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate):
     target_key = "server2_coincircle" if ("coincircle" in clean_key or "server2" in clean_key or "neev" in clean_key) else (clean_key or "server2_coincircle")
     dname = payload.display_name or ("Server 2: CoinCircleTrust Gateways (Neev 81 APIs)" if target_key == "server2_coincircle" else provider_key)
     eurl = payload.endpoint_url or "https://apis.coincircletrust.com/api/v1/apiProduct"
+    if eurl:
+        eurl = eurl.strip().rstrip('/')
+        if "api.coincircletrust.com" in eurl and "apis.coincircletrust.com" not in eurl:
+            eurl = eurl.replace("api.coincircletrust.com", "apis.coincircletrust.com")
+        if "apis.coincircletrust.com" in eurl and not eurl.endswith("/apiProduct"):
+            eurl = "https://apis.coincircletrust.com/api/v1/apiProduct"
     akey = (payload.api_key or "").strip()
     skey = (payload.secret_key or "").strip()
     is_prim = payload.is_primary if payload.is_primary is not None else (target_key == "server2_coincircle")

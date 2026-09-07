@@ -139,12 +139,21 @@ def _call_neev_api(
         logger.info(f"Neev API key not set for '{endpoint_slug}' - using verified fallback simulator")
         return False, None, 15, "API Key not configured"
 
-    # Construct clean URL
+    # Construct clean URL with intelligent domain & path auto-correction
     clean_base = base_url.strip().rstrip('/')
+    
+    # Auto-correct singular api.coincircletrust.com -> plural apis.coincircletrust.com
+    if "api.coincircletrust.com" in clean_base and "apis.coincircletrust.com" not in clean_base:
+        clean_base = clean_base.replace("api.coincircletrust.com", "apis.coincircletrust.com")
+
     if clean_base.startswith("http://"):
         clean_base = clean_base.replace("http://", "https://", 1)
     elif not clean_base.startswith("https://"):
         clean_base = "https://" + clean_base.lstrip("/")
+
+    # Auto-normalize coincircle host to the official production endpoint path
+    if "apis.coincircletrust.com" in clean_base and not clean_base.endswith("/apiProduct"):
+        clean_base = "https://apis.coincircletrust.com/api/v1/apiProduct"
 
     clean_slug = endpoint_slug.strip().lstrip('/')
     if not clean_slug.startswith("apiProduct") and "/apiProduct" not in clean_base:
