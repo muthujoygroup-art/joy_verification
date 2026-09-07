@@ -28,58 +28,83 @@ def compute_record_hash(data: Dict[str, Any], secret_salt: str = "JOY_VERIF_DPDP
 # -----------------------------------------------------------------------------
 # 🌐 Dynamic Active Provider Dispatcher (Adaptive Failover & Multi-Provider Hub)
 # -----------------------------------------------------------------------------
-def get_active_provider_info(db: Session, preferred_provider_key: Optional[str] = None) -> Dict[str, Any]:
+def get_active_provider_info(db: Optional[Session] = None, preferred_provider_key: Optional[str] = None) -> Dict[str, Any]:
     """
     Returns the currently active primary API provider configured in PostgreSQL.
     Reads credentials entered dynamically in the SuperAdmin console.
     """
-    try:
-        if preferred_provider_key:
-            target = db.query(ApiConfiguration).filter(
-                ApiConfiguration.provider_key == preferred_provider_key,
-                ApiConfiguration.is_active == True
-            ).first()
-            if target:
-                return {
-                    "key": target.provider_key,
-                    "name": target.display_name,
-                    "endpoint_url": target.endpoint_url or DEFAULT_COINCIRCLE_ENDPOINT,
-                    "api_key": target.api_key or "",
-                    "secret_key": target.secret_key or "",
-                    "is_active": target.is_active,
-                    "sandbox_mode": target.sandbox_mode
-                }
+    from sqlalchemy import text
+    from backend.app.database import engine
+    from backend.app.config import settings
 
-        # 1. Primary active provider
-        primary = db.query(ApiConfiguration).filter(
-            ApiConfiguration.is_primary == True,
-            ApiConfiguration.is_active == True
-        ).first()
-        
-        # 2. If primary is disabled or missing, fallback to active coincircle
-        if not primary:
-            primary = db.query(ApiConfiguration).filter(
-                ApiConfiguration.provider_key == "server2_coincircle",
-                ApiConfiguration.is_active == True
-            ).first()
-            
-        # 3. Fallback to any active provider in database
-        if not primary:
-            primary = db.query(ApiConfiguration).filter(ApiConfiguration.is_active == True).first()
-            
-        if primary:
+    try:
+        with engine.connect() as conn:
+            rows = conn.execute(text("SELECT * FROM api_configurations")).mappings().all()
+
+        if rows:
+            # 1. Preferred provider if specified
+            if preferred_provider_key:
+                for r in rows:
+                    if r.get("provider_key") == preferred_provider_key and r.get("is_active") is not False:
+                        return {
+                            "key": r.get("provider_key"),
+                            "name": r.get("display_name", "CoinCircle Gateway"),
+                            "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
+                            "api_key": (r.get("api_key") or "").strip(),
+                            "secret_key": (r.get("secret_key") or "").strip(),
+                            "is_active": r.get("is_active") is not False,
+                            "sandbox_mode": bool(r.get("sandbox_mode"))
+                        }
+            # 2. Primary provider with valid API key
+            for r in rows:
+                if r.get("is_primary") and r.get("is_active") is not False and (r.get("api_key") or "").strip():
+                    return {
+                        "key": r.get("provider_key"),
+                        "name": r.get("display_name", "CoinCircle Gateway"),
+                        "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
+                        "api_key": (r.get("api_key") or "").strip(),
+                        "secret_key": (r.get("secret_key") or "").strip(),
+                        "is_active": True,
+                        "sandbox_mode": bool(r.get("sandbox_mode"))
+                    }
+            # 3. Any coincircle provider with valid API key
+            for r in rows:
+                if (r.get("provider_key") == "server2_coincircle" or "coincircle" in str(r.get("provider_key")).lower()) and (r.get("api_key") or "").strip():
+                    return {
+                        "key": r.get("provider_key"),
+                        "name": r.get("display_name", "CoinCircle Gateway"),
+                        "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
+                        "api_key": (r.get("api_key") or "").strip(),
+                        "secret_key": (r.get("secret_key") or "").strip(),
+                        "is_active": r.get("is_active") is not False,
+                        "sandbox_mode": bool(r.get("sandbox_mode"))
+                    }
+            # 4. Any provider with a non-empty API key
+            for r in rows:
+                if (r.get("api_key") or "").strip():
+                    return {
+                        "key": r.get("provider_key"),
+                        "name": r.get("display_name", "API Gateway"),
+                        "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
+                        "api_key": (r.get("api_key") or "").strip(),
+                        "secret_key": (r.get("secret_key") or "").strip(),
+                        "is_active": r.get("is_active") is not False,
+                        "sandbox_mode": bool(r.get("sandbox_mode"))
+                    }
+            # 5. First row
+            r = rows[0]
             return {
-                "key": primary.provider_key,
-                "name": primary.display_name,
-                "endpoint_url": primary.endpoint_url or DEFAULT_COINCIRCLE_ENDPOINT,
-                "api_key": primary.api_key or "",
-                "secret_key": primary.secret_key or "",
-                "is_active": primary.is_active,
-                "sandbox_mode": primary.sandbox_mode
+                "key": r.get("provider_key"),
+                "name": r.get("display_name", "API Gateway"),
+                "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
+                "api_key": (r.get("api_key") or "").strip(),
+                "secret_key": (r.get("secret_key") or "").strip(),
+                "is_active": r.get("is_active") is not False,
+                "sandbox_mode": bool(r.get("sandbox_mode"))
             }
     except Exception as e:
         logger.warning(f"Could not load dynamic provider from DB: {e}")
-        
+
     return {
         "key": "server2_coincircle",
         "name": "Server 2: CoinCircleTrust Gateways (Neev 81 APIs)",
