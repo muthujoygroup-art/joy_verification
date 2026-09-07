@@ -274,21 +274,55 @@ def update_company_features(company_id: str, payload: CompanyUpdateFeatures, db:
     db.refresh(comp)
     return {"success": True, "message": f"Updated features for {comp.name}", "features": comp.features}
 
-def get_direct_db_connection():
-    """Establishes an isolated, standalone psycopg2 connection with AUTOCOMMIT enabled"""
-    import psycopg2
-    from backend.app.config import settings
-    dsn = settings.DATABASE_URL
-    if dsn.startswith('postgresql+psycopg2://'):
-        dsn = dsn.replace('postgresql+psycopg2://', 'postgresql://')
-    conn = psycopg2.connect(dsn)
-    conn.autocommit = True
-    return conn
+def get_table_columns(table_name: str = "api_configurations") -> set:
+    """Introspects and returns all column names currently present in the target database table"""
+    from sqlalchemy import text
+    from backend.app.database import engine
+    cols = set()
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(text(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}'"))
+            for r in res.fetchall():
+                cols.add(r[0].lower())
+    except Exception:
+        pass
+    if not cols:
+        try:
+            with engine.connect() as conn:
+                res = conn.execute(text(f"PRAGMA table_info({table_name})"))
+                for r in res.fetchall():
+                    cols.add(r[1].lower())
+        except Exception:
+            pass
+    return cols
 
-def ensure_api_config_schema(db: Optional[Session] = None):
-    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL using raw DBAPI AUTOCOMMIT"""
+def ensure_api_config_schema():
+    """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL/SQLite"""
+    from sqlalchemy import text
+    from backend.app.database import engine
+    
     ddl_statements = [
-        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL, secret_key VARCHAR(255), webhook_url VARCHAR(255), sandbox_mode BOOLEAN DEFAULT FALSE, rate_limit_per_min INTEGER DEFAULT 120, status VARCHAR(50) DEFAULT 'CONNECTED', is_active BOOLEAN DEFAULT TRUE, is_primary BOOLEAN DEFAULT FALSE, supported_services JSON DEFAULT '[]', provider_type VARCHAR(100) DEFAULT 'Institutional Gateway', description TEXT, ping_latency_ms INTEGER DEFAULT 62, monthly_quota INTEGER DEFAULT 10000, monthly_used INTEGER DEFAULT 0, last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
+        """CREATE TABLE IF NOT EXISTS api_configurations (
+            provider_key VARCHAR(50) PRIMARY KEY,
+            display_name VARCHAR(100) NOT NULL,
+            endpoint_url VARCHAR(255) NOT NULL,
+            api_key VARCHAR(255) NOT NULL,
+            secret_key VARCHAR(255),
+            webhook_url VARCHAR(255),
+            sandbox_mode BOOLEAN DEFAULT FALSE,
+            rate_limit_per_min INTEGER DEFAULT 120,
+            status VARCHAR(50) DEFAULT 'CONNECTED',
+            is_active BOOLEAN DEFAULT TRUE,
+            is_primary BOOLEAN DEFAULT FALSE,
+            supported_services JSON DEFAULT '[]',
+            provider_type VARCHAR(100) DEFAULT 'Institutional Gateway',
+            description TEXT,
+            ping_latency_ms INTEGER DEFAULT 62,
+            monthly_quota INTEGER DEFAULT 10000,
+            monthly_used INTEGER DEFAULT 0,
+            last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )""",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255)",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE",
@@ -304,7 +338,24 @@ def ensure_api_config_schema(db: Optional[Session] = None):
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
         "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}', response_summary JSON DEFAULT '{}', error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
+        """CREATE TABLE IF NOT EXISTS api_call_logs (
+            id VARCHAR(50) PRIMARY KEY,
+            endpoint_slug VARCHAR(150) NOT NULL,
+            category VARCHAR(100) NOT NULL,
+            initiator_role VARCHAR(50) DEFAULT 'superadmin',
+            initiator_id VARCHAR(100),
+            company_id VARCHAR(50),
+            provider_key VARCHAR(50) DEFAULT 'server2_coincircle',
+            status VARCHAR(50) DEFAULT 'SUCCESS',
+            http_status INTEGER DEFAULT 200,
+            latency_ms INTEGER DEFAULT 50,
+            cost_incurred FLOAT DEFAULT 4.0,
+            input_identifier VARCHAR(100),
+            request_payload JSON DEFAULT '{}',
+            response_summary JSON DEFAULT '{}',
+            error_message TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )""",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0",
@@ -313,18 +364,12 @@ def ensure_api_config_schema(db: Optional[Session] = None):
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}'",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT"
     ]
-    try:
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
-        for s in ddl_statements:
-            try:
-                cur.execute(s)
-            except Exception:
-                pass
-        cur.close()
-        conn.close()
-    except Exception as e:
-        print(f"Error in ensure_api_config_schema: {e}")
+    for s in ddl_statements:
+        try:
+            with engine.begin() as conn:
+                conn.execute(text(s))
+        except Exception:
+            pass
 
 # Run schema assurance immediately on module load
 try:
@@ -335,40 +380,34 @@ except Exception:
 @router.get("/api-configs")
 def get_api_configurations():
     """Telemetry & credentials for API SETU, Sandbox API, Coincircletrust, etc."""
+    from sqlalchemy import text
+    from backend.app.database import engine
     ensure_api_config_schema()
     try:
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'api_configurations'")
-        c_names = [r[0] for r in cur.fetchall()]
-        
-        cur.execute("SELECT * FROM api_configurations ORDER BY is_primary DESC, provider_key ASC")
-        rows = cur.fetchall()
-        cur.close()
-        conn.close()
+        with engine.connect() as conn:
+            rows = conn.execute(text("SELECT * FROM api_configurations")).mappings().all()
         
         result = []
         for r in rows:
-            r_dict = dict(zip(c_names, r))
             result.append({
-                "provider_key": r_dict.get("provider_key"),
-                "display_name": r_dict.get("display_name", "API Provider"),
-                "endpoint_url": r_dict.get("endpoint_url", "https://apis.coincircletrust.com/api/v1/apiProduct"),
-                "api_key": r_dict.get("api_key", ""),
-                "secret_key": r_dict.get("secret_key"),
-                "webhook_url": r_dict.get("webhook_url"),
-                "sandbox_mode": r_dict.get("sandbox_mode", False),
-                "rate_limit_per_min": r_dict.get("rate_limit_per_min", 120),
-                "status": r_dict.get("status", "CONNECTED"),
-                "is_active": r_dict.get("is_active", True),
-                "is_primary": r_dict.get("is_primary", False),
-                "supported_services": r_dict.get("supported_services", []),
-                "provider_type": r_dict.get("provider_type", "Institutional Gateway"),
-                "description": r_dict.get("description"),
-                "ping_latency_ms": r_dict.get("ping_latency_ms", 62),
-                "monthly_quota": r_dict.get("monthly_quota", 10000),
-                "monthly_used": r_dict.get("monthly_used", 0),
-                "last_synced": r_dict.get("last_synced").isoformat() if r_dict.get("last_synced") else None
+                "provider_key": r.get("provider_key"),
+                "display_name": r.get("display_name", "API Provider"),
+                "endpoint_url": r.get("endpoint_url", "https://apis.coincircletrust.com/api/v1/apiProduct"),
+                "api_key": r.get("api_key", ""),
+                "secret_key": r.get("secret_key"),
+                "webhook_url": r.get("webhook_url"),
+                "sandbox_mode": r.get("sandbox_mode", False),
+                "rate_limit_per_min": r.get("rate_limit_per_min", 120),
+                "status": r.get("status", "CONNECTED"),
+                "is_active": r.get("is_active", True),
+                "is_primary": r.get("is_primary", False),
+                "supported_services": r.get("supported_services", []),
+                "provider_type": r.get("provider_type", "Institutional Gateway"),
+                "description": r.get("description"),
+                "ping_latency_ms": r.get("ping_latency_ms", 62),
+                "monthly_quota": r.get("monthly_quota", 10000),
+                "monthly_used": r.get("monthly_used", 0),
+                "last_synced": r.get("last_synced").isoformat() if r.get("last_synced") and hasattr(r.get("last_synced"), "isoformat") else str(r.get("last_synced")) if r.get("last_synced") else None
             })
         return result
     except Exception as e:
@@ -378,55 +417,61 @@ def get_api_configurations():
 @router.post("/api-configs")
 def create_api_configuration(payload: ApiConfigCreate):
     """Super Admin onboarding of a new third-party verification API provider"""
+    from sqlalchemy import text
+    from backend.app.database import engine
+    import json
     try:
         ensure_api_config_schema()
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
+        cols = get_table_columns("api_configurations")
         
-        cur.execute("SELECT provider_key FROM api_configurations WHERE provider_key = %s", (payload.provider_key,))
-        if cur.fetchone():
-            cur.close()
-            conn.close()
-            raise HTTPException(status_code=400, detail=f"API Provider with key '{payload.provider_key}' already exists.")
+        with engine.connect() as conn:
+            existing = conn.execute(text("SELECT provider_key FROM api_configurations WHERE provider_key = :pkey"), {"pkey": payload.provider_key}).fetchone()
+            if existing:
+                raise HTTPException(status_code=400, detail=f"API Provider with key '{payload.provider_key}' already exists.")
             
-        if payload.is_primary:
-            cur.execute("UPDATE api_configurations SET is_primary = FALSE")
+        if payload.is_primary and "is_primary" in cols:
+            with engine.begin() as conn:
+                conn.execute(text("UPDATE api_configurations SET is_primary = FALSE"))
             
-        import json
-        services_json = json.dumps(payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"])
+        data_map = {
+            "provider_key": payload.provider_key,
+            "display_name": payload.display_name,
+            "endpoint_url": payload.endpoint_url,
+            "api_key": payload.api_key
+        }
+        if "secret_key" in cols:
+            data_map["secret_key"] = payload.secret_key
+        if "webhook_url" in cols:
+            data_map["webhook_url"] = payload.webhook_url
+        if "sandbox_mode" in cols:
+            data_map["sandbox_mode"] = payload.sandbox_mode or False
+        if "rate_limit_per_min" in cols:
+            data_map["rate_limit_per_min"] = payload.rate_limit_per_min or 120
+        if "status" in cols:
+            data_map["status"] = payload.status or "CONNECTED"
+        if "is_active" in cols:
+            data_map["is_active"] = payload.is_active if payload.is_active is not None else True
+        if "is_primary" in cols:
+            data_map["is_primary"] = payload.is_primary or False
+        if "supported_services" in cols:
+            data_map["supported_services"] = json.dumps(payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"])
+        if "provider_type" in cols:
+            data_map["provider_type"] = payload.provider_type or "Institutional Gateway"
+        if "description" in cols:
+            data_map["description"] = payload.description or ""
+        if "monthly_quota" in cols:
+            data_map["monthly_quota"] = payload.monthly_quota or 10000
+
+        insert_cols = [c for c in data_map.keys() if c in cols]
+        if not insert_cols:
+            insert_cols = ["provider_key", "display_name", "endpoint_url", "api_key"]
+            
+        col_names = ", ".join(insert_cols)
+        val_placeholders = ", ".join([f":{c}" for c in insert_cols])
         
-        cur.execute("""
-            INSERT INTO api_configurations (
-                provider_key, display_name, endpoint_url, api_key, secret_key,
-                webhook_url, sandbox_mode, rate_limit_per_min, status,
-                is_active, is_primary, supported_services, provider_type,
-                description, monthly_quota, monthly_used, ping_latency_ms, last_synced
-            ) VALUES (
-                %s, %s, %s, %s, %s,
-                %s, %s, %s, %s,
-                %s, %s, %s, %s,
-                %s, %s, 0, 62, CURRENT_TIMESTAMP
-            )
-        """, (
-            payload.provider_key,
-            payload.display_name,
-            payload.endpoint_url,
-            payload.api_key,
-            payload.secret_key,
-            payload.webhook_url,
-            payload.sandbox_mode or False,
-            payload.rate_limit_per_min or 120,
-            payload.status or "CONNECTED",
-            payload.is_active if payload.is_active is not None else True,
-            payload.is_primary or False,
-            services_json,
-            payload.provider_type or "Institutional Gateway",
-            payload.description,
-            payload.monthly_quota or 10000
-        ))
-        
-        cur.close()
-        conn.close()
+        with engine.begin() as conn:
+            conn.execute(text(f"INSERT INTO api_configurations ({col_names}) VALUES ({val_placeholders})"), data_map)
+            
         return {"success": True, "message": f"API Provider '{payload.display_name}' created successfully.", "provider_key": payload.provider_key}
     except HTTPException:
         raise
@@ -435,8 +480,11 @@ def create_api_configuration(payload: ApiConfigCreate):
 
 @router.put("/api-configs/{provider_key}")
 def update_api_config(provider_key: str, payload: ApiConfigUpdate):
-    """Update API Gateway credentials, endpoints, sandbox mode or rate limits (standalone psycopg2 autocommit)"""
+    """Update API Gateway credentials, endpoints, sandbox mode or rate limits with resilient dynamic column mapping"""
     from fastapi.responses import JSONResponse
+    from sqlalchemy import text
+    from backend.app.database import engine
+    import json
     import traceback
     
     clean_key = provider_key.strip().lower().replace(' ', '_')
@@ -450,85 +498,75 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate):
     
     try:
         ensure_api_config_schema()
-        conn = get_direct_db_connection()
-        cursor = conn.cursor()
+        cols = get_table_columns("api_configurations")
         
-        # 1. Guarantee table exists
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS api_configurations (
-                provider_key VARCHAR(50) PRIMARY KEY,
-                display_name VARCHAR(100) NOT NULL,
-                endpoint_url VARCHAR(255) NOT NULL,
-                api_key VARCHAR(255) NOT NULL,
-                secret_key VARCHAR(255),
-                webhook_url VARCHAR(255),
-                sandbox_mode BOOLEAN DEFAULT FALSE,
-                rate_limit_per_min INTEGER DEFAULT 120,
-                status VARCHAR(50) DEFAULT 'CONNECTED',
-                is_active BOOLEAN DEFAULT TRUE,
-                is_primary BOOLEAN DEFAULT FALSE,
-                supported_services JSON DEFAULT '[]',
-                provider_type VARCHAR(100) DEFAULT 'Institutional Gateway',
-                description TEXT,
-                ping_latency_ms INTEGER DEFAULT 62,
-                monthly_quota INTEGER DEFAULT 10000,
-                monthly_used INTEGER DEFAULT 0,
-                last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        # 2. Guarantee columns
-        cols_to_add = [
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255)",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255)",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED'",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]'",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway'",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-        ]
-        for stmt in cols_to_add:
+        # If is_primary column exists and we are making this primary, reset others
+        if is_prim and "is_primary" in cols:
             try:
-                cursor.execute(stmt)
+                with engine.begin() as conn:
+                    conn.execute(text("UPDATE api_configurations SET is_primary = FALSE WHERE provider_key != :pkey"), {"pkey": target_key})
             except Exception:
                 pass
-                
-        # 3. If primary, demote other providers
-        if is_prim:
-            try:
-                cursor.execute("UPDATE api_configurations SET is_primary = FALSE WHERE provider_key != %s", (target_key,))
-            except Exception:
-                pass
-                
-        # 4. Upsert configuration
-        cursor.execute("""
-            INSERT INTO api_configurations (
-                provider_key, display_name, endpoint_url, api_key, secret_key, status, is_active, is_primary, last_synced
-            ) VALUES (
-                %s, %s, %s, %s, %s, 'CONNECTED', %s, %s, CURRENT_TIMESTAMP
-            ) ON CONFLICT (provider_key) DO UPDATE SET
-                display_name = COALESCE(EXCLUDED.display_name, api_configurations.display_name),
-                endpoint_url = EXCLUDED.endpoint_url,
-                api_key = EXCLUDED.api_key,
-                secret_key = COALESCE(EXCLUDED.secret_key, api_configurations.secret_key),
-                status = 'CONNECTED',
-                is_active = EXCLUDED.is_active,
-                is_primary = EXCLUDED.is_primary,
-                last_synced = CURRENT_TIMESTAMP
-        """, (target_key, dname, eurl, akey, skey, is_act, is_prim))
+
+        # Build data dictionary matching available schema columns
+        data_map = {
+            "provider_key": target_key,
+            "display_name": dname,
+            "endpoint_url": eurl,
+            "api_key": akey
+        }
+        if "secret_key" in cols:
+            data_map["secret_key"] = skey
+        if "status" in cols:
+            data_map["status"] = "CONNECTED" if is_act else "DISABLED"
+        if "is_active" in cols:
+            data_map["is_active"] = is_act
+        if "is_primary" in cols:
+            data_map["is_primary"] = is_prim
+        if "sandbox_mode" in cols:
+            data_map["sandbox_mode"] = payload.sandbox_mode if payload.sandbox_mode is not None else False
+        if "rate_limit_per_min" in cols:
+            data_map["rate_limit_per_min"] = payload.rate_limit_per_min or 5000
+        if "monthly_quota" in cols:
+            data_map["monthly_quota"] = payload.monthly_quota or 50000
+        if "webhook_url" in cols and payload.webhook_url:
+            data_map["webhook_url"] = payload.webhook_url
+        if "supported_services" in cols:
+            data_map["supported_services"] = json.dumps(payload.supported_services or ["aadhaar", "pan", "bank", "dl", "passport", "uan", "face"])
+        if "provider_type" in cols:
+            data_map["provider_type"] = payload.provider_type or "Institutional Gateway"
+        if "description" in cols:
+            data_map["description"] = payload.description or ""
+
+        # Filter fields strictly by existing columns
+        insert_cols = [c for c in data_map.keys() if c in cols]
+        if not insert_cols:
+            insert_cols = ["provider_key", "display_name", "endpoint_url", "api_key"]
+            
+        col_names = ", ".join(insert_cols)
+        val_placeholders = ", ".join([f":{c}" for c in insert_cols])
+        update_clauses = [f"{c} = :{c}" for c in insert_cols if c != "provider_key"]
+        update_str = ", ".join(update_clauses)
         
-        cursor.close()
-        conn.close()
-        
+        # Check if record exists
+        with engine.begin() as conn:
+            existing = conn.execute(
+                text("SELECT provider_key FROM api_configurations WHERE provider_key = :pkey"),
+                {"pkey": target_key}
+            ).fetchone()
+            
+            if existing:
+                if update_str:
+                    conn.execute(
+                        text(f"UPDATE api_configurations SET {update_str} WHERE provider_key = :provider_key"),
+                        data_map
+                    )
+            else:
+                conn.execute(
+                    text(f"INSERT INTO api_configurations ({col_names}) VALUES ({val_placeholders})"),
+                    data_map
+                )
+
         return {
             "success": True,
             "message": f"Updated {dname} credentials and Base URL in database successfully.",
@@ -550,31 +588,37 @@ def update_api_config(provider_key: str, payload: ApiConfigUpdate):
 @router.put("/api-configs/{provider_key}/toggle")
 def toggle_api_config(provider_key: str, payload: ApiConfigToggle):
     """Instantly Enable or Disable an API Provider"""
+    from sqlalchemy import text
+    from backend.app.database import engine
     clean_key = provider_key.strip().lower().replace(' ', '_')
     try:
         ensure_api_config_schema()
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE api_configurations 
-            SET is_active = %s, status = %s, last_synced = CURRENT_TIMESTAMP
-            WHERE provider_key = %s OR provider_key = %s
-            RETURNING display_name, is_active, status
-        """, (payload.is_active, "CONNECTED" if payload.is_active else "DISABLED", provider_key, clean_key))
-        row = cur.fetchone()
-        cur.close()
-        conn.close()
+        cols = get_table_columns("api_configurations")
         
-        dname = row[0] if row else provider_key
-        act = row[1] if row else payload.is_active
-        st = row[2] if row else ("CONNECTED" if payload.is_active else "DISABLED")
-        status_str = "ENABLED (Active)" if act else "DISABLED (Offline)"
+        status_val = "CONNECTED" if payload.is_active else "DISABLED"
+        update_parts = []
+        params = {"pkey": provider_key, "ckey": clean_key, "status": status_val}
+        
+        if "is_active" in cols:
+            update_parts.append("is_active = :is_active")
+            params["is_active"] = payload.is_active
+        if "status" in cols:
+            update_parts.append("status = :status")
+        if "last_synced" in cols:
+            update_parts.append("last_synced = CURRENT_TIMESTAMP")
+            
+        if update_parts:
+            set_clause = ", ".join(update_parts)
+            with engine.begin() as conn:
+                conn.execute(text(f"UPDATE api_configurations SET {set_clause} WHERE provider_key = :pkey OR provider_key = :ckey"), params)
+                
+        status_str = "ENABLED (Active)" if payload.is_active else "DISABLED (Offline)"
         return {
             "success": True,
-            "message": f"{dname} is now {status_str}",
+            "message": f"API Provider is now {status_str}",
             "provider_key": provider_key,
-            "is_active": act,
-            "status": st
+            "is_active": payload.is_active,
+            "status": status_val
         }
     except Exception as e:
         return {"success": False, "detail": str(e)}
@@ -582,25 +626,28 @@ def toggle_api_config(provider_key: str, payload: ApiConfigToggle):
 @router.put("/api-configs/{provider_key}/primary")
 def set_primary_api_config(provider_key: str):
     """Set specified API provider as the Primary Active Verification Engine for all checks"""
+    from sqlalchemy import text
+    from backend.app.database import engine
     try:
         ensure_api_config_schema()
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
-        cur.execute("UPDATE api_configurations SET is_primary = FALSE")
-        cur.execute("""
-            UPDATE api_configurations 
-            SET is_primary = TRUE, is_active = TRUE, status = 'CONNECTED', last_synced = CURRENT_TIMESTAMP
-            WHERE provider_key = %s
-            RETURNING display_name, endpoint_url, is_active, is_primary
-        """, (provider_key,))
-        row = cur.fetchone()
-        cur.close()
-        conn.close()
+        cols = get_table_columns("api_configurations")
         
-        dname = row[0] if row else provider_key
+        with engine.begin() as conn:
+            if "is_primary" in cols:
+                conn.execute(text("UPDATE api_configurations SET is_primary = FALSE"))
+                update_parts = ["is_primary = TRUE"]
+                if "is_active" in cols:
+                    update_parts.append("is_active = TRUE")
+                if "status" in cols:
+                    update_parts.append("status = 'CONNECTED'")
+                if "last_synced" in cols:
+                    update_parts.append("last_synced = CURRENT_TIMESTAMP")
+                set_clause = ", ".join(update_parts)
+                conn.execute(text(f"UPDATE api_configurations SET {set_clause} WHERE provider_key = :pkey"), {"pkey": provider_key})
+                
         return {
             "success": True,
-            "message": f"{dname} is now the PRIMARY active verification engine.",
+            "message": f"API Provider '{provider_key}' is now the PRIMARY active verification engine.",
             "provider_key": provider_key,
             "is_primary": True
         }
@@ -610,20 +657,16 @@ def set_primary_api_config(provider_key: str):
 @router.delete("/api-configs/{provider_key}")
 def delete_api_config(provider_key: str):
     """Delete a custom added API Provider"""
+    from sqlalchemy import text
+    from backend.app.database import engine
     if provider_key in ("server1_sandbox", "server2_coincircle"):
         raise HTTPException(status_code=400, detail="System default providers (Sandbox / CoinCircle) cannot be deleted. You can disable them instead.")
     
     try:
         ensure_api_config_schema()
-        conn = get_direct_db_connection()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM api_configurations WHERE provider_key = %s RETURNING display_name", (provider_key,))
-        row = cur.fetchone()
-        cur.close()
-        conn.close()
-        if not row:
-            raise HTTPException(status_code=404, detail="API Gateway configuration not found")
-        return {"success": True, "message": f"API Provider '{row[0]}' deleted successfully."}
+        with engine.begin() as conn:
+            conn.execute(text("DELETE FROM api_configurations WHERE provider_key = :pkey"), {"pkey": provider_key})
+        return {"success": True, "message": f"API Provider '{provider_key}' deleted successfully."}
     except HTTPException:
         raise
     except Exception as e:

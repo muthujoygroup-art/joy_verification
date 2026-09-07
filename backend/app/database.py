@@ -135,7 +135,30 @@ def apply_runtime_migrations(target_engine):
         "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);",
         "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';",
         "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}', response_summary JSON DEFAULT '{}', error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+        "CREATE TABLE IF NOT EXISTS api_configurations (provider_key VARCHAR(50) PRIMARY KEY, display_name VARCHAR(100) NOT NULL, endpoint_url VARCHAR(255) NOT NULL, api_key VARCHAR(255) NOT NULL, secret_key VARCHAR(255), webhook_url VARCHAR(255), sandbox_mode BOOLEAN DEFAULT FALSE, rate_limit_per_min INTEGER DEFAULT 120, status VARCHAR(50) DEFAULT 'CONNECTED', is_active BOOLEAN DEFAULT TRUE, is_primary BOOLEAN DEFAULT FALSE, supported_services JSON DEFAULT '[]', provider_type VARCHAR(100) DEFAULT 'Institutional Gateway', description TEXT, ping_latency_ms INTEGER DEFAULT 62, monthly_quota INTEGER DEFAULT 10000, monthly_used INTEGER DEFAULT 0, last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255);",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255);",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED';",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[]';",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
+        "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
+        "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}', response_summary JSON DEFAULT '{}', error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100);",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}';",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}';",
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;"
     ]
     for stmt in migrations:
         try:
