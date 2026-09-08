@@ -61,11 +61,20 @@ import {
   Sliders,
   DollarSign,
   Download,
-  ArrowUpRight
+  ArrowUpRight,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
-import { Running3DBackground } from '../components/Running3DBackground';
+import Running3DBackground from '../components/Running3DBackground';
+import HeroInteractiveCard3D from '../components/landing/HeroInteractiveCard3D';
+import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
+import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentRadarVisualizer';
+import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator';
+import InteractiveProcessPipeline from '../components/landing/InteractiveProcessPipeline';
+import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
+import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
@@ -81,17 +90,15 @@ export const LandingPageView = () => {
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showPassModal, setShowPassModal] = useState(false);
+  const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
 
-  // Hero 3D Card Parallax Tilt State
-  const [tiltStyle, setTiltStyle] = useState({});
-  const heroCardRef = useRef(null);
-
-  // Hero Interactive Multi-Worker Personas & Biometric State
-  const [activePersona, setActivePersona] = useState('aryan');
-  const [heroScanning, setHeroScanning] = useState(false);
-  const [heroScanComplete, setHeroScanComplete] = useState(false);
-  const [heroScanProgress, setHeroScanProgress] = useState(0);
-  const [heroScanStage, setHeroScanStage] = useState('idle'); // 'idle' | 'identity' | 'experience' | 'bank' | 'complete'
+  const handleToggleSound = () => {
+    const nextMute = soundEngine.toggleMute();
+    setSoundMuted(nextMute);
+    if (!nextMute) {
+      soundEngine.playSuccess();
+    }
+  };
 
   // WhatsApp Floating Widget State
   const [whatsappOpen, setWhatsappOpen] = useState(false);
@@ -655,6 +662,20 @@ export const LandingPageView = () => {
           {/* Right Action CTAs & Portal Switcher */}
           <div className="hidden sm:flex items-center gap-3">
             
+            {/* Futuristic UI Sound Effects Toggle */}
+            <button
+              onClick={handleToggleSound}
+              title={soundMuted ? 'Unmute Futuristic UI Sound Effects' : 'Mute UI Sound Effects'}
+              className="p-2.5 rounded-xl text-xs font-bold text-slate-200 bg-white/10 hover:bg-white/15 border border-white/15 transition-all flex items-center justify-center cursor-pointer shadow-sm"
+              aria-label="Toggle Sound Effects"
+            >
+              {soundMuted ? (
+                <VolumeX className="w-4 h-4 text-slate-400" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />
+              )}
+            </button>
+
             {/* Portal Login Dropdown */}
             <div className="relative">
               <button
@@ -746,16 +767,15 @@ export const LandingPageView = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="xl:hidden mt-3 pt-3 border-t border-white/10 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Features</a>
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Verification Modules</a>
+            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Moonlighting Radar</a>
+            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Turnstile Simulator</a>
             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">How It Works</a>
-            <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Solutions</a>
+            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Comparison Matrix</a>
             <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Simulator Studio</a>
             <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">ROI Calculator</a>
-            <a href="#craft" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Architecture</a>
-            <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Specifications</a>
             <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">India Telemetry Radar</a>
             <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Reviews</a>
-            <a href="#knowledge-hub" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Knowledge Hub</a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">FAQ</a>
             
             <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
@@ -777,7 +797,7 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: 3D LIQUID GLASS EMPLOYEE PROFILE VERIFICATION STAGE
+       * 2. HERO SECTION: 3D HOLOGRAPHIC DIGITAL PASSPORT STAGE
        * ============================================================================== */}
       <section className="relative z-10 pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -795,15 +815,15 @@ export const LandingPageView = () => {
 
             {/* Main Headline with Electric Gradient */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12] mb-6 font-outfit">
-              The Easiest & Most Reliable Way to <br className="hidden sm:inline" />
+              The Intelligent Employee Profile <br className="hidden sm:inline" />
               <span className="text-gradient-electric">
-                Verify Employee Profiles
+                Verification Engine
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8 font-normal">
-              Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee profile verification as simple as sending a link. Validate digital identity, past employment history, legal public records, and payroll bank details in 3 effortless steps.
+              Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee profile verification as simple as sending a link. Validate digital identity, past employment history, dual-employment moonlighting, and direct bank details in sub-45 seconds.
             </p>
 
             {/* Primary Action Buttons */}
@@ -812,7 +832,7 @@ export const LandingPageView = () => {
                 onClick={() => setShowDemoModal(true)}
                 className="px-6 py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-xl shadow-cyan-500/30 hover-jump transition-all flex items-center gap-2 cursor-pointer border border-cyan-400/40"
               >
-                <span>Book Live Demo</span>
+                <span>Book Live Enterprise Demo</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -821,186 +841,39 @@ export const LandingPageView = () => {
                 className="dark-glass-card px-5 py-3.5 rounded-xl font-bold text-sm text-white hover:text-cyan-300 hover:border-cyan-400/50 shadow-sm hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Explore Features</span>
+                <span>Explore Modules</span>
               </a>
 
               <a
-                href="#how-it-works"
+                href="#moonlighting-radar"
                 className="dark-glass-card px-4 py-3.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5 text-indigo-400" />
-                <span>How It Works</span>
+                <span>Moonlighting Radar</span>
               </a>
             </div>
 
             {/* Quick Metrics Bar with Dark Glass Cards */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 w-full max-w-lg">
               <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
-                <div className="text-2xl sm:text-3xl font-black text-cyan-400 font-outfit">3 Steps</div>
-                <div className="text-xs text-slate-300 font-bold mt-0.5">Effortless Flow</div>
-              </div>
-              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-outfit">Fast</div>
+                <div className="text-2xl sm:text-3xl font-black text-cyan-400 font-outfit">&lt;45s</div>
                 <div className="text-xs text-slate-300 font-bold mt-0.5">Automated TAT</div>
               </div>
               <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
+                <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-outfit">0.00%</div>
+                <div className="text-xs text-slate-300 font-bold mt-0.5">Ghost Worker Risk</div>
+              </div>
+              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
                 <div className="text-2xl sm:text-3xl font-black text-indigo-400 font-outfit">100%</div>
-                <div className="text-xs text-slate-300 font-bold mt-0.5">Audit-Ready Dossier</div>
+                <div className="text-xs text-slate-300 font-bold mt-0.5">DPDP Act Compliant</div>
               </div>
             </div>
 
           </div>
 
-          {/* Right Column: 3D Floating Stage with Interactive Jumping Badges */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative max-w-[430px] mx-auto">
-              
-              {/* Persona Switcher Tabs */}
-              <div className="flex items-center justify-between p-1.5 dark-glass-card rounded-2xl mb-3 font-mono text-[11px] font-bold border border-white/10">
-                {[
-                  { id: 'aryan', label: '💼 Corporate / IT' },
-                  { id: 'pooja', label: '📦 Logistics / 3PL' },
-                  { id: 'rajesh', label: '🏭 Manufacturing' }
-                ].map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      setActivePersona(p.id);
-                      setHeroScanComplete(false);
-                      setHeroScanStage('idle');
-                    }}
-                    className={`flex-1 py-2 px-2 rounded-xl transition-all cursor-pointer ${
-                      activePersona === p.id
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md border border-cyan-400/40 font-extrabold scale-[1.02]'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Glowing Background Ring */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/25 via-blue-600/20 to-purple-600/25 rounded-3xl blur-2xl opacity-90 pointer-events-none"></div>
-              
-              {/* Floating Liquid Glass Badges that jump on hover */}
-              <div className="absolute -top-3 -left-4 z-20 dark-glass-pill font-mono text-[9px] uppercase tracking-wider text-emerald-300 border border-emerald-500/30 font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob hover-jump cursor-pointer">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% DPDP Act Compliant</span>
-              </div>
-
-              <div className="absolute -bottom-3 -right-4 z-20 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3.5 py-1.5 rounded-full shadow-xl flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer border border-cyan-400/30">
-                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                <span>Automated Verification</span>
-              </div>
-
-              <div
-                ref={heroCardRef}
-                onMouseMove={handleMouseMoveHero}
-                onMouseLeave={handleMouseLeaveHero}
-                style={tiltStyle}
-                className="dark-glass-hero relative rounded-3xl overflow-hidden p-3 transition-all hover-jump-subtle border border-white/20"
-              >
-                {/* 3D Smart Card Image */}
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-950 border border-white/20 shadow-inner">
-                  <img
-                    src={heroPersonas[activePersona].image}
-                    alt="JOY TrueProfile 3D Digital Employee Verification Stage"
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                  
-                  {/* Animated Laser Scan Beam */}
-                  {heroScanning && (
-                    <div className="absolute inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#06B6D4,0_0_40px_#6366F1] animate-laser-vertical pointer-events-none z-10"></div>
-                  )}
-
-                  {/* Top Badges */}
-                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md border border-white/20 font-mono text-[9px] uppercase tracking-wider text-slate-200 font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
-                    <Fingerprint className="w-3 h-3 text-cyan-400" />
-                    <span>Identity Authenticated</span>
-                  </div>
-
-                  <div className="absolute top-3 right-3 bg-cyan-950/80 backdrop-blur-md border border-cyan-500/40 font-mono text-[9px] uppercase tracking-wider text-cyan-300 font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-xs">
-                    <Zap className="w-3 h-3 text-cyan-400" />
-                    <span>Verified Profile</span>
-                  </div>
-
-                  {/* Candidate Info Overlay at bottom of image */}
-                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-3 pt-6 text-white font-sans">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-sm font-bold text-white font-outfit">{heroPersonas[activePersona].name}</h4>
-                        <p className="text-[10px] text-slate-300 font-mono">{heroPersonas[activePersona].role}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/40 text-[9px] font-mono text-cyan-300 font-bold">
-                          {heroPersonas[activePersona].gateId}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Telemetry & Live Verification Stages Footer */}
-                <div className="p-3.5 bg-slate-900/90 backdrop-blur-md rounded-2xl mt-2 border border-white/10 flex flex-col gap-2.5 shadow-xs">
-                  
-                  {/* Verification Pipeline Checks */}
-                  <div className="grid grid-cols-3 gap-1.5 font-mono text-[9px]">
-                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
-                      heroScanStage === 'identity' || heroScanComplete ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-950/80 border-white/10 text-slate-400'
-                    }`}>
-                      1. Digital ID & Face
-                      <span className="block text-[8px] font-extrabold text-emerald-400">{heroScanComplete ? '99.98% ✓' : 'Live Match'}</span>
-                    </div>
-
-                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
-                      heroScanStage === 'experience' || heroScanComplete ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-950/80 border-white/10 text-slate-400'
-                    }`}>
-                      2. Work History
-                      <span className="block text-[8px] font-extrabold text-emerald-400">{heroScanComplete ? '0 Overlaps ✓' : 'Tenure Check'}</span>
-                    </div>
-
-                    <div className={`p-1.5 rounded-lg border text-center transition-all ${
-                      heroScanStage === 'bank' || heroScanComplete ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-950/80 border-white/10 text-slate-400'
-                    }`}>
-                      3. Bank & Payroll
-                      <span className="block text-[8px] font-extrabold text-emerald-400">{heroScanComplete ? '100% Match ✓' : 'Name Match'}</span>
-                    </div>
-                  </div>
-
-                  {/* Cryptographic SHA-256 Checksum */}
-                  <div className="flex items-center justify-between font-mono text-[9px] text-slate-400 pt-1 border-t border-white/10">
-                    <span>DIGITAL PROFILE DOSSIER</span>
-                    <span className="text-cyan-400 font-bold">SHA-256 CERTIFIED</span>
-                  </div>
-
-                  {/* Interactive Biometric Test Button */}
-                  <button
-                    onClick={triggerHeroBiometricScan}
-                    disabled={heroScanning}
-                    className="w-full py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-lg shadow-cyan-500/25 hover-jump transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer border border-cyan-400/30"
-                  >
-                    {heroScanning ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
-                        <span>Verifying Employee Profile ({heroScanProgress}%)...</span>
-                      </>
-                    ) : heroScanComplete ? (
-                      <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-                        <span>Clearance Issued: {heroPersonas[activePersona].statutoryPass} ✓</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-3.5 h-3.5 text-white" />
-                        <span>Run Profile Verification Test</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-              </div>
-            </div>
+          {/* Right Column: 3D Holographic Employee ID Passport Centerpiece */}
+          <div className="lg:col-span-5 flex justify-center">
+            <HeroInteractiveCard3D />
           </div>
 
         </div>
@@ -1011,15 +884,15 @@ export const LandingPageView = () => {
        * ============================================================================== */}
       <section className="relative z-10 py-5 bg-slate-950/80 border-y border-white/10 overflow-hidden shadow-2xs backdrop-blur-md">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee font-mono text-xs text-slate-300 tracking-wider uppercase font-semibold">
-          <span className="flex items-center gap-2 text-cyan-400"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & OCR DOCUMENT AUTHENTICATION</span>
+          <span className="flex items-center gap-2 text-cyan-400"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & 3D LIVENESS MATCH</span>
           <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-emerald-400"><Search className="w-4 h-4" /> PAST EMPLOYMENT & CAREER HISTORY VERIFICATION</span>
+          <span className="flex items-center gap-2 text-emerald-400"><Search className="w-4 h-4" /> PAST EMPLOYMENT & CAREER HISTORY TENURE RADAR</span>
           <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-indigo-400"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING RADAR</span>
+          <span className="flex items-center gap-2 text-indigo-400"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING DETECTION</span>
           <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-amber-400"><Scale className="w-4 h-4" /> COMPREHENSIVE LEGAL & PUBLIC RECORD SCREENING</span>
+          <span className="flex items-center gap-2 text-amber-400"><Scale className="w-4 h-4" /> NATIONAL JUDICIAL & LITIGATION SCREENING</span>
           <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-sky-400"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & PAYROLL NAME MATCH</span>
+          <span className="flex items-center gap-2 text-sky-400"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION</span>
           <span className="text-slate-600">■</span>
           <span className="flex items-center gap-2 text-purple-400"><ShieldCheck className="w-4 h-4" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY</span>
           <span className="text-slate-600">■</span>
@@ -1028,7 +901,7 @@ export const LandingPageView = () => {
       </section>
 
       {/* ==============================================================================
-       * NEW: COMPREHENSIVE EMPLOYEE PROFILE VERIFICATION FEATURES (#features)
+       * 4. RADIAL VERIFICATION COMMAND ORBIT (#features)
        * ============================================================================== */}
       <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
         
@@ -1036,284 +909,54 @@ export const LandingPageView = () => {
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
           <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>ALL-IN-ONE VERIFICATION SUITE</span>
+            <span>RADIAL COMMAND COCKPIT</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4 tracking-tight">
             Complete Employee Profile <br className="hidden sm:inline" />
             <span className="text-gradient-electric">
-              Verification Features
+              Verification Modules
             </span>
           </h2>
           <p className="text-slate-300 text-base max-w-2xl leading-relaxed font-normal">
-            Everything your HR, talent acquisition, and compliance teams need to verify candidates with 100% confidence, zero paperwork, and complete audit readiness.
+            Select and test each verification engine below to explore sub-second response times, deterministic cryptographic logic, and live payload data.
           </p>
         </div>
 
-        {/* 8 Features Grid with Dark Glass Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          {/* Feature 1: Digital Identity */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <Fingerprint className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Digital Identity & KYC
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Automated document extraction, biometric facial match, and real-time OCR validation of government identity credentials.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-cyan-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>99.98% Biometric Match</span>
-            </div>
-          </div>
-
-          {/* Feature 2: Employment History */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <Briefcase className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Employment & Experience
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Automated past tenure history, organization track records, joining/relieving dates, and experience authentication.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-emerald-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Full Career Timeline</span>
-            </div>
-          </div>
-
-          {/* Feature 3: Dual-Employment Radar */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-400/30 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <Search className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Dual-Employment Radar
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Scans active payroll streams and contribution histories to identify undeclared secondary employment and moonlighting risks.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-indigo-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Conflict-of-Interest Shield</span>
-            </div>
-          </div>
-
-          {/* Feature 4: Legal & Court Screening */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-400/30 text-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <Scale className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Legal & Court Records
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Nationwide screening across criminal, civil, and commercial litigation databases and public tribunal registries.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-purple-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
-              <span>Pan-India Legal Scan</span>
-            </div>
-          </div>
-
-          {/* Feature 5: Bank & Payroll Match */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-400/30 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <CreditCard className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Bank & Payroll Validation
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Direct penny-drop verification ensuring bank account validity and exact candidate name match before salary disbursement.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-amber-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-              <span>Zero Payroll Fraud</span>
-            </div>
-          </div>
-
-          {/* Feature 6: Education Credentials */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-500/15 border border-sky-400/30 text-sky-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <Award className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Academic Credentials
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Verification of academic degrees, marksheets, diplomas, and certifications against accredited institutional repositories.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-sky-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
-              <span>Degree Authenticity</span>
-            </div>
-          </div>
-
-          {/* Feature 7: Address & Geolocation */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-500/15 border border-teal-400/30 text-teal-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <MapPin className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Address & Geotagging
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Candidate residential address confirmation with digital proof upload and optional GPS location timestamping.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-teal-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-              <span>Digital Proof of Address</span>
-            </div>
-          </div>
-
-          {/* Feature 8: Tamper-Proof Audit Dossiers */}
-          <div className="dark-glass-card rounded-3xl p-6 shadow-xl hover-jump flex flex-col justify-between gap-4 group border border-white/10">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
-                <FileCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">
-                Audit-Ready Dossiers
-              </h3>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Instant downloadable SHA-256 encrypted verification reports, compliance certificates, and HR audit-ready logs.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-cyan-400 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>SHA-256 Tamper-Proof</span>
-            </div>
-          </div>
-
-        </div>
+        {/* The Revolutionary Radial Command Orbit Component */}
+        <VerificationCommandOrbit />
 
       </section>
 
       {/* ==============================================================================
-       * 4. HOW EASY EMPLOYEE VERIFICATION WORKS IN 3 STEPS (#how-it-works)
+       * 5. DUAL-EMPLOYMENT & MOONLIGHTING RADAR VISUALIZER (#moonlighting-radar)
+       * ============================================================================== */}
+      <section id="moonlighting-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+        <DualEmploymentRadarVisualizer />
+      </section>
+
+      {/* ==============================================================================
+       * 6. WORKFORCE DIGITAL TURNSTILE GATE SIMULATOR (#turnstile-access)
+       * ============================================================================== */}
+      <section id="turnstile-access" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+        <TurnstileGateSimulator />
+      </section>
+
+      {/* ==============================================================================
+       * 7. KINETIC PROCESS PIPELINE (#how-it-works)
        * ============================================================================== */}
       <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-2xs">
-            <Zap className="w-3.5 h-3.5 text-cyan-400" />
-            <span>EFFORTLESS 3-STEP PROCESS</span>
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4 tracking-tight">
-            How Employee Profile Verification <br className="hidden sm:inline" />
-            <span className="text-gradient-electric">
-              Works in 3 Simple Steps
-            </span>
-          </h2>
-          <p className="text-slate-300 text-base max-w-2xl leading-relaxed font-normal">
-            Eliminate slow paper onboarding, physical document submission, and manual verification calls. Completely self-serve on any smartphone.
-          </p>
-        </div>
-
-        {/* 3 Step Interactive Jumping Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          
-          {/* Connecting Line between steps (Desktop) */}
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500/40 via-indigo-500/40 to-emerald-500/40 -translate-y-12 z-0"></div>
-
-          {/* Step 1 Card */}
-          <div className="dark-glass-card rounded-3xl p-8 shadow-2xl hover-jump flex flex-col justify-between gap-6 relative z-10 group border border-white/10">
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/40 text-cyan-300 flex items-center justify-center font-outfit text-2xl font-black shadow-inner group-hover:scale-110 transition-transform">
-                  01
-                </div>
-                <span className="dark-glass-pill font-mono text-[10px] font-bold text-cyan-300 border border-cyan-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-                  1-Click Dispatch
-                </span>
-              </div>
-              <h3 className="text-xl font-extrabold text-white font-outfit mb-3">
-                Send Magic Link or QR
-              </h3>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                HR inputs the employee's phone number or email, or candidate scans a QR code. An encrypted, passwordless magic link is sent via WhatsApp and SMS immediately.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-white/10 font-mono text-xs text-cyan-400 font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-              <span>Zero App Downloads Needed</span>
-            </div>
-          </div>
-
-          {/* Step 2 Card */}
-          <div className="dark-glass-card rounded-3xl p-8 shadow-2xl hover-jump flex flex-col justify-between gap-6 relative z-10 group border border-white/10">
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/30 border border-emerald-400/40 text-emerald-300 flex items-center justify-center font-outfit text-2xl font-black shadow-inner group-hover:scale-110 transition-transform">
-                  02
-                </div>
-                <span className="dark-glass-pill font-mono text-[10px] font-bold text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-                  Mobile Self-KYC
-                </span>
-              </div>
-              <h3 className="text-xl font-extrabold text-white font-outfit mb-3">
-                Candidate Self-Verifies
-              </h3>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                The employee opens the link on their mobile browser, verifies identity via secure OTP, and captures a quick live selfie with AI liveness detection.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-white/10 font-mono text-xs text-emerald-400 font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>99.98% Biometric Facial Match</span>
-            </div>
-          </div>
-
-          {/* Step 3 Card */}
-          <div className="dark-glass-card rounded-3xl p-8 shadow-2xl hover-jump flex flex-col justify-between gap-6 relative z-10 group border border-white/10">
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/30 border border-indigo-400/40 text-indigo-300 flex items-center justify-center font-outfit text-2xl font-black shadow-inner group-hover:scale-110 transition-transform">
-                  03
-                </div>
-                <span className="dark-glass-pill font-mono text-[10px] font-bold text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-                  Verified Dossier
-                </span>
-              </div>
-              <h3 className="text-xl font-extrabold text-white font-outfit mb-3">
-                360° Certified Dossier Ready
-              </h3>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                Identity, experience history, public records, and bank account checks are executed automatically. A tamper-proof SHA-256 PDF report is generated seamlessly.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-white/10 font-mono text-xs text-indigo-400 font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-              <span>Downloadable Audit PDF & JSON</span>
-            </div>
-          </div>
-
-        </div>
-
+        <InteractiveProcessPipeline />
       </section>
 
       {/* ==============================================================================
-       * 5. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
+       * 8. TRADITIONAL 15-DAY AGENCY VS JOY TRUEPROFILE COMPARISON (#comparison)
+       * ============================================================================== */}
+      <section id="comparison" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+        <InteractiveSpeedComparison />
+      </section>
+
+      {/* ==============================================================================
+       * 9. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
        * ============================================================================== */}
       <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">

@@ -1705,5 +1705,51 @@ body[data-role="employee_link"] {
   }
 }
 
+@keyframes laserVertical {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-laser-vertical {
+  animation: laserVertical 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes holographicSheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-holographic-sheen {
+  background-size: 200% 200%;
+  animation: holographicSheen 4s ease infinite;
+}
+
+.border-glow-cyan {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.15);
+}
+
+.border-glow-emerald {
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.35), inset 0 0 15px rgba(52, 211, 153, 0.15);
+}
+
 
 
