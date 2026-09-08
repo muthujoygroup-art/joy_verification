@@ -33,7 +33,8 @@ const CANDIDATE_PROFILES = [
     experience: '7 Years Experience • 3 Previous Employers Confirmed',
     bankMatch: 'Bank Account Verified — 100% Name Match',
     courtScreen: 'Clean Police & Court Record — No Cases Found',
-    avatarBg: 'from-amber-600 via-orange-600 to-rose-700'
+    avatarBg: 'bg-orange-600',
+    outerRing: 'border-orange-500 bg-orange-600'
   },
   {
     id: 'plant',
@@ -50,7 +51,8 @@ const CANDIDATE_PROFILES = [
     experience: '11 Years Experience • Fully Compliant Work History',
     bankMatch: 'Bank Account Verified — 100% Name Match',
     courtScreen: 'Clean Legal Record — Zero Court Proceedings',
-    avatarBg: 'from-emerald-600 to-teal-800'
+    avatarBg: 'bg-emerald-600',
+    outerRing: 'border-emerald-500 bg-emerald-600'
   },
   {
     id: 'fleet',
@@ -67,7 +69,8 @@ const CANDIDATE_PROFILES = [
     experience: '9 Years Experience • Zero Moonlighting Conflicts',
     bankMatch: 'Bank Account Verified — 100% Name Match',
     courtScreen: 'Clean Background — Verified Identity & Address',
-    avatarBg: 'from-rose-600 to-amber-700'
+    avatarBg: 'bg-rose-600',
+    outerRing: 'border-rose-500 bg-rose-600'
   }
 ];
 
@@ -183,11 +186,11 @@ const HeroInteractiveCard3D = () => {
             {/* Top Bar: Company & Verification Status */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-4 relative z-10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white font-black shadow-sm">
-                  <ShieldCheck className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black shadow-sm border border-orange-500">
+                  <ShieldCheck className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold block">
+                  <span className="text-[10px] uppercase tracking-wider text-orange-700 font-bold block">
                     JOY VERIFICATION • VERIFIED EMPLOYEE
                   </span>
                   <h4 className="font-outfit font-black text-sm text-slate-900 tracking-tight">
@@ -205,8 +208,8 @@ const HeroInteractiveCard3D = () => {
             {/* Candidate Center Card */}
             <div className="flex items-center gap-4 my-auto relative z-10">
               {/* Avatar Photo Frame */}
-              <div className="relative w-20 h-20 rounded-2xl p-1 bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 shadow-md shrink-0">
-                <div className={`w-full h-full rounded-xl bg-gradient-to-br ${profile.avatarBg} flex items-center justify-center text-white text-2xl font-black font-outfit relative overflow-hidden`}>
+              <div className="relative w-20 h-20 rounded-2xl p-1 bg-orange-600 shadow-md shrink-0 border border-orange-500">
+                <div className={`w-full h-full rounded-xl ${profile.avatarBg} flex items-center justify-center text-white text-2xl font-black font-outfit relative overflow-hidden shadow-inner`}>
                   <span>{profile.initials}</span>
                   <div className="absolute bottom-1 right-1">
                     <CheckCircle2 className="w-4 h-4 text-emerald-300 drop-shadow" />
@@ -214,10 +217,10 @@ const HeroInteractiveCard3D = () => {
                 </div>
 
                 {/* Accent Corners */}
-                <span className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-amber-500"></span>
-                <span className="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-amber-500"></span>
-                <span className="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-amber-500"></span>
-                <span className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-amber-500"></span>
+                <span className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-orange-400"></span>
+                <span className="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-orange-400"></span>
+                <span className="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-orange-400"></span>
+                <span className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-orange-400"></span>
               </div>
 
               {/* Candidate Metadata */}
@@ -376,17 +379,17 @@ const HeroInteractiveCard3D = () => {
         <button
           onClick={handleTriggerScan}
           disabled={isScanning}
-          className="px-4 py-2 rounded-xl dark-glass-card border border-amber-500/20 hover:border-amber-400 text-amber-200 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md"
+          className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-black flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-orange-600/30 border border-orange-500 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Zap className={`w-3.5 h-3.5 text-amber-400 ${isScanning ? 'animate-bounce' : ''}`} />
+          <Zap className={`w-3.5 h-3.5 text-white ${isScanning ? 'animate-bounce' : ''}`} />
           <span>{isScanning ? 'Verifying Details...' : 'Test Verification Check'}</span>
         </button>
 
         <button
           onClick={handleFlip}
-          className="px-4 py-2 rounded-xl dark-glass-card border border-orange-500/20 hover:border-orange-400 text-orange-200 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md"
+          className="px-5 py-2.5 rounded-xl bg-white hover:bg-orange-50 border-2 border-orange-600 text-orange-700 hover:text-orange-800 text-xs font-black flex items-center gap-2 transition-all cursor-pointer shadow-xs hover:scale-[1.02] active:scale-[0.98]"
         >
-          <RotateCw className="w-3.5 h-3.5 text-orange-400" />
+          <RotateCw className="w-3.5 h-3.5 text-orange-600" />
           <span>{isFlipped ? 'Show Front' : 'View Full Breakdown'}</span>
         </button>
       </div>

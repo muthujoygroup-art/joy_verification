@@ -808,10 +808,9 @@ export const LandingPageView = () => {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-10 w-full sm:w-auto">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="group relative px-7 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 shadow-xl shadow-amber-600/20 hover:shadow-2xl hover:shadow-amber-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-amber-500/40 overflow-hidden"
+                className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/30 hover:shadow-2xl hover:shadow-orange-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-orange-500 overflow-hidden"
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
-                <span className="tracking-wide">Book a Free Live Demo</span>
+                <span className="tracking-wide text-white font-black">Book a Free Live Demo</span>
                 <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
               </button>
 
@@ -2476,11 +2475,11 @@ export const LandingPageView = () => {
         {/* Floating WhatsApp Toggle Button */}
         <button
           onClick={() => setWhatsappOpen(!whatsappOpen)}
-          className="group relative flex items-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-700 text-white font-bold text-xs shadow-2xl shadow-emerald-500/40 hover:shadow-emerald-500/60 hover:-translate-y-1 hover:scale-105 active:scale-95 active:translate-y-0 transition-all cursor-pointer z-50 border border-amber-300/40 backdrop-blur-xl"
+          className="group relative flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-black text-xs sm:text-sm shadow-2xl shadow-emerald-600/40 hover:shadow-emerald-600/60 hover:-translate-y-1 hover:scale-105 active:scale-95 active:translate-y-0 transition-all cursor-pointer z-50 border border-emerald-400"
           aria-label="Toggle WhatsApp Contact"
         >
           {/* Animated WhatsApp Ping Halo */}
-          <span className="absolute -inset-1 rounded-full bg-emerald-400 opacity-40 animate-ping pointer-events-none"></span>
+          <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-40 animate-ping pointer-events-none"></span>
 
           {/* WhatsApp SVG Icon */}
           <div className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 flex items-center justify-center">
@@ -2489,13 +2488,13 @@ export const LandingPageView = () => {
             </svg>
           </div>
 
-          <span className="font-outfit text-xs font-black tracking-wide text-white drop-shadow-sm">
+          <span className="font-outfit text-xs sm:text-sm font-black tracking-wide text-white drop-shadow-sm">
             {whatsappOpen ? 'Close Chat' : 'Chat on WhatsApp'}
           </span>
 
           {/* Online status indicator */}
-          <span className="flex items-center gap-1 font-mono text-[10px] text-emerald-200 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-400/40">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="flex items-center gap-1 font-mono text-[10px] text-white bg-black/25 px-2 py-0.5 rounded-full border border-white/20 font-bold">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
             <span className="hidden sm:inline">Instant</span>
           </span>
         </button>
