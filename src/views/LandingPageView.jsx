@@ -106,7 +106,7 @@ export const LandingPageView = () => {
 
   const handleSendWhatsApp = (customText) => {
     const defaultPhone = '919940000000';
-    const message = customText || whatsappMsg || 'Hello JOY TrueProfile Team! I would like to learn more about employee profile verification for my enterprise.';
+    const message = customText || whatsappMsg || 'Hello JOY TRUE PROFILE Team! I would like to learn more about employee background verification for my company.';
     const url = `https://wa.me/${defaultPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -559,24 +559,24 @@ export const LandingPageView = () => {
   // FAQ Data
   const faqData = [
     {
-      q: 'How does JOY TrueProfile achieve fast and comprehensive employee profile verification?',
-      a: 'JOY TrueProfile queries verified identity, past employment history, public legal records, and banking APIs in parallel using automated microservices. Instead of slow manual paper processing and endless phone calls, profile verification is completed seamlessly.'
+      q: 'How does JOY TRUE PROFILE achieve fast and comprehensive employee background verification?',
+      a: 'JOY TRUE PROFILE automatically checks candidate identity, past employment history, public court records, and direct bank details in parallel. Instead of slow manual calls and days of paperwork, verifications are completed in under 60 seconds.'
     },
     {
       q: 'How does the platform eliminate duplicate worker profiles and fraudulent entries?',
-      a: 'Contractor agencies and applicant pools can often contain duplicate identities or phantom entries. JOY TrueProfile performs biometric facial deduplication and digital checksum matching to ensure every profile is an authenticated, real individual before access is granted.'
+      a: 'Applicant pools and staffing rosters can often contain duplicate identities or phantom entries. JOY TRUE PROFILE performs biometric photo matching and digital ID verification to ensure every profile is an authentic, real individual before access is granted.'
     },
     {
       q: 'How is candidate privacy protected under the Digital Personal Data Protection (DPDP) Act 2023?',
-      a: 'All verifications are 100% consent-driven. Candidates grant explicit OTP-based consent. Data in transit and at rest is secured with 256-bit AES cryptographic encryption, and automated data redaction ensures sensitive identifiers are masked in accordance with data privacy laws.'
+      a: 'All verifications are 100% consent-driven. Candidates grant explicit OTP-based consent. Data in transit and at rest is secured with 256-bit AES encryption, and automated data masking ensures sensitive numbers are protected.'
     },
     {
-      q: 'Can JOY TrueProfile issue digital compliance passes and audit-ready dossiers?',
-      a: 'Yes. Upon successful verification, the engine automatically compiles tamper-proof audit dossiers, compliance certificates, and digital QR gate passes that can be printed or integrated with on-premise security systems.'
+      q: 'Can JOY TRUE PROFILE issue digital compliance passes and audit-ready reports?',
+      a: 'Yes. Upon successful verification, the engine automatically compiles certified audit reports, compliance certificates, and digital QR gate passes that can be printed or scanned with any phone camera.'
     },
     {
       q: 'Do candidates need to install any mobile app to complete verification?',
-      a: 'No app download is required. Candidates receive a secure encrypted magic link via WhatsApp or SMS. They simply open the link in any mobile browser, verify with an OTP, capture a live selfie, and complete the check effortlessly.'
+      a: 'No app download is required. Candidates receive a secure magic link via WhatsApp or SMS. They simply open the link in any mobile browser, verify with an OTP, capture a quick selfie, and complete the check in under 2 minutes.'
     }
   ];
 
@@ -1998,17 +1998,19 @@ export const LandingPageView = () => {
             {/* Column 1: Brand & Credentials */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/30">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
+                <img 
+                  src="/joy_logo.png" 
+                  alt="JOY TRUE PROFILE Logo" 
+                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.35)]" 
+                />
                 <div>
-                  <span className="font-black text-white font-outfit text-base tracking-tight">JOY TrueProfile</span>
-                  <p className="text-[10px] text-amber-400 font-medium">Enterprise Profile Verification</p>
+                  <span className="font-black text-white font-outfit text-base tracking-tight">JOY <span className="text-amber-400">TRUE PROFILE</span></span>
+                  <p className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Instant Workforce Verification</p>
                 </div>
               </div>
 
               <p className="text-slate-300 text-xs leading-relaxed font-sans font-normal">
-                Next-generation cryptographic employee profile verification engine built for modern Indian enterprises, industrial corridors, and secure supply chains.
+                Automated employee background verification platform built for modern enterprises, high-growth teams, and secure workplaces across India.
               </p>
 
               <div className="flex items-center gap-2 mt-2">
@@ -2275,7 +2277,7 @@ export const LandingPageView = () => {
                   Submit Verified Enterprise Review
                 </h3>
                 <p className="text-slate-300 text-xs mb-6">
-                  Share your experience with JOY TrueProfile turnaround velocity and employee profile verification.
+                  Share your experience with JOY TRUE PROFILE turnaround speed and employee background verification.
                 </p>
 
                 <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs font-mono">
@@ -2337,7 +2339,7 @@ export const LandingPageView = () => {
                       rows={4}
                       value={reviewForm.comment}
                       onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                      placeholder="Describe how JOY TrueProfile accelerated your turnaround time or eliminated verification delays..."
+                      placeholder="Describe how JOY TRUE PROFILE accelerated your turnaround time or eliminated verification delays..."
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none"
                     ></textarea>
                   </div>
@@ -2347,17 +2349,7 @@ export const LandingPageView = () => {
                     disabled={reviewLoading}
                     className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                   >
-                    {reviewLoading ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Submitting Review...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Publish Review</span>
-                        <Send className="w-4 h-4" />
-                      </>
-                    )}
+                    {reviewLoading ? 'Submitting Review...' : 'Post Client Testimonial'}
                   </button>
                 </form>
               </div>
@@ -2384,7 +2376,7 @@ export const LandingPageView = () => {
       )}
 
       {/* ==============================================================================
-       * 16. FLOATING LIQUID GLASS WHATSAPP MESSAGING WIDGET
+       * 16. LUXURY FLOATING WHATSAPP CHAT DRAWER
        * ============================================================================== */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
         
@@ -2421,7 +2413,7 @@ export const LandingPageView = () => {
             <div className="p-4 bg-[#080d1a]/95 backdrop-blur-md flex flex-col gap-3">
               {/* Specialist Message Bubble */}
               <div className="p-3.5 bg-white/10 rounded-2xl rounded-tl-sm border border-white/10 shadow-xs text-xs text-slate-200 leading-relaxed">
-                <p className="font-bold mb-1 text-white">👋 Welcome to JOY TrueProfile!</p>
+                <p className="font-bold mb-1 text-white">👋 Welcome to JOY TRUE PROFILE!</p>
                 <p className="text-slate-300">
                   How can our verification specialists assist you today? Tap a quick option or type your message below to chat on WhatsApp.
                 </p>
