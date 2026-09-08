@@ -73,6 +73,7 @@ export const LandingPageView = () => {
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
@@ -89,7 +90,7 @@ export const LandingPageView = () => {
   const [heroScanning, setHeroScanning] = useState(false);
   const [heroScanComplete, setHeroScanComplete] = useState(false);
   const [heroScanProgress, setHeroScanProgress] = useState(0);
-  const [heroScanStage, setHeroScanStage] = useState('idle'); // 'idle' | 'liveness' | 'epfo' | 'bank' | 'complete'
+  const [heroScanStage, setHeroScanStage] = useState('idle'); // 'idle' | 'identity' | 'experience' | 'bank' | 'complete'
 
   const heroPersonas = {
     aryan: {
@@ -97,9 +98,9 @@ export const LandingPageView = () => {
       role: 'Senior Software Engineer',
       contractor: 'Enterprise Direct Hire',
       hub: 'Bengaluru Tech Corridor, KA',
-      uidai: 'XXXX-XXXX-9012',
-      uan: '1014-9921-8841',
-      bank: 'HDFC Bank (Active Match)',
+      idChecksum: 'ID-VERIFIED-9012',
+      workRecordId: 'EXP-REC-8841',
+      bank: 'HDFC Bank (Payroll Validated)',
       gateId: 'JOY-EMP-BLR-9042',
       image: '/assets/3d/hero_employee_3d_id.jpg',
       statutoryPass: 'Corporate Security Clearance'
@@ -109,24 +110,24 @@ export const LandingPageView = () => {
       role: 'Supply Chain Operations Lead',
       contractor: 'FastTrack Logistics Solutions',
       hub: 'Bhiwandi Logistics Hub, MH',
-      uidai: 'XXXX-XXXX-4811',
-      uan: '1019-3382-7104',
-      bank: 'State Bank of India (Active Match)',
+      idChecksum: 'ID-VERIFIED-4811',
+      workRecordId: 'EXP-REC-7104',
+      bank: 'State Bank of India (Payroll Validated)',
       gateId: 'JOY-EMP-BHW-3108',
       image: '/assets/3d/easy_3step_verify_3d.jpg',
-      statutoryPass: 'Supply Chain Gate Pass'
+      statutoryPass: 'Supply Chain Access Pass'
     },
     rajesh: {
       name: 'Aryan Sharma',
       role: 'Precision Engineering Specialist',
       contractor: 'Premier Manufacturing Corp',
       hub: 'Sanand Industrial Cluster, GJ',
-      uidai: 'XXXX-XXXX-6523',
-      uan: '1008-7712-4490',
-      bank: 'ICICI Bank (Active Match)',
+      idChecksum: 'ID-VERIFIED-6523',
+      workRecordId: 'EXP-REC-4490',
+      bank: 'ICICI Bank (Payroll Validated)',
       gateId: 'JOY-EMP-SND-1150',
       image: '/assets/3d/corporate_shield_vault_3d.jpg',
-      statutoryPass: 'Plant Access Clearance'
+      statutoryPass: 'Workforce Security Pass'
     }
   };
 
@@ -232,7 +233,7 @@ export const LandingPageView = () => {
     setHeroScanning(true);
     setHeroScanComplete(false);
     setHeroScanProgress(0);
-    setHeroScanStage('liveness');
+    setHeroScanStage('identity');
 
     let current = 0;
     const interval = setInterval(() => {
@@ -240,7 +241,7 @@ export const LandingPageView = () => {
       setHeroScanProgress(current);
 
       if (current >= 35 && current < 70) {
-        setHeroScanStage('epfo');
+        setHeroScanStage('experience');
       } else if (current >= 70 && current < 100) {
         setHeroScanStage('bank');
       } else if (current >= 100) {
@@ -306,32 +307,32 @@ export const LandingPageView = () => {
     }
   };
 
-  // Technical Specifications Data (Capricorn Precision Matrix)
+  // Technical Specifications Data (Precision Profile Matrix)
   const technicalSpecs = {
     performance: [
-      { label: 'Turnstile Gate TAT', value: '0.8 Seconds', detail: 'Sub-second QR pass verification' },
-      { label: 'Biometric Deduplication', value: '99.98% Match', detail: 'Zero ghost worker tolerance' },
-      { label: 'WhatsApp KYC Velocity', value: 'Under 45 Seconds', detail: 'Full candidate mobile completion' },
+      { label: 'Gate Clearance TAT', value: '0.8 Seconds', detail: 'Sub-second digital pass verification' },
+      { label: 'Biometric Deduplication', value: '99.98% Match', detail: 'Zero duplicate profile tolerance' },
+      { label: 'Mobile KYC Completion', value: 'Under 2 Minutes', detail: 'Full candidate self-verification' },
       { label: 'Concurrent Throughput', value: '50,000+ Req/Min', detail: 'Distributed microservices engine' },
       { label: 'System Uptime SLA', value: '99.99%', detail: 'Multi-region high availability' }
     ],
     security: [
       { label: 'Data Encryption', value: '256-Bit AES-GCM', detail: 'End-to-end cryptographic protection' },
-      { label: 'Privacy Statutory Law', value: 'DPDP Act 2023', detail: 'Consent-driven tokenized vault' },
+      { label: 'Privacy Compliance', value: 'DPDP Act 2023', detail: 'Consent-driven tokenized data vault' },
       { label: 'Global Compliance', value: 'ISO 27001 & SOC-2', detail: 'Independently audited infrastructure' },
-      { label: 'Aadhaar Redaction', value: 'Masked UIDAI Compliant', detail: 'Automated 8-digit masking' },
+      { label: 'Data Masking', value: 'Automated Redaction', detail: 'Automated PII masking & tokenization' },
       { label: 'Audit Log Immutability', value: 'Cryptographic Hash', detail: 'SHA-256 tamper-proof ledger' }
     ],
     statutory: [
-      { label: 'Contract Labor Act', value: 'CLRA Form XVI Ready', detail: 'Automated statutory gate pass' },
-      { label: 'Muster Roll Records', value: 'CLRA Form XIII', detail: 'Digital muster roll compliance' },
-      { label: 'Provident Fund Audit', value: 'EPFO UAN Dual Scan', detail: 'Active contribution timeline check' },
-      { label: 'Direct Tax Verification', value: 'ITD Form 26AS', detail: 'Income stream validation' },
-      { label: 'Court Record Scope', value: '3,200+ Courts', detail: 'High Courts & District Courts' }
+      { label: 'Workforce Compliance', value: 'Statutory Passes Ready', detail: 'Automated digital access pass' },
+      { label: 'Muster Roll Records', value: 'Digital Attendance', detail: 'Audit-ready compliance records' },
+      { label: 'Employment History', value: 'Tenure & Experience Scan', detail: 'Active contribution timeline check' },
+      { label: 'Financial Verification', value: 'Direct Account Match', detail: 'Penny-drop bank name validation' },
+      { label: 'Public Records Scope', value: 'National Legal Databases', detail: 'Comprehensive court records check' }
     ],
     infrastructure: [
       { label: 'Architecture', value: 'Event-Driven Microservices', detail: 'Ultra-low latency edge network' },
-      { label: 'Repository Connectors', value: 'Direct Govt & Banking APIs', detail: 'UIDAI, EPFO, NSDL, MoRTH, NPCI' },
+      { label: 'Verification APIs', value: 'Automated Enterprise Connectors', detail: 'ID, Experience, Banking, Legal' },
       { label: 'Candidate Interface', value: 'Zero-Install Web App', detail: 'Runs on any mobile browser' },
       { label: 'Turnstile Integration', value: 'REST API & Webhooks', detail: 'Compatible with all RFID/QR turnstiles' },
       { label: 'Dossier Output', value: 'Cryptographic PDF & JSON', detail: 'Downloadable certified audit record' }
@@ -347,8 +348,8 @@ export const LandingPageView = () => {
       activePasses: '14,820 Passes Streamed',
       avgTat: '0.8 Seconds',
       accuracy: '99.98%',
-      recentEvent: '120 Assembly Line Technicians verified with CLRA Form XVI Passes in 1.2 min batch.',
-      topCheck: 'UIDAI Biometric & Form XVI Generation'
+      recentEvent: '120 Assembly Line Technicians verified with digital access passes in 1.2 min batch.',
+      topCheck: 'Identity & Facial Biometric Match'
     },
     sanand: {
       name: 'Sanand Industrial Mega Zone',
@@ -357,8 +358,8 @@ export const LandingPageView = () => {
       activePasses: '18,450 Workers Monitored',
       avgTat: '0.9 Seconds',
       accuracy: '99.96%',
-      recentEvent: 'Battery plant contractor batch completed with IMPS bank account penny drop validation.',
-      topCheck: 'NPCI Bank Account & Police Record Check'
+      recentEvent: 'Battery plant contractor batch completed with bank account name drop validation.',
+      topCheck: 'Direct Bank & Integrity Check'
     },
     bhiwandi: {
       name: 'Bhiwandi Logistics & 3PL Cluster',
@@ -367,8 +368,8 @@ export const LandingPageView = () => {
       activePasses: '32,100 Delivery Associates',
       avgTat: '1.1 Seconds',
       accuracy: '99.94%',
-      recentEvent: '500 Delivery fleet drivers verified via WhatsApp Magic Links in 35 minutes.',
-      topCheck: 'MoRTH Commercial DL & Aadhaar OTP'
+      recentEvent: '500 Delivery fleet drivers verified via Mobile Magic Links in 35 minutes.',
+      topCheck: 'Commercial License & Digital ID'
     },
     manesar: {
       name: 'Manesar-Gurugram Industrial Belt',
@@ -377,7 +378,7 @@ export const LandingPageView = () => {
       activePasses: '22,700 Active Turnstile Passes',
       avgTat: '0.7 Seconds',
       accuracy: '99.99%',
-      recentEvent: 'Zero ghost worker duplicate match detected and blocked at East Gate Turnstiles.',
+      recentEvent: 'Zero duplicate profile match detected and blocked at East Gate Turnstiles.',
       topCheck: 'Facial Biometric Deduplication'
     },
     hosur: {
@@ -387,8 +388,8 @@ export const LandingPageView = () => {
       activePasses: '16,300 Shift Passes Issued',
       avgTat: '0.85 Seconds',
       accuracy: '99.97%',
-      recentEvent: 'Contractor agency monthly muster roll matched against EPFO UAN contributions.',
-      topCheck: 'EPFO UAN Dual Employment Radar'
+      recentEvent: 'Contractor agency monthly records matched against verified employment history.',
+      topCheck: 'Dual Employment & Moonlighting Radar'
     },
     chakan: {
       name: 'Chakan-Talegaon Industrial Hub',
@@ -397,8 +398,8 @@ export const LandingPageView = () => {
       activePasses: '24,600 Active Badges',
       avgTat: '0.75 Seconds',
       accuracy: '99.98%',
-      recentEvent: 'Major Tier-1 auto plant completed contractor statutory audit across 850 workers.',
-      topCheck: 'UIDAI Aadhaar + Police Clearance Verification'
+      recentEvent: 'Major Tier-1 auto plant completed workforce compliance audit across 850 workers.',
+      topCheck: 'Digital Identity + Legal Clearance'
     }
   };
 
@@ -406,24 +407,24 @@ export const LandingPageView = () => {
   const simModes = {
     labor_pass: {
       id: 'labor_pass',
-      title: 'Factory & Contract Labor Pass',
+      title: 'Workforce & Plant Staff Profile',
       category: 'Manufacturing & Industrial',
       icon: HardHat,
       candidate: { name: 'Karan Sharma', role: 'Assembly Line Specialist', contractor: 'Apex Manpower Services' },
       checks: [
-        { title: 'UIDAI Aadhaar Checksum & Address', status: 'Authenticated ✓', time: '0.7s' },
-        { title: 'Ghost Worker Biometric Deduplication', status: '0 Duplicate Flags ✓', time: '0.4s' },
-        { title: 'CLRA Form XVI Statutory Pass', status: 'Token #7821 Issued ✓', time: '0.6s' },
-        { title: 'Bank IMPS Penny Drop Account Match', status: 'SBI Active Match 100% ✓', time: '1.1s' }
+        { title: 'Digital ID Checksum & Address Match', status: 'Authenticated ✓', time: '0.7s' },
+        { title: 'Facial Biometric Deduplication', status: '0 Duplicate Flags ✓', time: '0.4s' },
+        { title: 'Workforce Digital Gate Clearance', status: 'Token #7821 Issued ✓', time: '0.6s' },
+        { title: 'Bank Account & Name Match', status: 'SBI Active Match 100% ✓', time: '1.1s' }
       ],
       json: {
         status: 'VERIFIED_ACTIVE',
-        verificationId: 'JOY-LBR-994208',
+        verificationId: 'JOY-EMP-994208',
         timestamp: '2026-09-05T14:15:20Z',
         latency_ms: 780,
         biometric_score: 99.8,
         statutory_gate_pass: {
-          clra_form_xvi: 'COMPLIANT_ACTIVE',
+          workforce_pass_status: 'COMPLIANT_ACTIVE',
           qr_token: 'QR_PASS_88492',
           contractor_license_valid: true
         }
@@ -431,20 +432,20 @@ export const LandingPageView = () => {
     },
     dual_employment: {
       id: 'dual_employment',
-      title: 'UAN / EPFO Moonlighting Radar',
+      title: 'Career History & Moonlighting Radar',
       category: 'Corporate & Executive',
       icon: Search,
       candidate: { name: 'Pooja Narang', role: 'Senior Software Engineer', contractor: 'Direct Enterprise Hire' },
       checks: [
-        { title: 'EPFO Service History Extraction', status: '4 Company Records Retrieved ✓', time: '1.2s' },
-        { title: 'Contribution Overlap Audit', status: '0 Active Overlaps (Clean) ✓', time: '0.8s' },
-        { title: 'Relieving Date & Exit Reason Check', status: 'Official Clean Exit ✓', time: '0.9s' },
-        { title: 'ITD Form 26AS TDS Cross-Check', status: 'Single Salary Stream ✓', time: '1.4s' }
+        { title: 'Employment History & Tenure Extraction', status: '4 Company Records Retrieved ✓', time: '1.2s' },
+        { title: 'Active Contribution Overlap Audit', status: '0 Active Overlaps (Clean) ✓', time: '0.8s' },
+        { title: 'Relieving Date & Experience Check', status: 'Official Clean Exit ✓', time: '0.9s' },
+        { title: 'Income & Tax Record Match', status: 'Single Salary Stream ✓', time: '1.4s' }
       ],
       json: {
         status: 'CLEAN_VERIFIED',
-        verificationId: 'JOY-UAN-551902',
-        uan_masked: '1004XXXX7729',
+        verificationId: 'JOY-EXP-551902',
+        identifier_masked: '1004XXXX7729',
         overlapping_employments_detected: 0,
         service_history_count: 4,
         moonlighting_risk_score: 'LOW (0.01%)'
@@ -452,15 +453,15 @@ export const LandingPageView = () => {
     },
     court_bgv: {
       id: 'court_bgv',
-      title: 'Executive BGV & National Court Scan',
+      title: 'Executive Integrity & Public Records Scan',
       category: 'High-Trust Roles',
       icon: Scale,
       candidate: { name: 'Vikramaditya Sengupta', role: 'VP Operations & Supply Chain', contractor: 'Leadership Executive' },
       checks: [
-        { title: 'National e-Courts Criminal Record Scan', status: '0 Adverse Litigation Flags ✓', time: '1.8s' },
-        { title: 'High Court Commercial Dispute DB', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
-        { title: 'Direct University Marksheet Verification', status: 'IIT Delhi Authenticated ✓', time: '1.9s' },
-        { title: 'MCA Director Disqualification (DIN)', status: 'Active Clean DIN ✓', time: '1.1s' }
+        { title: 'National Judicial Litigation Scan', status: '0 Adverse Litigation Flags ✓', time: '1.8s' },
+        { title: 'Commercial Dispute & Default Check', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
+        { title: 'Academic Degree & Credential Check', status: 'IIT Delhi Authenticated ✓', time: '1.9s' },
+        { title: 'Directorship & Corporate Disqualification Check', status: 'Active Clean Status ✓', time: '1.1s' }
       ],
       json: {
         status: 'LEADERSHIP_CLEARANCE_ISSUED',
@@ -472,15 +473,15 @@ export const LandingPageView = () => {
     },
     whatsapp_kyc: {
       id: 'whatsapp_kyc',
-      title: '45-Second WhatsApp Magic Link',
+      title: 'Seamless Mobile Self-Verification',
       category: 'Zero-Drop Mobile Flow',
       icon: Smartphone,
-      candidate: { name: 'Rahul Deshmukh', role: 'Logistics Fleet Driver', contractor: 'Direct WhatsApp Flow' },
+      candidate: { name: 'Rahul Deshmukh', role: 'Logistics Fleet Driver', contractor: 'Direct Mobile Flow' },
       checks: [
-        { title: 'Encrypted WhatsApp Link Dispatch', status: 'Green Tick API Delivered ✓', time: '0.3s' },
-        { title: 'Digital Aadhaar OTP Consent Capture', status: 'Completed in 22s ✓', time: '0.6s' },
+        { title: 'Encrypted Magic Link Dispatch', status: 'API Delivered via WhatsApp/SMS ✓', time: '0.3s' },
+        { title: 'Candidate OTP Consent Capture', status: 'Verified in 22s ✓', time: '0.6s' },
         { title: 'Camera Liveness & Geo-Location', status: 'Selfie Matched 99.4% ✓', time: '1.2s' },
-        { title: 'Instant Audit Dossier PDF Generation', status: 'Dossier Auto-Compiled ✓', time: '0.8s' }
+        { title: 'Audit Dossier PDF Generation', status: 'Dossier Auto-Compiled ✓', time: '0.8s' }
       ],
       json: {
         status: 'ONBOARDING_COMPLETED',
@@ -539,24 +540,24 @@ export const LandingPageView = () => {
   // FAQ Data
   const faqData = [
     {
-      q: 'How does JOY TrueProfile achieve complete verification in under 45 seconds?',
-      a: 'JOY TrueProfile queries authoritative government and financial repositories (UIDAI, NSDL, EPFO, MoRTH, e-Courts, NPCI) in parallel using high-speed REST microservices. Instead of slow manual paper processing, cryptographic verification occurs in milliseconds.'
+      q: 'How does JOY TrueProfile achieve fast and comprehensive employee profile verification?',
+      a: 'JOY TrueProfile queries verified identity, past employment history, public legal records, and banking APIs in parallel using automated microservices. Instead of slow manual paper processing and endless phone calls, profile verification is completed seamlessly.'
     },
     {
-      q: 'How does the platform eliminate Ghost Worker fraud in factories and plants?',
-      a: 'Contractor agencies frequently submit duplicate names or phantom workers on muster rolls. JOY TrueProfile performs biometric facial deduplication and Aadhaar checksum matching to ensure every gate entrant is a real, distinct, authenticated individual. No duplicate entries can pass.'
+      q: 'How does the platform eliminate duplicate worker profiles and fraudulent entries?',
+      a: 'Contractor agencies and applicant pools can often contain duplicate identities or phantom entries. JOY TrueProfile performs biometric facial deduplication and digital checksum matching to ensure every profile is an authenticated, real individual before access is granted.'
     },
     {
       q: 'How is candidate privacy protected under the Digital Personal Data Protection (DPDP) Act 2023?',
-      a: 'All verifications are 100% consent-driven. Candidates grant explicit OTP-based consent. Data in transit and at rest is secured with 256-bit AES cryptographic encryption, and automated data redaction ensures sensitive identifiers like full Aadhaar numbers are masked in accordance with Indian statutory law.'
+      a: 'All verifications are 100% consent-driven. Candidates grant explicit OTP-based consent. Data in transit and at rest is secured with 256-bit AES cryptographic encryption, and automated data redaction ensures sensitive identifiers are masked in accordance with data privacy laws.'
     },
     {
-      q: 'Can JOY TrueProfile issue statutory CLRA Form XVI passes for contract labor?',
-      a: 'Yes. Upon successful verification, the engine automatically populates and compiles tamper-proof statutory passes including CLRA Form XVI, Form XIII muster roll records, and digital QR gate badges that can be printed or scanned on security tablets.'
+      q: 'Can JOY TrueProfile issue digital compliance passes and audit-ready dossiers?',
+      a: 'Yes. Upon successful verification, the engine automatically compiles tamper-proof audit dossiers, compliance certificates, and digital QR gate passes that can be printed or integrated with on-premise security systems.'
     },
     {
       q: 'Do candidates need to install any mobile app to complete verification?',
-      a: 'No app download is required. Candidates receive an encrypted magic link via WhatsApp or SMS. They simply open the link in any mobile browser, verify with an OTP, capture a live selfie, and complete the check in under 45 seconds.'
+      a: 'No app download is required. Candidates receive a secure encrypted magic link via WhatsApp or SMS. They simply open the link in any mobile browser, verify with an OTP, capture a live selfie, and complete the check effortlessly.'
     }
   ];
 
@@ -571,7 +572,7 @@ export const LandingPageView = () => {
       </div>
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION (SEAMLESS STICKY GLASS HEADER WITH PORTAL SWITCHER)
+       * 1. TOP NAVIGATION (CLEAN & SPACIOUS MODERN SAAS HEADER)
        * ============================================================================== */}
       <header className="sticky top-0 z-50 w-full backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-4 sm:px-8 py-3 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -586,23 +587,61 @@ export const LandingPageView = () => {
                 JOY <span className="text-blue-600">TrueProfile</span>
               </span>
               <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 block -mt-0.5 font-bold">
-                AI Employee Verification Engine
+                Employee Profile Verification
               </span>
             </div>
           </a>
 
           {/* Center Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-5 font-mono text-xs text-slate-600 font-semibold">
+          <nav className="hidden xl:flex items-center gap-6 font-mono text-xs text-slate-700 font-semibold">
+            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How It Works</a>
             <a href="#solutions" className="hover:text-blue-600 transition-colors">Solutions</a>
-            <a href="#craft" className="hover:text-blue-600 transition-colors">Architecture</a>
-            <a href="#specs" className="hover:text-blue-600 transition-colors">Specifications</a>
             <a href="#interactive-lab" className="hover:text-blue-600 transition-colors">Simulator</a>
-            <a href="#live-radar" className="hover:text-blue-600 transition-colors">India Radar</a>
             <a href="#roi-calculator" className="hover:text-blue-600 transition-colors">ROI Calculator</a>
-            <a href="#reviews" className="hover:text-blue-600 transition-colors">Reviews</a>
-            <a href="#knowledge-hub" className="hover:text-blue-600 transition-colors">Knowledge Hub</a>
-            <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
+            
+            {/* More Resources Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
+                className="hover:text-blue-600 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <span>Resources</span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {resourcesDropdownOpen && (
+                <div 
+                  className="absolute left-0 mt-2 w-52 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  onMouseLeave={() => setResourcesDropdownOpen(false)}
+                >
+                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <Cpu className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Architecture</span>
+                  </a>
+                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <Sliders className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Specifications</span>
+                  </a>
+                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <Radio className="w-3.5 h-3.5 text-blue-600" />
+                    <span>India Radar</span>
+                  </a>
+                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <Star className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Client Reviews</span>
+                  </a>
+                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Knowledge Hub</span>
+                  </a>
+                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-2">
+                    <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
+                    <span>FAQ</span>
+                  </a>
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Right Action CTAs & Portal Switcher */}
@@ -612,7 +651,7 @@ export const LandingPageView = () => {
             <div className="relative">
               <button
                 onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-100/90 hover:bg-slate-200/80 border border-slate-300 transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5 text-blue-600" />
                 <span>Portals & Login</span>
@@ -678,18 +717,10 @@ export const LandingPageView = () => {
                 </div>
               )}
             </div>
-
-            <a
-              href="#interactive-lab"
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-white border border-slate-300 hover:border-blue-400 hover:bg-blue-50/50 shadow-2xs transition-all flex items-center gap-1.5"
-            >
-              <Zap className="w-3.5 h-3.5 text-blue-600" />
-              <span>Try Simulator</span>
-            </a>
             
             <button
               onClick={() => setShowDemoModal(true)}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -708,13 +739,14 @@ export const LandingPageView = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="xl:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Features</a>
             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">How It Works</a>
             <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Solutions</a>
+            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Simulator Studio</a>
+            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">ROI Calculator</a>
             <a href="#craft" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Architecture</a>
             <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Specifications</a>
-            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Simulator Studio</a>
             <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">India Telemetry Radar</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">ROI Calculator</a>
             <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Reviews</a>
             <a href="#knowledge-hub" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Knowledge Hub</a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">FAQ</a>
@@ -738,7 +770,7 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: 3D FLOATING EMPLOYEE VERIFICATION HUB WITH HOVER JUMPING
+       * 2. HERO SECTION: 3D FLOATING EMPLOYEE PROFILE VERIFICATION HUB
        * ============================================================================== */}
       <section className="relative z-10 pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -749,21 +781,20 @@ export const LandingPageView = () => {
             {/* Live Telemetry Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-mono text-xs mb-6 shadow-2xs hover-jump-subtle cursor-pointer">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Employees Verified Across 34 Indian Hubs</span>
+              <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Employee Profiles Verified Across 34 Indian Hubs</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.12] mb-6 font-outfit">
-              The Easiest & Fastest Way to <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
-                Verify Any Employee
-              </span> <br />
-              in Under 45 Seconds
+              The Easiest & Most Reliable Way to <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 bg-clip-text text-transparent">
+                Verify Employee Profiles
+              </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed mb-8">
-              Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee verification as simple as sending a link. Verify Identity, EPFO past employment, court litigation, and bank accounts in 3 effortless steps.
+              Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee profile verification as simple as sending a link. Validate digital identity, past employment history, legal public records, and payroll bank details in 3 effortless steps.
             </p>
 
             {/* Primary Action Buttons */}
@@ -777,20 +808,20 @@ export const LandingPageView = () => {
               </button>
 
               <a
-                href="#how-it-works"
+                href="#features"
                 className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
               >
-                <Zap className="w-4 h-4 text-blue-600" />
-                <span>See How Easy It Works</span>
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span>Explore Features</span>
               </a>
 
-              <button
-                onClick={() => setShowLegalHandbook(true)}
+              <a
+                href="#how-it-works"
                 className="px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Compliance Guide</span>
-              </button>
+                <Zap className="w-3.5 h-3.5 text-indigo-600" />
+                <span>How It Works</span>
+              </a>
             </div>
 
             {/* Quick Metrics Bar */}
@@ -800,12 +831,12 @@ export const LandingPageView = () => {
                 <div className="text-xs text-slate-600 font-bold mt-0.5">Effortless Flow</div>
               </div>
               <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">45s</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Verification TAT</div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">Fast</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Automated TAT</div>
               </div>
               <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
                 <div className="text-2xl sm:text-3xl font-black text-indigo-600 font-outfit">100%</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Zero Fraud / Duplicate</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Audit-Ready Dossier</div>
               </div>
             </div>
 
@@ -849,9 +880,9 @@ export const LandingPageView = () => {
                 <span>100% DPDP Act Compliant</span>
               </div>
 
-              <div className="absolute -bottom-3 -right-4 z-20 bg-emerald-500 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer">
-                <Zap className="w-3.5 h-3.5 text-white" />
-                <span>45s Instant Verification</span>
+              <div className="absolute -bottom-3 -right-4 z-20 bg-blue-600 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer">
+                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                <span>Automated Verification</span>
               </div>
 
               <div
@@ -877,12 +908,12 @@ export const LandingPageView = () => {
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
                     <Fingerprint className="w-3 h-3 text-blue-600" />
-                    <span>AI Identity Verified</span>
+                    <span>Identity Authenticated</span>
                   </div>
 
-                  <div className="absolute top-3 right-3 bg-emerald-50/95 backdrop-blur-md border border-emerald-300 font-mono text-[9px] uppercase tracking-wider text-emerald-800 font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-xs">
-                    <Zap className="w-3 h-3 text-emerald-600" />
-                    <span>Instant TAT</span>
+                  <div className="absolute top-3 right-3 bg-blue-50/95 backdrop-blur-md border border-blue-300 font-mono text-[9px] uppercase tracking-wider text-blue-800 font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-xs">
+                    <Zap className="w-3 h-3 text-blue-600" />
+                    <span>Verified Profile</span>
                   </div>
 
                   {/* Candidate Info Overlay at bottom of image */}
@@ -907,30 +938,30 @@ export const LandingPageView = () => {
                   {/* Verification Pipeline Checks */}
                   <div className="grid grid-cols-3 gap-1.5 font-mono text-[9px]">
                     <div className={`p-1.5 rounded-lg border text-center transition-all ${
-                      heroScanStage === 'liveness' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
+                      heroScanStage === 'identity' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
                     }`}>
-                      1. AI Liveness
-                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '99.98% ✓' : 'Instant Match'}</span>
+                      1. Digital ID & Face
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '99.98% ✓' : 'Live Match'}</span>
                     </div>
 
                     <div className={`p-1.5 rounded-lg border text-center transition-all ${
-                      heroScanStage === 'epfo' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
+                      heroScanStage === 'experience' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
                     }`}>
-                      2. Past EPFO
-                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '0 Overlaps ✓' : 'UAN History'}</span>
+                      2. Work History
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '0 Overlaps ✓' : 'Tenure Check'}</span>
                     </div>
 
                     <div className={`p-1.5 rounded-lg border text-center transition-all ${
                       heroScanStage === 'bank' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
                     }`}>
-                      3. Bank ₹1
-                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '100% Match ✓' : 'IMPS Drop'}</span>
+                      3. Bank & Payroll
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '100% Match ✓' : 'Name Match'}</span>
                     </div>
                   </div>
 
                   {/* Cryptographic SHA-256 Checksum */}
                   <div className="flex items-center justify-between font-mono text-[9px] text-slate-500 pt-1 border-t border-slate-200">
-                    <span>DIGITAL DOSSIER</span>
+                    <span>DIGITAL PROFILE DOSSIER</span>
                     <span className="text-indigo-700 font-bold">SHA-256 CERTIFIED</span>
                   </div>
 
@@ -943,7 +974,7 @@ export const LandingPageView = () => {
                     {heroScanning ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
-                        <span>Verifying Against Repositories ({heroScanProgress}%)...</span>
+                        <span>Verifying Employee Profile ({heroScanProgress}%)...</span>
                       </>
                     ) : heroScanComplete ? (
                       <>
@@ -953,7 +984,7 @@ export const LandingPageView = () => {
                     ) : (
                       <>
                         <Zap className="w-3.5 h-3.5 text-white" />
-                        <span>Run 3-Step Verification Test</span>
+                        <span>Run Profile Verification Test</span>
                       </>
                     )}
                   </button>
@@ -967,45 +998,226 @@ export const LandingPageView = () => {
       </section>
 
       {/* ==============================================================================
-       * 3. INFINITE GOVERNMENT REPOSITORY TICKER
+       * 3. INFINITE VERIFICATION CAPABILITIES TICKER
        * ============================================================================== */}
       <section className="relative z-10 py-5 bg-white border-y border-slate-200 overflow-hidden shadow-2xs">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee font-mono text-xs text-slate-600 tracking-wider uppercase font-semibold">
-          <span className="flex items-center gap-2 text-cyan-700"><Fingerprint className="w-4 h-4" /> UIDAI DIRECT CRYPTOGRAPHIC CHECKSUM</span>
+          <span className="flex items-center gap-2 text-cyan-700"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & OCR DOCUMENT AUTHENTICATION</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-emerald-700"><Search className="w-4 h-4" /> EPFO UAN DUAL EMPLOYMENT RADAR</span>
+          <span className="flex items-center gap-2 text-emerald-700"><Search className="w-4 h-4" /> PAST EMPLOYMENT & CAREER HISTORY VERIFICATION</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-indigo-700"><Scale className="w-4 h-4" /> HIGH COURT & 3,200+ DISTRICT COURTS E-FILING</span>
+          <span className="flex items-center gap-2 text-indigo-700"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING RADAR</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-amber-700"><Truck className="w-4 h-4" /> MORTH COMMERCIAL TRANSPORT DRIVING LICENSE</span>
+          <span className="flex items-center gap-2 text-amber-700"><Scale className="w-4 h-4" /> COMPREHENSIVE LEGAL & PUBLIC RECORD SCREENING</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-sky-700"><CreditCard className="w-4 h-4" /> NPCI / IMPS ₹1 PENNY DROP NAME MATCH</span>
+          <span className="flex items-center gap-2 text-sky-700"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & PAYROLL NAME MATCH</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-purple-700"><ShieldCheck className="w-4 h-4" /> ISO 27001:2022 & SOC-2 TYPE II CERTIFIED</span>
+          <span className="flex items-center gap-2 text-purple-700"><ShieldCheck className="w-4 h-4" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY</span>
           <span className="text-slate-300">■</span>
-          <span className="flex items-center gap-2 text-cyan-700"><Lock className="w-4 h-4" /> DPDP ACT 2023 CONSENT ARCHITECTURE</span>
+          <span className="flex items-center gap-2 text-cyan-700"><Lock className="w-4 h-4" /> 100% DPDP ACT 2023 CONSENT-DRIVEN PRIVACY</span>
         </div>
       </section>
 
       {/* ==============================================================================
-       * NEW: HOW EASY EMPLOYEE VERIFICATION WORKS IN 3 STEPS (#how-it-works)
+       * NEW: COMPREHENSIVE EMPLOYEE PROFILE VERIFICATION FEATURES (#features)
+       * ============================================================================== */}
+      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+        
+        {/* Section Header */}
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
+          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>ALL-IN-ONE VERIFICATION SUITE</span>
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4 tracking-tight">
+            Complete Employee Profile <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
+              Verification Features
+            </span>
+          </h2>
+          <p className="text-slate-600 text-base max-w-2xl leading-relaxed">
+            Everything your HR, talent acquisition, and compliance teams need to verify candidates with 100% confidence, zero paperwork, and complete audit readiness.
+          </p>
+        </div>
+
+        {/* 8 Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          {/* Feature 1: Digital Identity */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Fingerprint className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Digital Identity & KYC
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Automated document extraction, biometric facial match, and real-time OCR validation of government identity credentials.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-blue-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+              <span>99.98% Biometric Match</span>
+            </div>
+          </div>
+
+          {/* Feature 2: Employment History */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Briefcase className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Employment & Experience
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Automated past tenure history, organization track records, joining/relieving dates, and experience authentication.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-emerald-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Full Career Timeline</span>
+            </div>
+          </div>
+
+          {/* Feature 3: Dual-Employment Radar */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Search className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Dual-Employment Radar
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Scans active payroll streams and contribution histories to identify undeclared secondary employment and moonlighting risks.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-indigo-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Conflict-of-Interest Shield</span>
+            </div>
+          </div>
+
+          {/* Feature 4: Legal & Court Screening */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Scale className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Legal & Court Records
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Nationwide screening across criminal, civil, and commercial litigation databases and public tribunal registries.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-purple-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
+              <span>Pan-India Legal Scan</span>
+            </div>
+          </div>
+
+          {/* Feature 5: Bank & Payroll Match */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <CreditCard className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Bank & Payroll Validation
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Direct penny-drop verification ensuring bank account validity and exact candidate name match before salary disbursement.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-amber-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+              <span>Zero Payroll Fraud</span>
+            </div>
+          </div>
+
+          {/* Feature 6: Education Credentials */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Award className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Academic Credentials
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Verification of academic degrees, marksheets, diplomas, and certifications against accredited institutional repositories.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-sky-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />
+              <span>Degree Authenticity</span>
+            </div>
+          </div>
+
+          {/* Feature 7: Address & Geolocation */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <MapPin className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Address & Geotagging
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Candidate residential address confirmation with digital proof upload and optional GPS location timestamping.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-teal-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
+              <span>Digital Proof of Address</span>
+            </div>
+          </div>
+
+          {/* Feature 8: Tamper-Proof Audit Dossiers */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <FileCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
+                Audit-Ready Dossiers
+              </h3>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Instant downloadable SHA-256 encrypted verification reports, compliance certificates, and HR audit-ready logs.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-cyan-700 font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" />
+              <span>SHA-256 Tamper-Proof</span>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ==============================================================================
+       * 4. HOW EASY EMPLOYEE VERIFICATION WORKS IN 3 STEPS (#how-it-works)
        * ============================================================================== */}
       <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
           <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>THE EASIEST ONBOARDING PROCESS</span>
+            <Zap className="w-3.5 h-3.5 text-blue-600" />
+            <span>EFFORTLESS 3-STEP PROCESS</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4 tracking-tight">
-            How Employee Verification Works in <br className="hidden sm:inline" />
+            How Employee Profile Verification <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
-              3 Simple, Effortless Steps
+              Works in 3 Simple Steps
             </span>
           </h2>
           <p className="text-slate-600 text-base max-w-2xl leading-relaxed">
-            Eliminate slow paper onboarding, physical document submission, and manual agency phone calls. Verified in under 45 seconds on any smartphone.
+            Eliminate slow paper onboarding, physical document submission, and manual verification calls. Completely self-serve on any smartphone.
           </p>
         </div>
 
@@ -1030,7 +1242,7 @@ export const LandingPageView = () => {
                 Send Magic Link or QR
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                HR inputs the employee's phone number or email, or candidate scans a QR code at reception. An encrypted magic link is sent via WhatsApp and SMS immediately.
+                HR inputs the employee's phone number or email, or candidate scans a QR code. An encrypted, passwordless magic link is sent via WhatsApp and SMS immediately.
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 font-mono text-xs text-blue-700 font-bold flex items-center gap-2">
@@ -1047,14 +1259,14 @@ export const LandingPageView = () => {
                   02
                 </div>
                 <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
-                  30s Mobile KYC
+                  Mobile Self-KYC
                 </span>
               </div>
               <h3 className="text-xl font-extrabold text-slate-900 font-outfit mb-3">
                 Candidate Self-Verifies
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                The employee opens the link on their mobile browser, verifies their identity with an instant OTP, and captures a quick live selfie with AI liveness detection.
+                The employee opens the link on their mobile browser, verifies identity via secure OTP, and captures a quick live selfie with AI liveness detection.
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 font-mono text-xs text-emerald-700 font-bold flex items-center gap-2">
@@ -1071,14 +1283,14 @@ export const LandingPageView = () => {
                   03
                 </div>
                 <span className="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 uppercase tracking-wider">
-                  Instant Dossier
+                  Verified Dossier
                 </span>
               </div>
               <h3 className="text-xl font-extrabold text-slate-900 font-outfit mb-3">
                 360° Certified Dossier Ready
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Government and financial APIs (Aadhaar, EPFO UAN, Court records, Bank) are queried in parallel. A tamper-proof SHA-256 PDF report is generated in &lt;45s.
+                Identity, experience history, public records, and bank account checks are executed automatically. A tamper-proof SHA-256 PDF report is generated seamlessly.
               </p>
             </div>
             <div className="pt-4 border-t border-slate-100 font-mono text-xs text-indigo-700 font-bold flex items-center gap-2">
@@ -1092,7 +1304,7 @@ export const LandingPageView = () => {
       </section>
 
       {/* ==============================================================================
-       * 4. ARCHITECTURE & STATUTORY CRAFT SECTION (#craft)
+       * 5. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
        * ============================================================================== */}
       <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -1100,13 +1312,13 @@ export const LandingPageView = () => {
           {/* Left Column: Monospace Category Header */}
           <div className="lg:col-span-4">
             <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold block mb-3">
-              PRECISION ARCHITECTURE & VAULT
+              ENTERPRISE ARCHITECTURE & VAULT
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-slate-900 font-outfit leading-tight mb-4">
-              Enterprise Trust Meets Instant Velocity
+              Enterprise Trust Meets High-Speed Accuracy
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mb-6">
-              Whether verifying executive leadership, corporate IT specialists, logistics drivers, or plant workers, JOY TrueProfile provides unified, cryptographic verification built directly on central government repository connectors.
+              Whether verifying executive leadership, corporate IT specialists, logistics drivers, or plant workers, JOY TrueProfile provides unified, cryptographic verification built on automated enterprise connectors.
             </p>
             <button
               onClick={() => setShowLegalHandbook(true)}
@@ -1120,12 +1332,12 @@ export const LandingPageView = () => {
           {/* Right Column: Split Dual Cards (3-Step Engine & Security Vault) */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* Card 1: 3-Step Automated Verification Pipeline */}
+            {/* Card 1: Automated Verification Pipeline */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 hover-jump shadow-md">
               <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-50">
                 <img
                   src="/assets/3d/easy_3step_verify_3d.jpg"
-                  alt="3-Step Automated Employee Verification Pipeline"
+                  alt="Automated Employee Verification Pipeline"
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -1134,10 +1346,10 @@ export const LandingPageView = () => {
                   STREAMLINED WORKFLOW
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-outfit">
-                  3-Step Automated Verification Pipeline
+                  Automated Verification Pipeline
                 </h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
-                  From 1-click WhatsApp magic link dispatch to 30-second mobile selfie KYC and instant certified audit dossier compilation.
+                  From 1-click mobile magic link dispatch to candidate selfie KYC and certified audit dossier compilation.
                 </p>
               </div>
             </div>
@@ -1153,13 +1365,13 @@ export const LandingPageView = () => {
               </div>
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-700 font-bold block mb-2">
-                  ENTERPRISE SECURITY & STATUTORY VAULT
+                  ENTERPRISE SECURITY & DATA VAULT
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-outfit">
-                  EPFO Moonlighting & Court Record Radar
+                  Dual-Employment Radar & Legal Screening
                 </h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
-                  Queries 3,200+ Indian district courts, EPFO monthly contribution history, and IMPS ₹1 penny drops with 256-bit AES encryption.
+                  Screening across national judicial databases, past employment history timelines, and direct bank name validation with 256-bit AES encryption.
                 </p>
               </div>
             </div>
@@ -1690,130 +1902,130 @@ export const LandingPageView = () => {
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="font-mono text-xs uppercase tracking-wider text-cyan-700 font-bold mb-3 flex items-center gap-2">
+          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2">
             <Layers className="w-3.5 h-3.5" />
-            <span>FULL-STACK VERIFICATION MODULES</span>
+            <span>ENTERPRISE SOLUTIONS</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-outfit mb-3">
-            Architected for High-Trust Enterprises
+            Architected for High-Trust Organizations
           </h2>
           <p className="text-slate-600 text-sm">
-            Whether managing thousands of contract plant laborers or screening executive leadership, JOY TrueProfile provides unified, statutory-compliant verification.
+            Whether managing thousands of plant and logistics personnel or screening executive leadership, JOY TrueProfile provides unified, audit-ready profile verification.
           </p>
         </div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Card 1: 45-Second WhatsApp Onboarding */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-cyan-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 1: Seamless Mobile Flow */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-blue-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mb-5">
                 <Smartphone className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                45-Second WhatsApp Flow
+                Seamless Mobile Flow
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Zero app installs required. Candidates complete Aadhaar OTP, liveness selfie check, and digital consent via a simple, encrypted WhatsApp magic link.
+                Zero app installs required. Candidates complete digital identity check, live selfie liveness verification, and consent via a simple, encrypted magic link.
               </p>
             </div>
-            <div className="font-mono text-xs text-cyan-700 font-bold flex items-center gap-1.5">
+            <div className="font-mono text-xs text-blue-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
               <span>98% Candidate Completion Rate</span>
               <Check className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Card 2: Factory Turnstile Gate Passes */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-emerald-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 2: Workplace & Gate Access Passes */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-emerald-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-5">
                 <HardHat className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                CLRA Form XVI & Gate Passes
+                Workforce Digital Gate Passes
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Automated statutory labor register generation. Issues cryptographic QR gate passes that seamlessly integrate with factory turnstile scanners and security tablets.
+                Automated workforce compliance and digital credential issuance. Generates QR passes that seamlessly integrate with security turnstiles and scanners.
               </p>
             </div>
-            <div className="font-mono text-xs text-emerald-700 font-bold flex items-center gap-1.5">
-              <span>Sub-0.8s Turnstile Gate Response</span>
+            <div className="font-mono text-xs text-emerald-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
+              <span>Sub-Second Gate Turnstile Response</span>
               <Check className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Card 3: UAN Moonlighting Detection */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-indigo-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 3: Dual-Employment Radar */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-indigo-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 mb-5">
                 <Search className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                EPFO UAN Dual Employment Radar
+                Dual-Employment & Moonlighting Radar
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Directly extracts EPFO service history and active monthly contribution streams to detect undeclared secondary employment, overlap tenures, and integrity red flags.
+                Extracts career service records and active contribution streams to detect undeclared secondary employment, overlapping tenures, and integrity risks.
               </p>
             </div>
-            <div className="font-mono text-xs text-indigo-700 font-bold flex items-center gap-1.5">
-              <span>Zero-Tamper EPFO Ledger Audit</span>
+            <div className="font-mono text-xs text-indigo-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
+              <span>Zero-Tamper Work History Audit</span>
               <Check className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Card 4: National e-Courts & Litigation */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-purple-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 4: National Legal & Litigation Screening */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-purple-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mb-5">
                 <Scale className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                3,200+ Courts Litigation Scan
+                National Legal Records Screening
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Comprehensive criminal and civil court records search across Indian District Courts, High Courts, Supreme Court, and national tribunals in real time.
+                Comprehensive criminal and civil court records search across national judicial registries, commercial tribunals, and public registries in real time.
               </p>
             </div>
-            <div className="font-mono text-xs text-purple-700 font-bold flex items-center gap-1.5">
+            <div className="font-mono text-xs text-purple-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
               <span>Fuzzy Match & Father Name Cross-Check</span>
               <Check className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Card 5: Bank Penny Drop & IMPS */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-amber-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 5: Bank & Payroll Match */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-amber-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-5">
                 <CreditCard className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                ₹1 IMPS Bank & UPI Verification
+                Direct Bank & Payroll Validation
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Performs automated ₹1 penny drops to validate bank account active status and authentic account holder name directly with NPCI before wage disbursement.
+                Performs automated penny-drop validation to verify bank account active status and confirm exact account holder name before wage disbursement.
               </p>
             </div>
-            <div className="font-mono text-xs text-amber-700 font-bold flex items-center gap-1.5">
+            <div className="font-mono text-xs text-amber-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
               <span>Eliminates Failed Salary Transfers</span>
               <Check className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Card 6: Tamper-Proof Cryptographic Dossiers */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-sky-400 hover:shadow-md transition-all shadow-xs">
+          {/* Card 6: Audit-Ready Dossier Reports */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between hover:border-sky-400 hover-jump shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 mb-5">
                 <FileCheck className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">
-                Audit-Ready Dossier Reports
+                Audit-Ready Profile Dossiers
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                Instantly compiles downloadable PDF audit reports stamped with cryptographic SHA-256 verification hashes, fully compliant with labor inspectorate guidelines.
+                Instantly compiles downloadable PDF audit reports stamped with cryptographic SHA-256 verification hashes, fully compliant with DPDP Act 2023.
               </p>
             </div>
-            <div className="font-mono text-xs text-sky-700 font-bold flex items-center gap-1.5">
+            <div className="font-mono text-xs text-sky-700 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-100">
               <span>DPDP Act 2023 Masked & Certified</span>
               <Check className="w-3.5 h-3.5" />
             </div>
@@ -1997,26 +2209,26 @@ export const LandingPageView = () => {
        * 13. HIGH IMPACT ENTERPRISE CTA & CONVERSION BANNER
        * ============================================================================== */}
       <section className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
-        <div className="relative rounded-3xl overflow-hidden border border-cyan-200 bg-gradient-to-br from-indigo-50/70 via-sky-50/60 to-cyan-50/70 p-8 sm:p-14 text-center shadow-xl">
+        <div className="relative rounded-3xl overflow-hidden border border-blue-200 bg-gradient-to-br from-indigo-50/70 via-sky-50/60 to-blue-50/70 p-8 sm:p-14 text-center shadow-xl">
           
           <div className="max-w-3xl mx-auto flex flex-col items-center">
-            <div className="w-14 h-14 rounded-2xl bg-cyan-100 border border-cyan-300 flex items-center justify-center text-cyan-700 mb-6 shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-blue-100 border border-blue-300 flex items-center justify-center text-blue-700 mb-6 shadow-xs">
               <Zap className="w-7 h-7" />
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit tracking-tight mb-4">
-              Ready to Secure Your Workforce <br className="hidden sm:inline" />
-              in Under 45 Seconds?
+              Ready to Streamline Your Employee <br className="hidden sm:inline" />
+              Profile Verification?
             </h2>
 
             <p className="text-slate-600 text-base max-w-xl mb-8">
-              Join leading Indian automotive plants, logistics warehouses, and tech corporations eliminating ghost worker fraud and automating statutory compliance today.
+              Join leading Indian enterprises, fast-growing tech companies, and nationwide supply chains automating employee profile verification and eliminating onboarding delays today.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-8 py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-xl shadow-cyan-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                className="px-8 py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>Book Live Enterprise Walkthrough</span>
                 <ArrowRight className="w-4 h-4" />
@@ -2027,17 +2239,17 @@ export const LandingPageView = () => {
                   setLandingSelectedAmount(5000);
                   setShowLandingRazorpayModal(true);
                 }}
-                className="px-7 py-4 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-cyan-500 hover:bg-cyan-50/50 shadow-xs transition-all flex items-center gap-2"
+                className="px-7 py-4 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
               >
-                <CreditCard className="w-4 h-4 text-cyan-600" />
-                <span>Instant Verification Checkout</span>
+                <CreditCard className="w-4 h-4 text-blue-600" />
+                <span>Get Verification Credits</span>
               </button>
             </div>
 
             {/* Compliance Guarantee Badges */}
             <div className="flex flex-wrap items-center justify-center gap-6 mt-10 font-mono text-[11px] text-slate-600 font-bold">
-              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-cyan-600" /> 100% DPDP Act 2023 Compliant</span>
-              <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-emerald-600" /> Automated CLRA Form XVI</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-blue-600" /> 100% DPDP Act 2023 Compliant</span>
+              <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-emerald-600" /> Audit-Ready Compliance Reports</span>
               <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-indigo-600" /> 256-Bit AES Cryptography</span>
             </div>
           </div>
@@ -2052,25 +2264,27 @@ export const LandingPageView = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-2xs">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 flex items-center justify-center text-white shadow-2xs">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
               <span className="font-bold text-slate-900 font-outfit text-sm">JOY TrueProfile</span>
-              <p className="text-[10px] text-slate-500 font-medium">AI Labor Management & Verification Engine</p>
+              <p className="text-[10px] text-slate-500 font-medium">Intelligent Employee Profile Verification Platform</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] font-semibold">
-            <a href="#solutions" className="hover:text-cyan-700 transition-colors">Solutions</a>
-            <a href="#craft" className="hover:text-cyan-700 transition-colors">Architecture</a>
-            <a href="#specs" className="hover:text-cyan-700 transition-colors">Specifications</a>
-            <a href="#interactive-lab" className="hover:text-cyan-700 transition-colors">Simulator</a>
-            <a href="#live-radar" className="hover:text-cyan-700 transition-colors">India Radar</a>
-            <a href="#roi-calculator" className="hover:text-cyan-700 transition-colors">ROI Calculator</a>
-            <a href="#reviews" className="hover:text-cyan-700 transition-colors">Reviews</a>
-            <a href="#knowledge-hub" className="hover:text-cyan-700 transition-colors">Knowledge Hub</a>
-            <a href="#faq" className="hover:text-cyan-700 transition-colors">FAQ</a>
+            <a href="#features" className="hover:text-blue-700 transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-blue-700 transition-colors">How It Works</a>
+            <a href="#solutions" className="hover:text-blue-700 transition-colors">Solutions</a>
+            <a href="#craft" className="hover:text-blue-700 transition-colors">Architecture</a>
+            <a href="#specs" className="hover:text-blue-700 transition-colors">Specifications</a>
+            <a href="#interactive-lab" className="hover:text-blue-700 transition-colors">Simulator</a>
+            <a href="#live-radar" className="hover:text-blue-700 transition-colors">India Radar</a>
+            <a href="#roi-calculator" className="hover:text-blue-700 transition-colors">ROI Calculator</a>
+            <a href="#reviews" className="hover:text-blue-700 transition-colors">Reviews</a>
+            <a href="#knowledge-hub" className="hover:text-blue-700 transition-colors">Knowledge Hub</a>
+            <a href="#faq" className="hover:text-blue-700 transition-colors">FAQ</a>
           </div>
 
           <div className="text-right text-[10px] text-slate-500 font-medium">
