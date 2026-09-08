@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Smartphone, 
-  Fingerprint, 
-  Cpu, 
+  Camera, 
+  Search, 
   FileCheck, 
   CheckCircle2, 
   ArrowRight, 
@@ -12,7 +12,8 @@ import {
   Zap,
   Lock,
   Download,
-  Sparkles
+  Sparkles,
+  Check
 } from 'lucide-react';
 import { soundEngine } from '../../utils/uiSoundEffects';
 
@@ -20,66 +21,66 @@ const PIPELINE_STEPS = [
   {
     stepNumber: '01',
     id: 'magic-link',
-    title: 'Zero-App Magic Link',
-    subtitle: 'Candidate Identity & Consent',
+    title: '1-Click Invite Link',
+    subtitle: 'Sent via WhatsApp or SMS',
     icon: Smartphone,
     color: 'from-amber-500 via-orange-500 to-rose-500',
-    description: 'HR initiates verification with candidate phone or email. Candidate receives an encrypted, time-bounded magic link requiring zero app downloads.',
+    description: 'HR initiates the check with just the candidate’s mobile number. The candidate receives an instant, secure link. No app download needed.',
     visualData: {
-      action: 'SMS / WhatsApp Dispatch',
-      target: '+91 98765 43210',
-      status: 'LINK ACCESSED (12s TAT)',
-      security: 'TLS 1.3 • AES-256 Consent'
+      channel: 'Instant WhatsApp & SMS Delivery',
+      recipient: 'Candidate (+91 98765 43210)',
+      timeToOpen: 'Average 45 seconds to open',
+      experience: '100% Mobile Browser Friendly'
     }
   },
   {
     stepNumber: '02',
     id: 'liveness',
-    title: 'AI Facial Liveness',
-    subtitle: '3D Face Mesh & Anti-Spoof',
-    icon: Fingerprint,
+    title: '2-Minute Self KYC & Selfie',
+    subtitle: 'Photo & Document Upload',
+    icon: Camera,
     color: 'from-orange-500 via-rose-500 to-amber-600',
-    description: 'Candidate completes a 3-second live selfie check. Proprietary 3D face mesh verifies real human presence and matches official document photographs.',
+    description: 'The candidate snaps a quick live selfie and uploads their ID. Smart face matching ensures the person in front of the camera matches their official government ID.',
     visualData: {
-      action: 'Biometric Depth Analysis',
-      faceMeshPoints: '468 Landmark Nodes',
-      status: 'LIVENESS MATCH (99.8%)',
-      security: 'ISO 30107-3 Compliant'
+      facialMatch: '100% Live Face Match Confirmed',
+      documentCheck: 'Aadhaar / PAN Details Auto-Read',
+      timeTaken: 'Completed in under 2 minutes',
+      privacy: 'Government Data Redaction & Masking'
     }
   },
   {
     stepNumber: '03',
-    id: 'radar',
-    title: 'Cryptographic Pipeline',
-    subtitle: 'Moonlighting & Judicial Radar',
-    icon: Cpu,
+    id: 'checks',
+    title: 'Automated Background Checks',
+    subtitle: 'Employment, Legal & Bank',
+    icon: Search,
     color: 'from-rose-500 via-amber-500 to-orange-600',
-    description: 'The engine scans career service histories for dual-employment overlaps, performs judicial tribunal checks, and validates bank accounts in parallel.',
+    description: 'Our platform automatically verifies past employment tenures, checks for undeclared moonlighting jobs, scans nationwide court records, and validates bank accounts in parallel.',
     visualData: {
-      action: 'Concurrent Database Scan',
-      tenureConflict: '0 Overlaps Found',
-      status: 'ALL ENGINES CLEARED',
-      security: 'Sub-45s Deterministic Output'
+      employmentCheck: 'Work History & Dates Confirmed',
+      moonlightingCheck: 'Zero Overlapping Active Jobs',
+      courtRecords: 'Pan-India Civil & Criminal Clean',
+      bankValidation: 'Account Holder Name 100% Matched'
     }
   },
   {
     stepNumber: '04',
-    id: 'dossier',
-    title: 'SHA-256 Audit Dossier',
-    subtitle: 'DPDP Certified Report',
+    id: 'report',
+    title: 'Download Certified Report',
+    subtitle: 'PDF Report & Digital QR Pass',
     icon: FileCheck,
     color: 'from-emerald-500 via-teal-500 to-amber-500',
-    description: 'An immutable PDF dossier is compiled, stamped with SHA-256 cryptographic hashes, and made instantly available for HR review or plant gate pass activation.',
+    description: 'HR receives a certified, audit-ready PDF report with a digital verification badge. Ready for immediate offer letters, onboarding, or plant gate entry.',
     visualData: {
-      action: 'PDF Dossier & QR Badge',
-      hashSignature: 'SHA256: 7f8a9...b34c2',
-      status: 'AUDIT-READY CERTIFIED',
-      security: 'DPDP Act 2023 Compliant'
+      outputFormat: 'Tamper-Proof PDF Dossier',
+      qrBadge: 'Digital Scannable QR Employee Pass',
+      auditTrail: 'Legally Compliant & Certified',
+      hiringStatus: 'Ready for Immediate Onboarding'
     }
   }
 ];
 
-const InteractiveProcessPipeline = () => {
+export const InteractiveProcessPipeline = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -99,172 +100,125 @@ const InteractiveProcessPipeline = () => {
 
   const handleStepClick = (idx) => {
     soundEngine.playClick();
-    setIsPlaying(false);
     setActiveStep(idx);
+    setIsPlaying(false);
   };
 
-  const currentStep = PIPELINE_STEPS[activeStep];
+  const step = PIPELINE_STEPS[activeStep];
 
   return (
     <div className="w-full dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl relative overflow-hidden">
       
-      {/* Top Header with Auto-Play Controller */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-500/15 pb-6 mb-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-amber-500/15 pb-6 mb-8">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>KINETIC WORKFLOW ENGINE</span>
+          <div className="flex items-center gap-2 text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">
+            <Zap className="w-3.5 h-3.5" />
+            <span>HOW IT WORKS</span>
           </div>
           <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">
-            How TrueProfile Verifies in Under 45 Seconds
+            Verify Candidates in 4 Simple Steps
           </h3>
+          <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-xl">
+            From sending an invitation to downloading a certified report, the entire process takes minutes instead of weeks.
+          </p>
         </div>
 
-        <button
-          onClick={() => {
-            soundEngine.playClick();
-            setIsPlaying(!isPlaying);
-          }}
-          className={`px-4 py-2 rounded-xl font-mono text-xs font-bold transition-all flex items-center gap-2 cursor-pointer border ${
-            isPlaying
-              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-md shadow-amber-500/20'
-              : 'bg-slate-900/60 hover:bg-slate-800/80 text-amber-200 border-amber-500/20'
-          }`}
-        >
-          {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 text-amber-400" />}
-          <span>{isPlaying ? 'Pause Automated Flow' : 'Play Automated Pipeline'}</span>
-        </button>
+        {/* Play/Pause Autoplay Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="px-4 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-amber-200 text-xs font-bold flex items-center gap-2 border border-amber-500/20 transition-all cursor-pointer shadow-xs"
+          >
+            {isPlaying ? <Pause className="w-3.5 h-3.5 text-amber-400" /> : <Play className="w-3.5 h-3.5 text-amber-400" />}
+            <span>{isPlaying ? 'Pause Walkthrough' : 'Auto-Play Walkthrough'}</span>
+          </button>
+        </div>
       </div>
 
-      {/* 4-Step Interactive Navigation Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        {PIPELINE_STEPS.map((step, idx) => {
-          const Icon = step.icon;
-          const isSelected = activeStep === idx;
+      {/* 4 Step Selector Buttons */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        {PIPELINE_STEPS.map((s, idx) => {
+          const Icon = s.icon;
+          const isActive = activeStep === idx;
           return (
             <button
-              key={step.id}
+              key={s.id}
               onClick={() => handleStepClick(idx)}
-              className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer relative overflow-hidden ${
-                isSelected
-                  ? 'bg-gradient-to-r from-amber-950/80 via-orange-950/70 to-slate-900 border-amber-400 text-white shadow-lg ring-1 ring-amber-400/50 scale-[1.02]'
-                  : 'bg-slate-900/40 border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:text-white'
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                isActive
+                  ? 'bg-gradient-to-br from-amber-950/80 via-orange-950/60 to-slate-900 border-amber-400 text-white shadow-lg ring-1 ring-amber-400/50 scale-[1.02]'
+                  : 'bg-slate-900/40 border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:bg-white/5'
               }`}
             >
-              {/* Top Row: Step Number & Icon */}
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-black text-amber-400">
-                  STAGE {step.stepNumber}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-black text-amber-400 font-outfit">
+                  STEP {s.stepNumber}
                 </span>
-                <div className={`p-2 rounded-xl ${isSelected ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'bg-white/10 text-amber-300'}`}>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                  isActive ? `bg-gradient-to-br ${s.color} text-slate-950 font-black shadow-md` : 'bg-white/10 text-slate-300'
+                }`}>
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
-
               <div>
-                <h4 className="font-bold text-sm text-white font-outfit">{step.title}</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5 truncate">{step.subtitle}</p>
+                <h4 className="font-bold text-sm text-white font-outfit">
+                  {s.title}
+                </h4>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  {s.subtitle}
+                </p>
               </div>
-
-              {/* Active Step Progress Indicator Bar */}
-              {isSelected && (
-                <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500"></div>
-              )}
             </button>
           );
         })}
       </div>
 
-      {/* Main Active Stage Interactive Visualizer */}
-      <div className="bg-[#0c101d]/90 border border-amber-500/15 rounded-2xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center shadow-2xl">
-        
-        {/* Left: Stage Description & Key Metrics (lg:col-span-6) */}
-        <div className="lg:col-span-6 flex flex-col gap-5">
-          <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${currentStep.color} flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/30`}>
-              <currentStep.icon className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="font-mono text-xs font-bold text-amber-400 uppercase tracking-wider">
-                STAGE {currentStep.stepNumber} // PIPELINE EXECUTION
-              </span>
-              <h4 className="text-2xl font-black text-white font-outfit">
-                {currentStep.title}
-              </h4>
-            </div>
-          </div>
-
-          <p className="text-slate-200 text-sm leading-relaxed">
-            {currentStep.description}
-          </p>
-
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="bg-slate-900/60 border border-amber-500/15 p-3 rounded-xl">
-              <span className="font-mono text-[10px] uppercase text-slate-400 font-bold block">Status Output</span>
-              <span className="text-xs font-bold text-emerald-400 block mt-0.5">{currentStep.visualData.status}</span>
-            </div>
-
-            <div className="bg-slate-900/60 border border-amber-500/15 p-3 rounded-xl">
-              <span className="font-mono text-[10px] uppercase text-slate-400 font-bold block">Security Standard</span>
-              <span className="text-xs font-bold text-amber-300 font-mono block mt-0.5">{currentStep.visualData.security}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Live Graphic Representation of Stage (lg:col-span-6) */}
-        <div className="lg:col-span-6 bg-black/60 border border-amber-500/15 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-inner min-h-[240px]">
+      {/* Active Step Showcase Card */}
+      <div className="bg-[#0c101d]/90 border border-amber-500/20 rounded-2xl p-6 sm:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
-          {activeStep === 0 && (
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-400 shadow-lg animate-bounce">
-                <Smartphone className="w-8 h-8" />
-              </div>
-              <span className="font-mono text-xs text-white font-bold">📲 Encrypted Magic Link Dispatched</span>
-              <p className="text-slate-400 text-xs max-w-xs">
-                Sent to candidate via WhatsApp & SMS with 1-click biometric consent.
-              </p>
+          <div className="lg:col-span-7">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>STEP {step.stepNumber} OF 04</span>
             </div>
-          )}
+            <h4 className="text-2xl font-black text-white font-outfit mb-3">
+              {step.title}
+            </h4>
+            <p className="text-slate-300 text-sm leading-relaxed mb-6 font-normal">
+              {step.description}
+            </p>
 
-          {activeStep === 1 && (
-            <div className="flex flex-col items-center gap-3 relative">
-              <div className="w-20 h-20 rounded-2xl bg-orange-500/20 border-2 border-orange-400/60 flex items-center justify-center text-orange-400 shadow-xl relative overflow-hidden">
-                <Fingerprint className="w-10 h-10" />
-                <div className="absolute inset-x-0 top-0 h-1 bg-amber-400 shadow-[0_0_10px_#f59e0b] animate-laser-vertical"></div>
-              </div>
-              <span className="font-mono text-xs text-white font-bold">👤 3D Face Mesh Liveness Verified</span>
-              <p className="text-slate-400 text-xs max-w-xs">
-                468 facial landmark depth nodes verified in under 3 seconds.
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {Object.entries(step.visualData).map(([key, val], vIdx) => (
+                <div key={vIdx} className="p-3 rounded-xl bg-slate-900/60 border border-amber-500/15 flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-xs text-slate-200 font-medium">{val}</span>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
-          {activeStep === 2 && (
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-400/50 flex items-center justify-center text-rose-400 shadow-lg animate-pulse">
-                <Cpu className="w-8 h-8" />
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="w-full max-w-sm p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-amber-500/30 text-center shadow-xl">
+              <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 bg-gradient-to-br ${step.color} flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/30`}>
+                <step.icon className="w-8 h-8" />
               </div>
-              <span className="font-mono text-xs text-white font-bold">⚡ Dual-Employment Radar Active</span>
-              <p className="text-slate-400 text-xs max-w-xs">
-                Cross-referencing past employment tenures & judicial registries simultaneously.
+              <h5 className="text-base font-bold text-white font-outfit mb-1">
+                {step.title}
+              </h5>
+              <p className="text-xs text-amber-300 font-medium mb-4">
+                {step.subtitle}
               </p>
-            </div>
-          )}
-
-          {activeStep === 3 && (
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400 shadow-lg">
-                <FileCheck className="w-8 h-8" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/90 text-emerald-400 text-xs font-bold border border-emerald-500/40">
+                <Check className="w-3.5 h-3.5" />
+                <span>Fully Automated in Platform</span>
               </div>
-              <span className="font-mono text-xs text-white font-bold">📜 SHA-256 Stamped Audit Dossier</span>
-              <p className="text-slate-400 text-xs max-w-xs">
-                PDF compliance certificate generated & ready for instantaneous download.
-              </p>
             </div>
-          )}
+          </div>
 
         </div>
-
       </div>
 
     </div>
