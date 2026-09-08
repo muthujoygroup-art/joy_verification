@@ -22,6 +22,7 @@ import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
+import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import {
@@ -211,6 +212,7 @@ export const SuperAdminView = () => {
   const [customTariffValues, setCustomTariffValues] = useState({});
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
+  const [showGatewaysModal, setShowGatewaysModal] = useState(false);
   const [selectedTermsCompany, setSelectedTermsCompany] = useState(null);
   const [editingCustomTermsCompany, setEditingCustomTermsCompany] = useState(null);
   const [showAddMasterFieldModal, setShowAddMasterFieldModal] = useState(false);
@@ -1095,6 +1097,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         else if (viewingLegalDoc) setViewingLegalDoc(null);
         else if (showAddDocModal) setShowAddDocModal(false);
         else if (showSuperAdminRazorpayModal) setShowSuperAdminRazorpayModal(false);
+        else if (showGatewaysModal) setShowGatewaysModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -1105,7 +1108,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     showLegalHandbook, showUniversalExportModal, downloadingCandidate, activeDrilldown,
     viewingDossierCandidate, viewingCertificateCandidate, selectedLogForDetail,
     showSimulateErrorModal, resolveModalLog, viewingLegalDoc, showAddDocModal,
-    showSuperAdminRazorpayModal
+    showSuperAdminRazorpayModal, showGatewaysModal
   ]);
 
 
@@ -1145,6 +1148,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             >
               <Download className="w-4 h-4 text-indigo-600" />
               <span>Date-Filtered Reports 📥</span>
+            </button>
+
+            <button 
+              onClick={() => setShowGatewaysModal(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+              title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
+            >
+              <MessageSquare className="w-4 h-4 text-emerald-600" />
+              <span>Automated Messaging (WhatsApp & SMS) 💬</span>
             </button>
 
             <button 
@@ -1271,7 +1283,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: Zap,
                 colorClass: 'from-teal-600 to-emerald-800',
                 activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
-                badgeText: '3 Modules',
+                badgeText: '4 Modules',
                 defaultTab: 'apiconfig'
               },
               {
@@ -1437,6 +1449,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>3. cPanel SMTP & Mail 📧</span>
+                  </button>
+                  <button
+                    onClick={() => setShowGatewaysModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-300 shadow-2xs"
+                    title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>4. Automated Messaging (WhatsApp & SMS) 💬</span>
                   </button>
                 </>
               )}
@@ -3198,6 +3218,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   >
                     <KeyRound className="w-4 h-4 text-indigo-600" />
                     <span>Update API Key & Base URL</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowGatewaysModal(true)}
+                    className="btn btn-secondary text-xs py-2.5 px-4 font-black border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 shadow-xs cursor-pointer flex items-center gap-2 btn-interactive"
+                    title="Configure Meta WhatsApp Business & Carrier SMS Gateway (SuperAdmin Only)"
+                  >
+                    <MessageSquare className="w-4 h-4 text-emerald-600" />
+                    <span>Automated Messaging (WhatsApp & SMS) 💬</span>
                   </button>
 
                   <button
@@ -6592,6 +6622,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           showToast(`⚡ ${pData.display_name || pKey} credentials & base URL synchronized with database!`);
         }}
       />
+
+      {/* 💬 SUPERADMIN AUTOMATED MESSAGING (WHATSAPP & CARRIER SMS) GATEWAY CONFIGURATOR */}
+      {showGatewaysModal && (
+        <CommunicationGatewaysModal 
+          onClose={() => setShowGatewaysModal(false)} 
+        />
+      )}
 
 
       

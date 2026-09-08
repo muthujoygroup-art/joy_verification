@@ -358,7 +358,7 @@ export const AppProvider = ({ children }) => {
     { id: 'LOG-903', timestamp: '2026-08-20 12:05:30', section: 'Automated SMS Router', event: 'SMS OTP Dispatch Timeout', details: 'Carrier gateway delayed OTP delivery by 45 seconds.', severity: 'Warning', solved: true, company: 'Acme Global' }
   ]);
 
-  // WHATSAPP & EMAIL INTEGRATION GATEWAYS STATE
+  // WHATSAPP & AUTOMATED MESSAGING INTEGRATION GATEWAYS (SUPERADMIN ONLY)
   const [whatsappConfig, setWhatsappConfig] = useState({
     enabled: true,
     wabaId: 'WABA-99823412091',
@@ -368,6 +368,21 @@ export const AppProvider = ({ children }) => {
     autoSendOnboardingLink: true,
     autoSendOtpCode: true,
     autoSendPdfCertificate: true,
+    status: 'Connected 🟢'
+  });
+
+  // CARRIER SMS GATEWAY INTEGRATION STATE (SUPERADMIN ONLY)
+  const [smsConfig, setSmsConfig] = useState({
+    enabled: true,
+    provider: 'Twilio',
+    accountSid: 'AC99823412091_TWILIO_LIVE',
+    authToken: 'AUTH_TOKEN_99823412091_JOY',
+    senderId: 'JOYVER',
+    dltEntityId: '1101234567890123456',
+    dltTemplateId: 'DLT_1107161829304859',
+    autoSendOnboardingSms: true,
+    autoSendOtpSms: true,
+    autoSendReportSms: true,
     status: 'Connected 🟢'
   });
 
@@ -1978,12 +1993,14 @@ export const AppProvider = ({ children }) => {
     } catch (err) {}
   };
 
-  const updateCommunicationGateways = async (waData, mailData) => {
+  const updateCommunicationGateways = async (waData, smsData, mailData) => {
     if (waData) setWhatsappConfig(prev => ({ ...prev, ...waData }));
+    if (smsData) setSmsConfig(prev => ({ ...prev, ...smsData }));
     if (mailData) setEmailConfig(prev => ({ ...prev, ...mailData }));
-    showToast('WhatsApp & Enterprise Email Gateway credentials saved in Database!');
+    showToast('⚡ SuperAdmin Automated Messaging (WhatsApp & SMS) credentials saved in Database!');
     try {
       if (waData) await api.saveGateway({ gateway_type: 'whatsapp', settings: waData });
+      if (smsData) await api.saveGateway({ gateway_type: 'sms', settings: smsData });
       if (mailData) await api.saveGateway({ gateway_type: 'email_smtp', settings: mailData });
     } catch (err) {}
   };
@@ -2585,6 +2602,8 @@ export const AppProvider = ({ children }) => {
       addSupportTicket,
       addTicketReply,
       whatsappConfig,
+      smsConfig,
+      setSmsConfig,
       emailConfig,
       updateCommunicationGateways,
       companyPaymentLedger,

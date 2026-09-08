@@ -18,7 +18,6 @@ import { DocumentDownloader } from '../components/DocumentDownloader';
 import { QrCodeModal } from '../components/QrCodeModal';
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { FullJoiningFormModal } from '../components/FullJoiningFormModal';
-import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
@@ -248,7 +247,6 @@ export const HrExecutiveView = () => {
     triggerAccessDenied
   } = useApp();
 
-  const [showGatewaysModal, setShowGatewaysModal] = useState(false);
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
 
@@ -466,7 +464,6 @@ export const HrExecutiveView = () => {
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
         else if (showFullJoiningModal) setShowFullJoiningModal(false);
         else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -475,8 +472,7 @@ export const HrExecutiveView = () => {
     selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
     managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
     dispatchingCandidate, viewingDossierCandidate, viewingCertificateCandidate,
-    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm,
-    showGatewaysModal
+    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm
   ]);
 
   // Clear Saved Draft & Start Fresh
@@ -1123,7 +1119,6 @@ export const HrExecutiveView = () => {
 
   // Lock Body Scroll when any Modal is Active to Prevent Dashboard Jitter
   const isAnyModalOpen = Boolean(
-    showGatewaysModal ||
     showFullJoiningModal ||
     downloadingCandidate ||
     viewingCertificateCandidate ||
@@ -1638,15 +1633,6 @@ export const HrExecutiveView = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
-            <button
-              onClick={() => setShowGatewaysModal(true)}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
-              title="Configure WhatsApp & SMTP Email Credentials"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Gateways (WhatsApp/Email) 💬</span>
-            </button>
-
             <button 
               onClick={() => {
                 if (hrPerms.allowProfileCreation === false) {
@@ -5586,13 +5572,6 @@ export const HrExecutiveView = () => {
         <EmployeeProfileDossierModal
           candidate={viewingDossierCandidate}
           onClose={() => setViewingDossierCandidate(null)}
-        />
-      )}
-
-      {/* WhatsApp & SMTP Email Gateways Modal */}
-      {showGatewaysModal && (
-        <CommunicationGatewaysModal 
-          onClose={() => setShowGatewaysModal(false)} 
         />
       )}
 

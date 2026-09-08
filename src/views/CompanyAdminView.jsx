@@ -6,7 +6,6 @@ import { HrPerformanceChart, TatDistributionChart } from '../components/StatsCha
 import { DocumentDownloader } from '../components/DocumentDownloader';
 import { DocumentStorageHub } from '../components/DocumentStorageHub';
 import { PaymentModal } from '../components/PaymentModal';
-import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
@@ -111,7 +110,6 @@ export const CompanyAdminView = () => {
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showRazorpayModal, setShowRazorpayModal] = useState(false);
-  const [showGatewaysModal, setShowGatewaysModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [inspectCandidate, setInspectCandidate] = useState(null);
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
@@ -313,9 +311,9 @@ export const CompanyAdminView = () => {
         if (payload.openModal === 'add_hr') setShowAddHrModal(true);
         if (payload.openModal === 'razorpay') setShowRazorpayModal(true);
       } else if (payload.type === 'open_modal') {
-        if (payload.modal === 'gateways') setShowGatewaysModal(true);
+        if (payload.modal === 'gateways') setActiveTab('settings');
         if (payload.modal === 'universal_export') setShowUniversalExportModal(true);
-        if (payload.modal === 'support') setShowGatewaysModal(true);
+        if (payload.modal === 'support') setActiveTab('support');
       }
     };
     window.addEventListener('tour_feature_action', handleTourAction);
@@ -335,7 +333,6 @@ export const CompanyAdminView = () => {
         else if (showAddHrModal) setShowAddHrModal(false);
         else if (showPaymentModal) setShowPaymentModal(false);
         else if (showRazorpayModal) setShowRazorpayModal(false);
-        else if (showGatewaysModal) setShowGatewaysModal(false);
         else if (showTermsModal) setShowTermsModal(false);
         else if (showLegalHandbook) setShowLegalHandbook(false);
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
@@ -349,7 +346,7 @@ export const CompanyAdminView = () => {
   }, [
     inspectCandidate, downloadingCandidate, activeDrilldown, viewingDossierCandidate,
     viewingCertificateCandidate, viewingBgvReportCandidate, showTourGuideModal, showAddHrModal,
-    showPaymentModal, showRazorpayModal, showGatewaysModal, showTermsModal, showLegalHandbook,
+    showPaymentModal, showRazorpayModal, showTermsModal, showLegalHandbook,
     showUniversalExportModal, governanceHr, activatingHr, showCompTestEmailModal
   ]);
 
@@ -522,15 +519,6 @@ export const CompanyAdminView = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setShowGatewaysModal(true)}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
-              title="Configure WhatsApp & SMTP Email Credentials"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>WhatsApp / Email API Gateways 💬</span>
-            </button>
-
             <button
               onClick={() => setShowUniversalExportModal(true)}
               className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
@@ -3031,13 +3019,6 @@ export const CompanyAdminView = () => {
         <PaymentModal 
           company={company} 
           onClose={() => setShowPaymentModal(false)} 
-        />
-      )}
-
-      {/* WhatsApp & SMTP Email Gateways Modal */}
-      {showGatewaysModal && (
-        <CommunicationGatewaysModal 
-          onClose={() => setShowGatewaysModal(false)} 
         />
       )}
 
