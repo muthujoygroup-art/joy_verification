@@ -92,6 +92,17 @@ export const LandingPageView = () => {
   const [heroScanProgress, setHeroScanProgress] = useState(0);
   const [heroScanStage, setHeroScanStage] = useState('idle'); // 'idle' | 'identity' | 'experience' | 'bank' | 'complete'
 
+  // WhatsApp Floating Widget State
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [whatsappMsg, setWhatsappMsg] = useState('');
+
+  const handleSendWhatsApp = (customText) => {
+    const defaultPhone = '919940000000';
+    const message = customText || whatsappMsg || 'Hello JOY TrueProfile Team! I would like to learn more about employee profile verification for my enterprise.';
+    const url = `https://wa.me/${defaultPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   const heroPersonas = {
     aryan: {
       name: 'Sarah J. Chen',
@@ -102,7 +113,7 @@ export const LandingPageView = () => {
       workRecordId: 'EXP-REC-8841',
       bank: 'HDFC Bank (Payroll Validated)',
       gateId: 'JOY-EMP-BLR-9042',
-      image: '/assets/3d/hero_employee_3d_id.jpg',
+      image: '/assets/3d/liquid_glass_hero_3d.jpg',
       statutoryPass: 'Corporate Security Clearance'
     },
     pooja: {
@@ -114,7 +125,7 @@ export const LandingPageView = () => {
       workRecordId: 'EXP-REC-7104',
       bank: 'State Bank of India (Payroll Validated)',
       gateId: 'JOY-EMP-BHW-3108',
-      image: '/assets/3d/easy_3step_verify_3d.jpg',
+      image: '/assets/3d/liquid_glass_flow_3d.jpg',
       statutoryPass: 'Supply Chain Access Pass'
     },
     rajesh: {
@@ -126,7 +137,7 @@ export const LandingPageView = () => {
       workRecordId: 'EXP-REC-4490',
       bank: 'ICICI Bank (Payroll Validated)',
       gateId: 'JOY-EMP-SND-1150',
-      image: '/assets/3d/corporate_shield_vault_3d.jpg',
+      image: '/assets/3d/liquid_glass_vault_3d.jpg',
       statutoryPass: 'Workforce Security Pass'
     }
   };
@@ -564,11 +575,16 @@ export const LandingPageView = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden">
       
-      {/* Background Ambience & Crystalline Subtle Grid */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(6,182,212,0.08),rgba(99,102,241,0.05),rgba(255,255,255,0))]"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"></div>
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-cyan-100/40 blur-[140px] rounded-full pointer-events-none"></div>
+      {/* Dynamic Aurora Mesh & Liquid Glass Ambient Backdrops */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Animated Aurora Orb 1 */}
+        <div className="absolute top-[-10%] left-[-5%] w-[650px] h-[650px] bg-gradient-to-br from-blue-500/20 via-indigo-500/15 to-cyan-400/20 rounded-full blur-[120px] animate-aurora-1"></div>
+        {/* Animated Aurora Orb 2 */}
+        <div className="absolute top-[35%] right-[-10%] w-[750px] h-[750px] bg-gradient-to-bl from-cyan-400/20 via-indigo-400/15 to-purple-500/20 rounded-full blur-[140px] animate-aurora-2"></div>
+        {/* Animated Aurora Orb 3 */}
+        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-gradient-to-tr from-sky-400/15 via-blue-600/10 to-emerald-400/10 rounded-full blur-[130px] animate-aurora-1"></div>
+        {/* Precision Crystalline Grid Layer */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] bg-[size:48px_48px] opacity-25"></div>
       </div>
 
       {/* ==============================================================================
@@ -651,20 +667,19 @@ export const LandingPageView = () => {
             <div className="relative">
               <button
                 onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <Lock className="w-3.5 h-3.5 text-blue-600" />
-                <span>Portals & Login</span>
-                <ChevronDown className="w-3 h-3 text-slate-500" />
+                <span>Select Portal</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
               </button>
 
               {portalDropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setPortalDropdownOpen(false)}
                 >
-                  <div className="px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider font-bold text-slate-400 border-b border-slate-100">
-                    Direct Portal Access
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold border-b border-slate-100">
+                    Authentication Gateways
                   </div>
                   <a
                     href="/login?role=superadmin"
@@ -770,7 +785,7 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: 3D FLOATING EMPLOYEE PROFILE VERIFICATION HUB
+       * 2. HERO SECTION: 3D LIQUID GLASS EMPLOYEE PROFILE VERIFICATION STAGE
        * ============================================================================== */}
       <section className="relative z-10 pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -779,21 +794,23 @@ export const LandingPageView = () => {
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
             {/* Live Telemetry Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-mono text-xs mb-6 shadow-2xs hover-jump-subtle cursor-pointer">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Employee Profiles Verified Across 34 Indian Hubs</span>
+            <div className="liquid-glass-pill inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 shadow-sm hover-jump-subtle cursor-pointer">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-mono font-bold uppercase tracking-wider text-[11px] text-slate-800">
+                LIVE: 520,000+ Employee Profiles Verified Across 34 Indian Hubs
+              </span>
             </div>
 
-            {/* Main Headline */}
+            {/* Main Headline with Electric Gradient */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.12] mb-6 font-outfit">
               The Easiest & Most Reliable Way to <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 bg-clip-text text-transparent">
+              <span className="text-gradient-electric">
                 Verify Employee Profiles
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed mb-8">
+            <p className="text-base sm:text-lg text-slate-700 max-w-xl leading-relaxed mb-8 font-medium">
               Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee profile verification as simple as sending a link. Validate digital identity, past employment history, legal public records, and payroll bank details in 3 effortless steps.
             </p>
 
@@ -809,7 +826,7 @@ export const LandingPageView = () => {
 
               <a
                 href="#features"
-                className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
+                className="liquid-glass-card px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 hover:text-blue-700 shadow-xs hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-blue-600" />
                 <span>Explore Features</span>
@@ -817,26 +834,26 @@ export const LandingPageView = () => {
 
               <a
                 href="#how-it-works"
-                className="px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
+                className="liquid-glass-card px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5 text-indigo-600" />
                 <span>How It Works</span>
               </a>
             </div>
 
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 w-full max-w-lg">
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+            {/* Quick Metrics Bar with Liquid Glass Cards */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200/80 w-full max-w-lg">
+              <div className="liquid-glass-card p-4 rounded-2xl hover-jump-subtle transition-all">
                 <div className="text-2xl sm:text-3xl font-black text-blue-600 font-outfit">3 Steps</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Effortless Flow</div>
+                <div className="text-xs text-slate-700 font-bold mt-0.5">Effortless Flow</div>
               </div>
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+              <div className="liquid-glass-card p-4 rounded-2xl hover-jump-subtle transition-all">
                 <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">Fast</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Automated TAT</div>
+                <div className="text-xs text-slate-700 font-bold mt-0.5">Automated TAT</div>
               </div>
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+              <div className="liquid-glass-card p-4 rounded-2xl hover-jump-subtle transition-all">
                 <div className="text-2xl sm:text-3xl font-black text-indigo-600 font-outfit">100%</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Audit-Ready Dossier</div>
+                <div className="text-xs text-slate-700 font-bold mt-0.5">Audit-Ready Dossier</div>
               </div>
             </div>
 
@@ -847,7 +864,7 @@ export const LandingPageView = () => {
             <div className="relative max-w-[430px] mx-auto">
               
               {/* Persona Switcher Tabs */}
-              <div className="flex items-center justify-between p-1 bg-slate-100/90 rounded-2xl border border-slate-200 mb-3 font-mono text-[11px] font-bold">
+              <div className="flex items-center justify-between p-1.5 liquid-glass-card rounded-2xl mb-3 font-mono text-[11px] font-bold">
                 {[
                   { id: 'aryan', label: '💼 Corporate / IT' },
                   { id: 'pooja', label: '📦 Logistics / 3PL' },
@@ -860,9 +877,9 @@ export const LandingPageView = () => {
                       setHeroScanComplete(false);
                       setHeroScanStage('idle');
                     }}
-                    className={`flex-1 py-1.5 px-2 rounded-xl transition-all cursor-pointer ${
+                    className={`flex-1 py-2 px-2 rounded-xl transition-all cursor-pointer ${
                       activePersona === p.id
-                        ? 'bg-white text-blue-700 shadow-xs border border-slate-200 font-extrabold scale-[1.02]'
+                        ? 'bg-white text-blue-700 shadow-sm border border-slate-200 font-extrabold scale-[1.02]'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -872,15 +889,15 @@ export const LandingPageView = () => {
               </div>
 
               {/* Glowing Background Ring */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-80 pointer-events-none"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/25 via-cyan-400/20 to-indigo-500/25 rounded-3xl blur-2xl opacity-90 pointer-events-none"></div>
               
-              {/* Floating Bouncy Badges that jump on hover */}
-              <div className="absolute -top-3 -left-4 z-20 bg-white/95 backdrop-blur-md border border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob hover-jump cursor-pointer">
+              {/* Floating Liquid Glass Badges that jump on hover */}
+              <div className="absolute -top-3 -left-4 z-20 liquid-glass-pill font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob hover-jump cursor-pointer">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>100% DPDP Act Compliant</span>
               </div>
 
-              <div className="absolute -bottom-3 -right-4 z-20 bg-blue-600 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer">
+              <div className="absolute -bottom-3 -right-4 z-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3.5 py-1.5 rounded-full shadow-xl flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer">
                 <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 <span>Automated Verification</span>
               </div>
@@ -890,10 +907,10 @@ export const LandingPageView = () => {
                 onMouseMove={handleMouseMoveHero}
                 onMouseLeave={handleMouseLeaveHero}
                 style={tiltStyle}
-                className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-2xl p-3 backdrop-blur-xl transition-all hover-jump-subtle"
+                className="liquid-glass-hero relative rounded-3xl overflow-hidden p-3 transition-all hover-jump-subtle"
               >
                 {/* 3D Smart Card Image */}
-                <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-900 border border-slate-200">
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-950 border border-white/40 shadow-inner">
                   <img
                     src={heroPersonas[activePersona].image}
                     alt="JOY TrueProfile 3D Digital Employee Verification Stage"
@@ -933,7 +950,7 @@ export const LandingPageView = () => {
                 </div>
 
                 {/* Card Telemetry & Live Verification Stages Footer */}
-                <div className="p-3.5 bg-slate-50 rounded-xl mt-2 border border-slate-200 flex flex-col gap-2.5">
+                <div className="p-3.5 bg-white/80 backdrop-blur-md rounded-2xl mt-2 border border-slate-200/80 flex flex-col gap-2.5 shadow-xs">
                   
                   {/* Verification Pipeline Checks */}
                   <div className="grid grid-cols-3 gap-1.5 font-mono text-[9px]">
@@ -969,7 +986,7 @@ export const LandingPageView = () => {
                   <button
                     onClick={triggerHeroBiometricScan}
                     disabled={heroScanning}
-                    className="w-full py-2.5 rounded-lg text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover-jump transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
+                    className="w-full py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover-jump transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
                   >
                     {heroScanning ? (
                       <>
@@ -1021,32 +1038,32 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * NEW: COMPREHENSIVE EMPLOYEE PROFILE VERIFICATION FEATURES (#features)
        * ============================================================================== */}
-      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200/80">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
-          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-2xs">
+          <span className="liquid-glass-pill font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
             <span>ALL-IN-ONE VERIFICATION SUITE</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4 tracking-tight">
             Complete Employee Profile <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
+            <span className="text-gradient-electric">
               Verification Features
             </span>
           </h2>
-          <p className="text-slate-600 text-base max-w-2xl leading-relaxed">
+          <p className="text-slate-700 text-base max-w-2xl leading-relaxed font-medium">
             Everything your HR, talent acquisition, and compliance teams need to verify candidates with 100% confidence, zero paperwork, and complete audit readiness.
           </p>
         </div>
 
-        {/* 8 Features Grid */}
+        {/* 8 Features Grid with Liquid Glass Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Feature 1: Digital Identity */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <Fingerprint className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1056,16 +1073,16 @@ export const LandingPageView = () => {
                 Automated document extraction, biometric facial match, and real-time OCR validation of government identity credentials.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-blue-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-blue-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
               <span>99.98% Biometric Match</span>
             </div>
           </div>
 
           {/* Feature 2: Employment History */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <Briefcase className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1075,16 +1092,16 @@ export const LandingPageView = () => {
                 Automated past tenure history, organization track records, joining/relieving dates, and experience authentication.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-emerald-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-emerald-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>Full Career Timeline</span>
             </div>
           </div>
 
           {/* Feature 3: Dual-Employment Radar */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <Search className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1094,16 +1111,16 @@ export const LandingPageView = () => {
                 Scans active payroll streams and contribution histories to identify undeclared secondary employment and moonlighting risks.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-indigo-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-indigo-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
               <span>Conflict-of-Interest Shield</span>
             </div>
           </div>
 
           {/* Feature 4: Legal & Court Screening */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <Scale className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1113,16 +1130,16 @@ export const LandingPageView = () => {
                 Nationwide screening across criminal, civil, and commercial litigation databases and public tribunal registries.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-purple-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-purple-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
               <span>Pan-India Legal Scan</span>
             </div>
           </div>
 
           {/* Feature 5: Bank & Payroll Match */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <CreditCard className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1132,16 +1149,16 @@ export const LandingPageView = () => {
                 Direct penny-drop verification ensuring bank account validity and exact candidate name match before salary disbursement.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-amber-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-amber-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
               <span>Zero Payroll Fraud</span>
             </div>
           </div>
 
           {/* Feature 6: Education Credentials */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <Award className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1151,16 +1168,16 @@ export const LandingPageView = () => {
                 Verification of academic degrees, marksheets, diplomas, and certifications against accredited institutional repositories.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-sky-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-sky-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />
               <span>Degree Authenticity</span>
             </div>
           </div>
 
           {/* Feature 7: Address & Geolocation */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <MapPin className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1170,16 +1187,16 @@ export const LandingPageView = () => {
                 Candidate residential address confirmation with digital proof upload and optional GPS location timestamping.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-teal-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-teal-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
               <span>Digital Proof of Address</span>
             </div>
           </div>
 
           {/* Feature 8: Tamper-Proof Audit Dossiers */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
+          <div className="liquid-glass-card rounded-3xl p-6 shadow-sm hover-jump flex flex-col justify-between gap-4 group">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all">
                 <FileCheck className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">
@@ -1189,7 +1206,7 @@ export const LandingPageView = () => {
                 Instant downloadable SHA-256 encrypted verification reports, compliance certificates, and HR audit-ready logs.
               </p>
             </div>
-            <div className="pt-3 border-t border-slate-100 font-mono text-[11px] text-cyan-700 font-bold flex items-center gap-1.5">
+            <div className="pt-3 border-t border-slate-200/60 font-mono text-[11px] text-cyan-700 font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" />
               <span>SHA-256 Tamper-Proof</span>
             </div>
@@ -1202,21 +1219,21 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 4. HOW EASY EMPLOYEE VERIFICATION WORKS IN 3 STEPS (#how-it-works)
        * ============================================================================== */}
-      <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200/80">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
-          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-2xs">
+          <span className="liquid-glass-pill font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full shadow-2xs">
             <Zap className="w-3.5 h-3.5 text-blue-600" />
             <span>EFFORTLESS 3-STEP PROCESS</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4 tracking-tight">
             How Employee Profile Verification <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
+            <span className="text-gradient-electric">
               Works in 3 Simple Steps
             </span>
           </h2>
-          <p className="text-slate-600 text-base max-w-2xl leading-relaxed">
+          <p className="text-slate-700 text-base max-w-2xl leading-relaxed font-medium">
             Eliminate slow paper onboarding, physical document submission, and manual verification calls. Completely self-serve on any smartphone.
           </p>
         </div>
@@ -1225,16 +1242,16 @@ export const LandingPageView = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           
           {/* Connecting Line between steps (Desktop) */}
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-300 via-indigo-300 to-emerald-300 -translate-y-12 z-0"></div>
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-300 via-indigo-300 to-emerald-300 -translate-y-12 z-0 opacity-60"></div>
 
           {/* Step 1 Card */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+          <div className="liquid-glass-card rounded-3xl p-8 shadow-xl hover-jump flex flex-col justify-between gap-6 relative z-10 group">
             <div>
               <div className="flex items-center justify-between mb-6">
                 <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
                   01
                 </div>
-                <span className="font-mono text-[10px] font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-200 uppercase tracking-wider">
+                <span className="liquid-glass-pill font-mono text-[10px] font-bold text-blue-800 px-3 py-1 rounded-full uppercase tracking-wider">
                   1-Click Dispatch
                 </span>
               </div>
@@ -1245,20 +1262,20 @@ export const LandingPageView = () => {
                 HR inputs the employee's phone number or email, or candidate scans a QR code. An encrypted, passwordless magic link is sent via WhatsApp and SMS immediately.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-blue-700 font-bold flex items-center gap-2">
+            <div className="pt-4 border-t border-slate-200/60 font-mono text-xs text-blue-700 font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-blue-600" />
               <span>Zero App Downloads Needed</span>
             </div>
           </div>
 
           {/* Step 2 Card */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+          <div className="liquid-glass-card rounded-3xl p-8 shadow-xl hover-jump flex flex-col justify-between gap-6 relative z-10 group">
             <div>
               <div className="flex items-center justify-between mb-6">
                 <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
                   02
                 </div>
-                <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
+                <span className="liquid-glass-pill font-mono text-[10px] font-bold text-emerald-800 px-3 py-1 rounded-full uppercase tracking-wider">
                   Mobile Self-KYC
                 </span>
               </div>
@@ -1269,20 +1286,20 @@ export const LandingPageView = () => {
                 The employee opens the link on their mobile browser, verifies identity via secure OTP, and captures a quick live selfie with AI liveness detection.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-emerald-700 font-bold flex items-center gap-2">
+            <div className="pt-4 border-t border-slate-200/60 font-mono text-xs text-emerald-700 font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               <span>99.98% Biometric Facial Match</span>
             </div>
           </div>
 
           {/* Step 3 Card */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+          <div className="liquid-glass-card rounded-3xl p-8 shadow-xl hover-jump flex flex-col justify-between gap-6 relative z-10 group">
             <div>
               <div className="flex items-center justify-between mb-6">
                 <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
                   03
                 </div>
-                <span className="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 uppercase tracking-wider">
+                <span className="liquid-glass-pill font-mono text-[10px] font-bold text-indigo-800 px-3 py-1 rounded-full uppercase tracking-wider">
                   Verified Dossier
                 </span>
               </div>
@@ -1293,7 +1310,7 @@ export const LandingPageView = () => {
                 Identity, experience history, public records, and bank account checks are executed automatically. A tamper-proof SHA-256 PDF report is generated seamlessly.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-indigo-700 font-bold flex items-center gap-2">
+            <div className="pt-4 border-t border-slate-200/60 font-mono text-xs text-indigo-700 font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-indigo-600" />
               <span>Downloadable Audit PDF & JSON</span>
             </div>
@@ -1306,37 +1323,37 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 5. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
        * ============================================================================== */}
-      <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200/80">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Column: Monospace Category Header */}
           <div className="lg:col-span-4">
-            <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold block mb-3">
+            <span className="liquid-glass-pill font-mono text-xs uppercase tracking-wider text-blue-700 font-bold inline-block mb-3 px-3 py-1 rounded-full">
               ENTERPRISE ARCHITECTURE & VAULT
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-slate-900 font-outfit leading-tight mb-4">
               Enterprise Trust Meets High-Speed Accuracy
             </h2>
-            <p className="text-slate-600 text-sm leading-relaxed mb-6">
+            <p className="text-slate-600 text-sm leading-relaxed mb-6 font-medium">
               Whether verifying executive leadership, corporate IT specialists, logistics drivers, or plant workers, JOY TrueProfile provides unified, cryptographic verification built on automated enterprise connectors.
             </p>
             <button
               onClick={() => setShowLegalHandbook(true)}
-              className="px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-blue-500 text-slate-800 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-2xs hover-jump-subtle transition-all font-bold cursor-pointer"
+              className="liquid-glass-card px-5 py-3 rounded-xl text-slate-800 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-sm hover-jump-subtle transition-all font-bold cursor-pointer"
             >
               <span>Compliance Handbook</span>
               <FileText className="w-3.5 h-3.5 text-blue-600" />
             </button>
           </div>
 
-          {/* Right Column: Split Dual Cards (3-Step Engine & Security Vault) */}
+          {/* Right Column: Split Dual Cards with Liquid Glass & 3D Assets */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Card 1: Automated Verification Pipeline */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 hover-jump shadow-md">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-50">
+            <div className="liquid-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-lg">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-white/40 bg-slate-900 shadow-inner">
                 <img
-                  src="/assets/3d/easy_3step_verify_3d.jpg"
+                  src="/assets/3d/liquid_glass_flow_3d.jpg"
                   alt="Automated Employee Verification Pipeline"
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
@@ -1355,10 +1372,10 @@ export const LandingPageView = () => {
             </div>
 
             {/* Card 2: Enterprise Security Vault & Moonlighting Radar */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 hover-jump shadow-md">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-50">
+            <div className="liquid-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-lg">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-white/40 bg-slate-900 shadow-inner">
                 <img
-                  src="/assets/3d/corporate_shield_vault_3d.jpg"
+                  src="/assets/3d/liquid_glass_vault_3d.jpg"
                   alt="Enterprise Security Vault & Moonlighting Radar"
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
@@ -2586,6 +2603,142 @@ export const LandingPageView = () => {
           }}
         />
       )}
+
+      {/* ==============================================================================
+       * 11. FLOATING LIQUID GLASS WHATSAPP MESSAGING WIDGET
+       * ============================================================================== */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        
+        {/* Expandable Liquid Glass Quick Chat Panel */}
+        {whatsappOpen && (
+          <div className="mb-3 w-96 max-w-[calc(100vw-2rem)] liquid-glass-card rounded-3xl p-0 overflow-hidden shadow-2xl border border-white/60 animate-in fade-in slide-in-from-bottom-5 duration-200">
+            {/* WhatsApp Header */}
+            <div className="bg-gradient-to-r from-[#128C7E] via-[#25D366] to-[#075E54] p-4 text-white flex items-center justify-between shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+                    <ShieldCheck className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-300 border-2 border-[#128C7E] rounded-full"></span>
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white font-outfit">JOY Verification Team</h4>
+                  <div className="flex items-center gap-1 text-[11px] text-emerald-100 font-sans">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse"></span>
+                    <span>Online | Instant Response</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setWhatsappOpen(false)}
+                className="p-1.5 rounded-full hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
+                aria-label="Close WhatsApp chat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Chat Body */}
+            <div className="p-4 bg-slate-50/70 backdrop-blur-md flex flex-col gap-3">
+              {/* Specialist Message Bubble */}
+              <div className="p-3.5 bg-white rounded-2xl rounded-tl-sm border border-slate-200/80 shadow-xs text-xs text-slate-800 leading-relaxed">
+                <p className="font-semibold mb-1 text-slate-900">👋 Welcome to JOY TrueProfile!</p>
+                <p className="text-slate-600">
+                  How can our verification specialists assist you today? Tap a quick option or type your message below to chat on WhatsApp.
+                </p>
+                <span className="block font-mono text-[9px] text-slate-400 text-right mt-1.5">Just now</span>
+              </div>
+
+              {/* Quick Prompt Chips */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">
+                  Quick Inquiries
+                </span>
+                {[
+                  '🚀 I want to verify employee profiles for my company',
+                  '📅 Book a live 1-on-1 enterprise walkthrough',
+                  '💰 Request custom volume pricing',
+                  '🔒 Ask about security & DPDP compliance'
+                ].map((chip, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendWhatsApp(chip)}
+                    className="text-left text-xs font-semibold px-3 py-2 rounded-xl bg-white/90 hover:bg-emerald-50 border border-slate-200/80 hover:border-emerald-300 text-slate-800 hover:text-emerald-900 transition-all flex items-center justify-between group shadow-2xs cursor-pointer"
+                  >
+                    <span className="truncate pr-2">{chip}</span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom Message Box */}
+              <div className="pt-2 border-t border-slate-200/80">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendWhatsApp();
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    type="text"
+                    value={whatsappMsg}
+                    onChange={(e) => setWhatsappMsg(e.target.value)}
+                    placeholder="Type your message here..."
+                    className="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-inner"
+                  />
+                  <button
+                    type="submit"
+                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+                    title="Send to WhatsApp"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              </div>
+
+            </div>
+
+            {/* Panel Footer */}
+            <div className="px-4 py-2.5 bg-slate-100/80 border-t border-slate-200/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+              <span className="flex items-center gap-1 text-emerald-700 font-bold">
+                <Lock className="w-3 h-3" /> End-to-end encrypted
+              </span>
+              <button
+                onClick={() => handleSendWhatsApp()}
+                className="font-bold text-emerald-700 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Direct WhatsApp</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Floating WhatsApp Toggle Button */}
+        <button
+          onClick={() => setWhatsappOpen(!whatsappOpen)}
+          className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-bold text-xs shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:shadow-emerald-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer z-50 border border-white/40"
+          aria-label="Toggle WhatsApp Contact"
+        >
+          {/* Animated WhatsApp Ping Halo */}
+          <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-30 animate-ping pointer-events-none"></span>
+
+          {/* WhatsApp SVG Icon */}
+          <div className="w-6 h-6 shrink-0 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.888 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.405" />
+            </svg>
+          </div>
+
+          <span className="font-outfit text-xs font-bold tracking-wide">
+            {whatsappOpen ? 'Close Chat' : 'Chat on WhatsApp'}
+          </span>
+
+          {/* Online status indicator */}
+          <span className="w-2 h-2 rounded-full bg-emerald-200 animate-pulse"></span>
+        </button>
+      </div>
 
     </div>
   );
