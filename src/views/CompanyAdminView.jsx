@@ -2689,7 +2689,7 @@ export const CompanyAdminView = () => {
               <div className="space-y-2.5">
                 {[
                   { id: 'allowProfileCreation', title: 'Single Profile Creation', desc: 'Allow HR to manually add new candidate profiles' },
-                  { id: 'allowBulkExcelUpload', title: 'Bulk Excel (.xlsx / .csv) Ingestion', desc: 'Allow HR to batch upload multiple candidates via spreadsheet' }
+                  { id: 'allowBulkExcelUpload', title: 'Bulk Excel (.xlsx) Ingestion', desc: 'Allow HR to batch upload multiple candidates via spreadsheet' }
                 ].map(item => {
                   const isChecked = company.hrPermissions?.[item.id] ?? true;
                   return (

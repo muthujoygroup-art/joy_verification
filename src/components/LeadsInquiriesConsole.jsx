@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Sparkles,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  FileSpreadsheet
 } from 'lucide-react';
 import { api } from '../services/api';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
@@ -109,25 +110,38 @@ export const LeadsInquiriesConsole = () => {
     converted: inquiries.filter(i => i.status === 'converted').length
   };
 
-  const exportCSV = () => {
+  const exportExcel = () => {
     const headers = ['ID', 'Name', 'Company', 'Email', 'Phone', 'Estimated Hires', 'Workforce Type', 'Status', 'Date', 'Notes'];
     const rows = filteredInquiries.map(i => [
       i.id,
-      `"${i.name}"`,
-      `"${i.company}"`,
+      i.name,
+      i.company,
       i.email,
-      `"${i.phone}"`,
-      `"${i.estimated_monthly_hires}"`,
+      i.phone,
+      i.estimated_monthly_hires,
       i.workforce_type,
       i.status,
       new Date(i.created_at).toLocaleDateString(),
-      `"${(i.notes || '').replace(/"/g, '""')}"`
+      i.notes || ''
     ]);
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+      <body>
+        <h2>JOY MARKETING PORTAL - DEMO INQUIRIES & SALES LEADS</h2>
+        <p>Export Date: ${new Date().toLocaleString()} | Total Leads: ${filteredInquiries.length}</p>
+        <table border="1">
+          <thead><tr style="background:#f97316;color:white;">${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `JOY_Demo_Inquiries_${new Date().toISOString().slice(0,10)}.csv`);
+    link.href = URL.createObjectURL(blob);
+    link.download = `JOY_Demo_Inquiries_${new Date().toISOString().slice(0,10)}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -158,11 +172,12 @@ export const LeadsInquiriesConsole = () => {
             <span>Refresh</span>
           </button>
           <button
-            onClick={exportCSV}
+            onClick={exportExcel}
             className="btn btn-superadmin text-xs py-2 px-3 flex items-center gap-1.5 cursor-pointer font-bold"
+            title="Export leads pipeline to Microsoft Excel (.xlsx)"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Export Excel (.xlsx)</span>
           </button>
         </div>
       </div>

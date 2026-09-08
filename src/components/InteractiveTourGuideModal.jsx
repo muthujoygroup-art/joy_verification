@@ -237,7 +237,7 @@ export const InteractiveTourGuideModal = ({
         '2. Choose Date Presets: "Today", "Yesterday", "Last 7 Days", "This Month", or "Custom Range".',
         '3. Filter by Status (Verified, Pending, Action Needed) or Department.',
         '4. Select candidate dossiers or click "Select All".',
-        '5. Choose your export format: "Export as PDF Dossiers", "Export as Excel (.xlsx/.csv)", or "Download ZIP Archive"!'
+        '5. Choose your export format: "Export as PDF Dossiers", "Export as Excel (.xlsx)", "Word Document (.docx)", or "Download Certificates ZIP Pack"!'
       ],
       actionLabel: 'Open Batch Export Wizard 🚀',
       actionPayload: { type: 'open_modal', modal: 'universal_export' }

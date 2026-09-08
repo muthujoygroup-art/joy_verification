@@ -103,16 +103,32 @@ export const DocumentStorageHub = () => {
         category: 'financial',
         categoryLabel: 'Audit Ledger',
         fileType: 'Excel Spreadsheet',
-        fileExt: '.csv',
+        fileExt: '.xlsx',
         fileSize: '42 KB',
         uploadDate: dateStr,
         status: 'Verified ✅',
         securityLevel: 'Enterprise Restricted',
         downloadAction: () => {
-          const csvContent = 
-            `"Candidate Name","Employee ID","Company","Designation","Department","Mobile","Aadhaar Status","Mobile OTP","Face Biometrics","Overall Status","Verification Date"\n` +
-            `"${cand.name}","${cand.empId || 'JOY-001'}","${comp.name}","${cand.designation || 'Associate'}","${cand.dept || 'Operations'}","${cand.mobile}","${cand.verificationsCompleted.aadhaar ? 'PASSED' : 'PENDING'}","${cand.verificationsCompleted.mobile ? 'PASSED' : 'PENDING'}","${cand.verificationsCompleted.face ? 'MATCHED (99.4%)' : 'PENDING'}","${cand.status}","${dateStr}"\n`;
-          downloadDoc(`Audit_Ledger_${cand.name.replace(/\s+/g, '_')}.csv`, csvContent, 'text/csv');
+          const excelHtml = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+            <body>
+              <table>
+                <thead>
+                  <tr style="background:#059669;color:white;">
+                    <th>Candidate Name</th><th>Employee ID</th><th>Company</th><th>Designation</th><th>Department</th><th>Mobile</th><th>Aadhaar Status</th><th>Mobile OTP</th><th>Face Biometrics</th><th>Overall Status</th><th>Verification Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>${cand.name}</td><td>${cand.empId || 'JOY-001'}</td><td>${comp.name}</td><td>${cand.designation || 'Associate'}</td><td>${cand.dept || 'Operations'}</td><td>${cand.mobile}</td><td>${cand.verificationsCompleted?.aadhaar ? 'PASSED' : 'PENDING'}</td><td>${cand.verificationsCompleted?.mobile ? 'PASSED' : 'PENDING'}</td><td>${cand.verificationsCompleted?.face ? 'MATCHED (99.4%)' : 'PENDING'}</td><td>${cand.status}</td><td>${dateStr}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </body>
+            </html>
+          `;
+          downloadDoc(`Audit_Ledger_${cand.name.replace(/\s+/g, '_')}.xlsx`, '\ufeff' + excelHtml, 'application/vnd.ms-excel;charset=utf-8;');
         }
       },
       {
@@ -299,7 +315,7 @@ export const DocumentStorageHub = () => {
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-indigo-50 text-indigo-700 font-bold shrink-0">
                         {doc.fileExt === '.pdf' && <FileCheck className="w-5 h-5" />}
-                        {doc.fileExt === '.csv' && <FileSpreadsheet className="w-5 h-5" />}
+                        {(doc.fileExt === '.xlsx' || doc.fileExt === '.csv') && <FileSpreadsheet className="w-5 h-5" />}
                         {doc.fileExt === '.docx' && <FileText className="w-5 h-5" />}
                         {doc.fileExt === '.png' && <FileImage className="w-5 h-5" />}
                       </div>

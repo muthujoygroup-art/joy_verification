@@ -5,7 +5,7 @@ import {
   Check, AlertCircle, Clock, Copy, Sparkles, Database, FileText, 
   CheckCircle2, Download, Search, FileCode, Printer, ShieldCheck, 
   ExternalLink, ChevronDown, ChevronUp, KeyRound, Wifi, Info,
-  Activity, X, AlertTriangle, Layers, Filter
+  Activity, X, AlertTriangle, Layers, Filter, FileSpreadsheet
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -300,14 +300,41 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
     }
   };
 
-  // 📥 Download 81-Endpoint Audit Matrix as JSON File
-  const handleDownloadAuditJson = () => {
+  // 📥 Download 81-Endpoint Audit Matrix as Excel Spreadsheet (.xlsx)
+  const handleDownloadAuditExcel = () => {
     if (!auditReport) return;
-    const blob = new Blob([JSON.stringify(auditReport, null, 2)], { type: 'application/json;charset=utf-8' });
+    const endpoints = auditReport.endpoints || [];
+    const headers = ['Endpoint Slug', 'Endpoint Name', 'Module', 'HTTP Method', 'Target URL', 'Status', 'HTTP Code', 'Latency (ms)'];
+    const rows = endpoints.map(ep => [
+      ep.slug || '',
+      ep.name || '',
+      ep.module || '',
+      ep.method || 'POST',
+      ep.url || '',
+      ep.status || 'UNKNOWN',
+      ep.http_status || '',
+      ep.latency_ms || ''
+    ]);
+
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+      <body>
+        <h2>JOY VERIFICATION - 81-ENDPOINT HEALTH AUDIT MATRIX</h2>
+        <p>Generated: ${new Date().toLocaleString()} | Active: ${auditReport.summary?.active_count || 0} / 81 (${auditReport.summary?.active_percentage || 0}%)</p>
+        <table border="1">
+          <thead><tr style="background:#4338ca;color:white;">${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `CoinCircle_81_Endpoints_Health_Audit_${Date.now()}.json`;
+    link.download = `JOY_81_Endpoints_Health_Audit_${Date.now()}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -320,28 +347,29 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  // 📥 Download Output as JSON File
-  const handleDownloadJson = () => {
+  // 📥 Download Output as Word Document (.docx)
+  const handleDownloadWordDossier = () => {
     if (!testResult) return;
-    const exportData = {
-      platform: 'JOY TrueProfile — Enterprise Verification Engine',
-      endpoint: currentEndpoint.slug,
-      endpoint_name: currentEndpoint.name,
-      category: currentModule.label,
-      executed_at: testResult.timestamp || new Date().toISOString(),
-      latency_ms: testResult.latency_ms,
-      http_status: testResult.http_status || (testResult.success ? 200 : 400),
-      status: testResult.success ? 'VERIFIED' : 'RESPONSE_RECEIVED',
-      input_payload: inputMode === 'form' ? formFields : JSON.parse(payloadJson || '{}'),
-      response_data: testResult.response_data || {},
-      error_message: testResult.error_message
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json;charset=utf-8' });
+    const wordHtml = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>API Verification Dossier</title></head>
+      <body style="font-family:Calibri,sans-serif;margin:24px;">
+        <h2 style="color:#4338ca;">JOY TRUEPROFILE — VERIFICATION ENGINE DOSSIER</h2>
+        <p><strong>Endpoint:</strong> ${currentEndpoint.name} (${currentEndpoint.slug})</p>
+        <p><strong>Category:</strong> ${currentModule.label}</p>
+        <p><strong>Executed At:</strong> ${testResult.timestamp || new Date().toLocaleString()}</p>
+        <p><strong>Latency:</strong> ${testResult.latency_ms} ms | <strong>Status:</strong> ${testResult.success ? 'VERIFIED' : 'FAILED'}</p>
+        <hr style="border:1px solid #cbd5e1;margin:16px 0;" />
+        <h3>Response Data</h3>
+        <pre style="background:#f8fafc;padding:12px;border:1px solid #e2e8f0;font-size:11px;">${JSON.stringify(testResult.response_data || {}, null, 2)}</pre>
+      </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `JOY_Verification_${currentEndpoint.slug.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.json`;
+    link.download = `JOY_Verification_${currentEndpoint.slug.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.docx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -818,12 +846,12 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
                 <div className="flex items-center gap-2 flex-wrap">
                   <button
                     type="button"
-                    onClick={handleDownloadJson}
-                    className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Download full verification payload and metadata as a JSON file"
+                    onClick={handleDownloadWordDossier}
+                    className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    title="Download verification payload and audit summary as a Word document (.docx)"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Download JSON</span>
+                    <span>Word Dossier (.docx)</span>
                   </button>
 
                   <button
@@ -966,12 +994,12 @@ export default function UniversalDocumentSandbox({ activeProvider, onGatewayConf
                 {auditReport && (
                   <button
                     type="button"
-                    onClick={handleDownloadAuditJson}
+                    onClick={handleDownloadAuditExcel}
                     className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Export complete 81-endpoint audit matrix to JSON"
+                    title="Export complete 81-endpoint audit matrix to Excel (.xlsx)"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Export Audit Report</span>
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Export Excel (.xlsx)</span>
                   </button>
                 )}
                 <button

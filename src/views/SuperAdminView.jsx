@@ -930,13 +930,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const safeTitle = report.title.replace(/[^a-zA-Z0-9]/g, '_');
 
-    if (format === 'csv') {
-      const csvContent = [
-        report.headers.join(','),
-        ...report.rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      ].join('\n');
-      downloadSystemReport(safeTitle, csvContent, '.csv', 'text/csv');
-      if (showToast) showToast(`📊 Exported ${report.title} as Excel/CSV!`);
+    if (format === 'csv' || format === 'excel') {
+      const excelHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+        <body>
+          <h2>JOY CORPORATE SOLUTIONS - ${report.title}</h2>
+          <p>Generated: ${new Date().toLocaleString()} | Domain: ${reportDomain.toUpperCase()}</p>
+          <table border="1">
+            <thead>
+              <tr style="background:#f97316;color:white;">${report.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${report.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+      downloadSystemReport(safeTitle, '\ufeff' + excelHtml, '.xlsx', 'application/vnd.ms-excel;charset=utf-8;');
+      if (showToast) showToast(`📊 Exported ${report.title} as Excel Spreadsheet (.xlsx)!`);
     } else if (format === 'doc') {
       const docContent = `JOY CORPORATE SOLUTIONS - OFFICIAL EXECUTIVE REPORT\n` +
         `Title: ${report.title}\n` +
@@ -2627,43 +2640,74 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <Database className="w-5 h-5 text-teal-700" />
                 <span>Database Management System (DBMS Explorer & Query Runner)</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Browse live tables, inspect daily stored records, export data to CSV/JSON, and run safe read-only SQL queries</p>
+              <p className="text-xs text-slate-500 font-medium">Browse live tables, inspect daily stored records, export data to Excel/Word, and run safe read-only SQL queries</p>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  const csvContent = 'data:text/csv;charset=utf-8,' + [Object.keys(currentTableRows[0] || {}).join(','), ...currentTableRows.map(r => Object.values(r).join(','))].join('\n');
-                  const encodedUri = encodeURI(csvContent);
+                  const headers = Object.keys(currentTableRows[0] || {});
+                  const rows = currentTableRows.map(r => Object.values(r));
+                  const excelHtml = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                    <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+                    <body>
+                      <h2>JOY DATABASE TABLE EXPORT - ${selectedDbTable.toUpperCase()}</h2>
+                      <p>Exported: ${new Date().toLocaleString()} | Total Records: ${currentTableRows.length}</p>
+                      <table border="1">
+                        <thead><tr style="background:#0f766e;color:white;">${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                        <tbody>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+                      </table>
+                    </body>
+                    </html>
+                  `;
+                  const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
                   const link = document.createElement('a');
-                  link.setAttribute('href', encodedUri);
-                  link.setAttribute('download', `${selectedDbTable}_export_2026.csv`);
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `${selectedDbTable}_export_2026.xlsx`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
-                  showToast(`Exported ${selectedDbTable} table to CSV!`);
+                  showToast(`Exported ${selectedDbTable} table to Excel (.xlsx)!`);
                 }}
                 className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                title="Export table data to Microsoft Excel"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Export CSV</span>
+                <span>Export Excel (.xlsx)</span>
               </button>
 
               <button
                 onClick={() => {
-                  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentTableRows, null, 2));
+                  const headers = Object.keys(currentTableRows[0] || {});
+                  const rows = currentTableRows.map(r => Object.values(r));
+                  const wordHtml = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head><meta charset='utf-8'><title>Database Export</title></head>
+                    <body style="font-family:Calibri,sans-serif;margin:20px;">
+                      <h2 style="color:#0f766e;">JOY DATABASE TABLE EXPORT - ${selectedDbTable.toUpperCase()}</h2>
+                      <p>Exported: ${new Date().toLocaleString()} | Total Records: ${currentTableRows.length}</p>
+                      <table border="1" style="border-collapse:collapse;width:100%;">
+                        <thead><tr style="background:#0f172a;color:white;">${headers.map(h => `<th style="padding:6px;">${h}</th>`).join('')}</tr></thead>
+                        <tbody>${rows.map(row => `<tr>${row.map(c => `<td style="padding:6px;">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+                      </table>
+                    </body>
+                    </html>
+                  `;
+                  const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8;' });
                   const link = document.createElement('a');
-                  link.setAttribute('href', jsonStr);
-                  link.setAttribute('download', `${selectedDbTable}_export_2026.json`);
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `${selectedDbTable}_export_2026.docx`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
-                  showToast(`Exported ${selectedDbTable} table to JSON!`);
+                  showToast(`Exported ${selectedDbTable} table to Word (.docx)!`);
                 }}
                 className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                title="Export table data to Microsoft Word"
               >
-                <FileCode className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Export JSON</span>
+                <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Export Word (.docx)</span>
               </button>
             </div>
           </div>
@@ -4279,29 +4323,43 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         const solvedCount = (systemErrorLogs || []).filter(l => l.solved).length;
         const resolutionRate = totalLogsCount > 0 ? Math.round((solvedCount / totalLogsCount) * 100) : 100;
 
-        const handleExportLogsCsv = () => {
+        const handleExportLogsExcel = () => {
           const headers = ['Log ID', 'Timestamp', 'Portal', 'Section', 'Function', 'Error Code', 'Severity', 'Message', 'Solved', 'Resolved At', 'Resolved By'];
           const rows = processedLogs.map(l => [
-            `"${l.id}"`,
-            `"${l.timestamp}"`,
-            `"${l.portal || 'HR Executive Portal'}"`,
-            `"${l.section || ''}"`,
-            `"${l.functionName || ''}"`,
-            `"${l.errorCode || l.event || ''}"`,
-            `"${l.severity || 'Critical'}"`,
-            `"${(l.message || l.details || '').replace(/"/g, '""')}"`,
-            `"${l.solved ? 'YES' : 'NO'}"`,
-            `"${l.resolvedTimestamp || ''}"`,
-            `"${l.resolvedBy || ''}"`
+            l.id,
+            l.timestamp,
+            l.portal || 'HR Executive Portal',
+            l.section || '',
+            l.functionName || '',
+            l.errorCode || l.event || '',
+            l.severity || 'Critical',
+            l.message || l.details || '',
+            l.solved ? 'YES' : 'NO',
+            l.resolvedTimestamp || '',
+            l.resolvedBy || ''
           ]);
-          const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-          const encodedUri = encodeURI(csvContent);
+
+          const excelHtml = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+            <body>
+              <h2>JOY SYSTEM ERROR & AUDIT LOGS</h2>
+              <p>Export Date: ${new Date().toLocaleString()} | Total Filtered Logs: ${processedLogs.length}</p>
+              <table border="1">
+                <thead><tr style="background:#e11d48;color:white;">${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+              </table>
+            </body>
+            </html>
+          `;
+          const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
           const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `JOY_System_Error_Audit_Logs_${new Date().toISOString().substring(0, 10)}.csv`);
+          link.href = URL.createObjectURL(blob);
+          link.download = `JOY_System_Error_Audit_Logs_${new Date().toISOString().substring(0, 10)}.xlsx`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+          showToast(`Exported ${processedLogs.length} error logs to Excel (.xlsx)!`);
         };
 
         return (
@@ -4395,12 +4453,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                   <button
                     type="button"
-                    onClick={handleExportLogsCsv}
+                    onClick={handleExportLogsExcel}
                     className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-700 bg-slate-100 border-slate-300 hover:bg-slate-200 cursor-pointer shadow-xs"
-                    title="Export filtered logs as CSV"
+                    title="Export filtered logs as Microsoft Excel (.xlsx)"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Export CSV</span>
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Export Excel (.xlsx)</span>
                   </button>
 
                   <button

@@ -263,9 +263,9 @@ export const UniversalDocumentExportModal = ({
     }, 500);
   };
 
-  // 2. Download Excel CSV Spreadsheet
-  const handleDownloadCsv = () => {
-    setExportingFormat('csv');
+  // 2. Download Microsoft Excel Spreadsheet (.xlsx)
+  const handleDownloadExcel = () => {
+    setExportingFormat('excel');
     const headers = [
       'Record ID',
       'Candidate Name',
@@ -282,89 +282,159 @@ export const UniversalDocumentExportModal = ({
       'Bank Name Match Status',
       'Verification Status',
       'Verification Date (YYYY-MM-DD)',
-      'Certificate Validity (Days)',
+      'Certificate Validity',
       'DPDP Digital Consent Logged'
     ];
 
     const rows = selectedList.map((c, i) => [
       c.id,
-      `"${c.name}"`,
+      c.name || 'Candidate',
       c.empId || `EMP-${400 + i}`,
-      `"${companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}"`,
-      `"${c.department || c.dept || 'Engineering'}"`,
-      `"${c.designation || 'Associate'}"`,
-      c.email,
-      c.mobile,
-      `"XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}"`,
+      companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+      c.department || c.dept || 'Engineering',
+      c.designation || 'Associate',
+      c.email || '',
+      c.mobile || '',
+      `XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}`,
       c.pan || 'ABCDE1234F',
       c.uan || '101234567890',
-      `"XXXXXX${c.bankDetails?.accountNumber?.slice(-4) || '7890'}"`,
-      `"${c.bankDetails?.nameMatchStatus || 'Matched 100%'}"`,
-      c.status,
+      `XXXXXX${c.bankDetails?.accountNumber?.slice(-4) || '7890'}`,
+      c.bankDetails?.nameMatchStatus || 'Matched 100%',
+      c.status || 'VERIFIED',
       c.verificationDate || '2026-08-26',
       '60 Days',
       'YES (DPDP Act Section 6)'
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + 
-      [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `JOY_BGV_Audit_Ledger_${isSingleDayMode ? singleDate : `${startDate}_to_${endDate}`}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>BGV Audit Ledger</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+        <style>
+          table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; }
+          th { background-color: #f97316; color: #ffffff; font-weight: bold; text-align: left; padding: 8px 12px; border: 1px solid #cbd5e1; }
+          td { padding: 6px 12px; border: 1px solid #cbd5e1; font-size: 13px; }
+          tr:nth-child(even) { background-color: #f8fafc; }
+        </style>
+      </head>
+      <body>
+        <h2>JOY CORPORATE SOLUTIONS - CANDIDATE VERIFICATION AUDIT LEDGER</h2>
+        <p>Period: ${isSingleDayMode ? singleDate : `${startDate} to ${endDate}`} | Generated: ${new Date().toLocaleString('en-IN')}</p>
+        <table>
+          <thead>
+            <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
 
-    setExportingFormat(null);
-    showToast(`Exported ${selectedList.length} candidate audit records to Excel CSV!`);
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-  };
-
-  // 3. Download JSON Export
-  const handleDownloadJson = () => {
-    setExportingFormat('json');
-    const exportData = {
-      exportMetadata: {
-        organization: 'JOY CORPORATE SOLUTIONS PVT LTD',
-        reportType: 'Filtered Candidate BGV Audit Ledger',
-        filterPeriod: isSingleDayMode ? singleDate : { from: startDate, to: endDate },
-        totalCandidates: selectedList.length,
-        generatedAt: new Date().toISOString(),
-        compliance: 'DPDP Act 2023 & ISO 27001'
-      },
-      candidates: selectedList.map(c => ({
-        id: c.id,
-        token: c.token,
-        name: c.name,
-        empId: c.empId,
-        companyName: companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-        status: c.status,
-        maskedAadhaar: `XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}`,
-        verificationDate: c.verificationDate || '2026-08-26',
-        checksSummary: {
-          aadhaar: 'UIDAI Verified',
-          pan: 'NSDL Match 100%',
-          epfo: 'EPFO History Verified',
-          bank: c.bankDetails?.nameMatchStatus || 'Active Account Verified',
-          faceLiveness: 'AI Biometric Liveness Passed'
-        }
-      }))
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `JOY_Candidate_BGV_Export_${isSingleDayMode ? singleDate : `${startDate}_to_${endDate}`}.json`;
+    link.download = `JOY_BGV_Audit_Ledger_${isSingleDayMode ? singleDate : `${startDate}_to_${endDate}`}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
     setExportingFormat(null);
-    showToast(`Downloaded JSON HRMS data package (${selectedList.length} records)`);
+    showToast(`Exported ${selectedList.length} candidate audit records to Excel (.xlsx)!`);
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+  };
+
+  // 3. Download Microsoft Word Document (.docx)
+  const handleDownloadWord = () => {
+    setExportingFormat('word');
+    const wordHtml = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Candidate Verification Report</title>
+        <style>
+          body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; margin: 24px; color: #0f172a; }
+          .header { border-bottom: 3px solid #f97316; padding-bottom: 12px; margin-bottom: 20px; }
+          h1 { color: #f97316; margin: 0 0 4px 0; font-size: 20pt; }
+          .subtitle { color: #64748b; font-size: 10pt; margin: 0; }
+          .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; margin-bottom: 20px; font-size: 10.5pt; }
+          table { border-collapse: collapse; width: 100%; margin-top: 15px; font-size: 9.5pt; }
+          th { background-color: #0f172a; color: #ffffff; padding: 8px 10px; border: 1px solid #cbd5e1; text-align: left; }
+          td { padding: 6px 10px; border: 1px solid #cbd5e1; vertical-align: top; }
+          tr:nth-child(even) { background-color: #f8fafc; }
+          .badge-success { color: #16a34a; font-weight: bold; }
+          .badge-warn { color: #ea580c; font-weight: bold; }
+          .footer { margin-top: 25px; font-size: 9pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+          <p class="subtitle">ISO 27001:2022 Certified | Reg. Under DPDP Act 2023 | Background Verification Audit Dossier</p>
+        </div>
+        <div class="meta-box">
+          <strong>Report Title:</strong> Executive Candidate Verification Audit Dossier<br/>
+          <strong>Audit Period:</strong> ${isSingleDayMode ? singleDate : `${startDate} to ${endDate}`}<br/>
+          <strong>Total Records:</strong> ${selectedList.length} Candidates<br/>
+          <strong>Export Timestamp:</strong> ${new Date().toLocaleString('en-IN')}<br/>
+          <strong>Compliance Seal:</strong> Digitally Authenticated Record
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Candidate Name</th>
+              <th>Employee ID</th>
+              <th>Department</th>
+              <th>Designation</th>
+              <th>Contact Details</th>
+              <th>Aadhaar (Masked)</th>
+              <th>PAN</th>
+              <th>Status</th>
+              <th>Verified Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${selectedList.map((c, i) => `
+              <tr>
+                <td>${i + 1}</td>
+                <td><strong>${c.name}</strong></td>
+                <td>${c.empId || `EMP-${400 + i}`}</td>
+                <td>${c.department || c.dept || 'Engineering'}</td>
+                <td>${c.designation || 'Associate'}</td>
+                <td>${c.email || ''}<br/>${c.mobile || ''}</td>
+                <td>XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}</td>
+                <td>${c.pan || 'ABCDE1234F'}</td>
+                <td><span class="${c.status === 'VERIFIED' ? 'badge-success' : 'badge-warn'}">${c.status || 'VERIFIED'}</span></td>
+                <td>${c.verificationDate || '2026-08-26'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="footer">
+          Generated automatically by JOY Background Verification System. Confidential and privileged business document.
+        </div>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `JOY_BGV_Audit_Report_${isSingleDayMode ? singleDate : `${startDate}_to_${endDate}`}.docx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExportingFormat(null);
+    showToast(`Exported ${selectedList.length} candidate records to Word Document (.docx)!`);
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
   };
 
   // 4. Download Bulk Certificates Pack
@@ -684,17 +754,29 @@ export const UniversalDocumentExportModal = ({
               <span>Consolidated PDF Dossier 📄</span>
             </button>
 
-            {/* 2. Excel CSV */}
+            {/* 2. Excel Spreadsheet */}
             <button
-              onClick={handleDownloadCsv}
+              onClick={handleDownloadExcel}
               disabled={selectedList.length === 0 || exportingFormat}
               className="btn btn-company text-xs py-2 px-3.5 font-black shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              title="Download Microsoft Excel Spreadsheet (.xlsx)"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Excel CSV Ledger 📊</span>
+              <span>Excel Spreadsheet (.xlsx) 📊</span>
             </button>
 
-            {/* 3. Bulk ZIP Certificates */}
+            {/* 3. Word Document */}
+            <button
+              onClick={handleDownloadWord}
+              disabled={selectedList.length === 0 || exportingFormat}
+              className="btn text-xs py-2 px-3.5 font-black shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              title="Download Microsoft Word Executive Report (.docx)"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Word Document (.docx) 📝</span>
+            </button>
+
+            {/* 4. Bulk ZIP Certificates */}
             <button
               onClick={handleDownloadBulkCertificates}
               disabled={selectedList.length === 0 || exportingFormat}
@@ -702,17 +784,6 @@ export const UniversalDocumentExportModal = ({
             >
               <Archive className="w-3.5 h-3.5 text-indigo-600" />
               <span>Certificates Pack 🗂️</span>
-            </button>
-
-            {/* 4. JSON Dump */}
-            <button
-              onClick={handleDownloadJson}
-              disabled={selectedList.length === 0 || exportingFormat}
-              className="btn btn-secondary text-xs py-2 px-2.5 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 bg-white"
-              title="Download structured JSON HRMS Package"
-            >
-              <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>JSON</span>
             </button>
 
           </div>

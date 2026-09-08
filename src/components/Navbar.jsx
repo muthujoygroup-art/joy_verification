@@ -240,7 +240,7 @@ export const Navbar = () => {
               <button
                 onClick={() => setShowUniversalExportModal(true)}
                 className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="Download Date-Filtered Candidate Reports in PDF, CSV, or ZIP"
+                title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                 <span>Reports 📥</span>

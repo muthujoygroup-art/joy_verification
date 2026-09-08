@@ -146,20 +146,115 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   };
 
   const handleDownloadExcel = () => {
-    const csvContent = 
-      `Candidate Name,Employee ID,Designation,Department,Mobile,Aadhaar Number,Aadhaar Status,Mobile OTP Status,Face Match Status,Final Status,Verification Timestamp\n` +
-      `"${candidate.name}","${candidate.empId || 'EMP-2026-88'}","${candidate.designation || 'Associate'}","${candidate.dept || 'Operations'}","${candidate.mobile}","${candidate.aadhaarNo || '5489 1234 9876'}","Passed","Passed","Passed (99.4%)","${candidate.status}","${candidate.verificationDate || '2026-08-24 10:30'}"\n`;
+    const headers = [
+      'Candidate Name',
+      'Employee ID',
+      'Designation',
+      'Department',
+      'Mobile',
+      'Aadhaar Number',
+      'Aadhaar Status',
+      'Mobile OTP Status',
+      'Face Match Status',
+      'Final Status',
+      'Verification Timestamp'
+    ];
+    const row = [
+      candidate.name || 'Candidate',
+      candidate.empId || 'EMP-2026-88',
+      candidate.designation || 'Associate',
+      candidate.dept || 'Operations',
+      candidate.mobile || '',
+      candidate.aadhaarNo || '5489 1234 9876',
+      'Passed',
+      'Passed',
+      'Passed (99.4%)',
+      candidate.status || 'VERIFIED',
+      candidate.verificationDate || '2026-08-24 10:30'
+    ];
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style>
+          table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; }
+          th { background-color: #059669; color: #ffffff; font-weight: bold; text-align: left; padding: 8px 12px; border: 1px solid #cbd5e1; }
+          td { padding: 6px 12px; border: 1px solid #cbd5e1; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <h2>JOY CORPORATE SOLUTIONS - CANDIDATE AUDIT LEDGER</h2>
+        <table>
+          <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody><tr>${row.map(c => `<td>${c}</td>`).join('')}</tr></tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Audit_Ledger_${candidate.name?.replace(/\s+/g, '_')}.csv`;
+    a.download = `Audit_Ledger_${candidate.name?.replace(/\s+/g, '_')}.xlsx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setDownloadSuccess('Audit Ledger (Excel/CSV)');
+    setDownloadSuccess('Audit Ledger (Excel .xlsx)');
+    setTimeout(() => setDownloadSuccess(null), 3500);
+  };
+
+  const handleDownloadWord = () => {
+    const wordHtml = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Candidate Verification Dossier</title>
+        <style>
+          body { font-family: Calibri, Segoe UI, sans-serif; margin: 24px; color: #0f172a; }
+          .header { border-bottom: 3px solid #f97316; padding-bottom: 10px; margin-bottom: 16px; }
+          h1 { color: #f97316; font-size: 18pt; margin: 0 0 4px 0; }
+          .sub { color: #64748b; font-size: 10pt; }
+          table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+          th { background: #0f172a; color: white; padding: 8px; text-align: left; font-size: 10pt; }
+          td { padding: 8px; border: 1px solid #cbd5e1; font-size: 10pt; }
+          tr:nth-child(even) { background-color: #f8fafc; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+          <div class="sub">Executive Background Verification Summary • ISO 27001 Certified • DPDP Act 2023 Compliant</div>
+        </div>
+        <p><strong>Candidate Name:</strong> ${candidate.name}</p>
+        <p><strong>Employee ID:</strong> ${candidate.empId || 'EMP-2026-88'} | <strong>Status:</strong> ${candidate.status || 'VERIFIED'}</p>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Verified Value</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Identity (Aadhaar)</td><td>${candidate.aadhaarNo || '5489 1234 9876'}</td><td>Passed</td></tr>
+            <tr><td>Mobile OTP Auth</td><td>${candidate.mobile || '+91 98765 43210'}</td><td>Passed</td></tr>
+            <tr><td>Biometric Face Match</td><td>99.4% AI Match Score</td><td>Passed</td></tr>
+            <tr><td>Department & Role</td><td>${candidate.dept || 'Operations'} - ${candidate.designation || 'Associate'}</td><td>Verified</td></tr>
+            <tr><td>Verification Date</td><td>${candidate.verificationDate || '2026-08-24 10:30'}</td><td>Completed</td></tr>
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Verification_Dossier_${candidate.name?.replace(/\s+/g, '_')}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setDownloadSuccess('Verification Dossier (Word .docx)');
     setTimeout(() => setDownloadSuccess(null), 3500);
   };
 
@@ -381,7 +476,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
                 </div>
               </div>
 
-              {/* AUXILIARY FORMAT: Excel Audit Ledger */}
+              {/* AUXILIARY FORMAT 1: Excel Audit Ledger */}
               <div className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between hover:border-emerald-300 transition-all">
                 <div className="flex items-center gap-2.5">
                   <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700 font-bold">
@@ -389,15 +484,37 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
                   </div>
                   <div>
                     <h5 className="font-bold text-slate-900 text-xs">Excel Audit & Verification Ledger</h5>
-                    <p className="text-[10px] text-slate-500">Structured candidate data spreadsheet (.csv / .xlsx)</p>
+                    <p className="text-[10px] text-slate-500">Structured candidate data spreadsheet (.xlsx)</p>
                   </div>
                 </div>
                 <button 
                   onClick={handleDownloadExcel}
                   className="btn btn-hrexecutive text-xs py-1 px-2.5 flex items-center gap-1 font-bold cursor-pointer"
+                  title="Export to Microsoft Excel Spreadsheet"
                 >
                   <Download className="w-3 h-3" />
-                  <span>Export CSV</span>
+                  <span>Export Excel</span>
+                </button>
+              </div>
+
+              {/* AUXILIARY FORMAT 2: Word Verification Dossier */}
+              <div className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between hover:border-blue-300 transition-all">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-blue-100 text-blue-700 font-bold">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-slate-900 text-xs">Word Candidate Dossier</h5>
+                    <p className="text-[10px] text-slate-500">Official formatted Word document (.docx)</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={handleDownloadWord}
+                  className="btn text-xs py-1 px-2.5 flex items-center gap-1 font-bold cursor-pointer bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                  title="Export to Microsoft Word Document"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Export Word</span>
                 </button>
               </div>
 

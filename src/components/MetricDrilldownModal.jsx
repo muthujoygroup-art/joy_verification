@@ -20,7 +20,8 @@ import {
   Layers,
   Filter,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export const MetricDrilldownModal = ({ 
@@ -75,17 +76,30 @@ export const MetricDrilldownModal = ({
     return true;
   });
 
-  const handleExportCsv = () => {
+  const handleExportExcel = () => {
     if (!filteredItems.length) return;
-    const headers = Object.keys(filteredItems[0] || {}).join(',');
+    const headers = Object.keys(filteredItems[0] || {});
     const rows = filteredItems.map(item => 
-      Object.values(item).map(v => typeof v === 'object' ? JSON.stringify(v) : `"${String(v).replace(/"/g, '""')}"`).join(',')
+      Object.values(item).map(v => typeof v === 'object' ? JSON.stringify(v) : String(v))
     );
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
-    const encodedUri = encodeURI(csvContent);
+
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+      <body>
+        <h2>JOY METRIC DRILLDOWN - ${(title || 'Audit Breakdown').toUpperCase()}</h2>
+        <p>Export Date: ${new Date().toLocaleString()} | Total Filtered Records: ${filteredItems.length}</p>
+        <table border="1">
+          <thead><tr style="background:#4f46e5;color:white;">${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${metricType || 'metric_breakdown'}_drilldown_2026.csv`);
+    link.href = URL.createObjectURL(blob);
+    link.download = `${metricType || 'metric_breakdown'}_drilldown_2026.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -159,12 +173,14 @@ export const MetricDrilldownModal = ({
             </select>
 
             <button
-              onClick={handleExportCsv}
+              onClick={handleExportExcel}
               disabled={filteredItems.length === 0}
               className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold shadow-2xs cursor-pointer shrink-0 disabled:opacity-50"
+              title="Export filtered records to Microsoft Excel (.xlsx)"
             >
-              <Download className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="hidden sm:inline">Export CSV</span>
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="hidden sm:inline">Export Excel (.xlsx)</span>
+              <span className="sm:hidden">Excel</span>
             </button>
           </div>
         </div>

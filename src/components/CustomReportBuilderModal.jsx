@@ -27,8 +27,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
   const [selectedCompanyFilter, setSelectedCompanyFilter] = useState('all');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
   const [selectedDeptFilter, setSelectedDeptFilter] = useState('all');
-  const [selectedDateFilter, setSelectedDateFilter] = useState('this_month');
-  const [outputFormat, setOutputFormat] = useState('pdf'); // 'pdf' | 'csv' | 'docx' | 'png'
+  const [outputFormat, setOutputFormat] = useState('pdf'); // 'pdf' | 'excel' | 'docx' | 'png'
 
   // Custom Field Checks
   const [selectedFields, setSelectedFields] = useState({
@@ -105,7 +104,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
       ? `Company_Master_Ledger_${selectedCompanyFilter}` 
       : `Platform_Overall_Master_Audit_Report`;
 
-    let fileExtension = outputFormat === 'csv' || outputFormat === 'excel' ? '.csv' : outputFormat === 'json' ? '.json' : '.pdf';
+    let fileExtension = outputFormat === 'excel' ? '.xlsx' : outputFormat === 'docx' ? '.docx' : outputFormat === 'png' ? '.png' : '.pdf';
 
     if (outputFormat === 'pdf') {
       // Clean HTML/Printable PDF generation
@@ -191,33 +190,87 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
     }
 
     let contentString = '';
-    let mimeType = 'text/csv';
+    let mimeType = 'text/plain';
 
-    if (outputFormat === 'json') {
-      mimeType = 'application/json';
-      contentString = JSON.stringify({
-        title: reportTitle,
-        generatedAt: new Date().toISOString(),
-        totalRecords: dataset.length,
-        records: dataset
-      }, null, 2);
-    } else {
-      // Standard RFC 4180 CSV / Excel spreadsheet
-      const headers = ['#', ...activeFieldKeys.map(k => `"${fieldHeaderNames[k]}"`)].join(',');
-      const rows = dataset.map((c, idx) => {
-        const rowVals = [
-          idx + 1,
-          ...activeFieldKeys.map(k => {
-            if (k === 'company') return `"${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions'}"`;
-            if (k === 'aadhaarCheck') return c.verificationsCompleted.aadhaar ? '"PASSED"' : '"PENDING"';
-            if (k === 'mobileOtp') return c.verificationsCompleted.mobile ? '"VERIFIED"' : '"PENDING"';
-            if (k === 'faceMatchScore') return c.verificationsCompleted.face ? '"99.4%"' : '"PENDING"';
-            return `"${(c[k] || '').toString().replace(/"/g, '""')}"`;
-          })
-        ];
-        return rowVals.join(',');
-      }).join('\n');
-      contentString = `${headers}\n${rows}`;
+    if (outputFormat === 'excel') {
+      mimeType = 'application/vnd.ms-excel;charset=utf-8;';
+      const headers = ['#', ...activeFieldKeys.map(k => fieldHeaderNames[k])];
+      const rows = dataset.map((c, idx) => [
+        idx + 1,
+        ...activeFieldKeys.map(k => {
+          if (k === 'company') return c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions';
+          if (k === 'aadhaarCheck') return c.verificationsCompleted?.aadhaar ? 'PASSED' : 'PENDING';
+          if (k === 'mobileOtp') return c.verificationsCompleted?.mobile ? 'VERIFIED' : 'PENDING';
+          if (k === 'faceMatchScore') return c.verificationsCompleted?.face ? '99.4%' : 'PENDING';
+          return (c[k] || '').toString();
+        })
+      ]);
+
+      contentString = '\ufeff' + `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Audit Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+          <style>
+            table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; }
+            th { background-color: #4338ca; color: #ffffff; font-weight: bold; text-align: left; padding: 8px 12px; border: 1px solid #cbd5e1; }
+            td { padding: 6px 12px; border: 1px solid #cbd5e1; font-size: 13px; }
+            tr:nth-child(even) { background-color: #f8fafc; }
+          </style>
+        </head>
+        <body>
+          <h2>JOY CORPORATE SOLUTIONS - ${reportTitle.replace(/_/g, ' ')}</h2>
+          <p>Generated: ${new Date().toLocaleString('en-IN')} | Total Records: ${dataset.length}</p>
+          <table>
+            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+          </table>
+        </body>
+        </html>
+      `;
+    } else if (outputFormat === 'docx') {
+      mimeType = 'application/msword;charset=utf-8;';
+      const headers = ['#', ...activeFieldKeys.map(k => fieldHeaderNames[k])];
+      const rows = dataset.map((c, idx) => [
+        idx + 1,
+        ...activeFieldKeys.map(k => {
+          if (k === 'company') return c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions';
+          if (k === 'aadhaarCheck') return c.verificationsCompleted?.aadhaar ? 'PASSED' : 'PENDING';
+          if (k === 'mobileOtp') return c.verificationsCompleted?.mobile ? 'VERIFIED' : 'PENDING';
+          if (k === 'faceMatchScore') return c.verificationsCompleted?.face ? '99.4%' : 'PENDING';
+          return (c[k] || '').toString();
+        })
+      ]);
+
+      contentString = '\ufeff' + `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>${reportTitle}</title>
+          <style>
+            body { font-family: Calibri, Segoe UI, sans-serif; margin: 24px; color: #0f172a; }
+            .header { border-bottom: 3px solid #4338ca; padding-bottom: 10px; margin-bottom: 16px; }
+            h1 { color: #4338ca; font-size: 18pt; margin: 0 0 4px 0; }
+            .sub { color: #64748b; font-size: 10pt; }
+            table { border-collapse: collapse; width: 100%; margin-top: 15px; font-size: 9.5pt; }
+            th { background: #1e1b4b; color: white; padding: 8px; text-align: left; }
+            td { padding: 6px 8px; border: 1px solid #cbd5e1; }
+            tr:nth-child(even) { background-color: #f8fafc; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
+            <div class="sub">Executive Background Verification Report • ${reportTitle.replace(/_/g, ' ')}</div>
+          </div>
+          <p><strong>Generated At:</strong> ${new Date().toLocaleString('en-IN')} | <strong>Total Candidates:</strong> ${dataset.length}</p>
+          <table>
+            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+          </table>
+        </body>
+        </html>
+      `;
     }
 
     // Trigger File Download
@@ -404,13 +457,13 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
 
               <button
                 type="button"
-                onClick={() => setOutputFormat('csv')}
+                onClick={() => setOutputFormat('excel')}
                 className={`p-3 rounded-xl border flex items-center gap-2 justify-center transition-all ${
-                  outputFormat === 'csv' ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm' : 'border-slate-200 bg-white text-slate-600'
+                  outputFormat === 'excel' ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm' : 'border-slate-200 bg-white text-slate-600'
                 }`}
               >
                 <FileCheck className="w-4 h-4 text-emerald-600" />
-                <span>Excel Sheet (.csv)</span>
+                <span>Excel Sheet (.xlsx)</span>
               </button>
 
               <button
