@@ -2558,7 +2558,7 @@ export const CompanyAdminView = () => {
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-bold">Virtual Account:</span>
-                  <span className="font-extrabold text-indigo-700">JOYCORP{company.code || 'ACME'}8821</span>
+                  <span className="font-extrabold text-indigo-700">JOYCORP{company.code || 'JOYCORP'}8821</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-bold">IFSC Code:</span>
@@ -3066,7 +3066,7 @@ export const CompanyAdminView = () => {
       {viewingBgvReportCandidate && (
         <ComprehensiveBgvReportModal
           candidate={viewingBgvReportCandidate}
-          companyName={company?.name || "Acme Global Technologies"}
+          companyName={company?.name || "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"}
           hrName="Authorized Company Officer"
           onClose={() => setViewingBgvReportCandidate(null)}
         />

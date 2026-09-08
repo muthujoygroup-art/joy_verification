@@ -162,7 +162,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
                   <tr>
                     <td>${i + 1}</td>
                     ${activeFieldKeys.map(k => {
-                      if (k === 'company') return `<td>${c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions'}</td>`;
+                      if (k === 'company') return `<td>${c.companyId === 'comp-1' ? 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' : 'Apex Logistics Solutions'}</td>`;
                       if (k === 'aadhaarCheck') return `<td><span className="${c.verificationsCompleted.aadhaar ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.aadhaar ? 'PASSED ✓' : 'PENDING'}</span></td>`;
                       if (k === 'mobileOtp') return `<td><span className="${c.verificationsCompleted.mobile ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.mobile ? 'VERIFIED ✓' : 'PENDING'}</span></td>`;
                       if (k === 'faceMatchScore') return `<td><span className="${c.verificationsCompleted.face ? 'badge-verified' : 'badge-pending'}">${c.verificationsCompleted.face ? '99.4% MATCH ✓' : 'PENDING'}</span></td>`;
@@ -198,7 +198,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
       const rows = dataset.map((c, idx) => [
         idx + 1,
         ...activeFieldKeys.map(k => {
-          if (k === 'company') return c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions';
+          if (k === 'company') return c.companyId === 'comp-1' ? 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' : 'Apex Logistics Solutions';
           if (k === 'aadhaarCheck') return c.verificationsCompleted?.aadhaar ? 'PASSED' : 'PENDING';
           if (k === 'mobileOtp') return c.verificationsCompleted?.mobile ? 'VERIFIED' : 'PENDING';
           if (k === 'faceMatchScore') return c.verificationsCompleted?.face ? '99.4%' : 'PENDING';
@@ -234,7 +234,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
       const rows = dataset.map((c, idx) => [
         idx + 1,
         ...activeFieldKeys.map(k => {
-          if (k === 'company') return c.companyId === 'comp-1' ? 'Acme Global Technologies' : 'Apex Logistics Solutions';
+          if (k === 'company') return c.companyId === 'comp-1' ? 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' : 'Apex Logistics Solutions';
           if (k === 'aadhaarCheck') return c.verificationsCompleted?.aadhaar ? 'PASSED' : 'PENDING';
           if (k === 'mobileOtp') return c.verificationsCompleted?.mobile ? 'VERIFIED' : 'PENDING';
           if (k === 'faceMatchScore') return c.verificationsCompleted?.face ? '99.4%' : 'PENDING';
@@ -370,7 +370,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
                 >
                   {candidates.map(c => (
                     <option key={c.id} value={c.id}>
-                      {c.name} (Emp ID: #{c.empId}) - {c.companyId === 'comp-1' ? 'Acme Tech' : 'Apex Logistics'} [{c.status}]
+                      {c.name} (Emp ID: #{c.empId}) - {c.companyId === 'comp-1' ? 'Joy Corporate Solutions' : 'Apex Logistics'} [{c.status}]
                     </option>
                   ))}
                 </select>

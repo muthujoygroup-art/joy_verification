@@ -353,9 +353,9 @@ export const AppProvider = ({ children }) => {
 
   // SUPER ADMIN SYSTEM ERROR & ISSUE LOGS STATE
   const [systemErrorLogs, setSystemErrorLogs] = useState([
-    { id: 'LOG-901', timestamp: '2026-08-20 12:24:10', section: 'Aadhaar UIDAI Gateway', event: 'Invalid Aadhaar OTP Attempt', details: 'Candidate entered incorrect OTP code 3 times in succession.', severity: 'Warning', solved: false, company: 'Acme Global' },
+    { id: 'LOG-901', timestamp: '2026-08-20 12:24:10', section: 'Aadhaar UIDAI Gateway', event: 'Invalid Aadhaar OTP Attempt', details: 'Candidate entered incorrect OTP code 3 times in succession.', severity: 'Warning', solved: false, company: 'JOY CORPORATE SOLUTIONS' },
     { id: 'LOG-902', timestamp: '2026-08-20 12:18:45', section: 'AI WebCam Biometrics', event: 'WebCam Permission Blocked', details: 'User browser blocked camera device access stream.', severity: 'Critical', solved: false, company: 'Apex Logistics' },
-    { id: 'LOG-903', timestamp: '2026-08-20 12:05:30', section: 'Automated SMS Router', event: 'SMS OTP Dispatch Timeout', details: 'Carrier gateway delayed OTP delivery by 45 seconds.', severity: 'Warning', solved: true, company: 'Acme Global' }
+    { id: 'LOG-903', timestamp: '2026-08-20 12:05:30', section: 'Automated SMS Router', event: 'SMS OTP Dispatch Timeout', details: 'Carrier gateway delayed OTP delivery by 45 seconds.', severity: 'Warning', solved: true, company: 'JOY CORPORATE SOLUTIONS' }
   ]);
 
   // WHATSAPP & AUTOMATED MESSAGING INTEGRATION GATEWAYS (SUPERADMIN ONLY)
@@ -488,7 +488,7 @@ export const AppProvider = ({ children }) => {
       id: 'notif-hr-1',
       role: 'hr',
       title: '⏳ JCS Certificate Expiring Soon (6 Days Left)',
-      message: 'Employee Vikram Sethi (ACME-2026-92) verified on 2026-07-02 has a JCS Certificate expiring on 2026-08-31. Please download the permanent dossier backup or dispatch a re-verification link.',
+      message: 'Employee Vikram Sethi (JOY-2026-92) verified on 2026-07-02 has a JCS Certificate expiring on 2026-08-31. Please download the permanent dossier backup or dispatch a re-verification link.',
       timestamp: '2026-08-25 08:30',
       isRead: false,
       priority: 'high',
@@ -500,7 +500,7 @@ export const AppProvider = ({ children }) => {
       id: 'notif-hr-2',
       role: 'hr',
       title: '🚨 Urgent: Certificate Expiry Tomorrow!',
-      message: 'Employee Pooja Sharma (ACME-2026-95) verified on 2026-06-27 is reaching the 60-day retention cutoff tomorrow. Take action now.',
+      message: 'Employee Pooja Sharma (JOY-2026-95) verified on 2026-06-27 is reaching the 60-day retention cutoff tomorrow. Take action now.',
       timestamp: '2026-08-25 09:00',
       isRead: false,
       priority: 'critical',
@@ -548,7 +548,7 @@ export const AppProvider = ({ children }) => {
       id: 'notif-comp-2',
       role: 'company',
       title: '💳 Monthly Verification Quota Alert',
-      message: 'Acme Global Technologies has utilized 420 / 500 verifications (84% of monthly Premier limit). Auto-rollover enabled.',
+      message: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED has utilized 420 / 500 verifications (84% of monthly Premier limit). Auto-rollover enabled.',
       timestamp: '2026-08-24 18:00',
       isRead: false,
       priority: 'medium',
@@ -570,7 +570,7 @@ export const AppProvider = ({ children }) => {
       id: 'notif-sa-1',
       role: 'superadmin',
       title: '💳 Enterprise Bill Settled (₹14,160)',
-      message: 'Acme Global Technologies completed monthly invoice payment via UPI QR Code. Receipt #PAY-2026-9812 logged in PostgreSQL.',
+      message: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED completed monthly invoice payment via UPI QR Code. Receipt #PAY-2026-9812 logged in PostgreSQL.',
       timestamp: '2026-08-25 09:15',
       isRead: false,
       priority: 'high',
@@ -637,7 +637,7 @@ export const AppProvider = ({ children }) => {
   const [supportTickets, setSupportTickets] = useState([
     {
       id: 'TICK-2026-881',
-      companyName: 'Acme Global Technologies',
+      companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       companyId: 'comp-1',
       reporterName: 'Priya Sundaram (HR)',
       subject: 'Aadhaar OTP Carrier Gateway Delay on Mobile Verification',
@@ -1922,7 +1922,7 @@ export const AppProvider = ({ children }) => {
     try {
       await api.createTicket({
         company_id: ticketData.companyId || 'comp-1',
-        company_name: ticketData.companyName || 'Acme Global',
+        company_name: ticketData.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
         subject: ticketData.subject,
         category: ticketData.category || 'API Integration',
         priority: ticketData.priority || 'Medium',
@@ -2326,13 +2326,13 @@ export const AppProvider = ({ children }) => {
   const [customCompanyTerms, setCustomCompanyTerms] = useState({
     'comp-1': {
       companyId: 'comp-1',
-      companyName: 'Acme Global Technologies',
+      companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       retentionDays: 60,
       customSla: '99.95% High-Availability SLA Tier',
       customIndemnityLimit: '₹10,00,000 INR',
       customClauseNotes: 'Dedicated 24/7 priority enterprise support line & quarterly cryptographic audit certifications.',
       boundVersion: 'v2.4-2026',
-      signedBy: 'Vikram Malhotra (Director HR)',
+      signedBy: 'Muthu Kumar P (Director HR)',
       signedDate: '2026-08-15 10:30'
     },
     'comp-2': {
@@ -2379,9 +2379,9 @@ export const AppProvider = ({ children }) => {
       id: 'sess-102',
       role: 'company',
       roleLabel: 'Company Admin',
-      userName: 'Vikram Malhotra',
+      userName: 'Muthu Kumar P',
       email: 'muthukumar@joyglobalcorp.com',
-      company: 'Acme Global Technologies',
+      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       ipAddress: '192.168.1.83 (Wi-Fi Internal)',
       device: 'Edge 127 / macOS Sequoia',
       loginTime: '2026-08-25 08:30:45',
@@ -2393,9 +2393,9 @@ export const AppProvider = ({ children }) => {
       id: 'sess-103',
       role: 'hrexecutive',
       roleLabel: 'HR Executive',
-      userName: 'Priya Sundaram',
+      userName: 'Muthu Kumar P (HR Lead)',
       email: 'muthujoygroup@gmail.com',
-      company: 'Acme Global Technologies',
+      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       ipAddress: '106.51.24.112 (Bengaluru ISP)',
       device: 'Chrome 128 / Windows 11',
       loginTime: '2026-08-25 08:45:00',
@@ -2423,7 +2423,7 @@ export const AppProvider = ({ children }) => {
       roleLabel: 'Candidate Link',
       userName: 'Rajesh Kumar',
       email: 'rajesh.k@gmail.com',
-      company: 'Acme Global Technologies',
+      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       ipAddress: '49.37.112.98 (Jio 5G Mobile)',
       device: 'Chrome Mobile / Android 14',
       loginTime: '2026-08-24 16:30:10',

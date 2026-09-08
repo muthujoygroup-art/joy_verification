@@ -1431,6 +1431,10 @@ def get_candidate_api_ledger(
 
         verified_types = [r.verification_type for r in records] or [k for k, v in (cand.verifications_completed or {}).items() if v]
 
+        comp_name = comp.name if comp else (getattr(cand, 'company_name', None) or "JOY CORPORATE SOLUTIONS PRIVATE LIMITED")
+        if "acme" in comp_name.lower():
+            comp_name = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+
         ledger_rows.append({
             "id": cand.id,
             "name": cand.name,
@@ -1441,8 +1445,8 @@ def get_candidate_api_ledger(
             "designation": cand.designation or "Associate",
             "dept": cand.dept or "Operations",
             "status": cand.status,
-            "company_id": cand.company_id,
-            "company_name": comp.name if comp else "Enterprise Client",
+            "company_id": cand.company_id or "comp-1",
+            "company_name": comp_name,
             "company_code": comp.code if comp else "COMP",
             "created_at": cand.created_at.isoformat() if cand.created_at else datetime.utcnow().isoformat(),
             "total_api_calls": total_calls,
@@ -1558,7 +1562,10 @@ def trigger_database_migrations():
         ("candidates.native_state", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);"),
         ("candidates.native_district", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);"),
         ("candidates.identification_marks", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;"),
-        ("candidates.employee_type", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';")
+        ("candidates.employee_type", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';"),
+        ("companies.primary_enterprise_fix", "UPDATE companies SET name = 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', code = 'JOYCORP' WHERE id = 'comp-1' OR LOWER(name) LIKE '%acme%';"),
+        ("hr_users.lead_fix", "UPDATE hr_users SET name = 'Muthu Kumar P (HR Lead)' WHERE email = 'muthujoygroup@gmail.com' OR company_id = 'comp-1';"),
+        ("candidates.company_binding_fix", "UPDATE candidates SET company_id = 'comp-1' WHERE company_id IS NULL OR company_id = 'COMP001' OR company_id = 'comp-joy';")
     ]
     
     from backend.app.database import engine

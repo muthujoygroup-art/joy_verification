@@ -107,10 +107,10 @@ def run_migration():
         if not comp:
             comp = Company(
                 id="comp-1",
-                name="Acme Global Technologies",
-                code="ACME-CORP",
-                contact_person="Vikram Malhotra",
-                email="admin@acmeglobal.com",
+                name="JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
+                code="JOYCORP",
+                contact_person="Muthu Kumar P",
+                email="muthujoygroup@gmail.com",
                 password_hash=hashlib.sha256("Company@Admin2026".encode()).hexdigest(),
                 plan="Enterprise Premier",
                 price_per_verification=120.0,
@@ -125,7 +125,12 @@ def run_migration():
                 }
             )
             db.add(comp)
-            print("✓ Seeded Company (Acme Global Technologies)")
+            print("✓ Seeded Company (JOY CORPORATE SOLUTIONS PRIVATE LIMITED)")
+        elif "acme" in comp.name.lower():
+            comp.name = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+            comp.code = "JOYCORP"
+            comp.contact_person = "Muthu Kumar P"
+            comp.email = "muthujoygroup@gmail.com"
 
         # 4. Seed HR User with password
         hr = db.query(HrUser).filter(HrUser.id == "hr-1").first()
@@ -133,15 +138,15 @@ def run_migration():
             hr = HrUser(
                 id="hr-1",
                 company_id="comp-1",
-                name="Priya Sundaram",
-                email="priya.s@acmeglobal.com",
+                name="Muthu Kumar P (HR Lead)",
+                email="muthujoygroup@gmail.com",
                 password_hash=hashlib.sha256("Hr@Recruiter2026".encode()).hexdigest(),
-                dept="Engineering Recruitment",
+                dept="Talent Acquisition & BGV",
                 active_links=5,
                 status="Active"
             )
             db.add(hr)
-            print("✓ Seeded HrUser (Priya Sundaram)")
+            print("✓ Seeded HrUser (Muthu Kumar P)")
 
         # 5. Seed Candidate if not exists
         cand = db.query(Candidate).filter(Candidate.id == "cand-1").first()

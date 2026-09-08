@@ -706,7 +706,7 @@ export const UniversalDocumentExportModal = ({
                           <div className="text-[10px] text-slate-400 font-mono">{c.empId || `EMP-${400 + idx}`}</div>
                         </td>
                         <td className="py-2 px-2.5 font-semibold text-slate-600">
-                          {companies.find(comp => comp.id === c.companyId)?.name || 'Acme Tech'}
+                          {companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS'}
                         </td>
                         <td className="py-2 px-2.5 font-mono text-[11px] text-slate-700">
                           XXXX-XXXX-{c.aadhaar ? c.aadhaar.slice(-4) : '9876'}

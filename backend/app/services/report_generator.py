@@ -107,7 +107,7 @@ def generate_official_certificate_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
         verif_date = verif_date.strftime('%Y-%m-%d %H:%M:%S UTC')
         
     company_name = candidate.get('company_name') or (
-        "Acme Global Technologies Pvt Ltd" if candidate.get('company_id') == 'comp-1' else "Apex Logistics Solutions"
+        "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" if candidate.get('company_id') == 'comp-1' else "Apex Logistics Solutions"
     )
 
     # 1. Top Dual-Logo Brand Header Block
@@ -858,8 +858,8 @@ def generate_tax_invoice_pdf(invoice: Dict[str, Any], company: Optional[Dict[str
         textColor=colors.HexColor('#1e293b')
     )
     
-    comp_name = company.get('name') or invoice.get('company_name') or 'Acme Global Technologies Pvt Ltd'
-    comp_code = company.get('code', 'ACME')
+    comp_name = company.get('name') or invoice.get('company_name') or 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'
+    comp_code = company.get('code', 'JOYCORP')
     inv_id = invoice.get('id', f'INV-{comp_code}-2026')
     month = invoice.get('month', 'August')
     year = invoice.get('year', 2026)

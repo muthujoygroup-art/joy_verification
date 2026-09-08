@@ -20,13 +20,84 @@ import {
   Trash2, 
   CheckSquare, 
   Square,
-  ShieldCheck,
-  Building2,
-  FileCheck,
-  Zap,
-  Eye,
-  Sliders
+  ShieldCheck, 
+  Building2, 
+  FileCheck, 
+  Zap, 
+  Eye, 
+  Sliders,
+  Laptop,
+  Factory,
+  Landmark,
+  HeartPulse,
+  Truck,
+  Layers,
+  Info
 } from 'lucide-react';
+
+// 🏢 SECTOR SPECIFIC TEMPLATE METADATA
+const SECTOR_TEMPLATES = [
+  {
+    id: 'master',
+    title: 'Master Comprehensive Template',
+    shortTitle: '📑 Master Multi-Sector',
+    badge: '35+ Fields • All Sectors',
+    desc: 'Multi-worksheet workbook with all 7-section joining form fields for any employee type',
+    icon: Layers,
+    color: 'border-indigo-300 bg-indigo-50/70 text-indigo-900',
+    headerColor: 'bg-indigo-600 text-white'
+  },
+  {
+    id: 'it_engineering',
+    title: 'IT & Software Engineering',
+    shortTitle: '💻 IT & Software',
+    badge: 'Tech Stack & Degree',
+    desc: 'Software engineers, cloud architects, DevOps, QA engineers with tech stack & UAN history',
+    icon: Laptop,
+    color: 'border-blue-300 bg-blue-50/70 text-blue-900',
+    headerColor: 'bg-blue-600 text-white'
+  },
+  {
+    id: 'manufacturing',
+    title: 'Manufacturing & Industrial Plant',
+    shortTitle: '🏭 Manufacturing & Plant',
+    badge: 'Plant, Shift & Trade',
+    desc: 'Plant operators, machinists, fitters, safety training, shift types & ESIC insurance',
+    icon: Factory,
+    color: 'border-amber-300 bg-amber-50/70 text-amber-900',
+    headerColor: 'bg-amber-600 text-white'
+  },
+  {
+    id: 'bfsi',
+    title: 'Banking, Financial Services & Insurance',
+    shortTitle: '🏦 BFSI & Finance',
+    badge: 'NISM & CIBIL Check',
+    desc: 'Credit risk analysts, branch managers, accountants with regulatory certifications',
+    icon: Landmark,
+    color: 'border-emerald-300 bg-emerald-50/70 text-emerald-900',
+    headerColor: 'bg-emerald-600 text-white'
+  },
+  {
+    id: 'healthcare',
+    title: 'Healthcare & Clinical Pharmaceuticals',
+    shortTitle: '🏥 Healthcare & Pharma',
+    badge: 'Medical Council Reg No',
+    desc: 'ICU nurses, resident medical officers, clinical pharmacists with State Council registration',
+    icon: HeartPulse,
+    color: 'border-rose-300 bg-rose-50/70 text-rose-900',
+    headerColor: 'bg-rose-600 text-white'
+  },
+  {
+    id: 'logistics',
+    title: 'Logistics, Retail & Fleet Delivery',
+    shortTitle: '🚚 Logistics & Delivery',
+    badge: 'Driving License & Vehicle',
+    desc: 'Commercial fleet drivers, delivery executives, warehouse leads with MoRTH DL verification',
+    icon: Truck,
+    color: 'border-cyan-300 bg-cyan-50/70 text-cyan-900',
+    headerColor: 'bg-cyan-600 text-white'
+  }
+];
 
 export const BulkEmployeeImportModal = ({ 
   isOpen, 
@@ -44,6 +115,7 @@ export const BulkEmployeeImportModal = ({
   const [isParsing, setIsParsing] = useState(false);
   const [parseError, setParseError] = useState(null);
   const [selectedEmployeeTypeFilter, setSelectedEmployeeTypeFilter] = useState('ALL');
+  const [selectedSectorTemplate, setSelectedSectorTemplate] = useState('master');
   const fileInputRef = useRef(null);
 
   // Link Sending Option States
@@ -115,164 +187,528 @@ export const BulkEmployeeImportModal = ({
       Object.keys(updated).forEach(k => {
         updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'education', 'experience', 'specimenSignature', 'dpdpConsent'].includes(k);
       });
-    } else if (presetName === 'comprehensive') {
+    } else if (presetName === 'it_tech') {
       Object.keys(updated).forEach(k => {
-        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'uan', 'education', 'experience', 'salarySlips', 'criminalCheck', 'courtLitigation', 'specimenSignature', 'dpdpConsent'].includes(k);
+        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'uan', 'education', 'experience', 'salarySlips', 'specimenSignature', 'dpdpConsent'].includes(k);
       });
-    } else if (presetName === 'intern') {
+    } else if (presetName === 'manufacturing') {
       Object.keys(updated).forEach(k => {
-        updated[k].enabled = ['aadhaar', 'pan', 'education', 'specimenSignature', 'dpdpConsent'].includes(k);
+        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'uan', 'addressProof', 'criminalCheck', 'specimenSignature', 'dpdpConsent'].includes(k);
       });
-    } else if (presetName === 'contract') {
+    } else if (presetName === 'logistics') {
       Object.keys(updated).forEach(k => {
-        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'addressProof', 'criminalCheck', 'specimenSignature', 'dpdpConsent'].includes(k);
+        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'drivingLicense', 'criminalCheck', 'specimenSignature', 'dpdpConsent'].includes(k);
+      });
+    } else if (presetName === 'bfsi') {
+      Object.keys(updated).forEach(k => {
+        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'uan', 'education', 'experience', 'criminalCheck', 'courtLitigation', 'specimenSignature', 'dpdpConsent'].includes(k);
+      });
+    } else if (presetName === 'healthcare') {
+      Object.keys(updated).forEach(k => {
+        updated[k].enabled = ['aadhaar', 'pan', 'bankCheck', 'education', 'experience', 'criminalCheck', 'specimenSignature', 'dpdpConsent'].includes(k);
       });
     }
     setChecklist(updated);
   };
 
-  // 1. GENERATE & DOWNLOAD EXCEL TEMPLATE
-  const handleDownloadTemplate = (format = 'xlsx') => {
-    // Sheet 1: Sample Candidate Data for All Types of Employees
-    const sampleData = [
+  // 1. GENERATE & DOWNLOAD COMPREHENSIVE SECTOR TEMPLATES (35+ COLUMNS)
+  const handleDownloadTemplate = (sector = selectedSectorTemplate, format = 'xlsx') => {
+    // 💻 IT & Engineering Data Set
+    const itSampleData = [
       {
         'Full Name *': 'Rahul Sharma',
-        'Email Address *': 'rahul.sharma@example.com',
-        'Mobile Number *': '9876543210',
-        'Employment Type *': 'Full-Time',
-        'Designation *': 'Senior Software Engineer',
-        'Department *': 'Engineering',
-        'Employee ID / Staff Code': 'EMP-1001',
-        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-01',
-        'PAN Number': 'ABCDE1234F',
-        'Aadhaar Number (12 Digits)': '234567890123',
+        'Father / Spouse Name': 'Suresh Sharma',
+        'Mother Name': 'Kanta Sharma',
+        'Date of Birth (YYYY-MM-DD)': '1997-04-12',
+        'Age': '29',
         'Gender': 'Male',
-        'Highest Qualification': 'B.Tech in Computer Science',
-        'Prior Experience (Years)': '4.5',
-        'Previous Company': 'Infosys Limited'
+        'Blood Group': 'B+',
+        'Marital Status': 'Single',
+        'Mother Tongue': 'Hindi',
+        'Official Email *': 'rahul.sharma@example.com',
+        'Mobile Number (10 Digits) *': '9876543210',
+        'Alternate / WhatsApp Number': '9876543211',
+        'Emergency Contact Name': 'Suresh Sharma',
+        'Emergency Contact Mobile': '9876543212',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': '#104, Green Glen Layout, Bellandur',
+        'Permanent City': 'Bengaluru',
+        'Permanent State': 'Karnataka',
+        'Permanent PIN Code': '560103',
+        'Present Address Line': '#104, Green Glen Layout, Bellandur',
+        'Present City': 'Bengaluru',
+        'Present State': 'Karnataka',
+        'Present PIN Code': '560103',
+        'Employee ID / Staff Code': 'IT-1001',
+        'Designation *': 'Senior Software Engineer',
+        'Department *': 'Engineering & Software Architecture',
+        'Employment Type *': 'Full-Time',
+        'Work Location': 'Bengaluru Tech Park (HQ)',
+        'Work Shift': 'General (09:30 - 18:30)',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-01',
+        'Offered Annual CTC (INR)': '2400000',
+        'Primary Tech Stack / Skills': 'React JS, Node.js, Python, PostgreSQL, AWS',
+        'Highest Degree': 'B.Tech in Computer Science',
+        'Specialization / Major': 'Computer Science & Engineering',
+        'University / College': 'VTU Belagavi',
+        'Year of Passing': '2019',
+        'Percentage / CGPA': '84.5%',
+        'Total Experience (Years)': '6.0',
+        'Previous Company Name': 'Infosys Limited',
+        'Previous Designation': 'Software Engineer',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-15',
+        'Last Drawn Annual CTC': '1800000',
+        'PAN Card Number (10 Digits)': 'ABCDE1234F',
+        'Aadhaar Number (12 Digits)': '234567890123',
+        'EPFO UAN Number (12 Digits)': '101298450123',
+        'Bank Account Holder Name': 'Rahul Sharma',
+        'Bank Name': 'HDFC Bank',
+        'Account Number': '50100234129845',
+        'IFSC Code': 'HDFC0000128',
+        'Branch Name': 'Koramangala 4th Block'
       },
       {
         'Full Name *': 'Priya Patel',
-        'Email Address *': 'priya.patel@example.com',
-        'Mobile Number *': '9823456781',
-        'Employment Type *': 'Contract',
-        'Designation *': 'UI/UX Product Designer',
-        'Department *': 'Product Design',
-        'Employee ID / Staff Code': 'CON-2001',
+        'Father / Spouse Name': 'Ramesh Patel',
+        'Mother Name': 'Geeta Patel',
+        'Date of Birth (YYYY-MM-DD)': '1999-08-25',
+        'Age': '27',
+        'Gender': 'Female',
+        'Blood Group': 'O+',
+        'Marital Status': 'Single',
+        'Mother Tongue': 'Gujarati',
+        'Official Email *': 'priya.patel@example.com',
+        'Mobile Number (10 Digits) *': '9823456781',
+        'Alternate / WhatsApp Number': '9823456782',
+        'Emergency Contact Name': 'Ramesh Patel',
+        'Emergency Contact Mobile': '9823456783',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': 'Flat 302, Palm Meadows, Hinjewadi',
+        'Permanent City': 'Pune',
+        'Permanent State': 'Maharashtra',
+        'Permanent PIN Code': '411057',
+        'Present Address Line': 'Flat 302, Palm Meadows, Hinjewadi',
+        'Present City': 'Pune',
+        'Present State': 'Maharashtra',
+        'Present PIN Code': '411057',
+        'Employee ID / Staff Code': 'IT-1002',
+        'Designation *': 'Full Stack Developer',
+        'Department *': 'Engineering & Software Architecture',
+        'Employment Type *': 'Full-Time',
+        'Work Location': 'Pune Innovation Hub',
+        'Work Shift': 'General',
         'Proposed Joining Date (YYYY-MM-DD)': '2026-09-25',
-        'PAN Number': 'PRPPA5544K',
+        'Offered Annual CTC (INR)': '1600000',
+        'Primary Tech Stack / Skills': 'Java, Spring Boot, Angular, Docker',
+        'Highest Degree': 'B.E. Information Technology',
+        'Specialization / Major': 'Information Technology',
+        'University / College': 'Savitribai Phule Pune University',
+        'Year of Passing': '2020',
+        'Percentage / CGPA': '81.2%',
+        'Total Experience (Years)': '4.5',
+        'Previous Company Name': 'Wipro Limited',
+        'Previous Designation': 'Associate Consultant',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-20',
+        'Last Drawn Annual CTC': '1150000',
+        'PAN Card Number (10 Digits)': 'PRPPA5544K',
         'Aadhaar Number (12 Digits)': '345678901234',
-        'Gender': 'Female',
-        'Highest Qualification': 'Master of Design',
-        'Prior Experience (Years)': '3.0',
-        'Previous Company': 'Freelance / Agency'
-      },
-      {
-        'Full Name *': 'Amit Kumar Verma',
-        'Email Address *': 'amit.verma@example.com',
-        'Mobile Number *': '9123456789',
-        'Employment Type *': 'Intern',
-        'Designation *': 'Data Science Trainee',
-        'Department *': 'AI & Analytics',
-        'Employee ID / Staff Code': 'INT-3001',
-        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-05',
-        'PAN Number': 'AMKPV8899Z',
-        'Aadhaar Number (12 Digits)': '456789012345',
-        'Gender': 'Male',
-        'Highest Qualification': 'B.Sc Statistics (Final Year)',
-        'Prior Experience (Years)': '0',
-        'Previous Company': 'N/A'
-      },
-      {
-        'Full Name *': 'Sunita Mehra',
-        'Email Address *': 'sunita.mehra@example.com',
-        'Mobile Number *': '9988776655',
-        'Employment Type *': 'Part-Time',
-        'Designation *': 'Corporate Legal Counsel',
-        'Department *': 'Legal & Compliance',
-        'Employee ID / Staff Code': 'PT-4001',
-        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-10',
-        'PAN Number': 'SUNMH3322L',
-        'Aadhaar Number (12 Digits)': '567890123456',
-        'Gender': 'Female',
-        'Highest Qualification': 'LL.M Corporate Law',
-        'Prior Experience (Years)': '8.0',
-        'Previous Company': 'Mehra & Associates'
-      },
-      {
-        'Full Name *': 'Vikramaditya Rao',
-        'Email Address *': 'vikram.rao@example.com',
-        'Mobile Number *': '9711223344',
-        'Employment Type *': 'Executive',
-        'Designation *': 'Vice President of Operations',
-        'Department *': 'Leadership & Operations',
-        'Employee ID / Staff Code': 'EXEC-5001',
-        'Proposed Joining Date (YYYY-MM-DD)': '2026-11-01',
-        'PAN Number': 'VIKRA1122Q',
-        'Aadhaar Number (12 Digits)': '678901234567',
-        'Gender': 'Male',
-        'Highest Qualification': 'MBA Operations (IIM)',
-        'Prior Experience (Years)': '14.0',
-        'Previous Company': 'Tata Consultancy Services'
-      },
-      {
-        'Full Name *': 'Kavita Sundaram',
-        'Email Address *': 'kavita.sundaram@example.com',
-        'Mobile Number *': '9845012345',
-        'Employment Type *': 'Vendor',
-        'Designation *': 'IT Support Technician',
-        'Department *': 'Facilities & IT Support',
-        'Employee ID / Staff Code': 'VEN-6001',
-        'Proposed Joining Date (YYYY-MM-DD)': '2026-09-20',
-        'PAN Number': 'KAVSU9988B',
-        'Aadhaar Number (12 Digits)': '789012345678',
-        'Gender': 'Female',
-        'Highest Qualification': 'Diploma in Hardware & Networking',
-        'Prior Experience (Years)': '2.5',
-        'Previous Company': 'TeamLease Services'
+        'EPFO UAN Number (12 Digits)': '101456789012',
+        'Bank Account Holder Name': 'Priya Patel',
+        'Bank Name': 'ICICI Bank',
+        'Account Number': '000401589234',
+        'IFSC Code': 'ICIC0000004',
+        'Branch Name': 'Hinjewadi Phase 1'
       }
     ];
 
-    // Sheet 2: Guidelines & Allowed Values Reference
+    // 🏭 Manufacturing & Plant Data Set
+    const mfgSampleData = [
+      {
+        'Full Name *': 'Murugan Subramani',
+        'Father / Spouse Name': 'Subramani K',
+        'Mother Name': 'Lakshmi S',
+        'Date of Birth (YYYY-MM-DD)': '1994-03-10',
+        'Age': '32',
+        'Gender': 'Male',
+        'Blood Group': 'A+',
+        'Marital Status': 'Married',
+        'Mother Tongue': 'Tamil',
+        'Official Email *': 'murugan.s@example.com',
+        'Mobile Number (10 Digits) *': '9841234567',
+        'Alternate / WhatsApp Number': '9841234568',
+        'Emergency Contact Name': 'Subramani K',
+        'Emergency Contact Mobile': '9841234569',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': '12, Mill Street, Sriperumbudur',
+        'Permanent City': 'Kanchipuram',
+        'Permanent State': 'Tamil Nadu',
+        'Permanent PIN Code': '602105',
+        'Present Address Line': '12, Mill Street, Sriperumbudur',
+        'Present City': 'Kanchipuram',
+        'Present State': 'Tamil Nadu',
+        'Present PIN Code': '602105',
+        'Employee ID / Staff Code': 'MFG-2001',
+        'Designation *': 'CNC Machine Programmer & Operator',
+        'Department *': 'Manufacturing, Plant & Assembly',
+        'Employment Type *': 'Full-Time',
+        'Plant / Factory Location *': 'Sriperumbudur Assembly Plant Unit 2',
+        'Work Shift *': 'Shift A (06:00 - 14:00)',
+        'Trade / ITI / Skill Certification': 'ITI Machinist / CNC Programming (Fanuc/Siemens)',
+        'Safety Training / PPE Clearance': 'Certified (Factory Act 1948 Compliance)',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-09-25',
+        'Offered Monthly / Annual CTC': '480000',
+        'Highest Degree': 'ITI Machinist Trade Certificate',
+        'Specialization / Major': 'Mechanical Machining',
+        'Trade Institute / ITI College': 'Govt ITI Guindy',
+        'Year of Passing': '2014',
+        'Percentage / CGPA': '78.5%',
+        'Total Experience (Years)': '8.0',
+        'Previous Plant / Employer': 'Sundram Fasteners Ltd',
+        'Previous Designation': 'Machinist Grade 2',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-10',
+        'Last Drawn Annual CTC': '380000',
+        'PAN Card Number (10 Digits)': 'MURGS4411M',
+        'Aadhaar Number (12 Digits)': '789012345678',
+        'ESIC IP Number': '5198234129',
+        'EPFO UAN Number': '100987654321',
+        'Bank Account Holder Name': 'Murugan Subramani',
+        'Bank Name': 'State Bank of India',
+        'Account Number': '20194819201',
+        'IFSC Code': 'SBIN0001234',
+        'Branch Name': 'Sriperumbudur Main'
+      },
+      {
+        'Full Name *': 'Ganesh Vasant Patil',
+        'Father / Spouse Name': 'Vasant Patil',
+        'Mother Name': 'Sunita Patil',
+        'Date of Birth (YYYY-MM-DD)': '1996-11-14',
+        'Age': '29',
+        'Gender': 'Male',
+        'Blood Group': 'O+',
+        'Marital Status': 'Married',
+        'Mother Tongue': 'Marathi',
+        'Official Email *': 'ganesh.patil@example.com',
+        'Mobile Number (10 Digits) *': '9765432190',
+        'Alternate / WhatsApp Number': '9765432191',
+        'Emergency Contact Name': 'Vasant Patil',
+        'Emergency Contact Mobile': '9765432192',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': 'Plot 45, MIDC Industrial Area, Bhosari',
+        'Permanent City': 'Pune',
+        'Permanent State': 'Maharashtra',
+        'Permanent PIN Code': '411026',
+        'Present Address Line': 'Plot 45, MIDC Industrial Area, Bhosari',
+        'Present City': 'Pune',
+        'Present State': 'Maharashtra',
+        'Present PIN Code': '411026',
+        'Employee ID / Staff Code': 'MFG-2002',
+        'Designation *': 'Plant Operations Supervisor',
+        'Department *': 'Manufacturing, Plant & Assembly',
+        'Employment Type *': 'Full-Time',
+        'Plant / Factory Location *': 'Bhosari MIDC Manufacturing Hub',
+        'Work Shift *': 'General Shift (08:30 - 17:30)',
+        'Trade / ITI / Skill Certification': 'Diploma in Mechanical Engineering',
+        'Safety Training / PPE Clearance': 'Certified Six Sigma Green Belt',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-01',
+        'Offered Monthly / Annual CTC': '650000',
+        'Highest Degree': 'Diploma in Mechanical Engineering',
+        'Specialization / Major': 'Mechanical & Production',
+        'Trade Institute / ITI College': 'Government Polytechnic Pune',
+        'Year of Passing': '2016',
+        'Percentage / CGPA': '82.0%',
+        'Total Experience (Years)': '7.5',
+        'Previous Plant / Employer': 'Bharat Forge Limited',
+        'Previous Designation': 'Production Line Lead',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-18',
+        'Last Drawn Annual CTC': '520000',
+        'PAN Card Number (10 Digits)': 'GANPT8822B',
+        'Aadhaar Number (12 Digits)': '890123456789',
+        'ESIC IP Number': '3198451290',
+        'EPFO UAN Number': '101876543210',
+        'Bank Account Holder Name': 'Ganesh Vasant Patil',
+        'Bank Name': 'Bank of Baroda',
+        'Account Number': '04810100019283',
+        'IFSC Code': 'BARB0BHOSAR',
+        'Branch Name': 'Bhosari Pune'
+      }
+    ];
+
+    // 🏦 BFSI Data Set
+    const bfsiSampleData = [
+      {
+        'Full Name *': 'Ananya Sengupta',
+        'Father / Spouse Name': 'Subir Sengupta',
+        'Mother Name': 'Malati Sengupta',
+        'Date of Birth (YYYY-MM-DD)': '1995-07-18',
+        'Age': '31',
+        'Gender': 'Female',
+        'Blood Group': 'B+',
+        'Marital Status': 'Single',
+        'Mother Tongue': 'Bengali',
+        'Official Email *': 'ananya.s@example.com',
+        'Mobile Number (10 Digits) *': '9830123456',
+        'Alternate / WhatsApp Number': '9830123457',
+        'Emergency Contact Name': 'Subir Sengupta',
+        'Emergency Contact Mobile': '9830123458',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': 'Tower 4, Flat 12B, BKC Heights',
+        'Permanent City': 'Mumbai',
+        'Permanent State': 'Maharashtra',
+        'Permanent PIN Code': '400051',
+        'Present Address Line': 'Tower 4, Flat 12B, BKC Heights',
+        'Present City': 'Mumbai',
+        'Present State': 'Maharashtra',
+        'Present PIN Code': '400051',
+        'Employee ID / Staff Code': 'BFSI-3001',
+        'Designation *': 'Senior Credit Risk Analyst',
+        'Department *': 'Risk Management & Underwriting',
+        'Employment Type *': 'Full-Time',
+        'Branch / Regional Hub': 'Bandra Kurla Complex (BKC) National Hub',
+        'Work Shift': 'Corporate General',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-10-01',
+        'Offered Annual CTC (INR)': '1850000',
+        'Regulatory Certifications': 'NISM Series VIII / CFA Level 2',
+        'CIBIL Clearance Declaration': 'Cleared (Score: 812, Zero Default)',
+        'Highest Degree': 'MBA in Finance',
+        'Specialization / Major': 'Banking & Financial Markets',
+        'University / College': 'NMIMS Mumbai',
+        'Year of Passing': '2019',
+        'Percentage / CGPA': '8.6 CGPA',
+        'Total Experience (Years)': '5.5',
+        'Previous Company Name': 'Axis Bank Limited',
+        'Previous Designation': 'Assistant Credit Manager',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-15',
+        'Last Drawn Annual CTC': '1400000',
+        'PAN Card Number (10 Digits)': 'ANASG9911K',
+        'Aadhaar Number (12 Digits)': '901234567890',
+        'EPFO UAN Number (12 Digits)': '101123456789',
+        'Bank Account Holder Name': 'Ananya Sengupta',
+        'Bank Name': 'HDFC Bank',
+        'Account Number': '00600159823412',
+        'IFSC Code': 'HDFC0000060',
+        'Branch Name': 'Fort Branch Mumbai'
+      }
+    ];
+
+    // 🏥 Healthcare Data Set
+    const healthSampleData = [
+      {
+        'Full Name *': 'Sister Mary Kurian',
+        'Father / Spouse Name': 'Thomas Kurian',
+        'Mother Name': 'Annamma Kurian',
+        'Date of Birth (YYYY-MM-DD)': '1993-05-22',
+        'Age': '33',
+        'Gender': 'Female',
+        'Blood Group': 'AB+',
+        'Marital Status': 'Married',
+        'Mother Tongue': 'Malayalam',
+        'Official Email *': 'mary.kurian@example.com',
+        'Mobile Number (10 Digits) *': '9447123456',
+        'Alternate / WhatsApp Number': '9447123457',
+        'Emergency Contact Name': 'Thomas Kurian',
+        'Emergency Contact Mobile': '9447123458',
+        'Emergency Contact Relationship': 'Spouse',
+        'Permanent Address Line': 'House 14, Greams Road, Thousand Lights',
+        'Permanent City': 'Chennai',
+        'Permanent State': 'Tamil Nadu',
+        'Permanent PIN Code': '600006',
+        'Present Address Line': 'House 14, Greams Road, Thousand Lights',
+        'Present City': 'Chennai',
+        'Present State': 'Tamil Nadu',
+        'Present PIN Code': '600006',
+        'Employee ID / Staff Code': 'HLTH-4001',
+        'Designation *': 'Senior ICU Staff Nurse',
+        'Department *': 'Critical Care Unit (ICU)',
+        'Employment Type *': 'Full-Time',
+        'Hospital / Facility Unit': 'Chennai Regional Medical Center',
+        'Work Shift': 'Rotational Shift (Day / Night)',
+        'Medical Council Registration No': 'Tamil Nadu Nursing Council: TNC-88291',
+        'Medical Degree / Specialization': 'B.Sc Nursing (Critical Care)',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-09-28',
+        'Offered Annual CTC (INR)': '550000',
+        'Highest Degree': 'B.Sc in Nursing',
+        'University / College': 'The Tamil Nadu Dr. M.G.R. Medical University',
+        'Year of Passing': '2015',
+        'Percentage / CGPA': '76.4%',
+        'Total Experience (Years)': '7.0',
+        'Previous Company Name': 'Apollo Hospitals Enterprises',
+        'Previous Designation': 'Staff Nurse Grade 1',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-12',
+        'Last Drawn Annual CTC': '450000',
+        'PAN Card Number (10 Digits)': 'MARYK3344P',
+        'Aadhaar Number (12 Digits)': '123456789012',
+        'ESIC IP Number': '5194819201',
+        'EPFO UAN Number (12 Digits)': '100456123789',
+        'Bank Account Holder Name': 'Sister Mary Kurian',
+        'Bank Name': 'Canara Bank',
+        'Account Number': '10451010029384',
+        'IFSC Code': 'CNRB0001045',
+        'Branch Name': 'Thousand Lights Chennai'
+      }
+    ];
+
+    // 🚚 Logistics Data Set
+    const logSampleData = [
+      {
+        'Full Name *': 'Rajendra Prasad Yadav',
+        'Father / Spouse Name': 'Ramdev Yadav',
+        'Mother Name': 'Phoolwati Yadav',
+        'Date of Birth (YYYY-MM-DD)': '1991-09-15',
+        'Age': '35',
+        'Gender': 'Male',
+        'Blood Group': 'O+',
+        'Marital Status': 'Married',
+        'Mother Tongue': 'Hindi',
+        'Official Email *': 'rajendra.yadav@example.com',
+        'Mobile Number (10 Digits) *': '9890123456',
+        'Alternate / WhatsApp Number': '9890123457',
+        'Emergency Contact Name': 'Ramdev Yadav',
+        'Emergency Contact Mobile': '9890123458',
+        'Emergency Contact Relationship': 'Father',
+        'Permanent Address Line': 'Village Post Sarai, Azamgarh',
+        'Permanent City': 'Azamgarh',
+        'Permanent State': 'Uttar Pradesh',
+        'Permanent PIN Code': '276001',
+        'Present Address Line': 'Room 12, Chawl 4, Bhiwandi Logistics Park',
+        'Present City': 'Thane',
+        'Present State': 'Maharashtra',
+        'Present PIN Code': '421302',
+        'Employee ID / Staff Code': 'LOG-5001',
+        'Designation *': 'Commercial Fleet Driver (Heavy Vehicles)',
+        'Department *': 'Logistics, Warehousing & Fleet Operations',
+        'Employment Type *': 'Full-Time',
+        'Delivery Hub / Warehouse Depot': 'Bhiwandi Central Fulfillment Depot',
+        'Work Shift': 'Night Line-Haul Shift',
+        'Commercial Driving License Number': 'MH0420150009812',
+        'DL Expiry Date (YYYY-MM-DD)': '2032-05-18',
+        'Vehicle Category': 'Heavy Commercial Vehicle (HCV) + Transport Badge',
+        'Proposed Joining Date (YYYY-MM-DD)': '2026-09-22',
+        'Offered Annual CTC (INR)': '420000',
+        'Highest Degree': 'Higher Secondary (10+2)',
+        'Trade / Driving Academy': 'Govt Heavy Vehicle Driving Training Institute',
+        'Year of Passing': '2009',
+        'Total Experience (Years)': '10.0',
+        'Previous Company Name': 'Delhivery Limited',
+        'Previous Designation': 'Line-Haul Fleet Captain',
+        'Previous Relieving Date (YYYY-MM-DD)': '2026-09-10',
+        'Last Drawn Annual CTC': '360000',
+        'PAN Card Number (10 Digits)': 'RAJPR5522D',
+        'Aadhaar Number (12 Digits)': '456789012345',
+        'ESIC IP Number': '3184910291',
+        'EPFO UAN Number (12 Digits)': '100876543987',
+        'Bank Account Holder Name': 'Rajendra Prasad Yadav',
+        'Bank Name': 'Punjab National Bank',
+        'Account Number': '0123000100987654',
+        'IFSC Code': 'PUNB0012300',
+        'Branch Name': 'Bhiwandi Branch'
+      }
+    ];
+
+    // 📑 Guidelines Sheet Data
     const guideData = [
-      { 'Field Name': 'Full Name', 'Mandatory': 'YES', 'Allowed Values': 'Candidate legal name as per Aadhaar/PAN', 'Notes': 'Used on official BGV certificates' },
-      { 'Field Name': 'Email Address', 'Mandatory': 'YES', 'Allowed Values': 'Valid email format (user@domain.com)', 'Notes': 'Onboarding link & welcome email sent here' },
-      { 'Field Name': 'Mobile Number', 'Mandatory': 'YES', 'Allowed Values': '10-digit Indian Mobile Number', 'Notes': 'Used for SMS OTP, link dispatches & WhatsApp' },
-      { 'Field Name': 'Employment Type', 'Mandatory': 'YES', 'Allowed Values': 'Full-Time | Contract | Intern | Part-Time | Executive | Vendor', 'Notes': 'Determines verification rigor & profile category' },
-      { 'Field Name': 'Designation', 'Mandatory': 'YES', 'Allowed Values': 'Any valid job title', 'Notes': 'Displayed in candidate profile dossier' },
-      { 'Field Name': 'Department', 'Mandatory': 'YES', 'Allowed Values': 'Engineering, Sales, Operations, HR, Finance, etc.', 'Notes': 'Used for organizational reporting' },
-      { 'Field Name': 'Employee ID', 'Mandatory': 'NO', 'Allowed Values': 'Alphanumeric internal staff code', 'Notes': 'Auto-generated if left blank' },
-      { 'Field Name': 'Proposed Joining Date', 'Mandatory': 'NO', 'Allowed Values': 'YYYY-MM-DD format (e.g. 2026-10-01)', 'Notes': 'Used to schedule verification deadlines' },
-      { 'Field Name': 'PAN Number', 'Mandatory': 'NO', 'Allowed Values': '10-character PAN (e.g. ABCDE1234F)', 'Notes': 'Pre-fills candidate verification station' },
-      { 'Field Name': 'Aadhaar Number', 'Mandatory': 'NO', 'Allowed Values': '12-digit UID (e.g. 234567890123)', 'Notes': 'Pre-fills candidate UIDAI OTP e-KYC' }
+      { 'Field Name': 'Full Name', 'Mandatory': 'YES', 'Section': '1. Personal Information', 'Allowed Values': 'Legal candidate name as per Aadhaar / PAN', 'Notes': 'Used on official BGV certificates' },
+      { 'Field Name': 'Official Email Address', 'Mandatory': 'YES', 'Section': '2. Contact Details', 'Allowed Values': 'Valid email address format (user@domain.com)', 'Notes': 'Candidate receives login credentials & verification link' },
+      { 'Field Name': 'Mobile Number', 'Mandatory': 'YES', 'Section': '2. Contact Details', 'Allowed Values': '10-digit Indian mobile number', 'Notes': 'Used for SMS OTP, link dispatches & WhatsApp' },
+      { 'Field Name': 'Employment Type', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Full-Time | Contract | Intern | Part-Time | Executive | Vendor', 'Notes': 'Controls profile classification in Master Registry' },
+      { 'Field Name': 'Designation', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Any corporate or plant job title', 'Notes': 'Printed on official candidate TrueProfile dossier' },
+      { 'Field Name': 'Department', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Engineering, Plant, BFSI, Healthcare, Logistics, etc.', 'Notes': 'Used for organizational reporting' },
+      { 'Field Name': 'Date of Birth', 'Mandatory': 'NO', 'Section': '1. Personal Information', 'Allowed Values': 'YYYY-MM-DD (e.g. 1996-05-15)', 'Notes': 'Required for MoRTH Driving License & Passport checks' },
+      { 'Field Name': 'Aadhaar Number', 'Mandatory': 'NO', 'Section': '5. Statutory KYC', 'Allowed Values': '12-digit Indian UID (e.g. 234567890123)', 'Notes': 'Pre-fills UIDAI OTP e-KYC gate' },
+      { 'Field Name': 'PAN Card Number', 'Mandatory': 'NO', 'Section': '5. Statutory KYC', 'Allowed Values': '10-character alphanumeric PAN (e.g. ABCDE1234F)', 'Notes': 'Pre-fills NSDL 2.0 direct verification' },
+      { 'Field Name': 'EPFO UAN Number', 'Mandatory': 'NO', 'Section': '5. Statutory KYC', 'Allowed Values': '12-digit EPFO UAN (e.g. 101298450123)', 'Notes': 'Enables dual employment & moonlighting audit V3' },
+      { 'Field Name': 'ESIC IP Number', 'Mandatory': 'NO', 'Section': '5. Statutory KYC', 'Allowed Values': '10 or 17 digit ESIC Insurance Number', 'Notes': 'Manufacturing, plant & delivery social security' },
+      { 'Field Name': 'Commercial Driving License', 'Mandatory': 'NO', 'Section': '5. Statutory KYC', 'Allowed Values': 'MoRTH Sarathi DL Code (e.g. KA0120200004910)', 'Notes': 'Transport & logistics fleet verification' },
+      { 'Field Name': 'Bank Account & IFSC', 'Mandatory': 'NO', 'Section': '8. Bank Details', 'Allowed Values': 'Account Number + 11-char IFSC Code', 'Notes': 'Enables automated NPCI IMPS penny-drop verification' }
     ];
 
     const wb = XLSX.utils.book_new();
-    const ws1 = XLSX.utils.json_to_sheet(sampleData);
-    const ws2 = XLSX.utils.json_to_sheet(guideData);
 
-    ws1['!cols'] = [
-      { wch: 22 }, { wch: 28 }, { wch: 16 }, { wch: 18 }, { wch: 28 },
-      { wch: 22 }, { wch: 24 }, { wch: 26 }, { wch: 16 }, { wch: 22 },
-      { wch: 12 }, { wch: 30 }, { wch: 20 }, { wch: 26 }
-    ];
+    const setColWidths = (ws) => {
+      ws['!cols'] = [
+        { wch: 24 }, { wch: 22 }, { wch: 20 }, { wch: 18 }, { wch: 8 }, 
+        { wch: 10 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 28 }, 
+        { wch: 18 }, { wch: 18 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, 
+        { wch: 32 }, { wch: 16 }, { wch: 18 }, { wch: 14 }, { wch: 32 }, 
+        { wch: 16 }, { wch: 18 }, { wch: 14 }, { wch: 18 }, { wch: 28 }, 
+        { wch: 26 }, { wch: 18 }, { wch: 26 }, { wch: 20 }, { wch: 18 }, 
+        { wch: 18 }, { wch: 30 }, { wch: 26 }, { wch: 26 }, { wch: 26 }, 
+        { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 26 }, { wch: 24 }, 
+        { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 20 }, { wch: 20 }, 
+        { wch: 24 }, { wch: 20 }, { wch: 22 }, { wch: 16 }, { wch: 22 }
+      ];
+    };
 
-    ws2['!cols'] = [
-      { wch: 22 }, { wch: 14 }, { wch: 45 }, { wch: 45 }
-    ];
+    let downloadFilename = '';
 
-    XLSX.utils.book_append_sheet(wb, ws1, 'Employee_Import_Data');
-    XLSX.utils.book_append_sheet(wb, ws2, 'Employment_Types_&_Guide');
+    if (sector === 'it_engineering') {
+      const ws = XLSX.utils.json_to_sheet(itSampleData);
+      setColWidths(ws);
+      XLSX.utils.book_append_sheet(wb, ws, 'IT_Software_Employees');
+      downloadFilename = 'Employee_Bulk_Import_Template_IT_Software';
+    } else if (sector === 'manufacturing') {
+      const ws = XLSX.utils.json_to_sheet(mfgSampleData);
+      setColWidths(ws);
+      XLSX.utils.book_append_sheet(wb, ws, 'Manufacturing_Plant_Staff');
+      downloadFilename = 'Employee_Bulk_Import_Template_Manufacturing_Plant';
+    } else if (sector === 'bfsi') {
+      const ws = XLSX.utils.json_to_sheet(bfsiSampleData);
+      setColWidths(ws);
+      XLSX.utils.book_append_sheet(wb, ws, 'BFSI_Finance_Employees');
+      downloadFilename = 'Employee_Bulk_Import_Template_BFSI_Finance';
+    } else if (sector === 'healthcare') {
+      const ws = XLSX.utils.json_to_sheet(healthSampleData);
+      setColWidths(ws);
+      XLSX.utils.book_append_sheet(wb, ws, 'Healthcare_Clinical_Staff');
+      downloadFilename = 'Employee_Bulk_Import_Template_Healthcare_Clinical';
+    } else if (sector === 'logistics') {
+      const ws = XLSX.utils.json_to_sheet(logSampleData);
+      setColWidths(ws);
+      XLSX.utils.book_append_sheet(wb, ws, 'Logistics_Fleet_Delivery');
+      downloadFilename = 'Employee_Bulk_Import_Template_Logistics_Fleet';
+    } else {
+      // Master Multi-Sheet Template containing all sectors
+      const wsMaster = XLSX.utils.json_to_sheet([...itSampleData, ...mfgSampleData, ...bfsiSampleData, ...healthSampleData, ...logSampleData]);
+      setColWidths(wsMaster);
+      XLSX.utils.book_append_sheet(wb, wsMaster, '1_Master_All_Sectors');
+
+      const wsIT = XLSX.utils.json_to_sheet(itSampleData);
+      setColWidths(wsIT);
+      XLSX.utils.book_append_sheet(wb, wsIT, '2_IT_Software');
+
+      const wsMfg = XLSX.utils.json_to_sheet(mfgSampleData);
+      setColWidths(wsMfg);
+      XLSX.utils.book_append_sheet(wb, wsMfg, '3_Manufacturing_Plant');
+
+      const wsBfsi = XLSX.utils.json_to_sheet(bfsiSampleData);
+      setColWidths(wsBfsi);
+      XLSX.utils.book_append_sheet(wb, wsBfsi, '4_BFSI_Finance');
+
+      const wsHlth = XLSX.utils.json_to_sheet(healthSampleData);
+      setColWidths(wsHlth);
+      XLSX.utils.book_append_sheet(wb, wsHlth, '5_Healthcare_Clinical');
+
+      const wsLog = XLSX.utils.json_to_sheet(logSampleData);
+      setColWidths(wsLog);
+      XLSX.utils.book_append_sheet(wb, wsLog, '6_Logistics_Fleet');
+
+      downloadFilename = 'Employee_Bulk_Import_Master_Multi_Sector_Template';
+    }
+
+    // Add Guidelines Sheet to all workbooks
+    const wsGuide = XLSX.utils.json_to_sheet(guideData);
+    wsGuide['!cols'] = [{ wch: 26 }, { wch: 14 }, { wch: 28 }, { wch: 45 }, { wch: 45 }];
+    XLSX.utils.book_append_sheet(wb, wsGuide, 'Field_Guide_&_Allowed_Values');
 
     if (format === 'csv') {
-      XLSX.writeFile(wb, 'Employee_Bulk_Import_Template.csv', { bookType: 'csv' });
+      XLSX.writeFile(wb, `${downloadFilename}.csv`, { bookType: 'csv' });
     } else {
-      XLSX.writeFile(wb, 'Employee_Bulk_Import_Template.xlsx', { bookType: 'xlsx' });
+      XLSX.writeFile(wb, `${downloadFilename}.xlsx`, { bookType: 'xlsx' });
     }
-    showToast(`📥 Bulk Import Template (${format.toUpperCase()}) downloaded successfully!`);
+
+    showToast(`📥 ${downloadFilename} (${format.toUpperCase()}) downloaded successfully!`);
   };
 
-  // 2. PARSE UPLOADED EXCEL / CSV FILE
+  // 2. PARSE UPLOADED EXCEL / CSV FILE (UNIVERSAL 35+ FIELDS SUPPORT)
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -291,7 +727,7 @@ export const BulkEmployeeImportModal = ({
         const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
         if (!rawJson || rawJson.length === 0) {
-          setParseError('The uploaded file contains no data rows. Please download the template and fill in candidate records.');
+          setParseError('The uploaded file contains no data rows. Please download the sector template and fill in candidate records.');
           setIsParsing(false);
           return;
         }
@@ -305,39 +741,98 @@ export const BulkEmployeeImportModal = ({
             return matchedKey ? String(row[matchedKey]).trim() : '';
           };
 
+          // 1. Personal Fields
           const name = findVal(['fullname', 'candidatename', 'employeename', 'name']) || `Candidate #${idx + 1}`;
-          const email = findVal(['emailaddress', 'email', 'candidateemail', 'mail']);
-          let mobile = findVal(['mobilenumber', 'mobile', 'phonenumber', 'phone', 'contact', 'whatsapp']);
+          const fatherSpouseName = findVal(['fatherspousename', 'fathername', 'father', 'spouse', 'husband']);
+          const motherName = findVal(['mothername', 'mother']);
+          const dob = findVal(['dateofbirth', 'dob', 'birthdate', 'birth']);
+          const age = findVal(['age', 'yearsold']);
+          const gender = findVal(['gender', 'sex']) || 'Male';
+          const bloodGroup = findVal(['bloodgroup', 'blood']);
+          const maritalStatus = findVal(['maritalstatus', 'marital', 'married']) || 'Single';
+          const motherTongue = findVal(['mothertongue', 'language']);
+
+          // 2. Contact Fields
+          const email = findVal(['officialemail', 'emailaddress', 'email', 'candidateemail', 'mail']);
+          let mobile = findVal(['mobilenumber', 'mobile', 'phonenumber', 'phone', 'contact']);
           mobile = mobile.replace(/[^0-9]/g, '');
           if (mobile.length > 10 && mobile.startsWith('91')) mobile = mobile.substring(2);
 
+          let alternateMobile = findVal(['alternatemobile', 'alternatenumber', 'altmobile', 'whatsappnumber', 'whatsapp']);
+          alternateMobile = alternateMobile.replace(/[^0-9]/g, '');
+          if (alternateMobile.length > 10 && alternateMobile.startsWith('91')) alternateMobile = alternateMobile.substring(2);
+
+          const emergencyContactName = findVal(['emergencycontactname', 'emergencyname', 'emergencycontact']);
+          const emergencyContactMobile = findVal(['emergencycontactmobile', 'emergencyphone', 'emergencynumber', 'emergencymobile']);
+          const emergencyRelationship = findVal(['emergencycontactrelationship', 'emergencyrelationship', 'emergencyrelation', 'relation']) || 'Parent / Relative';
+
+          // 3. Address Fields
+          const permanentAddressLine = findVal(['permanentaddressline', 'permanentaddress', 'permaddress', 'addressline', 'address']);
+          const permanentCity = findVal(['permanentcity', 'permcity', 'city']);
+          const permanentState = findVal(['permanentstate', 'permstate', 'state']);
+          const permanentPincode = findVal(['permanentpincode', 'permpin', 'pincode', 'pin', 'postalcode']);
+
+          const presentAddressLine = findVal(['presentaddressline', 'presentaddress', 'currentaddress', 'localaddress']) || permanentAddressLine;
+          const presentCity = findVal(['presentcity', 'currentcity']) || permanentCity;
+          const presentState = findVal(['presentstate', 'currentstate']) || permanentState;
+          const presentPincode = findVal(['presentpincode', 'currentpin']) || permanentPincode;
+
+          // 4. Employment Fields
           let empTypeRaw = findVal(['employmenttype', 'employeetype', 'category', 'type', 'contracttype']) || 'Full-Time';
           let empType = 'Full-Time';
           const lowerType = empTypeRaw.toLowerCase();
           if (lowerType.includes('contract') || lowerType.includes('retainer')) empType = 'Contract';
-          else if (lowerType.includes('intern') || lowerType.includes('trainee')) empType = 'Intern';
+          else if (lowerType.includes('intern') || lowerType.includes('trainee') || lowerType.includes('apprentice')) empType = 'Intern';
           else if (lowerType.includes('part') || lowerType.includes('freelance')) empType = 'Part-Time';
           else if (lowerType.includes('exec') || lowerType.includes('lead') || lowerType.includes('director') || lowerType.includes('vp')) empType = 'Executive';
           else if (lowerType.includes('vendor') || lowerType.includes('third')) empType = 'Vendor';
 
           const designation = findVal(['designation', 'jobrole', 'role', 'title', 'position']) || 'Associate';
-          const dept = findVal(['department', 'dept', 'function', 'division']) || 'General';
-          const empId = findVal(['employeeid', 'staffcode', 'empid', 'id']) || `${currentCompany?.code || 'COMP'}EMP${String(Date.now()).slice(-4)}${idx + 1}`;
-          const doj = findVal(['joiningdate', 'doj', 'dateofjoining']) || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
-          const pan = findVal(['pan', 'pannumber', 'pancard']).toUpperCase();
-          const aadhaar = findVal(['aadhaar', 'aadhaarnumber', 'uid']).replace(/[^0-9]/g, '');
-          const gender = findVal(['gender', 'sex']) || 'Male';
-          const qualification = findVal(['qualification', 'highestqualification', 'education', 'degree']);
-          const experience = findVal(['experience', 'priorexperience', 'workexperience']);
-          const prevCompany = findVal(['previouscompany', 'lastcompany', 'employer']);
+          const dept = findVal(['department', 'dept', 'function', 'division']) || 'General Operations';
+          const empId = findVal(['employeeid', 'staffcode', 'empid', 'id']) || `${currentCompany?.code || 'JOY'}EMP${String(Date.now()).slice(-4)}${idx + 1}`;
+          const doj = findVal(['proposedjoiningdate', 'joiningdate', 'doj', 'dateofjoining']) || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+          const workLocation = findVal(['worklocation', 'plantlocation', 'factorylocation', 'branch', 'hub', 'location']) || 'Main Office';
+          const workShift = findVal(['workshift', 'shift', 'shifttype']) || 'General Shift';
+          const offeredCtc = findVal(['offeredannualctc', 'offeredctc', 'annualctc', 'ctc', 'salary']);
+
+          // 5. Statutory KYC Fields
+          const pan = findVal(['pancardnumber', 'pan', 'pannumber', 'pancard']).toUpperCase();
+          const aadhaar = findVal(['aadhaarnumber', 'aadhaar', 'uid']).replace(/[^0-9]/g, '');
+          const uanEpf = findVal(['epfouannumber', 'uannumber', 'uan', 'epf', 'pfnumber']).replace(/[^0-9]/g, '');
+          const esicNo = findVal(['esicipnumber', 'esicnumber', 'esicno', 'esic']).replace(/[^0-9]/g, '');
+          const drivingLicense = findVal(['commercialdrivinglicense', 'drivinglicense', 'dlnumber', 'dlno']);
+          const passportNo = findVal(['passportnumber', 'passportno', 'passport']);
+          const regulatoryCert = findVal(['regulatorycertifications', 'medicalcouncil', 'tradecertification', 'nism', 'trade', 'safetytraining']);
+
+          // 6. Academic Fields
+          const highestQualification = findVal(['highestdegree', 'highestqualification', 'degree', 'qualification', 'education']);
+          const specialization = findVal(['specialization', 'major', 'stream', 'branch']);
+          const university = findVal(['university', 'college', 'institute', 'board']);
+          const yearOfPassing = findVal(['yearofpassing', 'passingyear', 'passyear', 'year']);
+          const percentage = findVal(['percentage', 'cgpa', 'marks', 'score']);
+
+          // 7. Experience Fields
+          const totalExperience = findVal(['totalexperience', 'priorexperience', 'workexperience', 'experienceyears', 'experience']);
+          const previousCompany = findVal(['previouscompanyname', 'previouscompany', 'lastcompany', 'previousemployer', 'employer']);
+          const previousDesignation = findVal(['previousdesignation', 'lastdesignation', 'priorrole']);
+          const previousRelievingDate = findVal(['previousrelievingdate', 'relievingdate', 'relieveddate']);
+          const lastDrawnCtc = findVal(['lastdrawnannualctc', 'lastdrawnctc', 'previousctc', 'lastctc']);
+
+          // 8. Bank Details
+          const bankAccountHolder = findVal(['bankaccountholdername', 'accountholdername', 'accountholder', 'holdername']) || name;
+          const bankName = findVal(['bankname', 'bank']);
+          const bankAccountNo = findVal(['bankaccountnumber', 'accountnumber', 'accountno', 'accno']);
+          const bankIfsc = findVal(['bankifsccode', 'ifsccode', 'ifsc']).toUpperCase();
+          const bankBranch = findVal(['branchname', 'bankbranch', 'branch']);
 
           const errors = [];
-          if (!name || name.length < 2) errors.push('Name is required');
+          if (!name || name.length < 2) errors.push('Candidate Name is required');
           if (!email || !email.includes('@') || !email.includes('.')) errors.push('Valid Email is required');
           if (!mobile || mobile.length !== 10) errors.push('10-digit Indian Mobile is required');
 
           return {
             rowId: idx + 1,
+            // Core
             name,
             email,
             mobile,
@@ -349,9 +844,49 @@ export const BulkEmployeeImportModal = ({
             pan,
             aadhaar,
             gender,
-            qualification,
-            experience,
-            prevCompany,
+            // Extended 35+ fields
+            fatherSpouseName,
+            motherName,
+            dob,
+            age,
+            bloodGroup,
+            maritalStatus,
+            motherTongue,
+            alternateMobile,
+            emergencyContactName,
+            emergencyContactMobile,
+            emergencyRelationship,
+            permanentAddressLine,
+            permanentCity,
+            permanentState,
+            permanentPincode,
+            presentAddressLine,
+            presentCity,
+            presentState,
+            presentPincode,
+            workLocation,
+            workShift,
+            offeredCtc,
+            uanEpf,
+            esicNo,
+            drivingLicense,
+            passportNo,
+            regulatoryCert,
+            highestQualification,
+            specialization,
+            university,
+            yearOfPassing,
+            percentage,
+            totalExperience,
+            previousCompany,
+            previousDesignation,
+            previousRelievingDate,
+            lastDrawnCtc,
+            bankAccountHolder,
+            bankName,
+            bankAccountNo,
+            bankIfsc,
+            bankBranch,
             isValid: errors.length === 0,
             errors,
             isSelected: errors.length === 0
@@ -360,7 +895,7 @@ export const BulkEmployeeImportModal = ({
 
         setParsedRows(normalized);
         setIsParsing(false);
-        showToast(`✅ Successfully parsed ${normalized.length} candidate rows from "${file.name}"!`);
+        showToast(`✅ Successfully parsed ${normalized.length} candidate rows from "${file.name}" with full 35+ field profile support!`);
       } catch (err) {
         console.error('File parsing error:', err);
         setParseError(`Failed to parse file: ${err.message || 'Corrupt or unsupported spreadsheet format.'}`);
@@ -427,6 +962,82 @@ export const BulkEmployeeImportModal = ({
         };
       });
 
+      // Complete 7-Section Joining Form Data Mapping
+      const joiningFormData = {
+        // 1. Personal Information
+        fullName: row.name,
+        fatherSpouseName: row.fatherSpouseName,
+        motherName: row.motherName,
+        dob: row.dob,
+        age: row.age ? parseInt(row.age) : null,
+        gender: row.gender,
+        bloodGroup: row.bloodGroup,
+        maritalStatus: row.maritalStatus,
+        motherTongue: row.motherTongue,
+        nationality: 'Indian',
+
+        // 2. Contact Details
+        email: row.email,
+        mobile: row.mobile,
+        alternateMobile: row.alternateMobile,
+        emergencyContactName: row.emergencyContactName,
+        emergencyContactPhone: row.emergencyContactMobile,
+        emergencyRelationship: row.emergencyRelationship,
+
+        // 3. Addresses
+        permanentAddressLine: row.permanentAddressLine,
+        permanentCity: row.permanentCity,
+        permanentState: row.permanentState,
+        permanentPincode: row.permanentPincode,
+        presentAddressLine: row.presentAddressLine || row.permanentAddressLine,
+        presentCity: row.presentCity || row.permanentCity,
+        presentState: row.presentState || row.permanentState,
+        presentPincode: row.presentPincode || row.permanentPincode,
+
+        // 4. Employment Details
+        empId: row.empId,
+        employeeNumber: row.empId,
+        designation: row.designation,
+        dept: row.dept,
+        employeeType: row.employeeType,
+        doj: row.doj,
+        workLocation: row.workLocation,
+        shift: row.workShift,
+        offeredCtc: row.offeredCtc,
+
+        // 5. Statutory & KYC
+        aadhaarNo: row.aadhaar,
+        panNo: row.pan,
+        uanEpf: row.uanEpf,
+        esicNo: row.esicNo,
+        drivingLicense: row.drivingLicense,
+        passportNo: row.passportNo,
+        tradeCertification: row.regulatoryCert,
+
+        // 6. Academic Qualifications
+        highestQualification: row.highestQualification,
+        specialization: row.specialization,
+        college: row.university,
+        yearOfPassing: row.yearOfPassing,
+        percentage: row.percentage,
+
+        // 7. Previous Experience
+        totalExperience: row.totalExperience,
+        previousCompany: row.previousCompany,
+        previousDesignation: row.previousDesignation,
+        relievingDate: row.previousRelievingDate,
+        lastDrawnCtc: row.lastDrawnCtc,
+
+        // 8. Bank Account Details
+        accountHolderName: row.bankAccountHolder || row.name,
+        bankName: row.bankName,
+        accountNumber: row.bankAccountNo,
+        ifscCode: row.bankIfsc,
+        branchName: row.bankBranch,
+
+        checklist: activeChecklistKeys
+      };
+
       const candidatePayload = {
         name: row.name,
         email: row.email,
@@ -438,10 +1049,16 @@ export const BulkEmployeeImportModal = ({
         designation: row.designation,
         dept: row.dept,
         doj: row.doj,
+        dob: row.dob,
+        age: row.age ? parseInt(row.age) : null,
+        gender: row.gender,
+        workLocation: row.workLocation,
         panNumber: row.pan,
         aadhaarNo: row.aadhaar,
-        gender: row.gender,
-        companyId: currentCompany?.id || 'COMP001',
+        pfNumber: row.uanEpf,
+        esiNumber: row.esicNo,
+        companyId: currentCompany?.id || 'comp-1',
+        companyName: currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
         hrId: activeHr?.id || 'HR001',
         portalPassword: candidatePin,
         verificationConfig,
@@ -449,7 +1066,9 @@ export const BulkEmployeeImportModal = ({
         hrCustomMessage: customHrMessage,
         status: autoSendLinks ? 'Link Sent' : 'Pending',
         isBulkImported: true,
-        importBatchDate: new Date().toISOString()
+        importBatchDate: new Date().toISOString(),
+        joiningFormData,
+        submittedFormData: joiningFormData
       };
 
       try {
@@ -492,6 +1111,7 @@ export const BulkEmployeeImportModal = ({
       'Portal Security PIN': c.portalPassword,
       'Direct Onboarding Link URL': c.linkUrl,
       'Dispatch Status': c.status,
+      'Company Name': currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
       'Date Imported': new Date().toLocaleDateString()
     }));
 
@@ -499,7 +1119,7 @@ export const BulkEmployeeImportModal = ({
     ws['!cols'] = [
       { wch: 22 }, { wch: 28 }, { wch: 16 }, { wch: 18 }, { wch: 24 },
       { wch: 20 }, { wch: 16 }, { wch: 22 }, { wch: 14 }, { wch: 65 },
-      { wch: 18 }, { wch: 16 }
+      { wch: 18 }, { wch: 35 }, { wch: 16 }
     ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Imported_Candidates_Links');
@@ -532,10 +1152,10 @@ export const BulkEmployeeImportModal = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900">Bulk Employee Profile Ingestion & Link Dispatch</h2>
-                <span className="badge badge-emerald text-[10px] font-bold">ALL EMPLOYEE TYPES</span>
+                <span className="badge badge-emerald text-[10px] font-bold">ALL EMPLOYEE TYPES & SECTORS</span>
               </div>
-              <p className="text-xs text-slate-600 mt-0.5 font-medium">
-                Download spreadsheet template, upload candidate batch (Full-Time, Contract, Intern, Executive), select document verification checklist & dispatch onboarding links.
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Import candidates across IT & Engineering, Manufacturing, BFSI, Healthcare & Logistics with full 35+ field profile creation & automated link dispatch.
               </p>
             </div>
           </div>
@@ -565,7 +1185,7 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">1</span>
-            <span>1. Template & Excel Upload</span>
+            <span>1. Sector Template & Upload</span>
           </button>
 
           <button
@@ -584,7 +1204,7 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">2</span>
-            <span>2. Document Checklist & Link Dispatch</span>
+            <span>2. Document Checklist & Channels</span>
           </button>
 
           <div
@@ -595,58 +1215,97 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">3</span>
-            <span>3. Batch Summary & Token Registry</span>
+            <span>3. Batch Summary & Links</span>
           </div>
         </div>
 
-        {/* STEP 1 */}
+        {/* STEP 1: TEMPLATE DOWNLOAD & FILE UPLOAD */}
         {currentStep === 1 && (
           <div className="space-y-6 animate-fadeIn">
             
-            {/* HERO */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border-2 border-emerald-200 space-y-3 shadow-2xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <span className="text-[11px] font-black uppercase text-emerald-800 tracking-wider flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-emerald-600" />
-                    <span>Universal Employee Type Support</span>
-                  </span>
-                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-                    Import any mix of employee contracts in a single spreadsheet
-                  </h3>
-                  <p className="text-xs text-slate-600">
-                    The template includes dedicated columns and sample pre-filled records for each employee category.
+            {/* SECTOR TEMPLATE DOWNLOAD HUB */}
+            <div className="p-5 rounded-3xl bg-slate-50 border-2 border-slate-200 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      <span>Select Industry & Download Specific Template</span>
+                    </span>
+                    <span className="badge badge-emerald text-[9px] font-bold">35+ FULL FIELDS</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Choose your sector below to download an industry-tailored Excel template with pre-filled sample rows.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => handleDownloadTemplate('xlsx')}
-                    className="btn btn-secondary text-xs py-2.5 px-4 font-black flex items-center gap-2 bg-white text-emerald-800 border-emerald-300 hover:bg-emerald-50 shadow-xs cursor-pointer"
-                    title="Download pre-formatted Excel template with sample rows and guidelines"
+                    onClick={() => handleDownloadTemplate(selectedSectorTemplate, 'xlsx')}
+                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black flex items-center gap-2 shadow-sm rounded-xl cursor-pointer"
                   >
-                    <Download className="w-4 h-4 text-emerald-600" />
-                    <span>Download Excel Template (.xlsx) 📥</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadTemplate('csv')}
-                    className="btn btn-secondary text-xs py-2.5 px-3 font-bold bg-white text-slate-700 border-slate-300 hover:bg-slate-50 cursor-pointer"
-                    title="Download CSV template format"
-                  >
-                    <span>CSV Format</span>
+                    <Download className="w-4 h-4" />
+                    <span>Download Selected ({SECTOR_TEMPLATES.find(s => s.id === selectedSectorTemplate)?.shortTitle}) 📥</span>
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1 flex-wrap text-[11px]">
-                <span className="font-bold text-slate-600">Supported Categories:</span>
-                {EMPLOYEE_TYPES.map(t => (
-                  <span key={t.key} className={`px-2.5 py-0.5 rounded-md font-bold border ${t.badge}`}>
-                    {t.label}
-                  </span>
-                ))}
+              {/* SECTOR CARDS GRID */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {SECTOR_TEMPLATES.map((sector) => {
+                  const Icon = sector.icon;
+                  const isSelected = selectedSectorTemplate === sector.id;
+                  return (
+                    <div
+                      key={sector.id}
+                      onClick={() => setSelectedSectorTemplate(sector.id)}
+                      className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-2 relative ${
+                        isSelected 
+                          ? 'border-emerald-500 bg-white shadow-md ring-2 ring-emerald-400/30' 
+                          : 'border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-slate-900 text-xs">{sector.title}</h4>
+                            <span className="text-[10px] text-slate-500 font-medium">{sector.badge}</span>
+                          </div>
+                        </div>
+
+                        {isSelected ? (
+                          <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">
+                            ✓
+                          </div>
+                        ) : (
+                          <div className="w-5 h-5 rounded-full border border-slate-300" />
+                        )}
+                      </div>
+
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        {sector.desc}
+                      </p>
+
+                      <div className="pt-1 flex justify-between items-center text-[10px]">
+                        <span className="font-bold text-slate-400">Excel .XLSX</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadTemplate(sector.id, 'xlsx');
+                          }}
+                          className="text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
+                        >
+                          Download Single 📥
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -662,173 +1321,182 @@ export const BulkEmployeeImportModal = ({
                 onChange={handleFileUpload} 
                 className="hidden" 
               />
-              <div className="w-14 h-14 rounded-2xl bg-white border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">
-                {isParsing ? <RefreshCw className="w-7 h-7 animate-spin text-emerald-600" /> : <Upload className="w-7 h-7" />}
+
+              <div className="w-14 h-14 rounded-2xl bg-white text-emerald-600 mx-auto flex items-center justify-center shadow-md border border-emerald-200 group-hover:scale-105 transition-transform">
+                {isParsing ? <RefreshCw className="w-7 h-7 animate-spin" /> : <Upload className="w-7 h-7" />}
               </div>
+
               <div>
                 <h4 className="font-black text-slate-900 text-base">
-                  {fileName ? `Selected: ${fileName}` : 'Click to Browse or Drag & Drop Excel Spreadsheet'}
+                  {fileName ? `Uploaded: ${fileName}` : 'Click to Upload or Drag & Drop Ingestion File'}
                 </h4>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Accepts standard Microsoft Excel (.xlsx, .xls) and Comma-Separated Values (.csv)
+                <p className="text-xs text-slate-500 mt-1">
+                  Supports .xlsx, .xls, and .csv files formatted with single or multi-sector templates
                 </p>
               </div>
-              <div className="inline-block px-3 py-1 rounded-full bg-white border border-emerald-200 text-emerald-700 text-xs font-bold shadow-2xs">
-                Browse Files from Device 📂
-              </div>
+
+              {fileName && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>File Ingested: {fileName}</span>
+                </div>
+              )}
             </div>
 
+            {/* ERROR NOTICE */}
             {parseError && (
               <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
                 <div className="flex-1 font-medium">{parseError}</div>
                 <button 
                   type="button" 
                   onClick={() => setParseError(null)} 
-                  className="font-bold text-rose-700 hover:text-rose-900"
+                  className="font-bold text-rose-600 hover:text-rose-900"
                 >
-                  ✕
+                  Dismiss
                 </button>
               </div>
             )}
 
+            {/* PARSED DATA PREVIEW */}
             {parsedRows.length > 0 && (
               <div className="space-y-4 pt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-extrabold text-slate-900 text-xs">Batch Overview:</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black">
-                      {validSelectedCount} of {totalValidCount} Valid Candidates Selected
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="font-black text-slate-900 text-sm">
+                      Parsed Records: {parsedRows.length} Total
+                    </span>
+                    <span className="badge badge-emerald text-[11px] font-bold">
+                      {validSelectedCount} Selected for Import
                     </span>
                     {invalidCount > 0 && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-black">
-                        {invalidCount} Missing Fields / Invalid
+                      <span className="badge badge-rose text-[11px] font-bold">
+                        {invalidCount} Errors Detected
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="font-bold text-slate-500">Filter Type:</span>
-                    <select 
-                      value={selectedEmployeeTypeFilter}
-                      onChange={(e) => setSelectedEmployeeTypeFilter(e.target.value)}
-                      className="form-select text-xs font-bold py-1 px-2.5 rounded-lg border-slate-300"
-                    >
-                      <option value="ALL">All Employee Types ({parsedRows.length})</option>
-                      {EMPLOYEE_TYPES.map(t => (
-                        <option key={t.key} value={t.key}>
-                          {t.label} ({countsByType[t.key] || 0})
-                        </option>
-                      ))}
-                    </select>
-
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => toggleAllRows(validSelectedCount < totalValidCount)}
-                      className="btn btn-secondary text-xs py-1 px-2.5 font-bold cursor-pointer"
+                      onClick={() => toggleAllRows(true)}
+                      className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer"
                     >
-                      {validSelectedCount < totalValidCount ? 'Select All Valid' : 'Deselect All'}
+                      Select All Valid
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleAllRows(false)}
+                      className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer"
+                    >
+                      Deselect All
                     </button>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 overflow-hidden overflow-x-auto shadow-2xs max-h-72">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px] tracking-wider border-b border-slate-200 sticky top-0 z-10">
-                      <tr>
-                        <th className="p-3 w-10 text-center">Select</th>
-                        <th className="p-3">#</th>
-                        <th className="p-3">Candidate Full Name</th>
-                        <th className="p-3">Email & Contact</th>
-                        <th className="p-3">Employee Type</th>
-                        <th className="p-3">Designation & Dept</th>
-                        <th className="p-3">Identity Proofs</th>
-                        <th className="p-3">Validation</th>
-                        <th className="p-3 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 bg-white">
-                      {displayedRows.map(r => (
-                        <tr key={r.rowId} className={`hover:bg-slate-50/80 ${!r.isValid ? 'bg-rose-50/40' : ''}`}>
-                          <td className="p-3 text-center">
-                            <input 
-                              type="checkbox" 
-                              disabled={!r.isValid}
-                              checked={r.isSelected}
-                              onChange={() => toggleRowSelection(r.rowId)}
-                              className="rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer disabled:cursor-not-allowed"
-                            />
-                          </td>
-                          <td className="p-3 font-mono font-bold text-slate-400">{r.rowId}</td>
-                          <td className="p-3 font-extrabold text-slate-900">
-                            <div>{r.name}</div>
-                            <span className="text-[10px] font-mono text-slate-500">{r.empId}</span>
-                          </td>
-                          <td className="p-3 font-medium text-slate-700">
-                            <div>{r.email || <span className="text-rose-500 font-bold">Missing Email</span>}</div>
-                            <div className="font-mono text-[11px] text-slate-500">{r.mobile || <span className="text-rose-500 font-bold">Missing Mobile</span>}</div>
-                          </td>
-                          <td className="p-3">
-                            <span className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] border ${
-                              EMPLOYEE_TYPES.find(t => t.key === r.employeeType)?.badge || 'bg-slate-100 text-slate-800'
-                            }`}>
-                              {r.employeeType}
-                            </span>
-                          </td>
-                          <td className="p-3">
-                            <div className="font-bold text-slate-800">{r.designation}</div>
-                            <div className="text-[10px] text-slate-500">{r.dept}</div>
-                          </td>
-                          <td className="p-3 font-mono text-[11px]">
-                            {r.pan && <div className="text-emerald-700 font-bold">PAN: {r.pan}</div>}
-                            {r.aadhaar && <div className="text-indigo-700 font-bold">UID: {r.aadhaar.slice(0, 4)}XXXX{r.aadhaar.slice(-4)}</div>}
-                            {!r.pan && !r.aadhaar && <span className="text-slate-400 italic">Self-Fill at Link</span>}
-                          </td>
-                          <td className="p-3">
-                            {r.isValid ? (
-                              <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center gap-1 w-fit">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                <span>Valid</span>
-                              </span>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 font-bold text-[10px] flex items-center gap-1 w-fit" title={r.errors.join(', ')}>
-                                <AlertTriangle className="w-3 h-3 text-rose-600" />
-                                <span>{r.errors[0]}</span>
-                              </span>
-                            )}
-                          </td>
-                          <td className="p-3 text-center">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(r.rowId)}
-                              className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-                              title="Remove row from batch"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
+                {/* TABLE CONTAINER */}
+                <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+                  <div className="overflow-x-auto max-h-[380px]">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-slate-100 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider sticky top-0 z-10">
+                        <tr>
+                          <th className="p-3 w-10 text-center">✓</th>
+                          <th className="p-3">Candidate Full Name</th>
+                          <th className="p-3">Category & Role</th>
+                          <th className="p-3">Mobile & Email</th>
+                          <th className="p-3">Work Location & Shift</th>
+                          <th className="p-3">Aadhaar / PAN</th>
+                          <th className="p-3">Proposed DOJ</th>
+                          <th className="p-3 text-center">Status</th>
+                          <th className="p-3 text-center">Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium">
+                        {displayedRows.map((row) => (
+                          <tr 
+                            key={row.rowId}
+                            className={`hover:bg-slate-50/80 transition-colors ${!row.isValid ? 'bg-rose-50/40' : row.isSelected ? 'bg-emerald-50/30' : ''}`}
+                          >
+                            <td className="p-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={row.isSelected}
+                                disabled={!row.isValid}
+                                onChange={() => toggleRowSelection(row.rowId)}
+                                className="accent-emerald-600 w-4 h-4 rounded cursor-pointer"
+                              />
+                            </td>
+                            <td className="p-3">
+                              <div className="font-bold text-slate-900">{row.name}</div>
+                              <div className="text-[10px] text-slate-400 font-mono">ID: {row.empId}</div>
+                            </td>
+                            <td className="p-3">
+                              <span className="px-2 py-0.5 rounded-md font-bold text-[10px] bg-slate-100 text-slate-800 border border-slate-200">
+                                {row.employeeType}
+                              </span>
+                              <div className="text-[11px] text-slate-600 font-semibold mt-0.5">{row.designation}</div>
+                              <div className="text-[10px] text-slate-400">{row.dept}</div>
+                            </td>
+                            <td className="p-3">
+                              <div className="font-mono text-slate-800">{row.mobile}</div>
+                              <div className="text-[11px] text-slate-500 truncate max-w-[170px]">{row.email}</div>
+                            </td>
+                            <td className="p-3">
+                              <div className="font-semibold text-slate-800 text-[11px]">{row.workLocation || 'Main Hub'}</div>
+                              <div className="text-[10px] text-slate-500 font-mono">{row.workShift || 'General'}</div>
+                            </td>
+                            <td className="p-3 font-mono text-[11px]">
+                              <div>{row.pan ? `PAN: ${row.pan}` : 'PAN: —'}</div>
+                              <div className="text-slate-500">{row.aadhaar ? `UID: XXXX-${row.aadhaar.slice(-4)}` : 'UID: —'}</div>
+                            </td>
+                            <td className="p-3 font-mono text-[11px] text-slate-600">
+                              {row.doj}
+                            </td>
+                            <td className="p-3 text-center">
+                              {row.isValid ? (
+                                <span className="badge badge-emerald text-[9px] font-black">VALID ROW</span>
+                              ) : (
+                                <span 
+                                  className="badge badge-rose text-[9px] font-black cursor-help"
+                                  title={row.errors.join(', ')}
+                                >
+                                  INVALID ({row.errors.length})
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-3 text-center">
+                              <button
+                                type="button"
+                                onClick={() => removeRow(row.rowId)}
+                                className="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition-colors"
+                                title="Remove row from import queue"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <button 
-                    type="button" 
-                    onClick={onClose} 
-                    className="btn btn-secondary text-xs font-bold"
-                  >
-                    Cancel
-                  </button>
+                {/* CONTINUE BUTTON */}
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs text-slate-500 font-medium">
+                    {validSelectedCount} valid candidate records prepared for onboarding link generation.
+                  </span>
 
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(2)}
+                    onClick={() => {
+                      if (validSelectedCount > 0) setCurrentStep(2);
+                      else showToast('⚠️ Please select at least one valid candidate record.');
+                    }}
                     disabled={validSelectedCount === 0}
-                    className="btn btn-hrexecutive text-xs py-2.5 px-6 flex items-center gap-2 font-black shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg cursor-pointer transition-all active:scale-98"
                   >
-                    <span>Proceed to Document Checklist & Links ({validSelectedCount} Candidates) →</span>
+                    <span>Proceed to Verification Checklist (Step 2) ➡️</span>
                   </button>
                 </div>
               </div>
@@ -837,308 +1505,285 @@ export const BulkEmployeeImportModal = ({
           </div>
         )}
 
-        {/* STEP 2 */}
+        {/* STEP 2: DOCUMENTS CHECKLIST & LINK SENDING CHANNELS */}
         {currentStep === 2 && (
-          <div className="space-y-6 animate-fadeIn text-xs">
+          <div className="space-y-6 animate-fadeIn">
             
-            {/* CHECKLIST */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-indigo-200 space-y-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5 text-indigo-600" />
-                    <h3 className="text-base font-black text-slate-900">Documents Verification Checklist for this Batch</h3>
-                  </div>
-                  <p className="text-slate-600 text-xs">
-                    Select which credentials and physical documents candidates must submit and verify through their link.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-bold text-slate-500 text-[11px]">Presets:</span>
-                  <button
-                    type="button"
-                    onClick={() => applyChecklistPreset('standard')}
-                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold border border-indigo-200 cursor-pointer text-[11px]"
-                  >
-                    Standard (5 Checks)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyChecklistPreset('comprehensive')}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 cursor-pointer text-[11px]"
-                  >
-                    Comprehensive (10 Checks)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyChecklistPreset('intern')}
-                    className="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold border border-purple-200 cursor-pointer text-[11px]"
-                  >
-                    Intern Pack
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyChecklistPreset('contract')}
-                    className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold border border-blue-200 cursor-pointer text-[11px]"
-                  >
-                    Contractor Pack
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyChecklistPreset('all')}
-                    className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 cursor-pointer text-[11px]"
-                  >
-                    All
-                  </button>
-                </div>
+            {/* 1. SECTOR PRESET QUICK SWITCHER */}
+            <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+                  <Sliders className="w-4 h-4 text-indigo-600" />
+                  <span>Document Verification Checklist & Sector Presets</span>
+                </h4>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Toggle statutory verification requirements for this batch of {validSelectedCount} employees.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {Object.entries(checklist).map(([k, item]) => {
-                  const isChecked = item.enabled;
-                  return (
-                    <label 
-                      key={k}
-                      className={`p-3 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${
-                        isChecked 
-                          ? 'bg-indigo-50/70 border-indigo-300 text-indigo-950 font-bold shadow-2xs' 
-                          : 'bg-slate-50/70 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      <input 
-                        type="checkbox" 
-                        checked={isChecked}
-                        onChange={() => {
-                          setChecklist(prev => ({
-                            ...prev,
-                            [k]: { ...prev[k], enabled: !prev[k].enabled }
-                          }));
-                        }}
-                        className="rounded text-indigo-600 focus:ring-indigo-500 mt-0.5"
-                      />
-                      <div className="space-y-0.5 flex-1">
-                        <div className="text-xs leading-tight">{item.title}</div>
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase block">
-                          [{item.category}]
-                        </span>
-                      </div>
-                    </label>
-                  );
-                })}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => applyChecklistPreset('it_tech')}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-blue-800 border border-blue-200 hover:bg-blue-50 cursor-pointer"
+                >
+                  💻 IT & Tech Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyChecklistPreset('manufacturing')}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-amber-800 border border-amber-200 hover:bg-amber-50 cursor-pointer"
+                >
+                  🏭 Plant Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyChecklistPreset('bfsi')}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-emerald-800 border border-emerald-200 hover:bg-emerald-50 cursor-pointer"
+                >
+                  🏦 BFSI Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyChecklistPreset('logistics')}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-cyan-800 border border-cyan-200 hover:bg-cyan-50 cursor-pointer"
+                >
+                  🚚 Fleet Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyChecklistPreset('all')}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
+                >
+                  All 14 Checks
+                </button>
               </div>
             </div>
 
-            {/* LINK SENDING OPTIONS */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-emerald-200 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <Send className="w-5 h-5 text-emerald-600" />
-                  <h3 className="text-base font-black text-slate-900">Link Sending & Dispatch Option</h3>
+            {/* 2. CHECKLIST ITEMS GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {Object.entries(checklist).map(([key, item]) => (
+                <label 
+                  key={key}
+                  className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 select-none ${
+                    item.enabled 
+                      ? 'border-emerald-500 bg-emerald-50/40 shadow-xs' 
+                      : 'border-slate-200 bg-white hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={item.enabled}
+                    onChange={(e) => {
+                      setChecklist(prev => ({
+                        ...prev,
+                        [key]: { ...prev[key], enabled: e.target.checked }
+                      }));
+                    }}
+                    className="accent-emerald-600 w-4 h-4 rounded mt-0.5 shrink-0 cursor-pointer"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-extrabold text-slate-900 text-xs">{item.title}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 block">{item.category}</span>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            {/* 3. LINK SENDING OPTION & DISPATCH CHANNELS */}
+            <div className="p-5 rounded-3xl bg-slate-50 border-2 border-slate-200 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div>
+                  <h4 className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <Send className="w-4 h-4 text-emerald-600" />
+                    <span>Automated Onboarding Link Dispatch Channels</span>
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Control how the generated magic onboarding token links are dispatched to candidates.
+                  </p>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer font-extrabold text-slate-900 text-xs bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
-                  <input 
-                    type="checkbox" 
+
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
                     checked={autoSendLinks}
                     onChange={(e) => setAutoSendLinks(e.target.checked)}
-                    className="rounded text-emerald-600 focus:ring-emerald-500"
+                    className="sr-only"
                   />
-                  <span>Dispatch Verification Links Immediately</span>
+                  <div className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 ${autoSendLinks ? 'bg-emerald-600 justify-end' : 'bg-slate-300 justify-start'}`}>
+                    <div className="w-4 h-4 rounded-full bg-white shadow-md" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700">
+                    {autoSendLinks ? 'Auto-Dispatch ON' : 'Create Profiles Only'}
+                  </span>
                 </label>
               </div>
 
               {autoSendLinks && (
-                <div className="space-y-4 animate-fadeIn">
+                <div className="space-y-3 pt-1">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${
-                      dispatchChannels.email ? 'bg-indigo-50 border-indigo-300 text-indigo-950 font-bold' : 'bg-slate-50 border-slate-200 text-slate-500'
-                    }`}>
-                      <input 
-                        type="checkbox" 
+                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.email ? 'bg-white border-indigo-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
+                      <input
+                        type="checkbox"
                         checked={dispatchChannels.email}
                         onChange={(e) => setDispatchChannels({ ...dispatchChannels, email: e.target.checked })}
-                        className="rounded text-indigo-600"
+                        className="accent-indigo-600 w-4 h-4 rounded"
                       />
                       <Mail className="w-4 h-4 text-indigo-600" />
-                      <span>Official HR SMTP Email</span>
+                      <span className="text-xs font-bold text-slate-800">Email Dispatch (cPanel SMTP)</span>
                     </label>
 
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${
-                      dispatchChannels.sms ? 'bg-sky-50 border-sky-300 text-sky-950 font-bold' : 'bg-slate-50 border-slate-200 text-slate-500'
-                    }`}>
-                      <input 
-                        type="checkbox" 
+                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.sms ? 'bg-white border-teal-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
+                      <input
+                        type="checkbox"
                         checked={dispatchChannels.sms}
                         onChange={(e) => setDispatchChannels({ ...dispatchChannels, sms: e.target.checked })}
-                        className="rounded text-sky-600"
+                        className="accent-teal-600 w-4 h-4 rounded"
                       />
-                      <Smartphone className="w-4 h-4 text-sky-600" />
-                      <span>Automated SMS Alert</span>
+                      <Smartphone className="w-4 h-4 text-teal-600" />
+                      <span className="text-xs font-bold text-slate-800">Carrier SMS (Twilio / DLT)</span>
                     </label>
 
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${
-                      dispatchChannels.whatsapp ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold' : 'bg-slate-50 border-slate-200 text-slate-500'
-                    }`}>
-                      <input 
-                        type="checkbox" 
+                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.whatsapp ? 'bg-white border-emerald-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
+                      <input
+                        type="checkbox"
                         checked={dispatchChannels.whatsapp}
                         onChange={(e) => setDispatchChannels({ ...dispatchChannels, whatsapp: e.target.checked })}
-                        className="rounded text-emerald-600"
+                        className="accent-emerald-600 w-4 h-4 rounded"
                       />
                       <MessageSquare className="w-4 h-4 text-emerald-600" />
-                      <span>WhatsApp Link</span>
+                      <span className="text-xs font-bold text-slate-800">Meta WhatsApp Cloud</span>
                     </label>
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Custom HR Instructions for Candidates (Sent with Link):</label>
-                    <textarea 
+                    <label className="block text-slate-700 font-bold text-xs mb-1">
+                      Custom HR Welcome Message to Employees
+                    </label>
+                    <textarea
                       rows={2}
                       value={customHrMessage}
                       onChange={(e) => setCustomHrMessage(e.target.value)}
                       className="form-input text-xs"
-                      placeholder="Enter custom instructions or deadline for the candidate..."
+                      placeholder="Type custom instructions to be included in the onboarding invitation..."
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* PROGRESS */}
-            {isImporting && (
-              <div className="p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 space-y-3 text-center animate-pulse">
-                <RefreshCw className="w-8 h-8 text-emerald-600 animate-spin mx-auto" />
-                <h4 className="font-black text-emerald-950 text-base">
-                  Creating Candidate Records & Generating Secure Tokens ({importProgress}%)
-                </h4>
-                <div className="w-full bg-emerald-200 rounded-full h-3 overflow-hidden">
-                  <div 
-                    className="bg-emerald-600 h-3 transition-all duration-300 rounded-full" 
-                    style={{ width: `${importProgress}%` }}
-                  />
-                </div>
-                <p className="text-xs text-emerald-800 font-medium">
-                  Setting up verification checklists and dispatching onboarding links...
-                </p>
-              </div>
-            )}
-
-            {/* ACTION BAR */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-              <button 
-                type="button" 
-                onClick={() => setCurrentStep(1)} 
-                disabled={isImporting}
-                className="btn btn-secondary text-xs font-bold cursor-pointer"
+            {/* ACTION BUTTONS */}
+            <div className="flex items-center justify-between pt-3">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="btn btn-secondary text-xs py-2.5 px-4 font-bold cursor-pointer"
               >
-                ← Back to Spreadsheet Review
+                ⬅️ Back to Review Records
               </button>
 
               <button
                 type="button"
                 onClick={handleExecuteBulkImport}
-                disabled={isImporting || validSelectedCount === 0}
-                className="btn btn-hrexecutive text-xs py-2.5 px-6 flex items-center gap-2 font-black shadow-lg cursor-pointer"
+                disabled={isImporting}
+                className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 px-6 rounded-xl flex items-center gap-2 shadow-xl cursor-pointer transition-all active:scale-98"
               >
-                <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
-                <span>Import {validSelectedCount} Candidates & Dispatch Links 🚀</span>
+                {isImporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                <span>
+                  {isImporting 
+                    ? `Creating Profiles (${importProgress}%)...` 
+                    : `Execute Bulk Import for ${validSelectedCount} Candidates 🚀`
+                  }
+                </span>
               </button>
             </div>
 
           </div>
         )}
 
-        {/* STEP 3 */}
+        {/* STEP 3: BATCH IMPORT RESULTS & TOKEN REGISTRY */}
         {currentStep === 3 && (
-          <div className="space-y-6 animate-fadeIn text-xs">
+          <div className="space-y-6 animate-fadeIn">
             
-            <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white space-y-3 text-center shadow-xl">
-              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto shadow-inner">
-                <CheckCircle2 className="w-10 h-10 text-white" />
+            {/* SUCCESS BANNER */}
+            <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-center space-y-3 shadow-lg">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 text-white mx-auto flex items-center justify-center font-black">
+                <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-black">
-                {importedCandidates.length} Employee Profiles Successfully Created!
+              <h3 className="text-xl sm:text-2xl font-black">
+                Successfully Ingested {importedCandidates.length} Employee Profiles!
               </h3>
-              <p className="text-emerald-100 text-xs max-w-xl mx-auto font-medium">
-                All candidates have been ingested into the system with their configured document verification checklists. Unique magic tokens have been generated and recorded.
+              <p className="text-xs text-emerald-100 max-w-xl mx-auto">
+                Candidate records have been stored in the PostgreSQL database under {currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}. Onboarding links and security PINs are generated below.
               </p>
-              
-              <div className="flex items-center justify-center gap-3 pt-2 flex-wrap">
+
+              <div className="pt-2 flex justify-center gap-3 flex-wrap">
                 <button
                   type="button"
                   onClick={handleDownloadBatchCredentials}
-                  className="px-5 py-2.5 rounded-xl bg-white text-emerald-900 font-black text-xs hover:bg-emerald-50 shadow-md cursor-pointer flex items-center gap-2"
+                  className="btn bg-white text-emerald-900 hover:bg-emerald-50 text-xs py-2.5 px-5 font-black flex items-center gap-2 rounded-xl shadow-md cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-emerald-700" />
-                  <span>Download Batch Links Sheet (.xlsx) 📥</span>
+                  <Download className="w-4 h-4 text-emerald-600" />
+                  <span>Download Credentials & Links Spreadsheet (.xlsx) 📥</span>
                 </button>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-black text-slate-900 text-sm flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  <span>Generated Candidate Verification Links ({importedCandidates.length})</span>
-                </h4>
-                <span className="text-[11px] text-slate-500 font-bold">
-                  Click link button to copy URL
-                </span>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 overflow-hidden overflow-x-auto shadow-2xs max-h-80">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px] tracking-wider border-b border-slate-200 sticky top-0 z-10">
+            {/* RESULTS LIST */}
+            <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+              <div className="overflow-x-auto max-h-[400px]">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-slate-100 text-slate-700 font-black border-b border-slate-200 uppercase text-[10px] tracking-wider sticky top-0 z-10">
                     <tr>
-                      <th className="p-3">Candidate</th>
-                      <th className="p-3">Type</th>
-                      <th className="p-3">Token & PIN</th>
-                      <th className="p-3">Onboarding Link URL</th>
-                      <th className="p-3 text-center">Copy Link</th>
+                      <th className="p-3">#</th>
+                      <th className="p-3">Candidate Employee</th>
+                      <th className="p-3">Role & Category</th>
+                      <th className="p-3">Contact</th>
+                      <th className="p-3">Security PIN</th>
+                      <th className="p-3">Onboarding Link Token</th>
+                      <th className="p-3 text-center">Status</th>
+                      <th className="p-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {importedCandidates.map(c => (
-                      <tr key={c.token} className="hover:bg-slate-50/80">
-                        <td className="p-3 font-extrabold text-slate-900">
-                          <div>{c.name}</div>
-                          <div className="text-[10px] font-mono font-normal text-slate-500">{c.email} • {c.mobile}</div>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {importedCandidates.map((cand, idx) => (
+                      <tr key={cand.token || idx} className="hover:bg-slate-50 transition-colors">
+                        <td className="p-3 font-mono text-slate-400">{idx + 1}</td>
+                        <td className="p-3">
+                          <div className="font-bold text-slate-900">{cand.name}</div>
+                          <div className="text-[10px] text-slate-400 font-mono">{cand.empId}</div>
                         </td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] border ${
-                            EMPLOYEE_TYPES.find(t => t.key === c.employeeType)?.badge || 'bg-slate-100 text-slate-800'
-                          }`}>
-                            {c.employeeType}
-                          </span>
+                          <div className="font-semibold text-slate-800">{cand.designation}</div>
+                          <span className="text-[10px] text-slate-500 font-mono">{cand.employeeType}</span>
                         </td>
-                        <td className="p-3 font-mono">
-                          <div className="text-emerald-700 font-bold">{c.token}</div>
-                          <div className="text-[10px] text-slate-400">PIN: {c.portalPassword}</div>
+                        <td className="p-3">
+                          <div className="font-mono text-slate-800">{cand.mobile}</div>
+                          <div className="text-[10px] text-slate-400 truncate max-w-[160px]">{cand.email}</div>
                         </td>
-                        <td className="p-3 font-mono text-[11px] text-slate-600 max-w-xs truncate" title={c.linkUrl}>
-                          {c.linkUrl}
+                        <td className="p-3 font-mono font-bold text-indigo-700">
+                          {cand.portalPassword}
+                        </td>
+                        <td className="p-3 font-mono text-[11px] text-slate-600">
+                          <div className="truncate max-w-[200px]" title={cand.linkUrl}>
+                            {cand.token}
+                          </div>
                         </td>
                         <td className="p-3 text-center">
+                          <span className="badge badge-emerald text-[9px] font-black">
+                            {cand.status}
+                          </span>
+                        </td>
+                        <td className="p-3 text-right">
                           <button
                             type="button"
-                            onClick={() => handleCopyLink(c.token, c.linkUrl)}
-                            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 mx-auto transition-all cursor-pointer ${
-                              copiedToken === c.token 
-                                ? 'bg-emerald-600 text-white shadow-xs' 
-                                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300'
-                            }`}
+                            onClick={() => handleCopyLink(cand.token, cand.linkUrl)}
+                            className="btn btn-secondary text-[11px] py-1 px-2.5 font-bold cursor-pointer"
                           >
-                            {copiedToken === c.token ? (
-                              <>
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>Copied!</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3.5 h-3.5" />
-                                <span>Copy Link</span>
-                              </>
-                            )}
+                            <Copy className="w-3 h-3" />
+                            <span>{copiedToken === cand.token ? 'Copied!' : 'Copy Link'}</span>
                           </button>
                         </td>
                       </tr>
@@ -1148,13 +1793,14 @@ export const BulkEmployeeImportModal = ({
               </div>
             </div>
 
-            <div className="flex items-center justify-end pt-3 border-t border-slate-100 gap-3">
+            {/* MODAL FOOTER */}
+            <div className="flex justify-end pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="btn btn-hrexecutive text-xs py-2.5 px-6 font-black shadow-md cursor-pointer"
+                className="btn bg-slate-900 hover:bg-slate-800 text-white font-black text-xs py-2.5 px-6 rounded-xl cursor-pointer"
               >
-                <span>Done & Return to Candidate List ✓</span>
+                Close & Return to Workstation ✓
               </button>
             </div>
 

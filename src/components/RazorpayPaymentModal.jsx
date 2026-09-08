@@ -75,7 +75,7 @@ export const RazorpayPaymentModal = ({
   ];
 
   // Generated shareable payment link
-  const generatedPaymentLink = `https://rzp.io/l/joy-verif-${company.code || 'ACME'}-${rechargeBaseAmount}`;
+  const generatedPaymentLink = `https://rzp.io/l/joy-verif-${company.code || 'JOYCORP'}-${rechargeBaseAmount}`;
 
   // ⚡ Execute Razorpay Checkout
   const handleLaunchRazorpay = () => {
@@ -116,7 +116,7 @@ export const RazorpayPaymentModal = ({
         },
         prefill: {
           name: company.contactPerson || 'Company Administrator',
-          email: company.email || 'admin@acmeglobal.com',
+          email: company.email || 'admin@joycorporatesolutions.com',
           contact: '+919876543210'
         },
         theme: {
@@ -176,7 +176,7 @@ export const RazorpayPaymentModal = ({
   };
 
   const handleCopyVirtualAccount = () => {
-    navigator.clipboard.writeText(`ICIC0000104 - JOYCORP${company.code || 'ACME'}8821`);
+    navigator.clipboard.writeText(`ICIC0000104 - JOYCORP${company.code || 'JOYCORP'}8821`);
     setCopiedAccount(true);
     showToast('Virtual Bank Account & IFSC copied!');
     setTimeout(() => setCopiedAccount(false), 2500);
@@ -476,11 +476,11 @@ export const RazorpayPaymentModal = ({
                     <div className="bg-white p-3.5 rounded-xl border border-sky-200 space-y-1.5 font-mono">
                       <div className="flex justify-between">
                         <span className="text-slate-500 font-bold">Account Name:</span>
-                        <span className="font-bold text-slate-900">JOY CORPORATE - {company.code || 'ACME'}</span>
+                        <span className="font-bold text-slate-900">JOY CORPORATE - {company.code || 'JOYCORP'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-500 font-bold">Virtual Account No:</span>
-                        <span className="font-extrabold text-indigo-700">JOYCORP{company.code || 'ACME'}8821</span>
+                        <span className="font-extrabold text-indigo-700">JOYCORP{company.code || 'JOYCORP'}8821</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-500 font-bold">IFSC Code:</span>

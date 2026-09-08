@@ -84,8 +84,8 @@ ALTER TABLE companies ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURR
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO companies (id, name, code, contact_person, email, password_hash, plan, price_per_verification, verified_count_this_month, max_limit, wallet_balance, status, is_active, features, terms_accepted, terms_version, created_at)
-VALUES ('comp-1', 'Acme Global Technologies', 'ACME-CORP', 'Vikram Malhotra', 'admin@acmeglobal.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 142, 500, 50000.0, 'Active', TRUE, '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP)
-ON CONFLICT DO NOTHING;
+VALUES ('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 142, 500, 50000.0, 'Active', TRUE, '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP)
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, code = EXCLUDED.code, email = EXCLUDED.email;
 
 
 -- ----------------------------------------------------------------------------
@@ -575,7 +575,7 @@ ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAUL
 ALTER TABLE support_tickets ALTER COLUMN reporter_name DROP NOT NULL;
 
 INSERT INTO support_tickets (id, company_id, company_name, reporter_name, subject, category, priority, status, created_at)
-VALUES ('tkt-01', 'comp-1', 'Acme Global Technologies', 'System Administrator', 'Webhook response delay during peak traffic', 'Technical API', 'High', 'Open', CURRENT_TIMESTAMP)
+VALUES ('tkt-01', 'comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'Muthu Kumar P', 'Webhook response delay during peak traffic', 'Technical API', 'High', 'Open', CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 

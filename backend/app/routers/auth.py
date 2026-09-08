@@ -103,7 +103,7 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
             "email": hr.email,
             "dept": hr.dept,
             "companyId": hr.company_id,
-            "companyName": comp.name if comp else "Acme Global"
+            "companyName": comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
         }
         return create_session(user_data, "hrexecutive", client_ip, user_agent)
         

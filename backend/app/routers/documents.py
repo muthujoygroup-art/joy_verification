@@ -383,7 +383,7 @@ def export_tax_invoice_pdf(invoice_id: str, db: Session = Depends(get_db)):
         
     comp = db.query(Company).filter(Company.id == inv.company_id).first()
     company_data = {
-        "name": comp.name if comp else "Acme Technologies",
+        "name": comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
         "gst_no": comp.gst_no if comp else "29ABCDE1234F1Z5",
         "pan_no": comp.pan_no if comp else "ABCDE1234F",
         "billing_address": comp.address if comp else "Koramangala, Bengaluru, KA"

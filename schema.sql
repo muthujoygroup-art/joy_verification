@@ -222,7 +222,7 @@ CREATE INDEX IF NOT EXISTS idx_verification_records_type ON verification_records
 -- Insert Companies
 INSERT INTO companies (id, name, code, contact_person, email, plan, price_per_verification, verified_count_this_month, max_limit, status, features)
 VALUES 
-('comp-1', 'Acme Global Technologies', 'ACME', 'Vikram Malhotra', 'admin@acmeglobal.com', 'Enterprise Premier', 120.00, 142, 500, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": true, "pan": true, "uan": true, "education": true, "criminalCheck": false, "addressCheck": false, "bankCheck": true}'),
+('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Enterprise Premier', 120.00, 142, 500, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": true, "pan": true, "uan": true, "education": true, "criminalCheck": false, "addressCheck": false, "bankCheck": true}'),
 ('comp-2', 'Apex Logistics & Freight', 'APEX', 'Ananya Sharma', 'hr-head@apexlogistics.in', 'Standard Tier', 100.00, 88, 250, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": false, "pan": true, "uan": false, "education": false, "criminalCheck": false, "addressCheck": true, "bankCheck": false}'),
 ('comp-3', 'Starlight Healthcare Solutions', 'SHS', 'Dr. Ramesh Iyer', 'operations@starlighthealth.org', 'Basic Tier', 80.00, 34, 100, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": false, "drivingLicense": false, "pan": false, "uan": false, "education": false, "criminalCheck": false, "addressCheck": false, "bankCheck": false}')
 ON CONFLICT (id) DO NOTHING;
@@ -230,8 +230,8 @@ ON CONFLICT (id) DO NOTHING;
 -- Insert HR Users
 INSERT INTO hr_users (id, company_id, name, email, dept, active_links)
 VALUES
-('hr-1', 'comp-1', 'Priya Sundaram', 'priya.s@acmeglobal.com', 'Engineering Recruitment', 12),
-('hr-2', 'comp-1', 'Rahul Verma', 'rahul.v@acmeglobal.com', 'Operations & Field Staff', 8),
+('hr-1', 'comp-1', 'Muthu Kumar P (HR Lead)', 'muthujoygroup@gmail.com', 'Talent Acquisition & BGV', 12),
+('hr-2', 'comp-1', 'Priya Sundaram', 'priya.s@joycorporatesolutions.com', 'Engineering Recruitment', 8),
 ('hr-3', 'comp-2', 'Sneha Patel', 'sneha.p@apexlogistics.in', 'Logistics Drivers & Fleet', 15)
 ON CONFLICT (id) DO NOTHING;
 
