@@ -93,40 +93,40 @@ export const LandingPageView = () => {
 
   const heroPersonas = {
     aryan: {
-      name: 'Aryan Sharma',
-      role: 'Automotive Assembly Specialist',
-      contractor: 'Apex Manpower Services Pvt Ltd',
-      hub: 'Sriperumbudur Auto Corridor, TN',
+      name: 'Sarah J. Chen',
+      role: 'Senior Software Engineer',
+      contractor: 'Enterprise Direct Hire',
+      hub: 'Bengaluru Tech Corridor, KA',
       uidai: 'XXXX-XXXX-9012',
       uan: '1014-9921-8841',
-      bank: 'State Bank of India (Acc: ••••4419)',
-      gateId: 'JOY-LBR-SRI-9452',
-      image: '/assets/3d/hero_3d_verification.jpg',
-      statutoryPass: 'CLRA Form XVI Certified'
+      bank: 'HDFC Bank (Active Match)',
+      gateId: 'JOY-EMP-BLR-9042',
+      image: '/assets/3d/hero_employee_3d_id.jpg',
+      statutoryPass: 'Corporate Security Clearance'
     },
     pooja: {
       name: 'Pooja Verma',
-      role: '3PL Logistics & Fulfillment Lead',
-      contractor: 'FastTrack Workforce Solutions',
+      role: 'Supply Chain Operations Lead',
+      contractor: 'FastTrack Logistics Solutions',
       hub: 'Bhiwandi Logistics Hub, MH',
       uidai: 'XXXX-XXXX-4811',
       uan: '1019-3382-7104',
-      bank: 'HDFC Bank (Acc: ••••1092)',
-      gateId: 'JOY-LBR-BHW-3108',
-      image: '/assets/3d/labor_3d_management.jpg',
+      bank: 'State Bank of India (Active Match)',
+      gateId: 'JOY-EMP-BHW-3108',
+      image: '/assets/3d/easy_3step_verify_3d.jpg',
       statutoryPass: 'Supply Chain Gate Pass'
     },
     rajesh: {
-      name: 'Rajesh Kumar',
-      role: 'Commercial Heavy Fleet Driver',
-      contractor: 'National Supply Transporters',
+      name: 'Aryan Sharma',
+      role: 'Precision Engineering Specialist',
+      contractor: 'Premier Manufacturing Corp',
       hub: 'Sanand Industrial Cluster, GJ',
       uidai: 'XXXX-XXXX-6523',
       uan: '1008-7712-4490',
-      bank: 'ICICI Bank (Acc: ••••8831)',
-      gateId: 'JOY-LBR-SND-1150',
-      image: '/assets/3d/corporate_3d_bgv.jpg',
-      statutoryPass: 'Commercial Transport Pass'
+      bank: 'ICICI Bank (Active Match)',
+      gateId: 'JOY-EMP-SND-1150',
+      image: '/assets/3d/corporate_shield_vault_3d.jpg',
+      statutoryPass: 'Plant Access Clearance'
     }
   };
 
@@ -586,20 +586,21 @@ export const LandingPageView = () => {
                 JOY <span className="text-blue-600">TrueProfile</span>
               </span>
               <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 block -mt-0.5 font-bold">
-                AI Labor Verification Engine
+                AI Employee Verification Engine
               </span>
             </div>
           </a>
 
           {/* Center Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-6 font-mono text-xs text-slate-600 font-semibold">
+          <nav className="hidden xl:flex items-center gap-5 font-mono text-xs text-slate-600 font-semibold">
+            <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How It Works</a>
             <a href="#solutions" className="hover:text-blue-600 transition-colors">Solutions</a>
             <a href="#craft" className="hover:text-blue-600 transition-colors">Architecture</a>
             <a href="#specs" className="hover:text-blue-600 transition-colors">Specifications</a>
             <a href="#interactive-lab" className="hover:text-blue-600 transition-colors">Simulator</a>
             <a href="#live-radar" className="hover:text-blue-600 transition-colors">India Radar</a>
             <a href="#roi-calculator" className="hover:text-blue-600 transition-colors">ROI Calculator</a>
-            <a href="#reviews" className="hover:text-blue-600 transition-colors">Client Reviews</a>
+            <a href="#reviews" className="hover:text-blue-600 transition-colors">Reviews</a>
             <a href="#knowledge-hub" className="hover:text-blue-600 transition-colors">Knowledge Hub</a>
             <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
           </nav>
@@ -707,6 +708,7 @@ export const LandingPageView = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="xl:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">How It Works</a>
             <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Solutions</a>
             <a href="#craft" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Architecture</a>
             <a href="#specs" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-700 hover:text-blue-600 font-medium">Specifications</a>
@@ -736,7 +738,7 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: BALANCED 2-COLUMN WITH 3D PERSPECTIVE CARD & MULTI-PERSONA LAB
+       * 2. HERO SECTION: 3D FLOATING EMPLOYEE VERIFICATION HUB WITH HOVER JUMPING
        * ============================================================================== */}
       <section className="relative z-10 pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -745,80 +747,80 @@ export const LandingPageView = () => {
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
             {/* Live Telemetry Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-mono text-xs mb-6 shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-mono text-xs mb-6 shadow-2xs hover-jump-subtle cursor-pointer">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Verified Across 34 Indian Industrial Hubs</span>
+              <span className="font-bold uppercase tracking-wider text-[11px]">LIVE: 520,000+ Employees Verified Across 34 Indian Hubs</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.12] mb-6 font-outfit">
-              Create & Verify <br className="hidden sm:inline" />
-              Complete Labor Profiles <br />
+              The Easiest & Fastest Way to <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
-                in Under 45 Seconds
-              </span>
+                Verify Any Employee
+              </span> <br />
+              in Under 45 Seconds
             </h1>
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed mb-8">
-              Eliminate ghost workers, contractor moonlighting fraud, and slow paper onboarding. Instantly issue certified digital labor gate passes, conduct real-time statutory audits, and generate tamper-proof dossiers on any smartphone.
+              Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee verification as simple as sending a link. Verify Identity, EPFO past employment, court litigation, and bank accounts in 3 effortless steps.
             </p>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                className="px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-500/25 hover-jump transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>Book Live Demo</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <a
-                href="#interactive-lab"
-                className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                href="#how-it-works"
+                className="px-5 py-3.5 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 shadow-xs hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-blue-600" />
-                <span>Launch Biometric Lab</span>
+                <span>See How Easy It Works</span>
               </a>
 
               <button
                 onClick={() => setShowLegalHandbook(true)}
-                className="px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-3.5 rounded-xl font-bold text-xs text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Statutory Handbook</span>
+                <span>Compliance Guide</span>
               </button>
             </div>
 
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 w-full max-w-lg">
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
-                <div className="text-2xl sm:text-3xl font-black text-blue-600 font-outfit">0.8s</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Turnstile Gate Pass</div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+                <div className="text-2xl sm:text-3xl font-black text-blue-600 font-outfit">3 Steps</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Effortless Flow</div>
               </div>
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">100%</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">Zero Ghost Workers</div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-outfit">45s</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Verification TAT</div>
               </div>
-              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80">
-                <div className="text-2xl sm:text-3xl font-black text-indigo-600 font-outfit">45s</div>
-                <div className="text-xs text-slate-600 font-bold mt-0.5">WhatsApp KYC TAT</div>
+              <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 hover-jump-subtle transition-all">
+                <div className="text-2xl sm:text-3xl font-black text-indigo-600 font-outfit">100%</div>
+                <div className="text-xs text-slate-600 font-bold mt-0.5">Zero Fraud / Duplicate</div>
               </div>
             </div>
 
           </div>
 
-          {/* Right Column: 3D Perspective Card Stage with Persona Switcher */}
+          {/* Right Column: 3D Floating Stage with Interactive Jumping Badges */}
           <div className="lg:col-span-5 relative">
             <div className="relative max-w-[430px] mx-auto">
               
               {/* Persona Switcher Tabs */}
               <div className="flex items-center justify-between p-1 bg-slate-100/90 rounded-2xl border border-slate-200 mb-3 font-mono text-[11px] font-bold">
                 {[
-                  { id: 'aryan', label: '👷 Assembly Line' },
-                  { id: 'pooja', label: '📦 3PL Warehouse' },
-                  { id: 'rajesh', label: '🚚 Fleet Driver' }
+                  { id: 'aryan', label: '💼 Corporate / IT' },
+                  { id: 'pooja', label: '📦 Logistics / 3PL' },
+                  { id: 'rajesh', label: '🏭 Manufacturing' }
                 ].map((p) => (
                   <button
                     key={p.id}
@@ -827,9 +829,9 @@ export const LandingPageView = () => {
                       setHeroScanComplete(false);
                       setHeroScanStage('idle');
                     }}
-                    className={`flex-1 py-1.5 px-2 rounded-xl transition-all ${
+                    className={`flex-1 py-1.5 px-2 rounded-xl transition-all cursor-pointer ${
                       activePersona === p.id
-                        ? 'bg-white text-blue-700 shadow-xs border border-slate-200 font-extrabold'
+                        ? 'bg-white text-blue-700 shadow-xs border border-slate-200 font-extrabold scale-[1.02]'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -841,19 +843,30 @@ export const LandingPageView = () => {
               {/* Glowing Background Ring */}
               <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-80 pointer-events-none"></div>
               
+              {/* Floating Bouncy Badges that jump on hover */}
+              <div className="absolute -top-3 -left-4 z-20 bg-white/95 backdrop-blur-md border border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob hover-jump cursor-pointer">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>100% DPDP Act Compliant</span>
+              </div>
+
+              <div className="absolute -bottom-3 -right-4 z-20 bg-emerald-500 text-white font-mono text-[9px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-float-bob-rev hover-jump cursor-pointer">
+                <Zap className="w-3.5 h-3.5 text-white" />
+                <span>45s Instant Verification</span>
+              </div>
+
               <div
                 ref={heroCardRef}
                 onMouseMove={handleMouseMoveHero}
                 onMouseLeave={handleMouseLeaveHero}
                 style={tiltStyle}
-                className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-2xl p-3 backdrop-blur-xl transition-all"
+                className="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-2xl p-3 backdrop-blur-xl transition-all hover-jump-subtle"
               >
                 {/* 3D Smart Card Image */}
                 <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-900 border border-slate-200">
                   <img
                     src={heroPersonas[activePersona].image}
-                    alt="JOY TrueProfile Digital Labor Identity Card"
-                    className="w-full h-full object-cover"
+                    alt="JOY TrueProfile 3D Digital Employee Verification Stage"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                   
                   {/* Animated Laser Scan Beam */}
@@ -864,12 +877,12 @@ export const LandingPageView = () => {
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200 font-mono text-[9px] uppercase tracking-wider text-slate-800 font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
                     <Fingerprint className="w-3 h-3 text-blue-600" />
-                    <span>UIDAI Biometric Verified</span>
+                    <span>AI Identity Verified</span>
                   </div>
 
                   <div className="absolute top-3 right-3 bg-emerald-50/95 backdrop-blur-md border border-emerald-300 font-mono text-[9px] uppercase tracking-wider text-emerald-800 font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-xs">
                     <Zap className="w-3 h-3 text-emerald-600" />
-                    <span>45s TAT</span>
+                    <span>Instant TAT</span>
                   </div>
 
                   {/* Candidate Info Overlay at bottom of image */}
@@ -897,14 +910,14 @@ export const LandingPageView = () => {
                       heroScanStage === 'liveness' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
                     }`}>
                       1. AI Liveness
-                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '99.98% ✓' : 'UIDAI Match'}</span>
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '99.98% ✓' : 'Instant Match'}</span>
                     </div>
 
                     <div className={`p-1.5 rounded-lg border text-center transition-all ${
                       heroScanStage === 'epfo' || heroScanComplete ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-white border-slate-200 text-slate-500'
                     }`}>
-                      2. EPFO UAN
-                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '0 Overlaps ✓' : 'Dual Scan'}</span>
+                      2. Past EPFO
+                      <span className="block text-[8px] font-extrabold">{heroScanComplete ? '0 Overlaps ✓' : 'UAN History'}</span>
                     </div>
 
                     <div className={`p-1.5 rounded-lg border text-center transition-all ${
@@ -917,30 +930,30 @@ export const LandingPageView = () => {
 
                   {/* Cryptographic SHA-256 Checksum */}
                   <div className="flex items-center justify-between font-mono text-[9px] text-slate-500 pt-1 border-t border-slate-200">
-                    <span>STATUTORY LEDGER</span>
-                    <span className="text-indigo-700 font-bold">SHA-256 TAMPER-PROOF</span>
+                    <span>DIGITAL DOSSIER</span>
+                    <span className="text-indigo-700 font-bold">SHA-256 CERTIFIED</span>
                   </div>
 
                   {/* Interactive Biometric Test Button */}
                   <button
                     onClick={triggerHeroBiometricScan}
                     disabled={heroScanning}
-                    className="w-full py-2.5 rounded-lg text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
+                    className="w-full py-2.5 rounded-lg text-xs font-bold font-mono uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover-jump transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
                   >
                     {heroScanning ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
-                        <span>Scanning Govt Repositories ({heroScanProgress}%)...</span>
+                        <span>Verifying Against Repositories ({heroScanProgress}%)...</span>
                       </>
                     ) : heroScanComplete ? (
                       <>
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-                        <span>Pass Issued: {heroPersonas[activePersona].statutoryPass} ✓ (Retest)</span>
+                        <span>Clearance Issued: {heroPersonas[activePersona].statutoryPass} ✓</span>
                       </>
                     ) : (
                       <>
                         <Zap className="w-3.5 h-3.5 text-white" />
-                        <span>Trigger Live Biometric Scan Test</span>
+                        <span>Run 3-Step Verification Test</span>
                       </>
                     )}
                   </button>
@@ -975,6 +988,110 @@ export const LandingPageView = () => {
       </section>
 
       {/* ==============================================================================
+       * NEW: HOW EASY EMPLOYEE VERIFICATION WORKS IN 3 STEPS (#how-it-works)
+       * ============================================================================== */}
+      <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+        
+        {/* Section Header */}
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
+          <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold mb-3 flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>THE EASIEST ONBOARDING PROCESS</span>
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4 tracking-tight">
+            How Employee Verification Works in <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 bg-clip-text text-transparent">
+              3 Simple, Effortless Steps
+            </span>
+          </h2>
+          <p className="text-slate-600 text-base max-w-2xl leading-relaxed">
+            Eliminate slow paper onboarding, physical document submission, and manual agency phone calls. Verified in under 45 seconds on any smartphone.
+          </p>
+        </div>
+
+        {/* 3 Step Interactive Jumping Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          
+          {/* Connecting Line between steps (Desktop) */}
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-300 via-indigo-300 to-emerald-300 -translate-y-12 z-0"></div>
+
+          {/* Step 1 Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
+                  01
+                </div>
+                <span className="font-mono text-[10px] font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-200 uppercase tracking-wider">
+                  1-Click Dispatch
+                </span>
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900 font-outfit mb-3">
+                Send Magic Link or QR
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                HR inputs the employee's phone number or email, or candidate scans a QR code at reception. An encrypted magic link is sent via WhatsApp and SMS immediately.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-blue-700 font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-blue-600" />
+              <span>Zero App Downloads Needed</span>
+            </div>
+          </div>
+
+          {/* Step 2 Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
+                  02
+                </div>
+                <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
+                  30s Mobile KYC
+                </span>
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900 font-outfit mb-3">
+                Candidate Self-Verifies
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                The employee opens the link on their mobile browser, verifies their identity with an instant OTP, and captures a quick live selfie with AI liveness detection.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-emerald-700 font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>99.98% Biometric Facial Match</span>
+            </div>
+          </div>
+
+          {/* Step 3 Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg hover-jump flex flex-col justify-between gap-6 relative z-10 group">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-outfit text-2xl font-black shadow-xs group-hover:scale-110 transition-transform">
+                  03
+                </div>
+                <span className="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 uppercase tracking-wider">
+                  Instant Dossier
+                </span>
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900 font-outfit mb-3">
+                360° Certified Dossier Ready
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Government and financial APIs (Aadhaar, EPFO UAN, Court records, Bank) are queried in parallel. A tamper-proof SHA-256 PDF report is generated in &lt;45s.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-slate-100 font-mono text-xs text-indigo-700 font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-indigo-600" />
+              <span>Downloadable Audit PDF & JSON</span>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ==============================================================================
        * 4. ARCHITECTURE & STATUTORY CRAFT SECTION (#craft)
        * ============================================================================== */}
       <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
@@ -982,67 +1099,67 @@ export const LandingPageView = () => {
           
           {/* Left Column: Monospace Category Header */}
           <div className="lg:col-span-4">
-            <span className="font-mono text-xs uppercase tracking-wider text-cyan-700 font-bold block mb-3">
-              PRECISION ARCHITECTURE
+            <span className="font-mono text-xs uppercase tracking-wider text-blue-700 font-bold block mb-3">
+              PRECISION ARCHITECTURE & VAULT
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-slate-900 font-outfit leading-tight mb-4">
-              Statutory Purity Meets Instant Velocity
+              Enterprise Trust Meets Instant Velocity
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mb-6">
-              In high-volume manufacturing plants and enterprise corporate screening, compliance is not a checkbox. It is precision engineering—built on direct government repository connectors, biometric deduplication, and cryptographic immutability.
+              Whether verifying executive leadership, corporate IT specialists, logistics drivers, or plant workers, JOY TrueProfile provides unified, cryptographic verification built directly on central government repository connectors.
             </p>
             <button
               onClick={() => setShowLegalHandbook(true)}
-              className="px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-cyan-500 text-slate-800 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-2xs hover:shadow-xs transition-all font-bold"
+              className="px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-blue-500 text-slate-800 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-2xs hover-jump-subtle transition-all font-bold cursor-pointer"
             >
               <span>Compliance Handbook</span>
-              <FileText className="w-3.5 h-3.5 text-cyan-600" />
+              <FileText className="w-3.5 h-3.5 text-blue-600" />
             </button>
           </div>
 
-          {/* Right Column: Split Dual Cards (Blue-Collar & Corporate BGV) */}
+          {/* Right Column: Split Dual Cards (3-Step Engine & Security Vault) */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* Card 1: Factory & Labor Pass */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 group hover:border-cyan-400 hover:shadow-md transition-all shadow-xs">
-              <div className="rounded-xl overflow-hidden aspect-[16/10] border border-slate-200">
+            {/* Card 1: 3-Step Automated Verification Pipeline */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 hover-jump shadow-md">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-50">
                 <img
-                  src="/assets/3d/labor_3d_management.jpg"
-                  alt="Industrial Labor Gate Pass Station"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="/assets/3d/easy_3step_verify_3d.jpg"
+                  alt="3-Step Automated Employee Verification Pipeline"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-700 font-bold block mb-2">
-                  BLUE-COLLAR & CONTRACT LABOR
+                  STREAMLINED WORKFLOW
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-outfit">
-                  Industrial Worker Gate Passes & Form XVI
+                  3-Step Automated Verification Pipeline
                 </h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
-                  Eliminate ghost worker invoicing and phantom contractors. Generate tamper-proof digital QR gate passes linked to UIDAI biometric verification and daily wage IMPS penny drops.
+                  From 1-click WhatsApp magic link dispatch to 30-second mobile selfie KYC and instant certified audit dossier compilation.
                 </p>
               </div>
             </div>
 
-            {/* Card 2: Executive BGV & Moonlighting */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 group hover:border-indigo-400 hover:shadow-md transition-all shadow-xs">
-              <div className="rounded-xl overflow-hidden aspect-[16/10] border border-slate-200">
+            {/* Card 2: Enterprise Security Vault & Moonlighting Radar */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 hover-jump shadow-md">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-50">
                 <img
-                  src="/assets/3d/corporate_3d_bgv.jpg"
-                  alt="Corporate Executive BGV & UAN Moonlighting"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="/assets/3d/corporate_shield_vault_3d.jpg"
+                  alt="Enterprise Security Vault & Moonlighting Radar"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-700 font-bold block mb-2">
-                  CORPORATE & EXECUTIVE SCREENING
+                  ENTERPRISE SECURITY & STATUTORY VAULT
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-outfit">
-                  UAN Moonlighting Radar & Dual-Job Detection
+                  EPFO Moonlighting & Court Record Radar
                 </h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
-                  Scan active EPFO contribution timelines to detect undeclared secondary employment, overlapping tenures, and integrity flags before rolling out offers.
+                  Queries 3,200+ Indian district courts, EPFO monthly contribution history, and IMPS ₹1 penny drops with 256-bit AES encryption.
                 </p>
               </div>
             </div>
