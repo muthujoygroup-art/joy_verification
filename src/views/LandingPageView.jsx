@@ -81,8 +81,14 @@ import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 
 export const LandingPageView = () => {
-  // Innovative First-Load / Reload Logo Preloader
-  const [showPreloader, setShowPreloader] = useState(true);
+  // Innovative First-Load / Reload Logo Preloader (Cached in session for instant subsequent loads)
+  const [showPreloader, setShowPreloader] = useState(() => {
+    try {
+      return !sessionStorage.getItem('joy_intro_seen');
+    } catch {
+      return true;
+    }
+  });
 
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -226,60 +232,6 @@ export const LandingPageView = () => {
     };
     fetchArticles();
   }, []);
-
-  // Handle Hero Card 3D Mouse Parallax
-  const handleMouseMoveHero = (e) => {
-    if (!heroCardRef.current) return;
-    const rect = heroCardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-    setTiltStyle({
-      transform: `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
-      transition: 'transform 0.1s ease-out'
-    });
-  };
-
-  const handleMouseLeaveHero = () => {
-    setTiltStyle({
-      transform: 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-      transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-    });
-  };
-
-  // Trigger Hero Biometric Scan Simulation
-  const triggerHeroBiometricScan = () => {
-    if (heroScanning) return;
-    setHeroScanning(true);
-    setHeroScanComplete(false);
-    setHeroScanProgress(0);
-    setHeroScanStage('identity');
-
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 5;
-      setHeroScanProgress(current);
-
-      if (current >= 35 && current < 70) {
-        setHeroScanStage('experience');
-      } else if (current >= 70 && current < 100) {
-        setHeroScanStage('bank');
-      } else if (current >= 100) {
-        clearInterval(interval);
-        setHeroScanning(false);
-        setHeroScanComplete(true);
-        setHeroScanStage('complete');
-        confetti({
-          particleCount: 60,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }
-    }, 60);
-  };
 
   // Trigger Interactive Engine Simulator
   const handleRunSimulation = (modeKey) => {
@@ -951,7 +903,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 4. VERIFICATION MODULES SHOWCASE (#features)
        * ============================================================================== */}
-      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="features" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
@@ -977,35 +929,35 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 5. DUAL-EMPLOYMENT & MOONLIGHTING RADAR VISUALIZER (#moonlighting-radar)
        * ============================================================================== */}
-      <section id="moonlighting-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="moonlighting-radar" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <DualEmploymentRadarVisualizer />
       </section>
 
       {/* ==============================================================================
        * 6. WORKFORCE DIGITAL TURNSTILE GATE SIMULATOR (#turnstile-access)
        * ============================================================================== */}
-      <section id="turnstile-access" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="turnstile-access" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <TurnstileGateSimulator />
       </section>
 
       {/* ==============================================================================
        * 7. KINETIC PROCESS PIPELINE (#how-it-works)
        * ============================================================================== */}
-      <section id="how-it-works" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="how-it-works" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <InteractiveProcessPipeline />
       </section>
 
       {/* ==============================================================================
        * 8. TRADITIONAL 15-DAY AGENCY VS JOY TRUEPROFILE COMPARISON (#comparison)
        * ============================================================================== */}
-      <section id="comparison" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="comparison" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <InteractiveSpeedComparison />
       </section>
 
       {/* ==============================================================================
        * 9. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
        * ============================================================================== */}
-      <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="craft" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Column: Monospace Category Header */}
@@ -1037,6 +989,8 @@ export const LandingPageView = () => {
                 <img
                   src="/assets/3d/warm_amber_pipeline_3d.jpg"
                   alt="Automated Employee Verification Pipeline"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-amber-300 font-mono text-[9px] uppercase tracking-wider text-amber-800 font-bold flex items-center gap-1.5 shadow-md">
@@ -1063,6 +1017,8 @@ export const LandingPageView = () => {
                 <img
                   src="/assets/3d/warm_amber_vault_3d.jpg"
                   alt="Enterprise Security Vault & Moonlighting Radar"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-amber-300 font-mono text-[9px] uppercase tracking-wider text-orange-800 font-bold flex items-center gap-1.5 shadow-md">
@@ -1091,10 +1047,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 5. SYSTEM SPECIFICATIONS & PERFORMANCE MATRIX (#specs)
        * ============================================================================== */}
-      {/* ==============================================================================
-       * 5. SYSTEM SPECIFICATIONS & PERFORMANCE MATRIX (#specs)
-       * ============================================================================== */}
-      <section id="specs" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="specs" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1159,7 +1112,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 6. LIVE INDIA WORKFORCE VERIFICATION RADAR (#live-radar)
        * ============================================================================== */}
-      <section id="live-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="live-radar" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1278,7 +1231,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 7. LIVE VERIFICATION DEMO & SIMULATOR (#interactive-lab)
        * ============================================================================== */}
-      <section id="interactive-lab" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="interactive-lab" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1455,7 +1408,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 8. ROI CALCULATOR & SAVINGS ESTIMATOR (#roi-calculator)
        * ============================================================================== */}
-      <section id="roi-calculator" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="roi-calculator" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1503,97 +1456,74 @@ export const LandingPageView = () => {
               </div>
             </div>
 
-            {/* Slider 1: Monthly Hires */}
+            {/* Monthly Volume Slider */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-700 font-bold">
-                  2. Monthly Candidate Onboarding Volume
-                </label>
-                <span className="font-mono text-base sm:text-lg font-black text-amber-800 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
-                  {monthlyHires.toLocaleString()} workers / mo
+              <div className="flex items-center justify-between mb-2 font-mono text-xs">
+                <label className="uppercase tracking-wider text-slate-700 font-bold">2. Monthly Hires / Verification Volume</label>
+                <span className="text-amber-800 font-bold bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  {monthlyHires.toLocaleString()} hires / mo
                 </span>
               </div>
               <input
                 type="range"
-                min="50"
-                max="5000"
-                step="50"
+                min={10}
+                max={2000}
+                step={10}
                 value={monthlyHires}
                 onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-300"
+                className="w-full accent-amber-500 cursor-pointer"
               />
-              {/* Quick Presets */}
-              <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                <span className="text-[10px] font-mono text-slate-500 font-bold mr-1">PRESETS:</span>
-                {[250, 500, 1000, 2500, 5000].map((preset) => (
-                  <button
-                    key={preset}
-                    onClick={() => setMonthlyHires(preset)}
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                      monthlyHires === preset ? 'bg-amber-500 text-slate-950 font-black border-amber-400' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50/60'
-                    }`}
-                  >
-                    {preset.toLocaleString()}
-                  </button>
-                ))}
+              <div className="flex justify-between font-mono text-[10px] text-slate-600 mt-1">
+                <span>10 hires</span>
+                <span>500 hires</span>
+                <span>1,000 hires</span>
+                <span>2,000+ hires</span>
               </div>
             </div>
 
-            {/* Slider 2: Contractor Turnover Rate */}
+            {/* Cost Per Manual Verification */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-700 font-bold">
-                  3. Annual Contractor Churn / Turnover
-                </label>
-                <span className="font-mono text-base font-black text-orange-800 bg-orange-50 px-3 py-1 rounded-lg border border-orange-200">
-                  {contractorTurnover}% / year
+              <div className="flex items-center justify-between mb-2 font-mono text-xs">
+                <label className="uppercase tracking-wider text-slate-700 font-bold">3. Current Traditional Agency Cost (Per Candidate)</label>
+                <span className="text-amber-800 font-bold bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  ₹{agencyCostPerHire.toLocaleString()} / check
                 </span>
               </div>
               <input
                 type="range"
-                min="5"
-                max="60"
-                step="5"
-                value={contractorTurnover}
-                onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-500 border border-slate-300"
+                min={500}
+                max={5000}
+                step={100}
+                value={agencyCostPerHire}
+                onChange={(e) => setAgencyCostPerHire(Number(e.target.value))}
+                className="w-full accent-amber-500 cursor-pointer"
               />
-              <div className="flex justify-between font-mono text-[10px] text-slate-500 font-semibold mt-1">
-                <span>5% (Low Churn)</span>
-                <span>25% (Industry Avg)</span>
-                <span>60% (High Churn)</span>
+              <div className="flex justify-between font-mono text-[10px] text-slate-600 mt-1">
+                <span>₹500 (Basic)</span>
+                <span>₹2,500 (Corporate)</span>
+                <span>₹5,000 (Executive)</span>
               </div>
-            </div>
-
-            {/* Benchmark Note */}
-            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 font-mono text-xs text-amber-900 flex items-start gap-2.5">
-              <HelpCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <span className="leading-relaxed">
-                Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated verification at a fraction of the cost and time.
-              </span>
             </div>
 
           </div>
 
-          {/* Savings Output Right Column */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white text-slate-900 border border-amber-300/80 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xl">
+          {/* Savings Summary Right Column */}
+          <div className="lg:col-span-6 bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-inner">
             
             <div>
-              <span className="font-mono text-xs uppercase tracking-wider text-emerald-700 font-bold block mb-1">
-                TOTAL ESTIMATED ANNUAL VALUE CREATED
+              <span className="font-mono text-[10px] uppercase tracking-wider text-amber-700 font-bold block mb-1">
+                ESTIMATED RETURN ON INVESTMENT
               </span>
-              <div className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit tracking-tight">
-                ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
-                <span className="text-xs sm:text-sm font-normal text-slate-500 ml-2">/ year</span>
-              </div>
-              <div className="text-xs font-mono text-emerald-700 mt-2 font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Estimated Payback Period: Under 12 Business Days</span>
-              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
+                ₹{totalMonthlySavings.toLocaleString('en-IN')}
+                <span className="text-sm font-normal text-slate-600 font-sans ml-2">saved monthly</span>
+              </h3>
+              <p className="text-slate-600 text-xs mt-1">
+                Based on automated sub-minute verification workflows vs traditional 15-day agency turnaround times.
+              </p>
             </div>
 
-            {/* 4 KPI Grid */}
-            <div className="grid grid-cols-2 gap-3 border-t border-slate-200 pt-4">
+            <div className="grid grid-cols-2 gap-3 font-mono text-xs">
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Direct Verification Savings</span>
                 <div className="text-lg font-black text-amber-700 font-outfit mt-0.5">
@@ -1654,7 +1584,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 9. COMPREHENSIVE SOLUTIONS BENTO GRID (#solutions)
        * ============================================================================== */}
-      <section id="solutions" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="solutions" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1794,7 +1724,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 10. CLIENT REVIEWS & VERIFIED TESTIMONIALS (#reviews)
        * ============================================================================== */}
-      <section id="reviews" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="reviews" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1868,7 +1798,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 11. KNOWLEDGE HUB & COMPLIANCE ARTICLES (#knowledge-hub)
        * ============================================================================== */}
-      <section id="knowledge-hub" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+      <section id="knowledge-hub" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
@@ -1917,7 +1847,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 12. FREQUENTLY ASKED QUESTIONS (#faq)
        * ============================================================================== */}
-      <section id="faq" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto border-t border-slate-200">
+      <section id="faq" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto border-t border-slate-200">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-14">

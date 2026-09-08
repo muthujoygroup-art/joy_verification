@@ -1776,5 +1776,19 @@ body[data-role="employee_link"] {
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.3), inset 0 0 15px rgba(245, 158, 11, 0.1);
 }
 
+/* ==============================================================================
+ * PERFORMANCE & ZERO-LAG HARDWARE ACCELERATION
+ * ============================================================================== */
+.section-lazy-render {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
 
 

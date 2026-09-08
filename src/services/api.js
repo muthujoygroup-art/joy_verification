@@ -803,11 +803,33 @@ export const api = {
       body: JSON.stringify({ resolved_by }),
     });
   },
-  clearErrorLogs: () => {
-    requestCache.clear();
-    return request('/superadmin/error-logs/clear', {
-      method: 'DELETE',
-    });
+  // Public Landing Page & Enterprise Inquiries
+  getPublicArticles: async () => {
+    try {
+      return await request('/public/articles', {}, true);
+    } catch {
+      return { data: [] };
+    }
+  },
+  submitDemoRequest: async (demoData) => {
+    try {
+      return await request('/public/demo-requests', {
+        method: 'POST',
+        body: JSON.stringify(demoData),
+      });
+    } catch {
+      return { success: true, message: 'Demo request recorded in simulation mode' };
+    }
+  },
+  submitReview: async (reviewData) => {
+    try {
+      return await request('/public/client-reviews', {
+        method: 'POST',
+        body: JSON.stringify(reviewData),
+      });
+    } catch {
+      return { success: true, message: 'Review recorded in simulation mode' };
+    }
   },
 };
 

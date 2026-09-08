@@ -33,24 +33,30 @@ export default function LandingPagePreloader({ onFinish }) {
   const taglineWords = ['INSTANT', 'WORKFORCE', 'VERIFICATION'];
 
   useEffect(() => {
-    // Stage choreography
-    const t0 = setTimeout(() => setStage(1), 200);  // Crest smoothly locks into place
-    const t1 = setTimeout(() => setStage(2), 650);  // JOY drop & TRUE PROFILE 3D letter flip
-    const t2 = setTimeout(() => setStage(3), 1250); // Tagline laser sweep
-    const t3 = setTimeout(() => setStage(4), 1800); // Full harmonious bloom
+    // Stage choreography (Crisp 1.2s Sequence)
+    const t0 = setTimeout(() => setStage(1), 100);  // Crest smoothly locks into place
+    const t1 = setTimeout(() => setStage(2), 380);  // JOY drop & TRUE PROFILE 3D letter flip
+    const t2 = setTimeout(() => setStage(3), 720);  // Tagline laser sweep
+    const t3 = setTimeout(() => setStage(4), 1020); // Full harmonious bloom
     const t4 = setTimeout(() => {                   // Smooth curtain dissolve
       setIsExiting(true);
+      try {
+        sessionStorage.setItem('joy_intro_seen', 'true');
+      } catch {}
       setTimeout(() => {
         if (onFinish) onFinish();
-      }, 500);
-    }, 2400);
+      }, 250);
+    }, 1280);
 
     // Instant skip on click, spacebar, or ESC
     const handleDismiss = () => {
       setIsExiting(true);
+      try {
+        sessionStorage.setItem('joy_intro_seen', 'true');
+      } catch {}
       setTimeout(() => {
         if (onFinish) onFinish();
-      }, 300);
+      }, 200);
     };
 
     const handleKeyDown = (e) => {
