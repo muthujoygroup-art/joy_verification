@@ -25,6 +25,7 @@ import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvRepor
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
+import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
 import {
   AlertCircle,
@@ -253,6 +254,7 @@ export const HrExecutiveView = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
   const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
   const [showHrLivePhotoModal, setShowHrLivePhotoModal] = useState(false);
@@ -463,6 +465,7 @@ export const HrExecutiveView = () => {
         else if (viewingCertificateCandidate) setViewingCertificateCandidate(null);
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
         else if (showFullJoiningModal) setShowFullJoiningModal(false);
+        else if (showBulkImportModal) setShowBulkImportModal(false);
         else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
       }
     };
@@ -472,7 +475,7 @@ export const HrExecutiveView = () => {
     selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
     managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
     dispatchingCandidate, viewingDossierCandidate, viewingCertificateCandidate,
-    showUniversalExportModal, showFullJoiningModal, activePreviewStatutoryForm
+    showUniversalExportModal, showFullJoiningModal, showBulkImportModal, activePreviewStatutoryForm
   ]);
 
   // Clear Saved Draft & Start Fresh
@@ -1120,6 +1123,7 @@ export const HrExecutiveView = () => {
   // Lock Body Scroll when any Modal is Active to Prevent Dashboard Jitter
   const isAnyModalOpen = Boolean(
     showFullJoiningModal ||
+    showBulkImportModal ||
     downloadingCandidate ||
     viewingCertificateCandidate ||
     viewingDossierCandidate ||
@@ -1635,6 +1639,23 @@ export const HrExecutiveView = () => {
           <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
             <button 
               onClick={() => {
+                if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {
+                  triggerAccessDenied('Bulk Excel Ingestion', 'Bulk candidate Excel ingestion is disabled for HR staff by your Company Administrator.');
+                  return;
+                }
+                setShowBulkImportModal(true);
+              }}
+              className={`btn btn-secondary text-xs flex items-center gap-1.5 shadow-xs font-bold text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 transition-all ${
+                (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              title="Bulk import all types of employees via Excel with document verification checklist"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              <span>Bulk Import (Excel) 📥</span>
+            </button>
+
+            <button 
+              onClick={() => {
                 if (hrPerms.allowProfileCreation === false) {
                   triggerAccessDenied('Create Employee Profile', 'Manual candidate profile creation is disabled for HR staff by your Company Administrator.');
                   return;
@@ -1762,7 +1783,16 @@ export const HrExecutiveView = () => {
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
-                    <span>1. Add Candidate & Select Verification Checks</span>
+                    <span>1. Single Candidate Profiler</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowBulkImportModal(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 shadow-2xs"
+                    title="Bulk import all types of employees via Excel with document verification checklist"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>2. Bulk Excel Import & Link Dispatch 📥</span>
                   </button>
                 </>
               )}
@@ -2038,6 +2068,16 @@ export const HrExecutiveView = () => {
               >
                 <Download className="w-3.5 h-3.5 text-indigo-600" />
                 <span>Date-Filtered Reports 📥</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowBulkImportModal(true)}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer"
+                title="Bulk upload multiple candidates via Excel spreadsheet"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Bulk Import (Excel) 📥</span>
               </button>
 
               <button
@@ -2662,14 +2702,26 @@ export const HrExecutiveView = () => {
               </button>
 
               {!editingCandidate && (
-                <button
-                  type="button"
-                  onClick={handleAutoFillMockData}
-                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm"
-                >
-                  <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
-                  <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowBulkImportModal(true)}
+                    className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-black text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-sm cursor-pointer"
+                    title="Bulk upload multiple candidate profiles via Excel (.xlsx) with template download"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                    <span>Bulk Import (Excel) 📥</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleAutoFillMockData}
+                    className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-extrabold text-amber-900 bg-amber-50 border-amber-300 hover:bg-amber-100 shadow-sm"
+                  >
+                    <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+                    <span>⚡ Auto-Fill Demo Profile (1-Click Test)</span>
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -5538,6 +5590,20 @@ export const HrExecutiveView = () => {
           }}
           onCopyLink={handleCopyLink}
           isCopied={copiedToken === dispatchingCandidate.token}
+        />
+      )}
+
+      {/* 📥 Bulk Employee Profile Ingestion & Link Dispatch Modal */}
+      {showBulkImportModal && (
+        <BulkEmployeeImportModal 
+          isOpen={showBulkImportModal}
+          onClose={() => setShowBulkImportModal(false)}
+          activeHr={activeHr}
+          currentCompany={currentCompany}
+          onImportComplete={(results) => {
+            setActiveMainSection('pipeline_dossiers');
+            setActiveTab('pipeline');
+          }}
         />
       )}
 
