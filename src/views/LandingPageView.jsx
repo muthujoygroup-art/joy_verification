@@ -830,15 +830,16 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-xl shadow-amber-500/30 hover-jump transition-all flex items-center gap-2 cursor-pointer border border-amber-300/40"
+                className="group relative px-7 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 shadow-xl shadow-amber-500/35 hover:shadow-2xl hover:shadow-amber-500/50 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center gap-2.5 cursor-pointer border border-amber-300/60 overflow-hidden"
               >
-                <span>Book Live Enterprise Demo</span>
-                <ArrowRight className="w-4 h-4" />
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
+                <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] tracking-wide">Book Live Enterprise Demo</span>
+                <ArrowRight className="w-4 h-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <a
                 href="#features"
-                className="dark-glass-card px-5 py-3.5 rounded-xl font-bold text-sm text-amber-200 hover:text-white hover:border-amber-400/50 shadow-sm hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
+                className="dark-glass-card px-5 py-4 rounded-2xl font-bold text-sm text-amber-200 hover:text-white hover:border-amber-400/50 shadow-sm hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 <span>Explore Modules</span>
@@ -846,7 +847,7 @@ export const LandingPageView = () => {
 
               <a
                 href="#moonlighting-radar"
-                className="dark-glass-card px-4 py-3.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
+                className="dark-glass-card px-4 py-4 rounded-2xl font-bold text-xs text-slate-300 hover:text-white shadow-2xs hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5 text-orange-400" />
                 <span>Moonlighting Radar</span>
@@ -882,21 +883,42 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 3. INFINITE VERIFICATION CAPABILITIES TICKER
        * ============================================================================== */}
-      <section className="relative z-10 py-5 bg-slate-950/80 border-y border-amber-500/15 overflow-hidden shadow-2xs backdrop-blur-md">
-        <div className="flex items-center gap-8 whitespace-nowrap animate-marquee font-mono text-xs text-slate-300 tracking-wider uppercase font-semibold">
-          <span className="flex items-center gap-2 text-amber-400"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & 3D LIVENESS MATCH</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-emerald-400"><Search className="w-4 h-4" /> PAST EMPLOYMENT & CAREER HISTORY TENURE RADAR</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-orange-400"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING DETECTION</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-rose-400"><Scale className="w-4 h-4" /> NATIONAL JUDICIAL & LITIGATION SCREENING</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-amber-300"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-emerald-400"><ShieldCheck className="w-4 h-4" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY</span>
-          <span className="text-amber-500/40">■</span>
-          <span className="flex items-center gap-2 text-amber-400"><Lock className="w-4 h-4" /> 100% DPDP ACT 2023 CONSENT-DRIVEN PRIVACY</span>
+      <section className="relative z-10 py-6 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="relative rounded-2xl dark-glass-card border border-amber-500/25 py-3.5 px-2 overflow-hidden shadow-2xl backdrop-blur-xl [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
+          <div className="flex items-center gap-8 whitespace-nowrap animate-marquee font-mono text-xs text-slate-200 tracking-wider uppercase font-bold">
+            {[...Array(2)].map((_, loopIdx) => (
+              <React.Fragment key={loopIdx}>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 shadow-xs">
+                  <Fingerprint className="w-3.5 h-3.5 text-amber-400" /> DIGITAL IDENTITY & 3D LIVENESS MATCH
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 shadow-xs">
+                  <Search className="w-3.5 h-3.5 text-emerald-400" /> PAST EMPLOYMENT & CAREER HISTORY TENURE RADAR
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-950/60 border border-orange-500/30 text-orange-300 shadow-xs">
+                  <Zap className="w-3.5 h-3.5 text-orange-400" /> DUAL-EMPLOYMENT & MOONLIGHTING DETECTION
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-950/60 border border-rose-500/30 text-rose-300 shadow-xs">
+                  <Scale className="w-3.5 h-3.5 text-rose-400" /> NATIONAL JUDICIAL & LITIGATION SCREENING
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 shadow-xs">
+                  <CreditCard className="w-3.5 h-3.5 text-amber-400" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 shadow-xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY
+                </span>
+                <span className="text-amber-500/40">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 shadow-xs">
+                  <Lock className="w-3.5 h-3.5 text-amber-400" /> 100% DPDP ACT 2023 CONSENT-DRIVEN PRIVACY
+                </span>
+                <span className="text-amber-500/40">✦</span>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -985,13 +1007,17 @@ export const LandingPageView = () => {
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Card 1: Automated Verification Pipeline */}
-            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/15">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/20 bg-slate-950 shadow-inner">
+            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/20 group">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/25 bg-slate-950 shadow-inner relative">
                 <img
-                  src="/assets/3d/liquid_glass_flow_3d.jpg"
+                  src="/assets/3d/warm_amber_pipeline_3d.jpg"
                   alt="Automated Employee Verification Pipeline"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-500/30 font-mono text-[9px] uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  <span>Sub-45s Optical KYC</span>
+                </div>
               </div>
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-2">
@@ -1007,13 +1033,17 @@ export const LandingPageView = () => {
             </div>
 
             {/* Card 2: Enterprise Security Vault & Moonlighting Radar */}
-            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/15">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/20 bg-slate-950 shadow-inner">
+            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/20 group">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/25 bg-slate-950 shadow-inner relative">
                 <img
-                  src="/assets/3d/liquid_glass_vault_3d.jpg"
+                  src="/assets/3d/warm_amber_vault_3d.jpg"
                   alt="Enterprise Security Vault & Moonlighting Radar"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-500/30 font-mono text-[9px] uppercase tracking-wider text-orange-300 font-bold flex items-center gap-1.5 shadow-md">
+                  <Lock className="w-3 h-3 text-orange-400" />
+                  <span>256-Bit Vault Mesh</span>
+                </div>
               </div>
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-orange-400 font-bold block mb-2">
@@ -1523,10 +1553,11 @@ export const LandingPageView = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="flex-1 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 cursor-pointer"
+                className="group relative flex-1 py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer border border-amber-300/50 overflow-hidden"
               >
-                <span>Unlock These Savings</span>
-                <ArrowRight className="w-4 h-4" />
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
+                <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] tracking-wide">Unlock These Savings</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]" />
               </button>
 
               <button
@@ -1534,7 +1565,7 @@ export const LandingPageView = () => {
                   confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
                   alert(`✅ Executive ROI Business Case generated for ${monthlyHires.toLocaleString()} monthly hires! Estimated Annual Savings: ₹${((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}`);
                 }}
-                className="py-3.5 px-4 rounded-xl font-bold text-xs text-amber-200 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="py-4 px-4 rounded-xl font-bold text-xs text-amber-200 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-amber-500/20 hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Download className="w-4 h-4 text-amber-400" />
                 <span>Export ROI Summary</span>
@@ -1880,10 +1911,11 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-8 py-4 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-xl shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                className="group relative px-9 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 shadow-2xl shadow-amber-500/35 hover:shadow-amber-500/50 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center gap-2.5 cursor-pointer border border-amber-300/60 overflow-hidden"
               >
-                <span>Book Live Enterprise Walkthrough</span>
-                <ArrowRight className="w-4 h-4" />
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
+                <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] tracking-wide">Book Live Enterprise Walkthrough</span>
+                <ArrowRight className="w-4 h-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
@@ -1891,7 +1923,7 @@ export const LandingPageView = () => {
                   setLandingSelectedAmount(5000);
                   setShowLandingRazorpayModal(true);
                 }}
-                className="px-7 py-4 rounded-xl font-bold text-sm text-white dark-glass-card border border-amber-500/30 hover:bg-white/10 shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+                className="px-7 py-4 rounded-2xl font-bold text-sm text-white dark-glass-card border border-amber-500/30 hover:bg-white/10 hover:border-amber-400/50 shadow-lg hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center gap-2 cursor-pointer"
               >
                 <CreditCard className="w-4 h-4 text-amber-400" />
                 <span>Get Verification Credits</span>
@@ -2420,25 +2452,28 @@ export const LandingPageView = () => {
         {/* Floating WhatsApp Toggle Button */}
         <button
           onClick={() => setWhatsappOpen(!whatsappOpen)}
-          className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-bold text-xs shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:shadow-emerald-600/50 hover:scale-105 active:scale-95 transition-all cursor-pointer z-50 border border-white/40"
+          className="group relative flex items-center gap-3 px-5 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-700 text-white font-bold text-xs shadow-2xl shadow-emerald-500/40 hover:shadow-emerald-500/60 hover:-translate-y-1 hover:scale-105 active:scale-95 active:translate-y-0 transition-all cursor-pointer z-50 border border-amber-300/40 backdrop-blur-xl"
           aria-label="Toggle WhatsApp Contact"
         >
           {/* Animated WhatsApp Ping Halo */}
-          <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-30 animate-ping pointer-events-none"></span>
+          <span className="absolute -inset-1 rounded-full bg-emerald-400 opacity-40 animate-ping pointer-events-none"></span>
 
           {/* WhatsApp SVG Icon */}
           <div className="w-6 h-6 shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white drop-shadow-sm" aria-hidden="true">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.888 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.405" />
             </svg>
           </div>
 
-          <span className="font-outfit text-xs font-bold tracking-wide">
+          <span className="font-outfit text-xs font-black tracking-wide text-white drop-shadow-sm">
             {whatsappOpen ? 'Close Chat' : 'Chat on WhatsApp'}
           </span>
 
           {/* Online status indicator */}
-          <span className="w-2 h-2 rounded-full bg-emerald-200 animate-pulse"></span>
+          <span className="flex items-center gap-1 font-mono text-[10px] text-emerald-200 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-400/40">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="hidden sm:inline">Instant</span>
+          </span>
         </button>
       </div>
 

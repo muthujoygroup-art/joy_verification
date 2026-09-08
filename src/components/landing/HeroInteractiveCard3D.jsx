@@ -139,12 +139,12 @@ const HeroInteractiveCard3D = () => {
             onClick={() => handleSelectProfile(idx)}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               selectedIdx === idx
-                ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black shadow-lg shadow-amber-500/25 border border-amber-300/60 scale-[1.02]'
+                ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-lg shadow-amber-500/30 border border-amber-300/60 scale-[1.02]'
                 : 'text-slate-300 hover:text-white hover:bg-white/5'
             }`}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-300"></span>
-            <span className="truncate">{p.roleLabel}</span>
+            <span className="truncate drop-shadow-xs">{p.roleLabel}</span>
           </button>
         ))}
       </div>
@@ -371,10 +371,10 @@ const HeroInteractiveCard3D = () => {
                   e.stopPropagation();
                   handleFlip();
                 }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-xs font-black font-mono text-slate-950 flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-black font-mono text-white flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/25 cursor-pointer border border-amber-300/40"
               >
-                <RotateCw className="w-3.5 h-3.5" />
-                <span>View ID Front</span>
+                <RotateCw className="w-3.5 h-3.5 text-white" />
+                <span className="drop-shadow-xs">View ID Front</span>
               </button>
             </div>
 
