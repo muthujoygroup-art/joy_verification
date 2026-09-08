@@ -244,8 +244,10 @@ export const HrExecutiveView = () => {
     getCertificateLifecycle,
     dispatchReVerificationLink,
     approveCandidateSubmission,
-    requestCandidateCorrections
+    requestCandidateCorrections,
+    triggerAccessDenied
   } = useApp();
+
   const [showGatewaysModal, setShowGatewaysModal] = useState(false);
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
   const [activeTab, setActiveTab] = useState('pipeline'); // 'pipeline' | 'profiler' | 'analytics' | 'settings'
@@ -333,6 +335,8 @@ export const HrExecutiveView = () => {
         name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
         code: 'COMP001'
       };
+
+  const hrPerms = currentCompany?.hrPermissions || {};
 
   const [isSavingHrPref, setIsSavingHrPref] = useState(false);
   const [showSmtpPassword, setShowSmtpPassword] = useState(false);
@@ -1645,21 +1649,20 @@ export const HrExecutiveView = () => {
 
             <button 
               onClick={() => {
+                if (hrPerms.allowProfileCreation === false) {
+                  triggerAccessDenied('Create Employee Profile', 'Manual candidate profile creation is disabled for HR staff by your Company Administrator.');
+                  return;
+                }
                 setShowAddForm(true);
                 setActiveTab('profiler');
               }}
-              className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-md font-bold"
+              className={`btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-md font-bold transition-all ${
+                hrPerms.allowProfileCreation === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              title={hrPerms.allowProfileCreation === false ? '🚫 Access Restricted: Profile Creation Disabled by Company Admin' : 'Create Employee & Send Link'}
             >
               <SendHorizontal className="w-4 h-4" />
               <span>Create Employee & Send Link</span>
-            </button>
-
-            <button 
-              onClick={() => setShowFullJoiningModal(true)}
-              className="btn btn-company text-xs flex items-center gap-1.5 shadow-md font-bold"
-            >
-              <FileEdit className="w-4 h-4" />
-              <span>HR Station Form Entry</span>
             </button>
           </div>
         </div>
@@ -2018,14 +2021,6 @@ export const HrExecutiveView = () => {
                 </p>
               </div>
             </div>
-
-            <button
-              onClick={() => setShowLegalHandbook(true)}
-              className="btn text-xs py-2 px-3.5 font-bold text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-400/40 shrink-0 self-start sm:self-auto flex items-center gap-1.5 cursor-pointer shadow-sm"
-            >
-              <ShieldCheck className="w-4 h-4 text-emerald-300" />
-              <span>Legal Guidelines 📖</span>
-            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -2244,8 +2239,17 @@ export const HrExecutiveView = () => {
                     <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-bold">
                       <button
                         type="button"
-                        onClick={() => setViewingBgvReportCandidate(cand)}
-                        className="p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                        onClick={() => {
+                          if (hrPerms.allow360DossierExport === false) {
+                            triggerAccessDenied('360° Multi-API Dossier Export', 'PDF dossier exporting is disabled for HR staff in your company compliance settings.');
+                            return;
+                          }
+                          setViewingBgvReportCandidate(cand);
+                        }}
+                        className={`p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1.5 text-center transition-all ${
+                          hrPerms.allow360DossierExport === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+                        }`}
+                        title={hrPerms.allow360DossierExport === false ? '🚫 Access Restricted: Dossier Export Disabled by Admin' : '360° Dossier'}
                       >
                         <ShieldCheck className="w-3.5 h-3.5 text-purple-700 shrink-0" />
                         <span className="truncate">360° Dossier</span>
@@ -2271,8 +2275,17 @@ export const HrExecutiveView = () => {
 
                       <button
                         type="button"
-                        onClick={() => setViewingCertificateCandidate(cand)}
-                        className="p-2 rounded-xl bg-indigo-50 text-indigo-950 border border-indigo-200 hover:bg-indigo-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                        onClick={() => {
+                          if (hrPerms.allowCertificateGeneration === false) {
+                            triggerAccessDenied('Certificate Generation', 'Official digital verification certificate generation is disabled for HR staff in your company compliance settings.');
+                            return;
+                          }
+                          setViewingCertificateCandidate(cand);
+                        }}
+                        className={`p-2 rounded-xl bg-indigo-50 text-indigo-950 border border-indigo-200 hover:bg-indigo-100 flex items-center justify-center gap-1.5 text-center transition-all ${
+                          hrPerms.allowCertificateGeneration === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+                        }`}
+                        title={hrPerms.allowCertificateGeneration === false ? '🚫 Access Restricted: Certificate Generation Disabled by Admin' : 'Certificate'}
                       >
                         <Award className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
                         <span className="truncate">Certificate</span>
@@ -2467,9 +2480,17 @@ export const HrExecutiveView = () => {
                           {/* 1. 360° Multi-API BGV Dossier Button */}
                           <button
                             data-tour-step={index === 0 ? 'hr-bgv-dossier-btn' : undefined}
-                            onClick={() => setViewingBgvReportCandidate(cand)}
-                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-2xs"
-                            title="View & Download Complete 360° Background Verification Dossier (10+ APIs)"
+                            onClick={() => {
+                              if (hrPerms.allow360DossierExport === false) {
+                                triggerAccessDenied('360° Multi-API Dossier Export', 'PDF dossier exporting is disabled for HR staff in your company compliance settings.');
+                                return;
+                              }
+                              setViewingBgvReportCandidate(cand);
+                            }}
+                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-2xs transition-all ${
+                              hrPerms.allow360DossierExport === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+                            }`}
+                            title={hrPerms.allow360DossierExport === false ? '🚫 Access Restricted: Dossier Export Disabled by Admin' : 'View & Download Complete 360° Background Verification Dossier (10+ APIs)'}
                           >
                             <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
                             <span>360° BGV Dossier (10+ APIs)</span>
@@ -2497,9 +2518,17 @@ export const HrExecutiveView = () => {
 
                           {/* 4. Official JOY Corporate Certificate PDF Button */}
                           <button
-                            onClick={() => setViewingCertificateCandidate(cand)}
-                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
-                            title="View & Download JOY Corporate Solutions Official Certificate"
+                            onClick={() => {
+                              if (hrPerms.allowCertificateGeneration === false) {
+                                triggerAccessDenied('Certificate Generation', 'Official digital verification certificate generation is disabled for HR staff in your company compliance settings.');
+                                return;
+                              }
+                              setViewingCertificateCandidate(cand);
+                            }}
+                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 transition-all ${
+                              hrPerms.allowCertificateGeneration === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+                            }`}
+                            title={hrPerms.allowCertificateGeneration === false ? '🚫 Access Restricted: Certificate Generation Disabled by Admin' : 'View & Download JOY Corporate Solutions Official Certificate'}
                           >
                             <Award className="w-3.5 h-3.5 text-indigo-700" />
                             <span>JOY Certificate</span>

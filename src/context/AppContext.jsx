@@ -446,6 +446,26 @@ export const AppProvider = ({ children }) => {
     }
   });
 
+  // 🚫 ACCESS RESTRICTED / FEATURE DISABLED NOTIFICATION STATE & HELPER
+  const [accessDeniedNotice, setAccessDeniedNotice] = useState(null);
+
+  const triggerAccessDenied = (featureName = 'This option', reason = '') => {
+    try {
+      soundEngine?.playError?.();
+    } catch (e) {}
+    showToast(`🚫 Access Restricted: ${featureName} is disabled for your role/account.`, 'error');
+    setAccessDeniedNotice({
+      isOpen: true,
+      featureName,
+      reason: reason || `${featureName} is currently deactivated for your account or user role by the Administrator. Please contact your administrator to enable access.`,
+      role: roleView
+    });
+  };
+
+  const closeAccessDeniedNotice = () => {
+    setAccessDeniedNotice(null);
+  };
+
   // NOTIFICATIONS (CROSS-ROLE SMART NOTIFICATION FEED)
   const [notifications, setNotifications] = useState([
     // HR NOTIFICATIONS (CRITICAL 60-DAY EXPIRY + PIPELINE)
@@ -2590,7 +2610,10 @@ export const AppProvider = ({ children }) => {
       showInactivityWarning,
       inactivityCountdown,
       refreshUserSession,
-      activeRole: currentRole
+      activeRole: currentRole,
+      accessDeniedNotice,
+      triggerAccessDenied,
+      closeAccessDeniedNotice
     }}>
       {children}
     </AppContext.Provider>

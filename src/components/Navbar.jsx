@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { SupportTicketModal } from './SupportTicketModal';
-import { HelpGuidelinesModal } from './HelpGuidelinesModal';
+import { AccessRestrictedModal } from './AccessRestrictedModal';
 import { CustomReportBuilderModal } from './CustomReportBuilderModal';
 import { NotificationCenterModal } from './NotificationCenterModal';
 import { ActiveSessionBadge } from './ActiveSessionBadge';
@@ -41,9 +41,18 @@ import {
 } from 'lucide-react';
 
 export const Navbar = () => {
-  const { currentUser, currentRole, logoutUser, candidates, selectedCandidateToken, setSelectedCandidateToken, notifications } = useApp();
+  const { 
+    currentUser, 
+    currentRole, 
+    logoutUser, 
+    candidates, 
+    selectedCandidateToken, 
+    setSelectedCandidateToken, 
+    notifications,
+    accessDeniedNotice,
+    closeAccessDeniedNotice
+  } = useApp();
   const [showSupportModal, setShowSupportModal] = useState(false);
-  const [showGuidelinesModal, setShowGuidelinesModal] = useState(false);
   const [showCustomReportModal, setShowCustomReportModal] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -250,16 +259,6 @@ export const Navbar = () => {
                     {unreadCount}
                   </span>
                 )}
-              </button>
-
-              {/* Help Guidelines Button */}
-              <button
-                onClick={() => setShowGuidelinesModal(true)}
-                className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-indigo-800 bg-white hover:bg-indigo-50 font-bold border border-slate-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="Operational Guidelines & How-To Manual"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>Guidelines</span>
               </button>
 
               {/* Support Ticket Raising Button */}
@@ -490,14 +489,6 @@ export const Navbar = () => {
               </button>
 
               <button
-                onClick={() => { setMobileMenuOpen(false); setShowGuidelinesModal(true); }}
-                className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 flex items-center gap-2.5 transition-all text-left shadow-2xs"
-              >
-                <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span className="truncate">Guidelines 📖</span>
-              </button>
-
-              <button
                 onClick={() => { setMobileMenuOpen(false); setShowSupportModal(true); }}
                 className="p-3 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-950 border border-purple-200 flex items-center gap-2.5 transition-all text-left shadow-2xs"
               >
@@ -544,9 +535,10 @@ export const Navbar = () => {
         <SupportTicketModal onClose={() => setShowSupportModal(false)} />
       )}
 
-      {showGuidelinesModal && (
-        <HelpGuidelinesModal onClose={() => setShowGuidelinesModal(false)} />
-      )}
+      <AccessRestrictedModal 
+        notice={accessDeniedNotice} 
+        onClose={closeAccessDeniedNotice} 
+      />
 
       {showTermsModal && (
         <TermsAndPrivacyPolicyModal 

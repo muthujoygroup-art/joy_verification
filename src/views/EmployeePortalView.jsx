@@ -828,11 +828,11 @@ export const EmployeePortalView = () => {
           </div>
         )}
 
-        {/* ⚡ ATTENTION & CANDIDATE GUIDELINES BANNER */}
+        {/* ⚡ ATTENTION & CANDIDATE INSTRUCTIONS BANNER */}
         <div className="p-4 bg-slate-950 text-white rounded-2xl space-y-2.5 shadow-md border border-slate-800">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-400" />
-            <h3 className="font-black text-xs uppercase tracking-wider text-amber-300">Important Candidate Attention & Guidelines</h3>
+            <h3 className="font-black text-xs uppercase tracking-wider text-amber-300">Important Candidate Attention & Instructions</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-200">
             <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">

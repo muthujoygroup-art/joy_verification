@@ -1807,5 +1807,40 @@ body[data-role="employee_link"] {
   will-change: transform;
 }
 
+/* ==============================================================================
+ * 🚫 DISABLED FEATURE & NO-ACCESS STYLES (MOUSE HOVER DISABLE SYMBOL)
+ * ============================================================================== */
+.disabled-feature-action,
+.feature-disabled,
+[data-disabled="true"],
+button:disabled,
+button.disabled,
+.btn:disabled,
+.btn.disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed !important;
+}
 
+.disabled-feature-action {
+  opacity: 0.55 !important;
+  filter: grayscale(35%);
+  cursor: not-allowed !important;
+  user-select: none;
+  position: relative;
+  transition: all 0.15s ease-in-out;
+}
 
+.disabled-feature-action:hover {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+}
+
+.disabled-feature-action *,
+.disabled-feature-action button,
+.disabled-feature-action span,
+.disabled-feature-action svg {
+  cursor: not-allowed !important;
+  pointer-events: none;
+}

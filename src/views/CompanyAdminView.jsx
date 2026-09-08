@@ -2143,70 +2143,6 @@ export const CompanyAdminView = () => {
 
             </div>
 
-            {/* Card 3: HR Executive Operational Guidelines Editor */}
-            <div className="p-5 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-4">
-              <div className="flex items-center justify-between border-b border-emerald-200 pb-2">
-                <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  <span>Edit HR Executive Operational Guidelines & Onboarding Policy (Shown to HR Team)</span>
-                </h4>
-                <span className="badge badge-emerald text-[10px]">Company Admin Editable</span>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">HR Manual Header Title</label>
-                  <input 
-                    type="text" 
-                    value={platformGuidelines.hr?.title || ''}
-                    onChange={(e) => updateGuidelines('hr', { title: e.target.value })}
-                    className="form-input text-xs font-bold bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">HR Onboarding Policy Summary</label>
-                  <textarea 
-                    rows={2}
-                    value={platformGuidelines.hr?.summary || ''}
-                    onChange={(e) => updateGuidelines('hr', { summary: e.target.value })}
-                    className="form-input text-xs bg-white"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Step 1 Instruction</label>
-                    <textarea 
-                      rows={3}
-                      value={platformGuidelines.hr?.step1 || ''}
-                      onChange={(e) => updateGuidelines('hr', { step1: e.target.value })}
-                      className="form-input text-xs bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Step 2 Instruction</label>
-                    <textarea 
-                      rows={3}
-                      value={platformGuidelines.hr?.step2 || ''}
-                      onChange={(e) => updateGuidelines('hr', { step2: e.target.value })}
-                      className="form-input text-xs bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Step 3 Instruction</label>
-                    <textarea 
-                      rows={3}
-                      value={platformGuidelines.hr?.step3 || ''}
-                      onChange={(e) => updateGuidelines('hr', { step3: e.target.value })}
-                      className="form-input text-xs bg-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* 📧 Company Email Gateway & Notification Rules Card */}
             <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-white space-y-5 shadow-xs">
@@ -2526,7 +2462,7 @@ export const CompanyAdminView = () => {
             <div className="flex justify-end pt-4 border-t border-slate-100">
               <button type="submit" className="btn btn-company text-xs flex items-center gap-2 font-bold shadow-md">
                 <Save className="w-4 h-4" />
-                <span>Save Company Settings & HR Guidelines</span>
+                <span>Save Company Settings & Policies</span>
               </button>
             </div>
           </form>

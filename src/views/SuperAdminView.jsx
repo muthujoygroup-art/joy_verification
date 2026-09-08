@@ -1538,22 +1538,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     <span>4. Support Helpdesk</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('guidelines')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'guidelines' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <BookOpen className="w-3.5 h-3.5" />
-                    <span>5. Guidelines</span>
-                  </button>
-                  <button
                     onClick={() => setActiveTab('blog_cms')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'blog_cms' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
                   >
                     <FileText className="w-3.5 h-3.5" />
-                    <span>6. Blog / Knowledge Hub CMS</span>
+                    <span>5. Blog & Knowledge Hub CMS</span>
                   </button>
                 </>
               )}
@@ -4887,33 +4878,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         );
       })()}
 
-      {/* TAB 12: PLATFORM GUIDELINES */}
-      {activeTab === 'guidelines' && (
-        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-purple-600" />
-              <span>Platform Role Workflows & Guidelines Hub</span>
-            </h3>
-            <p className="text-xs text-slate-500 font-medium">Review and edit step-by-step operating guidelines for Super Admin, Company Admin, HR Executives, and Candidates</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            {Object.entries(platformGuidelines).map(([roleKey, guide]) => (
-              <div key={roleKey} className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-                <span className="badge badge-purple text-[10px] uppercase font-bold">{roleKey} Guide</span>
-                <h4 className="font-black text-slate-900 text-sm">{guide.title}</h4>
-                <p className="text-slate-600">{guide.summary}</p>
-                <div className="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1 text-[11px] text-slate-700 font-medium">
-                  <p><strong>Step 1:</strong> {guide.step1}</p>
-                  <p><strong>Step 2:</strong> {guide.step2}</p>
-                  <p><strong>Step 3:</strong> {guide.step3}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* TAB 13: PLATFORM SETTINGS & CPANEL MAIL CONFIGURATION */}
       {activeTab === 'settings' && (
