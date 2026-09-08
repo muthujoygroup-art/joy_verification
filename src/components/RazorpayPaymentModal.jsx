@@ -184,7 +184,7 @@ export const RazorpayPaymentModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/40 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -192,24 +192,24 @@ export const RazorpayPaymentModal = ({
       <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Header */}
-        <div className="p-4 sm:px-6 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="p-4 sm:px-6 bg-white text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-3">
             <img src="/joy_logo.png" alt="JOY Logo" className="w-9 h-9 object-contain shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-sm sm:text-base text-white tracking-tight">
+                <h3 className="font-black text-sm sm:text-base text-slate-900 tracking-tight font-outfit">
                   Verification Wallet & Razorpay Gateway
                 </h3>
                 <span className="badge badge-purple text-[8px] font-black">B2B BILLING</span>
               </div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
                 {company.name} • Live Quota: ₹{(company.walletBalance || 0).toLocaleString('en-IN')}
               </p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all cursor-pointer"
+            className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-all cursor-pointer"
             title="Close"
           >
             <X className="w-4 h-4" />

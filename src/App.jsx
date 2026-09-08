@@ -57,10 +57,10 @@ const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivat
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
 const BlogView = lazyWithRetry(() => import('./views/BlogView').then(m => ({ default: m.BlogView })), 'BlogView');
 
-// Seamless Dark Loading Fallback Component (No white flash)
+// Seamless Light Loading Fallback Component
 const RouteLoadingSpinner = () => (
-  <div className="fixed inset-0 bg-[#07090e] flex flex-col items-center justify-center z-50">
-    <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-400 animate-spin"></div>
+  <div className="fixed inset-0 bg-[#F8FAFC] flex flex-col items-center justify-center z-50">
+    <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-500 animate-spin"></div>
   </div>
 );
 
@@ -150,7 +150,7 @@ export const App = () => {
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col justify-between overflow-x-hidden">
+          <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
                 {/* 1. Public Marketing Landing Page (No Portal URLs Leaked) */}

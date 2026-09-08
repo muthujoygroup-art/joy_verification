@@ -128,19 +128,19 @@ const HeroInteractiveCard3D = () => {
     <div className="w-full flex flex-col items-center">
       
       {/* Profile Selector Chips */}
-      <div className="flex items-center justify-center gap-2 mb-6 p-1.5 rounded-2xl dark-glass-card border border-amber-500/20 max-w-md w-full">
+      <div className="flex items-center justify-center gap-2 mb-6 p-1.5 rounded-2xl dark-glass-card border border-slate-200 max-w-md w-full shadow-sm">
         {CANDIDATE_PROFILES.map((p, idx) => (
           <button
             key={p.id}
             onClick={() => handleSelectProfile(idx)}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               selectedIdx === idx
-                ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-lg shadow-amber-500/30 border border-amber-300/60 scale-[1.02]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
+                ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-md shadow-amber-500/25 border border-amber-400 scale-[1.02]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-300"></span>
-            <span className="truncate drop-shadow-xs">{p.roleLabel}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span className="truncate">{p.roleLabel}</span>
           </button>
         ))}
       </div>
@@ -162,42 +162,42 @@ const HeroInteractiveCard3D = () => {
            * FRONT FACE OF VERIFIED EMPLOYEE PASS
            * =============================================================== */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl dark-glass-card border-2 border-amber-500/30 p-6 sm:p-7 flex flex-col justify-between shadow-2xl backdrop-blur-2xl overflow-hidden [backface-visibility:hidden]"
+            className="absolute inset-0 w-full h-full rounded-3xl dark-glass-card border-2 border-amber-300/80 p-6 sm:p-7 flex flex-col justify-between shadow-xl backdrop-blur-2xl overflow-hidden [backface-visibility:hidden] bg-white/95"
             style={{
-              boxShadow: `0 25px 50px -12px ${profile.badgeGlow}, 0 0 40px rgba(245, 158, 11, 0.15)`
+              boxShadow: `0 20px 45px -10px rgba(245, 158, 11, 0.25), 0 4px 15px rgba(15, 23, 42, 0.05)`
             }}
           >
             {/* Dynamic Holographic Foil Specular Sheen */}
             <div
-              className="absolute inset-0 pointer-events-none opacity-40 z-10 transition-opacity"
+              className="absolute inset-0 pointer-events-none opacity-30 z-10 transition-opacity"
               style={{
-                background: `radial-gradient(circle at ${tilt.sheenX}% ${tilt.sheenY}%, rgba(254,240,138,0.4) 0%, rgba(245,158,11,0.25) 25%, rgba(244,63,94,0.18) 50%, transparent 75%)`
+                background: `radial-gradient(circle at ${tilt.sheenX}% ${tilt.sheenY}%, rgba(254,240,138,0.5) 0%, rgba(245,158,11,0.2) 25%, rgba(244,63,94,0.1) 50%, transparent 75%)`
               }}
             />
 
             {/* Scanning Laser Beam Animation */}
             {isScanning && (
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_15px_#f59e0b] z-20 animate-laser-vertical"></div>
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_15px_#f59e0b] z-20 animate-laser-vertical"></div>
             )}
 
             {/* Top Bar: Company & Verification Status */}
-            <div className="flex items-center justify-between border-b border-amber-500/15 pb-4 relative z-10">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4 relative z-10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/40">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white font-black shadow-sm">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-300 font-bold block">
+                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold block">
                     JOY VERIFICATION • VERIFIED EMPLOYEE
                   </span>
-                  <h4 className="font-outfit font-black text-sm text-white tracking-tight">
+                  <h4 className="font-outfit font-black text-sm text-slate-900 tracking-tight">
                     {profile.company}
                   </h4>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-emerald-950/90 px-2.5 py-1 rounded-full border border-emerald-500/50 text-emerald-400 text-[10px] font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-300 text-emerald-700 text-[10px] font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>{profile.status}</span>
               </div>
             </div>
@@ -205,7 +205,7 @@ const HeroInteractiveCard3D = () => {
             {/* Candidate Center Card */}
             <div className="flex items-center gap-4 my-auto relative z-10">
               {/* Avatar Photo Frame */}
-              <div className="relative w-20 h-20 rounded-2xl p-1 bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 shadow-xl shrink-0">
+              <div className="relative w-20 h-20 rounded-2xl p-1 bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 shadow-md shrink-0">
                 <div className={`w-full h-full rounded-xl bg-gradient-to-br ${profile.avatarBg} flex items-center justify-center text-white text-2xl font-black font-outfit relative overflow-hidden`}>
                   <span>{profile.initials}</span>
                   <div className="absolute bottom-1 right-1">
@@ -214,25 +214,25 @@ const HeroInteractiveCard3D = () => {
                 </div>
 
                 {/* Accent Corners */}
-                <span className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-amber-400"></span>
-                <span className="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-amber-400"></span>
-                <span className="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-amber-400"></span>
-                <span className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-amber-400"></span>
+                <span className="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-amber-500"></span>
+                <span className="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-amber-500"></span>
+                <span className="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-amber-500"></span>
+                <span className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-amber-500"></span>
               </div>
 
               {/* Candidate Metadata */}
               <div className="flex-1">
-                <h3 className="text-xl font-black text-white font-outfit leading-snug">
+                <h3 className="text-xl font-black text-slate-900 font-outfit leading-snug">
                   {profile.name}
                 </h3>
-                <p className="text-amber-300 text-xs font-semibold leading-tight mt-0.5">
+                <p className="text-amber-700 text-xs font-semibold leading-tight mt-0.5">
                   {profile.title}
                 </p>
-                <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-300">
-                  <span className="bg-white/10 px-2 py-0.5 rounded border border-amber-500/20 text-slate-200 font-medium">
+                <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-500">
+                  <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-slate-700 font-medium">
                     ID: {profile.candidateId}
                   </span>
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-emerald-600 font-bold">
                     ✓ 100% Authentic
                   </span>
                 </div>
@@ -241,45 +241,42 @@ const HeroInteractiveCard3D = () => {
 
             {/* Clear Verification Badges */}
             <div className="grid grid-cols-2 gap-2.5 my-2 relative z-10">
-              <div className="bg-slate-900/70 border border-amber-500/15 p-2.5 rounded-xl flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <div className="truncate">
-                  <span className="text-[10px] uppercase text-slate-400 block font-bold">Photo & Face Match</span>
-                  <span className="text-xs font-bold text-white">100% Genuine</span>
+                  <span className="text-[10px] uppercase text-slate-500 block font-bold">Photo & Face Match</span>
+                  <span className="text-xs font-bold text-slate-900">100% Genuine</span>
                 </div>
               </div>
 
-              <div className="bg-slate-900/70 border border-amber-500/15 p-2.5 rounded-xl flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex items-center gap-2">
+                <Zap className="w-4 h-4 text-amber-500 shrink-0" />
                 <div className="truncate">
-                  <span className="text-[10px] uppercase text-slate-400 block font-bold">Verification Speed</span>
-                  <span className="text-xs font-bold text-amber-300">{profile.speed}</span>
+                  <span className="text-[10px] uppercase text-slate-500 block font-bold">Verification Speed</span>
+                  <span className="text-xs font-bold text-amber-700">{profile.speed}</span>
                 </div>
               </div>
             </div>
 
             {/* Bottom Section: QR Code & Flip Button */}
-            <div className="border-t border-amber-500/15 pt-3 flex items-center justify-between relative z-10">
+            <div className="border-t border-slate-200 pt-3 flex items-center justify-between relative z-10">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 p-1 flex items-center justify-center text-slate-950 shadow-md">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 p-1 flex items-center justify-center text-slate-900 shadow-xs">
                   <QrCode className="w-full h-full" />
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">
-                    DIGITAL VERIFICATION BADGE
-                  </span>
-                  <span className="text-xs font-bold text-amber-200">
-                    Scan to View Certified Report
-                  </span>
+                <div className="text-[10px] font-mono leading-tight">
+                  <span className="font-bold text-slate-800 block">QR Gate Pass</span>
+                  <span className="text-emerald-600 font-semibold">Ready to Scan</span>
                 </div>
               </div>
 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  soundEngine.playClick();
                   handleFlip();
                 }}
-                className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-xs font-bold text-amber-800 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>View Details</span>
@@ -292,68 +289,68 @@ const HeroInteractiveCard3D = () => {
            * BACK FACE OF VERIFIED PASS (Verification Breakdown)
            * =============================================================== */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl dark-glass-card border-2 border-amber-500/40 p-6 sm:p-7 flex flex-col justify-between shadow-2xl backdrop-blur-2xl overflow-hidden [backface-visibility:hidden] [transform:rotateY(180deg)]"
+            className="absolute inset-0 w-full h-full rounded-3xl dark-glass-card border-2 border-amber-300/80 p-6 sm:p-7 flex flex-col justify-between shadow-xl backdrop-blur-2xl overflow-hidden [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white/95"
             style={{
-              boxShadow: `0 25px 50px -12px ${profile.badgeGlow}`
+              boxShadow: `0 20px 45px -10px rgba(245, 158, 11, 0.25)`
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-amber-500/15 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-amber-400" />
+                <Award className="w-5 h-5 text-amber-500" />
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-300 font-bold block">
+                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold block">
                     BACKGROUND SCREENING SUMMARY
                   </span>
-                  <h4 className="font-outfit font-black text-sm text-white">
+                  <h4 className="font-outfit font-black text-sm text-slate-900">
                     Verified Checklist
                   </h4>
                 </div>
               </div>
 
-              <span className="text-[10px] text-emerald-400 bg-emerald-950/90 px-2 py-0.5 rounded border border-emerald-500/40 font-bold">
+              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 font-bold">
                 100% COMPLIANT
               </span>
             </div>
 
             {/* Checkpoints List - Clear B2B Benefits */}
             <div className="flex flex-col gap-2.5 my-auto text-xs">
-              <div className="p-2.5 rounded-xl bg-slate-900/70 border border-amber-500/15 flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-white block">Employment & Work History</span>
-                  <span className="text-[11px] text-slate-300">{profile.experience}</span>
+                  <span className="font-bold text-slate-900 block">Employment & Work History</span>
+                  <span className="text-[11px] text-slate-600">{profile.experience}</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-900/70 border border-amber-500/15 flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-white block">Bank Account & Salary Match</span>
-                  <span className="text-[11px] text-slate-300">{profile.bankMatch}</span>
+                  <span className="font-bold text-slate-900 block">Bank Account & Salary Match</span>
+                  <span className="text-[11px] text-slate-600">{profile.bankMatch}</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-900/70 border border-amber-500/15 flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-white block">Court & Criminal Record Check</span>
-                  <span className="text-[11px] text-slate-300">{profile.courtScreen}</span>
+                  <span className="font-bold text-slate-900 block">Court & Criminal Record Check</span>
+                  <span className="text-[11px] text-slate-600">{profile.courtScreen}</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-900/70 border border-amber-500/15 flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-white block">Dual-Employment & Moonlighting</span>
-                  <span className="text-[11px] text-emerald-300 font-semibold">Clean — No Overlapping Jobs Detected</span>
+                  <span className="font-bold text-slate-900 block">Dual-Employment & Moonlighting</span>
+                  <span className="text-[11px] text-emerald-700 font-semibold">Clean — No Overlapping Jobs Detected</span>
                 </div>
               </div>
             </div>
 
             {/* Bottom Actions */}
-            <div className="border-t border-amber-500/15 pt-3 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">
+            <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+              <span className="text-[11px] text-slate-500 font-medium">
                 🔒 Verified & Tamper-Proof
               </span>
 
@@ -362,7 +359,7 @@ const HeroInteractiveCard3D = () => {
                   e.stopPropagation();
                   handleFlip();
                 }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/25 cursor-pointer border border-amber-300/40"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 cursor-pointer border border-amber-400"
               >
                 <RotateCw className="w-3.5 h-3.5 text-white" />
                 <span>View Front Badge</span>

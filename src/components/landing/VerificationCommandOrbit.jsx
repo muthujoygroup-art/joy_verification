@@ -186,17 +186,17 @@ export const VerificationCommandOrbit = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Column: 6 Module Selector Cards (lg:col-span-5) */}
-        <div className="lg:col-span-5 dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-2xl backdrop-blur-xl">
+        <div className="lg:col-span-5 dark-glass-card border border-slate-200/90 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-xl backdrop-blur-xl">
           
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
-              <Zap className="w-4 h-4 text-amber-400" />
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
+              <Zap className="w-4 h-4 text-amber-600" />
               <span>CORE SCREENING CHECKS</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-white font-outfit mb-2">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-outfit mb-2">
               Select a Verification Check
             </h3>
-            <p className="text-slate-300 text-xs leading-relaxed mb-5">
+            <p className="text-slate-600 text-xs leading-relaxed mb-5">
               Click any module to see how JOY Verification protects your hiring and delivers instant, reliable results.
             </p>
 
@@ -211,32 +211,36 @@ export const VerificationCommandOrbit = () => {
                     onClick={() => handleSelectModule(idx)}
                     className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between group cursor-pointer ${
                       isSelected
-                        ? 'bg-gradient-to-r from-amber-950/70 via-orange-950/60 to-slate-900 border-amber-400 text-white shadow-lg ring-1 ring-amber-400/50 scale-[1.02]'
-                        : 'bg-slate-900/40 border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:bg-white/5 hover:text-white'
+                        ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 border-amber-400 text-white shadow-lg ring-2 ring-amber-400/40 scale-[1.02]'
+                        : 'bg-white/85 border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-slate-900'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                           isSelected
-                            ? `bg-gradient-to-br ${mod.color} text-slate-950 font-black shadow-md shadow-amber-500/30`
-                            : 'bg-white/10 text-amber-300 group-hover:text-white'
+                            ? `bg-white/20 text-white font-black shadow-xs`
+                            : 'bg-amber-50 text-amber-700 group-hover:bg-amber-100'
                         }`}
                       >
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-white font-outfit leading-snug">
+                        <h4 className={`font-bold text-sm font-outfit leading-snug ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                           {mod.title}
                         </h4>
-                        <span className="text-[11px] text-amber-300/90 block mt-0.5 font-medium">
+                        <span className={`text-[11px] block mt-0.5 font-medium ${isSelected ? 'text-amber-100' : 'text-amber-700'}`}>
                           {mod.badge}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className="text-[11px] font-bold text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-500/30">
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                        isSelected 
+                          ? 'text-white bg-black/20 border-white/30' 
+                          : 'text-amber-800 bg-amber-50 border-amber-200'
+                      }`}>
                         {mod.turnaround}
                       </span>
                     </div>
@@ -246,31 +250,31 @@ export const VerificationCommandOrbit = () => {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-amber-500/15 flex items-center justify-between text-xs text-slate-400">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+            <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               All 6 Screening Engines Active
             </span>
-            <span className="text-amber-200">100% Automated</span>
+            <span className="text-amber-800 font-medium">100% Automated</span>
           </div>
 
         </div>
 
         {/* Right Column: Feature Breakdown & Interactive Preview (lg:col-span-7) */}
-        <div className="lg:col-span-7 dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl">
+        <div className="lg:col-span-7 dark-glass-card border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl backdrop-blur-xl">
           
           <div>
             {/* Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-500/15 pb-5 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
               <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/30 shrink-0`}>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/20 shrink-0`}>
                   <activeModule.icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-300 font-bold block">
+                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold block">
                     {activeModule.badge}
                   </span>
-                  <h3 className="text-2xl font-black text-white font-outfit">
+                  <h3 className="text-2xl font-black text-slate-900 font-outfit">
                     {activeModule.title}
                   </h3>
                 </div>
@@ -279,16 +283,16 @@ export const VerificationCommandOrbit = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode(viewMode === 'benefits' ? 'certificate' : 'benefits')}
-                  className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-bold text-amber-900 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Eye className="w-3.5 h-3.5 text-amber-400" />
+                  <Eye className="w-3.5 h-3.5 text-amber-600" />
                   <span>{viewMode === 'benefits' ? 'View Sample Certificate' : 'View Key Benefits'}</span>
                 </button>
 
                 <button
                   onClick={handleRunTest}
                   disabled={isSimulating}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/25 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
                   <span>{isSimulating ? 'Verifying...' : 'Simulate Check'}</span>
@@ -297,24 +301,24 @@ export const VerificationCommandOrbit = () => {
             </div>
 
             {/* Description */}
-            <p className="text-slate-200 text-sm leading-relaxed mb-6 font-normal">
+            <p className="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
               {activeModule.summary}
             </p>
 
             {/* Switchable View: Benefits or Sample Certificate */}
             {viewMode === 'benefits' ? (
               <div>
-                <h4 className="text-xs uppercase tracking-wider text-amber-300 font-bold mb-3">
+                <h4 className="text-xs uppercase tracking-wider text-amber-800 font-bold mb-3">
                   Key Business Benefits:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   {activeModule.benefits.map((benefit, bIdx) => (
                     <div
                       key={bIdx}
-                      className="p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/15 flex items-start gap-2.5"
+                      className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-200 leading-snug font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="text-xs text-slate-700 leading-snug font-medium">
                         {benefit}
                       </span>
                     </div>
@@ -322,61 +326,61 @@ export const VerificationCommandOrbit = () => {
                 </div>
               </div>
             ) : (
-              <div className="mb-6 p-5 rounded-2xl bg-slate-950/80 border border-amber-500/30 relative overflow-hidden">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+              <div className="mb-6 p-5 rounded-2xl bg-white border border-slate-200 shadow-md relative overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-black text-white font-outfit">
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-black text-slate-900 font-outfit">
                       Certified Verification Result
                     </span>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                     {activeModule.previewCard.resultBadge}
                   </span>
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Check Type:</span>
-                    <span className="text-white font-bold">{activeModule.previewCard.checkName}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">Check Type:</span>
+                    <span className="text-slate-900 font-bold">{activeModule.previewCard.checkName}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Reference / Record:</span>
-                    <span className="text-slate-200">{activeModule.previewCard.idNumber}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">Reference / Record:</span>
+                    <span className="text-slate-700">{activeModule.previewCard.idNumber}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-slate-400">Candidate / Title:</span>
-                    <span className="text-amber-300 font-medium">{activeModule.previewCard.holderName}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">Candidate / Title:</span>
+                    <span className="text-amber-800 font-medium">{activeModule.previewCard.holderName}</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span className="text-slate-400">Verification Outcome:</span>
-                    <span className="text-emerald-400 font-bold">{activeModule.previewCard.matchStatus}</span>
+                    <span className="text-slate-500">Verification Outcome:</span>
+                    <span className="text-emerald-700 font-bold">{activeModule.previewCard.matchStatus}</span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/15 text-center">
+            <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-center">
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Turnaround</span>
-                <span className="text-sm font-black text-amber-400">{activeModule.turnaround}</span>
+                <span className="text-[10px] text-slate-600 block font-semibold uppercase">Turnaround</span>
+                <span className="text-sm font-black text-amber-700">{activeModule.turnaround}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Accuracy</span>
-                <span className="text-sm font-black text-emerald-400">{activeModule.accuracy}</span>
+                <span className="text-[10px] text-slate-600 block font-semibold uppercase">Accuracy</span>
+                <span className="text-sm font-black text-emerald-700">{activeModule.accuracy}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Compliance</span>
-                <span className="text-sm font-black text-orange-400">100% Legal</span>
+                <span className="text-[10px] text-slate-600 block font-semibold uppercase">Compliance</span>
+                <span className="text-sm font-black text-orange-700">100% Legal</span>
               </div>
             </div>
 
           </div>
 
           {/* Bottom Action */}
-          <div className="mt-6 pt-5 border-t border-amber-500/15 flex flex-wrap items-center justify-between gap-4">
-            <span className="text-xs text-slate-300">
+          <div className="mt-6 pt-5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <span className="text-xs text-slate-600">
               Ready to automate this check for your company?
             </span>
             <a

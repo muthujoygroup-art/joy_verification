@@ -52,39 +52,39 @@ const COMPARISON_METRICS = [
 
 export const InteractiveSpeedComparison = () => {
   return (
-    <div className="w-full dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full dark-glass-card border border-slate-200/90 rounded-3xl p-6 sm:p-9 shadow-xl backdrop-blur-xl relative overflow-hidden">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/15 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
         <div>
-          <div className="flex items-center gap-2 text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">
             <Zap className="w-3.5 h-3.5" />
             <span>HOW WE COMPARE</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
             Traditional 15-Day Agency vs JOY Verification
           </h3>
-          <p className="text-slate-300 text-xs sm:text-sm mt-1">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1">
             See why leading HR teams are replacing slow, expensive background check agencies with our modern platform.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             <span>Under 1 Minute Results</span>
           </span>
         </div>
       </div>
 
       {/* Comparison Grid Table */}
-      <div className="flex flex-col divide-y divide-amber-500/15">
+      <div className="flex flex-col divide-y divide-slate-200">
         
         {/* Table Column Headers */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pb-4 text-xs uppercase tracking-wider text-slate-400 font-bold hidden md:grid">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pb-4 text-xs uppercase tracking-wider text-slate-500 font-bold hidden md:grid">
           <div className="md:col-span-4">What You Get</div>
-          <div className="md:col-span-4 text-rose-400">Traditional Background Agency (The Old Way)</div>
-          <div className="md:col-span-4 text-amber-400">JOY Verification (The Modern Way)</div>
+          <div className="md:col-span-4 text-rose-700">Traditional Background Agency (The Old Way)</div>
+          <div className="md:col-span-4 text-amber-700">JOY Verification (The Modern Way)</div>
         </div>
 
         {/* Rows */}
@@ -95,33 +95,33 @@ export const InteractiveSpeedComparison = () => {
               
               {/* Parameter Name */}
               <div className="md:col-span-4 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-slate-900/60 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-amber-700 shrink-0">
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-white font-outfit">{row.category}</h4>
-                  <span className="text-[11px] text-emerald-400 font-bold block sm:hidden">
+                  <h4 className="font-bold text-sm text-slate-900 font-outfit">{row.category}</h4>
+                  <span className="text-[11px] text-emerald-700 font-bold block sm:hidden">
                     {row.saving}
                   </span>
                 </div>
               </div>
 
               {/* Traditional (Old Way) */}
-              <div className="md:col-span-4 p-3 rounded-xl bg-rose-950/20 border border-rose-500/25 flex items-start gap-2.5">
-                <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-                <span className="text-xs text-rose-200 font-medium leading-relaxed">
+              <div className="md:col-span-4 p-3 rounded-xl bg-rose-50/80 border border-rose-200 flex items-start gap-2.5">
+                <XCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <span className="text-xs text-rose-900 font-medium leading-relaxed">
                   {row.traditional}
                 </span>
               </div>
 
               {/* JOY (Modern) */}
-              <div className="md:col-span-4 p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 flex items-start gap-2.5 shadow-md shadow-amber-500/10">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="md:col-span-4 p-3 rounded-xl bg-amber-50/90 border border-amber-200/90 flex items-start gap-2.5 shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-xs text-white font-bold leading-relaxed block">
+                  <span className="text-xs text-slate-900 font-bold leading-relaxed block">
                     {row.joyTrueProfile}
                   </span>
-                  <span className="text-[11px] text-amber-300 font-semibold block mt-0.5">
+                  <span className="text-[11px] text-amber-800 font-semibold block mt-0.5">
                     ✨ {row.saving}
                   </span>
                 </div>
@@ -134,15 +134,15 @@ export const InteractiveSpeedComparison = () => {
       </div>
 
       {/* Bottom Summary Strip */}
-      <div className="mt-8 pt-6 border-t border-amber-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-xs text-slate-300">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+      <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-xs text-slate-600">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span>Trusted by enterprises to screen over 50,000 hires every month.</span>
         </div>
 
         <a
           href="#roi-calculator"
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 font-bold text-xs text-slate-950 flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-500/25 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 font-bold text-xs text-slate-950 flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
         >
           <span>Calculate Your Savings</span>
           <ArrowRight className="w-3.5 h-3.5" />

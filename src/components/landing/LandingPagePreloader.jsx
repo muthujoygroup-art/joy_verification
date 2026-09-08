@@ -84,11 +84,11 @@ export default function LandingPagePreloader({ onFinish }) {
       className={`fixed inset-0 z-[100] flex flex-col items-center justify-center select-none overflow-hidden cursor-pointer transition-all duration-500 ease-out ${
         isExiting 
           ? 'opacity-0 scale-[1.03] pointer-events-none filter blur-sm' 
-          : 'opacity-100 scale-100 bg-[#07090e]'
+          : 'opacity-100 scale-100 bg-[#F8FAFC]'
       }`}
       style={{
         backgroundImage: `
-          radial-gradient(circle at 50% 48%, rgba(245, 158, 11, 0.12) 0%, rgba(7, 9, 14, 0.98) 65%)
+          radial-gradient(circle at 50% 48%, rgba(245, 158, 11, 0.18) 0%, rgba(248, 250, 252, 0.98) 65%)
         `
       }}
     >
@@ -97,7 +97,7 @@ export default function LandingPagePreloader({ onFinish }) {
 
         {/* Soft Ambient Warm Amber Backlight Aura (No Green Circle, No Sharp Borders) */}
         <div 
-          className={`absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-amber-500/15 filter blur-3xl transition-all duration-1000 pointer-events-none ${
+          className={`absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-amber-400/20 filter blur-3xl transition-all duration-1000 pointer-events-none ${
             stage >= 1 ? 'scale-100 opacity-100' : 'scale-75 opacity-50'
           }`} 
         />
@@ -111,7 +111,7 @@ export default function LandingPagePreloader({ onFinish }) {
             alt="JOY TRUE PROFILE" 
             className={`w-36 h-36 sm:w-44 sm:h-44 object-contain relative z-10 transition-all duration-700 ease-out ${
               stage >= 1 
-                ? 'opacity-100 transform scale-100 drop-shadow-[0_12px_32px_rgba(245,158,11,0.45)]' 
+                ? 'opacity-100 transform scale-100 drop-shadow-[0_12px_28px_rgba(245,158,11,0.35)]' 
                 : 'opacity-0 transform scale-80 filter blur-[2px]'
             }`}
             style={{
@@ -128,22 +128,22 @@ export default function LandingPagePreloader({ onFinish }) {
           {/* Main Title Row: "JOY" (Kinetic Drop) + "TRUE PROFILE" (3D Stagger Flip) */}
           <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 flex-wrap">
             
-            {/* "JOY": Crisp Pure White 3D Kinetic Slam */}
+            {/* "JOY": Crisp Slate-900 3D Kinetic Slam */}
             <span 
-              className={`text-3xl sm:text-4xl md:text-5xl font-black font-outfit uppercase tracking-tight text-white transition-all duration-500 ${
+              className={`text-3xl sm:text-4xl md:text-5xl font-black font-outfit uppercase tracking-tight text-slate-900 transition-all duration-500 ${
                 stage >= 2 
                   ? 'opacity-100 transform translate-y-0 scale-100' 
                   : 'opacity-0 transform -translate-y-4 scale-110 filter blur-[2px]'
               }`}
               style={{
-                textShadow: '0 0 24px rgba(255, 255, 255, 0.3)',
+                textShadow: '0 2px 10px rgba(15, 23, 42, 0.08)',
                 transition: 'transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease'
               }}
             >
               JOY
             </span>
 
-            {/* "TRUE PROFILE": 3D Kinetic Stagger Decryption */}
+            {/* "TRUE PROFILE": 3D Kinetic Stagger Decryption in Rich Amber-500 */}
             <div 
               className="inline-flex items-center"
               style={{ perspective: '800px' }}
@@ -151,7 +151,7 @@ export default function LandingPagePreloader({ onFinish }) {
               {trueProfileLetters.map((item, idx) => (
                 <span
                   key={idx}
-                  className={`inline-block text-3xl sm:text-4xl md:text-5xl font-black font-outfit uppercase tracking-tight text-amber-400 transform-gpu transition-all duration-400 ${
+                  className={`inline-block text-3xl sm:text-4xl md:text-5xl font-black font-outfit uppercase tracking-tight text-amber-500 transform-gpu transition-all duration-400 ${
                     item.isSpace ? 'w-2 sm:w-3' : ''
                   }`}
                   style={{
@@ -163,7 +163,7 @@ export default function LandingPagePreloader({ onFinish }) {
                     filter: stage >= 2 ? 'blur(0px)' : 'blur(3px)',
                     transitionDelay: `${item.delay}ms`,
                     transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    textShadow: '0 0 25px rgba(245, 158, 11, 0.55)'
+                    textShadow: '0 2px 12px rgba(245, 158, 11, 0.3)'
                   }}
                 >
                   {item.char}
@@ -183,7 +183,7 @@ export default function LandingPagePreloader({ onFinish }) {
               {taglineWords.map((word, wIdx) => (
                 <React.Fragment key={wIdx}>
                   <span
-                    className={`transition-all duration-600 text-amber-300/90 ${
+                    className={`transition-all duration-600 text-amber-800 ${
                       stage >= 3 
                         ? 'opacity-100 transform translate-y-0 filter-none' 
                         : 'opacity-0 transform translate-y-2 filter blur-[2px]'
@@ -197,7 +197,7 @@ export default function LandingPagePreloader({ onFinish }) {
                   </span>
                   {wIdx < taglineWords.length - 1 && (
                     <span 
-                      className={`text-amber-500/40 text-[9px] transition-opacity duration-500 ${
+                      className={`text-amber-500 text-[9px] transition-opacity duration-500 ${
                         stage >= 3 ? 'opacity-100' : 'opacity-0'
                       }`}
                       style={{ transitionDelay: `${wIdx * 120 + 60}ms` }}

@@ -177,7 +177,7 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/40 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -185,7 +185,7 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
       <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Header Bar */}
-        <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="p-4 sm:px-8 bg-white text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-3.5">
             <img 
               src="/joy_logo.png" 
@@ -194,12 +194,12 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-400/30">
+                <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200">
                   🏛️ Statutory Regulatory Framework
                 </span>
-                <span className="text-xs text-slate-400 font-mono hidden sm:inline">ISO 27001 & DPDP Act 2023</span>
+                <span className="text-xs text-slate-500 font-mono hidden sm:inline">ISO 27001 & DPDP Act 2023</span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-white mt-0.5">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 mt-0.5 font-outfit">
                 Government Policy & Legal Compliance Handbook
               </h2>
             </div>
@@ -207,7 +207,7 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

@@ -79,17 +79,17 @@ export const Running3DBackground = () => {
         });
       }
 
-      // Generate circular glowing point texture programmatically
+      // Generate circular glowing point texture programmatically for light theme
       const createCircleTexture = () => {
         const canvas = document.createElement('canvas');
         canvas.width = 64;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
         const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        gradient.addColorStop(0.25, 'rgba(245, 158, 11, 0.95)'); // Warm Amber
-        gradient.addColorStop(0.6, 'rgba(249, 115, 22, 0.4)'); // Coral Orange
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(0, 'rgba(180, 83, 9, 1)'); // Deep Rich Amber
+        gradient.addColorStop(0.35, 'rgba(217, 119, 6, 0.85)'); // Warm Amber
+        gradient.addColorStop(0.7, 'rgba(245, 158, 11, 0.4)'); // Light Amber
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 64, 64);
@@ -107,11 +107,12 @@ export const Running3DBackground = () => {
       );
 
       const pointMat = new THREE.PointsMaterial({
-        color: 0xfbbf24, // Amber-400
+        color: 0xd97706, // Rich Amber-600
         size: 7.5,
         map: createCircleTexture(),
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
+        opacity: 0.85,
         depthWrite: false
       });
 
@@ -136,7 +137,8 @@ export const Running3DBackground = () => {
       const lineMat = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
+        opacity: 0.35,
         depthWrite: false
       });
 
@@ -267,13 +269,13 @@ export const Running3DBackground = () => {
       {/* Native Three.js WebGL Interactive 60FPS Canvas */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-      {/* Luminous Warm Amber, Sunset Coral & Gold Ambient Glow Orbs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[750px] h-[750px] bg-gradient-to-br from-amber-500/12 via-orange-500/8 to-rose-600/6 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-[35%] right-[-10%] w-[850px] h-[850px] bg-gradient-to-bl from-orange-600/10 via-amber-500/8 to-rose-500/6 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[25%] w-[700px] h-[700px] bg-gradient-to-tr from-amber-500/10 via-rose-500/6 to-emerald-400/6 rounded-full blur-[140px] pointer-events-none" />
+      {/* Luminous Warm Amber, Sunset Coral & Gold Ambient Glow Orbs for Light Theme */}
+      <div className="absolute top-[-10%] left-[-5%] w-[750px] h-[750px] bg-gradient-to-br from-amber-400/25 via-orange-300/20 to-rose-300/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[35%] right-[-10%] w-[850px] h-[850px] bg-gradient-to-bl from-orange-300/20 via-amber-300/20 to-rose-300/15 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[25%] w-[700px] h-[700px] bg-gradient-to-tr from-amber-300/20 via-rose-300/15 to-emerald-300/15 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Modern B2B Fine Dot / Subtle Grid Matrix Overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(245,158,11,0.06)_1px,transparent_1px)] bg-[size:32px_32px] opacity-60 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(217,119,6,0.08)_1px,transparent_1px)] bg-[size:32px_32px] opacity-70 pointer-events-none" />
     </div>
   );
 };

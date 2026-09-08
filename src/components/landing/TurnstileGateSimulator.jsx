@@ -79,24 +79,24 @@ const TurnstileGateSimulator = () => {
   };
 
   return (
-    <div className="w-full dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full dark-glass-card border border-slate-200/90 rounded-3xl p-6 sm:p-9 shadow-xl backdrop-blur-xl relative overflow-hidden">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/15 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 font-mono text-[10px] text-amber-700 font-bold uppercase tracking-wider mb-1">
             <HardHat className="w-3.5 h-3.5" />
             <span>INTELLIGENT ACCESS & TURNSTILE CONTROLLER</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
             Workforce Digital Turnstile Gate Simulator
           </h3>
-          <p className="text-slate-300 text-xs sm:text-sm mt-1">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1">
             Experience sub-second biometric QR pass authentication directly integrated with facility turnstiles and plant security gates.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-900/60 border border-amber-500/20 p-1.5 rounded-2xl font-mono text-xs">
+        <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 p-1.5 rounded-2xl font-mono text-xs">
           {TEST_WORKERS.map((w) => (
             <button
               key={w.id}
@@ -108,7 +108,7 @@ const TurnstileGateSimulator = () => {
               className={`px-3 py-2 rounded-xl font-bold transition-all cursor-pointer ${
                 selectedWorker.id === w.id
                   ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black shadow-md shadow-amber-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {w.valid ? '✅ Valid Pass Profile' : '⚠️ Incomplete Pass Profile'}
@@ -122,10 +122,10 @@ const TurnstileGateSimulator = () => {
         
         {/* Left Column: Digital QR Badge Preview (lg:col-span-5) */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          <div className="bg-[#0c101d]/90 border border-amber-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-md relative overflow-hidden">
             
-            <div className="flex items-center justify-between border-b border-amber-500/15 pb-3 mb-4">
-              <span className="font-mono text-[10px] uppercase text-slate-400 font-bold">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <span className="font-mono text-[10px] uppercase text-slate-500 font-bold">
                 CANDIDATE PASS CREDENTIAL
               </span>
               <span className={`font-mono text-[9px] px-2 py-0.5 rounded border font-bold ${selectedWorker.badgeColor}`}>
@@ -138,14 +138,14 @@ const TurnstileGateSimulator = () => {
                 {selectedWorker.name.charAt(0)}
               </div>
               <div>
-                <h4 className="font-bold text-base text-white font-outfit">{selectedWorker.name}</h4>
-                <p className="text-xs text-slate-300 font-semibold">{selectedWorker.role}</p>
-                <p className="text-[11px] text-amber-300 font-mono mt-0.5">{selectedWorker.company}</p>
+                <h4 className="font-bold text-base text-slate-900 font-outfit">{selectedWorker.name}</h4>
+                <p className="text-xs text-slate-600 font-semibold">{selectedWorker.role}</p>
+                <p className="text-[11px] text-amber-700 font-mono mt-0.5">{selectedWorker.company}</p>
               </div>
             </div>
 
             {/* Simulated Interactive QR Code Card */}
-            <div className="bg-white p-3 rounded-xl flex items-center justify-center relative my-3 shadow-md">
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-center relative my-3 shadow-inner">
               <QrCode className="w-28 h-28 text-slate-900" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-[10px] font-black shadow-md">
@@ -154,15 +154,15 @@ const TurnstileGateSimulator = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mt-2">
               <span>Pass ID: {selectedWorker.passId}</span>
-              <span className="text-amber-300 font-bold">{selectedWorker.codeTime}</span>
+              <span className="text-amber-700 font-bold">{selectedWorker.codeTime}</span>
             </div>
 
             <button
               onClick={handleSimulateScan}
               disabled={gateState === 'scanning'}
-              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Zap className="w-4 h-4" />
               <span>{gateState === 'scanning' ? 'Authenticating Turnstile...' : 'Tap Digital QR Pass to Scan'}</span>
@@ -175,67 +175,67 @@ const TurnstileGateSimulator = () => {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Turnstile Physical Representation */}
-          <div className="bg-[#0c101d]/90 border border-amber-500/20 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center min-h-[280px] shadow-2xl relative overflow-hidden">
+          <div className="bg-slate-50/90 border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center min-h-[280px] shadow-inner relative overflow-hidden">
             
             {/* Status Beam Indicator at Top of Gate */}
             <div className="flex items-center gap-2 mb-6">
-              <span className="font-mono text-xs text-slate-400 font-bold uppercase">Gate Status:</span>
+              <span className="font-mono text-xs text-slate-500 font-bold uppercase">Gate Status:</span>
               {gateState === 'idle' && (
-                <span className="font-mono text-xs text-slate-300 bg-white/10 px-3 py-1 rounded-full border border-amber-500/20 font-bold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span className="font-mono text-xs text-slate-700 bg-white border border-slate-200 px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                   READY TO SCAN
                 </span>
               )}
               {gateState === 'scanning' && (
-                <span className="font-mono text-xs text-amber-300 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-500/40 font-bold flex items-center gap-1.5 animate-pulse">
-                  <Activity className="w-3.5 h-3.5 animate-spin" />
+                <span className="font-mono text-xs text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 font-bold flex items-center gap-1.5 animate-pulse">
+                  <Activity className="w-3.5 h-3.5 animate-spin text-amber-600" />
                   AUTHENTICATING (0.38s)...
                 </span>
               )}
               {gateState === 'granted' && (
-                <span className="font-mono text-xs text-emerald-300 bg-emerald-950/90 px-3 py-1 rounded-full border border-emerald-500/50 font-bold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="font-mono text-xs text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   ACCESS GRANTED • TURNSTILE UNLOCKED
                 </span>
               )}
               {gateState === 'denied' && (
-                <span className="font-mono text-xs text-rose-300 bg-rose-950/90 px-3 py-1 rounded-full border border-rose-500/50 font-bold flex items-center gap-1.5">
-                  <XCircle className="w-3.5 h-3.5" />
+                <span className="font-mono text-xs text-rose-800 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 font-bold flex items-center gap-1.5">
+                  <XCircle className="w-3.5 h-3.5 text-rose-600" />
                   ACCESS DENIED • STATUTORY CLEARANCE REQUIRED
                 </span>
               )}
             </div>
 
             {/* Turnstile Physical Barrier Graphic */}
-            <div className="w-full max-w-sm flex items-center justify-between gap-4 py-4 px-6 rounded-2xl bg-slate-900/60 border border-amber-500/15 relative">
+            <div className="w-full max-w-sm flex items-center justify-between gap-4 py-4 px-6 rounded-2xl bg-white border border-slate-200 relative shadow-sm">
               {/* Left Turnstile Pillar */}
-              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-700 to-slate-900 border border-amber-500/20 flex flex-col items-center justify-between p-2 shadow-lg">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                <span className="text-[8px] font-mono text-slate-400">PIL-L</span>
+              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-2 shadow-xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                <span className="text-[8px] font-mono text-slate-600 font-bold">PIL-L</span>
               </div>
 
               {/* Center Barrier Arms (Open or Closed) */}
               <div className="flex-1 flex items-center justify-center relative h-28">
                 {gateState === 'granted' ? (
                   <div className="flex items-center gap-6 transition-all duration-500">
-                    <div className="w-16 h-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full shadow-[0_0_15px_#34d399] -rotate-45 origin-left transition-transform"></div>
-                    <div className="w-16 h-2.5 bg-gradient-to-l from-emerald-400 to-teal-400 rounded-full shadow-[0_0_15px_#34d399] rotate-45 origin-right transition-transform"></div>
+                    <div className="w-16 h-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] -rotate-45 origin-left transition-transform"></div>
+                    <div className="w-16 h-2.5 bg-gradient-to-l from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] rotate-45 origin-right transition-transform"></div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 transition-all duration-300">
-                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_15px_#f43f5e]' : 'bg-slate-500'}`}></div>
-                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_15px_#f43f5e]' : 'bg-slate-500'}`}></div>
+                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
+                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
                   </div>
                 )}
                 
                 {/* Center Lock Status Icon */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   {gateState === 'granted' ? (
-                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-400 flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-full bg-emerald-100 border border-emerald-400 text-emerald-700 flex items-center justify-center">
                       <Unlock className="w-4 h-4" />
                     </div>
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-white/10 border border-amber-500/20 text-slate-400 flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-300 text-slate-500 flex items-center justify-center">
                       <Lock className="w-4 h-4" />
                     </div>
                   )}
@@ -243,35 +243,35 @@ const TurnstileGateSimulator = () => {
               </div>
 
               {/* Right Turnstile Pillar */}
-              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-700 to-slate-900 border border-amber-500/20 flex flex-col items-center justify-between p-2 shadow-lg">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                <span className="text-[8px] font-mono text-slate-400">PIL-R</span>
+              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-2 shadow-xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                <span className="text-[8px] font-mono text-slate-600 font-bold">PIL-R</span>
               </div>
             </div>
 
           </div>
 
           {/* Real-time Turnstile Muster Roll Log Feed */}
-          <div className="bg-[#0c101d]/90 border border-amber-500/20 rounded-2xl p-4 font-mono text-xs">
-            <div className="flex items-center justify-between text-slate-400 text-[10px] uppercase font-bold border-b border-amber-500/15 pb-2 mb-2">
-              <span className="flex items-center gap-1.5 text-amber-300">
-                <Activity className="w-3.5 h-3.5" />
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 font-mono text-xs shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold border-b border-slate-100 pb-2 mb-2">
+              <span className="flex items-center gap-1.5 text-amber-800">
+                <Activity className="w-3.5 h-3.5 text-amber-600" />
                 <span>LIVE MUSTER ROLL ACCESS STREAM</span>
               </span>
-              <span className="text-emerald-400">TURNSTILE GATE 04 ONLINE</span>
+              <span className="text-emerald-700">TURNSTILE GATE 04 ONLINE</span>
             </div>
 
             <div className="flex flex-col gap-1.5">
               {accessLogs.map((log, idx) => (
-                <div key={idx} className="flex items-center justify-between text-[11px] text-slate-300 py-1 border-b border-white/5 last:border-0">
+                <div key={idx} className="flex items-center justify-between text-[11px] text-slate-600 py-1 border-b border-slate-100 last:border-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-500">[{log.time}]</span>
-                    <span className="font-bold text-white">{log.name}</span>
-                    <span className="text-slate-400">({log.id})</span>
+                    <span className="text-slate-400">[{log.time}]</span>
+                    <span className="font-bold text-slate-900">{log.name}</span>
+                    <span className="text-slate-500">({log.id})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-bold">{log.status}</span>
-                    <span className="text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30 text-[10px]">
+                    <span className="text-emerald-700 font-bold">{log.status}</span>
+                    <span className="text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 text-[10px]">
                       {log.latency}
                     </span>
                   </div>
