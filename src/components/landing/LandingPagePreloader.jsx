@@ -230,15 +230,6 @@ export default function LandingPagePreloader({ onFinish }) {
         </div>
 
       </div>
-
-      {/* Discreet click-to-skip hint */}
-      <div 
-        className={`absolute bottom-6 font-mono text-[10px] text-slate-500 tracking-wider transition-opacity duration-500 ${
-          stage >= 2 ? 'opacity-50 hover:opacity-100' : 'opacity-0'
-        }`}
-      >
-        CLICK ANYWHERE TO ENTER
-      </div>
     </div>
   );
 }
