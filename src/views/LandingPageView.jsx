@@ -594,15 +594,20 @@ export const LandingPageView = () => {
           
           {/* Logo Brand */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform border border-amber-300/40">
-              <ShieldCheck className="w-5 h-5 text-slate-950 stroke-[2.5]" />
+            <div className="relative shrink-0">
+              <img 
+                src="/joy_logo.png" 
+                alt="JOY TRUE PROFILE Logo" 
+                className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform" 
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0c0f17] animate-pulse" />
             </div>
             <div>
               <span className="text-lg font-black tracking-tight text-white flex items-center gap-1.5 font-outfit">
-                JOY <span className="text-gradient-electric">TrueProfile</span>
+                JOY <span className="text-gradient-electric">TRUE PROFILE</span>
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-amber-300/90 block -mt-0.5 font-bold">
-                Employee Profile Verification
+              <span className="text-[10px] uppercase tracking-wider text-amber-300 block -mt-0.5 font-bold">
+                Instant Workforce Verification
               </span>
             </div>
           </a>
