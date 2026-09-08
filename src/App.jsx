@@ -44,8 +44,10 @@ function lazyWithRetry(componentImport, chunkName = 'chunk') {
   });
 }
 
-// Route-Level Code Splitting & Security Chunk Isolation (Resilient Lazy Loading)
-const LandingPageView = lazyWithRetry(() => import('./views/LandingPageView').then(m => ({ default: m.LandingPageView })), 'LandingPageView');
+// Statically import LandingPageView to prevent Suspense fallback flash on reload
+import { LandingPageView } from './views/LandingPageView';
+
+// Route-Level Code Splitting for Authenticated Portals
 const LoginView = lazyWithRetry(() => import('./views/LoginView').then(m => ({ default: m.LoginView })), 'LoginView');
 const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })), 'SuperAdminView');
 const CompanyAdminView = lazyWithRetry(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })), 'CompanyAdminView');
@@ -55,11 +57,10 @@ const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivat
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
 const BlogView = lazyWithRetry(() => import('./views/BlogView').then(m => ({ default: m.BlogView })), 'BlogView');
 
-// Loading Fallback Component
+// Seamless Dark Loading Fallback Component (No white flash)
 const RouteLoadingSpinner = () => (
-  <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
-    <div className="w-10 h-10 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
-    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Loading Secure Workspace...</span>
+  <div className="fixed inset-0 bg-[#07090e] flex flex-col items-center justify-center z-50">
+    <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-400 animate-spin"></div>
   </div>
 );
 
@@ -149,7 +150,7 @@ export const App = () => {
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between overflow-x-hidden">
+          <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
                 {/* 1. Public Marketing Landing Page (No Portal URLs Leaked) */}
