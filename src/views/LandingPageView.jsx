@@ -581,27 +581,27 @@ export const LandingPageView = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070A13] text-slate-100 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0C0F17] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
       
-      {/* 60FPS Running 3D Animated Background & Cosmic Energy Mesh */}
+      {/* 60FPS Running 3D Animated Background & Warm Cosmic Energy Mesh */}
       <Running3DBackground />
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION (HIGH-CONTRAST DARK GLASS HEADER)
+       * 1. TOP NAVIGATION (HIGH-CONTRAST WARM DARK GLASS HEADER)
        * ============================================================================== */}
       <header className="dark-glass-nav sticky top-0 z-50 w-full px-4 sm:px-8 py-3 transition-all shadow-xl">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           
           {/* Logo Brand */}
           <a href="#" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-105 transition-transform border border-white/20">
-              <ShieldCheck className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform border border-amber-300/40">
+              <ShieldCheck className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
             <div>
               <span className="text-lg font-black tracking-tight text-white flex items-center gap-1.5 font-outfit">
                 JOY <span className="text-gradient-electric">TrueProfile</span>
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-300/80 block -mt-0.5 font-bold">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-amber-300/90 block -mt-0.5 font-bold">
                 Employee Profile Verification
               </span>
             </div>
@@ -609,17 +609,17 @@ export const LandingPageView = () => {
 
           {/* Center Navigation Links */}
           <nav className="hidden xl:flex items-center gap-6 font-mono text-xs text-slate-200 font-bold">
-            <a href="#features" className="hover:text-cyan-400 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-cyan-400 transition-colors">How It Works</a>
-            <a href="#solutions" className="hover:text-cyan-400 transition-colors">Solutions</a>
-            <a href="#interactive-lab" className="hover:text-cyan-400 transition-colors">Simulator</a>
-            <a href="#roi-calculator" className="hover:text-cyan-400 transition-colors">ROI Calculator</a>
+            <a href="#features" className="hover:text-amber-300 transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-amber-300 transition-colors">How It Works</a>
+            <a href="#solutions" className="hover:text-amber-300 transition-colors">Solutions</a>
+            <a href="#interactive-lab" className="hover:text-amber-300 transition-colors">Simulator</a>
+            <a href="#roi-calculator" className="hover:text-amber-300 transition-colors">ROI Calculator</a>
             
             {/* More Resources Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
-                className="hover:text-cyan-400 transition-colors flex items-center gap-1 cursor-pointer"
+                className="hover:text-amber-300 transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <span>Resources</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
@@ -627,31 +627,31 @@ export const LandingPageView = () => {
 
               {resourcesDropdownOpen && (
                 <div 
-                  className="absolute left-0 mt-2 w-52 dark-glass-card bg-[#0B101E]/95 border border-white/15 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  className="absolute left-0 mt-2 w-52 dark-glass-card bg-[#121826]/95 border border-amber-500/20 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setResourcesDropdownOpen(false)}
                 >
-                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <Cpu className="w-3.5 h-3.5 text-amber-400" />
                     <span>Architecture</span>
                   </a>
-                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <Sliders className="w-3.5 h-3.5 text-amber-400" />
                     <span>Specifications</span>
                   </a>
-                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <Radio className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <Radio className="w-3.5 h-3.5 text-amber-400" />
                     <span>India Radar</span>
                   </a>
-                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <Star className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <Star className="w-3.5 h-3.5 text-amber-400" />
                     <span>Client Reviews</span>
                   </a>
-                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <BookOpen className="w-3.5 h-3.5 text-amber-400" />
                     <span>Knowledge Hub</span>
                   </a>
-                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors flex items-center gap-2">
-                    <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 transition-colors flex items-center gap-2">
+                    <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
                     <span>FAQ</span>
                   </a>
                 </div>
@@ -666,13 +666,13 @@ export const LandingPageView = () => {
             <button
               onClick={handleToggleSound}
               title={soundMuted ? 'Unmute Futuristic UI Sound Effects' : 'Mute UI Sound Effects'}
-              className="p-2.5 rounded-xl text-xs font-bold text-slate-200 bg-white/10 hover:bg-white/15 border border-white/15 transition-all flex items-center justify-center cursor-pointer shadow-sm"
+              className="p-2.5 rounded-xl text-xs font-bold text-slate-200 bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 transition-all flex items-center justify-center cursor-pointer shadow-sm"
               aria-label="Toggle Sound Effects"
             >
               {soundMuted ? (
                 <VolumeX className="w-4 h-4 text-slate-400" />
               ) : (
-                <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <Volume2 className="w-4 h-4 text-amber-400 animate-pulse" />
               )}
             </button>
 
@@ -680,7 +680,7 @@ export const LandingPageView = () => {
             <div className="relative">
               <button
                 onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-200 bg-white/10 hover:bg-white/15 border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-200 bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Select Portal</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -688,17 +688,17 @@ export const LandingPageView = () => {
 
               {portalDropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-64 dark-glass-card bg-[#0B101E]/95 border border-white/15 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  className="absolute right-0 mt-2 w-64 dark-glass-card bg-[#121826]/95 border border-amber-500/20 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setPortalDropdownOpen(false)}
                 >
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold border-b border-white/10">
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-amber-300/80 font-bold border-b border-amber-500/15">
                     Authentication Gateways
                   </div>
                   <a
                     href="/login?role=superadmin"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-indigo-500/15 text-slate-200 hover:text-white transition-colors group"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-500/15 text-slate-200 hover:text-white transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 group-hover:bg-amber-600 group-hover:text-slate-950 transition-colors font-bold">
                       <Crown className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -708,9 +708,9 @@ export const LandingPageView = () => {
                   </a>
                   <a
                     href="/login?role=company"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-sky-500/15 text-slate-200 hover:text-white transition-colors group"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-500/15 text-slate-200 hover:text-white transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-300 flex items-center justify-center shrink-0 group-hover:bg-orange-600 group-hover:text-slate-950 transition-colors font-bold">
                       <Building2 className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -722,7 +722,7 @@ export const LandingPageView = () => {
                     href="/login?role=hrexecutive"
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-emerald-500/15 text-slate-200 hover:text-white transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-slate-950 transition-colors font-bold">
                       <UserCheck className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -732,9 +732,9 @@ export const LandingPageView = () => {
                   </a>
                   <a
                     href="/login?role=employee_link"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-500/15 text-slate-200 hover:text-white transition-colors group"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-500/15 text-slate-200 hover:text-white transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-slate-950 transition-colors font-bold">
                       <Smartphone className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -748,7 +748,7 @@ export const LandingPageView = () => {
             
             <button
               onClick={() => setShowDemoModal(true)}
-              className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-cyan-400/30"
+              className="px-5 py-2.5 rounded-xl text-xs font-black text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-amber-300/40"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -758,7 +758,7 @@ export const LandingPageView = () => {
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-2 rounded-lg bg-white/10 border border-white/15 text-slate-200 hover:text-white"
+            className="xl:hidden p-2 rounded-lg bg-slate-900/60 border border-amber-500/20 text-slate-200 hover:text-white"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -766,28 +766,28 @@ export const LandingPageView = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="xl:hidden mt-3 pt-3 border-t border-white/10 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Verification Modules</a>
-            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Moonlighting Radar</a>
-            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Turnstile Simulator</a>
-            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">How It Works</a>
-            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Comparison Matrix</a>
-            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Simulator Studio</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">ROI Calculator</a>
-            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">India Telemetry Radar</a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">Reviews</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-cyan-400 font-medium">FAQ</a>
+          <div className="xl:hidden mt-3 pt-3 border-t border-amber-500/15 flex flex-col gap-3 font-mono text-xs px-2 pb-2">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Verification Modules</a>
+            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Moonlighting Radar</a>
+            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Turnstile Simulator</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">How It Works</a>
+            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Comparison Matrix</a>
+            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Simulator Studio</a>
+            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">ROI Calculator</a>
+            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">India Telemetry Radar</a>
+            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">Reviews</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1.5 text-slate-200 hover:text-amber-300 font-medium">FAQ</a>
             
-            <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
+            <div className="pt-2 border-t border-amber-500/15 flex flex-col gap-2">
               <a
                 href="/login?role=hrexecutive"
-                className="w-full py-2 rounded-xl font-bold text-xs text-white bg-white/10 hover:bg-white/20 text-center border border-white/15"
+                className="w-full py-2 rounded-xl font-bold text-xs text-white bg-slate-900/80 hover:bg-slate-800 text-center border border-amber-500/20"
               >
                 Portals & Login
               </a>
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-cyan-600 hover:bg-cyan-500 text-center shadow-sm"
+                className="w-full py-2.5 rounded-xl font-black text-xs text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-center shadow-md shadow-amber-500/20"
               >
                 Book Live Demo
               </button>
@@ -806,9 +806,9 @@ export const LandingPageView = () => {
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
             {/* Live Telemetry Pill */}
-            <div className="dark-glass-pill inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 shadow-md hover-jump-subtle border border-cyan-500/30 text-cyan-300 font-mono text-xs cursor-pointer">
+            <div className="dark-glass-pill inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 shadow-md hover-jump-subtle border border-amber-500/30 text-amber-300 font-mono text-xs cursor-pointer">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="font-mono font-bold uppercase tracking-wider text-[11px] text-slate-200">
+              <span className="font-mono font-bold uppercase tracking-wider text-[11px] text-amber-200">
                 LIVE: 520,000+ Employee Profiles Verified Across 34 Indian Hubs
               </span>
             </div>
@@ -822,7 +822,7 @@ export const LandingPageView = () => {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8 font-normal">
+            <p className="text-base sm:text-lg text-slate-200 max-w-xl leading-relaxed mb-8 font-normal">
               Zero manual paperwork. Zero endless phone calls. JOY TrueProfile makes employee profile verification as simple as sending a link. Validate digital identity, past employment history, dual-employment moonlighting, and direct bank details in sub-45 seconds.
             </p>
 
@@ -830,7 +830,7 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-6 py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-xl shadow-cyan-500/30 hover-jump transition-all flex items-center gap-2 cursor-pointer border border-cyan-400/40"
+                className="px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-xl shadow-amber-500/30 hover-jump transition-all flex items-center gap-2 cursor-pointer border border-amber-300/40"
               >
                 <span>Book Live Enterprise Demo</span>
                 <ArrowRight className="w-4 h-4" />
@@ -838,9 +838,9 @@ export const LandingPageView = () => {
 
               <a
                 href="#features"
-                className="dark-glass-card px-5 py-3.5 rounded-xl font-bold text-sm text-white hover:text-cyan-300 hover:border-cyan-400/50 shadow-sm hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
+                className="dark-glass-card px-5 py-3.5 rounded-xl font-bold text-sm text-amber-200 hover:text-white hover:border-amber-400/50 shadow-sm hover-jump-subtle transition-all flex items-center gap-2 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <Sparkles className="w-4 h-4 text-amber-400" />
                 <span>Explore Modules</span>
               </a>
 
@@ -848,23 +848,23 @@ export const LandingPageView = () => {
                 href="#moonlighting-radar"
                 className="dark-glass-card px-4 py-3.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white shadow-2xs hover-jump-subtle transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <Zap className="w-3.5 h-3.5 text-indigo-400" />
+                <Zap className="w-3.5 h-3.5 text-orange-400" />
                 <span>Moonlighting Radar</span>
               </a>
             </div>
 
             {/* Quick Metrics Bar with Dark Glass Cards */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 w-full max-w-lg">
-              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
-                <div className="text-2xl sm:text-3xl font-black text-cyan-400 font-outfit">&lt;45s</div>
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-amber-500/15 w-full max-w-lg">
+              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-amber-500/20">
+                <div className="text-2xl sm:text-3xl font-black text-amber-400 font-outfit">&lt;45s</div>
                 <div className="text-xs text-slate-300 font-bold mt-0.5">Automated TAT</div>
               </div>
-              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
+              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-amber-500/20">
                 <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-outfit">0.00%</div>
                 <div className="text-xs text-slate-300 font-bold mt-0.5">Ghost Worker Risk</div>
               </div>
-              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-white/10">
-                <div className="text-2xl sm:text-3xl font-black text-indigo-400 font-outfit">100%</div>
+              <div className="dark-glass-card p-4 rounded-2xl hover-jump-subtle transition-all border border-amber-500/20">
+                <div className="text-2xl sm:text-3xl font-black text-orange-400 font-outfit">100%</div>
                 <div className="text-xs text-slate-300 font-bold mt-0.5">DPDP Act Compliant</div>
               </div>
             </div>
@@ -882,33 +882,33 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 3. INFINITE VERIFICATION CAPABILITIES TICKER
        * ============================================================================== */}
-      <section className="relative z-10 py-5 bg-slate-950/80 border-y border-white/10 overflow-hidden shadow-2xs backdrop-blur-md">
+      <section className="relative z-10 py-5 bg-slate-950/80 border-y border-amber-500/15 overflow-hidden shadow-2xs backdrop-blur-md">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee font-mono text-xs text-slate-300 tracking-wider uppercase font-semibold">
-          <span className="flex items-center gap-2 text-cyan-400"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & 3D LIVENESS MATCH</span>
-          <span className="text-slate-600">■</span>
+          <span className="flex items-center gap-2 text-amber-400"><Fingerprint className="w-4 h-4" /> DIGITAL IDENTITY & 3D LIVENESS MATCH</span>
+          <span className="text-amber-500/40">■</span>
           <span className="flex items-center gap-2 text-emerald-400"><Search className="w-4 h-4" /> PAST EMPLOYMENT & CAREER HISTORY TENURE RADAR</span>
-          <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-indigo-400"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING DETECTION</span>
-          <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-amber-400"><Scale className="w-4 h-4" /> NATIONAL JUDICIAL & LITIGATION SCREENING</span>
-          <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-sky-400"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION</span>
-          <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-purple-400"><ShieldCheck className="w-4 h-4" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY</span>
-          <span className="text-slate-600">■</span>
-          <span className="flex items-center gap-2 text-cyan-400"><Lock className="w-4 h-4" /> 100% DPDP ACT 2023 CONSENT-DRIVEN PRIVACY</span>
+          <span className="text-amber-500/40">■</span>
+          <span className="flex items-center gap-2 text-orange-400"><Zap className="w-4 h-4" /> DUAL-EMPLOYMENT & MOONLIGHTING DETECTION</span>
+          <span className="text-amber-500/40">■</span>
+          <span className="flex items-center gap-2 text-rose-400"><Scale className="w-4 h-4" /> NATIONAL JUDICIAL & LITIGATION SCREENING</span>
+          <span className="text-amber-500/40">■</span>
+          <span className="flex items-center gap-2 text-amber-300"><CreditCard className="w-4 h-4" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION</span>
+          <span className="text-amber-500/40">■</span>
+          <span className="flex items-center gap-2 text-emerald-400"><ShieldCheck className="w-4 h-4" /> ISO 27001 & SOC-2 TYPE II DATA SECURITY</span>
+          <span className="text-amber-500/40">■</span>
+          <span className="flex items-center gap-2 text-amber-400"><Lock className="w-4 h-4" /> 100% DPDP ACT 2023 CONSENT-DRIVEN PRIVACY</span>
         </div>
       </section>
 
       {/* ==============================================================================
        * 4. RADIAL VERIFICATION COMMAND ORBIT (#features)
        * ============================================================================== */}
-      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="features" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>RADIAL COMMAND COCKPIT</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4 tracking-tight">
@@ -951,19 +951,19 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 8. TRADITIONAL 15-DAY AGENCY VS JOY TRUEPROFILE COMPARISON (#comparison)
        * ============================================================================== */}
-      <section id="comparison" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="comparison" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         <InteractiveSpeedComparison />
       </section>
 
       {/* ==============================================================================
        * 9. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
        * ============================================================================== */}
-      <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="craft" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Column: Monospace Category Header */}
           <div className="lg:col-span-4">
-            <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold inline-block mb-3 px-3 py-1 rounded-full border border-cyan-500/30">
+            <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold inline-block mb-3 px-3 py-1 rounded-full border border-amber-500/30">
               ENTERPRISE ARCHITECTURE & VAULT
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white font-outfit leading-tight mb-4">
@@ -974,10 +974,10 @@ export const LandingPageView = () => {
             </p>
             <button
               onClick={() => setShowLegalHandbook(true)}
-              className="dark-glass-card px-5 py-3 rounded-xl text-white font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-md hover-jump-subtle transition-all font-bold cursor-pointer border border-white/15"
+              className="dark-glass-card px-5 py-3 rounded-xl text-amber-200 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-md hover-jump-subtle transition-all font-bold cursor-pointer border border-amber-500/20"
             >
               <span>Compliance Handbook</span>
-              <FileText className="w-3.5 h-3.5 text-cyan-400" />
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
             </button>
           </div>
 
@@ -985,8 +985,8 @@ export const LandingPageView = () => {
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Card 1: Automated Verification Pipeline */}
-            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-white/10">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-white/20 bg-slate-950 shadow-inner">
+            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/15">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/20 bg-slate-950 shadow-inner">
                 <img
                   src="/assets/3d/liquid_glass_flow_3d.jpg"
                   alt="Automated Employee Verification Pipeline"
@@ -1007,8 +1007,8 @@ export const LandingPageView = () => {
             </div>
 
             {/* Card 2: Enterprise Security Vault & Moonlighting Radar */}
-            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-white/10">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-white/20 bg-slate-950 shadow-inner">
+            <div className="dark-glass-card rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-amber-500/15">
+              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-amber-500/20 bg-slate-950 shadow-inner">
                 <img
                   src="/assets/3d/liquid_glass_vault_3d.jpg"
                   alt="Enterprise Security Vault & Moonlighting Radar"
@@ -1016,7 +1016,7 @@ export const LandingPageView = () => {
                 />
               </div>
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-400 font-bold block mb-2">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-orange-400 font-bold block mb-2">
                   ENTERPRISE SECURITY & DATA VAULT
                 </span>
                 <h3 className="text-xl font-bold text-white mb-2 font-outfit">
@@ -1036,12 +1036,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 5. SYSTEM SPECIFICATIONS & PERFORMANCE MATRIX (#specs)
        * ============================================================================== */}
-      <section id="specs" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="specs" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30">
+            <Sliders className="w-3.5 h-3.5 text-amber-400" />
             <span>TECHNICAL SPECIFICATIONS & SLA</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1054,7 +1054,7 @@ export const LandingPageView = () => {
 
         {/* Spec Category Segmented Control */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex p-1.5 rounded-2xl dark-glass-card border border-white/15 font-mono text-xs uppercase tracking-wider">
+          <div className="inline-flex p-1.5 rounded-2xl dark-glass-card border border-amber-500/20 font-mono text-xs uppercase tracking-wider">
             {[
               { id: 'performance', label: 'Performance' },
               { id: 'security', label: 'Security & DPDP' },
@@ -1066,7 +1066,7 @@ export const LandingPageView = () => {
                 onClick={() => setActiveSpecCategory(cat.id)}
                 className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
                   activeSpecCategory === cat.id
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg border border-cyan-400/40'
+                    ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black shadow-lg shadow-amber-500/25 border border-amber-300/40'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -1077,18 +1077,18 @@ export const LandingPageView = () => {
         </div>
 
         {/* Specification Parameters Table (Dark Glass Grid) */}
-        <div className="max-w-4xl mx-auto divide-y divide-white/10 dark-glass-card rounded-2xl border border-white/15 p-6 sm:p-8 shadow-2xl">
+        <div className="max-w-4xl mx-auto divide-y divide-amber-500/15 dark-glass-card rounded-2xl border border-amber-500/20 p-6 sm:p-8 shadow-2xl">
           {technicalSpecs[activeSpecCategory].map((spec, idx) => (
             <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
               <dt className="font-mono text-xs uppercase tracking-wider text-slate-300 flex items-center gap-2 font-bold">
-                <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                 <span>{spec.label}</span>
               </dt>
               <dd className="text-left sm:text-right">
                 <span className="text-base sm:text-lg font-black text-white font-outfit">
                   {spec.value}
                 </span>
-                <span className="block font-mono text-[11px] text-cyan-300/80 mt-0.5">
+                <span className="block font-mono text-[11px] text-amber-300/80 mt-0.5">
                   {spec.detail}
                 </span>
               </dd>
@@ -1101,12 +1101,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 6. LIVE INDIA WORKFORCE VERIFICATION RADAR (#live-radar)
        * ============================================================================== */}
-      <section id="live-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="live-radar" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30">
+            <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
             <span>REAL-TIME NETWORK ACTIVITY</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1118,13 +1118,13 @@ export const LandingPageView = () => {
         </div>
 
         {/* Radar Interactive Stage */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center dark-glass-card border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
           
           {/* Left: Industrial Corridor Selector */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             <div className="font-mono text-[10px] uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between font-bold">
               <span className="text-slate-200">ACTIVE REGIONAL CORRIDORS</span>
-              <span className="text-cyan-400 font-bold">● 5 HUBS ONLINE</span>
+              <span className="text-amber-400 font-bold">● 5 HUBS ONLINE</span>
             </div>
 
             {Object.keys(radarCities).map((key) => {
@@ -1136,18 +1136,18 @@ export const LandingPageView = () => {
                   onClick={() => setActiveRadarCity(key)}
                   className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border-cyan-400/80 text-white shadow-lg ring-1 ring-cyan-400/50'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white'
+                      ? 'bg-gradient-to-r from-amber-950/80 via-orange-950/70 to-slate-900 border-amber-400/80 text-white shadow-lg ring-1 ring-amber-400/50'
+                      : 'bg-slate-900/40 border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-cyan-400 animate-ping' : 'bg-slate-500'}`}></span>
+                      <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-amber-400 animate-ping' : 'bg-slate-500'}`}></span>
                       <h4 className="font-mono text-xs uppercase tracking-wider font-black text-white">{hub.name}</h4>
                     </div>
                     <p className="text-[11px] text-slate-300 mt-1">{hub.state} • {hub.tag}</p>
                   </div>
-                  <span className="font-mono text-[10px] font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded border border-cyan-500/40">
+                  <span className="font-mono text-[10px] font-bold text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded border border-amber-500/40">
                     {hub.avgTat}
                   </span>
                 </button>
@@ -1156,18 +1156,18 @@ export const LandingPageView = () => {
           </div>
 
           {/* Right: Telemetry Event Stream Display */}
-          <div className="lg:col-span-7 bg-[#050811]/90 border border-white/15 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-2xl">
+          <div className="lg:col-span-7 bg-[#0c101d]/90 border border-amber-500/20 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-2xl">
             
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-500/15 pb-4">
               <div>
-                <span className="font-mono text-[10px] text-cyan-400 uppercase tracking-wider font-bold">
+                <span className="font-mono text-[10px] text-amber-400 uppercase tracking-wider font-bold">
                   {radarCities[activeRadarCity].state}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit">
                   {radarCities[activeRadarCity].name}
                 </h3>
               </div>
-              <div className="flex items-center gap-2 bg-emerald-950/80 px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
+              <div className="flex items-center gap-2 bg-emerald-950/90 px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
                 <Activity className="w-3.5 h-3.5 animate-pulse" />
                 <span>TELEMETRY ACTIVE</span>
               </div>
@@ -1175,22 +1175,22 @@ export const LandingPageView = () => {
 
             {/* Metrics Row */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold block">Daily Active Passes</span>
+              <div className="bg-slate-900/60 border border-amber-500/15 p-4 rounded-xl">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Daily Active Passes</span>
                 <div className="text-lg font-black text-white mt-1 font-outfit">
                   {radarCities[activeRadarCity].activePasses.split(' ')[0]} <span className="text-xs font-normal text-slate-400">Passes</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
-                <div className="text-lg font-black text-cyan-400 mt-1 font-outfit">
+              <div className="bg-slate-900/60 border border-amber-500/15 p-4 rounded-xl">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
+                <div className="text-lg font-black text-amber-400 mt-1 font-outfit">
                   {radarCities[activeRadarCity].avgTat}
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
+              <div className="bg-slate-900/60 border border-amber-500/15 p-4 rounded-xl">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
                 <div className="text-lg font-black text-emerald-400 mt-1 font-outfit">
                   {radarCities[activeRadarCity].accuracy}
                 </div>
@@ -1198,7 +1198,7 @@ export const LandingPageView = () => {
             </div>
 
             {/* Event Log */}
-            <div className="bg-black/50 border border-white/10 rounded-xl p-4 font-mono text-xs">
+            <div className="bg-black/50 border border-amber-500/15 rounded-xl p-4 font-mono text-xs">
               <span className="text-slate-400 text-[10px] uppercase tracking-wider block mb-2 flex items-center justify-between font-bold">
                 <span className="text-slate-300">// LATEST TELEMETRY EVENT STREAM</span>
                 <span className="text-emerald-400 text-[9px] bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">REAL-TIME SYNC</span>
@@ -1216,12 +1216,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 7. THE "TRUEPROFILE ENGINE STUDIO" (#interactive-lab)
        * ============================================================================== */}
-      <section id="interactive-lab" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="interactive-lab" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <Zap className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30">
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
             <span>INTERACTIVE SIMULATOR STUDIO</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1244,15 +1244,15 @@ export const LandingPageView = () => {
                 onClick={() => handleRunSimulation(key)}
                 className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border-cyan-400 text-white shadow-lg ring-1 ring-cyan-400/50'
-                    : 'dark-glass-card border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                    ? 'bg-gradient-to-r from-amber-950/80 via-orange-950/70 to-slate-900 border-amber-400 text-white shadow-lg ring-1 ring-amber-400/50'
+                    : 'dark-glass-card border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:text-white'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className={`p-2 rounded-xl ${isSelected ? 'bg-cyan-500 text-white' : 'bg-white/10 text-slate-300'}`}>
+                  <div className={`p-2 rounded-xl ${isSelected ? 'bg-amber-500 text-slate-950 font-black' : 'bg-white/10 text-amber-300'}`}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-300 font-bold">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-amber-300 font-bold">
                     {isSelected ? 'ACTIVE' : 'READY'}
                   </span>
                 </div>
@@ -1266,16 +1266,16 @@ export const LandingPageView = () => {
         </div>
 
         {/* Live Simulation Console */}
-        <div className="dark-glass-card border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div className="dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
           
           {/* Top Console Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-500/15 pb-5 mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
+              <div className="w-3 h-3 rounded-full bg-amber-400 animate-ping"></div>
               <div>
                 <span className="font-mono text-xs uppercase tracking-wider text-slate-400 font-bold block">SIMULATION TARGET</span>
                 <h3 className="text-lg sm:text-xl font-bold text-white font-outfit">
-                  {simModes[selectedSimMode].candidate.name} — <span className="text-cyan-400 font-bold">{simModes[selectedSimMode].candidate.role}</span>
+                  {simModes[selectedSimMode].candidate.name} — <span className="text-amber-400 font-bold">{simModes[selectedSimMode].candidate.role}</span>
                 </h3>
               </div>
             </div>
@@ -1283,16 +1283,16 @@ export const LandingPageView = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowJsonPayload(!showJsonPayload)}
-                className="px-3.5 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-white font-mono text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer"
+                className="px-3.5 py-2 rounded-xl border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 font-mono text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer"
               >
-                <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                <Eye className="w-3.5 h-3.5 text-amber-400" />
                 <span>{showJsonPayload ? 'View Visual Checks' : 'Inspect JSON Payload'}</span>
               </button>
 
               <button
                 onClick={() => handleRunSimulation(selectedSimMode)}
                 disabled={simulating}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold font-mono text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-md shadow-cyan-500/25 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black font-mono text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-md shadow-amber-500/25 cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
                 <span>{simulating ? 'Running...' : 'Re-Run Pipeline'}</span>
@@ -1303,13 +1303,13 @@ export const LandingPageView = () => {
           {/* Progress Bar when Simulating */}
           {simulating && (
             <div className="mb-6">
-              <div className="flex items-center justify-between font-mono text-xs text-cyan-300 font-bold mb-1.5">
+              <div className="flex items-center justify-between font-mono text-xs text-amber-300 font-bold mb-1.5">
                 <span>EXECUTING CRYPTOGRAPHIC PIPELINE CHECKS...</span>
                 <span>{simProgress}%</span>
               </div>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden border border-white/10">
+              <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-amber-500/20">
                 <div
-                  className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 transition-all duration-100"
+                  className="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all duration-100"
                   style={{ width: `${simProgress}%` }}
                 ></div>
               </div>
@@ -1318,7 +1318,7 @@ export const LandingPageView = () => {
 
           {/* Main Visual or JSON Output */}
           {showJsonPayload ? (
-            <div className="bg-black/70 border border-white/15 rounded-2xl p-4 sm:p-6 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
+            <div className="bg-black/70 border border-amber-500/20 rounded-2xl p-4 sm:p-6 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
               <pre>{JSON.stringify(simModes[selectedSimMode].json, null, 2)}</pre>
             </div>
           ) : (
@@ -1326,7 +1326,7 @@ export const LandingPageView = () => {
               {simModes[selectedSimMode].checks.map((check, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl border border-white/10 bg-white/5 flex items-center justify-between gap-4"
+                  className="p-4 rounded-xl border border-amber-500/15 bg-slate-900/60 flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
@@ -1337,7 +1337,7 @@ export const LandingPageView = () => {
                       <span className="font-mono text-xs text-emerald-400 font-bold block mt-0.5">{check.status}</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs text-cyan-300 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-500/30 shrink-0 font-bold">
+                  <span className="font-mono text-xs text-amber-300 bg-amber-950/60 px-2.5 py-1 rounded border border-amber-500/30 shrink-0 font-bold">
                     {check.time}
                   </span>
                 </div>
@@ -1352,12 +1352,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 8. ROI CALCULATOR & SAVINGS ESTIMATOR (#roi-calculator)
        * ============================================================================== */}
-      <section id="roi-calculator" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="roi-calculator" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-blue-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30">
-            <DollarSign className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30">
+            <DollarSign className="w-3.5 h-3.5 text-amber-400" />
             <span>ENTERPRISE VALUE & ROI ESTIMATOR</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1369,7 +1369,7 @@ export const LandingPageView = () => {
         </div>
 
         {/* ROI Calculator Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch dark-glass-card border border-white/15 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
           
           {/* Controls Left Column */}
           <div className="lg:col-span-6 flex flex-col justify-between gap-6">
@@ -1390,8 +1390,8 @@ export const LandingPageView = () => {
                     onClick={() => setWorkforceType(item.id)}
                     className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                       workforceType === item.id
-                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-cyan-400 shadow-md'
-                        : 'bg-white/5 border-white/10 text-slate-300 hover:text-white hover:bg-white/10'
+                        ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black border-amber-300 shadow-md shadow-amber-500/20'
+                        : 'bg-slate-900/60 border-amber-500/10 text-slate-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     {item.label}
@@ -1406,7 +1406,7 @@ export const LandingPageView = () => {
                 <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">
                   2. Monthly Candidate Onboarding Volume
                 </label>
-                <span className="font-mono text-base sm:text-lg font-black text-cyan-300 bg-cyan-950/80 px-3 py-1 rounded-lg border border-cyan-500/40">
+                <span className="font-mono text-base sm:text-lg font-black text-amber-300 bg-amber-950/80 px-3 py-1 rounded-lg border border-amber-500/40">
                   {monthlyHires.toLocaleString()} workers / mo
                 </span>
               </div>
@@ -1417,7 +1417,7 @@ export const LandingPageView = () => {
                 step="50"
                 value={monthlyHires}
                 onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                className="w-full h-2.5 bg-white/15 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-white/10"
+                className="w-full h-2.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-amber-400 border border-amber-500/20"
               />
               {/* Quick Presets */}
               <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
@@ -1427,7 +1427,7 @@ export const LandingPageView = () => {
                     key={preset}
                     onClick={() => setMonthlyHires(preset)}
                     className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                      monthlyHires === preset ? 'bg-cyan-500 text-white border-cyan-400' : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/15'
+                      monthlyHires === preset ? 'bg-amber-500 text-slate-950 font-black border-amber-400' : 'bg-slate-900/60 text-slate-300 border-amber-500/15 hover:bg-white/10'
                     }`}
                   >
                     {preset.toLocaleString()}
@@ -1442,7 +1442,7 @@ export const LandingPageView = () => {
                 <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">
                   3. Annual Contractor Churn / Turnover
                 </label>
-                <span className="font-mono text-base font-black text-indigo-300 bg-indigo-950/80 px-3 py-1 rounded-lg border border-indigo-500/40">
+                <span className="font-mono text-base font-black text-orange-300 bg-orange-950/80 px-3 py-1 rounded-lg border border-orange-500/40">
                   {contractorTurnover}% / year
                 </span>
               </div>
@@ -1453,7 +1453,7 @@ export const LandingPageView = () => {
                 step="5"
                 value={contractorTurnover}
                 onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                className="w-full h-2.5 bg-white/15 rounded-lg appearance-none cursor-pointer accent-indigo-400 border border-white/10"
+                className="w-full h-2.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-orange-400 border border-amber-500/20"
               />
               <div className="flex justify-between font-mono text-[10px] text-slate-400 font-semibold mt-1">
                 <span>5% (Low Churn)</span>
@@ -1463,8 +1463,8 @@ export const LandingPageView = () => {
             </div>
 
             {/* Benchmark Note */}
-            <div className="p-3.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 font-mono text-xs text-cyan-200 flex items-start gap-2.5">
-              <HelpCircle className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/30 font-mono text-xs text-amber-200 flex items-start gap-2.5">
+              <HelpCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <span className="leading-relaxed">
                 Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated verification at a fraction of the cost and time.
               </span>
@@ -1473,7 +1473,7 @@ export const LandingPageView = () => {
           </div>
 
           {/* Savings Output Right Column */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-[#0B1120] via-[#111936] to-[#0B1120] text-white border border-white/15 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#121826] via-[#1a2336] to-[#0f1524] text-white border border-amber-500/20 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
             
             <div>
               <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">
@@ -1490,29 +1490,29 @@ export const LandingPageView = () => {
             </div>
 
             {/* 4 KPI Grid */}
-            <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-4">
-              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+            <div className="grid grid-cols-2 gap-3 border-t border-amber-500/15 pt-4">
+              <div className="bg-slate-900/60 p-3 rounded-xl border border-amber-500/15">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
-                <div className="text-lg font-black text-cyan-300 font-outfit mt-0.5">
+                <div className="text-lg font-black text-amber-300 font-outfit mt-0.5">
                   ₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+              <div className="bg-slate-900/60 p-3 rounded-xl border border-amber-500/15">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
-                <div className="text-lg font-black text-fuchsia-300 font-outfit mt-0.5">
+                <div className="text-lg font-black text-rose-300 font-outfit mt-0.5">
                   ~{ghostWorkerPrevented * 12} profiles
                 </div>
               </div>
 
-              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+              <div className="bg-slate-900/60 p-3 rounded-xl border border-amber-500/15">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
                 <div className="text-lg font-black text-emerald-300 font-outfit mt-0.5">
                   {(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr
                 </div>
               </div>
 
-              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+              <div className="bg-slate-900/60 p-3 rounded-xl border border-amber-500/15">
                 <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
                 <div className="text-lg font-black text-amber-300 font-outfit mt-0.5">
                   100% Protected
@@ -1523,7 +1523,7 @@ export const LandingPageView = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 cursor-pointer"
+                className="flex-1 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 cursor-pointer"
               >
                 <span>Unlock These Savings</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1534,9 +1534,9 @@ export const LandingPageView = () => {
                   confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
                   alert(`✅ Executive ROI Business Case generated for ${monthlyHires.toLocaleString()} monthly hires! Estimated Annual Savings: ₹${((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}`);
                 }}
-                className="py-3.5 px-4 rounded-xl font-bold text-xs text-slate-200 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="py-3.5 px-4 rounded-xl font-bold text-xs text-amber-200 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-amber-500/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Download className="w-4 h-4 text-cyan-400" />
+                <Download className="w-4 h-4 text-amber-400" />
                 <span>Export ROI Summary</span>
               </button>
             </div>
@@ -1550,12 +1550,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 9. COMPREHENSIVE SOLUTIONS BENTO GRID (#solutions)
        * ============================================================================== */}
-      <section id="solutions" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="solutions" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-blue-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30">
-            <Layers className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 shadow-md shadow-amber-500/10">
+            <Layers className="w-3.5 h-3.5 text-amber-400" />
             <span>ENTERPRISE SOLUTIONS</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1570,9 +1570,9 @@ export const LandingPageView = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           {/* Card 1: Seamless Mobile Flow */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-cyan-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-amber-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-amber-400 mb-5 shadow-lg shadow-amber-500/10">
                 <Smartphone className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1582,16 +1582,16 @@ export const LandingPageView = () => {
                 Zero app installs required. Candidates complete digital identity verification, live selfie liveness checks, and consent via a simple, encrypted magic link.
               </p>
             </div>
-            <div className="font-mono text-xs text-cyan-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-amber-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>98% Candidate Completion Rate</span>
-              <Check className="w-3.5 h-3.5 text-cyan-400" />
+              <Check className="w-3.5 h-3.5 text-amber-400" />
             </div>
           </div>
 
           {/* Card 2: Workplace & Gate Access Passes */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-5 shadow-lg shadow-emerald-500/10">
                 <HardHat className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1601,16 +1601,16 @@ export const LandingPageView = () => {
                 Automated workforce compliance and digital credential issuance. Generates secure QR passes that seamlessly integrate with facility turnstiles and scanners.
               </p>
             </div>
-            <div className="font-mono text-xs text-emerald-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-emerald-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>Sub-Second Gate Turnstile Response</span>
               <Check className="w-3.5 h-3.5 text-emerald-400" />
             </div>
           </div>
 
           {/* Card 3: Dual-Employment Radar */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-indigo-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-orange-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center text-indigo-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-orange-950/80 border border-orange-500/40 flex items-center justify-center text-orange-400 mb-5 shadow-lg shadow-orange-500/10">
                 <Search className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1620,16 +1620,16 @@ export const LandingPageView = () => {
                 Cross-references career service records and employment tenures to detect undeclared secondary employment, overlapping tenures, and integrity risks.
               </p>
             </div>
-            <div className="font-mono text-xs text-indigo-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-orange-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>Zero-Tamper Work History Audit</span>
-              <Check className="w-3.5 h-3.5 text-indigo-400" />
+              <Check className="w-3.5 h-3.5 text-orange-400" />
             </div>
           </div>
 
           {/* Card 4: National Legal & Litigation Screening */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-purple-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-rose-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-950/80 border border-purple-500/40 flex items-center justify-center text-purple-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-950/80 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-5 shadow-lg shadow-rose-500/10">
                 <Scale className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1639,16 +1639,16 @@ export const LandingPageView = () => {
                 Real-time criminal and civil court records screening across national judicial registries, commercial tribunals, and public registries.
               </p>
             </div>
-            <div className="font-mono text-xs text-purple-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-rose-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>Fuzzy Match & Cross-Check</span>
-              <Check className="w-3.5 h-3.5 text-purple-400" />
+              <Check className="w-3.5 h-3.5 text-rose-400" />
             </div>
           </div>
 
           {/* Card 5: Bank & Payroll Match */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-amber-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-amber-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-amber-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-amber-400 mb-5 shadow-lg shadow-amber-500/10">
                 <CreditCard className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1658,16 +1658,16 @@ export const LandingPageView = () => {
                 Performs automated validation to verify bank account active status and confirm exact account holder name before wage disbursement.
               </p>
             </div>
-            <div className="font-mono text-xs text-amber-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-amber-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>Eliminates Failed Salary Transfers</span>
               <Check className="w-3.5 h-3.5 text-amber-400" />
             </div>
           </div>
 
           {/* Card 6: Audit-Ready Dossier Reports */}
-          <div className="rounded-3xl border border-white/15 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-sky-400/60 hover-jump shadow-2xl">
+          <div className="rounded-3xl border border-amber-500/20 dark-glass-card p-6 sm:p-7 flex flex-col justify-between hover:border-teal-400/60 hover-jump shadow-2xl">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-sky-950/80 border border-sky-500/40 flex items-center justify-center text-sky-400 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-500/40 flex items-center justify-center text-teal-400 mb-5 shadow-lg shadow-teal-500/10">
                 <FileCheck className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white font-outfit mb-2">
@@ -1677,9 +1677,9 @@ export const LandingPageView = () => {
                 Instantly compiles downloadable PDF audit reports stamped with cryptographic verification hashes, fully compliant with DPDP Act 2023.
               </p>
             </div>
-            <div className="font-mono text-xs text-sky-300 font-bold flex items-center gap-1.5 pt-3 border-t border-white/10">
+            <div className="font-mono text-xs text-teal-300 font-bold flex items-center gap-1.5 pt-3 border-t border-amber-500/15">
               <span>DPDP Act 2023 Masked & Certified</span>
-              <Check className="w-3.5 h-3.5 text-sky-400" />
+              <Check className="w-3.5 h-3.5 text-teal-400" />
             </div>
           </div>
 
@@ -1690,12 +1690,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 10. CLIENT REVIEWS & VERIFIED TESTIMONIALS (#reviews)
        * ============================================================================== */}
-      <section id="reviews" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="reviews" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 shadow-md shadow-amber-500/10">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
             <span>ENTERPRISE TRUST & PROVEN IMPACT</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1711,7 +1711,7 @@ export const LandingPageView = () => {
           {clientReviews.map((rev, idx) => (
             <div
               key={idx}
-              className="rounded-2xl border border-white/15 dark-glass-card p-6 sm:p-8 flex flex-col justify-between gap-6 hover:border-cyan-400/50 transition-all shadow-2xl"
+              className="rounded-2xl border border-amber-500/20 dark-glass-card p-6 sm:p-8 flex flex-col justify-between gap-6 hover:border-amber-400/50 transition-all shadow-2xl"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -1720,7 +1720,7 @@ export const LandingPageView = () => {
                       <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded border border-cyan-500/40 font-bold">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2.5 py-1 rounded border border-amber-500/40 font-bold">
                     {rev.badge}
                   </span>
                 </div>
@@ -1730,13 +1730,13 @@ export const LandingPageView = () => {
                 </p>
               </div>
 
-              <div className="border-t border-white/10 pt-4 flex items-center justify-between">
+              <div className="border-t border-amber-500/15 pt-4 flex items-center justify-between">
                 <div>
                   <h5 className="font-bold text-sm text-white font-outfit">{rev.name}</h5>
                   <p className="text-xs text-slate-400 mt-0.5">{rev.role}</p>
-                  <p className="text-[11px] text-cyan-400 font-mono font-bold mt-0.5">{rev.company}</p>
+                  <p className="text-[11px] text-amber-400 font-mono font-bold mt-0.5">{rev.company}</p>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-cyan-300">
+                <div className="w-9 h-9 rounded-full bg-amber-950/60 border border-amber-500/30 flex items-center justify-center text-amber-300">
                   <Building2 className="w-4 h-4" />
                 </div>
               </div>
@@ -1745,16 +1745,16 @@ export const LandingPageView = () => {
         </div>
 
         {/* Submit Review CTA Banner */}
-        <div className="rounded-2xl border border-white/15 dark-glass-card p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4 shadow-2xl">
+        <div className="rounded-2xl border border-amber-500/20 dark-glass-card p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4 shadow-2xl">
           <div>
             <h4 className="font-bold text-white text-base sm:text-lg font-outfit">Are you an active JOY TrueProfile enterprise partner?</h4>
             <p className="text-slate-300 text-xs sm:text-sm mt-0.5">Share your verification turnaround and efficiency experience with the community.</p>
           </div>
           <button
             onClick={() => setShowReviewModal(true)}
-            className="px-5 py-3 rounded-xl border border-cyan-500/40 bg-cyan-950/60 hover:bg-cyan-900/80 text-white font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all font-bold shadow-md shadow-cyan-500/20 cursor-pointer"
+            className="px-5 py-3 rounded-xl border border-amber-500/40 bg-amber-950/60 hover:bg-amber-900/80 text-amber-200 hover:text-white font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all font-bold shadow-md shadow-amber-500/20 cursor-pointer"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
+            <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
             <span>Submit Client Review</span>
           </button>
         </div>
@@ -1764,12 +1764,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 11. KNOWLEDGE HUB & COMPLIANCE ARTICLES (#knowledge-hub)
        * ============================================================================== */}
-      <section id="knowledge-hub" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
+      <section id="knowledge-hub" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 shadow-md shadow-amber-500/10">
+            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
             <span>INTELLIGENCE & INSIGHTS</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1785,14 +1785,14 @@ export const LandingPageView = () => {
           {(publicArticles.length > 0 ? publicArticles.slice(0, 3) : fallbackArticles).map((art, idx) => (
             <div
               key={art.id || idx}
-              className="rounded-2xl border border-white/15 dark-glass-card p-6 flex flex-col justify-between hover:border-cyan-400/60 hover:shadow-cyan-500/20 transition-all shadow-2xl group"
+              className="rounded-2xl border border-amber-500/20 dark-glass-card p-6 flex flex-col justify-between hover:border-amber-400/60 hover:shadow-amber-500/20 transition-all shadow-2xl group"
             >
               <div>
                 <div className="flex items-center justify-between font-mono text-[10px] text-slate-400 mb-3 font-semibold">
-                  <span className="text-cyan-400 uppercase tracking-wider font-bold">{art.category || 'Compliance'}</span>
+                  <span className="text-amber-400 uppercase tracking-wider font-bold">{art.category || 'Compliance'}</span>
                   <span>{art.readTime || '4 min read'}</span>
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit group-hover:text-cyan-300 transition-colors mb-2.5">
+                <h3 className="text-lg font-bold text-white font-outfit group-hover:text-amber-300 transition-colors mb-2.5">
                   {art.title}
                 </h3>
                 <p className="text-slate-300 text-xs leading-relaxed line-clamp-3">
@@ -1800,7 +1800,7 @@ export const LandingPageView = () => {
                 </p>
               </div>
 
-              <div className="border-t border-white/10 pt-4 mt-6 flex items-center justify-between text-xs font-mono text-cyan-400 font-bold">
+              <div className="border-t border-amber-500/15 pt-4 mt-6 flex items-center justify-between text-xs font-mono text-amber-400 font-bold">
                 <span>Read Full Article</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -1813,12 +1813,12 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 12. FREQUENTLY ASKED QUESTIONS (#faq)
        * ============================================================================== */}
-      <section id="faq" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto border-t border-white/10">
+      <section id="faq" className="scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto border-t border-amber-500/15">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-cyan-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30">
-            <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-300 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 shadow-md shadow-amber-500/10">
+            <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
             <span>CLARITY & ASSURANCE</span>
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
@@ -1836,17 +1836,17 @@ export const LandingPageView = () => {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-white/15 dark-glass-card overflow-hidden transition-all shadow-xl"
+                className={`rounded-2xl border transition-all shadow-xl dark-glass-card ${isOpen ? 'border-amber-500/50 bg-slate-900/80' : 'border-amber-500/15 hover:border-amber-500/35'}`}
               >
                 <button
                   onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                   className="w-full p-5 text-left font-bold text-sm sm:text-base text-white font-outfit flex items-center justify-between gap-4 cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-cyan-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-amber-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-white/10 pt-3">
+                  <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-amber-500/15 pt-3">
                     {faq.a}
                   </div>
                 )}
@@ -1860,17 +1860,17 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 13. HIGH IMPACT ENTERPRISE CTA & CONVERSION BANNER
        * ============================================================================== */}
-      <section className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-white/10">
-        <div className="relative rounded-3xl overflow-hidden border border-cyan-500/30 dark-glass-hero p-8 sm:p-14 text-center shadow-2xl">
+      <section className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-amber-500/15">
+        <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 dark-glass-hero p-8 sm:p-14 text-center shadow-2xl">
           
           <div className="max-w-3xl mx-auto flex flex-col items-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-cyan-500/30">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 mb-6 shadow-lg shadow-amber-500/30">
               <Zap className="w-7 h-7" />
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight mb-4">
               Ready to Streamline Your Employee <br className="hidden sm:inline" />
-              <span className="text-gradient-electric">Profile Verification?</span>
+              <span className="text-gradient-gold">Profile Verification?</span>
             </h2>
 
             <p className="text-slate-300 text-base max-w-xl mb-8 leading-relaxed">
@@ -1880,7 +1880,7 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="px-8 py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 shadow-xl shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                className="px-8 py-4 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-xl shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>Book Live Enterprise Walkthrough</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1891,18 +1891,18 @@ export const LandingPageView = () => {
                   setLandingSelectedAmount(5000);
                   setShowLandingRazorpayModal(true);
                 }}
-                className="px-7 py-4 rounded-xl font-bold text-sm text-white dark-glass-card border border-white/20 hover:bg-white/10 shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+                className="px-7 py-4 rounded-xl font-bold text-sm text-white dark-glass-card border border-amber-500/30 hover:bg-white/10 shadow-lg transition-all flex items-center gap-2 cursor-pointer"
               >
-                <CreditCard className="w-4 h-4 text-cyan-400" />
+                <CreditCard className="w-4 h-4 text-amber-400" />
                 <span>Get Verification Credits</span>
               </button>
             </div>
 
             {/* Compliance Guarantee Badges */}
             <div className="flex flex-wrap items-center justify-center gap-6 mt-10 font-mono text-[11px] text-slate-300 font-bold">
-              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> 100% DPDP Act 2023 Compliant</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> 100% DPDP Act 2023 Compliant</span>
               <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-emerald-400" /> Audit-Ready Compliance Reports</span>
-              <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-indigo-400" /> 256-Bit AES Cryptography</span>
+              <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-rose-400" /> 256-Bit AES Cryptography</span>
             </div>
           </div>
 
@@ -1912,7 +1912,7 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 14. MODERN ENTERPRISE 4-COLUMN FOOTER
        * ============================================================================== */}
-      <footer className="relative z-10 py-16 bg-[#04060C]/95 border-t border-white/15 px-4 sm:px-8 font-mono text-xs text-slate-400 shadow-2xl backdrop-blur-xl">
+      <footer className="relative z-10 py-16 bg-[#080B11]/95 border-t border-amber-500/20 px-4 sm:px-8 font-mono text-xs text-slate-400 shadow-2xl backdrop-blur-xl">
         <div className="max-w-7xl mx-auto">
           
           {/* Top 4-Column Grid */}
@@ -1921,12 +1921,12 @@ export const LandingPageView = () => {
             {/* Column 1: Brand & Credentials */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/30">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="font-black text-white font-outfit text-base tracking-tight">JOY TrueProfile</span>
-                  <p className="text-[10px] text-cyan-300 font-medium">Enterprise Profile Verification</p>
+                  <p className="text-[10px] text-amber-400 font-medium">Enterprise Profile Verification</p>
                 </div>
               </div>
 
@@ -1948,11 +1948,11 @@ export const LandingPageView = () => {
                 Verification Modules
               </h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-300">
-                <li><a href="#features" className="hover:text-cyan-400 transition-colors">Digital Identity & Liveness Check</a></li>
-                <li><a href="#features" className="hover:text-cyan-400 transition-colors">Employment History & Tenure Radar</a></li>
-                <li><a href="#features" className="hover:text-cyan-400 transition-colors">National Judicial & Court Screening</a></li>
-                <li><a href="#features" className="hover:text-cyan-400 transition-colors">Direct Bank & Name Validation</a></li>
-                <li><a href="#features" className="hover:text-cyan-400 transition-colors">Workplace Digital QR Passes</a></li>
+                <li><a href="#features" className="hover:text-amber-400 transition-colors">Digital Identity & Liveness Check</a></li>
+                <li><a href="#features" className="hover:text-amber-400 transition-colors">Employment History & Tenure Radar</a></li>
+                <li><a href="#features" className="hover:text-amber-400 transition-colors">National Judicial & Court Screening</a></li>
+                <li><a href="#features" className="hover:text-amber-400 transition-colors">Direct Bank & Name Validation</a></li>
+                <li><a href="#features" className="hover:text-amber-400 transition-colors">Workplace Digital QR Passes</a></li>
               </ul>
             </div>
 
@@ -1962,11 +1962,11 @@ export const LandingPageView = () => {
                 Platform & Solutions
               </h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-300">
-                <li><a href="#interactive-lab" className="hover:text-cyan-400 transition-colors">TrueProfile Simulator Studio</a></li>
-                <li><a href="#live-radar" className="hover:text-cyan-400 transition-colors">Live India Workforce Radar</a></li>
-                <li><a href="#roi-calculator" className="hover:text-cyan-400 transition-colors">Enterprise ROI Calculator</a></li>
-                <li><a href="#specs" className="hover:text-cyan-400 transition-colors">Technical SLA & Performance</a></li>
-                <li><a href="#knowledge-hub" className="hover:text-cyan-400 transition-colors">Knowledge Hub & Insights</a></li>
+                <li><a href="#interactive-lab" className="hover:text-amber-400 transition-colors">TrueProfile Simulator Studio</a></li>
+                <li><a href="#live-radar" className="hover:text-amber-400 transition-colors">Live India Workforce Radar</a></li>
+                <li><a href="#roi-calculator" className="hover:text-amber-400 transition-colors">Enterprise ROI Calculator</a></li>
+                <li><a href="#specs" className="hover:text-amber-400 transition-colors">Technical SLA & Performance</a></li>
+                <li><a href="#knowledge-hub" className="hover:text-amber-400 transition-colors">Knowledge Hub & Insights</a></li>
               </ul>
             </div>
 
@@ -1981,7 +1981,7 @@ export const LandingPageView = () => {
               <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-mono mt-1">
                 <span className="text-white font-bold">Email: support@joygroup.art</span>
                 <span className="text-white font-bold">WhatsApp: +91 98765 43210</span>
-                <span className="text-cyan-300">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
+                <span className="text-amber-300">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
               </div>
             </div>
 
@@ -1998,11 +1998,11 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center gap-6">
               <button
                 onClick={() => setShowLegalHandbook(true)}
-                className="hover:text-cyan-400 transition-colors cursor-pointer text-slate-300 font-bold"
+                className="hover:text-amber-400 transition-colors cursor-pointer text-slate-300 font-bold"
               >
                 Statutory Compliance Handbook
               </button>
-              <a href="/login" className="hover:text-cyan-400 transition-colors text-slate-300 font-bold">
+              <a href="/login" className="hover:text-amber-400 transition-colors text-slate-300 font-bold">
                 Client Portal Login
               </a>
               <span className="text-slate-500">|</span>
@@ -2020,8 +2020,8 @@ export const LandingPageView = () => {
 
       {/* Enterprise Demo Modal */}
       {showDemoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-          <div className="relative w-full max-w-lg dark-glass-card border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="relative w-full max-w-lg dark-glass-card border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowDemoModal(false)}
               className="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
@@ -2031,7 +2031,7 @@ export const LandingPageView = () => {
 
             {demoSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/20">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">Demo Request Received!</h3>
@@ -2040,15 +2040,15 @@ export const LandingPageView = () => {
                 </p>
                 <button
                   onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 transition-all shadow-md cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
                 >
                   Close Window
                 </button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-cyan-300 font-bold mb-2">
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                <div className="flex items-center gap-2 font-mono text-xs text-amber-300 font-bold mb-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>ENTERPRISE WALKTHROUGH</span>
                 </div>
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">
@@ -2067,7 +2067,7 @@ export const LandingPageView = () => {
                       value={demoForm.name}
                       onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })}
                       placeholder="e.g. Anand Mahindra"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -2080,7 +2080,7 @@ export const LandingPageView = () => {
                         value={demoForm.email}
                         onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })}
                         placeholder="anand@company.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                     <div>
@@ -2091,7 +2091,7 @@ export const LandingPageView = () => {
                         value={demoForm.phone}
                         onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })}
                         placeholder="+91 98765 43210"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                   </div>
@@ -2104,7 +2104,7 @@ export const LandingPageView = () => {
                       value={demoForm.company}
                       onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })}
                       placeholder="e.g. Apex Enterprises Ltd"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -2114,7 +2114,7 @@ export const LandingPageView = () => {
                       <select
                         value={demoForm.hires}
                         onChange={(e) => setDemoForm({ ...demoForm, hires: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1628] border border-white/15 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0D121F] border border-amber-500/20 text-white focus:outline-none focus:border-amber-400"
                       >
                         <option value="50-200">50 - 200 / month</option>
                         <option value="200-1000">200 - 1,000 / month</option>
@@ -2128,7 +2128,7 @@ export const LandingPageView = () => {
                       <select
                         value={demoForm.workforceType}
                         onChange={(e) => setDemoForm({ ...demoForm, workforceType: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1628] border border-white/15 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0D121F] border border-amber-500/20 text-white focus:outline-none focus:border-amber-400"
                       >
                         <option value="both">Both Factory & Corporate</option>
                         <option value="labor">Factory & Contract Labor</option>
@@ -2140,7 +2140,7 @@ export const LandingPageView = () => {
                   <button
                     type="submit"
                     disabled={demoLoading}
-                    className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                   >
                     {demoLoading ? (
                       <>
@@ -2163,8 +2163,8 @@ export const LandingPageView = () => {
 
       {/* Client Review Submission Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-          <div className="relative w-full max-w-lg dark-glass-card border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="relative w-full max-w-lg dark-glass-card border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowReviewModal(false)}
               className="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
@@ -2174,7 +2174,7 @@ export const LandingPageView = () => {
 
             {reviewSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/20">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">Review Submitted!</h3>
@@ -2183,15 +2183,15 @@ export const LandingPageView = () => {
                 </p>
                 <button
                   onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 transition-all shadow-md cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
                 >
                   Close Window
                 </button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-cyan-300 font-bold mb-2">
-                  <MessageSquare className="w-4 h-4 text-cyan-400" />
+                <div className="flex items-center gap-2 font-mono text-xs text-amber-300 font-bold mb-2">
+                  <MessageSquare className="w-4 h-4 text-amber-400" />
                   <span>CLIENT COMMUNITY WALL</span>
                 </div>
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">
@@ -2211,7 +2211,7 @@ export const LandingPageView = () => {
                         value={reviewForm.name}
                         onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
                         placeholder="e.g. Priya Iyer"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                     <div>
@@ -2222,7 +2222,7 @@ export const LandingPageView = () => {
                         value={reviewForm.role}
                         onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })}
                         placeholder="e.g. Head of HR"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                   </div>
@@ -2236,7 +2236,7 @@ export const LandingPageView = () => {
                         value={reviewForm.company}
                         onChange={(e) => setReviewForm({ ...reviewForm, company: e.target.value })}
                         placeholder="e.g. Nexus 3PL Corp"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                     <div>
@@ -2244,7 +2244,7 @@ export const LandingPageView = () => {
                       <select
                         value={reviewForm.rating}
                         onChange={(e) => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e1628] border border-white/15 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0D121F] border border-amber-500/20 text-white focus:outline-none focus:border-amber-400"
                       >
                         <option value={5}>⭐⭐⭐⭐⭐ (5 - Exceptional)</option>
                         <option value={4}>⭐⭐⭐⭐ (4 - Very Good)</option>
@@ -2261,14 +2261,14 @@ export const LandingPageView = () => {
                       value={reviewForm.comment}
                       onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                       placeholder="Describe how JOY TrueProfile accelerated your turnaround time or eliminated verification delays..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:bg-white/10 resize-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/20 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none"
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
                     disabled={reviewLoading}
-                    className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                   >
                     {reviewLoading ? (
                       <>
@@ -2291,7 +2291,7 @@ export const LandingPageView = () => {
 
       {/* Statutory Compliance Handbook Modal */}
       {showLegalHandbook && (
-        <LegalComplianceHandbookModal onClose={() => setShowLegalHandbook(false)} />
+        <LegalComplianceHandbookModal isOpen={showLegalHandbook} onClose={() => setShowLegalHandbook(false)} />
       )}
 
       {/* Razorpay Instant Checkout Modal */}

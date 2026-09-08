@@ -23,8 +23,8 @@ const ORBIT_MODULES = [
     title: 'Digital Identity & Facial Liveness',
     badge: 'CORE MODULE 01',
     icon: ShieldCheck,
-    color: 'from-cyan-500 to-blue-600',
-    accentColor: '#38BDF8',
+    color: 'from-amber-500 via-orange-500 to-rose-500',
+    accentColor: '#F59E0B',
     tat: '0.34s',
     accuracy: '99.98%',
     compliance: 'DPDP Act 2023 Masked',
@@ -49,8 +49,8 @@ const ORBIT_MODULES = [
     title: 'Dual-Employment & Tenure Radar',
     badge: 'CORE MODULE 02',
     icon: Search,
-    color: 'from-indigo-500 to-purple-600',
-    accentColor: '#818CF8',
+    color: 'from-orange-500 via-rose-500 to-amber-600',
+    accentColor: '#FB923C',
     tat: '0.42s',
     accuracy: '100% Deterministic',
     compliance: 'Dual-Employment Defense',
@@ -75,8 +75,8 @@ const ORBIT_MODULES = [
     title: 'National Judicial & Court Screening',
     badge: 'CORE MODULE 03',
     icon: Scale,
-    color: 'from-purple-500 to-pink-600',
-    accentColor: '#C084FC',
+    color: 'from-rose-500 via-pink-600 to-amber-500',
+    accentColor: '#F43F5E',
     tat: '0.45s',
     accuracy: 'Multi-Tribunal Coverage',
     compliance: 'High-Trust Clearance',
@@ -100,8 +100,8 @@ const ORBIT_MODULES = [
     title: 'Direct Bank & Name Validation',
     badge: 'CORE MODULE 04',
     icon: CreditCard,
-    color: 'from-amber-500 to-orange-600',
-    accentColor: '#F59E0B',
+    color: 'from-amber-400 via-amber-500 to-orange-500',
+    accentColor: '#FBBF24',
     tat: '0.28s',
     accuracy: '100% Direct Verification',
     compliance: 'Zero Payroll Leakage',
@@ -125,8 +125,8 @@ const ORBIT_MODULES = [
     title: 'Workforce Digital QR Passes',
     badge: 'CORE MODULE 05',
     icon: QrCode,
-    color: 'from-emerald-500 to-teal-600',
-    accentColor: '#34D399',
+    color: 'from-emerald-500 via-teal-500 to-amber-500',
+    accentColor: '#10B981',
     tat: '0.25s',
     accuracy: 'Turnstile Integrated',
     compliance: 'Factory & Facility Ready',
@@ -150,8 +150,8 @@ const ORBIT_MODULES = [
     title: 'Audit-Ready Profile Dossiers',
     badge: 'CORE MODULE 06',
     icon: FileCheck,
-    color: 'from-sky-500 to-indigo-600',
-    accentColor: '#38BDF8',
+    color: 'from-amber-500 via-rose-500 to-orange-500',
+    accentColor: '#F59E0B',
     tat: '0.38s',
     accuracy: 'SHA-256 Stamped',
     compliance: 'DPDP Act 2023 Masked',
@@ -200,12 +200,12 @@ const VerificationCommandOrbit = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left: Orbital Command Wheel Selector (lg:col-span-5) */}
-        <div className="lg:col-span-5 dark-glass-card border border-white/15 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl relative overflow-hidden">
+        <div className="lg:col-span-5 dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl relative overflow-hidden">
           
           {/* Section Header */}
           <div className="mb-6">
-            <div className="flex items-center gap-2 font-mono text-[10px] text-cyan-400 font-bold uppercase tracking-wider mb-1">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center gap-2 font-mono text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
               <span>RADIAL VERIFICATION ENGINE</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-white font-outfit">
@@ -227,16 +227,16 @@ const VerificationCommandOrbit = () => {
                   onClick={() => handleSelectModule(idx)}
                   className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between group cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border-cyan-400/80 text-white shadow-lg ring-1 ring-cyan-400/40 scale-[1.02]'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white'
+                      ? 'bg-gradient-to-r from-amber-950/70 via-orange-950/60 to-slate-900 border-amber-400/80 text-white shadow-lg ring-1 ring-amber-400/50 scale-[1.02]'
+                      : 'bg-slate-900/40 border-amber-500/10 text-slate-300 hover:border-amber-500/30 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
                         isSelected
-                          ? `bg-gradient-to-br ${mod.color} text-white shadow-md`
-                          : 'bg-white/10 text-slate-400 group-hover:text-white'
+                          ? `bg-gradient-to-br ${mod.color} text-slate-950 font-black shadow-md shadow-amber-500/30`
+                          : 'bg-white/10 text-amber-300 group-hover:text-white'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -245,14 +245,14 @@ const VerificationCommandOrbit = () => {
                       <h4 className="font-bold text-xs sm:text-sm text-white font-outfit leading-snug">
                         {mod.title}
                       </h4>
-                      <span className="font-mono text-[10px] text-cyan-300/80 block mt-0.5">
+                      <span className="font-mono text-[10px] text-amber-300/90 block mt-0.5 font-semibold">
                         {mod.badge}
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="font-mono text-[10px] font-black text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">
+                    <span className="font-mono text-[10px] font-black text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30">
                       {mod.tat}
                     </span>
                   </div>
@@ -262,28 +262,28 @@ const VerificationCommandOrbit = () => {
           </div>
 
           {/* Quick Engine Status Indicator */}
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between font-mono text-[10px] text-slate-400">
+          <div className="mt-6 pt-4 border-t border-amber-500/15 flex items-center justify-between font-mono text-[10px] text-slate-400">
             <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               All 6 Modules Online
             </span>
-            <span>Sub-Second Response Guarantee</span>
+            <span className="text-amber-200/80">Sub-Second Response Guarantee</span>
           </div>
 
         </div>
 
         {/* Right: Live Telemetry & Inspector Panel (lg:col-span-7) */}
-        <div className="lg:col-span-7 dark-glass-card border border-white/15 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl relative overflow-hidden">
+        <div className="lg:col-span-7 dark-glass-card border border-amber-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl relative overflow-hidden">
           
           <div>
             {/* Active Module Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-500/15 pb-5 mb-6">
               <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-white shadow-lg shadow-cyan-500/30`}>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/30`}>
                   <activeModule.icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-cyan-300 font-bold block">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-amber-300 font-bold block">
                     {activeModule.badge}
                   </span>
                   <h3 className="text-2xl font-black text-white font-outfit">
@@ -295,16 +295,16 @@ const VerificationCommandOrbit = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowJson(!showJson)}
-                  className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono font-bold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-mono font-bold text-amber-200 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Code className="w-3.5 h-3.5 text-cyan-400" />
+                  <Code className="w-3.5 h-3.5 text-amber-400" />
                   <span>{showJson ? 'Visual Specs' : 'JSON Payload'}</span>
                 </button>
 
                 <button
                   onClick={handleRunModuleTest}
                   disabled={isSimulating}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-cyan-500/20 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black font-mono text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/25 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
                   <span>{isSimulating ? 'Testing Pipeline...' : 'Test Module'}</span>
@@ -314,8 +314,8 @@ const VerificationCommandOrbit = () => {
 
             {/* Main Content: Specs vs JSON */}
             {showJson ? (
-              <div className="bg-black/70 border border-white/15 rounded-2xl p-5 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
-                <div className="flex items-center justify-between text-slate-400 text-[10px] uppercase mb-2 border-b border-white/10 pb-1">
+              <div className="bg-black/70 border border-amber-500/20 rounded-2xl p-5 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
+                <div className="flex items-center justify-between text-amber-300/80 text-[10px] uppercase mb-2 border-b border-amber-500/20 pb-1 font-bold">
                   <span>// REST API PAYLOAD RESPONSE</span>
                   <span className="text-emerald-400">HTTP 200 OK</span>
                 </div>
@@ -331,29 +331,29 @@ const VerificationCommandOrbit = () => {
 
                 {/* 3 Metric Badges */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                  <div className="bg-slate-900/60 border border-amber-500/15 p-3.5 rounded-xl">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">
                       Response Latency
                     </span>
-                    <div className="text-xl font-black text-cyan-300 font-outfit mt-0.5">
+                    <div className="text-xl font-black text-amber-300 font-outfit mt-0.5">
                       {activeModule.tat}
                     </div>
                   </div>
 
-                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                  <div className="bg-slate-900/60 border border-amber-500/15 p-3.5 rounded-xl">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">
                       Verification Standard
                     </span>
-                    <div className="text-xl font-black text-emerald-300 font-outfit mt-0.5">
+                    <div className="text-xl font-black text-emerald-400 font-outfit mt-0.5">
                       {activeModule.accuracy}
                     </div>
                   </div>
 
-                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                  <div className="bg-slate-900/60 border border-amber-500/15 p-3.5 rounded-xl">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">
                       Statutory Policy
                     </span>
-                    <div className="text-sm font-bold text-indigo-300 font-outfit mt-1 truncate">
+                    <div className="text-sm font-bold text-orange-300 font-outfit mt-1 truncate">
                       {activeModule.compliance}
                     </div>
                   </div>
@@ -361,12 +361,12 @@ const VerificationCommandOrbit = () => {
 
                 {/* Key Architectural Features */}
                 <div>
-                  <h5 className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold mb-3">
+                  <h5 className="font-mono text-xs uppercase tracking-wider text-amber-200 font-bold mb-3">
                     Key Engine Capabilities
                   </h5>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {activeModule.features.map((feat, idx) => (
-                      <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2.5">
+                      <div key={idx} className="p-3 rounded-xl bg-slate-900/50 border border-amber-500/15 flex items-start gap-2.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-xs text-slate-200 font-medium leading-relaxed">
                           {feat}
@@ -381,18 +381,18 @@ const VerificationCommandOrbit = () => {
           </div>
 
           {/* Bottom Action Strip */}
-          <div className="mt-8 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="mt-8 pt-4 border-t border-amber-500/15 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-xs font-mono text-amber-200/90">
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
               <span>AES-256 Encrypted • DPDP Compliant</span>
             </div>
 
             <a
               href="#interactive-lab"
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-200 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <span>Run Live Simulation Lab</span>
-              <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
+              <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
             </a>
           </div>
 

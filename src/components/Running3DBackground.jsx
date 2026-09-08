@@ -32,15 +32,15 @@ export const Running3DBackground = () => {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('resize', handleResize);
 
-    // 1. 3D Particle Constellation Nodes
+    // 1. 3D Particle Constellation Nodes (Warm Golden Amber, Coral & Sunset Glow)
     const numParticles = Math.min(width < 768 ? 40 : 85, 100);
     const particles = [];
     const colors = [
-      'rgba(56, 189, 248, ',  // Sky/Cyan
-      'rgba(99, 102, 241, ',  // Indigo
-      'rgba(168, 85, 247, ',  // Violet
-      'rgba(16, 185, 129, ',  // Emerald
-      'rgba(6, 182, 212, ',   // Neon Cyan
+      'rgba(245, 158, 11, ',   // Golden Amber
+      'rgba(249, 115, 22, ',   // Sunset Orange
+      'rgba(244, 63, 94, ',    // Warm Coral/Rose
+      'rgba(253, 230, 138, ',  // Champagne Gold
+      'rgba(16, 185, 129, ',   // Verification Emerald
     ];
 
     for (let i = 0; i < numParticles; i++) {
@@ -59,12 +59,12 @@ export const Running3DBackground = () => {
       });
     }
 
-    // 2. Rotating 3D Geometric Polyhedrons (Floating Verification Crystals)
+    // 2. Rotating 3D Geometric Polyhedrons (Floating Verification Amber Crystals)
     const polyhedrons = [
-      { x: -width * 0.35, y: -height * 0.25, z: 350, size: 55, rotX: 0, rotY: 0, rotZ: 0, speedX: 0.008, speedY: 0.012, color: 'rgba(56, 189, 248, 0.4)' },
-      { x: width * 0.38, y: -height * 0.15, z: 400, size: 65, rotX: 0.5, rotY: 0.2, rotZ: 0, speedX: 0.006, speedY: 0.009, color: 'rgba(168, 85, 247, 0.4)' },
-      { x: -width * 0.3, y: height * 0.35, z: 300, size: 50, rotX: 0.2, rotY: 0.8, rotZ: 0, speedX: 0.01, speedY: 0.007, color: 'rgba(16, 185, 129, 0.35)' },
-      { x: width * 0.32, y: height * 0.3, z: 450, size: 60, rotX: 0.9, rotY: 0.4, rotZ: 0, speedX: 0.007, speedY: 0.011, color: 'rgba(99, 102, 241, 0.4)' },
+      { x: -width * 0.35, y: -height * 0.25, z: 350, size: 55, rotX: 0, rotY: 0, rotZ: 0, speedX: 0.008, speedY: 0.012, color: 'rgba(245, 158, 11, 0.45)' },
+      { x: width * 0.38, y: -height * 0.15, z: 400, size: 65, rotX: 0.5, rotY: 0.2, rotZ: 0, speedX: 0.006, speedY: 0.009, color: 'rgba(244, 63, 94, 0.45)' },
+      { x: -width * 0.3, y: height * 0.35, z: 300, size: 50, rotX: 0.2, rotY: 0.8, rotZ: 0, speedX: 0.01, speedY: 0.007, color: 'rgba(16, 185, 129, 0.4)' },
+      { x: width * 0.32, y: height * 0.3, z: 450, size: 60, rotX: 0.9, rotY: 0.4, rotZ: 0, speedX: 0.007, speedY: 0.011, color: 'rgba(249, 115, 22, 0.45)' },
     ];
 
     // Simple 3D projection helper
@@ -108,9 +108,9 @@ export const Running3DBackground = () => {
 
       // 1. Fluid Ambient Neon Waveforms
       const waveGradient = ctx.createLinearGradient(0, 0, width, height);
-      waveGradient.addColorStop(0, 'rgba(56, 189, 248, 0.04)');
-      waveGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.03)');
-      waveGradient.addColorStop(1, 'rgba(168, 85, 247, 0.04)');
+      waveGradient.addColorStop(0, 'rgba(245, 158, 11, 0.05)');
+      waveGradient.addColorStop(0.5, 'rgba(249, 115, 22, 0.04)');
+      waveGradient.addColorStop(1, 'rgba(244, 63, 94, 0.05)');
 
       ctx.beginPath();
       for (let x = 0; x <= width; x += 15) {
@@ -131,7 +131,7 @@ export const Running3DBackground = () => {
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.07)';
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.09)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -187,11 +187,11 @@ export const Running3DBackground = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxDistance) {
-            const lineAlpha = (1 - dist / maxDistance) * 0.22 * Math.min(p1.scale, p2.scale);
+            const lineAlpha = (1 - dist / maxDistance) * 0.24 * Math.min(p1.scale, p2.scale);
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(129, 140, 248, ${lineAlpha})`;
+            ctx.strokeStyle = `rgba(245, 158, 11, ${lineAlpha})`;
             ctx.lineWidth = 0.75;
             ctx.stroke();
           }
@@ -245,7 +245,7 @@ export const Running3DBackground = () => {
         rotated.forEach((v) => {
           ctx.beginPath();
           ctx.arc(v.x, v.y, 2.2 * v.scale, 0, Math.PI * 2);
-          ctx.fillStyle = poly.color.replace('0.4', '0.85').replace('0.35', '0.85');
+          ctx.fillStyle = poly.color.replace('0.45', '0.9').replace('0.4', '0.9');
           ctx.fill();
         });
       });
@@ -267,13 +267,13 @@ export const Running3DBackground = () => {
       {/* 3D WebGL / Canvas Stream */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Luminous Cosmic Aurora Background Orbs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[700px] h-[700px] bg-gradient-to-br from-cyan-500/18 via-indigo-500/12 to-purple-600/15 rounded-full blur-[140px] animate-aurora-1"></div>
-      <div className="absolute top-[35%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-bl from-blue-600/18 via-purple-500/15 to-emerald-500/12 rounded-full blur-[160px] animate-aurora-2"></div>
-      <div className="absolute bottom-[-10%] left-[25%] w-[650px] h-[650px] bg-gradient-to-tr from-indigo-500/15 via-sky-500/12 to-emerald-400/12 rounded-full blur-[140px] animate-aurora-1"></div>
+      {/* Luminous Warm Amber & Sunset Coral Aurora Background Orbs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[700px] h-[700px] bg-gradient-to-br from-amber-500/18 via-orange-500/12 to-rose-600/15 rounded-full blur-[140px] animate-aurora-1"></div>
+      <div className="absolute top-[35%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-bl from-orange-600/16 via-rose-500/14 to-amber-500/12 rounded-full blur-[160px] animate-aurora-2"></div>
+      <div className="absolute bottom-[-10%] left-[25%] w-[650px] h-[650px] bg-gradient-to-tr from-amber-500/15 via-rose-500/12 to-emerald-400/10 rounded-full blur-[140px] animate-aurora-1"></div>
 
-      {/* Subtle Precision Grid Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40"></div>
+      {/* Subtle Precision Grid Overlay with warm amber tint */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,158,11,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,158,11,0.04)_1px,transparent_1px)] bg-[size:56px_56px] opacity-50"></div>
     </div>
   );
 };
