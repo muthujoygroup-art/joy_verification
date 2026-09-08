@@ -107,7 +107,7 @@ const TurnstileGateSimulator = () => {
               }}
               className={`px-3 py-2 rounded-xl font-bold transition-all cursor-pointer ${
                 selectedWorker.id === w.id
-                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black shadow-md shadow-amber-500/20'
+                  ? 'bg-orange-600 text-white font-black shadow-md shadow-orange-600/25 border border-orange-500'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -134,13 +134,13 @@ const TurnstileGateSimulator = () => {
             </div>
 
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 text-xl font-black font-outfit shadow-md">
+              <div className="w-14 h-14 rounded-2xl bg-orange-600 flex items-center justify-center text-white text-xl font-black font-outfit shadow-md">
                 {selectedWorker.name.charAt(0)}
               </div>
               <div>
                 <h4 className="font-bold text-base text-slate-900 font-outfit">{selectedWorker.name}</h4>
                 <p className="text-xs text-slate-600 font-semibold">{selectedWorker.role}</p>
-                <p className="text-[11px] text-amber-700 font-mono mt-0.5">{selectedWorker.company}</p>
+                <p className="text-[11px] text-orange-700 font-mono mt-0.5">{selectedWorker.company}</p>
               </div>
             </div>
 
@@ -148,7 +148,7 @@ const TurnstileGateSimulator = () => {
             <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-center relative my-3 shadow-inner">
               <QrCode className="w-28 h-28 text-slate-900" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-[10px] font-black shadow-md">
+                <div className="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] font-black shadow-md">
                   JOY
                 </div>
               </div>
@@ -156,13 +156,13 @@ const TurnstileGateSimulator = () => {
 
             <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mt-2">
               <span>Pass ID: {selectedWorker.passId}</span>
-              <span className="text-amber-700 font-bold">{selectedWorker.codeTime}</span>
+              <span className="text-orange-700 font-bold">{selectedWorker.codeTime}</span>
             </div>
 
             <button
               onClick={handleSimulateScan}
               disabled={gateState === 'scanning'}
-              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/25 border border-orange-500 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Zap className="w-4 h-4" />
               <span>{gateState === 'scanning' ? 'Authenticating Turnstile...' : 'Tap Digital QR Pass to Scan'}</span>

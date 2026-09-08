@@ -211,7 +211,7 @@ export const VerificationCommandOrbit = () => {
                     onClick={() => handleSelectModule(idx)}
                     className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between group cursor-pointer ${
                       isSelected
-                        ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 border-amber-400 text-white shadow-lg ring-2 ring-amber-400/40 scale-[1.02]'
+                        ? 'bg-orange-600 border-orange-500 text-white shadow-lg ring-2 ring-orange-400/40 scale-[1.02]'
                         : 'bg-white/85 border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-slate-900'
                     }`}
                   >
@@ -292,7 +292,7 @@ export const VerificationCommandOrbit = () => {
                 <button
                   onClick={handleRunTest}
                   disabled={isSimulating}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-orange-600/25 border border-orange-500 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
                   <span>{isSimulating ? 'Verifying...' : 'Simulate Check'}</span>
@@ -385,7 +385,7 @@ export const VerificationCommandOrbit = () => {
             </span>
             <a
               href="#roi-calculator"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-orange-600/25 border border-orange-500 transition-all cursor-pointer"
             >
               <span>Calculate Your Savings</span>
               <ArrowRight className="w-3.5 h-3.5" />

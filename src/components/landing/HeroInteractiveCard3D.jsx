@@ -135,11 +135,11 @@ const HeroInteractiveCard3D = () => {
             onClick={() => handleSelectProfile(idx)}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               selectedIdx === idx
-                ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-md shadow-amber-500/25 border border-amber-400 scale-[1.02]'
+                ? 'bg-orange-600 text-white font-black shadow-md shadow-orange-600/30 border border-orange-500 scale-[1.02]'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${selectedIdx === idx ? 'bg-white' : 'bg-amber-500'}`}></span>
             <span className="truncate">{p.roleLabel}</span>
           </button>
         ))}
@@ -359,7 +359,7 @@ const HeroInteractiveCard3D = () => {
                   e.stopPropagation();
                   handleFlip();
                 }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 cursor-pointer border border-amber-400"
+                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md shadow-orange-600/25 cursor-pointer border border-orange-500"
               >
                 <RotateCw className="w-3.5 h-3.5 text-white" />
                 <span>View Front Badge</span>

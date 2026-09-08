@@ -725,7 +725,7 @@ export const LandingPageView = () => {
             
             <button
               onClick={() => setShowDemoModal(true)}
-              className="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 shadow-md shadow-amber-600/20 hover:shadow-lg hover:shadow-amber-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-amber-500/40"
+              className="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/25 hover:shadow-lg hover:shadow-orange-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-orange-500"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -1077,7 +1077,7 @@ export const LandingPageView = () => {
                 onClick={() => setActiveSpecCategory(cat.id)}
                 className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
                   activeSpecCategory === cat.id
-                    ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black shadow-md shadow-amber-500/20 border border-amber-300/40'
+                    ? 'bg-orange-600 text-white font-black shadow-md shadow-orange-600/25 border border-orange-500'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1147,7 +1147,7 @@ export const LandingPageView = () => {
                   onClick={() => setActiveRadarCity(key)}
                   className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 border-amber-400 text-white shadow-md'
+                      ? 'bg-orange-600 border-orange-500 text-white shadow-lg ring-1 ring-orange-400'
                       : 'bg-white/80 border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-slate-900'
                   }`}
                 >
@@ -1156,7 +1156,7 @@ export const LandingPageView = () => {
                       <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-400'}`}></span>
                       <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-900'}`}>{hub.name}</h4>
                     </div>
-                    <p className={`text-[11px] mt-1 ${isSelected ? 'text-amber-100' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
+                    <p className={`text-[11px] mt-1 ${isSelected ? 'text-orange-100 font-medium' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
                   </div>
                   <span className={`font-mono text-[10px] font-bold px-2.5 py-1 rounded border ${
                     isSelected 
@@ -1259,7 +1259,7 @@ export const LandingPageView = () => {
                 onClick={() => handleRunSimulation(key)}
                 className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 border-amber-400 text-white shadow-lg ring-2 ring-amber-400/40'
+                    ? 'bg-orange-600 border-orange-500 text-white shadow-lg ring-2 ring-orange-400/40'
                     : 'dark-glass-card border-slate-200 text-slate-700 hover:border-amber-300 hover:text-slate-900 bg-white/80'
                 }`}
               >
@@ -1267,13 +1267,13 @@ export const LandingPageView = () => {
                   <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-amber-50 text-amber-700'}`}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-amber-100' : 'text-amber-700'}`}>
+                  <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-700'}`}>
                     {isSelected ? 'SELECTED' : 'CLICK TO TEST'}
                   </span>
                 </div>
                 <div>
                   <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-900'}`}>{item.title}</h4>
-                  <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-amber-100' : 'text-slate-500'}`}>{item.category}</p>
+                  <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-orange-100 font-medium' : 'text-slate-500'}`}>{item.category}</p>
                 </div>
               </button>
             );
@@ -1307,7 +1307,7 @@ export const LandingPageView = () => {
               <button
                 onClick={() => handleRunSimulation(selectedSimMode)}
                 disabled={simulating}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-md shadow-amber-500/20 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-md shadow-orange-600/25 border border-orange-500 cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
                 <span>{simulating ? 'Verifying...' : 'Re-Run Verification Check'}</span>
@@ -1446,7 +1446,7 @@ export const LandingPageView = () => {
                     onClick={() => setWorkforceType(item.id)}
                     className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                       workforceType === item.id
-                        ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-slate-950 font-black border-amber-300 shadow-md shadow-amber-500/20'
+                        ? 'bg-orange-600 text-white font-black border-orange-500 shadow-md shadow-orange-600/25'
                         : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-amber-50/40'
                     }`}
                   >
@@ -1579,11 +1579,10 @@ export const LandingPageView = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="group relative flex-1 py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 shadow-lg shadow-amber-500/25 hover:scale-[1.02] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer border border-amber-300/50 overflow-hidden"
+                className="group relative flex-1 py-4 rounded-xl font-black text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/30 hover:scale-[1.02] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer border border-orange-500 overflow-hidden"
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
-                <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] tracking-wide">Unlock These Savings</span>
-                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" />
+                <span className="tracking-wide text-white font-black">Unlock These Savings</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
@@ -1921,7 +1920,7 @@ export const LandingPageView = () => {
         <div className="relative rounded-3xl overflow-hidden border border-slate-200/90 dark-glass-hero p-8 sm:p-14 text-center shadow-2xl">
           
           <div className="max-w-3xl mx-auto flex flex-col items-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-slate-950 mb-6 shadow-lg shadow-amber-500/25">
+            <div className="w-14 h-14 rounded-2xl bg-orange-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-orange-600/25">
               <Zap className="w-7 h-7" />
             </div>
 
@@ -1937,11 +1936,10 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="group relative px-9 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 shadow-xl shadow-amber-500/25 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center gap-2.5 cursor-pointer border border-amber-300/60 overflow-hidden"
+                className="group relative px-9 py-4 rounded-2xl font-black text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/30 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center gap-2.5 cursor-pointer border border-orange-500 overflow-hidden"
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></span>
-                <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] tracking-wide">Book Live Enterprise Walkthrough</span>
-                <ArrowRight className="w-4 h-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] group-hover:translate-x-1 transition-transform" />
+                <span className="tracking-wide text-white font-black">Book Live Enterprise Walkthrough</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
@@ -2100,7 +2098,7 @@ export const LandingPageView = () => {
                 </p>
                 <button
                   onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-orange-600 hover:bg-orange-700 transition-all shadow-md shadow-orange-600/25 border border-orange-500 cursor-pointer"
                 >
                   Close Window
                 </button>
@@ -2200,7 +2198,7 @@ export const LandingPageView = () => {
                   <button
                     type="submit"
                     disabled={demoLoading}
-                    className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-orange-500 cursor-pointer"
                   >
                     {demoLoading ? (
                       <>
@@ -2243,7 +2241,7 @@ export const LandingPageView = () => {
                 </p>
                 <button
                   onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-orange-600 hover:bg-orange-700 transition-all shadow-md shadow-orange-600/25 border border-orange-500 cursor-pointer"
                 >
                   Close Window
                 </button>
@@ -2328,7 +2326,7 @@ export const LandingPageView = () => {
                   <button
                     type="submit"
                     disabled={reviewLoading}
-                    className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-orange-500 cursor-pointer"
                   >
                     {reviewLoading ? 'Submitting Review...' : 'Post Client Testimonial'}
                   </button>

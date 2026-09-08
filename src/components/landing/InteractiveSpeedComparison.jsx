@@ -142,7 +142,7 @@ export const InteractiveSpeedComparison = () => {
 
         <a
           href="#roi-calculator"
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 font-bold text-xs text-slate-950 flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 font-bold text-xs text-white flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-600/25 border border-orange-500 cursor-pointer"
         >
           <span>Calculate Your Savings</span>
           <ArrowRight className="w-3.5 h-3.5" />

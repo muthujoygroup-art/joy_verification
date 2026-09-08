@@ -147,12 +147,12 @@ export const InteractiveProcessPipeline = () => {
               onClick={() => handleStepClick(idx)}
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                 isActive
-                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 border-amber-400 text-white shadow-lg ring-2 ring-amber-400/40 scale-[1.02]'
+                  ? 'bg-orange-600 border-orange-500 text-white shadow-lg ring-2 ring-orange-400/40 scale-[1.02]'
                   : 'bg-white/85 border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/40'
               }`}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs font-black font-outfit ${isActive ? 'text-amber-100' : 'text-amber-700'}`}>
+                <span className={`text-xs font-black font-outfit ${isActive ? 'text-white font-black' : 'text-amber-700'}`}>
                   STEP {s.stepNumber}
                 </span>
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
@@ -165,7 +165,7 @@ export const InteractiveProcessPipeline = () => {
                 <h4 className={`font-bold text-sm font-outfit ${isActive ? 'text-white' : 'text-slate-900'}`}>
                   {s.title}
                 </h4>
-                <p className={`text-[11px] mt-0.5 ${isActive ? 'text-amber-100' : 'text-slate-500'}`}>
+                <p className={`text-[11px] mt-0.5 ${isActive ? 'text-orange-100 font-medium' : 'text-slate-500'}`}>
                   {s.subtitle}
                 </p>
               </div>
