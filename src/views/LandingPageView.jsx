@@ -74,12 +74,16 @@ import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentR
 import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator';
 import InteractiveProcessPipeline from '../components/landing/InteractiveProcessPipeline';
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
+import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 
 export const LandingPageView = () => {
+  // Innovative First-Load / Reload Logo Preloader
+  const [showPreloader, setShowPreloader] = useState(true);
+
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
@@ -583,6 +587,11 @@ export const LandingPageView = () => {
   return (
     <div className="min-h-screen bg-[#0C0F17] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
       
+      {/* Innovative First-Load / Reload Holographic Logo Preloader */}
+      {showPreloader && (
+        <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
+      )}
+
       {/* 60FPS Running 3D Animated Background & Warm Cosmic Energy Mesh */}
       <Running3DBackground />
 
@@ -667,6 +676,17 @@ export const LandingPageView = () => {
           {/* Right Action CTAs & Portal Switcher */}
           <div className="hidden sm:flex items-center gap-3">
             
+            {/* Replay Holographic Intro Animation */}
+            <button
+              onClick={() => setShowPreloader(true)}
+              title="Replay Holographic Intro Animation"
+              className="p-2.5 rounded-xl text-xs font-bold text-slate-200 bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-500/50 hover:text-amber-400 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              aria-label="Replay Intro"
+            >
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="hidden xl:inline text-[11px] font-mono">Intro</span>
+            </button>
+
             {/* Futuristic UI Sound Effects Toggle */}
             <button
               onClick={handleToggleSound}
