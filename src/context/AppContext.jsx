@@ -434,7 +434,7 @@ export const AppProvider = ({ children }) => {
       title: 'HR Executive Onboarding Workstation Guidelines',
       summary: 'HR Executives profile new employees, assign customized 10-feature verification flags, and dispatch magic token links via WhatsApp, SMS, Email, or QR code.',
       step1: 'Creating Candidate Profile & Assigning 10-Feature Flags: Click "Send Link to Employee". Input employee name, mobile number, designation, and department dropdowns. Toggle mandatory verification checks.',
-      step2: 'Dispatching Magic Token Links via Meta WhatsApp & Email: In Candidate Pipeline, click "Dispatch Link". Dispatch onboarding link via WhatsApp Cloud API, carrier SMS, SMTP email, or display scannable QR Code.',
+      step2: 'Sending Verification Links via WhatsApp & Email: In Candidate List, click "Send Link". Send the onboarding verification link via WhatsApp, SMS, email, or show a scannable QR Code.',
       step3: 'HR Station Form Manual Entry: If candidate is present at HR desk, click "HR Station Form Entry" to complete full 7-section joining form with pre-filled dropdown options.'
     },
     candidate: {

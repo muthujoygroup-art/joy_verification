@@ -79,7 +79,7 @@ export const ROLE_TOUR_STEPS = {
     steps: [
       {
         target: 'hr-pipeline-tab',
-        title: '1. Candidate Onboarding Pipeline',
+        title: '1. Candidate Verification List',
         description: 'View active candidate profiles, filter by verification status, and audit 60-day certificate lifecycle deadlines.'
       },
       {

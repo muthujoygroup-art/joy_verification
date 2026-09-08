@@ -154,7 +154,7 @@ export const LeadsInquiriesConsole = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-            <span>📬 Demo Inquiries & Sales Leads Pipeline</span>
+            <span>📬 Demo Inquiries & Contact Requests</span>
             <span className="badge badge-purple text-xs font-mono">{inquiries.length} Total</span>
           </h2>
           <p className="text-xs text-slate-500 font-medium">
@@ -174,7 +174,7 @@ export const LeadsInquiriesConsole = () => {
           <button
             onClick={exportExcel}
             className="btn btn-superadmin text-xs py-2 px-3 flex items-center gap-1.5 cursor-pointer font-bold"
-            title="Export leads pipeline to Microsoft Excel (.xlsx)"
+            title="Export inquiries to Microsoft Excel (.xlsx)"
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
             <span>Export Excel (.xlsx)</span>
@@ -258,7 +258,7 @@ export const LeadsInquiriesConsole = () => {
                 <th className="p-3.5">Lead / Contact</th>
                 <th className="p-3.5">Company Name</th>
                 <th className="p-3.5">Volume & Scope</th>
-                <th className="p-3.5">Pipeline Status</th>
+                <th className="p-3.5">Status</th>
                 <th className="p-3.5">Received Date</th>
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
@@ -268,7 +268,7 @@ export const LeadsInquiriesConsole = () => {
                 <tr>
                   <td colSpan="6" className="p-8 text-center text-slate-400">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-500" />
-                    <span>Loading leads pipeline...</span>
+                    <span>Loading inquiries...</span>
                   </td>
                 </tr>
               ) : filteredInquiries.length === 0 ? (

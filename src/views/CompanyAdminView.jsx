@@ -518,7 +518,7 @@ export const CompanyAdminView = () => {
               <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
             </div>
             <h2 className="text-2xl font-black text-slate-900 mt-1">{company.name}</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Telemetry, Turnaround Time Metrics, Employee Master Registry & Document Hub.</p>
+            <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Activity, Turnaround Time Metrics, Employee Directory & Document Hub.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -584,8 +584,8 @@ export const CompanyAdminView = () => {
             {[
               {
                 id: 'telemetry_candidates',
-                title: '1. Telemetry & Candidates',
-                subtitle: 'Usage & Master Registry',
+                title: '1. Analytics & Candidates',
+                subtitle: 'Usage & Candidate Directory',
                 icon: ShieldCheck,
                 activeBorder: 'border-sky-500 bg-sky-50/90 text-sky-950 shadow-md',
                 badgeText: `${candidates.length} Profiles`,
@@ -661,10 +661,6 @@ export const CompanyAdminView = () => {
           <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-              
-              <span className="text-[11px] font-black text-sky-900 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-sky-100 border border-sky-200 shadow-2xs shrink-0">
-                SUB-SECTIONS:
-              </span>
 
               {/* 1. Telemetry & Candidates Sub-Sections */}
               {activeMainSection === 'telemetry_candidates' && (
@@ -685,7 +681,7 @@ export const CompanyAdminView = () => {
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
-                    <span>2. Telemetry & TAT Analytics</span>
+                    <span>2. Verification Analytics & Turnaround Time</span>
                   </button>
                 </>
               )}
@@ -1729,7 +1725,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <div>
                     <h4 className="font-black text-slate-900 text-base">
-                      Verification Pipeline & Feature Modules (Company Controls)
+                      Verification Checks & Feature Modules (Company Controls)
                     </h4>
                     <p className="text-slate-500 text-[11px]">
                       Enable or disable verification checks required for your candidates on their onboarding link

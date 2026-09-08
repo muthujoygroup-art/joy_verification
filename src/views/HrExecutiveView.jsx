@@ -1677,17 +1677,17 @@ export const HrExecutiveView = () => {
             {[
               {
                 id: 'pipeline_dossiers',
-                title: '1. Candidate Pipeline & Registry',
-                subtitle: 'Verification Pipeline & Audit Ledger',
+                title: '1. Candidate List & Records',
+                subtitle: 'View, verify, and manage all candidate applications',
                 icon: Smartphone,
                 activeBorder: 'border-emerald-500 bg-emerald-50/90 text-emerald-950 shadow-md',
-                badgeText: `${candidates.length} In Pipeline`,
+                badgeText: `${candidates.length} Candidates`,
                 defaultTab: 'pipeline'
               },
               {
                 id: 'profiler_dispatch',
-                title: '2. Candidate Profiler & Dispatch',
-                subtitle: '10-Check Matrix & Magic Links',
+                title: '2. Add New Candidate',
+                subtitle: 'Enter candidate details & send verification link',
                 icon: Sliders,
                 activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
                 badgeText: 'New Onboarding',
@@ -1695,11 +1695,11 @@ export const HrExecutiveView = () => {
               },
               {
                 id: 'statutory_settings',
-                title: '3. Analytics, Policies & Settings',
-                subtitle: 'TAT Telemetry, Preferences & Rules',
+                title: '3. Analytics & Settings',
+                subtitle: 'Turnaround times, verification reports & rules',
                 icon: Settings,
                 activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: 'Rules & TAT',
+                badgeText: 'Analytics & Rules',
                 defaultTab: 'analytics'
               }
             ].map(cat => {
@@ -1746,16 +1746,12 @@ export const HrExecutiveView = () => {
             })}
           </div>
 
-          {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
+          {/* TIER 2: ACTIVE NAVIGATION TABS RIBBON */}
           <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-              
-              <span className="text-[11px] font-black text-emerald-900 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-emerald-100 border border-emerald-200 shadow-2xs shrink-0">
-                SUB-SECTIONS:
-              </span>
 
-              {/* 1. Pipeline & Dossiers Sub-Sections */}
+              {/* 1. Candidate List & Records Tabs */}
               {activeMainSection === 'pipeline_dossiers' && (
                 <>
                   <button
@@ -1765,12 +1761,12 @@ export const HrExecutiveView = () => {
                     }`}
                   >
                     <Smartphone className="w-3.5 h-3.5" />
-                    <span>1. Candidate Pipeline & Registry ({candidates.length})</span>
+                    <span>1. Candidate List ({candidates.length})</span>
                   </button>
                 </>
               )}
 
-              {/* 2. Profiler & Dispatch Sub-Sections */}
+              {/* 2. Add Candidate Tabs */}
               {activeMainSection === 'profiler_dispatch' && (
                 <>
                   <button
@@ -1780,12 +1776,12 @@ export const HrExecutiveView = () => {
                     }`}
                   >
                     <Sliders className="w-3.5 h-3.5" />
-                    <span>1. Add Candidate Profile & 10-Check Matrix</span>
+                    <span>1. Add Candidate & Select Verification Checks</span>
                   </button>
                 </>
               )}
 
-              {/* 3. Analytics, Policies & Settings Sub-Sections */}
+              {/* 3. Analytics & Settings Tabs */}
               {activeMainSection === 'statutory_settings' && (
                 <>
                   <button
@@ -1795,7 +1791,7 @@ export const HrExecutiveView = () => {
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
-                    <span>1. Telemetry & TAT Analytics</span>
+                    <span>1. Verification Analytics & Turnaround Time</span>
                   </button>
                   <button
                     onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('settings'); setShowAddForm(false); }}
@@ -1804,7 +1800,7 @@ export const HrExecutiveView = () => {
                     }`}
                   >
                     <Settings className="w-3.5 h-3.5" />
-                    <span>2. Settings, Email & Rules</span>
+                    <span>2. Settings & Notifications</span>
                   </button>
                 </>
               )}
@@ -2027,9 +2023,9 @@ export const HrExecutiveView = () => {
             <div>
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Smartphone className="w-5 h-5 text-emerald-600" />
-                <span>Employee Candidate Verification Pipeline & Document Registry</span>
+                <span>Candidate Verification List & Records</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Dispatch onboarding links via WhatsApp/SMS/Email, monitor 60-day certificate validity, and export official dossiers</p>
+              <p className="text-xs text-slate-500 font-medium">Send verification links via WhatsApp/SMS/Email, monitor 60-day certificate validity, and export official reports</p>
             </div>
             
             <div className="flex items-center gap-2 self-start flex-wrap">
@@ -2674,9 +2670,9 @@ export const HrExecutiveView = () => {
                   setShowAddForm(false);
                 }}
                 className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-700 bg-white border-slate-300 hover:bg-slate-50 cursor-pointer"
-                title="Return to Candidate Pipeline table"
+                title="Return to Candidate List"
               >
-                <span>← Back to Pipeline</span>
+                <span>← Back to Candidate List</span>
               </button>
 
               {!editingCandidate && (
@@ -5120,7 +5116,7 @@ export const HrExecutiveView = () => {
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-emerald-600" />
-              <span>HR Candidate Conversion Pipeline Telemetry</span>
+              <span>Candidate Verification & Turnaround Overview</span>
             </h3>
             <span className="badge badge-emerald">85% Completion Conversion Rate</span>
           </div>

@@ -1261,7 +1261,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: Building2,
                 colorClass: 'from-indigo-600 to-indigo-800',
                 activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: '6 Sub-Sections',
+                badgeText: '6 Modules',
                 defaultTab: 'analytics'
               },
               {
@@ -1271,7 +1271,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: Zap,
                 colorClass: 'from-teal-600 to-emerald-800',
                 activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
-                badgeText: '3 Sub-Sections',
+                badgeText: '3 Modules',
                 defaultTab: 'apiconfig'
               },
               {
@@ -1281,7 +1281,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: CreditCard,
                 colorClass: 'from-amber-600 to-amber-800',
                 activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
-                badgeText: '2 Sub-Sections',
+                badgeText: '2 Modules',
                 defaultTab: 'billing'
               },
               {
@@ -1291,7 +1291,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: Database,
                 colorClass: 'from-rose-600 to-rose-800',
                 activeBorder: 'border-rose-500 bg-rose-50/90 text-rose-950 shadow-md',
-                badgeText: '4 Sub-Sections',
+                badgeText: '4 Modules',
                 defaultTab: 'dbms'
               },
               {
@@ -1301,7 +1301,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 icon: ShieldCheck,
                 colorClass: 'from-purple-600 to-purple-900',
                 activeBorder: 'border-purple-500 bg-purple-50/90 text-purple-950 shadow-md',
-                badgeText: '4 Sub-Sections',
+                badgeText: '4 Modules',
                 defaultTab: 'reports'
               }
             ].map(cat => {
@@ -1343,14 +1343,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             })}
           </div>
 
-          {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
+          {/* TIER 2: ACTIVE NAVIGATION TABS RIBBON */}
           <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-              
-              <span className="text-[11px] font-black text-indigo-900 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-indigo-100 border border-indigo-200 shadow-2xs shrink-0">
-                SUB-SECTIONS:
-              </span>
 
               {/* 1. Core Operations Sub-Sections */}
               {activeMainSection === 'core_ops' && (
@@ -4108,7 +4104,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               {/* Pack 5: HR Recruiter Throughput */}
               <div className="p-4 rounded-2xl border-2 border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-white to-indigo-50/20 space-y-3 shadow-2xs hover:border-indigo-300 transition-all flex flex-col justify-between">
                 <div className="space-y-1">
-                  <span className="badge badge-indigo text-[9px] font-bold">RECRUITMENT PIPELINE</span>
+                  <span className="badge badge-indigo text-[9px] font-bold">RECRUITMENT & ONBOARDING</span>
                   <strong className="text-slate-900 font-black text-sm block">5. HR Recruiter Verification Throughput</strong>
                   <p className="text-[11px] text-slate-500">Per-recruiter link dispatch velocity, candidate turnaround time, and completion rate.</p>
                 </div>
