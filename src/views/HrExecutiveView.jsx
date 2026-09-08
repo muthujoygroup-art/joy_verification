@@ -2294,19 +2294,10 @@ export const HrExecutiveView = () => {
                       <button
                         type="button"
                         onClick={() => setDispatchingCandidate(cand)}
-                        className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                        className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center col-span-2 font-bold"
                       >
                         <QrCode className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Send Link 📲</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setRoleView('employee_link', cand.token)}
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
-                      >
-                        <Smartphone className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Test Portal 👁️</span>
+                        <span className="truncate">Dispatch Link 📲</span>
                       </button>
 
                       <button
@@ -2565,16 +2556,6 @@ export const HrExecutiveView = () => {
                           >
                             <QrCode className="w-3.5 h-3.5" />
                             <span>Dispatch Link 📲</span>
-                          </button>
-
-                          {/* 4. Test Employee Link Portal */}
-                          <button
-                            onClick={() => setRoleView('employee_link', cand.token)}
-                            className="btn btn-company text-[11px] py-1.5 px-2 flex items-center gap-1"
-                            title="Test verification link from candidate perspective"
-                          >
-                            <Smartphone className="w-3.5 h-3.5" />
-                            <span>Test Portal</span>
                           </button>
 
                           {/* 5. Inactive / Activate Toggle */}
