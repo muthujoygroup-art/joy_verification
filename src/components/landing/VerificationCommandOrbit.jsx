@@ -8,13 +8,9 @@ import {
   FileCheck, 
   Zap, 
   CheckCircle2, 
-  Lock, 
   ArrowRight,
   Eye,
   RefreshCw,
-  Award,
-  Users,
-  Building,
   Check,
   Sparkles
 } from 'lucide-react';
@@ -24,9 +20,9 @@ const ORBIT_MODULES = [
   {
     id: 'identity',
     title: 'Government ID & Photo Match',
-    badge: 'INSTANT VERIFICATION',
+    badge: 'INSTANT IDENTITY',
     icon: ShieldCheck,
-    color: 'from-amber-500 via-orange-500 to-rose-500',
+    color: 'from-emerald-500 via-teal-500 to-cyan-600',
     turnaround: 'Under 30 Seconds',
     accuracy: '100% Verified',
     image3d: '/assets/3d/hero_3d_verification.jpg',
@@ -50,7 +46,7 @@ const ORBIT_MODULES = [
     title: 'Past Employment & Experience',
     badge: 'WORK HISTORY',
     icon: FileCheck,
-    color: 'from-orange-500 via-amber-500 to-yellow-500',
+    color: 'from-blue-600 via-indigo-600 to-slate-800',
     turnaround: 'Instant Verification',
     accuracy: 'Verified Records',
     image3d: '/assets/3d/corporate_3d_bgv.jpg',
@@ -74,7 +70,7 @@ const ORBIT_MODULES = [
     title: 'Dual-Employment & Moonlighting',
     badge: 'CONFLICT OF INTEREST',
     icon: Search,
-    color: 'from-rose-500 via-orange-500 to-amber-600',
+    color: 'from-amber-500 via-orange-500 to-rose-600',
     turnaround: 'Real-Time Alert',
     accuracy: '100% Reliable',
     image3d: '/assets/3d/corporate_shield_vault_3d.jpg',
@@ -98,7 +94,7 @@ const ORBIT_MODULES = [
     title: 'Court & Criminal Record Search',
     badge: 'LEGAL CLEARANCE',
     icon: Scale,
-    color: 'from-rose-500 via-pink-600 to-amber-500',
+    color: 'from-indigo-600 via-purple-600 to-pink-600',
     turnaround: 'Nationwide Search',
     accuracy: 'Comprehensive',
     image3d: '/assets/3d/security_3d_shield.jpg',
@@ -122,7 +118,7 @@ const ORBIT_MODULES = [
     title: 'Bank Account & Salary Validation',
     badge: 'FINANCIAL INTEGRITY',
     icon: CreditCard,
-    color: 'from-amber-400 via-orange-500 to-rose-500',
+    color: 'from-teal-600 via-emerald-600 to-cyan-700',
     turnaround: 'Instant Check',
     accuracy: 'Official Banking Rails',
     image3d: '/assets/3d/liquid_glass_vault_3d.jpg',
@@ -146,7 +142,7 @@ const ORBIT_MODULES = [
     title: 'Digital Employee Pass & QR Badge',
     badge: 'WORKFORCE PASS',
     icon: QrCode,
-    color: 'from-emerald-400 via-teal-500 to-amber-500',
+    color: 'from-emerald-600 via-teal-600 to-emerald-800',
     turnaround: 'Instant Download',
     accuracy: 'Tamper-Proof QR',
     image3d: '/assets/3d/labor_3d_management.jpg',
@@ -218,16 +214,16 @@ export const VerificationCommandOrbit = () => {
                     onClick={() => handleSelectModule(idx)}
                     className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between group cursor-pointer ${
                       isSelected
-                        ? 'bg-orange-600 border-orange-500 text-white shadow-lg ring-2 ring-orange-400/40 scale-[1.02]'
-                        : 'bg-white/85 border-slate-200 text-slate-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-slate-900'
+                        ? 'bg-slate-900 border-slate-800 text-white shadow-xl ring-2 ring-emerald-500/40 scale-[1.02]'
+                        : 'bg-white/85 border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30 hover:text-slate-900'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                           isSelected
-                            ? `bg-white/20 text-white font-black shadow-xs`
-                            : 'bg-amber-50 text-amber-700 group-hover:bg-amber-100'
+                            ? `bg-emerald-500 text-slate-950 font-black shadow-sm`
+                            : 'bg-slate-100 text-slate-700 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                         }`}
                       >
                         <Icon className="w-4 h-4" />
@@ -236,17 +232,17 @@ export const VerificationCommandOrbit = () => {
                         <h4 className={`font-bold text-sm font-outfit leading-snug ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                           {mod.title}
                         </h4>
-                        <span className={`text-[11px] block mt-0.5 font-medium ${isSelected ? 'text-amber-100' : 'text-amber-700'}`}>
+                        <span className={`text-[10px] block mt-0.5 font-mono font-bold tracking-wider uppercase ${isSelected ? 'text-emerald-400' : 'text-slate-500'}`}>
                           {mod.badge}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                      <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border ${
                         isSelected 
-                          ? 'text-white bg-black/20 border-white/30' 
-                          : 'text-amber-800 bg-amber-50 border-amber-200'
+                          ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30' 
+                          : 'text-slate-600 bg-slate-100 border-slate-200'
                       }`}>
                         {mod.turnaround}
                       </span>
@@ -262,7 +258,7 @@ export const VerificationCommandOrbit = () => {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               All 6 Screening Engines Active
             </span>
-            <span className="text-amber-800 font-medium">100% Automated</span>
+            <span className="text-slate-500 font-mono text-[11px]">100% Automated</span>
           </div>
 
         </div>
@@ -274,11 +270,11 @@ export const VerificationCommandOrbit = () => {
             {/* Header */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
               <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/20 shrink-0`}>
-                  <activeModule.icon className="w-6 h-6" />
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-white font-black shadow-md shadow-slate-900/20 shrink-0`}>
+                  <activeModule.icon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold block">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-700 font-bold block">
                     {activeModule.badge}
                   </span>
                   <h3 className="text-2xl font-black text-slate-900 font-outfit">
@@ -290,16 +286,16 @@ export const VerificationCommandOrbit = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode(viewMode === 'benefits' ? 'certificate' : 'benefits')}
-                  className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-bold text-amber-900 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-800 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Eye className="w-3.5 h-3.5 text-amber-600" />
+                  <Eye className="w-3.5 h-3.5 text-emerald-600" />
                   <span>{viewMode === 'benefits' ? 'View Sample Certificate' : 'View Key Benefits'}</span>
                 </button>
 
                 <button
                   onClick={handleRunTest}
                   disabled={isSimulating}
-                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-orange-600/25 border border-orange-500 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/25 border border-emerald-500 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
                   <span>{isSimulating ? 'Verifying...' : 'Simulate Check'}</span>
@@ -323,11 +319,11 @@ export const VerificationCommandOrbit = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
 
               {isSimulating && (
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_15px_#f59e0b] z-20 animate-laser-vertical"></div>
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] z-20 animate-laser-vertical"></div>
               )}
 
-              <div className="absolute top-2.5 left-2.5 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
-                <Sparkles className="w-3 h-3 text-amber-400" />
+              <div className="absolute top-2.5 left-2.5 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
+                <Sparkles className="w-3 h-3 text-emerald-400" />
                 <span>{activeModule.turnaround}</span>
               </div>
 

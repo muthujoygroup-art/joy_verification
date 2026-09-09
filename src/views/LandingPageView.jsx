@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
   Building2, 
@@ -10,49 +10,22 @@ import {
   CheckCircle2, 
   Lock, 
   FileText, 
-  Award, 
   Zap, 
-  Check, 
-  BarChart3, 
+  Check,
+  FileCheck,
   Scale, 
   CreditCard, 
-  ChevronRight, 
   HelpCircle, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  ExternalLink,
   ChevronDown,
   Layers,
-  Send,
   Eye,
   X,
-  Play,
-  FileCheck,
-  Clock,
-  Briefcase,
-  User,
-  Shield,
-  TrendingUp,
-  CheckCircle,
-  Laptop,
-  CheckCheck,
   Menu,
   Star,
   HardHat,
-  Users,
-  AlertTriangle,
-  QrCode,
-  FileSpreadsheet,
-  Truck,
-  Factory,
-  Building,
   Fingerprint,
   MessageSquare,
-  ThumbsUp,
-  Quote,
   BookOpen,
-  WifiOff,
   Activity,
   Radio,
   Cpu,
@@ -61,7 +34,6 @@ import {
   Sliders,
   DollarSign,
   Download,
-  ArrowUpRight,
   Volume2,
   VolumeX
 } from 'lucide-react';
@@ -75,6 +47,7 @@ import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator
 import InteractiveProcessPipeline from '../components/landing/InteractiveProcessPipeline';
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
+import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -82,7 +55,7 @@ import confetti from 'canvas-confetti';
 import { useApp } from '../context/AppContext';
 
 export const LandingPageView = () => {
-  const { platformLogo, platformLogoEmblem } = useApp() || {};
+  const { platformLogoEmblem } = useApp() || {};
   // Innovative First-Load / Reload Logo Preloader (Cached in session for instant subsequent loads)
   const [showPreloader, setShowPreloader] = useState(() => {
     try {
@@ -101,7 +74,6 @@ export const LandingPageView = () => {
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [showPassModal, setShowPassModal] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
 
   const handleToggleSound = () => {
@@ -112,54 +84,11 @@ export const LandingPageView = () => {
     }
   };
 
-  // WhatsApp Floating Widget State
-  const [whatsappOpen, setWhatsappOpen] = useState(false);
-  const [whatsappMsg, setWhatsappMsg] = useState('');
-
   const handleSendWhatsApp = (customText) => {
     const defaultPhone = '919940000000';
-    const message = customText || whatsappMsg || 'Hello JOY TRUE PROFILE Team! I would like to learn more about employee background verification for my company.';
+    const message = customText || 'Hello JOY TRUE PROFILE Team! I would like to learn more about instant workforce background verification for my company.';
     const url = `https://wa.me/${defaultPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  const heroPersonas = {
-    aryan: {
-      name: 'Sarah J. Chen',
-      role: 'Senior Software Engineer',
-      contractor: 'Enterprise Direct Hire',
-      hub: 'Bengaluru Tech Corridor, KA',
-      idChecksum: 'ID-VERIFIED-9012',
-      workRecordId: 'EXP-REC-8841',
-      bank: 'HDFC Bank (Payroll Validated)',
-      gateId: 'JOY-EMP-BLR-9042',
-      image: '/assets/3d/liquid_glass_hero_3d.jpg',
-      statutoryPass: 'Corporate Security Clearance'
-    },
-    pooja: {
-      name: 'Pooja Verma',
-      role: 'Supply Chain Operations Lead',
-      contractor: 'FastTrack Logistics Solutions',
-      hub: 'Bhiwandi Logistics Hub, MH',
-      idChecksum: 'ID-VERIFIED-4811',
-      workRecordId: 'EXP-REC-7104',
-      bank: 'State Bank of India (Payroll Validated)',
-      gateId: 'JOY-EMP-BHW-3108',
-      image: '/assets/3d/liquid_glass_flow_3d.jpg',
-      statutoryPass: 'Supply Chain Access Pass'
-    },
-    rajesh: {
-      name: 'Aryan Sharma',
-      role: 'Precision Engineering Specialist',
-      contractor: 'Premier Manufacturing Corp',
-      hub: 'Sanand Industrial Cluster, GJ',
-      idChecksum: 'ID-VERIFIED-6523',
-      workRecordId: 'EXP-REC-4490',
-      bank: 'ICICI Bank (Payroll Validated)',
-      gateId: 'JOY-EMP-SND-1150',
-      image: '/assets/3d/liquid_glass_vault_3d.jpg',
-      statutoryPass: 'Workforce Security Pass'
-    }
   };
 
   // Interactive Spec Customizer Tab State (Capricorn Zagato Style)
@@ -550,10 +479,10 @@ export const LandingPageView = () => {
       <VideoLoopBackground />
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION (HIGH-CONTRAST LIGHT LUXURY GLASS HEADER)
+       * 1. TOP NAVIGATION: FLOATING EXECUTIVE GLASS CAPSULE NAVBAR
        * ============================================================================== */}
-      <header className="dark-glass-nav sticky top-0 z-50 w-full px-4 sm:px-6 lg:px-8 py-3 transition-all shadow-xs border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="sticky top-2 sm:top-4 z-50 w-full px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto transition-all">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl sm:rounded-full bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           
           {/* Logo Brand */}
           <a href="#" className="flex items-center gap-3 group">
@@ -561,36 +490,37 @@ export const LandingPageView = () => {
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="JOY TRUE PROFILE Logo" 
-                className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)] group-hover:scale-105 transition-transform" 
+                className="w-10 h-10 object-contain drop-shadow-[0_2px_8px_rgba(16,185,129,0.25)] group-hover:scale-105 transition-transform" 
               />
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
             </div>
             <div>
-              <span className="text-lg font-black tracking-tight text-slate-950 flex items-center gap-1.5 font-outfit">
-                JOY <span className="text-gradient-electric">TRUE PROFILE</span>
+              <span className="text-base sm:text-lg font-black tracking-tight text-slate-950 flex items-center gap-1.5 font-outfit">
+                JOY <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-700">TRUE PROFILE</span>
               </span>
-              <span className="text-[10px] uppercase tracking-wider text-amber-800 block -mt-0.5 font-bold">
-                Instant Workforce Verification
+              <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-800 block -mt-0.5 font-bold">
+                Zero-Trust Verification
               </span>
             </div>
           </a>
 
-          {/* Center Navigation Links (Streamlined for Desktop) */}
-          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 font-sans text-xs text-slate-700 font-bold">
-            <a href="#features" className="hover:text-amber-700 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-amber-700 transition-colors">How It Works</a>
-            <a href="#solutions" className="hover:text-amber-700 transition-colors">Solutions</a>
-            <a href="#interactive-lab" className="hover:text-amber-700 transition-colors">Simulator</a>
-            <a href="#roi-calculator" className="hover:text-amber-700 transition-colors">ROI Calculator</a>
+          {/* Center Navigation Links (Streamlined Pill Bar) */}
+          <nav className="hidden xl:flex items-center gap-1 font-sans text-xs text-slate-700 font-bold bg-slate-100/70 p-1 rounded-full border border-slate-200/60">
+            <a href="#features" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Features</a>
+            <a href="#moonlighting-radar" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Moonlighting Radar</a>
+            <a href="#turnstile-access" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Turnstile Gate</a>
+            <a href="#how-it-works" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Pipeline</a>
+            <a href="#comparison" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Speed Matrix</a>
+            <a href="#roi-calculator" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">ROI Calculator</a>
             
             {/* More Resources Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
-                className="hover:text-amber-700 transition-colors flex items-center gap-1 cursor-pointer text-slate-700 font-bold"
+                className="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-white transition-all flex items-center gap-1 cursor-pointer text-slate-600 font-bold"
               >
                 <span>Resources</span>
-                <ChevronDown className="w-3 h-3 text-slate-500" />
+                <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
               {resourcesDropdownOpen && (
@@ -598,28 +528,28 @@ export const LandingPageView = () => {
                   className="absolute left-0 mt-2 w-52 bg-white/95 border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setResourcesDropdownOpen(false)}
                 >
-                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <Cpu className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <Cpu className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Architecture</span>
                   </a>
-                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <Sliders className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <Sliders className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Specifications</span>
                   </a>
-                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <Radio className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <Radio className="w-3.5 h-3.5 text-emerald-600" />
                     <span>India Radar</span>
                   </a>
-                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <Star className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <Star className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Client Reviews</span>
                   </a>
-                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <BookOpen className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Knowledge Hub</span>
                   </a>
-                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors flex items-center gap-2">
-                    <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
+                    <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
                     <span>FAQ</span>
                   </a>
                 </div>
@@ -634,10 +564,10 @@ export const LandingPageView = () => {
             <button
               onClick={() => setShowPreloader(true)}
               title="Replay Holographic Intro Animation"
-              className="p-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 hover:border-amber-400 hover:text-amber-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="p-2.5 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               aria-label="Replay Intro"
             >
-              <Sparkles className="w-4 h-4 text-amber-500" />
+              <Sparkles className="w-4 h-4 text-emerald-500" />
               <span className="hidden 2xl:inline text-[11px] font-mono">Intro</span>
             </button>
 
@@ -645,13 +575,13 @@ export const LandingPageView = () => {
             <button
               onClick={handleToggleSound}
               title={soundMuted ? 'Unmute Futuristic UI Sound Effects' : 'Mute UI Sound Effects'}
-              className="p-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center justify-center cursor-pointer shadow-xs"
+              className="p-2.5 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center justify-center cursor-pointer shadow-xs"
               aria-label="Toggle Sound Effects"
             >
               {soundMuted ? (
                 <VolumeX className="w-4 h-4 text-slate-400" />
               ) : (
-                <Volume2 className="w-4 h-4 text-amber-500" />
+                <Volume2 className="w-4 h-4 text-emerald-600" />
               )}
             </button>
 
@@ -659,7 +589,7 @@ export const LandingPageView = () => {
             <div className="relative">
               <button
                 onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                className="px-3.5 py-2 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <span>Select Portal</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
@@ -670,7 +600,7 @@ export const LandingPageView = () => {
                   className="absolute right-0 mt-2 w-64 bg-white/95 border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setPortalDropdownOpen(false)}
                 >
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-amber-800 font-bold border-b border-slate-100">
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold border-b border-slate-100">
                     Authentication Gateways
                   </div>
                   <a
@@ -687,9 +617,9 @@ export const LandingPageView = () => {
                   </a>
                   <a
                     href="/login?role=company"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 text-slate-700 hover:text-slate-900 transition-colors group"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-slate-900 transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-colors font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors font-bold">
                       <Building2 className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -727,7 +657,7 @@ export const LandingPageView = () => {
             
             <button
               onClick={() => setShowDemoModal(true)}
-              className="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/25 hover:shadow-lg hover:shadow-orange-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-orange-500"
+              className="px-4 sm:px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 shadow-md shadow-emerald-600/25 hover:shadow-lg hover:shadow-emerald-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-500"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -746,17 +676,17 @@ export const LandingPageView = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="xl:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-2 font-sans text-xs px-2 pb-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Verification Modules</a>
-            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Moonlighting Radar</a>
-            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Turnstile Simulator</a>
-            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">How It Works</a>
-            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Comparison Matrix</a>
-            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Simulator Studio</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">ROI Calculator</a>
-            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">India Telemetry Radar</a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">Reviews</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-amber-800 hover:bg-amber-50 font-semibold">FAQ</a>
+          <div className="xl:hidden mt-3 pt-3 border border-slate-200 flex flex-col gap-2 font-sans text-xs px-3 pb-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Verification Modules</a>
+            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Moonlighting Radar</a>
+            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Turnstile Simulator</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">How It Works</a>
+            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Comparison Matrix</a>
+            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Simulator Studio</a>
+            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">ROI Calculator</a>
+            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">India Telemetry Radar</a>
+            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Reviews</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">FAQ</a>
             
             <div className="pt-2 border-t border-slate-200 flex flex-col gap-2">
               <a
@@ -767,7 +697,7 @@ export const LandingPageView = () => {
               </a>
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-center shadow-md shadow-amber-600/20"
+                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 text-center shadow-md shadow-emerald-600/20"
               >
                 Book Live Demo
               </button>
@@ -785,32 +715,35 @@ export const LandingPageView = () => {
           {/* Left Column: Value Proposition & CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
-            {/* Trust Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 shadow-xs border border-amber-300/80 text-amber-900 font-bold text-xs bg-amber-50/90 hover-jump-subtle transition-all cursor-pointer">
+            {/* Trust Eyebrow Pill */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-6 shadow-xs border border-emerald-500/30 text-slate-800 font-bold text-xs bg-white/90 backdrop-blur-md hover:border-emerald-500/60 transition-all cursor-pointer">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="font-bold uppercase tracking-wider text-[11px] text-amber-950">
-                Trusted Platform: Over 500,000+ Candidate Profiles Verified Across India
+              <span className="font-bold font-mono uppercase tracking-wider text-[11px] text-slate-900">
+                INDIA'S FIRST ZERO-TRUST WORKFORCE VERIFICATION PLATFORM
+              </span>
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-black border border-emerald-300">
+                500K+ CHECKS
               </span>
             </div>
 
             {/* Main Marketing Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.12] mb-5 font-outfit">
-              Verify Employee Backgrounds <br className="hidden sm:inline" />
-              <span className="text-gradient-electric">
-                in Minutes, Not Days
+              Zero-Trust Workforce Verification. <br className="hidden sm:inline" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-700">
+                In 45 Seconds Flat.
               </span>
             </h1>
 
-            {/* Clear, Non-Technical Subtitle */}
-            <p className="text-base sm:text-lg text-slate-700 max-w-xl leading-relaxed mb-8 font-medium">
-              Fast, automated background checks for modern HR teams. Verify candidate identity, past employment history, dual-employment moonlighting, court records, and bank details in under 60 seconds — with zero paperwork.
+            {/* Clear, High-Impact Subtitle */}
+            <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed mb-8 font-normal">
+              Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
             </p>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-10 w-full sm:w-auto">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/30 hover:shadow-2xl hover:shadow-orange-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-orange-500 overflow-hidden"
+                className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:shadow-emerald-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-emerald-400 overflow-hidden"
               >
                 <span className="tracking-wide text-white font-black">Book a Free Live Demo</span>
                 <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -818,34 +751,42 @@ export const LandingPageView = () => {
 
               <a
                 href="#features"
-                className="bg-white/95 border border-slate-200 hover:border-amber-400/70 px-5 py-4 rounded-2xl font-bold text-sm text-slate-800 hover:text-amber-800 shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="bg-white/95 border border-slate-200 hover:border-emerald-500/60 px-5 py-4 rounded-2xl font-bold text-sm text-slate-800 hover:text-emerald-900 shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
+                <Sparkles className="w-4 h-4 text-emerald-600" />
                 <span>See All Features</span>
               </a>
 
-              <a
-                href="#roi-calculator"
-                className="bg-white/95 border border-slate-200 hover:border-amber-400/70 px-4 py-4 rounded-2xl font-bold text-xs text-slate-700 hover:text-amber-800 shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              <button
+                onClick={() => handleSendWhatsApp()}
+                className="bg-emerald-50/80 border border-emerald-300/80 hover:border-emerald-400 px-4 py-4 rounded-2xl font-bold text-xs text-emerald-900 hover:text-emerald-950 shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Zap className="w-3.5 h-3.5 text-orange-500" />
-                <span>Calculate ROI</span>
-              </a>
+                <div className="w-4 h-4 text-[#25D366] shrink-0">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.888 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.405" />
+                  </svg>
+                </div>
+                <span>WhatsApp Advisory</span>
+              </button>
             </div>
 
             {/* Key Value Metrics Bar */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-slate-200/80 w-full max-w-xl">
-              <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
-                <div className="text-2xl sm:text-3xl font-black text-amber-700 font-outfit">&lt;60s</div>
-                <div className="text-[11px] sm:text-xs text-slate-700 font-bold mt-0.5">Instant Verification</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-200/80 w-full max-w-2xl">
+              <div className="bg-white/95 backdrop-blur-sm p-3.5 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
+                <div className="text-xl sm:text-2xl font-black text-emerald-700 font-outfit">&lt;45s</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Verification TAT</div>
               </div>
-              <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-700 font-outfit">100%</div>
-                <div className="text-[11px] sm:text-xs text-slate-700 font-bold mt-0.5">Authentic Hires</div>
+              <div className="bg-white/95 backdrop-blur-sm p-3.5 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
+                <div className="text-xl sm:text-2xl font-black text-slate-950 font-outfit">99.98%</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Precision Rate</div>
               </div>
-              <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
-                <div className="text-2xl sm:text-3xl font-black text-orange-700 font-outfit">80%</div>
-                <div className="text-[11px] sm:text-xs text-slate-700 font-bold mt-0.5">Cost Savings</div>
+              <div className="bg-white/95 backdrop-blur-sm p-3.5 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
+                <div className="text-xl sm:text-2xl font-black text-teal-700 font-outfit">100%</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">DPDP 2023 Compliant</div>
+              </div>
+              <div className="bg-white/95 backdrop-blur-sm p-3.5 rounded-2xl hover-jump-subtle transition-all border border-slate-200 shadow-xs">
+                <div className="text-xl sm:text-2xl font-black text-amber-700 font-outfit">80%</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Cost Reduction</div>
               </div>
             </div>
 
@@ -860,41 +801,37 @@ export const LandingPageView = () => {
       </section>
 
       {/* ==============================================================================
-       * 3. CAPABILITIES HIGHLIGHT TICKER
+       * 3. STATUTORY COMPLIANCE & VERIFIED RAILS TICKER
        * ============================================================================== */}
-      <section className="relative z-10 py-6 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative rounded-2xl dark-glass-card border border-slate-200/90 py-3.5 px-2 overflow-hidden shadow-md backdrop-blur-xl [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
-          <div className="flex items-center gap-8 whitespace-nowrap animate-marquee text-xs text-slate-700 tracking-wider uppercase font-bold">
+      <section className="relative z-10 py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="relative rounded-2xl dark-glass-card border border-slate-200/90 py-3 px-2 overflow-hidden shadow-sm backdrop-blur-xl [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
+          <div className="flex items-center gap-6 whitespace-nowrap animate-marquee text-xs text-slate-700 tracking-wider uppercase font-bold">
             {[...Array(2)].map((_, loopIdx) => (
               <React.Fragment key={loopIdx}>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 shadow-xs">
-                  <Fingerprint className="w-3.5 h-3.5 text-amber-600" /> GOVERNMENT ID & INSTANT PHOTO MATCH
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> ISO 27001 CERTIFIED CLOUD
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 shadow-xs">
-                  <Search className="w-3.5 h-3.5 text-emerald-600" /> PAST EMPLOYMENT & EXPERIENCE VERIFICATION
+                <span className="text-emerald-500">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <Lock className="w-3.5 h-3.5 text-teal-600" /> DPDP ACT 2023 STATUTORY CONSENT
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-900 shadow-xs">
-                  <Zap className="w-3.5 h-3.5 text-orange-600" /> MOONLIGHTING & DUAL-EMPLOYMENT DETECTION
+                <span className="text-emerald-500">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <Fingerprint className="w-3.5 h-3.5 text-emerald-600" /> UIDAI & AADHAAR ECOSYSTEM INTEGRATED
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-900 shadow-xs">
-                  <Scale className="w-3.5 h-3.5 text-rose-600" /> PAN-INDIA COURT & CRIMINAL RECORD SEARCH
+                <span className="text-emerald-500">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <Zap className="w-3.5 h-3.5 text-amber-600" /> EPFO UAN REAL-TIME PASSBOOK RADAR
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 shadow-xs">
-                  <CreditCard className="w-3.5 h-3.5 text-amber-600" /> DIRECT BANK ACCOUNT & EXACT NAME VALIDATION
+                <span className="text-emerald-500">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <Scale className="w-3.5 h-3.5 text-indigo-600" /> PAN-INDIA DISTRICT & HIGH COURT REPOSITORIES
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 shadow-xs">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> DIGITAL EMPLOYEE PASS & INSTANT QR BADGE
+                <span className="text-emerald-500">✦</span>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-800 shadow-2xs">
+                  <CreditCard className="w-3.5 h-3.5 text-emerald-600" /> NPCI & IMPS DIRECT BANK ACCOUNT RAILS
                 </span>
-                <span className="text-amber-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 shadow-xs">
-                  <Lock className="w-3.5 h-3.5 text-amber-600" /> 100% DATA PRIVACY & LEGAL COMPLIANCE
-                </span>
-                <span className="text-amber-400">✦</span>
+                <span className="text-emerald-500">✦</span>
               </React.Fragment>
             ))}
           </div>
@@ -1924,13 +1861,13 @@ export const LandingPageView = () => {
             
             {/* Left Content (7 Cols) */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center text-white mb-5 shadow-lg shadow-orange-600/25">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white mb-5 shadow-lg shadow-emerald-600/25">
                 <Zap className="w-6 h-6" />
               </div>
 
               <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit tracking-tight mb-4 leading-tight">
                 Ready to Streamline Your Employee <br className="hidden sm:inline" />
-                <span className="text-gradient-electric">Profile Verification?</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-700">Profile Verification?</span>
               </h2>
 
               <p className="text-slate-600 text-sm sm:text-base max-w-xl mb-8 leading-relaxed">
@@ -1940,7 +1877,7 @@ export const LandingPageView = () => {
               <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/30 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-orange-500 overflow-hidden"
+                  className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 shadow-xl shadow-emerald-600/30 hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-emerald-400 overflow-hidden"
                 >
                   <span className="tracking-wide text-white font-black">Book Live Enterprise Walkthrough</span>
                   <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -1951,18 +1888,18 @@ export const LandingPageView = () => {
                     setLandingSelectedAmount(5000);
                     setShowLandingRazorpayModal(true);
                   }}
-                  className="px-7 py-4 rounded-2xl font-bold text-sm text-slate-800 bg-white border border-slate-200 hover:bg-slate-50 hover:border-amber-300 shadow-sm hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-7 py-4 rounded-2xl font-bold text-sm text-slate-800 bg-white border border-slate-200 hover:bg-slate-50 hover:border-emerald-300 shadow-sm hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <CreditCard className="w-4 h-4 text-amber-600" />
+                  <CreditCard className="w-4 h-4 text-emerald-600" />
                   <span>Get Verification Credits</span>
                 </button>
               </div>
 
               {/* Compliance Guarantee Badges */}
               <div className="flex flex-wrap items-center gap-5 mt-8 font-mono text-[11px] text-slate-600 font-bold border-t border-slate-100 pt-6">
-                <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-amber-600" /> 100% DPDP Act 2023</span>
-                <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-emerald-600" /> Audit-Ready PDF Dossiers</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-rose-600" /> 256-Bit AES Cryptography</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> 100% DPDP Act 2023</span>
+                <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-teal-600" /> Audit-Ready PDF Dossiers</span>
+                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-emerald-700" /> 256-Bit AES Cryptography</span>
               </div>
             </div>
 
@@ -1976,8 +1913,8 @@ export const LandingPageView = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-95"
                     loading="lazy"
                   />
-                  <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
-                    <Sparkles className="w-3 h-3 text-amber-400" />
+                  <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
+                    <Sparkles className="w-3 h-3 text-emerald-400" />
                     <span>Joy Neural Verification Mesh</span>
                   </div>
 
@@ -2009,11 +1946,11 @@ export const LandingPageView = () => {
                 <img 
                   src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY TRUE PROFILE Logo" 
-                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.25)]" 
+                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.25)]" 
                 />
                 <div>
-                  <span className="font-black text-slate-900 font-outfit text-base tracking-tight">JOY <span className="text-amber-600">TRUE PROFILE</span></span>
-                  <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">Instant Workforce Verification</p>
+                  <span className="font-black text-slate-900 font-outfit text-base tracking-tight">JOY <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-700">TRUE PROFILE</span></span>
+                  <p className="text-[10px] text-emerald-800 font-bold uppercase tracking-wider">Zero-Trust Verification</p>
                 </div>
               </div>
 
@@ -2035,11 +1972,11 @@ export const LandingPageView = () => {
                 Verification Modules
               </h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-600">
-                <li><a href="#features" className="hover:text-amber-700 transition-colors">Digital Identity & Liveness Check</a></li>
-                <li><a href="#features" className="hover:text-amber-700 transition-colors">Employment History & Tenure Radar</a></li>
-                <li><a href="#features" className="hover:text-amber-700 transition-colors">National Judicial & Court Screening</a></li>
-                <li><a href="#features" className="hover:text-amber-700 transition-colors">Direct Bank & Name Validation</a></li>
-                <li><a href="#features" className="hover:text-amber-700 transition-colors">Workplace Digital QR Passes</a></li>
+                <li><a href="#features" className="hover:text-emerald-700 transition-colors">Digital Identity & Liveness Check</a></li>
+                <li><a href="#features" className="hover:text-emerald-700 transition-colors">Employment History & Tenure Radar</a></li>
+                <li><a href="#features" className="hover:text-emerald-700 transition-colors">National Judicial & Court Screening</a></li>
+                <li><a href="#features" className="hover:text-emerald-700 transition-colors">Direct Bank & Name Validation</a></li>
+                <li><a href="#features" className="hover:text-emerald-700 transition-colors">Workplace Digital QR Passes</a></li>
               </ul>
             </div>
 
@@ -2049,11 +1986,11 @@ export const LandingPageView = () => {
                 Platform & Solutions
               </h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-600">
-                <li><a href="#interactive-lab" className="hover:text-amber-700 transition-colors">TrueProfile Simulator Studio</a></li>
-                <li><a href="#live-radar" className="hover:text-amber-700 transition-colors">Live India Workforce Radar</a></li>
-                <li><a href="#roi-calculator" className="hover:text-amber-700 transition-colors">Enterprise ROI Calculator</a></li>
-                <li><a href="#specs" className="hover:text-amber-700 transition-colors">Technical SLA & Performance</a></li>
-                <li><a href="#knowledge-hub" className="hover:text-amber-700 transition-colors">Knowledge Hub & Insights</a></li>
+                <li><a href="#interactive-lab" className="hover:text-emerald-700 transition-colors">TrueProfile Simulator Studio</a></li>
+                <li><a href="#live-radar" className="hover:text-emerald-700 transition-colors">Live India Workforce Radar</a></li>
+                <li><a href="#roi-calculator" className="hover:text-emerald-700 transition-colors">Enterprise ROI Calculator</a></li>
+                <li><a href="#specs" className="hover:text-emerald-700 transition-colors">Technical SLA & Performance</a></li>
+                <li><a href="#knowledge-hub" className="hover:text-emerald-700 transition-colors">Knowledge Hub & Insights</a></li>
               </ul>
             </div>
 
@@ -2067,8 +2004,8 @@ export const LandingPageView = () => {
               </p>
               <div className="flex flex-col gap-1.5 text-xs text-slate-600 font-mono mt-1">
                 <span className="text-slate-900 font-bold">Email: support@joygroup.art</span>
-                <span className="text-slate-900 font-bold">WhatsApp: +91 98765 43210</span>
-                <span className="text-amber-700">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
+                <span className="text-slate-900 font-bold">WhatsApp: +91 99400 00000</span>
+                <span className="text-emerald-700">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
               </div>
             </div>
 
@@ -2085,11 +2022,11 @@ export const LandingPageView = () => {
             <div className="flex flex-wrap items-center gap-6">
               <button
                 onClick={() => setShowLegalHandbook(true)}
-                className="hover:text-amber-700 transition-colors cursor-pointer text-slate-600 font-bold"
+                className="hover:text-emerald-700 transition-colors cursor-pointer text-slate-600 font-bold"
               >
                 Statutory Compliance Handbook
               </button>
-              <a href="/login" className="hover:text-amber-700 transition-colors text-slate-600 font-bold">
+              <a href="/login" className="hover:text-emerald-700 transition-colors text-slate-600 font-bold">
                 Client Portal Login
               </a>
               <span className="text-slate-300">|</span>
@@ -2386,149 +2323,10 @@ export const LandingPageView = () => {
       {/* ==============================================================================
        * 16. LUXURY FLOATING WHATSAPP CHAT DRAWER
        * ============================================================================== */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
-        
-        {/* Expandable Liquid Glass Quick Chat Panel */}
-        {whatsappOpen && (
-          <>
-            {/* Backdrop on mobile to allow easy click-outside dismissal */}
-            <div 
-              className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-[1px] sm:hidden"
-              onClick={() => setWhatsappOpen(false)}
-            />
-            
-            <div className="relative z-50 mb-3 w-[calc(100vw-2rem)] sm:w-96 max-w-[380px] bg-white rounded-3xl p-0 overflow-hidden shadow-2xl border border-slate-200 animate-in fade-in slide-in-from-bottom-5 duration-200">
-              {/* WhatsApp Header */}
-              <div className="bg-gradient-to-r from-[#128C7E] via-[#25D366] to-[#075E54] p-4 text-white flex items-center justify-between shadow-md">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
-                      <ShieldCheck className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-300 border-2 border-[#128C7E] rounded-full"></span>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white font-outfit">JOY Verification Team</h4>
-                    <div className="flex items-center gap-1 text-[11px] text-emerald-100 font-sans">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse"></span>
-                      <span>Online | Instant Response</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setWhatsappOpen(false)}
-                  className="p-1.5 rounded-full hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
-                  aria-label="Close WhatsApp chat"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Chat Body */}
-              <div className="p-4 bg-white flex flex-col gap-3">
-                {/* Specialist Message Bubble */}
-                <div className="p-3.5 bg-slate-50 rounded-2xl rounded-tl-sm border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed">
-                  <p className="font-bold mb-1 text-slate-900">👋 Welcome to JOY TRUE PROFILE!</p>
-                  <p className="text-slate-600">
-                    How can our verification specialists assist you today? Tap a quick option or type your message below to chat on WhatsApp.
-                  </p>
-                  <span className="block font-mono text-[9px] text-slate-400 text-right mt-1.5">Just now</span>
-                </div>
-
-                {/* Quick Prompt Chips */}
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">
-                    Quick Inquiries
-                  </span>
-                  {[
-                    '🚀 I want to verify employee profiles for my company',
-                    '📅 Book a live 1-on-1 enterprise walkthrough',
-                    '💰 Request custom volume pricing',
-                    '🔒 Ask about security & DPDP compliance'
-                  ].map((chip, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSendWhatsApp(chip)}
-                      className="text-left text-xs font-semibold px-3 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-900 transition-all flex items-center justify-between group shadow-2xs cursor-pointer"
-                    >
-                      <span className="truncate pr-2">{chip}</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </button>
-                  ))}
-                </div>
-
-                {/* Custom Message Box */}
-                <div className="pt-2 border-t border-slate-100">
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSendWhatsApp();
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={whatsappMsg}
-                      onChange={(e) => setWhatsappMsg(e.target.value)}
-                      placeholder="Type your message here..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-inner"
-                    />
-                    <button
-                      type="submit"
-                      className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
-                      title="Send to WhatsApp"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                    </button>
-                  </form>
-                </div>
-
-              </div>
-
-              {/* Panel Footer */}
-              <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[10px] font-mono text-slate-500">
-                <span className="flex items-center gap-1 text-emerald-700 font-bold">
-                  <Lock className="w-3 h-3" /> End-to-end encrypted
-                </span>
-                <button
-                  onClick={() => handleSendWhatsApp()}
-                  className="font-bold text-emerald-700 hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Direct WhatsApp</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Floating WhatsApp Toggle Button */}
-        <button
-          onClick={() => setWhatsappOpen(!whatsappOpen)}
-          className="group relative flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-black text-xs sm:text-sm shadow-2xl shadow-emerald-600/40 hover:shadow-emerald-600/60 hover:-translate-y-1 hover:scale-105 active:scale-95 active:translate-y-0 transition-all cursor-pointer z-50 border border-emerald-400"
-          aria-label="Toggle WhatsApp Contact"
-        >
-          {/* Animated WhatsApp Ping Halo */}
-          <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-40 animate-ping pointer-events-none"></span>
-
-          {/* WhatsApp SVG Icon */}
-          <div className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-current text-white drop-shadow-sm" aria-hidden="true">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.888 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.405" />
-            </svg>
-          </div>
-
-          <span className="font-outfit text-xs sm:text-sm font-black tracking-wide text-white drop-shadow-sm">
-            {whatsappOpen ? 'Close Chat' : 'Chat on WhatsApp'}
-          </span>
-
-          {/* Online status indicator */}
-          <span className="flex items-center gap-1 font-mono text-[10px] text-white bg-black/25 px-2 py-0.5 rounded-full border border-white/20 font-bold">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-            <span className="hidden sm:inline">Instant</span>
-          </span>
-        </button>
-      </div>
+      {/* ==============================================================================
+       * 13. WORLD-CLASS 3D GLASSMORPHIC WHATSAPP CONCIERGE
+       * ============================================================================== */}
+      <WhatsAppConcierge3D />
 
     </div>
   );
