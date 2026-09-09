@@ -472,53 +472,84 @@ export const LandingPageView = () => {
       <VideoLoopBackground />
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION: FLOATING EXECUTIVE GLASS CAPSULE NAVBAR
+       * 1. TOP NAVIGATION: SLEEK EXECUTIVE ENTERPRISE NAVBAR
        * ============================================================================== */}
-      <header className="sticky top-2 sm:top-4 z-50 w-full px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto transition-all">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl sm:rounded-full bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-[0_2px_15px_rgba(0,0,0,0.03)] transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
           
-          {/* Logo Brand */}
-          <a href="#" className="flex items-center gap-3 group">
+          {/* Brand Logo - Single Line, Clean, Balanced */}
+          <a href="#" className="flex items-center gap-3 shrink-0 group">
             <div className="relative shrink-0">
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="JOY TRUE PROFILE Logo" 
-                className="w-10 h-10 object-contain drop-shadow-[0_2px_8px_rgba(16,185,129,0.25)] group-hover:scale-105 transition-transform" 
+                className="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" 
               />
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
             </div>
-            <div>
-              <span className="text-base sm:text-lg font-black tracking-tight text-slate-950 flex items-center gap-1.5 font-outfit">
-                JOY <span className="text-[#047857] font-black" style={{ color: '#047857' }}>TRUE PROFILE</span>
-              </span>
-              <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-800 block -mt-0.5 font-bold">
+            <div className="flex flex-col text-left justify-center">
+              <div className="flex items-center gap-1.5 whitespace-nowrap leading-none">
+                <span className="text-lg sm:text-xl font-black text-slate-950 font-outfit tracking-tight">JOY</span>
+                <span className="text-lg sm:text-xl font-black text-[#047857] font-outfit tracking-tight" style={{ color: '#047857' }}>TRUE PROFILE</span>
+              </div>
+              <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-800 font-bold whitespace-nowrap mt-1">
                 Zero-Trust Verification
               </span>
             </div>
           </a>
 
-          {/* Center Navigation Links (Streamlined Pill Bar) */}
-          <nav className="hidden xl:flex items-center gap-1 font-sans text-xs text-slate-700 font-bold bg-slate-100/70 p-1 rounded-full border border-slate-200/60">
-            <a href="#features" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Features</a>
-            <a href="#moonlighting-radar" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Moonlighting Radar</a>
-            <a href="#turnstile-access" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Turnstile Gate</a>
-            <a href="#how-it-works" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Pipeline</a>
-            <a href="#comparison" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">Speed Matrix</a>
-            <a href="#roi-calculator" className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-950 hover:bg-white transition-all">ROI Calculator</a>
+          {/* Center Navigation Links - Spacious, Single Line, No Cramping */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-sans text-xs font-bold text-slate-700">
+            <a 
+              href="#features" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              Features
+            </a>
+            <a 
+              href="#moonlighting-radar" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              Moonlighting Radar
+            </a>
+            <a 
+              href="#turnstile-access" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              Turnstile Gate
+            </a>
+            <a 
+              href="#how-it-works" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              Pipeline
+            </a>
+            <a 
+              href="#comparison" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              Speed Matrix
+            </a>
+            <a 
+              href="#roi-calculator" 
+              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
+            >
+              ROI Calculator
+            </a>
             
-            {/* More Resources Dropdown */}
+            {/* Resources Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
-                className="px-3 py-1.5 rounded-full hover:text-slate-950 hover:bg-white transition-all flex items-center gap-1 cursor-pointer text-slate-600 font-bold"
+                className="whitespace-nowrap hover:text-[#047857] transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-bold"
               >
                 <span>Resources</span>
-                <ChevronDown className="w-3 h-3 text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
               {resourcesDropdownOpen && (
                 <div 
-                  className="absolute left-0 mt-2 w-52 bg-white/95 border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  className="absolute left-0 mt-3 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setResourcesDropdownOpen(false)}
                 >
                   <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-950 transition-colors flex items-center gap-2">
@@ -545,52 +576,43 @@ export const LandingPageView = () => {
                     <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
                     <span>FAQ</span>
                   </a>
+
+                  <div className="pt-2 mt-1 border-t border-slate-100 flex flex-col gap-1">
+                    <button
+                      onClick={() => { setResourcesDropdownOpen(false); setShowPreloader(true); }}
+                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 text-left cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Replay Intro Animation</span>
+                    </button>
+                    <button
+                      onClick={handleToggleSound}
+                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 text-left cursor-pointer"
+                    >
+                      {soundMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-600" />}
+                      <span>{soundMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
           </nav>
 
           {/* Right Action CTAs & Portal Switcher */}
-          <div className="hidden sm:flex items-center gap-2.5 lg:gap-3">
-            
-            {/* Replay Holographic Intro Animation */}
-            <button
-              onClick={() => setShowPreloader(true)}
-              title="Replay Holographic Intro Animation"
-              className="p-2.5 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-              aria-label="Replay Intro"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-500" />
-              <span className="hidden 2xl:inline text-[11px] font-mono">Intro</span>
-            </button>
-
-            {/* Futuristic UI Sound Effects Toggle */}
-            <button
-              onClick={handleToggleSound}
-              title={soundMuted ? 'Unmute Futuristic UI Sound Effects' : 'Mute UI Sound Effects'}
-              className="p-2.5 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center justify-center cursor-pointer shadow-xs"
-              aria-label="Toggle Sound Effects"
-            >
-              {soundMuted ? (
-                <VolumeX className="w-4 h-4 text-slate-400" />
-              ) : (
-                <Volume2 className="w-4 h-4 text-emerald-600" />
-              )}
-            </button>
-
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             {/* Portal Login Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="px-3.5 py-2 rounded-full text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                className="whitespace-nowrap px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-950 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <span>Select Portal</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
               {portalDropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-64 bg-white/95 border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
+                  className="absolute right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
                   onMouseLeave={() => setPortalDropdownOpen(false)}
                 >
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold border-b border-slate-100">
@@ -648,10 +670,11 @@ export const LandingPageView = () => {
               )}
             </div>
             
+            {/* Book Live Demo Primary Button */}
             <button
               onClick={() => setShowDemoModal(true)}
               style={{ backgroundColor: '#047857', color: '#ffffff' }}
-              className="px-5 py-2.5 rounded-full text-xs font-black text-white hover:bg-[#065f46] shadow-md shadow-emerald-950/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer border-2 border-[#065f46]"
+              className="whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-black text-white hover:bg-[#065f46] shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border-2 border-[#065f46]"
             >
               <span style={{ color: '#ffffff' }}>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -661,7 +684,7 @@ export const LandingPageView = () => {
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-950 hover:bg-slate-50 shadow-xs cursor-pointer"
+            className="lg:hidden p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-950 hover:bg-slate-50 shadow-2xs cursor-pointer"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -670,19 +693,15 @@ export const LandingPageView = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="xl:hidden mt-3 pt-3 border border-slate-200 flex flex-col gap-2 font-sans text-xs px-3 pb-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Verification Modules</a>
-            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Moonlighting Radar</a>
-            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Turnstile Simulator</a>
-            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">How It Works</a>
-            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Comparison Matrix</a>
-            <a href="#interactive-lab" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Simulator Studio</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">ROI Calculator</a>
-            <a href="#live-radar" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">India Telemetry Radar</a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">Reviews</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-2 px-3 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 font-semibold">FAQ</a>
+          <div className="lg:hidden border-t border-slate-200 px-4 py-4 bg-white shadow-xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">Verification Modules</a>
+            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">Moonlighting Radar</a>
+            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">Turnstile Simulator</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">How It Works</a>
+            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">Comparison Matrix</a>
+            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-800 hover:text-[#047857] hover:bg-emerald-50 font-bold">ROI Calculator</a>
             
-            <div className="pt-2 border-t border-slate-200 flex flex-col gap-2">
+            <div className="pt-3 mt-1 border-t border-slate-200 flex flex-col gap-2">
               <a
                 href="/login?role=hrexecutive"
                 className="w-full py-2.5 rounded-xl font-bold text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 text-center border border-slate-200"
