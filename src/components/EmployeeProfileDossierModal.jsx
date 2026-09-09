@@ -35,10 +35,12 @@ import {
   Scale,
   Loader2
 } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
+  const { companies = [] } = useApp() || {};
   const [activeTab, setActiveTab] = useState(1);
   // 1: Demographics, 2: Role, 3: Edu & Exp, 4: Statutory & Bank, 5: Statutory Forms, 6: Attached Exhibits, 7: Complete Master PDF
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
@@ -73,7 +75,10 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     ...(c.submittedFormData || {})
   };
 
-  const companyName = c.companyName || jf.companyName || jf.workingCompany || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const candCompany = Array.isArray(companies) ? companies.find(comp => comp.id === c.companyId || comp.code === c.companyCode || comp.name === c.companyName) : null;
+  const employerCompanyName = candCompany?.name || c.companyName || jf.companyName || jf.workingCompany || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const employerCompanyLogo = c.companyLogo || c.company_logo || candCompany?.logo || candCompany?.logo_url || candCompany?.company_logo || (candCompany?.documents || {}).company_logo || (candCompany?.features || {}).logo || '/joy_logo.png';
+  const companyName = employerCompanyName;
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';
   
@@ -461,8 +466,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 {/* Master Corporate Header */}
                 <div className="flex items-center justify-between border-b-2 border-slate-900 pb-3 gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-xl bg-white border-2 border-slate-200 shadow-xs flex items-center justify-center p-1.5 shrink-0">
-                      <img src="/joy_logo.png" alt="Company Official Logo" className="w-full h-full object-contain" />
+                    <div className="w-16 h-16 rounded-xl bg-white border-2 border-slate-200 shadow-xs flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+                      <img src={employerCompanyLogo} alt={employerCompanyName} className="w-full h-full object-contain" />
                     </div>
                     <div>
                       <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">{companyName}</h1>

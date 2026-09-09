@@ -1619,21 +1619,42 @@ export const HrExecutiveView = () => {
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
-              <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
-                • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany?.name || 'Joy Corporate Solutions'})</span>
-              </span>
-              <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
-                👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany?.code || 'COMP001'}HR001`}
-              </span>
-              <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
-                🏢 Company: {currentCompany?.code || 'COMP001'}
-              </span>
+          <div className="flex items-start gap-4">
+            {/* Employer Corporate Logo Display */}
+            {currentCompany?.logo || currentCompany?.logo_url || (currentCompany?.features || {}).logo || (currentCompany?.documents || {}).company_logo ? (
+              <div className="w-16 h-16 rounded-2xl bg-white border-2 border-emerald-200 shadow-sm p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name}`}>
+                <img 
+                  src={currentCompany.logo || currentCompany.logo_url || (currentCompany.features || {}).logo || (currentCompany.documents || {}).company_logo} 
+                  alt={currentCompany.name} 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-2xl flex items-center justify-center shrink-0 shadow-md border-2 border-white">
+                {(currentCompany?.name || 'JC').charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
+                <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
+                  • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany?.name || 'Joy Corporate Solutions'})</span>
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
+                  👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany?.code || 'COMP001'}HR001`}
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
+                  🏢 Company: {currentCompany?.code || 'COMP001'}
+                </span>
+                {(currentCompany?.location || currentCompany?.registered_address) && (
+                  <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                    📍 {currentCompany.location || currentCompany.registered_address}
+                  </span>
+                )}
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium">Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.</p>
             </div>
-            <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium">Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">

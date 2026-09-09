@@ -115,6 +115,8 @@ def apply_runtime_migrations(target_engine):
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS gstin_number VARCHAR(100);",
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS company_pan VARCHAR(50);",
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS registered_address TEXT;",
+        "ALTER TABLE companies ADD COLUMN IF NOT EXISTS location VARCHAR(255);",
+        "ALTER TABLE companies ADD COLUMN IF NOT EXISTS logo_url TEXT;",
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS industry_sector VARCHAR(100) DEFAULT 'Information Technology (IT/ITeS)';",
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS website VARCHAR(200);",
         "ALTER TABLE companies ADD COLUMN IF NOT EXISTS documents JSON DEFAULT '{}';",

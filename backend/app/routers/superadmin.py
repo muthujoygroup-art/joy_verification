@@ -68,6 +68,10 @@ def format_company_dict(c: Company) -> Dict[str, Any]:
         "gstin_number": c.gstin_number,
         "company_pan": c.company_pan,
         "registered_address": c.registered_address,
+        "location": c.location or c.registered_address or "",
+        "logo": c.logo_url or "",
+        "logo_url": c.logo_url or "",
+        "company_logo": c.company_logo or "",
         "industry_sector": c.industry_sector,
         "website": c.website,
         "documents": c.documents or {},
@@ -181,10 +185,18 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             "bankCheck": True
         }
         
+        logo_data = getattr(payload, 'logo', None) or getattr(payload, 'logo_url', None) or getattr(payload, 'company_logo', None)
+        location_data = getattr(payload, 'location', None) or getattr(payload, 'registered_address', None) or ""
+
         # Store all extended attributes inside features JSONB for bulletproof PostgreSQL schema compatibility
         combined_features = {
             **default_features,
             "phone": clean_phone,
+            "logo": logo_data,
+            "logo_url": logo_data,
+            "company_logo": logo_data,
+            "location": location_data,
+            "registered_address": location_data,
             "activation_token": activation_token,
             "activation_password": activation_pin_set,
             "activation_expires_at": expires_at.isoformat() if expires_at else None,
@@ -1712,7 +1724,11 @@ def update_company_profile(company_id: str, payload: dict, db: Session = Depends
     if payload.get("cin_number") is not None: comp.cin_number = payload["cin_number"].strip().upper()
     if payload.get("gstin_number") is not None: comp.gstin_number = payload["gstin_number"].strip().upper()
     if payload.get("company_pan") is not None: comp.company_pan = payload["company_pan"].strip().upper()
+    if payload.get("location") is not None: comp.location = payload["location"].strip()
     if payload.get("registered_address") is not None: comp.registered_address = payload["registered_address"].strip()
+    if payload.get("logo") is not None: comp.logo_url = payload["logo"]
+    if payload.get("logo_url") is not None: comp.logo_url = payload["logo_url"]
+    if payload.get("company_logo") is not None: comp.logo_url = payload["company_logo"]
     if payload.get("industry_sector") is not None: comp.industry_sector = payload["industry_sector"].strip()
     if payload.get("website") is not None: comp.website = payload["website"].strip()
     if payload.get("documents") is not None: comp.documents = {**(comp.documents or {}), **payload["documents"]}

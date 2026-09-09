@@ -75,6 +75,8 @@ export const CompanyAdminView = () => {
     updateCompanyRoutingEngine,
     updateCompanyHrPermissions,
     updateCompanyFeatures,
+    updateCompanyDetails,
+    updateCompanyPassword,
     apiConfigurations,
     showToast
   } = useApp();
@@ -155,16 +157,52 @@ export const CompanyAdminView = () => {
     send_email: true
   });
 
-  // 🏢 Company Profile Details & Statutory Uploads States
+  // 🏢 Company Profile Details, Branding Logo & Statutory Uploads States
   const [profileData, setProfileData] = useState({
+    name: company?.name || '',
+    logo: company?.logo || company?.logo_url || (company?.features || {}).logo || (company?.documents || {}).company_logo || '',
+    contact_person: company?.contactPerson || company?.contact_person || '',
+    phone: company?.phone || '',
+    location: company?.location || company?.registered_address || '',
+    registered_address: company?.registered_address || company?.location || '',
     cin_number: company?.cin_number || '',
     gstin_number: company?.gstin_number || '',
     company_pan: company?.company_pan || '',
-    registered_address: company?.registered_address || '',
     industry_sector: company?.industry_sector || 'Information Technology (IT/ITeS)',
     website: company?.website || ''
   });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // 🔐 Company Administrator Login Password Update State
+  const [passwordData, setPasswordData] = useState({
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  // Sync profile form whenever active company changes
+  useEffect(() => {
+    if (company) {
+      setProfileData({
+        name: company.name || '',
+        logo: company.logo || company.logo_url || (company.features || {}).logo || (company.documents || {}).company_logo || '',
+        contact_person: company.contactPerson || company.contact_person || '',
+        phone: company.phone || '',
+        location: company.location || company.registered_address || '',
+        registered_address: company.registered_address || company.location || '',
+        cin_number: company.cin_number || '',
+        gstin_number: company.gstin_number || '',
+        company_pan: company.company_pan || '',
+        industry_sector: company.industry_sector || 'Information Technology (IT/ITeS)',
+        website: company.website || ''
+      });
+      setCompanyUploadedDocs(company.documents || {});
+    }
+  }, [company?.id]);
 
   // Save Company Master Profile & Statutory Credentials
   const handleSaveCompanyProfile = async (e) => {
@@ -175,12 +213,43 @@ export const CompanyAdminView = () => {
         ...profileData,
         documents: companyUploadedDocs
       };
-      const res = await api.updateCompanyProfile(company.id, payload);
-      showToast(res.message || '💾 Company profile details and statutory credentials saved successfully!');
+      if (typeof updateCompanyDetails === 'function') {
+        await updateCompanyDetails(company.id, payload);
+      } else {
+        await api.updateCompanyProfile(company.id, payload);
+      }
+      showToast('💾 Corporate details, branding logo, and statutory credentials saved successfully!');
     } catch (err) {
       showToast(`❌ Failed to save profile: ${err.message}`, 'error');
     } finally {
       setIsSavingProfile(false);
+    }
+  };
+
+  // Update Company Login Password
+  const handleUpdateCompanyPassword = async (e) => {
+    e?.preventDefault();
+    if (!passwordData.new_password || passwordData.new_password.length < 4) {
+      showToast('⚠️ New password must be at least 4 characters long', 'error');
+      return;
+    }
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      showToast('⚠️ New password and confirmation do not match', 'error');
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      if (typeof updateCompanyPassword === 'function') {
+        await updateCompanyPassword(company.id, passwordData.new_password, passwordData.current_password);
+      } else {
+        await api.updateCompanyPassword(company.id, passwordData.new_password, true, passwordData.current_password);
+      }
+      showToast('🔐 Company Administrator password updated successfully!');
+      setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
+    } catch (err) {
+      showToast(`❌ Password update failed: ${err.message}`, 'error');
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -509,13 +578,34 @@ export const CompanyAdminView = () => {
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-sky-600 to-teal-600" />
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="badge badge-cyan">Company Admin Workstation</span>
-              <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
+          <div className="flex items-start gap-4">
+            {/* Corporate Logo Display */}
+            {company?.logo || company?.logo_url || (company?.features || {}).logo || (company?.documents || {}).company_logo ? (
+              <div className="w-16 h-16 rounded-2xl bg-white border-2 border-slate-200 shadow-sm p-1.5 flex items-center justify-center shrink-0 overflow-hidden">
+                <img 
+                  src={company.logo || company.logo_url || (company.features || {}).logo || (company.documents || {}).company_logo} 
+                  alt={company.name} 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-600 to-indigo-700 text-white font-black text-2xl flex items-center justify-center shrink-0 shadow-md border-2 border-white">
+                {(company?.name || 'JC').charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="badge badge-cyan">Company Admin Workstation</span>
+                <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
+                {(company.location || company.registered_address) && (
+                  <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                    📍 {company.location || company.registered_address}
+                  </span>
+                )}
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 mt-1">{company.name}</h2>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Activity, Turnaround Time Metrics, Employee Directory & Document Hub.</p>
             </div>
-            <h2 className="text-2xl font-black text-slate-900 mt-1">{company.name}</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Activity, Turnaround Time Metrics, Employee Directory & Document Hub.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -1385,89 +1475,225 @@ export const CompanyAdminView = () => {
 
           <form onSubmit={handleSaveCompanyProfile} className="space-y-6 text-xs">
             
-            {/* Master Credentials Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Company Legal Name</label>
-                <input 
-                  type="text" 
-                  value={company.name} 
-                  disabled
-                  className="form-input bg-slate-100 font-bold text-slate-600 cursor-not-allowed" 
-                />
+            {/* 1. CORPORATE BRANDING & LOGO MANAGEMENT */}
+            <div className="p-4 bg-gradient-to-r from-sky-50/80 via-indigo-50/50 to-white border border-sky-200 rounded-2xl shadow-2xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sky-100 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900">Official Corporate Logo & Visual Branding</h4>
+                    <p className="text-[10px] text-slate-500 font-medium">Uploaded logo displays on Company Workstation, HR Dashboard, and all Candidate Profile Dossier PDFs</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-sky-700 bg-sky-100/70 border border-sky-200 px-2 py-0.5 rounded-md self-start sm:self-auto">
+                  High-Resolution PNG / SVG Recommended
+                </span>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Corporate Identification Number (CIN) *</label>
-                <input 
-                  type="text" 
-                  value={profileData.cin_number} 
-                  onChange={(e) => setProfileData({ ...profileData, cin_number: e.target.value.toUpperCase() })}
-                  placeholder="e.g. U74999KA2026PTC192841"
-                  className="form-input font-mono font-bold" 
-                />
-              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                {/* Logo Preview Frame */}
+                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-dashed border-sky-300 p-2 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                  {profileData.logo ? (
+                    <img 
+                      src={profileData.logo} 
+                      alt="Company Logo" 
+                      className="w-full h-full object-contain" 
+                    />
+                  ) : (
+                    <div className="text-center p-1">
+                      <Building2 className="w-7 h-7 text-slate-300 mx-auto" />
+                      <span className="text-[8.5px] text-slate-400 font-black block mt-0.5 uppercase">No Logo</span>
+                    </div>
+                  )}
+                </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Company PAN Number *</label>
-                <input 
-                  type="text" 
-                  maxLength={10}
-                  value={profileData.company_pan} 
-                  onChange={(e) => setProfileData({ ...profileData, company_pan: e.target.value.toUpperCase() })}
-                  placeholder="e.g. AAACJ1234F"
-                  className="form-input font-mono font-bold" 
-                />
-              </div>
+                {/* Logo Actions */}
+                <div className="flex-1 space-y-2 text-center sm:text-left">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <label className="btn btn-primary text-xs py-1.5 px-3.5 cursor-pointer flex items-center gap-1.5 font-bold shadow-2xs">
+                      <UploadCloud className="w-3.5 h-3.5" />
+                      <span>{profileData.logo ? 'Change Company Logo 🖼️' : 'Upload Corporate Logo 🖼️'}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 3 * 1024 * 1024) {
+                              showToast('⚠️ Logo file size exceeds 3MB limit. Please choose a smaller image.', 'error');
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              setProfileData(prev => ({ ...prev, logo: reader.result }));
+                              showToast('🖼️ Company logo loaded! Click "Save Company Details" to persist.');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">GSTIN Registration Number *</label>
-                <input 
-                  type="text" 
-                  maxLength={15}
-                  value={profileData.gstin_number} 
-                  onChange={(e) => setProfileData({ ...profileData, gstin_number: e.target.value.toUpperCase() })}
-                  placeholder="e.g. 29AAAAA0000A1Z5"
-                  className="form-input font-mono font-bold" 
-                />
+                    {profileData.logo && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileData(prev => ({ ...prev, logo: '' }));
+                          showToast('Logo cleared. Click "Save Company Details" to persist.');
+                        }}
+                        className="btn btn-secondary text-xs py-1.5 px-3 text-red-600 hover:bg-red-50 border-red-200 cursor-pointer font-bold"
+                      >
+                        Remove Logo
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+                    Corporate logo will be automatically injected into employee profile sheets, joining verification dossiers, and portal headers.
+                  </p>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Industry Sector / Domain *</label>
-                <select
-                  value={profileData.industry_sector}
-                  onChange={(e) => setProfileData({ ...profileData, industry_sector: e.target.value })}
-                  className="form-select font-bold text-xs"
-                >
-                  <option value="Information Technology (IT/ITeS)">Information Technology (IT/ITeS)</option>
-                  <option value="Banking, Financial Services & Insurance (BFSI)">Banking, Financial Services & Insurance (BFSI)</option>
-                  <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
-                  <option value="E-Commerce, Logistics & Supply Chain">E-Commerce, Logistics & Supply Chain</option>
-                  <option value="Manufacturing & Infrastructure">Manufacturing & Infrastructure</option>
-                  <option value="Consulting & Professional Services">Consulting & Professional Services</option>
-                </select>
-              </div>
+            {/* 2. MASTER CORPORATE IDENTITY & LOCATION DETAILS */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                <Sliders className="w-4 h-4 text-indigo-600" />
+                <span>Corporate Legal Identity & Location</span>
+              </h4>
 
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Official Corporate Website</label>
-                <input 
-                  type="url" 
-                  value={profileData.website} 
-                  onChange={(e) => setProfileData({ ...profileData, website: e.target.value })}
-                  placeholder="https://www.yourcompany.com"
-                  className="form-input font-bold" 
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                {/* Company Full Legal Name (Editable!) */}
+                <div className="md:col-span-2">
+                  <label className="block font-bold text-slate-700 mb-1">Company Full Legal Name *</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={profileData.name} 
+                    onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                    placeholder="e.g. Apex Global Technologies Private Limited"
+                    className="form-input font-bold text-slate-900 bg-white" 
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Official registered entity title on compliance files</span>
+                </div>
 
-              <div className="md:col-span-3">
-                <label className="block font-bold text-slate-700 mb-1">Registered Corporate Office Address *</label>
-                <textarea 
-                  rows={2}
-                  value={profileData.registered_address} 
-                  onChange={(e) => setProfileData({ ...profileData, registered_address: e.target.value })}
-                  placeholder="Floor No, Building Name, Street Address, City, State, Pincode"
-                  className="form-input text-xs" 
-                />
+                {/* Company Registered Location / City */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Location / Head Office City *</label>
+                  <input 
+                    type="text" 
+                    value={profileData.location} 
+                    onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
+                    placeholder="e.g. Bangalore, Karnataka"
+                    className="form-input font-bold" 
+                  />
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Primary operating city / facility</span>
+                </div>
+
+                {/* Contact Person Name */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Primary Executive Contact Person</label>
+                  <input 
+                    type="text" 
+                    value={profileData.contact_person} 
+                    onChange={(e) => setProfileData({ ...profileData, contact_person: e.target.value })}
+                    placeholder="e.g. Vikram Malhotra"
+                    className="form-input font-bold" 
+                  />
+                </div>
+
+                {/* Contact Mobile Number */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Official Contact Phone / Mobile</label>
+                  <input 
+                    type="tel" 
+                    value={profileData.phone} 
+                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    placeholder="e.g. +91 98765 43210"
+                    className="form-input font-mono font-bold" 
+                  />
+                </div>
+
+                {/* Official Corporate Website */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Official Corporate Website</label>
+                  <input 
+                    type="url" 
+                    value={profileData.website} 
+                    onChange={(e) => setProfileData({ ...profileData, website: e.target.value })}
+                    placeholder="https://www.yourcompany.com"
+                    className="form-input font-bold" 
+                  />
+                </div>
+
+                {/* CIN */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Corporate Identification Number (CIN) *</label>
+                  <input 
+                    type="text" 
+                    value={profileData.cin_number} 
+                    onChange={(e) => setProfileData({ ...profileData, cin_number: e.target.value.toUpperCase() })}
+                    placeholder="e.g. U74999KA2026PTC192841"
+                    className="form-input font-mono font-bold" 
+                  />
+                </div>
+
+                {/* PAN */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Company PAN Number *</label>
+                  <input 
+                    type="text" 
+                    maxLength={10}
+                    value={profileData.company_pan} 
+                    onChange={(e) => setProfileData({ ...profileData, company_pan: e.target.value.toUpperCase() })}
+                    placeholder="e.g. AAACJ1234F"
+                    className="form-input font-mono font-bold" 
+                  />
+                </div>
+
+                {/* GSTIN */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">GSTIN Registration Number *</label>
+                  <input 
+                    type="text" 
+                    maxLength={15}
+                    value={profileData.gstin_number} 
+                    onChange={(e) => setProfileData({ ...profileData, gstin_number: e.target.value.toUpperCase() })}
+                    placeholder="e.g. 29AAAAA0000A1Z5"
+                    className="form-input font-mono font-bold" 
+                  />
+                </div>
+
+                {/* Industry Sector */}
+                <div className="md:col-span-3">
+                  <label className="block font-bold text-slate-700 mb-1">Industry Sector / Domain *</label>
+                  <select
+                    value={profileData.industry_sector}
+                    onChange={(e) => setProfileData({ ...profileData, industry_sector: e.target.value })}
+                    className="form-select font-bold text-xs"
+                  >
+                    <option value="Information Technology (IT/ITeS)">Information Technology (IT/ITeS)</option>
+                    <option value="Banking, Financial Services & Insurance (BFSI)">Banking, Financial Services & Insurance (BFSI)</option>
+                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
+                    <option value="E-Commerce, Logistics & Supply Chain">E-Commerce, Logistics & Supply Chain</option>
+                    <option value="Manufacturing & Infrastructure">Manufacturing & Infrastructure</option>
+                    <option value="Consulting & Professional Services">Consulting & Professional Services</option>
+                  </select>
+                </div>
+
+                {/* Registered Corporate Office Address */}
+                <div className="md:col-span-3">
+                  <label className="block font-bold text-slate-700 mb-1">Registered Corporate Office Address *</label>
+                  <textarea 
+                    rows={2}
+                    value={profileData.registered_address} 
+                    onChange={(e) => setProfileData({ ...profileData, registered_address: e.target.value })}
+                    placeholder="Floor No, Building Name, Street Address, City, State, Pincode"
+                    className="form-input text-xs" 
+                  />
+                </div>
               </div>
             </div>
 
@@ -1547,10 +1773,116 @@ export const CompanyAdminView = () => {
                 className="btn btn-company text-xs py-2 px-6 flex items-center gap-2 font-bold shadow-md cursor-pointer"
               >
                 {isSavingProfile ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                <span>{isSavingProfile ? 'Saving...' : 'Save Corporate Profile & Documents 💾'}</span>
+                <span>{isSavingProfile ? 'Saving Profile...' : 'Save Corporate Profile & Documents 💾'}</span>
               </button>
             </div>
           </form>
+
+          {/* 3. COMPANY ADMINISTRATOR LOGIN PASSWORD UPDATE CARD */}
+          <div className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/70 space-y-4 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-sm">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-black text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                    <span>Company Administrator Login Password & Access Control</span>
+                    <span className="badge badge-amber text-[9px]">SECURITY MASTER</span>
+                  </h4>
+                  <p className="text-slate-500 text-[10px] font-medium">
+                    Change the password used to authenticate into this Company Admin Workstation ({company.email})
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleUpdateCompanyPassword} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Current Password (Optional verification) */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Current Password</label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      placeholder="Enter current password"
+                      value={passwordData.current_password}
+                      onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
+                      className="form-input font-mono pr-8"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <span className="text-[9.5px] text-slate-400 mt-0.5 block">For security verification</span>
+                </div>
+
+                {/* New Password */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">New Login Password *</label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Min 4 characters"
+                      value={passwordData.new_password}
+                      onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                      className="form-input font-mono font-bold pr-8"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <span className="text-[9.5px] text-slate-400 mt-0.5 block">Alphanumeric password</span>
+                </div>
+
+                {/* Confirm New Password */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Confirm New Password *</label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Repeat new password"
+                      value={passwordData.confirm_password}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                      className="form-input font-mono font-bold pr-8"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <span className="text-[9.5px] text-slate-400 mt-0.5 block">Must match exactly</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <p className="text-[10.5px] text-slate-500 font-medium">
+                  Updating this password will apply to all future logins for user <strong className="text-slate-700">{company.email}</strong>.
+                </p>
+                <button
+                  type="submit"
+                  disabled={isUpdatingPassword || !passwordData.new_password}
+                  className="btn bg-slate-900 hover:bg-slate-800 text-white text-xs py-2 px-5 flex items-center gap-2 font-black rounded-xl shadow-sm cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  {isUpdatingPassword ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5 text-amber-400" />}
+                  <span>{isUpdatingPassword ? 'Updating Password...' : 'Update Login Password 🔐'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

@@ -110,15 +110,15 @@ def generate_official_certificate_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
         "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" if candidate.get('company_id') == 'comp-1' else "Apex Logistics Solutions"
     )
 
-    # 1. Top Dual-Logo Brand Header Block
+    # 1. Top Single Project-Logo Brand Header Block (JOY Corporate Solutions Authority)
     logo_joy_block = Paragraph(
         "<font size=14 color='#ffffff'><b>🛡️ JOY</b></font><br/><font size=6.5 color='#e0e7ff'><b>CORPORATE SOLUTIONS</b></font>",
         ParagraphStyle('LogoJoy', parent=body_style, alignment=1, textColor=colors.white)
     )
     
-    company_logo_block = Paragraph(
-        f"<font size=13 color='#ffffff'><b>🏢 {company_name[:18].upper()}</b></font><br/><font size=6.5 color='#e0f2fe'><b>EMPLOYER ENTERPRISE</b></font>",
-        ParagraphStyle('LogoComp', parent=body_style, alignment=1, textColor=colors.white)
+    auth_seal_block = Paragraph(
+        "<font size=10 color='#15803d'><b>OFFICIAL SEAL</b></font><br/><font size=6.5 color='#166534'><b>COMPLIANCE VERIFIED ✓</b></font>",
+        ParagraphStyle('AuthSeal', parent=body_style, alignment=1, textColor=colors.HexColor('#15803d'))
     )
     
     center_text = Paragraph(
@@ -137,8 +137,9 @@ def generate_official_certificate_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
                 ('ALIGN', (0,0), (-1,-1), 'CENTER')
             ]),
             center_text,
-            Table([[company_logo_block]], colWidths=[100], style=[
-                ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#0284c7')),
+            Table([[auth_seal_block]], colWidths=[100], style=[
+                ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f0fdf4')),
+                ('BOX', (0,0), (-1,-1), 1.5, colors.HexColor('#22c55e')),
                 ('PADDING', (0,0), (-1,-1), 6),
                 ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
                 ('ALIGN', (0,0), (-1,-1), 'CENTER')

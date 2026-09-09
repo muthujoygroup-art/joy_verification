@@ -788,6 +788,8 @@ export const AppProvider = ({ children }) => {
             const key = (c.id || c.code || c.email || '').toLowerCase();
             if (key && !seen.has(key)) {
               seen.add(key);
+              const compLogo = c.logo || c.logo_url || c.company_logo || (c.features || {}).logo || (c.features || {}).logo_url || (c.documents || {}).company_logo || (c.documents || {}).logo || '';
+              const compLoc = c.location || c.registered_address || (c.features || {}).location || '';
               uniqueComps.push({
                 id: c.id,
                 name: c.name,
@@ -795,6 +797,16 @@ export const AppProvider = ({ children }) => {
                 contactPerson: c.contact_person,
                 phone: c.phone,
                 email: c.email,
+                logo: compLogo,
+                logo_url: compLogo,
+                company_logo: compLogo,
+                location: compLoc,
+                registered_address: c.registered_address || compLoc,
+                website: c.website || (c.features || {}).website || '',
+                cin_number: c.cin_number || (c.features || {}).cin_number || '',
+                gstin_number: c.gstin_number || (c.features || {}).gstin_number || '',
+                company_pan: c.company_pan || (c.features || {}).company_pan || '',
+                documents: c.documents || {},
                 plan: c.plan,
                 pricePerVerification: c.price_per_verification,
                 verifiedCountThisMonth: c.verified_count_this_month,
@@ -1107,7 +1119,15 @@ export const AppProvider = ({ children }) => {
         credits_purchased: parseInt(companyData.credits_purchased || companyData.maxLimit || 500),
         expiry_days: parseInt(companyData.expiry_days || 15),
         expiry_date: companyData.expiry_date || null,
-        features: companyData.features || {
+        logo: companyData.logo || companyData.logo_url || companyData.company_logo || '',
+        logo_url: companyData.logo || companyData.logo_url || companyData.company_logo || '',
+        location: companyData.location || companyData.registered_address || '',
+        registered_address: companyData.location || companyData.registered_address || '',
+        features: {
+          ...(companyData.features || {}),
+          logo: companyData.logo || companyData.logo_url || companyData.company_logo || '',
+          logo_url: companyData.logo || companyData.logo_url || companyData.company_logo || '',
+          location: companyData.location || companyData.registered_address || '',
           aadhaar: true,
           pan: true,
           bankCheck: true,
@@ -1123,6 +1143,9 @@ export const AppProvider = ({ children }) => {
 
       const created = await api.createCompany(payload);
 
+      const savedLogo = created.logo || created.logo_url || created.company_logo || (created.features || {}).logo || companyData.logo || '';
+      const savedLocation = created.location || created.registered_address || (created.features || {}).location || companyData.location || '';
+
       const formatted = {
         id: created.id,
         name: created.name,
@@ -1130,6 +1153,16 @@ export const AppProvider = ({ children }) => {
         contactPerson: created.contact_person,
         phone: created.phone,
         email: created.email,
+        logo: savedLogo,
+        logo_url: savedLogo,
+        company_logo: savedLogo,
+        location: savedLocation,
+        registered_address: created.registered_address || savedLocation,
+        website: created.website || (created.features || {}).website || '',
+        cin_number: created.cin_number || (created.features || {}).cin_number || '',
+        gstin_number: created.gstin_number || (created.features || {}).gstin_number || '',
+        company_pan: created.company_pan || (created.features || {}).company_pan || '',
+        documents: created.documents || {},
         plan: created.plan,
         pricePerVerification: created.price_per_verification,
         verifiedCountThisMonth: 0,
@@ -1148,6 +1181,53 @@ export const AppProvider = ({ children }) => {
     } catch (err) {
       console.error('Failed to create company:', err);
       showToast(`❌ Company onboarding failed: ${err.message || 'Server error'}`, 'error');
+      throw err;
+    }
+  };
+
+  // Update Company Details (Logo, Name, Location/Address, Contact Person, Phone, etc.)
+  const updateCompanyDetails = async (companyId, updatedData) => {
+    try {
+      const res = await api.updateCompanyProfile(companyId, updatedData);
+      setCompanies(prev => prev.map(c => {
+        if (c.id === companyId || c.code === companyId) {
+          const newLogo = updatedData.logo !== undefined ? updatedData.logo : (updatedData.logo_url !== undefined ? updatedData.logo_url : c.logo);
+          const newName = updatedData.name || c.name;
+          const newLocation = updatedData.location !== undefined ? updatedData.location : (updatedData.registered_address !== undefined ? updatedData.registered_address : c.location);
+          return {
+            ...c,
+            ...updatedData,
+            name: newName,
+            logo: newLogo,
+            logo_url: newLogo,
+            company_logo: newLogo,
+            location: newLocation,
+            registered_address: newLocation,
+            contactPerson: updatedData.contact_person || c.contactPerson,
+            phone: updatedData.phone !== undefined ? updatedData.phone : c.phone,
+            website: updatedData.website !== undefined ? updatedData.website : c.website,
+            cin_number: updatedData.cin_number !== undefined ? updatedData.cin_number : c.cin_number,
+            gstin_number: updatedData.gstin_number !== undefined ? updatedData.gstin_number : c.gstin_number,
+            company_pan: updatedData.company_pan !== undefined ? updatedData.company_pan : c.company_pan,
+            documents: updatedData.documents !== undefined ? { ...(c.documents || {}), ...updatedData.documents } : c.documents
+          };
+        }
+        return c;
+      }));
+      return res;
+    } catch (err) {
+      console.error('Failed to update company details:', err);
+      throw err;
+    }
+  };
+
+  // Update Company Admin Password
+  const updateCompanyPassword = async (companyId, newPassword, oldPassword = '') => {
+    try {
+      const res = await api.updateCompanyPassword(companyId, newPassword, true, oldPassword);
+      return res;
+    } catch (err) {
+      console.error('Failed to update company password:', err);
       throw err;
     }
   };
@@ -2549,6 +2629,8 @@ export const AppProvider = ({ children }) => {
       setCompanies,
       updateCompanyStatus,
       addCompany,
+      updateCompanyDetails,
+      updateCompanyPassword,
       updateCompanyFeatures,
       updateCompanyHrPermissions,
       updateCandidateVerificationConfig,

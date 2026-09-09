@@ -175,6 +175,39 @@ class Company(Base):
         f["custom_tariffs"] = val or {}
         self.features = f
 
+    @property
+    def logo_url(self) -> Optional[str]:
+        return (self.features or {}).get("logo_url") or (self.features or {}).get("logo") or (self.documents or {}).get("company_logo") or (self.documents or {}).get("logo")
+
+    @logo_url.setter
+    def logo_url(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["logo_url"] = val
+        f["logo"] = val
+        self.features = f
+        docs = dict(self.documents or {})
+        docs["company_logo"] = val
+        self.documents = docs
+
+    @property
+    def company_logo(self) -> Optional[str]:
+        return self.logo_url
+
+    @company_logo.setter
+    def company_logo(self, val: Optional[str]):
+        self.logo_url = val
+
+    @property
+    def location(self) -> Optional[str]:
+        return (self.features or {}).get("location") or self.registered_address
+
+    @location.setter
+    def location(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["location"] = val
+        self.features = f
+        self.registered_address = val
+
     # Relationships
     hr_users = relationship("HrUser", back_populates="company", cascade="all, delete-orphan")
     candidates = relationship("Candidate", back_populates="company", cascade="all, delete-orphan")

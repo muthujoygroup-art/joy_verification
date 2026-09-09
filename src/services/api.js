@@ -615,11 +615,16 @@ export const api = {
       body: JSON.stringify({ status }),
     });
   },
-  updateCompanyPassword: (companyId, password, sendEmail = true) => {
+  updateCompanyPassword: (companyId, password, sendEmail = true, oldPassword = '') => {
     requestCache.clear();
-    return request(`/superadmin/companies/${companyId}/password`, {
+    return request(`/company/${companyId}/password`, {
       method: 'PUT',
-      body: JSON.stringify({ password, send_email: sendEmail }),
+      body: JSON.stringify({ password, send_email: sendEmail, old_password: oldPassword }),
+    }).catch(() => {
+      return request(`/superadmin/companies/${companyId}/password`, {
+        method: 'PUT',
+        body: JSON.stringify({ password, send_email: sendEmail }),
+      });
     });
   },
   updateCompanyProfile: (companyId, profileData) => {

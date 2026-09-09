@@ -89,11 +89,13 @@ import {
   ToggleRight,
   Trash2,
   TrendingUp,
+  Upload,
+  UploadCloud,
   UserCheck,
   Users,
   X,
   Zap
-} from 'lucide-react';;
+} from 'lucide-react';
 
 export const SuperAdminView = () => {
   const { 
@@ -596,6 +598,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     contactPerson: '',
     phone: '',
     email: '',
+    logo: '',
+    location: '',
     password: 'Company@Admin2026',
     activation_password: '1234',
     plan: 'Standard Tier',
@@ -854,7 +858,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       contactPerson: '',
       phone: '',
       email: '',
-      password: '1234',
+      logo: '',
+      location: '',
+      password: 'Company@Admin2026',
+      activation_password: '1234',
       plan: 'Standard Tier',
       credits_purchased: 500,
       expiry_days: 15,
@@ -6261,16 +6268,92 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             <form onSubmit={handleCreateCompanySubmit} className="space-y-4 text-xs">
               
+              {/* Field: Company Official Logo Upload */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                <label className="block text-slate-800 font-bold mb-1.5 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <Building2 className="w-4 h-4 text-indigo-600" />
+                    <span>Company Official Corporate Logo</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">PNG, JPG, SVG, WebP (Max 2MB)</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                    {newCompany.logo ? (
+                      <img src={newCompany.logo} alt="Company Logo" className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <div className="text-center p-1">
+                        <Building2 className="w-6 h-6 text-slate-300 mx-auto" />
+                        <span className="text-[8px] text-slate-400 font-bold block mt-0.5">NO LOGO</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <label className="btn btn-secondary text-xs py-1.5 px-3 cursor-pointer flex items-center gap-1.5 font-bold text-slate-700 bg-white border-slate-300 hover:bg-slate-50 shadow-2xs">
+                        <UploadCloud className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>{newCompany.logo ? 'Change Logo 🖼️' : 'Upload Corporate Logo 🖼️'}</span>
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 2 * 1024 * 1024) {
+                                showToast('⚠️ Logo file size exceeds 2MB limit. Please choose a smaller image.', 'error');
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                setNewCompany(prev => ({ ...prev, logo: reader.result }));
+                                showToast('🖼️ Company logo uploaded successfully!');
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                      {newCompany.logo && (
+                        <button
+                          type="button"
+                          onClick={() => setNewCompany(prev => ({ ...prev, logo: '' }))}
+                          className="btn btn-secondary text-xs py-1.5 px-2.5 text-red-600 hover:bg-red-50 border-red-200 cursor-pointer font-bold"
+                          title="Remove logo"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-500 font-medium">
+                      Displayed across Company Admin workstation, HR dashboard, and official Candidate Profile Dossier PDFs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Field 1: Company Full Name */}
               <div>
                 <label className="block text-slate-700 font-bold mb-1">Company Full Legal Name *</label>
                 <input 
                   type="text" 
                   required
-                  placeholder="e.g. Acme Technologies Private Limited"
+                  placeholder="e.g. Apex Global Solutions Private Limited"
                   value={newCompany.name}
                   onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
                   className="form-input font-bold"
+                />
+              </div>
+
+              {/* Field: Company Registered Location / City */}
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Registered Location / Head Office City</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Bangalore, Karnataka (or registered street address)"
+                  value={newCompany.location}
+                  onChange={(e) => setNewCompany({ ...newCompany, location: e.target.value })}
+                  className="form-input"
                 />
               </div>
 

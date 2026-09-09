@@ -49,6 +49,10 @@ class CompanyBase(BaseModel):
     terms_accepted_by: Optional[str] = None
     terms_version: Optional[str] = None
     custom_tariffs: Optional[Dict[str, Any]] = None
+    logo: Optional[str] = None
+    logo_url: Optional[str] = None
+    company_logo: Optional[str] = None
+    location: Optional[str] = None
 
 class CompanyCreate(CompanyBase):
     password: Optional[str] = "Company@Admin2026"
