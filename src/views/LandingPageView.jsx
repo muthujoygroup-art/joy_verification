@@ -79,8 +79,10 @@ import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
+import { useApp } from '../context/AppContext';
 
 export const LandingPageView = () => {
+  const { platformLogo } = useApp() || {};
   // Innovative First-Load / Reload Logo Preloader (Cached in session for instant subsequent loads)
   const [showPreloader, setShowPreloader] = useState(() => {
     try {
@@ -557,7 +559,7 @@ export const LandingPageView = () => {
           <a href="#" className="flex items-center gap-3 group">
             <div className="relative shrink-0">
               <img 
-                src="/joy_logo.png" 
+                src={platformLogo || "/joy_logo.png"} 
                 alt="JOY TRUE PROFILE Logo" 
                 className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)] group-hover:scale-105 transition-transform" 
               />
@@ -1977,7 +1979,7 @@ export const LandingPageView = () => {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/joy_logo.png" 
+                  src={platformLogo || "/joy_logo.png"} 
                   alt="JOY TRUE PROFILE Logo" 
                   className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.25)]" 
                 />

@@ -143,7 +143,11 @@ export const SuperAdminView = () => {
     whatsappConfig,
     smsConfig,
     updateCommunicationGateways,
-    showToast
+    showToast,
+    platformLogo,
+    platformLogoDark,
+    updatePlatformLogo,
+    resetPlatformLogo
   } = useApp();
 
   const navigate = useNavigate();
@@ -5043,6 +5047,200 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       {/* TAB 13: PLATFORM SETTINGS & CPANEL MAIL CONFIGURATION */}
       {activeTab === 'settings' && (
         <div className="space-y-6">
+          
+          {/* 🎨 Official Platform Branding & Logo Customization Console */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900">Official Platform Branding & Logo Customization</h3>
+                    <span className="badge badge-amber text-[10px] font-bold">GLOBAL BRANDING</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Upload and manage the master platform logo displayed across Top Navigation, Login View, Candidate Portals, Certificates, and Dossier PDFs.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={resetPlatformLogo}
+                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 cursor-pointer"
+                  title="Reset to factory brand logo"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Reset to Default Logo</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Current Active Logo Live Previews against Light and Dark backgrounds */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Light Background Preview */}
+              <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-slate-700 block">Preview: Light Background</span>
+                  <p className="text-[10px] text-slate-400">Rendered on navigation bars, verification portals & dossiers</p>
+                  <span className="badge badge-emerald text-[9px] mt-1">Active Global Branding ✓</span>
+                </div>
+                <div className="w-28 h-20 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-2 shadow-xs shrink-0">
+                  <img 
+                    src={platformLogo || '/joy_logo.png'} 
+                    alt="Active Platform Logo Light" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Dark Background Preview */}
+              <div className="p-4 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-between gap-4 text-white">
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-slate-200 block">Preview: Dark Background</span>
+                  <p className="text-[10px] text-slate-400">Rendered on high-contrast cards & dark-mode headers</p>
+                  <span className="badge badge-amber text-[9px] mt-1">High-Contrast Mode ✓</span>
+                </div>
+                <div className="w-28 h-20 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center p-2 shadow-xs shrink-0">
+                  <img 
+                    src={platformLogo || '/joy_logo.png'} 
+                    alt="Active Platform Logo Dark" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Upload New Custom Logo Section */}
+            <div className="p-5 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50/40 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
+                    <UploadCloud className="w-4 h-4 text-amber-600" />
+                    <span>Upload New Custom Platform Logo</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 font-medium">
+                    Upload your official organization logo. Supports transparent PNG, SVG, JPG, WebP (Max 3MB).
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <label className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer">
+                    <UploadCloud className="w-4 h-4" />
+                    <span>Choose Logo File 🖼️</span>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > 3 * 1024 * 1024) {
+                          showToast('⚠️ Logo file size exceeds 3MB limit. Please choose a smaller file.', 'error');
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          if (event.target?.result) {
+                            updatePlatformLogo(event.target.result);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick-Switch Curated Brand Presets */}
+            <div className="space-y-2">
+              <h4 className="font-extrabold text-xs text-slate-700 uppercase tracking-wider">
+                Official JOY TRUE PROFILE Brand Presets (Click to Apply)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                {/* Preset 1 */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_trueprofile_logo_light_theme.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
+                    platformLogo === '/assets/logos/joy_trueprofile_logo_light_theme.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_trueprofile_logo_light_theme.png" alt="Light Preset" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-slate-900 block truncate">JOY True Profile (Light)</span>
+                    <span className="text-[10px] text-slate-500 block">Shield + Navy Typography</span>
+                    {platformLogo === '/assets/logos/joy_trueprofile_logo_light_theme.png' && (
+                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 2 */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_trueprofile_logo_dark_theme.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-900 text-white ${
+                    platformLogo === '/assets/logos/joy_trueprofile_logo_dark_theme.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_trueprofile_logo_dark_theme.png" alt="Dark Preset" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-white block truncate">JOY True Profile (Dark)</span>
+                    <span className="text-[10px] text-slate-400 block">Shield + White Typography</span>
+                    {platformLogo === '/assets/logos/joy_trueprofile_logo_dark_theme.png' && (
+                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 3 */}
+                <div 
+                  onClick={() => updatePlatformLogo('/joy_logo.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
+                    platformLogo === '/joy_logo.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
+                    <img src="/joy_logo.png" alt="Emblem Preset" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-slate-900 block truncate">Winged Shield Emblem</span>
+                    <span className="text-[10px] text-slate-500 block">Gold & Green Checkmark</span>
+                    {platformLogo === '/joy_logo.png' && (
+                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 4: User Uploaded Badge */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-950 text-white ${
+                    platformLogo === '/assets/logos/joy_true_profile_badge.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_true_profile_badge.png" alt="Custom Badge" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-amber-400 block truncate">Official Brand Badge</span>
+                    <span className="text-[10px] text-slate-400 block">Uploaded Master Graphic</span>
+                    {platformLogo === '/assets/logos/joy_true_profile_badge.png' && (
+                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
           
           {/* 📧 cPanel SMTP Mail Gateway Configuration */}
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">

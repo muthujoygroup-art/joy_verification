@@ -29,7 +29,7 @@ export const RazorpayPaymentModal = ({
   targetCompanyId = 'comp-1',
   defaultAmount = 5000 
 }) => {
-  const { companies, rechargeCompanyWallet, paymentGatewayConfig, showToast } = useApp();
+  const { companies, rechargeCompanyWallet, paymentGatewayConfig, showToast, platformLogo } = useApp();
 
   const company = (companies || []).find(c => c.id === targetCompanyId) || (companies && companies[0]) || {
     id: 'comp-joy',
@@ -89,7 +89,7 @@ export const RazorpayPaymentModal = ({
         currency: 'INR',
         name: 'JOY CORPORATE SOLUTIONS PVT LTD',
         description: `Wallet Recharge: ${estimatedVerifications} BGV Verification Credits (${company.name})`,
-        image: '/joy_logo.png',
+        image: platformLogo || '/joy_logo.png',
         handler: function (response) {
           setIsProcessing(false);
           const paymentRecord = {
@@ -194,7 +194,7 @@ export const RazorpayPaymentModal = ({
         {/* Top Header */}
         <div className="p-4 sm:px-6 bg-white text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-3">
-            <img src="/joy_logo.png" alt="JOY Logo" className="w-9 h-9 object-contain shrink-0" />
+            <img src={platformLogo || "/joy_logo.png"} alt="JOY Logo" className="w-9 h-9 object-contain shrink-0" />
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-black text-sm sm:text-base text-slate-900 tracking-tight font-outfit">

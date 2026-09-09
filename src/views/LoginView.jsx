@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 export const LoginView = ({ initialRole = 'superadmin' }) => {
-  const { loginUser, candidates, companies, hrUsers, showToast } = useApp();
+  const { loginUser, candidates, companies, hrUsers, showToast, platformLogo } = useApp();
   const navigate = useNavigate();
   const [selectedRoleTab, setSelectedRoleTab] = useState(initialRole || 'superadmin');
   
@@ -264,8 +264,8 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
           <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
             <img 
-              src="/joy_logo.png" 
-              alt="JOY Logo" 
+              src={platformLogo || "/joy_logo.png"} 
+              alt="JOY TRUE PROFILE Logo" 
               className="w-11 h-11 object-contain group-hover:scale-105 transition-transform" 
             />
             <div>

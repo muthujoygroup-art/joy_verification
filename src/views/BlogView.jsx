@@ -22,8 +22,10 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { api } from '../services/api';
+import { useApp } from '../context/AppContext';
 
 export const BlogView = () => {
+  const { platformLogo } = useApp() || {};
   const { slug } = useParams();
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
@@ -175,7 +177,7 @@ By performing real-time authenticated service timeline audits against official E
           
           <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
             <img 
-              src="/joy_logo.png" 
+              src={platformLogo || "/joy_logo.png"} 
               alt="JOY TrueProfile Logo" 
               className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform" 
             />

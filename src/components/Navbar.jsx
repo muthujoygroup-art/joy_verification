@@ -50,7 +50,8 @@ export const Navbar = () => {
     setSelectedCandidateToken, 
     notifications,
     accessDeniedNotice,
-    closeAccessDeniedNotice
+    closeAccessDeniedNotice,
+    platformLogo
   } = useApp();
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [showCustomReportModal, setShowCustomReportModal] = useState(false);
@@ -117,8 +118,8 @@ export const Navbar = () => {
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer shrink-0">
               <div className="relative shrink-0">
                 <img 
-                  src="/joy_logo.png" 
-                  alt="JOY Logo" 
+                  src={platformLogo || "/joy_logo.png"} 
+                  alt="JOY TRUE PROFILE Logo" 
                   className="w-9 h-9 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform" 
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white animate-pulse" title="Gateway Online" />

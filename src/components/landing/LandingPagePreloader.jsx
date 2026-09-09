@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Clean, Prestigious & Kinetic Logo Preloader for JOY TRUE PROFILE
@@ -9,6 +10,7 @@ import React, { useState, useEffect } from 'react';
  * - Pure, seamless high-res logo with kinetic assembly & 3D letter flip typography
  */
 export default function LandingPagePreloader({ onFinish }) {
+  const { platformLogo } = useApp() || {};
   // Animation stages: 0=Assemble, 1=Crest Lock, 2=Typography Flip, 3=Tagline Sweep, 4=Complete Bloom
   const [stage, setStage] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
@@ -113,7 +115,7 @@ export default function LandingPagePreloader({ onFinish }) {
          * ========================================================================= */}
         <div className="relative flex items-center justify-center">
           <img 
-            src="/joy_logo.png" 
+            src={platformLogo || "/joy_logo.png"} 
             alt="JOY TRUE PROFILE" 
             className={`w-36 h-36 sm:w-44 sm:h-44 object-contain relative z-10 transition-all duration-700 ease-out ${
               stage >= 1 

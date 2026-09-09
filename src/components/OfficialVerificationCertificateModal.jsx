@@ -17,8 +17,10 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
+import { useApp } from '../context/AppContext';
 
 export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => {
+  const { platformLogo } = useApp() || {};
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
@@ -146,8 +148,8 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               {/* Logo 1: JOY Corporate Solutions Logo */}
               <div className="p-2 rounded-2xl bg-white border-2 border-indigo-100 shadow-sm flex items-center justify-center shrink-0">
                 <img 
-                  src="/joy_logo.png" 
-                  alt="JOY Logo" 
+                  src={platformLogo || "/joy_logo.png"} 
+                  alt="JOY TRUE PROFILE Logo" 
                   className="w-14 h-14 object-contain" 
                 />
               </div>

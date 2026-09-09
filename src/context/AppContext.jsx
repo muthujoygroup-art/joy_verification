@@ -63,8 +63,51 @@ export const AppProvider = ({ children }) => {
     }
   });
   const [selectedCandidateToken, setSelectedCandidateToken] = useState(null);
-  const [toastMessage, setToastMessage] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
+
+  // 🎨 Global Platform Branding & Logo Customization
+  const [platformLogo, setPlatformLogo] = useState(() => {
+    try {
+      return localStorage.getItem('joy_platform_logo') || '/assets/logos/joy_true_profile_badge.png';
+    } catch (e) {
+      return '/assets/logos/joy_true_profile_badge.png';
+    }
+  });
+
+  const [platformLogoDark, setPlatformLogoDark] = useState(() => {
+    try {
+      return localStorage.getItem('joy_platform_logo_dark') || '/assets/logos/joy_true_profile_badge.png';
+    } catch (e) {
+      return '/assets/logos/joy_true_profile_badge.png';
+    }
+  });
+
+  const updatePlatformLogo = (newLogoUrl, isDark = false) => {
+    if (isDark) {
+      setPlatformLogoDark(newLogoUrl);
+      try { localStorage.setItem('joy_platform_logo_dark', newLogoUrl); } catch (e) {}
+    } else {
+      setPlatformLogo(newLogoUrl);
+      try { localStorage.setItem('joy_platform_logo', newLogoUrl); } catch (e) {}
+    }
+    if (typeof showToast === 'function') {
+      showToast('✨ Global platform logo updated successfully!');
+    }
+  };
+
+  const resetPlatformLogo = () => {
+    const defaultLight = '/assets/logos/joy_true_profile_badge.png';
+    const defaultDark = '/assets/logos/joy_trueprofile_logo_dark_theme.png';
+    setPlatformLogo(defaultLight);
+    setPlatformLogoDark(defaultDark);
+    try {
+      localStorage.removeItem('joy_platform_logo');
+      localStorage.removeItem('joy_platform_logo_dark');
+    } catch (e) {}
+    if (typeof showToast === 'function') {
+      showToast('🔄 Platform logo reset to default brand logo.');
+    }
+  };
 
   // SESSION MANAGEMENT & INACTIVITY TRACKING
   const [sessionData, setSessionData] = useState(null);
@@ -2818,7 +2861,11 @@ export const AppProvider = ({ children }) => {
       activeRole: currentRole,
       accessDeniedNotice,
       triggerAccessDenied,
-      closeAccessDeniedNotice
+      closeAccessDeniedNotice,
+      platformLogo,
+      platformLogoDark,
+      updatePlatformLogo,
+      resetPlatformLogo
     }}>
       {children}
     </AppContext.Provider>

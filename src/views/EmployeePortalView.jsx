@@ -58,7 +58,8 @@ export const EmployeePortalView = () => {
     getActiveCandidate, 
     updateCandidateVerification, 
     showToast, 
-    setRoleView 
+    setRoleView,
+    platformLogo 
   } = useApp();
   
   const [directCandidate, setDirectCandidate] = useState(null);
@@ -400,7 +401,7 @@ export const EmployeePortalView = () => {
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
           
           <div className="text-center space-y-2">
-            <img src="/joy_logo.png" alt="JOY Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto" />
+            <img src={platformLogo || "/joy_logo.png"} alt="JOY Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto" />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
               <Lock className="w-3.5 h-3.5" />
               <span>DPDP Act 2023 Secure Gateway</span>
