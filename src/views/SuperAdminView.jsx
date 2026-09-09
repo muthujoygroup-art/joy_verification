@@ -5161,65 +5161,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               <h4 className="font-extrabold text-xs text-slate-700 uppercase tracking-wider">
                 Official JOY TRUE PROFILE Brand Presets (Click to Apply)
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                {/* Preset 1 */}
-                <div 
-                  onClick={() => updatePlatformLogo('/assets/logos/joy_trueprofile_logo_light_theme.png')}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
-                    platformLogo === '/assets/logos/joy_trueprofile_logo_light_theme.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
-                    <img src="/assets/logos/joy_trueprofile_logo_light_theme.png" alt="Light Preset" className="max-h-full max-w-full object-contain" />
-                  </div>
-                  <div className="overflow-hidden">
-                    <span className="font-black text-slate-900 block truncate">JOY True Profile (Light)</span>
-                    <span className="text-[10px] text-slate-500 block">Shield + Navy Typography</span>
-                    {platformLogo === '/assets/logos/joy_trueprofile_logo_light_theme.png' && (
-                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Preset 2 */}
-                <div 
-                  onClick={() => updatePlatformLogo('/assets/logos/joy_trueprofile_logo_dark_theme.png')}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-900 text-white ${
-                    platformLogo === '/assets/logos/joy_trueprofile_logo_dark_theme.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1 shrink-0">
-                    <img src="/assets/logos/joy_trueprofile_logo_dark_theme.png" alt="Dark Preset" className="max-h-full max-w-full object-contain" />
-                  </div>
-                  <div className="overflow-hidden">
-                    <span className="font-black text-white block truncate">JOY True Profile (Dark)</span>
-                    <span className="text-[10px] text-slate-400 block">Shield + White Typography</span>
-                    {platformLogo === '/assets/logos/joy_trueprofile_logo_dark_theme.png' && (
-                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Preset 3 */}
-                <div 
-                  onClick={() => updatePlatformLogo('/joy_logo.png')}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
-                    platformLogo === '/joy_logo.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
-                    <img src="/joy_logo.png" alt="Emblem Preset" className="max-h-full max-w-full object-contain" />
-                  </div>
-                  <div className="overflow-hidden">
-                    <span className="font-black text-slate-900 block truncate">Winged Shield Emblem</span>
-                    <span className="text-[10px] text-slate-500 block">Gold & Green Checkmark</span>
-                    {platformLogo === '/joy_logo.png' && (
-                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Preset 4: User Uploaded Badge */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                {/* Preset 1: Clean Shield Badge (Active Default) */}
                 <div 
                   onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge.png')}
                   className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-950 text-white ${
@@ -5227,13 +5170,89 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   }`}
                 >
                   <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center p-1 shrink-0">
-                    <img src="/assets/logos/joy_true_profile_badge.png" alt="Custom Badge" className="max-h-full max-w-full object-contain" />
+                    <img src="/assets/logos/joy_true_profile_badge.png" alt="Clean Badge" className="max-h-full max-w-full object-contain" />
                   </div>
                   <div className="overflow-hidden">
-                    <span className="font-black text-amber-400 block truncate">Official Brand Badge</span>
-                    <span className="text-[10px] text-slate-400 block">Uploaded Master Graphic</span>
+                    <span className="font-black text-amber-400 block truncate">Official Shield Badge</span>
+                    <span className="text-[10px] text-slate-400 block">Shield + Text (No Wings)</span>
                     {platformLogo === '/assets/logos/joy_true_profile_badge.png' && (
                       <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 2: Transparent Shield Brand */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge_transparent.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-900 text-white ${
+                    platformLogo === '/assets/logos/joy_true_profile_badge_transparent.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_true_profile_badge_transparent.png" alt="Transparent Badge" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-white block truncate">Transparent Shield</span>
+                    <span className="text-[10px] text-slate-400 block">Alpha Transparent BG</span>
+                    {platformLogo === '/assets/logos/joy_true_profile_badge_transparent.png' && (
+                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 3: Shield Emblem Only */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_shield_emblem.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
+                    platformLogo === '/assets/logos/joy_true_profile_shield_emblem.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_true_profile_shield_emblem.png" alt="Emblem Only" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-slate-900 block truncate">Shield Emblem Only</span>
+                    <span className="text-[10px] text-slate-500 block">Gold & Green Check</span>
+                    {platformLogo === '/assets/logos/joy_true_profile_shield_emblem.png' && (
+                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 4: Light Surface Badge */}
+                <div 
+                  onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge_light.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
+                    platformLogo === '/assets/logos/joy_true_profile_badge_light.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
+                    <img src="/assets/logos/joy_true_profile_badge_light.png" alt="Light Preset" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-slate-900 block truncate">Light Surface Brand</span>
+                    <span className="text-[10px] text-slate-500 block">Navy & Gold Text</span>
+                    {platformLogo === '/assets/logos/joy_true_profile_badge_light.png' && (
+                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preset 5: Winged Shield Heritage */}
+                <div 
+                  onClick={() => updatePlatformLogo('/joy_logo.png')}
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white ${
+                    platformLogo === '/joy_logo.png' ? 'border-indigo-600 shadow-sm ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
+                    <img src="/joy_logo.png" alt="Winged Preset" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="font-black text-slate-900 block truncate">Winged Crest</span>
+                    <span className="text-[10px] text-slate-500 block">Heritage Wings Style</span>
+                    {platformLogo === '/joy_logo.png' && (
+                      <span className="text-[9px] text-indigo-600 font-bold">● Active Now</span>
                     )}
                   </div>
                 </div>
