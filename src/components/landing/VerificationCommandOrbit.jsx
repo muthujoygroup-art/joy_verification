@@ -28,6 +28,7 @@ const ORBIT_MODULES = [
     color: 'from-amber-500 via-orange-500 to-rose-500',
     turnaround: 'Under 30 Seconds',
     accuracy: '100% Verified',
+    image3d: '/assets/3d/hero_3d_verification.jpg',
     summary: 'Instantly verify Aadhaar, PAN, and government IDs with live selfie camera match to eliminate fake profiles and impersonation.',
     benefits: [
       'Instant Aadhaar & PAN validation directly with official registries',
@@ -51,6 +52,7 @@ const ORBIT_MODULES = [
     color: 'from-orange-500 via-amber-500 to-yellow-500',
     turnaround: 'Instant Verification',
     accuracy: 'Verified Records',
+    image3d: '/assets/3d/corporate_3d_bgv.jpg',
     summary: 'Confirm past company names, job titles, joining dates, and exit details in minutes without waiting weeks for HR phone calls.',
     benefits: [
       'Automated tenure and work history confirmation',
@@ -74,6 +76,7 @@ const ORBIT_MODULES = [
     color: 'from-rose-500 via-orange-500 to-amber-600',
     turnaround: 'Real-Time Alert',
     accuracy: '100% Reliable',
+    image3d: '/assets/3d/corporate_shield_vault_3d.jpg',
     summary: 'Detect active concurrent jobs and overlapping employment tenures to protect company data and prevent productivity loss.',
     benefits: [
       'Identifies undeclared second jobs and overlapping payrolls',
@@ -97,6 +100,7 @@ const ORBIT_MODULES = [
     color: 'from-rose-500 via-pink-600 to-amber-500',
     turnaround: 'Nationwide Search',
     accuracy: 'Comprehensive',
+    image3d: '/assets/3d/security_3d_shield.jpg',
     summary: 'Scan national civil, criminal, and high court records across India to ensure your workplace remains safe and trustworthy.',
     benefits: [
       'Nationwide screening across district, state, and central courts',
@@ -120,6 +124,7 @@ const ORBIT_MODULES = [
     color: 'from-amber-400 via-orange-500 to-rose-500',
     turnaround: 'Instant Check',
     accuracy: 'Official Banking Rails',
+    image3d: '/assets/3d/liquid_glass_vault_3d.jpg',
     summary: 'Validate candidate bank accounts with real-time account holder name matching before payroll setup to prevent salary fraud.',
     benefits: [
       'Instant ₹1 penny-drop validation with registered bank branch',
@@ -143,6 +148,7 @@ const ORBIT_MODULES = [
     color: 'from-emerald-400 via-teal-500 to-amber-500',
     turnaround: 'Instant Download',
     accuracy: 'Tamper-Proof QR',
+    image3d: '/assets/3d/labor_3d_management.jpg',
     summary: 'Issue certified digital employee badges and scannable QR passes for instant on-site identification at office gates and industrial plants.',
     benefits: [
       'Instant digital QR badge sent to employee mobile phone',
@@ -301,9 +307,34 @@ export const VerificationCommandOrbit = () => {
             </div>
 
             {/* Description */}
-            <p className="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
+            <p className="text-slate-600 text-sm leading-relaxed mb-4 font-normal">
               {activeModule.summary}
             </p>
+
+            {/* 3D Module Feature Showcase Viewport */}
+            <div className="w-full relative rounded-2xl overflow-hidden aspect-[16/7] border border-slate-200 bg-slate-950 mb-6 shadow-sm group">
+              <img
+                src={activeModule.image3d}
+                alt={activeModule.title}
+                className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
+
+              {isSimulating && (
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_15px_#f59e0b] z-20 animate-laser-vertical"></div>
+              )}
+
+              <div className="absolute top-2.5 left-2.5 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>{activeModule.turnaround}</span>
+              </div>
+
+              <div className="absolute bottom-2.5 right-2.5 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span>{activeModule.accuracy}</span>
+              </div>
+            </div>
 
             {/* Switchable View: Benefits or Sample Certificate */}
             {viewMode === 'benefits' ? (

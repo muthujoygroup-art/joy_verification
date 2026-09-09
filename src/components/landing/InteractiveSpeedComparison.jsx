@@ -72,8 +72,69 @@ export const InteractiveSpeedComparison = () => {
         <div className="flex items-center gap-2 text-xs">
           <span className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Under 1 Minute Results</span>
+            <span>Sub-45s Turnaround</span>
           </span>
+        </div>
+      </div>
+
+      {/* 3D Visual Speed Comparison Hero Showcase */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-50/90 border border-slate-200 rounded-2xl p-5 sm:p-7 mb-8 shadow-inner">
+        {/* Left: 3D Render Image */}
+        <div className="lg:col-span-5 rounded-xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-950 shadow-sm relative group">
+          <img
+            src="/assets/3d/speed_3d_instant.jpg"
+            alt="3D Instant Speed Verification Smartphone"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-95"
+            loading="lazy"
+          />
+          <div className="absolute top-2.5 left-2.5 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
+            <Clock className="w-3 h-3 text-amber-400" />
+            <span>Live Latency: 00:45s</span>
+          </div>
+        </div>
+
+        {/* Right: Dual Countdown Comparison Boxes */}
+        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Traditional Card */}
+          <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/80 flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-[10px] uppercase font-bold text-rose-700 block mb-1">
+                TRADITIONAL MANUAL BGV
+              </span>
+              <div className="text-2xl sm:text-3xl font-black text-rose-950 font-outfit">
+                14 – 18 Days
+              </div>
+              <p className="text-xs text-rose-800 mt-1 font-medium">
+                Manual phone calls, physical postal verifications, and endless back-and-forth emails.
+              </p>
+            </div>
+            <div className="mt-3 pt-3 border-t border-rose-200/80 flex items-center justify-between text-[11px] font-mono text-rose-700">
+              <span>Candidate Drop-off: High</span>
+              <span className="font-bold">❌ 40% Churn</span>
+            </div>
+          </div>
+
+          {/* JOY TrueProfile Card */}
+          <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/90 flex flex-col justify-between shadow-xs">
+            <div>
+              <span className="font-mono text-[10px] uppercase font-bold text-amber-800 block mb-1">
+                JOY TRUE PROFILE AUTOMATION
+              </span>
+              <div className="text-2xl sm:text-3xl font-black text-amber-950 font-outfit flex items-center gap-2">
+                <span>&lt; 45 Seconds</span>
+                <span className="text-xs font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+                  INSTANT
+                </span>
+              </div>
+              <p className="text-xs text-amber-900 mt-1 font-medium">
+                Automated parallel connectors across official government, PF, court, and banking rails.
+              </p>
+            </div>
+            <div className="mt-3 pt-3 border-t border-amber-200/80 flex items-center justify-between text-[11px] font-mono text-amber-900 font-bold">
+              <span>Candidate Completion:</span>
+              <span className="text-emerald-700">✓ 98.4% Rate</span>
+            </div>
+          </div>
         </div>
       </div>
 

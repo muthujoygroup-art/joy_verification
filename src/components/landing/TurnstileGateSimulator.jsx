@@ -174,11 +174,54 @@ const TurnstileGateSimulator = () => {
         {/* Right Column: 3D Turnstile Gate Physical Simulation (lg:col-span-7) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
           
-          {/* Turnstile Physical Representation */}
-          <div className="bg-slate-50/90 border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center min-h-[280px] shadow-inner relative overflow-hidden">
+          {/* Turnstile Physical Representation with 3D Render Backdrop */}
+          <div className="bg-slate-50/90 border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[300px] shadow-inner relative overflow-hidden group">
             
+            {/* 3D Facility Turnstile Render Viewport */}
+            <div className="w-full relative rounded-xl overflow-hidden aspect-[16/9] mb-4 border border-slate-200 shadow-sm bg-slate-900">
+              <img
+                src="/assets/3d/labor_3d_management.jpg"
+                alt="3D Workforce Turnstile Plant Check-in"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
+                loading="lazy"
+              />
+
+              {/* Dynamic Gate State Laser Scan Overlay */}
+              {gateState === 'scanning' && (
+                <div className="absolute inset-0 bg-amber-500/15 pointer-events-none animate-pulse flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full border-2 border-amber-400 animate-ping opacity-75"></div>
+                </div>
+              )}
+
+              {/* Gate Unlocked Overlay */}
+              {gateState === 'granted' && (
+                <div className="absolute inset-0 bg-emerald-600/20 pointer-events-none flex items-center justify-center backdrop-blur-[1px] transition-all">
+                  <div className="bg-emerald-950/90 border border-emerald-400 text-emerald-200 px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 shadow-2xl animate-bounce">
+                    <Unlock className="w-4 h-4 text-emerald-400" />
+                    <span>TURNSTILE UNLOCKED • ROTATING 90°</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Gate Denied Overlay */}
+              {gateState === 'denied' && (
+                <div className="absolute inset-0 bg-rose-600/25 pointer-events-none flex items-center justify-center backdrop-blur-[1px] transition-all">
+                  <div className="bg-rose-950/90 border border-rose-400 text-rose-200 px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 shadow-2xl">
+                    <Lock className="w-4 h-4 text-rose-400" />
+                    <span>BARRIER LOCKED • STATUTORY COMPLIANCE FAILED</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Floating Camera / Optical Scanner HUD */}
+              <div className="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
+                <Activity className="w-3 h-3 text-amber-400 animate-pulse" />
+                <span>Optical Turnstile Barcode Reader #04</span>
+              </div>
+            </div>
+
             {/* Status Beam Indicator at Top of Gate */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4 w-full justify-between flex-wrap">
               <span className="font-mono text-xs text-slate-500 font-bold uppercase">Gate Status:</span>
               {gateState === 'idle' && (
                 <span className="font-mono text-xs text-slate-700 bg-white border border-slate-200 px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-xs">
@@ -207,45 +250,45 @@ const TurnstileGateSimulator = () => {
             </div>
 
             {/* Turnstile Physical Barrier Graphic */}
-            <div className="w-full max-w-sm flex items-center justify-between gap-4 py-4 px-6 rounded-2xl bg-white border border-slate-200 relative shadow-sm">
+            <div className="w-full max-w-sm flex items-center justify-between gap-4 py-3 px-5 rounded-xl bg-white border border-slate-200 relative shadow-2xs">
               {/* Left Turnstile Pillar */}
-              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-2 shadow-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                <span className="text-[8px] font-mono text-slate-600 font-bold">PIL-L</span>
+              <div className="w-10 h-20 rounded-lg bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-1.5 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                <span className="text-[7px] font-mono text-slate-600 font-bold">PIL-L</span>
               </div>
 
               {/* Center Barrier Arms (Open or Closed) */}
-              <div className="flex-1 flex items-center justify-center relative h-28">
+              <div className="flex-1 flex items-center justify-center relative h-20">
                 {gateState === 'granted' ? (
                   <div className="flex items-center gap-6 transition-all duration-500">
-                    <div className="w-16 h-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] -rotate-45 origin-left transition-transform"></div>
-                    <div className="w-16 h-2.5 bg-gradient-to-l from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] rotate-45 origin-right transition-transform"></div>
+                    <div className="w-14 h-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] -rotate-45 origin-left transition-transform"></div>
+                    <div className="w-14 h-2.5 bg-gradient-to-l from-emerald-500 to-teal-500 rounded-full shadow-[0_0_12px_#10b981] rotate-45 origin-right transition-transform"></div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 transition-all duration-300">
-                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
-                    <div className={`w-20 h-3 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
+                    <div className={`w-16 h-2.5 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
+                    <div className={`w-16 h-2.5 rounded-full transition-colors ${gateState === 'denied' ? 'bg-rose-500 shadow-[0_0_12px_#f43f5e]' : 'bg-slate-300'}`}></div>
                   </div>
                 )}
                 
                 {/* Center Lock Status Icon */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   {gateState === 'granted' ? (
-                    <div className="w-9 h-9 rounded-full bg-emerald-100 border border-emerald-400 text-emerald-700 flex items-center justify-center">
-                      <Unlock className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 border border-emerald-400 text-emerald-700 flex items-center justify-center">
+                      <Unlock className="w-3.5 h-3.5" />
                     </div>
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-300 text-slate-500 flex items-center justify-center">
-                      <Lock className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-300 text-slate-500 flex items-center justify-center">
+                      <Lock className="w-3.5 h-3.5" />
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Right Turnstile Pillar */}
-              <div className="w-12 h-28 rounded-xl bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-2 shadow-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                <span className="text-[8px] font-mono text-slate-600 font-bold">PIL-R</span>
+              <div className="w-10 h-20 rounded-lg bg-gradient-to-b from-slate-200 to-slate-300 border border-slate-300 flex flex-col items-center justify-between p-1.5 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                <span className="text-[7px] font-mono text-slate-600 font-bold">PIL-R</span>
               </div>
             </div>
 

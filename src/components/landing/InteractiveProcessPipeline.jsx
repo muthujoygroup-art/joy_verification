@@ -200,20 +200,45 @@ export const InteractiveProcessPipeline = () => {
             </div>
           </div>
 
+          {/* Right Column: 3D Isometric Pipeline Centerpiece */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-full max-w-sm p-6 rounded-2xl bg-white border border-slate-200 text-center shadow-md">
-              <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 bg-gradient-to-br ${step.color} flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/20`}>
-                <step.icon className="w-8 h-8" />
+            <div className="w-full rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-md group relative">
+              {/* 3D Isometric Render */}
+              <div className="relative aspect-[16/11] bg-slate-950 overflow-hidden">
+                <img
+                  src="/assets/3d/easy_3step_verify_3d.jpg"
+                  alt="3D 3-Step Automated Verification Pipeline"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-95"
+                  loading="lazy"
+                />
+
+                {/* Overlaid Active Step Pill */}
+                <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-amber-400/60 font-mono text-[10px] text-amber-300 font-bold flex items-center gap-2 shadow-lg">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  <span>ACTIVE: STEP {step.stepNumber} — {step.title}</span>
+                </div>
+
+                {/* Sub-second latency badge */}
+                <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-400/60 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
+                  <Zap className="w-3 h-3 text-emerald-400" />
+                  <span>Sub-60s Automated TAT</span>
+                </div>
               </div>
-              <h5 className="text-base font-bold text-slate-900 font-outfit mb-1">
-                {step.title}
-              </h5>
-              <p className="text-xs text-amber-700 font-medium mb-4">
-                {step.subtitle}
-              </p>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
-                <Check className="w-3.5 h-3.5" />
-                <span>Fully Automated in Platform</span>
+
+              {/* Bottom Step Context Footer */}
+              <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <h5 className="font-bold text-xs sm:text-sm text-slate-900 font-outfit">
+                    {step.title}
+                  </h5>
+                  <p className="text-[11px] text-amber-700 font-medium">
+                    {step.subtitle}
+                  </p>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  <span>100% Automated</span>
+                </div>
               </div>
             </div>
           </div>
