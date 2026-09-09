@@ -64,6 +64,7 @@ export const AppProvider = ({ children }) => {
   });
   const [selectedCandidateToken, setSelectedCandidateToken] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
+  const [toastMessage, setToastMessage] = useState(null);
 
   // 🎨 Global Platform Branding & Logo Customization
   const [platformLogo, setPlatformLogo] = useState(() => {
