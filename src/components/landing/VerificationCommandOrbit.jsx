@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldCheck, 
   Search, 
@@ -15,7 +15,8 @@ import {
   Award,
   Users,
   Building,
-  Check
+  Check,
+  Sparkles
 } from 'lucide-react';
 import { soundEngine } from '../../utils/uiSoundEffects';
 
