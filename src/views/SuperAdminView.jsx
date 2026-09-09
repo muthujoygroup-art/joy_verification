@@ -12,6 +12,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { CompanyActivationModal } from '../components/CompanyActivationModal';
 import { CompanyGovernanceModal } from '../components/CompanyGovernanceModal';
+import { CompanyProfileAuditModal } from '../components/CompanyProfileAuditModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { OfficialLegalDocumentViewerModal } from '../components/OfficialLegalDocumentViewerModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
@@ -595,6 +596,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   // 🏢 Company Activation & Onboarding States
   const [governanceCompany, setGovernanceCompany] = useState(null);
   const [activatingCompany, setActivatingCompany] = useState(null);
+  const [auditingCompany, setAuditingCompany] = useState(null);
   const [showNewCompPassword, setShowNewCompPassword] = useState(false);
   const [showNewCompLoginPassword, setShowNewCompLoginPassword] = useState(false);
   const [showNewCompActivationPin, setShowNewCompActivationPin] = useState(false);
@@ -2119,9 +2121,17 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             <span className="badge badge-rose text-[10px] font-black py-1 px-2 border border-rose-300">
                               🔴 SUSPENDED
                             </span>
+                          ) : comp.verification_status === 'Verified' ? (
+                            <span className="badge badge-emerald text-[8.5px] font-black py-0.5 px-2 border border-emerald-300">
+                              🏛️ STATUTORY VERIFIED ✓
+                            </span>
+                          ) : comp.verification_status === 'Action Required' ? (
+                            <span className="badge badge-amber text-[8.5px] font-black py-0.5 px-2 border border-amber-300">
+                              ⚠️ STATUTORY ACTION REQ
+                            </span>
                           ) : (
-                            <span className="badge badge-emerald text-[10px] font-black py-1 px-2 border border-emerald-300">
-                              🟢 ACTIVE & VERIFIED
+                            <span className="badge badge-purple text-[8.5px] font-bold py-0.5 px-2 border border-purple-200">
+                              📋 STATUTORY AUDIT PENDING
                             </span>
                           )}
 
@@ -2188,6 +2198,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       </td>
                       <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setAuditingCompany(comp)}
+                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-black bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-900 shadow-2xs cursor-pointer"
+                            title="Audit Statutory Profile Details (GST, PAN, CIN, Bank, Documents)"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Audit Statutory Profile 🏛️</span>
+                          </button>
                           <button
                             type="button"
                             onClick={() => setGovernanceCompany(comp)}
@@ -7839,6 +7858,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           onClose={() => setGovernanceCompany(null)} 
           onUpdateCompany={(updated) => setCompanies(prev => prev.map(c => c.id === updated.id ? { ...c, ...updated } : c))}
           showToast={showToast}
+        />
+      )}
+
+      {/* 🏛️ COMPANY PROFILE STATUTORY AUDIT MODAL */}
+      {auditingCompany && (
+        <CompanyProfileAuditModal 
+          company={auditingCompany} 
+          onClose={() => setAuditingCompany(null)} 
         />
       )}
 </div>
