@@ -67,11 +67,21 @@ export const AppProvider = ({ children }) => {
   const [toastMessage, setToastMessage] = useState(null);
 
   // 🎨 Global Platform Branding & Logo Customization
+  // Full Brand Badge (Used for first load splash screens, hero banners, and brand showcases)
   const [platformLogo, setPlatformLogo] = useState(() => {
     try {
       return localStorage.getItem('joy_platform_logo') || '/assets/logos/joy_true_profile_badge.png';
     } catch (e) {
       return '/assets/logos/joy_true_profile_badge.png';
+    }
+  });
+
+  // Pure Shield Emblem / Crest (Used for Navbar, Favicon, PDF reports, official certificates & seals)
+  const [platformLogoEmblem, setPlatformLogoEmblem] = useState(() => {
+    try {
+      return localStorage.getItem('joy_platform_logo_emblem') || '/assets/logos/joy_true_profile_shield_emblem.png';
+    } catch (e) {
+      return '/assets/logos/joy_true_profile_shield_emblem.png';
     }
   });
 
@@ -83,10 +93,13 @@ export const AppProvider = ({ children }) => {
     }
   });
 
-  const updatePlatformLogo = (newLogoUrl, isDark = false) => {
-    if (isDark) {
+  const updatePlatformLogo = (newLogoUrl, option = false) => {
+    if (option === 'dark' || option === true) {
       setPlatformLogoDark(newLogoUrl);
       try { localStorage.setItem('joy_platform_logo_dark', newLogoUrl); } catch (e) {}
+    } else if (option === 'emblem') {
+      setPlatformLogoEmblem(newLogoUrl);
+      try { localStorage.setItem('joy_platform_logo_emblem', newLogoUrl); } catch (e) {}
     } else {
       setPlatformLogo(newLogoUrl);
       try { localStorage.setItem('joy_platform_logo', newLogoUrl); } catch (e) {}
@@ -99,11 +112,14 @@ export const AppProvider = ({ children }) => {
   const resetPlatformLogo = () => {
     const defaultLight = '/assets/logos/joy_true_profile_badge.png';
     const defaultDark = '/assets/logos/joy_trueprofile_logo_dark_theme.png';
+    const defaultEmblem = '/assets/logos/joy_true_profile_shield_emblem.png';
     setPlatformLogo(defaultLight);
     setPlatformLogoDark(defaultDark);
+    setPlatformLogoEmblem(defaultEmblem);
     try {
       localStorage.removeItem('joy_platform_logo');
       localStorage.removeItem('joy_platform_logo_dark');
+      localStorage.removeItem('joy_platform_logo_emblem');
     } catch (e) {}
     if (typeof showToast === 'function') {
       showToast('🔄 Platform logo reset to default brand logo.');
@@ -2864,6 +2880,7 @@ export const AppProvider = ({ children }) => {
       triggerAccessDenied,
       closeAccessDeniedNotice,
       platformLogo,
+      platformLogoEmblem,
       platformLogoDark,
       updatePlatformLogo,
       resetPlatformLogo

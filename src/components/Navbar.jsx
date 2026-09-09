@@ -51,7 +51,8 @@ export const Navbar = () => {
     notifications,
     accessDeniedNotice,
     closeAccessDeniedNotice,
-    platformLogo
+    platformLogo,
+    platformLogoEmblem
   } = useApp();
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [showCustomReportModal, setShowCustomReportModal] = useState(false);
@@ -118,7 +119,7 @@ export const Navbar = () => {
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer shrink-0">
               <div className="relative shrink-0">
                 <img 
-                  src={platformLogo || "/joy_logo.png"} 
+                  src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY TRUE PROFILE Logo" 
                   className="w-9 h-9 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform" 
                 />

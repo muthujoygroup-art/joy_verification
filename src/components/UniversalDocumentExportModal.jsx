@@ -30,7 +30,7 @@ export const UniversalDocumentExportModal = ({
   initialRole = 'hrexecutive',
   scopedCompanyId = null 
 }) => {
-  const { candidates, companies, hrUsers, showToast, platformLogo } = useApp();
+  const { candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem } = useApp();
 
   // Date Range State
   const [datePreset, setDatePreset] = useState('all');
@@ -464,7 +464,7 @@ export const UniversalDocumentExportModal = ({
         {/* Modal Top Header */}
         <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3.5">
-            <img src={platformLogo || "/joy_logo.png"} alt="JOY Logo" className="w-10 h-10 object-contain shrink-0" />
+            <img src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} alt="JOY Logo" className="w-10 h-10 object-contain shrink-0" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="badge badge-purple text-[10px] font-black uppercase">

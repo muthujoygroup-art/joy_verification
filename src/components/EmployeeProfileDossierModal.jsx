@@ -40,7 +40,7 @@ import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
-  const { companies = [], platformLogo } = useApp() || {};
+  const { companies = [], platformLogo, platformLogoEmblem } = useApp() || {};
   const [activeTab, setActiveTab] = useState(1);
   // 1: Demographics, 2: Role, 3: Edu & Exp, 4: Statutory & Bank, 5: Statutory Forms, 6: Attached Exhibits, 7: Complete Master PDF
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
@@ -77,7 +77,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   const candCompany = Array.isArray(companies) ? companies.find(comp => comp.id === c.companyId || comp.code === c.companyCode || comp.name === c.companyName) : null;
   const employerCompanyName = candCompany?.name || c.companyName || jf.companyName || jf.workingCompany || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
-  const employerCompanyLogo = c.companyLogo || c.company_logo || candCompany?.logo || candCompany?.logo_url || candCompany?.company_logo || (candCompany?.documents || {}).company_logo || (candCompany?.features || {}).logo || platformLogo || '/joy_logo.png';
+  const employerCompanyLogo = c.companyLogo || c.company_logo || candCompany?.logo || candCompany?.logo_url || candCompany?.company_logo || (candCompany?.documents || {}).company_logo || (candCompany?.features || {}).logo || platformLogoEmblem || '/assets/logos/joy_true_profile_shield_emblem.png';
   const companyName = employerCompanyName;
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';

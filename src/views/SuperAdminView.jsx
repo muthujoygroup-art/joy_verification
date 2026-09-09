@@ -145,6 +145,7 @@ export const SuperAdminView = () => {
     updateCommunicationGateways,
     showToast,
     platformLogo,
+    platformLogoEmblem,
     platformLogoDark,
     updatePlatformLogo,
     resetPlatformLogo
@@ -5079,36 +5080,36 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             </div>
 
-            {/* Current Active Logo Live Previews against Light and Dark backgrounds */}
+            {/* Current Active Logo Live Previews: Full Brand vs Pure Emblem */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Light Background Preview */}
+              {/* Full Brand Badge Preview (First Load / Splash) */}
               <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-slate-700 block">Preview: Light Background</span>
-                  <p className="text-[10px] text-slate-400">Rendered on navigation bars, verification portals & dossiers</p>
-                  <span className="badge badge-emerald text-[9px] mt-1">Active Global Branding ✓</span>
+                  <span className="text-xs font-bold text-slate-800 block">1. Full Brand Presentation</span>
+                  <p className="text-[10px] text-slate-500">Includes Shield + Project Name + Tagline. Rendered on first load splash screen, login cards & hero branding.</p>
+                  <span className="badge badge-amber text-[9px] mt-1 font-bold">First Load / Splash ✓</span>
                 </div>
-                <div className="w-28 h-20 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-2 shadow-xs shrink-0">
+                <div className="w-28 h-20 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 shadow-xs shrink-0">
                   <img 
-                    src={platformLogo || '/joy_logo.png'} 
-                    alt="Active Platform Logo Light" 
+                    src={platformLogo || '/assets/logos/joy_true_profile_badge.png'} 
+                    alt="Full Brand Logo" 
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
               </div>
 
-              {/* Dark Background Preview */}
-              <div className="p-4 rounded-2xl border border-slate-800 bg-slate-950 flex items-center justify-between gap-4 text-white">
+              {/* Pure Shield Emblem Preview (Navbar / Favicon / PDFs) */}
+              <div className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 flex items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-slate-200 block">Preview: Dark Background</span>
-                  <p className="text-[10px] text-slate-400">Rendered on high-contrast cards & dark-mode headers</p>
-                  <span className="badge badge-amber text-[9px] mt-1">High-Contrast Mode ✓</span>
+                  <span className="text-xs font-bold text-emerald-950 block">2. Pure Shield Emblem (Logo Mark Only)</span>
+                  <p className="text-[10px] text-emerald-700">Clean 3D golden shield with luminous emerald tick. Rendered on Navbar, Favicon, PDF Reports & Certificates.</p>
+                  <span className="badge badge-emerald text-[9px] mt-1 font-bold">Navbar • Favicon • PDFs ✓</span>
                 </div>
-                <div className="w-28 h-20 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center p-2 shadow-xs shrink-0">
+                <div className="w-28 h-20 rounded-xl bg-white border border-emerald-200 flex items-center justify-center p-2 shadow-xs shrink-0">
                   <img 
-                    src={platformLogo || '/joy_logo.png'} 
-                    alt="Active Platform Logo Dark" 
-                    className="max-h-full max-w-full object-contain"
+                    src={platformLogoEmblem || '/assets/logos/joy_true_profile_shield_emblem.png'} 
+                    alt="Pure Shield Emblem" 
+                    className="max-h-full max-w-full object-contain drop-shadow-sm"
                   />
                 </div>
               </div>

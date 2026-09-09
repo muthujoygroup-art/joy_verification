@@ -43,7 +43,7 @@ export const ComprehensiveBgvReportModal = ({
   companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED", 
   hrName = "PRAVEEN B" 
 }) => {
-  const { platformLogo } = useApp() || {};
+  const { platformLogo, platformLogoEmblem } = useApp() || {};
   const [activeApiTab, setActiveApiTab] = useState('all');
  // 'all' | 'aadhaar' | 'pan' | 'epfo' | 'bank' | 'dl' | 'passport' | 'voter' | 'esic' | 'mobile360' | 'face' | 'court'
   const [copiedLink, setCopiedLink] = useState(false);
@@ -322,7 +322,7 @@ export const ComprehensiveBgvReportModal = ({
         <div className="p-3.5 sm:px-6 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <img 
-              src={platformLogo || "/joy_logo.png"} 
+              src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY Logo" 
               className="w-9 h-9 object-contain shrink-0" 
             />
