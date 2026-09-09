@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundEngine } from '../../utils/uiSoundEffects';
-import { ShieldCheck, CheckCircle2, Lock, Zap, Cpu } from 'lucide-react';
 
 /**
  * World-Class Futuristic Biometric & Cybernetic Logo Preloader
@@ -9,15 +8,12 @@ import { ShieldCheck, CheckCircle2, Lock, Zap, Cpu } from 'lucide-react';
  * - Transparent 3D Golden Shield with Luminous Emerald Checkmark
  * - Holographic laser sweep scanning from top to bottom
  * - Kinetic 3D letter flip typography for "JOY TRUE PROFILE"
- * - Live cybernetic telemetry percentage counter (0% -> 100%)
- * - Glowing statutory compliance badges (UIDAI, NSDL, EPFO, DPDP)
  * - Ultra-smooth cinematic fade & skip controls (Click / Space / Esc)
  */
 export default function LandingPagePreloader({ onFinish }) {
   const { platformLogo } = useApp() || {};
-  // Animation stages: 0=Initialize, 1=Laser Scan, 2=Tick Bloom, 3=Typography Flip, 4=Telemetry Complete
+  // Animation stages: 0=Initialize, 1=Laser Scan, 2=Tick Bloom, 3=Typography Flip, 4=Lock Complete
   const [stage, setStage] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
   // Split "TRUE PROFILE" for individual 3D letter flip choreography
@@ -38,25 +34,6 @@ export default function LandingPagePreloader({ onFinish }) {
 
   // Tagline Words
   const taglineWords = ['INSTANT', 'WORKFORCE', 'VERIFICATION'];
-
-  // Smooth counter progression (0% to 100% in 1.1s)
-  useEffect(() => {
-    let startTimestamp = null;
-    const duration = 1100;
-
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const elapsed = timestamp - startTimestamp;
-      const pct = Math.min(Math.floor((elapsed / duration) * 100), 100);
-      setProgress(pct);
-      if (elapsed < duration) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    const animFrame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animFrame);
-  }, []);
 
   useEffect(() => {
     // Stage Choreography
@@ -172,7 +149,7 @@ export default function LandingPagePreloader({ onFinish }) {
           {/* Golden Shield Container */}
           <div className="relative z-10 overflow-hidden p-2">
             <img 
-              src={platformLogo || "/assets/logos/joy_true_profile_badge.png"} 
+              src="/assets/logos/joy_true_profile_shield_emblem.png" 
               alt="JOY TRUE PROFILE" 
               className={`w-36 h-36 sm:w-44 sm:h-44 object-contain transition-all duration-700 ease-out ${
                 stage >= 1 
@@ -292,41 +269,6 @@ export default function LandingPagePreloader({ onFinish }) {
                 transition: 'transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)'
               }}
             />
-          </div>
-
-          {/* =========================================================================
-           * 4. CYBERNETIC PROGRESS & TELEMETRY READOUT (0% -> 100%)
-           * ========================================================================= */}
-          <div className="mt-5 w-56 sm:w-64 flex flex-col items-center gap-2">
-            
-            {/* Cyber Progress Bar */}
-            <div className="w-full h-1.5 bg-slate-900 rounded-full border border-slate-800 p-0.5 overflow-hidden relative shadow-inner">
-              <div 
-                className="h-full bg-gradient-to-r from-amber-500 via-emerald-400 to-emerald-300 rounded-full transition-all duration-150 ease-out shadow-[0_0_12px_rgba(52,211,153,0.8)]"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-
-            {/* Telemetry Status Line */}
-            <div className="w-full flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                {progress < 100 ? 'INITIALIZING SHIELD...' : 'ENCRYPTED PASSKEY VERIFIED'}
-              </span>
-              <span className="font-bold text-amber-400">{progress}%</span>
-            </div>
-
-            {/* Statutory Security Seal Badges */}
-            <div className="flex items-center gap-2 text-[8px] font-mono text-slate-500 mt-1 uppercase tracking-wider">
-              <span>UIDAI</span>
-              <span>•</span>
-              <span>NSDL</span>
-              <span>•</span>
-              <span>EPFO</span>
-              <span>•</span>
-              <span>ISO 27001</span>
-            </div>
-
           </div>
 
         </div>
