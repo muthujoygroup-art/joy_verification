@@ -45,15 +45,20 @@ export const MetricDrilldownModal = ({
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (typeof onClose === 'function') onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -107,15 +112,15 @@ export const MetricDrilldownModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] text-slate-900 my-auto animate-modal-spring">
+      <div className="w-full max-w-4xl h-full max-h-[calc(100vh-2rem)] bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col text-slate-900 shrink-0 animate-modal-spring">
         
         {/* Modal Header */}
-        <div className="p-4 sm:p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white relative">
+        <div className="shrink-0 p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white relative">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -139,16 +144,17 @@ export const MetricDrilldownModal = ({
 
             <button 
               onClick={onClose}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
-              title="Close modal"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-200 hover:text-white border border-white/20 hover:border-rose-400 transition-colors cursor-pointer shrink-0 text-xs font-bold"
+              title="Close (Esc)"
             >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <X className="w-4 h-4" />
+              <span>Close (Esc)</span>
             </button>
           </div>
         </div>
 
         {/* Toolbar: Search, Filters & Export */}
-        <div className="p-3 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 text-xs">
+        <div className="shrink-0 p-3 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 text-xs">
           
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -276,7 +282,7 @@ export const MetricDrilldownModal = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3 text-xs">
+        <div className="shrink-0 p-3.5 sm:p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3 text-xs">
           <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
             🔒 DPDP Act 2023 & ISO 27001 Certified Audit Trail
           </span>
@@ -286,9 +292,10 @@ export const MetricDrilldownModal = ({
 
           <button
             onClick={onClose}
-            className="btn btn-secondary py-1.5 px-4 text-xs font-bold shadow-2xs cursor-pointer ml-auto"
+            className="btn btn-secondary py-1.5 px-4 text-xs font-bold shadow-2xs cursor-pointer ml-auto flex items-center gap-1.5"
           >
-            Close Inspector
+            <X className="w-4 h-4" />
+            <span>Close Inspector (Esc)</span>
           </button>
         </div>
 

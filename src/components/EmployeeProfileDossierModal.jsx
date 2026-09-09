@@ -289,24 +289,40 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     }, 200);
   };
 
+  // Keyboard accessibility (Esc to close) & background scroll lock
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && typeof onClose === 'function') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [onClose]);
+
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto flex flex-col items-center justify-start sm:justify-center print:p-0 print:bg-white animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && typeof onClose === 'function') onClose();
       }}
     >
       <div 
-        className="bg-white w-full max-w-5xl h-[94vh] max-h-[94vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 text-slate-900 my-auto relative print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 overflow-hidden shrink-0" 
+        className="bg-white w-full max-w-5xl h-full max-h-[calc(100vh-2rem)] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 text-slate-900 relative print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 overflow-hidden" 
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Action Header Controls (Sticky Fixed at Top, Hidden on Print) */}
-        <div className="shrink-0 bg-white border-b border-slate-200 z-50 p-3 sm:p-4 flex flex-col gap-2.5 shadow-sm print:hidden">
+        <div className="shrink-0 bg-white border-b border-slate-200 z-50 p-3 sm:p-4 flex flex-col gap-2.5 shadow-xs print:hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="badge badge-cyan text-[10px] font-bold">Complete Master Profile Dossier</span>
-              <span className="text-xs text-slate-700 font-bold">
+              <span className="text-xs text-slate-700 font-bold truncate max-w-xs sm:max-w-md">
                 • {candidateName} (#{c.employeeNumber || c.empId || c.uniqueProfileId || 'EMP-2026'}) {attachedExhibits.length > 0 ? `• ${attachedExhibits.length} Exhibits` : ''}
               </span>
             </div>
@@ -315,7 +331,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               <button 
                 type="button" 
                 onClick={handlePrint} 
-                className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold py-2 px-3.5 rounded-xl flex items-center gap-1.5 transition-all text-xs cursor-pointer print:hidden"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 transition-all text-xs cursor-pointer print:hidden"
                 title="Print Complete Multi-Page Dossier (with Annexures)"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-600" />
@@ -325,18 +341,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 type="button" 
                 onClick={handleDownloadPdf} 
                 disabled={isExporting}
-                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-2 px-4 rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg transition-all text-xs cursor-pointer print:hidden disabled:opacity-75"
+                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-1.5 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all text-xs cursor-pointer print:hidden disabled:opacity-75"
               >
-                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 <span>{isExporting ? "Compiling Master PDF..." : "Download Dossier (PDF)"}</span>
               </button>
               <button 
                 type="button" 
                 onClick={onClose} 
-                className="text-slate-400 hover:text-slate-800 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer print:hidden"
-                title="Close"
+                className="bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-300 hover:border-rose-300 px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold transition-all text-xs cursor-pointer print:hidden"
+                title="Close Dossier (Esc)"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>Close</span>
               </button>
             </div>
           </div>
@@ -408,39 +425,6 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         {/* Scrollable Modal Content Container */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 overscroll-contain bg-slate-50/50 print:p-0 print:bg-white print:overflow-visible">
           
-          {/* In-Document Floating Download PDF Action Banner */}
-          <div className="max-w-[840px] mx-auto mb-4 p-3 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border border-emerald-200 shadow-xs flex items-center justify-between gap-3 flex-wrap print:hidden">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
-                <FileCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="font-bold text-xs text-slate-900">Official Master Employee Profile Dossier</h4>
-                <p className="text-[10px] text-slate-600 font-mono">UIDAI, EPFO, NSDL & NPCI Cryptographically Verified</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all shadow-2xs cursor-pointer"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleDownloadPdf}
-                disabled={isExporting}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3.5 rounded-xl flex items-center gap-1.5 text-xs shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-75"
-              >
-                {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                <span>{isExporting ? "Generating PDF..." : "Download Official PDF"}</span>
-              </button>
-            </div>
-          </div>
-
           {/* ========================================================================= */}
           {/* PRINTABLE MASTER DOSSIER ROOT CONTAINER */}
           {/* ========================================================================= */}
@@ -1304,12 +1288,21 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         <div className="shrink-0 bg-white/95 backdrop-blur-md p-3 sm:p-4 border-t border-slate-200 z-30 flex items-center justify-between gap-3 shadow-md print:hidden">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs font-bold text-slate-700">
+            <span className="text-xs font-bold text-slate-700 truncate max-w-xs sm:max-w-md">
               {candidateName} • Master Profile Dossier
             </span>
           </div>
 
           <div className="flex items-center gap-2">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all cursor-pointer"
+              title="Close Dossier (Esc)"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Close (Esc)</span>
+            </button>
             <button 
               type="button" 
               onClick={handlePrint} 

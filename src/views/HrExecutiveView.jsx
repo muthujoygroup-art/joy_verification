@@ -451,6 +451,57 @@ export const HrExecutiveView = () => {
     return () => clearTimeout(timer);
   }, [formData, delegatedFieldsMap]);
 
+  // Modal Opener Helpers with Automatic Mutual Exclusion (Never stack modals)
+  const openDossier = (cand) => {
+    setDownloadingCandidate(null);
+    setViewingCertificateCandidate(null);
+    setViewingBgvReportCandidate(null);
+    setViewingUploadedDocsCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setViewingDossierCandidate(cand);
+  };
+
+  const openCertificate = (cand) => {
+    setDownloadingCandidate(null);
+    setViewingDossierCandidate(null);
+    setViewingBgvReportCandidate(null);
+    setViewingUploadedDocsCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setViewingCertificateCandidate(cand);
+  };
+
+  const openBgvReport = (cand) => {
+    setDownloadingCandidate(null);
+    setViewingDossierCandidate(null);
+    setViewingCertificateCandidate(null);
+    setViewingUploadedDocsCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setViewingBgvReportCandidate(cand);
+  };
+
+  const openDownloader = (cand) => {
+    setViewingDossierCandidate(null);
+    setViewingCertificateCandidate(null);
+    setViewingBgvReportCandidate(null);
+    setViewingUploadedDocsCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setDownloadingCandidate(cand);
+  };
+
+  const openUploadedDocs = (cand) => {
+    setDownloadingCandidate(null);
+    setViewingDossierCandidate(null);
+    setViewingCertificateCandidate(null);
+    setViewingBgvReportCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setViewingUploadedDocsCandidate(cand);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -463,6 +514,10 @@ export const HrExecutiveView = () => {
         else if (dispatchingCandidate) setDispatchingCandidate(null);
         else if (viewingDossierCandidate) setViewingDossierCandidate(null);
         else if (viewingCertificateCandidate) setViewingCertificateCandidate(null);
+        else if (viewingBgvReportCandidate) setViewingBgvReportCandidate(null);
+        else if (downloadingCandidate) setDownloadingCandidate(null);
+        else if (activeDrilldown) setActiveDrilldown(null);
+        else if (showLegalHandbook) setShowLegalHandbook(false);
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
         else if (showFullJoiningModal) setShowFullJoiningModal(false);
         else if (showBulkImportModal) setShowBulkImportModal(false);
@@ -475,7 +530,9 @@ export const HrExecutiveView = () => {
     selectedDocPreview, viewingUploadedDocsCandidate, reviewingCandidate,
     managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
     dispatchingCandidate, viewingDossierCandidate, viewingCertificateCandidate,
-    showUniversalExportModal, showFullJoiningModal, showBulkImportModal, activePreviewStatutoryForm
+    viewingBgvReportCandidate, downloadingCandidate, activeDrilldown,
+    showLegalHandbook, showUniversalExportModal, showFullJoiningModal, 
+    showBulkImportModal, activePreviewStatutoryForm
   ]);
 
   // Clear Saved Draft & Start Fresh
@@ -2010,7 +2067,7 @@ export const HrExecutiveView = () => {
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
                             type="button"
-                            onClick={() => setViewingDossierCandidate(c)}
+                            onClick={() => openDossier(c)}
                             className="btn btn-secondary text-[10px] py-1 px-2 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
                             title="Download 4-Page Dossier Backup"
                           >
@@ -2287,7 +2344,7 @@ export const HrExecutiveView = () => {
                             triggerAccessDenied('360° Multi-API Dossier Export', 'PDF dossier exporting is disabled for HR staff in your company compliance settings.');
                             return;
                           }
-                          setViewingBgvReportCandidate(cand);
+                          openBgvReport(cand);
                         }}
                         className={`p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1.5 text-center transition-all ${
                           hrPerms.allow360DossierExport === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
@@ -2300,7 +2357,7 @@ export const HrExecutiveView = () => {
 
                       <button
                         type="button"
-                        onClick={() => setViewingDossierCandidate(cand)}
+                        onClick={() => openDossier(cand)}
                         className="p-2 rounded-xl bg-sky-50 text-sky-950 border border-sky-200 hover:bg-sky-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
                       >
                         <FileText className="w-3.5 h-3.5 text-sky-700 shrink-0" />
@@ -2309,7 +2366,7 @@ export const HrExecutiveView = () => {
 
                       <button
                         type="button"
-                        onClick={() => setViewingUploadedDocsCandidate(cand)}
+                        onClick={() => openUploadedDocs(cand)}
                         className="p-2 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-200 hover:bg-emerald-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
                       >
                         <FolderDown className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
@@ -2323,7 +2380,7 @@ export const HrExecutiveView = () => {
                             triggerAccessDenied('Certificate Generation', 'Official digital verification certificate generation is disabled for HR staff in your company compliance settings.');
                             return;
                           }
-                          setViewingCertificateCandidate(cand);
+                          openCertificate(cand);
                         }}
                         className={`p-2 rounded-xl bg-indigo-50 text-indigo-950 border border-indigo-200 hover:bg-indigo-100 flex items-center justify-center gap-1.5 text-center transition-all ${
                           hrPerms.allowCertificateGeneration === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
@@ -2519,7 +2576,7 @@ export const HrExecutiveView = () => {
                                 triggerAccessDenied('360° Multi-API Dossier Export', 'PDF dossier exporting is disabled for HR staff in your company compliance settings.');
                                 return;
                               }
-                              setViewingBgvReportCandidate(cand);
+                              openBgvReport(cand);
                             }}
                             className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-2xs transition-all ${
                               hrPerms.allow360DossierExport === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
@@ -2532,7 +2589,7 @@ export const HrExecutiveView = () => {
 
                           {/* 2. Employee Profile PDF Button */}
                           <button
-                            onClick={() => setViewingDossierCandidate(cand)}
+                            onClick={() => openDossier(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
                             title="View & Download Comprehensive Employee Profile Dossier"
                           >
@@ -2542,7 +2599,7 @@ export const HrExecutiveView = () => {
 
                           {/* 3. Uploaded Original Documents Inspection Button */}
                           <button
-                            onClick={() => setViewingUploadedDocsCandidate(cand)}
+                            onClick={() => openUploadedDocs(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-emerald-900 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
                             title="Inspect all uploaded original documents (Aadhaar, PAN, Cheque, Degree, Relieving, NDA)"
                           >
@@ -2557,7 +2614,7 @@ export const HrExecutiveView = () => {
                                 triggerAccessDenied('Certificate Generation', 'Official digital verification certificate generation is disabled for HR staff in your company compliance settings.');
                                 return;
                               }
-                              setViewingCertificateCandidate(cand);
+                              openCertificate(cand);
                             }}
                             className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 transition-all ${
                               hrPerms.allowCertificateGeneration === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
@@ -5673,8 +5730,8 @@ export const HrExecutiveView = () => {
           metricType={activeDrilldown.metricType}
           role="hrexecutive"
           data={activeDrilldown.data}
-          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
-          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+          onViewCandidateDossier={(cand) => openDossier(cand)}
+          onViewCandidateCertificate={(cand) => openCertificate(cand)}
           onDispatchLink={(cand) => setDispatchingCandidate(cand)}
         />
       )}
@@ -5706,7 +5763,7 @@ export const HrExecutiveView = () => {
       {/* 📁 HR UPLOADED ORIGINAL DOCUMENTS REPOSITORY MODAL */}
       {viewingUploadedDocsCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setViewingUploadedDocsCandidate(null);
@@ -5714,7 +5771,7 @@ export const HrExecutiveView = () => {
             }
           }}
         >
-          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-scaleIn my-auto relative z-10">
+          <div className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
             
             {/* Modal Header */}
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
@@ -5737,9 +5794,11 @@ export const HrExecutiveView = () => {
                   setViewingUploadedDocsCandidate(null);
                   setSelectedDocPreview(null);
                 }}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+                className="flex items-center gap-1 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
 
@@ -5805,8 +5864,7 @@ export const HrExecutiveView = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    setViewingDossierCandidate(viewingUploadedDocsCandidate);
-                    setViewingUploadedDocsCandidate(null);
+                    openDossier(viewingUploadedDocsCandidate);
                   }}
                   className="btn btn-secondary text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
                 >
@@ -5833,12 +5891,12 @@ export const HrExecutiveView = () => {
       {/* 👁️ SINGLE DOCUMENT INSPECTION PREVIEW OVERLAY */}
       {selectedDocPreview && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[1000000] bg-slate-950/90 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedDocPreview(null);
           }}
         >
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-scaleIn my-auto relative z-10">
+          <div className="bg-white w-full max-w-xl h-full max-h-[calc(100vh-4rem)] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
             <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
               <div>
                 <h4 className="font-extrabold text-sm text-white">{selectedDocPreview.name}</h4>
@@ -5846,9 +5904,11 @@ export const HrExecutiveView = () => {
               </div>
               <button 
                 onClick={() => setSelectedDocPreview(null)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer"
+                className="flex items-center gap-1 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
               >
                 <X className="w-5 h-5" />
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
 
@@ -5888,7 +5948,7 @@ export const HrExecutiveView = () => {
       {/* 🔍 HR CANDIDATE SUBMISSION REVIEW & APPROVAL CONSOLE MODAL */}
       {reviewingCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setReviewingCandidate(null);
@@ -5896,7 +5956,7 @@ export const HrExecutiveView = () => {
             }
           }}
         >
-          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-scaleIn my-auto relative z-10">
+          <div className="bg-white w-full max-w-4xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
             
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
@@ -5924,9 +5984,11 @@ export const HrExecutiveView = () => {
                   setShowCorrectionInput(false);
                   setCorrectionNotes('');
                 }} 
-                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 cursor-pointer"
+                className="flex items-center gap-1 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
 
@@ -6127,12 +6189,12 @@ export const HrExecutiveView = () => {
       {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
       {managingDocVerifCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setManagingDocVerifCandidate(null);
           }}
         >
-          <div className="bg-white text-slate-900 w-full max-w-2xl rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring max-h-[92vh] overflow-hidden flex flex-col my-auto relative z-10">
+          <div className="bg-white text-slate-900 w-full max-w-2xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring overflow-hidden flex flex-col shrink-0 relative z-10">
             
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
@@ -6151,9 +6213,11 @@ export const HrExecutiveView = () => {
               </div>
               <button 
                 onClick={() => setManagingDocVerifCandidate(null)} 
-                className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer p-1"
+                className="flex items-center gap-1 text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
               >
-                ✕
+                <X className="w-5 h-5" />
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
 
@@ -6277,18 +6341,25 @@ export const HrExecutiveView = () => {
       {/* 📝 MODAL: ADD DYNAMIC CUSTOM TEXT FIELD */}
       {showAddCustomFieldModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowAddCustomFieldModal(false);
           }}
         >
-          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring my-auto relative z-10">
+          <div className="bg-white text-slate-900 w-full max-w-md max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-600" />
                 <span>+ Add Dynamic Custom Text Field</span>
               </h4>
-              <button onClick={() => setShowAddCustomFieldModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+              <button 
+                onClick={() => setShowAddCustomFieldModal(false)} 
+                className="flex items-center gap-1 text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Close</span>
+              </button>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -6356,18 +6427,25 @@ export const HrExecutiveView = () => {
       {/* 📂 MODAL: ADD DYNAMIC CUSTOM DOCUMENT SLOT */}
       {showAddCustomDocModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowAddCustomDocModal(false);
           }}
         >
-          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring my-auto relative z-10">
+          <div className="bg-white text-slate-900 w-full max-w-md max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <FolderDown className="w-4 h-4 text-emerald-600" />
                 <span>+ Add Custom Document Upload Slot</span>
               </h4>
-              <button onClick={() => setShowAddCustomDocModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
+              <button 
+                onClick={() => setShowAddCustomDocModal(false)} 
+                className="flex items-center gap-1 text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Close (Esc)"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Close</span>
+              </button>
             </div>
 
             <div className="space-y-3 text-xs">

@@ -209,6 +209,22 @@ export const ComprehensiveBgvReportModal = ({
     window.print();
   };
 
+  // Keyboard accessibility (Esc to close) & background scroll lock
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && typeof onClose === 'function') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [onClose]);
+
   const handleDownloadMasterPdf = async () => {
     setIsExporting(true);
     const filename = `JOY_360_BGV_Dossier_${uniqueCode}_${(c.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
@@ -293,30 +309,30 @@ export const ComprehensiveBgvReportModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn overflow-hidden"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget && typeof onClose === 'function') onClose();
       }}
     >
-      <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 animate-modal-spring relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-full max-h-[calc(100vh-2rem)] text-slate-900 animate-modal-spring relative z-10" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Control Bar */}
-        <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
-          <div className="flex items-center gap-3.5">
+        <div className="p-3.5 sm:px-6 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-3">
             <img 
               src="/joy_logo.png" 
               alt="JOY Logo" 
-              className="w-10 h-10 object-contain shrink-0" 
+              className="w-9 h-9 object-contain shrink-0" 
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                <span className="text-[9.5px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
                   10+ APIs Verified (360° Dossier)
                 </span>
-                <span className="text-xs text-slate-400 font-mono">ISO 27001 & DPDP Act</span>
+                <span className="text-xs text-slate-400 font-mono hidden sm:inline">ISO 27001 & DPDP Act</span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-white mt-0.5 tracking-tight">
-                JOY CORPORATE SOLUTIONS — Multi-API Background Verification Dossier
+              <h2 className="text-sm sm:text-base font-black text-white mt-0.5 tracking-tight truncate max-w-xs sm:max-w-md">
+                JOY CORPORATE SOLUTIONS — 360° Verification Dossier
               </h2>
             </div>
           </div>
@@ -324,28 +340,30 @@ export const ComprehensiveBgvReportModal = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
               title="Print Complete 360° Dossier"
             >
-              <Printer className="w-4 h-4" />
-              <span className="hidden sm:inline">Print Report</span>
+              <Printer className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Print</span>
             </button>
 
             <button
               onClick={handleDownloadMasterPdf}
               disabled={isExporting}
-              className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer transition-all hover:scale-105"
+              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer transition-all hover:scale-105"
               title="Download Master All-In-One Report"
             >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Download className="w-4 h-4 text-white" />}
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5 text-white" />}
               <span>{isExporting ? "Compiling 360° PDF..." : "Download Master PDF"}</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer ml-1"
+              className="bg-slate-800 hover:bg-rose-900/80 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold transition-all text-xs cursor-pointer ml-1"
+              title="Close Dossier (Esc)"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
+              <span>Close</span>
             </button>
           </div>
         </div>

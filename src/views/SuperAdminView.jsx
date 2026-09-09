@@ -7006,8 +7006,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           metricType={activeDrilldown.metricType}
           role="superadmin"
           data={activeDrilldown.data}
-          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
-          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+          onViewCandidateDossier={(cand) => {
+            setActiveDrilldown(null);
+            setViewingCertificateCandidate(null);
+            setViewingDossierCandidate(cand);
+          }}
+          onViewCandidateCertificate={(cand) => {
+            setActiveDrilldown(null);
+            setViewingDossierCandidate(null);
+            setViewingCertificateCandidate(cand);
+          }}
         />
       )}
 

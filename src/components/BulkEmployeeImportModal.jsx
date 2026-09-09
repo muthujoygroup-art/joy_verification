@@ -123,6 +123,22 @@ export const BulkEmployeeImportModal = ({
   const [selectedSectorTemplate, setSelectedSectorTemplate] = useState('master');
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !isImporting) {
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [isOpen, isImporting, onClose]);
+
   // Link Sending Option States
   const [autoSendLinks, setAutoSendLinks] = useState(true);
   const [dispatchChannels, setDispatchChannels] = useState({
@@ -1205,25 +1221,25 @@ export const BulkEmployeeImportModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isImporting) onClose();
       }}
     >
-      <div className="glass-panel w-full max-w-5xl p-4 sm:p-7 space-y-6 border-emerald-300 bg-white text-slate-900 shadow-2xl rounded-3xl my-auto animate-fadeIn max-h-[92vh] overflow-y-auto">
+      <div className="w-full max-w-5xl h-full max-h-[calc(100vh-2rem)] flex flex-col border border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden shrink-0 animate-fadeIn">
         
-        {/* MODAL HEADER */}
-        <div className="flex items-start justify-between border-b border-slate-100 pb-4 gap-4">
+        {/* MODAL HEADER - PINNED TO TOP */}
+        <div className="shrink-0 bg-white p-4 sm:p-5 border-b border-slate-100 flex items-start justify-between gap-4 z-20">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black shadow-lg">
-              <FileSpreadsheet className="w-7 h-7" />
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black shadow-lg shrink-0">
+              <FileSpreadsheet className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900">Bulk Employee Profile Ingestion & Link Dispatch</h2>
-                <span className="badge badge-emerald text-[10px] font-bold">ALL EMPLOYEE TYPES & SECTORS</span>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900">Bulk Employee Ingestion & Link Dispatch</h2>
+                <span className="badge badge-emerald text-[9px] sm:text-[10px] font-bold">ALL EMPLOYEE TYPES & SECTORS</span>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 font-medium mt-0.5 hidden sm:block">
                 Import candidates across IT & Engineering, Manufacturing, BFSI, Healthcare & Logistics with full 35+ field profile creation & automated link dispatch.
               </p>
             </div>
@@ -1233,11 +1249,16 @@ export const BulkEmployeeImportModal = ({
             type="button"
             onClick={onClose} 
             disabled={isImporting}
-            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 font-bold flex items-center justify-center transition-all cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 text-slate-500 hover:text-rose-700 bg-slate-100 hover:bg-rose-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-rose-200 transition-colors text-xs font-bold cursor-pointer shrink-0 disabled:opacity-50"
+            title="Close (Esc)"
           >
-            ✕
+            <X className="w-4 h-4" />
+            <span>Close (Esc)</span>
           </button>
         </div>
+
+        {/* SCROLLABLE BODY CONTAINER */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-7 space-y-6">
 
         {/* STEP PROGRESS TRACKER */}
         <div className="grid grid-cols-3 gap-2 text-xs font-bold">
@@ -1998,6 +2019,7 @@ export const BulkEmployeeImportModal = ({
           </div>
         )}
 
+        </div>
       </div>
     </div>
   );

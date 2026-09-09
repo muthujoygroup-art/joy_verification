@@ -3374,8 +3374,18 @@ export const CompanyAdminView = () => {
           metricType={activeDrilldown.metricType}
           role="company"
           data={activeDrilldown.data}
-          onViewCandidateDossier={(cand) => setViewingDossierCandidate(cand)}
-          onViewCandidateCertificate={(cand) => setViewingCertificateCandidate(cand)}
+          onViewCandidateDossier={(cand) => {
+            setActiveDrilldown(null);
+            setViewingCertificateCandidate(null);
+            setViewingBgvReportCandidate(null);
+            setViewingDossierCandidate(cand);
+          }}
+          onViewCandidateCertificate={(cand) => {
+            setActiveDrilldown(null);
+            setViewingDossierCandidate(null);
+            setViewingBgvReportCandidate(null);
+            setViewingCertificateCandidate(cand);
+          }}
         />
       )}
 

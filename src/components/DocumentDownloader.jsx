@@ -33,12 +33,21 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (typeof onClose === 'function') onClose();
+        if (selectedDocPreview) {
+          setSelectedDocPreview(null);
+        } else if (typeof onClose === 'function') {
+          onClose();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [onClose, selectedDocPreview]);
 
 
   if (!candidate) return null;
@@ -261,15 +270,15 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   return (
     <>
       <div 
-        className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto flex flex-col items-center justify-start sm:justify-center animate-fadeIn"
+        className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) onClose();
         }}
       >
-        <div className="bg-white w-full max-w-3xl h-[94vh] max-h-[94vh] flex flex-col border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl my-auto overflow-hidden shrink-0">
+        <div className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-2rem)] flex flex-col border border-slate-200 text-slate-900 shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden shrink-0">
           
           {/* Sticky Fixed Header */}
-          <div className="shrink-0 bg-white p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-20">
+          <div className="shrink-0 bg-white p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-20">
             <div className="flex items-center gap-2.5">
               <div className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-xs">
                 <Package className="w-5 h-5" />
@@ -292,15 +301,16 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
                 className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download All ({displayDocs.length} Docs)</span>
+                <span>Download All ({displayDocs.length})</span>
               </button>
               <button 
                 type="button"
                 onClick={onClose} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-                title="Close"
+                className="flex items-center gap-1.5 text-slate-500 hover:text-rose-700 bg-slate-100 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-rose-200 transition-colors text-xs font-bold cursor-pointer shrink-0"
+                title="Close (Esc)"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Close</span>
               </button>
             </div>
           </div>
@@ -521,18 +531,33 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
             </div>
           )}
 
-          <div className="flex justify-end pt-3 border-t border-slate-100">
-            <button onClick={onClose} className="btn btn-secondary text-xs font-bold cursor-pointer">Close Window</button>
           </div>
 
+          {/* Sticky Pinned Bottom Action Bar */}
+          <div className="shrink-0 p-3 sm:p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3 z-10">
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">Candidate: <strong className="text-slate-800">{candidate.name}</strong></span>
+            <span className="text-[10px] text-slate-400 font-mono">Vault Storage Verified</span>
+            <button 
+              type="button"
+              onClick={onClose} 
+              className="btn btn-secondary text-xs font-bold px-4 py-2 cursor-pointer flex items-center gap-1.5 ml-auto"
+            >
+              <X className="w-4 h-4" />
+              <span>Close Window (Esc)</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* 👁️ DOCUMENT FULL RESOLUTION PREVIEW MODAL */}
       {selectedDocPreview && (
-        <div className="fixed inset-0 z-60 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-md animate-fadeIn">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-scaleIn">
+        <div 
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-6 overflow-hidden bg-slate-950/85 backdrop-blur-md animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedDocPreview(null);
+          }}
+        >
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-full max-h-[calc(100vh-4rem)] animate-scaleIn shrink-0">
             <div className="flex items-center justify-between p-4 bg-slate-900 text-white border-b border-slate-800">
               <div className="flex items-center gap-2.5">
                 <FileText className="w-5 h-5 text-sky-400" />

@@ -28,7 +28,12 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
   }, [onClose]);
 
   if (!candidate) return null;
@@ -72,23 +77,23 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn"
+      className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget && typeof onClose === 'function') onClose();
       }}
     >
       <div 
-        className="bg-white w-full max-w-3xl h-[92vh] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 relative text-slate-900 print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring overflow-hidden" 
+        className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-2rem)] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-double border-indigo-200 relative text-slate-900 print:border-none print:shadow-none print:max-w-none print:max-h-none print:p-0 print:m-0 animate-modal-spring overflow-hidden" 
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Sticky Fixed Header (Hidden on Print) */}
-        <div className="shrink-0 bg-white/95 backdrop-blur-sm p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between print:hidden z-30">
+        <div className="shrink-0 bg-white/95 backdrop-blur-sm p-3.5 sm:p-4 border-b border-slate-100 flex items-center justify-between print:hidden z-30">
           <div className="flex items-center gap-2">
             <span className={`badge text-[10px] ${isFullyVerified ? 'badge-purple' : 'badge-amber'}`}>
               {isFullyVerified ? 'Official Compliance Certificate' : 'Provisional Certificate (Pending Verification)'}
             </span>
-            <span className="text-xs text-slate-500 font-bold">• JOY CORPORATE SOLUTIONS PVT LTD</span>
+            <span className="text-xs text-slate-500 font-bold hidden sm:inline">• JOY CORPORATE SOLUTIONS PVT LTD</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -97,7 +102,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
               title="Print Certificate"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-3.5 h-3.5" />
               <span>Print</span>
             </button>
             <button
@@ -106,16 +111,17 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               disabled={isExporting}
               className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-75"
             >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
               <span>{isExporting ? "Compiling PDF..." : "Download Official PDF"}</span>
             </button>
-            <button 
+            <button
               type="button"
-              onClick={onClose} 
-              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-              title="Close"
+              onClick={onClose}
+              className="bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-300 hover:border-rose-300 px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold transition-all text-xs cursor-pointer print:hidden"
+              title="Close Certificate (Esc)"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
+              <span>Close</span>
             </button>
           </div>
         </div>
@@ -400,6 +406,45 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             <span className="font-bold text-indigo-600">JOY CORPORATE SOLUTIONS PVT LTD • All Rights Reserved</span>
           </div>
 
+        </div>
+
+        {/* Sticky Bottom Action Bar for instant download and close */}
+        <div className="shrink-0 bg-white/95 backdrop-blur-md p-3 sm:p-4 border-t border-slate-200 z-30 flex items-center justify-between gap-3 shadow-md print:hidden">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span className="text-xs font-bold text-slate-700 truncate max-w-xs sm:max-w-md">
+              {candidate.name} • Official Certificate
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all cursor-pointer"
+              title="Close Certificate (Esc)"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Close (Esc)</span>
+            </button>
+            <button 
+              type="button" 
+              onClick={handlePrint} 
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 text-xs transition-all cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
+            <button 
+              type="button" 
+              onClick={handleDownloadPdf} 
+              disabled={isExporting}
+              className="btn btn-superadmin text-white font-bold py-1.5 px-4 rounded-xl flex items-center gap-1.5 text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-75"
+            >
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              <span>{isExporting ? "Compiling PDF..." : "Download Official PDF"}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
