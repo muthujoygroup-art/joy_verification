@@ -1844,3 +1844,29 @@ textarea:disabled {
   cursor: not-allowed !important;
   pointer-events: none;
 }
+
+/* ==============================================================================
+ * 📄 UNIVERSAL HIGH-PRECISION PDF & PRINT PAGINATION RULES
+ * ============================================================================== */
+.pdf-page-block {
+  page-break-after: always;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.pdf-avoid-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+@media print {
+  .pdf-page-block {
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 0 !important;
+  }
+}
+

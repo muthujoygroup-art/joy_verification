@@ -54,7 +54,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
     try {
       const el = document.getElementById('printable-official-certificate');
       if (el) {
-        await exportElementToPdf(el, filename);
+        await exportElementToPdf(el, filename, { showFooter: false });
       } else {
         await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
       }
@@ -124,7 +124,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
         <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-5 sm:space-y-6 bg-slate-50/40 print:p-0 print:bg-white print:overflow-visible">
 
           {/* Certificate Decorative Border Container */}
-          <div id="printable-official-certificate" className={`p-6 sm:p-8 border-2 rounded-xl space-y-6 relative overflow-hidden bg-white shadow-xs ${
+          <div id="printable-official-certificate" className={`pdf-page-block p-6 sm:p-8 border-2 rounded-xl space-y-4 sm:space-y-5 relative overflow-hidden bg-white shadow-xs ${
             isFullyVerified 
               ? 'border-indigo-600/30 bg-gradient-to-b from-slate-50/50 via-white to-indigo-50/30' 
               : 'border-amber-400/50 bg-gradient-to-b from-amber-50/30 via-white to-slate-50/40'
@@ -147,16 +147,21 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               </div>
 
               {/* Central Authority Header */}
-              <div className="text-center space-y-1">
-                <h1 className="text-lg sm:text-xl font-black text-indigo-950 tracking-tight">
+              <div className="text-center space-y-1 flex-1 px-2">
+                <h1 className="text-base sm:text-lg md:text-xl font-black text-indigo-950 tracking-tight leading-snug">
                   JOY CORPORATE SOLUTIONS PRIVATE LIMITED
                 </h1>
-                <p className="text-[11px] font-extrabold text-indigo-600 tracking-widest uppercase">
+                <p className="text-[10.5px] sm:text-[11px] font-extrabold text-indigo-600 tracking-wider uppercase">
                   Enterprise Identity Verification & Compliance Division
                 </p>
-                <p className="text-[9.5px] text-slate-500 font-semibold">
-                  CIN: U74999KA2026PTC098214 • ISO 27001:2022 Certified Government Gateway Partner
-                </p>
+                <div className="flex items-center justify-center gap-2 flex-wrap text-[9px] sm:text-[9.5px] text-slate-500 font-medium">
+                  <span className="font-mono">CIN: U74999KA2026PTC098214</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="inline-flex items-center gap-1 text-slate-600 font-semibold">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                    <span>ISO 27001:2022 Certified Gateway Partner</span>
+                  </span>
+                </div>
               </div>
 
               {/* Logo 2: Candidate Live Verified Photo & QR Seal */}
@@ -246,8 +251,8 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
               <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'}</strong>
             </div>
             <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Token Link Reference</span>
-              <strong className="text-indigo-600 font-mono text-[11px] truncate block">{candidate.token}</strong>
+              <span className="text-[11px] text-slate-400 font-medium block">Department / Division</span>
+              <strong className="text-slate-900 font-bold text-xs truncate block">{candidate.dept || candidate.department || 'Operations'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Biometrics Liveness Score</span>
