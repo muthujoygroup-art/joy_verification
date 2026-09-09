@@ -26,18 +26,12 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
         query = query.filter(Candidate.company_id == company_id)
     return query.order_by(Candidate.created_at.desc()).all()
 
-@router.post("/candidates", response_model=CandidateResponse)
-def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
+def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, commit: bool = True):
     """
-    Creates a new labor/employee profile, configures verification fields,
-    and issues an automated verification token link.
+    Internal helper to create or update a candidate record in the database.
+    Returns (candidate_instance, is_new_record: bool).
     """
-    try:
-        apply_runtime_migrations(db.get_bind())
-    except Exception:
-        pass
-
-    # 🛡️ Strict Duplicate Prevention: Check if candidate already exists by email, mobile, aadhaar, or emp_id
+    # 🛡️ Strict Duplicate Prevention: Check if candidate already exists by email, mobile, or aadhaar
     existing_cand = None
     if payload.email:
         existing_cand = db.query(Candidate).filter(
@@ -83,9 +77,10 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         if payload.joining_form_data: existing_cand.joining_form_data = payload.joining_form_data
         if payload.custom_fields: existing_cand.custom_fields = payload.custom_fields
         if payload.specimen_signature: existing_cand.specimen_signature = payload.specimen_signature
-        db.commit()
-        db.refresh(existing_cand)
-        return existing_cand
+        if commit:
+            db.commit()
+            db.refresh(existing_cand)
+        return existing_cand, False
 
     candidate_id = f"emp-{uuid.uuid4().hex[:6]}"
     clean_name = payload.name.lower().replace(" ", "_")[:10]
@@ -195,12 +190,28 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         if hr:
             hr.active_links = (hr.active_links or 0) + 1
             
-    db.commit()
-    db.refresh(new_candidate)
+    if commit:
+        db.commit()
+        db.refresh(new_candidate)
+
+    return new_candidate, True
+
+@router.post("/candidates", response_model=CandidateResponse)
+def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
+    """
+    Creates a new labor/employee profile, configures verification fields,
+    and issues an automated verification token link.
+    """
+    try:
+        apply_runtime_migrations(db.get_bind())
+    except Exception:
+        pass
+
+    new_candidate, is_new = _save_or_update_candidate_record(payload, db, commit=True)
 
     # 📧 Automated Email Invitation to Candidate
     try:
-        if new_candidate.email:
+        if is_new and new_candidate.email:
             comp_obj = db.query(Company).filter(Company.id == new_candidate.company_id).first() if new_candidate.company_id else None
             comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
             
@@ -214,7 +225,7 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
 
             send_candidate_onboarding_email(
                 candidate_name=new_candidate.name,
-                candidate_code=new_candidate.emp_id or hierarchical_emp_code,
+                candidate_code=new_candidate.emp_id or new_candidate.employee_number or "EMP",
                 candidate_email=new_candidate.email,
                 token=new_candidate.token,
                 security_pin=new_candidate.portal_password or "1234",
@@ -229,6 +240,60 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
         print(f"Warning: Failed to dispatch candidate onboarding email: {e}")
 
     return new_candidate
+
+@router.post("/candidates/bulk", response_model=List[CandidateResponse])
+def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends(get_db)):
+    """
+    Bulk import multiple candidate/employee profiles in a high-performance, atomic batch transaction.
+    """
+    try:
+        apply_runtime_migrations(db.get_bind())
+    except Exception:
+        pass
+
+    saved_records = []
+    for item in payload:
+        try:
+            cand, is_new = _save_or_update_candidate_record(item, db, commit=False)
+            saved_records.append((cand, is_new))
+        except Exception as err:
+            print(f"Error importing bulk candidate '{getattr(item, 'name', 'unknown')}': {err}")
+            continue
+
+    try:
+        db.commit()
+    except Exception as commit_err:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error during bulk candidate ingestion: {str(commit_err)}")
+
+    refreshed_list = []
+    for cand, is_new in saved_records:
+        try:
+            db.refresh(cand)
+            refreshed_list.append(cand)
+            
+            # Optional dispatch email if email is present
+            if is_new and cand.email:
+                try:
+                    comp_obj = db.query(Company).filter(Company.id == cand.company_id).first() if cand.company_id else None
+                    comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+                    send_candidate_onboarding_email(
+                        candidate_name=cand.name,
+                        candidate_code=cand.emp_id or cand.employee_number or "EMP",
+                        candidate_email=cand.email,
+                        token=cand.token,
+                        security_pin=cand.portal_password or "1234",
+                        company_name=comp_name,
+                        company_id=cand.company_id,
+                        designation=cand.designation or "Associate",
+                        db=db
+                    )
+                except Exception:
+                    pass
+        except Exception:
+            continue
+
+    return refreshed_list
 
 @router.post("/dispatch-link")
 def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):

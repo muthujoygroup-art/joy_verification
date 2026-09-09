@@ -365,6 +365,13 @@ export const api = {
       body: JSON.stringify(candidateData),
     });
   },
+  bulkCreateCandidates: (candidatesList) => {
+    requestCache.clear();
+    return request('/hr/candidates/bulk', {
+      method: 'POST',
+      body: JSON.stringify(candidatesList),
+    });
+  },
   updateCandidate: (candidateId, candidateData) => {
     requestCache.clear();
     return request(`/hr/candidates/${candidateId}`, {

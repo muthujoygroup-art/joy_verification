@@ -1389,6 +1389,109 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Bulk Add Candidates (Persists in single atomic transaction to PostgreSQL)
+  const bulkAddCandidates = async (candidatesList) => {
+    if (!candidatesList || candidatesList.length === 0) return [];
+    try {
+      const payloads = candidatesList.map(candidateData => ({
+        name: candidateData.name,
+        emp_id: candidateData.empId,
+        employee_number: candidateData.employeeNumber || candidateData.empId,
+        email: candidateData.email,
+        mobile: candidateData.mobile,
+        aadhaar_no: candidateData.aadhaarNo,
+        designation: candidateData.designation,
+        dept: candidateData.dept,
+        employee_type: candidateData.employeeCategory || candidateData.employeeType || 'it_tech',
+        dob: candidateData.dob,
+        doj: candidateData.doj,
+        age: parseInt(candidateData.age) || null,
+        gender: candidateData.gender,
+        marital_status: candidateData.maritalStatus,
+        mother_tongue: candidateData.motherTongue,
+        languages_known: candidateData.languagesKnown,
+        pf_number: candidateData.pfNumber || candidateData.uanEpf,
+        esi_number: candidateData.esiNumber || candidateData.esicNo,
+        religion: candidateData.religion,
+        caste: candidateData.caste,
+        category: candidateData.category,
+        native_state: candidateData.nativeState,
+        native_district: candidateData.nativeDistrict,
+        identification_marks: candidateData.identificationMarks,
+        company_id: candidateData.companyId,
+        hr_id: candidateData.hrId,
+        portal_password: candidateData.portalPassword || candidateData.securityPin || '1234',
+        verification_config: candidateData.verificationConfig,
+        manual_checks: candidateData.manualChecks,
+        joining_form_data: candidateData.joiningFormData || candidateData,
+        custom_fields: candidateData.customFields || candidateData.custom_fields || {},
+        face_images: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
+        documents: candidateData.documents || candidateData.uploadedDocumentsList || []
+      }));
+
+      const createdList = await api.bulkCreateCandidates(payloads);
+      
+      const formattedList = createdList.map(created => ({
+        id: created.id,
+        token: created.token,
+        name: created.name,
+        empId: created.emp_id,
+        employeeNumber: created.employee_number || created.emp_id,
+        email: created.email,
+        mobile: created.mobile,
+        aadhaarNo: created.aadhaar_no,
+        designation: created.designation,
+        dept: created.dept,
+        employeeType: created.employee_type,
+        dob: created.dob,
+        doj: created.doj,
+        age: created.age,
+        gender: created.gender,
+        maritalStatus: created.marital_status,
+        motherTongue: created.mother_tongue,
+        languagesKnown: created.languages_known,
+        pfNumber: created.pf_number,
+        esiNumber: created.esi_number,
+        religion: created.religion,
+        caste: created.caste,
+        category: created.category,
+        nativeState: created.native_state,
+        nativeDistrict: created.native_district,
+        identificationMarks: created.identification_marks,
+        companyId: created.company_id,
+        hrId: created.hr_id,
+        status: created.status,
+        portalPassword: created.portal_password || '1234',
+        verificationConfig: created.verification_config || {},
+        verificationsCompleted: created.verifications_completed || {},
+        photo: created.face_images?.straight || null,
+        faceImages: created.face_images || { straight: null, left: null, right: null },
+        manualChecks: created.manual_checks || {},
+        joiningFormData: created.joining_form_data || {},
+        customFields: created.custom_fields || {},
+        documents: created.documents || [],
+        verificationDate: created.verification_date
+      }));
+
+      setCandidates(prev => {
+        const existingIds = new Set(formattedList.map(f => f.id));
+        const filteredPrev = prev.filter(p => !existingIds.has(p.id));
+        return [...formattedList, ...filteredPrev];
+      });
+
+      showToast(`Batch of ${formattedList.length} candidate profiles imported successfully!`);
+      return formattedList;
+    } catch (err) {
+      console.warn('Bulk endpoint error, falling back to sequential create:', err);
+      const fallbackResults = [];
+      for (const item of candidatesList) {
+        const token = await addCandidate(item);
+        fallbackResults.push({ ...item, token });
+      }
+      return fallbackResults;
+    }
+  };
+
   // Update Candidate / Employee Profile Particulars (Persists to PostgreSQL)
   const updateCandidate = async (candidateIdOrToken, updatedData) => {
     const candidatePin = updatedData.portalPassword || updatedData.securityPin || '1234';
@@ -2640,6 +2743,7 @@ export const AppProvider = ({ children }) => {
       candidates,
       setCandidates,
       addCandidate,
+      bulkAddCandidates,
       updateCandidate,
       deleteCandidate,
       toggleCandidateStatus,

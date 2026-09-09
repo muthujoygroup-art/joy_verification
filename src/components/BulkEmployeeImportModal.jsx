@@ -32,7 +32,8 @@ import {
   HeartPulse,
   Truck,
   Layers,
-  Info
+  Info,
+  Search
 } from 'lucide-react';
 
 // 🏢 SECTOR SPECIFIC TEMPLATE METADATA
@@ -106,11 +107,15 @@ export const BulkEmployeeImportModal = ({
   currentCompany,
   onImportComplete 
 }) => {
-  const { addCandidate, showToast } = useApp();
+  const { addCandidate, bulkAddCandidates, showToast } = useApp();
 
   // Step 1: Upload & Data | Step 2: Verification Checklist & Dispatch | Step 3: Success Summary
   const [currentStep, setCurrentStep] = useState(1);
+  const [step1Mode, setStep1Mode] = useState('upload'); // 'upload' | 'templates'
+  const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [uploadedFileSize, setUploadedFileSize] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [parsedRows, setParsedRows] = useState([]);
   const [isParsing, setIsParsing] = useState(false);
   const [parseError, setParseError] = useState(null);
@@ -709,11 +714,11 @@ export const BulkEmployeeImportModal = ({
   };
 
   // 2. PARSE UPLOADED EXCEL / CSV FILE (UNIVERSAL 35+ FIELDS SUPPORT)
-  const handleFileUpload = (e) => {
-    const file = e.target.files?.[0];
+  const processFile = (file) => {
     if (!file) return;
 
     setFileName(file.name);
+    setUploadedFileSize((file.size / 1024).toFixed(1) + ' KB');
     setIsParsing(true);
     setParseError(null);
 
@@ -906,6 +911,41 @@ export const BulkEmployeeImportModal = ({
     reader.readAsArrayBuffer(file);
   };
 
+  const handleFileInputChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const clearUploadedFile = () => {
+    setFileName('');
+    setUploadedFileSize(null);
+    setParsedRows([]);
+    setParseError(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const toggleRowSelection = (rowId) => {
     setParsedRows(prev => prev.map(r => r.rowId === rowId ? { ...r, isSelected: !r.isSelected } : r));
   };
@@ -919,8 +959,17 @@ export const BulkEmployeeImportModal = ({
   };
 
   const displayedRows = parsedRows.filter(r => {
-    if (selectedEmployeeTypeFilter === 'ALL') return true;
-    return r.employeeType === selectedEmployeeTypeFilter;
+    if (selectedEmployeeTypeFilter !== 'ALL' && r.employeeType !== selectedEmployeeTypeFilter) return false;
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase();
+      const matchName = r.name?.toLowerCase().includes(q);
+      const matchMobile = r.mobile?.includes(q);
+      const matchEmail = r.email?.toLowerCase().includes(q);
+      const matchEmpId = r.empId?.toLowerCase().includes(q);
+      const matchRole = r.designation?.toLowerCase().includes(q);
+      if (!matchName && !matchMobile && !matchEmail && !matchEmpId && !matchRole) return false;
+    }
+    return true;
   });
 
   const validSelectedCount = parsedRows.filter(r => r.isValid && r.isSelected).length;
@@ -941,18 +990,14 @@ export const BulkEmployeeImportModal = ({
     }
 
     setIsImporting(true);
-    setImportProgress(0);
+    setImportProgress(10);
 
     const activeChecklistKeys = Object.entries(checklist)
       .filter(([_, v]) => v.enabled)
       .map(([k, _]) => k);
 
-    const createdResults = [];
-
-    for (let i = 0; i < candidatesToImport.length; i++) {
-      const row = candidatesToImport[i];
+    const candidatePayloads = candidatesToImport.map(row => {
       const candidatePin = '1234';
-
       const verificationConfig = {};
       Object.entries(checklist).forEach(([k, v]) => {
         verificationConfig[k] = {
@@ -1038,7 +1083,7 @@ export const BulkEmployeeImportModal = ({
         checklist: activeChecklistKeys
       };
 
-      const candidatePayload = {
+      return {
         name: row.name,
         email: row.email,
         mobile: row.mobile,
@@ -1068,33 +1113,57 @@ export const BulkEmployeeImportModal = ({
         isBulkImported: true,
         importBatchDate: new Date().toISOString(),
         joiningFormData,
-        submittedFormData: joiningFormData
+        submittedFormData: joiningFormData,
+        _originalRow: row
       };
+    });
 
-      try {
-        const createdToken = await addCandidate(candidatePayload);
-        const tokenString = (typeof createdToken === 'string' ? createdToken : createdToken?.token) || 
-          `tok_${row.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
-
-        createdResults.push({
-          ...row,
-          token: tokenString,
-          portalPassword: candidatePin,
-          linkUrl: `${window.location.origin}/employee?token=${tokenString}&mode=onboarding`,
-          status: autoSendLinks ? 'Link Dispatched 🟢' : 'Profile Created 🟡'
-        });
-      } catch (err) {
-        console.error('Error importing candidate:', row.name, err);
+    try {
+      setImportProgress(35);
+      let imported = [];
+      if (typeof bulkAddCandidates === 'function') {
+        imported = await bulkAddCandidates(candidatePayloads);
+      } else {
+        for (let i = 0; i < candidatePayloads.length; i++) {
+          const item = candidatePayloads[i];
+          const token = await addCandidate(item);
+          imported.push({ ...item, token: typeof token === 'string' ? token : token?.token });
+          setImportProgress(35 + Math.round(((i + 1) / candidatePayloads.length) * 55));
+        }
       }
 
-      setImportProgress(Math.round(((i + 1) / candidatesToImport.length) * 100));
-    }
+      setImportProgress(95);
 
-    setImportedCandidates(createdResults);
-    setIsImporting(false);
-    setCurrentStep(3);
-    showToast(`🎉 Bulk import completed! ${createdResults.length} employee profiles created & links generated.`);
-    if (onImportComplete) onImportComplete(createdResults);
+      const createdResults = imported.map((cand, idx) => {
+        const orig = candidatesToImport[idx] || {};
+        const tokenString = cand.token || `tok_${(cand.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
+        return {
+          ...orig,
+          name: cand.name || orig.name,
+          email: cand.email || orig.email,
+          mobile: cand.mobile || orig.mobile,
+          empId: cand.empId || cand.emp_id || orig.empId,
+          designation: cand.designation || orig.designation,
+          dept: cand.dept || orig.dept,
+          employeeType: cand.employeeType || orig.employeeType,
+          token: tokenString,
+          portalPassword: '1234',
+          linkUrl: `${window.location.origin}/employee?token=${tokenString}&mode=onboarding`,
+          status: autoSendLinks ? 'Link Dispatched 🟢' : 'Profile Created 🟡'
+        };
+      });
+
+      setImportProgress(100);
+      setImportedCandidates(createdResults);
+      setIsImporting(false);
+      setCurrentStep(3);
+      showToast(`🎉 Bulk import completed! ${createdResults.length} employee profiles created & links generated.`);
+      if (onImportComplete) onImportComplete(createdResults);
+    } catch (err) {
+      console.error('Error during bulk candidate import:', err);
+      setIsImporting(false);
+      showToast(`⚠️ Import encountered an error: ${err.message || 'Check console'}`);
+    }
   };
 
   const handleDownloadBatchCredentials = () => {
@@ -1221,140 +1290,251 @@ export const BulkEmployeeImportModal = ({
 
         {/* STEP 1: TEMPLATE DOWNLOAD & FILE UPLOAD */}
         {currentStep === 1 && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-5 animate-fadeIn">
             
-            {/* SECTOR TEMPLATE DOWNLOAD HUB */}
-            <div className="p-5 rounded-3xl bg-slate-50 border-2 border-slate-200 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
-                <div>
+            {/* 🌟 DUAL-MODE SWITCHER (UPLOAD EDITED EXCEL vs DOWNLOAD TEMPLATES) */}
+            <div className="flex items-center p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 gap-1.5 max-w-xl mx-auto shadow-inner">
+              <button
+                type="button"
+                onClick={() => setStep1Mode('upload')}
+                className={`flex-1 py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  step1Mode === 'upload'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
+                }`}
+              >
+                <Upload className="w-4 h-4" />
+                <span>1. Upload Edited Excel File 📤</span>
+                {parsedRows.length > 0 && (
+                  <span className="badge bg-white text-emerald-900 text-[10px] font-black">
+                    {parsedRows.length} Rows
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep1Mode('templates')}
+                className={`flex-1 py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  step1Mode === 'templates'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
+                }`}
+              >
+                <Download className="w-4 h-4" />
+                <span>2. Download Blank Templates 📥</span>
+                <span className="badge bg-indigo-100 text-indigo-800 text-[9px] font-extrabold">6 Sectors</span>
+              </button>
+            </div>
+
+            {/* 📤 MODE 1: UPLOAD EDITED EXCEL SPREADSHEET */}
+            {step1Mode === 'upload' && (
+              <div className="space-y-4 animate-fadeIn">
+                {/* Helpful Guidance Banner */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50/60 border border-emerald-200 rounded-2xl text-xs text-emerald-950 font-medium shadow-2xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-emerald-600" />
-                      <span>Select Industry & Download Specific Template</span>
-                    </span>
-                    <span className="badge badge-emerald text-[9px] font-bold">35+ FULL FIELDS</span>
+                    <span className="text-base">💡</span>
+                    <span>Ready to import? Upload your filled Excel file below. Need the blank template first?</span>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Choose your sector below to download an industry-tailored Excel template with pre-filled sample rows.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadTemplate(selectedSectorTemplate, 'xlsx')}
-                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black flex items-center gap-2 shadow-sm rounded-xl cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download Selected ({SECTOR_TEMPLATES.find(s => s.id === selectedSectorTemplate)?.shortTitle}) 📥</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* SECTOR CARDS GRID */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {SECTOR_TEMPLATES.map((sector) => {
-                  const Icon = sector.icon;
-                  const isSelected = selectedSectorTemplate === sector.id;
-                  return (
-                    <div
-                      key={sector.id}
-                      onClick={() => setSelectedSectorTemplate(sector.id)}
-                      className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-2 relative ${
-                        isSelected 
-                          ? 'border-emerald-500 bg-white shadow-md ring-2 ring-emerald-400/30' 
-                          : 'border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300'
-                      }`}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadTemplate(selectedSectorTemplate, 'xlsx')}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-emerald-300 text-emerald-900 hover:bg-emerald-100 font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                            <Icon className="w-4 h-4" />
+                      <Download className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Download Master Template (.xlsx)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep1Mode('templates')}
+                      className="text-xs text-indigo-700 hover:text-indigo-900 font-extrabold underline cursor-pointer"
+                    >
+                      All 6 Sectors →
+                    </button>
+                  </div>
+                </div>
+
+                {/* PROMINENT DRAG & DROP UPLOAD BOX */}
+                <div 
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`relative p-8 sm:p-10 rounded-3xl border-2 border-dashed transition-all text-center space-y-4 ${
+                    isDragging 
+                      ? 'border-emerald-600 bg-emerald-100/70 ring-4 ring-emerald-400/30 scale-[1.01]' 
+                      : fileName 
+                        ? 'border-emerald-400 bg-emerald-50/40 hover:bg-emerald-50/70' 
+                        : 'border-emerald-300 bg-emerald-50/30 hover:border-emerald-500 hover:bg-emerald-50/60'
+                  }`}
+                >
+                  <input 
+                    ref={fileInputRef}
+                    type="file" 
+                    accept=".xlsx, .xls, .csv" 
+                    onChange={handleFileInputChange} 
+                    className="hidden" 
+                  />
+
+                  <div className="w-16 h-16 rounded-2xl bg-white text-emerald-600 mx-auto flex items-center justify-center shadow-md border border-emerald-200">
+                    {isParsing ? <RefreshCw className="w-8 h-8 animate-spin" /> : <Upload className="w-8 h-8" />}
+                  </div>
+
+                  <div className="max-w-md mx-auto space-y-1">
+                    <h4 className="font-black text-slate-900 text-base sm:text-lg">
+                      {fileName ? `Uploaded File: ${fileName}` : 'Drop Your Edited Excel Spreadsheet Here'}
+                    </h4>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Upload candidate profiles to parse 35+ personal, statutory, employment & bank fields automatically.
+                    </p>
+                  </div>
+
+                  {/* PRIMARY ACTION BUTTON */}
+                  <div className="pt-2 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm py-3.5 px-8 font-black rounded-2xl shadow-lg flex items-center gap-2.5 cursor-pointer transition-all hover:scale-105 active:scale-98"
+                    >
+                      <Upload className="w-5 h-5" />
+                      <span>{fileName ? 'Choose Another File 📁' : 'Browse & Upload Edited Excel (.xlsx, .xls, .csv) 📁'}</span>
+                    </button>
+                  </div>
+
+                  {/* FILE INFO CARD */}
+                  {fileName && (
+                    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white text-emerald-950 text-xs font-bold border border-emerald-300 shadow-xs mt-2">
+                      <FileSpreadsheet className="w-5 h-5 text-emerald-600 shrink-0" />
+                      <span className="truncate max-w-[220px]">{fileName}</span>
+                      {uploadedFileSize && <span className="text-slate-400 font-mono text-[11px]">({uploadedFileSize})</span>}
+                      <span className="badge badge-emerald text-[10px] font-black">{parsedRows.length} Candidates Parsed ✓</span>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); clearUploadedFile(); }}
+                        className="text-rose-600 hover:text-rose-800 p-1 hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
+                        title="Remove file"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* ERROR NOTICE */}
+                {parseError && (
+                  <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                    <div className="flex-1 font-medium">{parseError}</div>
+                    <button 
+                      type="button" 
+                      onClick={() => setParseError(null)} 
+                      className="font-bold text-rose-600 hover:text-rose-900 cursor-pointer"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 📥 MODE 2: SECTOR TEMPLATE DOWNLOAD HUB */}
+            {step1Mode === 'templates' && (
+              <div className="p-5 rounded-3xl bg-slate-50 border-2 border-slate-200 space-y-4 animate-fadeIn">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-emerald-600" />
+                        <span>Select Industry & Download Specific Blank Template</span>
+                      </span>
+                      <span className="badge badge-emerald text-[9px] font-bold">35+ FULL FIELDS</span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Choose your sector below to download an industry-tailored Excel template with pre-filled sample rows.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadTemplate(selectedSectorTemplate, 'xlsx')}
+                      className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black flex items-center gap-2 shadow-sm rounded-xl cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download ({SECTOR_TEMPLATES.find(s => s.id === selectedSectorTemplate)?.shortTitle}) 📥</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* SECTOR CARDS GRID */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {SECTOR_TEMPLATES.map((sector) => {
+                    const Icon = sector.icon;
+                    const isSelected = selectedSectorTemplate === sector.id;
+                    return (
+                      <div
+                        key={sector.id}
+                        onClick={() => setSelectedSectorTemplate(sector.id)}
+                        className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-2 relative ${
+                          isSelected 
+                            ? 'border-emerald-500 bg-white shadow-md ring-2 ring-emerald-400/30' 
+                            : 'border-slate-200 bg-white/70 hover:bg-white hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-extrabold text-slate-900 text-xs">{sector.title}</h4>
+                              <span className="text-[10px] text-slate-500 font-medium">{sector.badge}</span>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-extrabold text-slate-900 text-xs">{sector.title}</h4>
-                            <span className="text-[10px] text-slate-500 font-medium">{sector.badge}</span>
-                          </div>
+
+                          {isSelected ? (
+                            <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">
+                              ✓
+                            </div>
+                          ) : (
+                            <div className="w-5 h-5 rounded-full border border-slate-300" />
+                          )}
                         </div>
 
-                        {isSelected ? (
-                          <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">
-                            ✓
-                          </div>
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border border-slate-300" />
-                        )}
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          {sector.desc}
+                        </p>
+
+                        <div className="pt-1 flex justify-between items-center text-[10px]">
+                          <span className="font-bold text-slate-400">Excel .XLSX</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadTemplate(sector.id, 'xlsx');
+                            }}
+                            className="text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
+                          >
+                            Download Single 📥
+                          </button>
+                        </div>
                       </div>
-
-                      <p className="text-[11px] text-slate-600 leading-relaxed">
-                        {sector.desc}
-                      </p>
-
-                      <div className="pt-1 flex justify-between items-center text-[10px]">
-                        <span className="font-bold text-slate-400">Excel .XLSX</span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDownloadTemplate(sector.id, 'xlsx');
-                          }}
-                          className="text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
-                        >
-                          Download Single 📥
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* DRAG & DROP UPLOAD BOX */}
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className="p-8 rounded-3xl border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 hover:bg-emerald-50/70 transition-all cursor-pointer text-center space-y-3 group"
-            >
-              <input 
-                ref={fileInputRef}
-                type="file" 
-                accept=".xlsx, .xls, .csv" 
-                onChange={handleFileUpload} 
-                className="hidden" 
-              />
-
-              <div className="w-14 h-14 rounded-2xl bg-white text-emerald-600 mx-auto flex items-center justify-center shadow-md border border-emerald-200 group-hover:scale-105 transition-transform">
-                {isParsing ? <RefreshCw className="w-7 h-7 animate-spin" /> : <Upload className="w-7 h-7" />}
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 text-base">
-                  {fileName ? `Uploaded: ${fileName}` : 'Click to Upload or Drag & Drop Ingestion File'}
-                </h4>
-                <p className="text-xs text-slate-500 mt-1">
-                  Supports .xlsx, .xls, and .csv files formatted with single or multi-sector templates
-                </p>
-              </div>
-
-              {fileName && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>File Ingested: {fileName}</span>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
 
-            {/* ERROR NOTICE */}
-            {parseError && (
-              <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
-                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
-                <div className="flex-1 font-medium">{parseError}</div>
-                <button 
-                  type="button" 
-                  onClick={() => setParseError(null)} 
-                  className="font-bold text-rose-600 hover:text-rose-900"
-                >
-                  Dismiss
-                </button>
+                {/* SWITCH TO UPLOAD BANNER */}
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-emerald-950 font-bold">
+                  <span>Already filled in your candidate details? Switch back to upload your completed spreadsheet.</span>
+                  <button
+                    type="button"
+                    onClick={() => setStep1Mode('upload')}
+                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 px-4 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload Completed Excel Now 📤</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1376,7 +1556,18 @@ export const BulkEmployeeImportModal = ({
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search candidates..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="form-input text-xs py-1.5 pl-8 pr-3 w-40 sm:w-56 bg-white"
+                      />
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => toggleAllRows(true)}
