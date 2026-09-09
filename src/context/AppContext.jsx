@@ -29,15 +29,22 @@ const INITIAL_CANDIDATES = [];
 const INITIAL_DEFAULT_VENDORS = [
   {
     id: 'vend-101',
-    companyId: 'comp-1',
+    companyId: 'comp-joy',
     vendorCode: 'VEND-001',
     vendorName: 'Apex Prime Staffing & Facility Solutions LLP',
     tradeName: 'Apex Manpower Services',
-    category: 'Staffing & Manpower',
+    category: 'Staffing & Manpower Solutions',
     contactPerson: 'Vikram Malhotra',
     email: 'compliance@apexstaffing.in',
     phone: '+91 98450 11223',
     address: '42, Cyber Park, Electronic City Phase 1, Bangalore - 560100',
+    gstin: '29AAACA1234A1Z5',
+    pan: 'AAACA1234A',
+    bankAccount: '987654321012',
+    bankIfsc: 'HDFC0000053',
+    msmeNumber: 'UDYAM-KR-03-0018921',
+    epfoNumber: 'BGBLR0018921000',
+    esicNumber: '53000189210000001',
     overallStatus: 'Verified',
     verifiedAt: '2026-09-08 11:30 IST',
     verifications: {
@@ -50,7 +57,7 @@ const INITIAL_DEFAULT_VENDORS = [
         activeStatus: 'Active',
         filingStatus: 'Up to Date (GSTR-1 & 3B Compliant)',
         verifiedAt: '2026-09-08 11:30 IST',
-        validityNotice: 'Verified against GSTN Portal at query timestamp.'
+        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
       },
       pan: {
         status: 'Verified',
@@ -58,40 +65,50 @@ const INITIAL_DEFAULT_VENDORS = [
         nameOnPan: 'Apex Prime Staffing & Facility Solutions LLP',
         category: 'Limited Liability Partnership',
         panStatus: 'Valid & Active in NSDL Database',
-        verifiedAt: '2026-09-08 11:31 IST'
+        verifiedAt: '2026-09-08 11:31 IST',
+        validityNotice: 'Point-in-Time statutory verification: Validated against Income Tax / NSDL records.'
       },
       bank: {
         status: 'Verified',
-        accountNumber: '••••••••8821',
+        accountNumber: '••••••••1012',
         ifsc: 'HDFC0000053',
         bankName: 'HDFC Bank Ltd',
         beneficiaryName: 'APEX PRIME STAFFING LLP',
         matchScore: 100,
         utrNumber: 'NPCI-IMPS-982187361284',
-        verifiedAt: '2026-09-08 11:32 IST'
+        verifiedAt: '2026-09-08 11:32 IST',
+        validityNotice: 'Point-in-Time statutory verification: ₹1 IMPS Penny Drop account confirmation.'
       },
       msme: {
         status: 'Verified',
         documentNumber: 'UDYAM-KR-03-0018921',
         enterpriseType: 'Medium Enterprise (Services)',
         majorActivity: 'Services - Employment Placement & Facility Management',
-        verifiedAt: '2026-09-08 11:33 IST'
+        verifiedAt: '2026-09-08 11:33 IST',
+        validityNotice: 'Point-in-Time statutory verification: Ministry of MSME Udyam Gateway.'
       }
     }
   },
   {
     id: 'vend-102',
-    companyId: 'comp-1',
+    companyId: 'comp-joy',
     vendorCode: 'VEND-002',
     vendorName: 'Falcon Fleet & Heavy Logistics Private Limited',
     tradeName: 'Falcon Cargo Transport',
-    category: 'Logistics & Transport',
+    category: 'Corporate Logistics & Fleet',
     contactPerson: 'Gurpreet Singh',
     email: 'billing@falconheavy.com',
     phone: '+91 98110 44556',
     address: 'Plot 18, Transport Nagar, Peenya 2nd Stage, Bangalore - 560058',
-    overallStatus: 'Pending Review',
-    verifiedAt: null,
+    gstin: '29AABCF9876K1Z2',
+    pan: 'AABCF9876K',
+    bankAccount: '50200049182741',
+    bankIfsc: 'ICIC0000047',
+    msmeNumber: 'UDYAM-KR-03-0044551',
+    epfoNumber: 'BGBLR0044551000',
+    esicNumber: '',
+    overallStatus: 'Partially Verified',
+    verifiedAt: '2026-09-09 10:15 IST',
     verifications: {
       gst: {
         status: 'Verified',
@@ -100,13 +117,90 @@ const INITIAL_DEFAULT_VENDORS = [
         tradeName: 'Falcon Cargo Transport',
         taxpayerType: 'Regular Taxpayer',
         activeStatus: 'Active',
-        filingStatus: 'Active',
-        verifiedAt: '2026-09-09 10:15 IST'
+        filingStatus: 'Active & Compliant',
+        verifiedAt: '2026-09-09 10:15 IST',
+        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
       },
       pan: {
         status: 'Pending',
         documentNumber: 'AABCF9876K',
         verifiedAt: null
+      }
+    }
+  },
+  {
+    id: 'vend-103',
+    companyId: 'comp-joy',
+    vendorCode: 'VEND-003',
+    vendorName: 'CloudMatrix Technologies Private Limited',
+    tradeName: 'CloudMatrix Enterprise Solutions',
+    category: 'IT Infrastructure & Cloud Services',
+    contactPerson: 'Deepak Narayanan',
+    email: 'admin@cloudmatrix.io',
+    phone: '+91 97400 88991',
+    address: 'Level 5, Brigade Tech Gardens, Brookefield, Bangalore - 560066',
+    gstin: '29AABCC5544R1ZR',
+    pan: 'AABCC5544R',
+    bankAccount: '110294817263',
+    bankIfsc: 'SBIN0004051',
+    msmeNumber: 'UDYAM-KR-03-0099882',
+    epfoNumber: 'BGBLR0099882000',
+    esicNumber: '53000998820000001',
+    overallStatus: 'Verified',
+    verifiedAt: '2026-09-09 12:00 IST',
+    verifications: {
+      gst: {
+        status: 'Verified',
+        documentNumber: '29AABCC5544R1ZR',
+        legalName: 'CloudMatrix Technologies Private Limited',
+        tradeName: 'CloudMatrix Enterprise Solutions',
+        taxpayerType: 'Regular Taxpayer',
+        activeStatus: 'Active',
+        filingStatus: 'Active (Current)',
+        verifiedAt: '2026-09-09 12:00 IST',
+        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
+      },
+      pan: {
+        status: 'Verified',
+        documentNumber: 'AABCC5544R',
+        nameOnPan: 'CloudMatrix Technologies Private Limited',
+        category: 'Private Limited Company',
+        panStatus: 'Active & In Good Standing',
+        verifiedAt: '2026-09-09 12:01 IST',
+        validityNotice: 'Point-in-Time statutory verification: Validated against Income Tax / NSDL records.'
+      },
+      bank: {
+        status: 'Verified',
+        accountNumber: '••••••••7263',
+        ifsc: 'SBIN0004051',
+        bankName: 'State Bank of India',
+        beneficiaryName: 'CLOUDMATRIX TECHNOLOGIES PVT LTD',
+        matchScore: 100,
+        utrNumber: 'NPCI-IMPS-110294817263',
+        verifiedAt: '2026-09-09 12:02 IST',
+        validityNotice: 'Point-in-Time statutory verification: ₹1 IMPS Penny Drop account confirmation.'
+      },
+      msme: {
+        status: 'Verified',
+        documentNumber: 'UDYAM-KR-03-0099882',
+        enterpriseType: 'Small Enterprise',
+        majorActivity: 'Services - Information Technology',
+        verifiedAt: '2026-09-09 12:03 IST',
+        validityNotice: 'Point-in-Time statutory verification: Ministry of MSME Gateway.'
+      },
+      epfo: {
+        status: 'Verified',
+        documentNumber: 'BGBLR0099882000',
+        establishmentName: 'CLOUDMATRIX TECHNOLOGIES PRIVATE LIMITED',
+        verifiedAt: '2026-09-09 12:04 IST',
+        validityNotice: 'Point-in-Time statutory verification: EPFO Gateway.'
+      },
+      esic: {
+        status: 'Verified',
+        documentNumber: '53000998820000001',
+        employerName: 'CLOUDMATRIX TECHNOLOGIES PRIVATE LIMITED',
+        verifiedAt: '2026-09-09 12:05 IST',
+        validityNotice: 'Point-in-Time statutory verification: ESIC Gateway.'
       }
     }
   }
@@ -118,7 +212,10 @@ export const AppProvider = ({ children }) => {
   const [vendors, setVendors] = useState(() => {
     try {
       const saved = localStorage.getItem('joy_company_vendors_v1');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 2) return parsed;
+      }
     } catch (e) {}
     return INITIAL_DEFAULT_VENDORS;
   });

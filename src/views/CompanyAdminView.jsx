@@ -816,6 +816,24 @@ export const CompanyAdminView = () => {
               <span>Date-Filtered Reports 📥</span>
             </button>
 
+            {/* 🤝 Enterprise Vendor Verification & Point-in-Time PDF Quick-Access */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveMainSection('vendor_verification');
+                setActiveTab('vendor_verification');
+              }}
+              className={`btn text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black rounded-xl shadow-md cursor-pointer shrink-0 transition-all ${
+                activeTab === 'vendor_verification'
+                  ? 'bg-gradient-to-r from-purple-700 to-indigo-700 text-white ring-2 ring-purple-300'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              }`}
+              title="Verify Vendors (GST, PAN, Bank, MSME) & Download Official Point-in-Time PDF Certificates"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-white" />
+              <span>Verify Vendors & PDF 🤝</span>
+            </button>
+
             {/* ⚡ 1-Click Verification Wallet Recharge via Razorpay */}
             <button
               onClick={() => setShowRazorpayModal(true)}
@@ -855,8 +873,8 @@ export const CompanyAdminView = () => {
         {/* ========================================================================= */}
         <div className="space-y-4">
           
-          {/* TIER 1: 4 MAIN PILLAR CATEGORY CARDS */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+          {/* TIER 1: 5 MAIN PILLAR CATEGORY CARDS */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
             {[
               {
                 id: 'telemetry_candidates',
@@ -877,8 +895,17 @@ export const CompanyAdminView = () => {
                 defaultTab: 'hrteam'
               },
               {
+                id: 'vendor_verification',
+                title: '3. Vendor Verification 🤝',
+                subtitle: 'Document Checks & Point-in-Time PDF',
+                icon: ShieldCheck,
+                activeBorder: 'border-purple-600 bg-purple-50/95 text-purple-950 shadow-md ring-2 ring-purple-300',
+                badgeText: `${(vendors || []).length} Vendors`,
+                defaultTab: 'vendor_verification'
+              },
+              {
                 id: 'corporate_dms',
-                title: '3. Profile & Document Vault',
+                title: '4. Profile & Document Vault',
                 subtitle: 'CIN, GSTIN & Cloud DMS',
                 icon: Building2,
                 activeBorder: 'border-emerald-500 bg-emerald-50/90 text-emerald-950 shadow-md',
@@ -887,7 +914,7 @@ export const CompanyAdminView = () => {
               },
               {
                 id: 'billing_gateways',
-                title: '4. Billing & Gateways',
+                title: '5. Billing & Gateways',
                 subtitle: 'Wallet, SMTP & Alerts',
                 icon: CreditCard,
                 activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
@@ -913,12 +940,12 @@ export const CompanyAdminView = () => {
                 >
                   <div className="flex items-center justify-between w-full mb-2">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-transform group-hover:scale-110 ${
-                      isSelected ? 'bg-gradient-to-br from-sky-600 to-indigo-700 text-white shadow-md' : 'bg-slate-100 text-slate-700 border border-slate-200'
+                      isSelected ? 'bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-md' : 'bg-slate-100 text-slate-700 border border-slate-200'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                      isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
+                      isSelected ? 'bg-white/90 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
                     }`}>
                       {cat.badgeText}
                     </span>
@@ -986,7 +1013,32 @@ export const CompanyAdminView = () => {
                 </>
               )}
 
-              {/* 3. Corporate Profile, Vendor Verification & DMS Sub-Sections */}
+              {/* 3. Dedicated Vendor Verification Sub-Sections */}
+              {activeMainSection === 'vendor_verification' && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('vendor_verification')}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      activeTab === 'vendor_verification' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>1. Vendor Directory & Document Checks ({(vendors || []).length}) 🤝</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('vendor_verification');
+                      setShowAddVendorModal(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-purple-600" />
+                    <span>2. Register New Vendor ➕</span>
+                  </button>
+                </>
+              )}
+
+              {/* 4. Corporate Profile & DMS Sub-Sections */}
               {activeMainSection === 'corporate_dms' && (
                 <>
                   <button
@@ -999,7 +1051,10 @@ export const CompanyAdminView = () => {
                     <span>1. Company Profile & Statutory Docs</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('vendor_verification')}
+                    onClick={() => {
+                      setActiveMainSection('vendor_verification');
+                      setActiveTab('vendor_verification');
+                    }}
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
                       activeTab === 'vendor_verification' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
                     }`}
@@ -1019,7 +1074,7 @@ export const CompanyAdminView = () => {
                 </>
               )}
 
-              {/* 4. Billing, Gateways & Support Sub-Sections */}
+              {/* 5. Billing, Gateways & Support Sub-Sections */}
               {activeMainSection === 'billing_gateways' && (
                 <>
                   <button
@@ -1060,96 +1115,139 @@ export const CompanyAdminView = () => {
         </div>
       </div>
 
-            {/* Metrics Row */}
+      {/* Metrics Row: Context-Aware for Vendor Hub vs Candidate Operations */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard 
-          title="Active HR Executives" 
-          value={companyHrUsers.length} 
-          subtext="Managing Onboarding" 
-          icon={Users} 
-          color="cyan" 
-          onClick={() => setActiveDrilldown({
-            title: 'Active HR Executives Team',
-            subtitle: `Recruiting & Onboarding staff assigned to ${company.name}`,
-            metricValue: `${companyHrUsers.length} HR Staff`,
-            metricType: 'company_hr',
-            data: (companyHrUsers || []).map(h => ({
-              name: h.name,
-              email: h.email,
-              dept: h.dept,
-              companyName: company.name,
-              status: 'Active Recruiter',
-              badge: `${h.activeLinks || 0} Links Active`
-            }))
-          })}
-        />
-        <MetricCard 
-          title="Verified Profiles" 
-          value={verifiedCount} 
-          subtext={`Out of ${companyCandidates.length} profiles`} 
-          icon={CheckCircle2} 
-          trend={`${Math.round((verifiedCount / (companyCandidates.length || 1)) * 100)}% Pass`}
-          color="emerald" 
-          onClick={() => setActiveDrilldown({
-            title: 'Verified Employee Profiles Audit',
-            subtitle: `Successfully verified candidates under ${company.name}`,
-            metricValue: `${verifiedCount} Verified`,
-            metricType: 'company_verified',
-            data: (companyCandidates || []).filter(c => c.status === 'Verified').map(c => ({
-              name: c.name,
-              empId: c.empId,
-              mobile: c.mobile,
-              email: c.email,
-              dept: c.designation || 'Specialist',
-              companyName: company.name,
-              status: 'Verified',
-              verificationDate: c.verificationDate || 'Recent',
-              token: c.token
-            }))
-          })}
-        />
-        <MetricCard 
-          title="In Progress / Pending" 
-          value={pendingCount} 
-          subtext="Awaiting Link Completion" 
-          icon={Clock} 
-          color="amber" 
-          onClick={() => setActiveDrilldown({
-            title: 'Pending & In-Progress Candidates',
-            subtitle: `Candidates currently awaiting Aadhaar OTP, SMS OTP, or Face verification`,
-            metricValue: `${pendingCount} Pending`,
-            metricType: 'company_pending',
-            data: (companyCandidates || []).filter(c => c.status !== 'Verified').map(c => ({
-              name: c.name,
-              empId: c.empId,
-              mobile: c.mobile,
-              email: c.email,
-              dept: c.designation || 'Specialist',
-              companyName: company.name,
-              status: c.status || 'In Progress',
-              token: c.token
-            }))
-          })}
-        />
-        <MetricCard 
-          tourStep="company-quota-card"
-          title="Monthly Quota Usage" 
-          value={`${company.verifiedCountThisMonth} / ${company.maxLimit}`} 
-          subtext={`Plan: ${company.plan}`} 
-          icon={FileCheck} 
-          color="indigo" 
-          onClick={() => setActiveDrilldown({
-            title: 'Monthly Verification Quota Consumption',
-            subtitle: `Detailed usage breakdown for plan ${company.plan}`,
-            metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
-            metricType: 'company_quota',
-            data: [
-              { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
-              { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
-              { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
-            ]
-          })}
-        />
+        {activeTab === 'vendor_verification' ? (
+          <>
+            <MetricCard 
+              title="Registered Corporate Vendors" 
+              value={(vendors || []).length} 
+              subtext="Suppliers in Directory" 
+              icon={Building2} 
+              color="purple" 
+              onClick={() => {}}
+            />
+            <MetricCard 
+              title="Verified Vendor Profiles" 
+              value={(vendors || []).filter(v => v.verifications?.gst?.verified && v.verifications?.pan?.verified).length} 
+              subtext={`Out of ${(vendors || []).length} vendors`} 
+              icon={CheckCircle2} 
+              trend={`${Math.round(((vendors || []).filter(v => v.verifications?.gst?.verified && v.verifications?.pan?.verified).length / Math.max((vendors || []).length, 1)) * 100)}% Verified`}
+              color="emerald" 
+              onClick={() => {}}
+            />
+            <MetricCard 
+              title="Verification Wallet Balance" 
+              value={`₹${(company.walletBalance || 0).toLocaleString()}`} 
+              subtext={`~${Math.floor((company.walletBalance || 0) / 60)} checks (@ ₹60/check)`} 
+              icon={CreditCard} 
+              color="amber" 
+              onClick={() => setShowRazorpayModal(true)}
+            />
+            <MetricCard 
+              title="Statutory PDF Audit" 
+              value="Point-in-Time" 
+              subtext="Legal Disclaimers & Hash" 
+              icon={FileText} 
+              color="indigo" 
+              onClick={() => {
+                const v = (vendors || [])[0];
+                if (v) setSelectedCertVendor(v);
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <MetricCard 
+              title="Active HR Executives" 
+              value={companyHrUsers.length} 
+              subtext="Managing Onboarding" 
+              icon={Users} 
+              color="cyan" 
+              onClick={() => setActiveDrilldown({
+                title: 'Active HR Executives Team',
+                subtitle: `Recruiting & Onboarding staff assigned to ${company.name}`,
+                metricValue: `${companyHrUsers.length} HR Staff`,
+                metricType: 'company_hr',
+                data: (companyHrUsers || []).map(h => ({
+                  name: h.name,
+                  email: h.email,
+                  dept: h.dept,
+                  companyName: company.name,
+                  status: 'Active Recruiter',
+                  badge: `${h.activeLinks || 0} Links Active`
+                }))
+              })}
+            />
+            <MetricCard 
+              title="Verified Profiles" 
+              value={verifiedCount} 
+              subtext={`Out of ${companyCandidates.length} profiles`} 
+              icon={CheckCircle2} 
+              trend={`${Math.round((verifiedCount / (companyCandidates.length || 1)) * 100)}% Pass`}
+              color="emerald" 
+              onClick={() => setActiveDrilldown({
+                title: 'Verified Employee Profiles Audit',
+                subtitle: `Successfully verified candidates under ${company.name}`,
+                metricValue: `${verifiedCount} Verified`,
+                metricType: 'company_verified',
+                data: (companyCandidates || []).filter(c => c.status === 'Verified').map(c => ({
+                  name: c.name,
+                  empId: c.empId,
+                  mobile: c.mobile,
+                  email: c.email,
+                  dept: c.designation || 'Specialist',
+                  companyName: company.name,
+                  status: 'Verified',
+                  verificationDate: c.verificationDate || 'Recent',
+                  token: c.token
+                }))
+              })}
+            />
+            <MetricCard 
+              title="In Progress / Pending" 
+              value={pendingCount} 
+              subtext="Awaiting Link Completion" 
+              icon={Clock} 
+              color="amber" 
+              onClick={() => setActiveDrilldown({
+                title: 'Pending & In-Progress Candidates',
+                subtitle: `Candidates currently awaiting Aadhaar OTP, SMS OTP, or Face verification`,
+                metricValue: `${pendingCount} Pending`,
+                metricType: 'company_pending',
+                data: (companyCandidates || []).filter(c => c.status !== 'Verified').map(c => ({
+                  name: c.name,
+                  empId: c.empId,
+                  mobile: c.mobile,
+                  email: c.email,
+                  dept: c.designation || 'Specialist',
+                  companyName: company.name,
+                  status: c.status || 'In Progress',
+                  token: c.token
+                }))
+              })}
+            />
+            <MetricCard 
+              tourStep="company-quota-card"
+              title="Monthly Quota Usage" 
+              value={`${company.verifiedCountThisMonth} / ${company.maxLimit}`} 
+              subtext={`Plan: ${company.plan}`} 
+              icon={FileCheck} 
+              color="indigo" 
+              onClick={() => setActiveDrilldown({
+                title: 'Monthly Verification Quota Consumption',
+                subtitle: `Detailed usage breakdown for plan ${company.plan}`,
+                metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
+                metricType: 'company_quota',
+                data: [
+                  { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
+                  { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
+                  { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
+                ]
+              })}
+            />
+          </>
+        )}
       </div>
 
       {/* TAB: MASTER EMPLOYEE REGISTRY */}
@@ -2260,13 +2358,13 @@ export const CompanyAdminView = () => {
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                 <span className="text-[10.5px] font-bold text-slate-500 block">Total Registered Vendors</span>
                 <span className="text-lg font-black text-slate-900">
-                  {(vendors || []).filter(v => !v.companyId || v.companyId === company.id || v.companyId === 'comp-joy').length}
+                  {(vendors || []).filter(v => !v.companyId || v.companyId === company.id || v.companyId === 'comp-joy' || v.companyId === 'comp-1').length}
                 </span>
               </div>
               <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
                 <span className="text-[10.5px] font-bold text-emerald-800 block">Fully Verified Vendors</span>
                 <span className="text-lg font-black text-emerald-900">
-                  {(vendors || []).filter(v => (!v.companyId || v.companyId === company.id || v.companyId === 'comp-joy') && v.verifications?.gst?.verified && v.verifications?.pan?.verified).length}
+                  {(vendors || []).filter(v => (!v.companyId || v.companyId === company.id || v.companyId === 'comp-joy' || v.companyId === 'comp-1') && v.verifications?.gst?.verified && v.verifications?.pan?.verified).length}
                 </span>
               </div>
               <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200">
@@ -2301,7 +2399,7 @@ export const CompanyAdminView = () => {
                   <option value="IT Infrastructure & Cloud Services">IT Infrastructure</option>
                   <option value="Corporate Logistics & Fleet">Logistics & Fleet</option>
                   <option value="Security & Facility Management">Facility Management</option>
-                  <option value="Manpower & Staffing Solutions">Manpower & Staffing</option>
+                  <option value="Staffing & Manpower Solutions">Staffing & Manpower</option>
                   <option value="Consulting & Legal Advisory">Consulting & Legal</option>
                 </select>
               </div>
@@ -2331,7 +2429,7 @@ export const CompanyAdminView = () => {
                   <tbody className="divide-y divide-slate-100 font-medium">
                     {(() => {
                       const filteredVendors = (vendors || []).filter(v => {
-                        const matchesCompany = !v.companyId || v.companyId === company.id || v.companyId === 'comp-joy';
+                        const matchesCompany = !v.companyId || v.companyId === company.id || v.companyId === 'comp-joy' || v.companyId === 'comp-1';
                         if (!matchesCompany) return false;
                         if (vendorCategoryFilter !== 'All' && v.category !== vendorCategoryFilter) return false;
                         if (vendorSearch.trim()) {
