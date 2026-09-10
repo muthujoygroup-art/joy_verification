@@ -36,6 +36,7 @@ import {
   FolderDown,
   KeyRound,
   Layers,
+  LifeBuoy,
   Lock,
   Mail,
   MessageSquare,
@@ -786,6 +787,100 @@ export const CompanyAdminView = () => {
     }
   };
 
+  const companyDivisionMetaMap = {
+    registry: {
+      pillarBadge: '🏛️ 1. Analytics & Candidates',
+      badgeText: `${candidates.length} Candidates Enrolled`,
+      title: 'Candidate Verification Directory & Onboarding Records',
+      subtitle: 'Comprehensive registry of company candidate profiles, real-time verification progress, and point-in-time dossiers',
+      icon: Users,
+      colorClass: 'from-sky-600 to-teal-600'
+    },
+    telemetry: {
+      pillarBadge: '🏛️ 1. Analytics & Candidates',
+      badgeText: 'TAT & Completion Rates',
+      title: 'Verification Telemetry, Turnaround Time & Operational Throughput',
+      subtitle: 'Live telemetry analyzing mean turnaround times, module completion percentages, and recruiter throughput',
+      icon: BarChart3,
+      colorClass: 'from-teal-600 to-emerald-700'
+    },
+    hrteam: {
+      pillarBadge: '👥 2. HR Team & Access',
+      badgeText: `${companyHrUsers.length} Active Recruiters`,
+      title: 'Recruiter Team Directory & Department Management',
+      subtitle: 'Manage recruiter accounts, department roles, active candidate link allotments, and credentials',
+      icon: Users,
+      colorClass: 'from-indigo-600 to-purple-700'
+    },
+    hr_permissions: {
+      pillarBadge: '👥 2. HR Team & Access',
+      badgeText: 'Granular Access Matrix',
+      title: 'Recruiter Field & Feature Check Flags Matrix',
+      subtitle: 'Granular permissions controlling candidate profile creation, bulk Excel imports, and mandatory check fields',
+      icon: Sliders,
+      colorClass: 'from-purple-600 to-indigo-700'
+    },
+    vendor_verification: {
+      pillarBadge: '🤝 3. Vendor Verification',
+      badgeText: `${(vendors || []).length} Corporate Vendors`,
+      title: 'Corporate Vendor Directory & Statutory Document Verification',
+      subtitle: 'Point-in-time GSTIN, PAN, and Bank Account Penny-Drop verification with downloadable statutory certificates',
+      icon: ShieldCheck,
+      colorClass: 'from-purple-600 to-indigo-700'
+    },
+    profile_details: {
+      pillarBadge: '🏢 4. Profile & Document Vault',
+      badgeText: 'Verified Master Profile',
+      title: 'Company Master Profile, Branding & Statutory Credentials',
+      subtitle: 'Corporate identity, CIN, GSTIN, PAN, corporate logo, and verified legal address',
+      icon: Building2,
+      colorClass: 'from-emerald-600 to-teal-700'
+    },
+    dochub: {
+      pillarBadge: '🏢 4. Profile & Document Vault',
+      badgeText: 'Cloud DMS Vault',
+      title: 'Cloud Document Hub & Statutory Verification Vault',
+      subtitle: 'Centralized repository of verified candidate identity proofs, education certificates, and company statutory files',
+      icon: FolderDown,
+      colorClass: 'from-teal-600 to-sky-700'
+    },
+    billing_wallet: {
+      pillarBadge: '💳 5. Billing & Gateways',
+      badgeText: `₹${company.walletBalance?.toLocaleString() || 50000} Wallet Balance`,
+      title: 'Verification Wallet Balance, Invoices & Metered Tariffs',
+      subtitle: 'Real-time prepaid balance, transaction statements, itemized GST tax invoices, and per-check tariff rates',
+      icon: CreditCard,
+      colorClass: 'from-amber-600 to-orange-700'
+    },
+    settings: {
+      pillarBadge: '💳 5. Billing & Gateways',
+      badgeText: 'SMTP Mail Server',
+      title: 'Outgoing Mail SMTP Server & Notification Routing',
+      subtitle: 'Configure dedicated company outgoing email server credentials, TLS/SSL ports, and candidate email templates',
+      icon: Mail,
+      colorClass: 'from-indigo-600 to-blue-700'
+    },
+    smtp_settings: {
+      pillarBadge: '💳 5. Billing & Gateways',
+      badgeText: 'SMTP Mail Server',
+      title: 'Outgoing Mail SMTP Server & Notification Routing',
+      subtitle: 'Configure dedicated company outgoing email server credentials, TLS/SSL ports, and candidate email templates',
+      icon: Mail,
+      colorClass: 'from-indigo-600 to-blue-700'
+    },
+    support: {
+      pillarBadge: '💳 5. Billing & Gateways',
+      badgeText: 'Dedicated Support Desk',
+      title: 'Support Helpdesk & Priority Escalation Tickets',
+      subtitle: 'Direct enterprise support channel for questions, priority escalation, and platform feature requests',
+      icon: LifeBuoy,
+      colorClass: 'from-rose-600 to-pink-700'
+    }
+  };
+
+  const currentCompanyDivMeta = companyDivisionMetaMap[activeTab] || companyDivisionMetaMap.registry;
+  const CurrentCompanyDivIcon = currentCompanyDivMeta.icon || Building2;
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
@@ -886,250 +981,42 @@ export const CompanyAdminView = () => {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* 🏢 2-TIER HIERARCHICAL SECTIONS & SUB-SECTIONS NAVIGATION ENGINE          */}
-        {/* ========================================================================= */}
-        <div className="space-y-4">
-          
-          {/* TIER 1: 5 MAIN PILLAR CATEGORY CARDS */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-            {[
-              {
-                id: 'telemetry_candidates',
-                title: '1. Analytics & Candidates',
-                subtitle: 'Usage & Candidate Directory',
-                icon: ShieldCheck,
-                activeBorder: 'border-sky-500 bg-sky-50/90 text-sky-950 shadow-md',
-                badgeText: `${candidates.length} Profiles`,
-                defaultTab: 'registry'
-              },
-              {
-                id: 'hr_governance',
-                title: '2. HR Team & Access',
-                subtitle: 'Recruiters & Permissions',
-                icon: Users,
-                activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: `${companyHrUsers.length} Staff`,
-                defaultTab: 'hrteam'
-              },
-              {
-                id: 'vendor_verification',
-                title: '3. Vendor Verification 🤝',
-                subtitle: 'Document Checks & Point-in-Time PDF',
-                icon: ShieldCheck,
-                activeBorder: 'border-purple-600 bg-purple-50/95 text-purple-950 shadow-md ring-2 ring-purple-300',
-                badgeText: `${(vendors || []).length} Vendors`,
-                defaultTab: 'vendor_verification'
-              },
-              {
-                id: 'corporate_dms',
-                title: '4. Profile & Document Vault',
-                subtitle: 'CIN, GSTIN & Cloud DMS',
-                icon: Building2,
-                activeBorder: 'border-emerald-500 bg-emerald-50/90 text-emerald-950 shadow-md',
-                badgeText: 'Statutory Docs',
-                defaultTab: 'profile_details'
-              },
-              {
-                id: 'billing_gateways',
-                title: '5. Billing & Gateways',
-                subtitle: 'Wallet, SMTP & Alerts',
-                icon: CreditCard,
-                activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
-                badgeText: `₹${company.walletBalance?.toLocaleString() || 50000}`,
-                defaultTab: 'billing_wallet'
-              }
-            ].map(cat => {
-              const Icon = cat.icon;
-              const isSelected = activeMainSection === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveMainSection(cat.id);
-                    setActiveTab(cat.defaultTab);
-                  }}
-                  className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
-                    isSelected 
-                      ? `${cat.activeBorder} scale-[1.02]` 
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700 shadow-2xs'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-transform group-hover:scale-110 ${
-                      isSelected ? 'bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-md' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                    }`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                      isSelected ? 'bg-white/90 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
-                    }`}>
-                      {cat.badgeText}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-extrabold text-xs sm:text-sm tracking-tight">{cat.title}</h4>
-                    <p className="text-[10px] text-slate-500 font-medium truncate">{cat.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
+        {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
+        <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentCompanyDivMeta.colorClass || 'from-sky-600 to-teal-700'} shrink-0 transition-all duration-200`}>
+              <CurrentCompanyDivIcon className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-sky-50 text-sky-900 border border-sky-200 shadow-2xs">
+                  {currentCompanyDivMeta.pillarBadge}
+                </span>
+                <span className="text-xs text-slate-300 font-bold">•</span>
+                <span className="text-[11px] font-bold text-slate-500">
+                  {currentCompanyDivMeta.badgeText}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight truncate mt-1">
+                {currentCompanyDivMeta.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                {currentCompanyDivMeta.subtitle}
+              </p>
+            </div>
           </div>
 
-          {/* TIER 2: ACTIVE SUB-SECTIONS RIBBON */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-
-              {/* 1. Telemetry & Candidates Sub-Sections */}
-              {activeMainSection === 'telemetry_candidates' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('registry')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'registry' ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>1. Candidate Registry ({candidates.length})</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('telemetry')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'telemetry' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span>2. Verification Analytics & Turnaround Time</span>
-                  </button>
-                </>
-              )}
-
-              {/* 2. HR Team & Access Sub-Sections */}
-              {activeMainSection === 'hr_governance' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('hrteam')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hrteam' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Users className="w-3.5 h-3.5" />
-                    <span>1. HR Staff Directory ({companyHrUsers.length})</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('hr_permissions')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'hr_permissions' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>2. Check Flags Matrix</span>
-                  </button>
-                </>
-              )}
-
-              {/* 3. Dedicated Vendor Verification Sub-Sections */}
-              {activeMainSection === 'vendor_verification' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('vendor_verification')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'vendor_verification' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>1. Vendor Directory & Document Checks ({(vendors || []).length}) 🤝</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab('vendor_verification');
-                      setShowAddVendorModal(true);
-                    }}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200"
-                  >
-                    <Plus className="w-3.5 h-3.5 text-purple-600" />
-                    <span>2. Register New Vendor ➕</span>
-                  </button>
-                </>
-              )}
-
-              {/* 4. Corporate Profile & DMS Sub-Sections */}
-              {activeMainSection === 'corporate_dms' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('profile_details')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'profile_details' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>1. Company Profile & Statutory Docs</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveMainSection('vendor_verification');
-                      setActiveTab('vendor_verification');
-                    }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'vendor_verification' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>2. Vendor Verification & Point-in-Time PDF 🤝</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('dochub')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'dochub' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <FolderDown className="w-3.5 h-3.5" />
-                    <span>3. Cloud Document Vault (DMS)</span>
-                  </button>
-                </>
-              )}
-
-              {/* 5. Billing, Gateways & Support Sub-Sections */}
-              {activeMainSection === 'billing_gateways' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('billing_wallet')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'billing_wallet' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <CreditCard className="w-3.5 h-3.5" />
-                    <span>1. Prepaid Wallet & GST Invoices</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>2. Email & Gateway Rules</span>
-                  </button>
-                </>
-              )}
-
-            </div>
-
-            {/* Quick Top-up Button */}
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               type="button"
               onClick={() => setShowRazorpayModal(true)}
-              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
+              title="Instant Wallet Top-Up via Razorpay"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Recharge ⚡</span>
+              <span>Recharge Credits ⚡</span>
             </button>
-
           </div>
-
         </div>
       </div>
 

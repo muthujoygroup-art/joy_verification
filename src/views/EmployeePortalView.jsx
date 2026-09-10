@@ -211,6 +211,25 @@ export const EmployeePortalView = () => {
     showFullJoiningModal, showSignatureModal, showLegalHandbook
   ]);
 
+  // Listen to navigation triggers dispatched from Candidate Portal Sidebar
+  useEffect(() => {
+    const handlePortalNav = (e) => {
+      const { tab, modal } = e.detail || {};
+      if (tab === 'aadhaar' || tab === 'aadhaar_step') setShowAadhaarOtpModal(true);
+      else if (tab === 'otp' || tab === 'otp_step') setShowMobileOtpModal(true);
+      else if (tab === 'face' || tab === 'face_step') setShowAiFaceMatchModal(true);
+      else if (tab === 'joining_form') setShowFullJoiningModal(true);
+      else if (tab === 'signature') setShowSignatureModal(true);
+      else if (modal === 'cert' || tab === 'cert_download') setShowCertModal(true);
+      else if (modal === 'dossier' || tab === 'labor_dossier') setShowLaborDossierModal(true);
+      else if (modal === 'legal_handbook' || tab === 'dpdp_rights') setShowLegalHandbook(true);
+      else if (modal === 'photo') setShowLivePhotoModal(true);
+      else if (modal === 'download') setShowDocDownloader(true);
+    };
+    window.addEventListener('portal_nav_navigate', handlePortalNav);
+    return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
+  }, []);
+
   // Ensure portal strictly enforces manual PIN entry on arrival
   useEffect(() => {
     setIsUnlocked(false);

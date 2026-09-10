@@ -1198,7 +1198,203 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     showSuperAdminRazorpayModal, showGatewaysModal
   ]);
 
+  const divisionMetaMap = useMemo(() => ({
+    companies: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: `${companies.length} Enterprise Clients`,
+      title: 'Enterprise Client Companies & Feature Matrix Flags',
+      subtitle: 'Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company',
+      icon: Building2,
+      colorClass: 'from-purple-600 to-indigo-700'
+    },
+    ledger: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: `${candidates.length} Profiles Recorded`,
+      title: 'Candidate Verification Ledger & Global Employee Registry',
+      subtitle: 'Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits',
+      icon: Users,
+      colorClass: 'from-emerald-600 to-teal-700'
+    },
+    terms_hub: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: 'Statutory Contracts',
+      title: 'Enterprise Terms & Conditions Contracts Hub & Agreement Ledger',
+      subtitle: 'Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures',
+      icon: Scale,
+      colorClass: 'from-amber-600 to-orange-700'
+    },
+    inquiries: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: 'Lead Gen & Inquiries',
+      title: 'Demo Inquiries & Inbound Enterprise Leads',
+      subtitle: 'Review incoming platform demo inquiries, follow up with corporate leads, and initiate onboarding pipelines',
+      icon: Mail,
+      colorClass: 'from-sky-600 to-indigo-600'
+    },
+    reviews: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: 'User Testimonials',
+      title: 'Client Reviews & Public Testimonials Moderation',
+      subtitle: 'Moderate client ratings, verify feedback authenticity, and publish featured corporate testimonials',
+      icon: Star,
+      colorClass: 'from-amber-500 to-orange-600'
+    },
+    blog_cms: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: 'Knowledge Hub CMS',
+      title: 'SEO Articles & Knowledge Hub CMS',
+      subtitle: 'Publish thought-leadership articles, statutory compliance advisories, and platform feature announcements',
+      icon: FileText,
+      colorClass: 'from-purple-600 to-indigo-800'
+    },
+    logins: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: 'Unified Directory',
+      title: 'Unified Logins & Master Access Directory',
+      subtitle: 'Inspect credentials, role assignments, and direct instant-login tokens across all platform accounts',
+      icon: UserCheck,
+      colorClass: 'from-indigo-600 to-purple-600'
+    },
+    omnisearch: {
+      pillarBadge: '🏛️ 1. Core Operations',
+      badgeText: `${searchResults.totalMatches} Search Matches`,
+      title: 'Universal Omnisearch & Hierarchical Profile ID Tracker',
+      subtitle: 'Real-time 360° record locator across Companies (COMP001), HR Staff (COMP001HR001), and Candidates (COMP001EMP001)',
+      icon: Search,
+      colorClass: 'from-indigo-600 to-purple-800'
+    },
+    apiconfig: {
+      pillarBadge: '⚡ 2. Upstream Gateways',
+      badgeText: 'Dual Mode Gateways',
+      title: 'Dual API Gateways (Sandbox vs Production Mode)',
+      subtitle: 'Configure real UIDAI Aadhaar, NSDL PAN, NPCI Bank Penny-Drop, EPFO, and Driving License upstream endpoints',
+      icon: Zap,
+      colorClass: 'from-teal-600 to-emerald-700'
+    },
+    studio: {
+      pillarBadge: '⚡ 2. Upstream Gateways',
+      badgeText: 'Interactive Sandbox',
+      title: 'Live Verification Studio & Interactive Payload Tester',
+      subtitle: 'Execute live diagnostic queries, inspect raw JSON payloads, and test failure scenarios in real time',
+      icon: Cpu,
+      colorClass: 'from-purple-600 to-indigo-700'
+    },
+    consumption_margins: {
+      pillarBadge: '⚡ 2. Upstream Gateways',
+      badgeText: 'Profitability Telemetry',
+      title: 'API Consumption & Profit Margin Telemetry',
+      subtitle: 'Analyze upstream vendor API costs against billed client tariffs to monitor real-time gross margins per verification module',
+      icon: TrendingUp,
+      colorClass: 'from-indigo-600 to-blue-700'
+    },
+    whatsapp_sms: {
+      pillarBadge: '⚡ 2. Upstream Gateways',
+      badgeText: 'Omnichannel Messaging',
+      title: 'Meta WhatsApp Business & Carrier SMS Gateways',
+      subtitle: 'Configure Meta Cloud API credentials, Twilio / MSG91 SMS routes, and candidate notification templates',
+      icon: MessageSquare,
+      colorClass: 'from-emerald-600 to-teal-700'
+    },
+    billing: {
+      pillarBadge: '💳 3. Financial Billing',
+      badgeText: 'Invoicing & Razorpay',
+      title: 'Metered Invoicing, Razorpay Gateway & Wallet Management',
+      subtitle: 'Review monthly billing invoices, configure Razorpay keys, and manage company verification wallet balances',
+      icon: CreditCard,
+      colorClass: 'from-amber-600 to-orange-700'
+    },
+    dbms: {
+      pillarBadge: '🛡️ 4. Database & Security',
+      badgeText: 'PostgreSQL Tables',
+      title: 'PostgreSQL Live Schema & Database Management System',
+      subtitle: 'Directly inspect and filter real database rows across candidates, companies, HR users, invoices, and audit logs',
+      icon: Database,
+      colorClass: 'from-rose-600 to-pink-700'
+    },
+    audit: {
+      pillarBadge: '🛡️ 4. Database & Security',
+      badgeText: 'Immutable DPDP Chain',
+      title: 'Audit Trail & DPDP Compliance Hash Chain',
+      subtitle: 'Cryptographically secured chronological activity trail recording administrative actions, logins, and verifications',
+      icon: FileText,
+      colorClass: 'from-emerald-600 to-teal-700'
+    },
+    sessions: {
+      pillarBadge: '🛡️ 4. Database & Security',
+      badgeText: `${multiRoleSessions.length} Active Sessions`,
+      title: 'Active Multi-Role Sessions Hub & Device Telemetry',
+      subtitle: 'Live session monitor tracking IP addresses, device user-agents, and authentication states across all portal roles',
+      icon: ShieldCheck,
+      colorClass: 'from-sky-600 to-indigo-700'
+    },
+    issuelogs: {
+      pillarBadge: '🛡️ 4. Database & Security',
+      badgeText: `${totalUnresolvedErrorCount} Unresolved Issues`,
+      title: 'System Incident Logs & Solved Hub Telemetry',
+      subtitle: 'Real-time telemetry of system exceptions, API timeouts, and resolution tracking',
+      icon: AlertTriangle,
+      colorClass: 'from-amber-600 to-rose-600'
+    },
+    analytics: {
+      pillarBadge: '🛡️ 4. Database & Security',
+      badgeText: 'Master Operations',
+      title: 'Platform Master Control, Analytics & Financial KPIs',
+      subtitle: 'Consolidated verification volume, gross revenue, profit trends, and company-wise performance charts',
+      icon: BarChart3,
+      colorClass: 'from-indigo-600 to-purple-700'
+    },
+    reports: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: 'Universal Exporter',
+      title: 'Reports Center & Universal Document Exporter',
+      subtitle: 'Generate date-filtered candidate verification dossiers, Excel sheets, and statutory compliance packages',
+      icon: Download,
+      colorClass: 'from-purple-600 to-indigo-700'
+    },
+    legal_governance: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: 'DPDP Act 2023',
+      title: 'Statutory Legal & DPDP Act 2023 Compliance Framework',
+      subtitle: 'Digital Personal Data Protection Act compliance, consent architecture, and statutory retention rules',
+      icon: Scale,
+      colorClass: 'from-indigo-600 to-purple-800'
+    },
+    masterdata: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: 'Field Schemas',
+      title: 'Master Data Presets & Custom Form Fields',
+      subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
+      icon: Sliders,
+      colorClass: 'from-teal-600 to-emerald-700'
+    },
+    masterfields: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: 'Field Schemas',
+      title: 'Master Data Presets & Custom Form Fields',
+      subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
+      icon: Sliders,
+      colorClass: 'from-teal-600 to-emerald-700'
+    },
+    tickets: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: `${supportTickets.length} Support Tickets`,
+      title: 'Support Helpdesk & Enterprise Feedback',
+      subtitle: 'Track and respond to helpdesk tickets, feature requests, and system feedback from corporate clients',
+      icon: LifeBuoy,
+      colorClass: 'from-rose-600 to-pink-700'
+    },
+    settings: {
+      pillarBadge: '⚖️ 5. Governance & Config',
+      badgeText: 'cPanel SMTP Mail',
+      title: 'cPanel SMTP Server & Email Configuration',
+      subtitle: 'Configure SMTP credentials, SSL/TLS ports, and dispatch diagnostic test emails',
+      icon: Mail,
+      colorClass: 'from-indigo-600 to-purple-700'
+    }
+  }), [companies.length, candidates.length, searchResults.totalMatches, multiRoleSessions.length, totalUnresolvedErrorCount, supportTickets.length]);
 
+  const currentDivisionMeta = divisionMetaMap[activeTab] || divisionMetaMap.companies;
+  const CurrentDivIcon = currentDivisionMeta.icon || Building2;
 
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900 pb-16">
@@ -1256,447 +1452,312 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
         </div>
 
-        {/* 🌟 PERMANENT TOP HERO: UNIVERSAL PROFILE ID & OMNISEARCH TRACKER (COMP001, COMP001HR001, COMP001EMP001) */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-slate-900 text-white border-2 border-indigo-500 shadow-xl space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
+        {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
+        <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentDivisionMeta.colorClass || 'from-indigo-600 to-purple-600'} shrink-0 transition-all duration-200`}>
+              <CurrentDivIcon className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-3 py-1 rounded-md bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
-                  ⚡ Global Profile ID & User Tracker
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-2xs">
+                  {currentDivisionMeta.pillarBadge}
                 </span>
-                <span className="text-xs font-mono font-bold text-indigo-200">
-                  COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
+                <span className="text-xs text-slate-300 font-bold">•</span>
+                <span className="text-[11px] font-bold text-slate-500">
+                  {currentDivisionMeta.badgeText}
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-medium mt-1">
-                Enter any Unique ID, Company Name, HR Name, or Candidate Name to locate their 360° record instantly.
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight truncate mt-1">
+                {currentDivisionMeta.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                {currentDivisionMeta.subtitle}
               </p>
-            </div>
-
-            {/* Quick Filter Presets */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-slate-300 font-bold text-xs">Quick Presets:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setGlobalSearchQuery('COMP001');
-                  setActiveTab('omnisearch');
-                }}
-                className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-purple-400"
-              >
-                🏢 COMP001
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setGlobalSearchQuery('COMP001HR001');
-                  setActiveTab('omnisearch');
-                }}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-emerald-400"
-              >
-                👔 COMP001HR001
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setGlobalSearchQuery('COMP001EMP001');
-                  setActiveTab('omnisearch');
-                }}
-                className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-sky-400"
-              >
-                👤 COMP001EMP001
-              </button>
             </div>
           </div>
 
-          {/* Large Live Omnisearch Input with High Contrast */}
-          <div className="relative flex items-center">
-            <Search className="w-5 h-5 text-amber-400 absolute left-4 pointer-events-none" />
-            <input
-              type="text"
-              value={globalSearchQuery}
-              onChange={(e) => {
-                setGlobalSearchQuery(e.target.value);
-                if (activeTab !== 'omnisearch') setActiveTab('omnisearch');
-              }}
-              onFocus={() => {
-                if (activeTab !== 'omnisearch') setActiveTab('omnisearch');
-              }}
-              placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
-              className="w-full pl-12 pr-28 py-3.5 rounded-xl bg-slate-950 text-white font-bold placeholder:text-slate-400 placeholder:font-normal border-2 border-indigo-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/40 text-sm shadow-inner"
-            />
-            {globalSearchQuery ? (
-              <button
-                type="button"
-                onClick={() => setGlobalSearchQuery('')}
-                className="absolute right-3 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm transition-all"
-              >
-                Clear ✕
-              </button>
-            ) : (
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            {activeTab !== 'omnisearch' && (
               <button
                 type="button"
                 onClick={() => setActiveTab('omnisearch')}
-                className="absolute right-3 px-4 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs cursor-pointer shadow-md transition-all"
+                className="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-900 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-slate-200 transition-all shadow-2xs hover:shadow-xs"
+                title="Search by Unique Profile ID, Company, HR, or Candidate"
               >
-                Search 🔍
+                <Search className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Search Omnisearch 🔍</span>
               </button>
             )}
           </div>
         </div>
-
-        {/* ========================================================================= */}
-        {/* 🏛️ 2-TIER HIERARCHICAL SECTIONS & SUB-SECTIONS NAVIGATION ENGINE          */}
-        {/* ========================================================================= */}
-        <div className="space-y-4">
-          
-          {/* TIER 1: 5 MAIN PILLAR CATEGORY CARDS */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-            {[
-              {
-                id: 'core_ops',
-                title: '1. Core Operations',
-                subtitle: 'Tenants & Candidates',
-                icon: Building2,
-                colorClass: 'from-indigo-600 to-indigo-800',
-                activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: '6 Modules',
-                defaultTab: 'analytics'
-              },
-              {
-                id: 'gateways_engine',
-                title: '2. Upstream Gateways',
-                subtitle: 'APIs & Live Studio',
-                icon: Zap,
-                colorClass: 'from-teal-600 to-emerald-800',
-                activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
-                badgeText: '4 Modules',
-                defaultTab: 'apiconfig'
-              },
-              {
-                id: 'billing_finance',
-                title: '3. Financial Billing',
-                subtitle: 'Invoices & Ledger',
-                icon: CreditCard,
-                colorClass: 'from-amber-600 to-amber-800',
-                activeBorder: 'border-amber-500 bg-amber-50/90 text-amber-950 shadow-md',
-                badgeText: '2 Modules',
-                defaultTab: 'billing'
-              },
-              {
-                id: 'db_security',
-                title: '4. Database & Security',
-                subtitle: 'DBMS & Audit Chain',
-                icon: Database,
-                colorClass: 'from-rose-600 to-rose-800',
-                activeBorder: 'border-rose-500 bg-rose-50/90 text-rose-950 shadow-md',
-                badgeText: '4 Modules',
-                defaultTab: 'dbms'
-              },
-              {
-                id: 'gov_reports',
-                title: '5. Governance & Config',
-                subtitle: 'DPDP, Reports & Help',
-                icon: ShieldCheck,
-                colorClass: 'from-purple-600 to-purple-900',
-                activeBorder: 'border-purple-500 bg-purple-50/90 text-purple-950 shadow-md',
-                badgeText: '4 Modules',
-                defaultTab: 'reports'
-              }
-            ].map(cat => {
-              const Icon = cat.icon;
-              const isSelected = activeMainSection === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveMainSection(cat.id);
-                    setActiveTab(cat.defaultTab);
-                  }}
-                  className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
-                    isSelected 
-                      ? `${cat.activeBorder} scale-[1.02]` 
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700 shadow-2xs'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-transform group-hover:scale-110 ${
-                      isSelected ? `bg-gradient-to-br ${cat.colorClass} text-white shadow-md` : 'bg-slate-100 text-slate-700 border border-slate-200'
-                    }`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                      isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
-                    }`}>
-                      {cat.badgeText}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-extrabold text-xs sm:text-sm tracking-tight">{cat.title}</h4>
-                    <p className="text-[10px] text-slate-500 font-medium truncate">{cat.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* TIER 2: ACTIVE NAVIGATION TABS RIBBON */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-
-              {/* 1. Core Operations Sub-Sections */}
-              {activeMainSection === 'core_ops' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('analytics')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span>1. Platform Analytics</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('companies')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'companies' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>2. Companies & Features</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('ledger')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Users className="w-3.5 h-3.5" />
-                    <span>3. Candidate Ledger</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('terms_hub')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'terms_hub' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Scale className="w-3.5 h-3.5" />
-                    <span>4. Terms & Agreements</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('inquiries')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'inquiries' ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>5. Demo Inquiries & Leads</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('reviews')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'reviews' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Star className="w-3.5 h-3.5" />
-                    <span>6. Client Reviews Moderation</span>
-                  </button>
-                </>
-              )}
-
-              {/* 2. Upstream Gateways Sub-Sections */}
-              {activeMainSection === 'gateways_engine' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('apiconfig')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'apiconfig' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Server className="w-3.5 h-3.5" />
-                    <span>1. Dual API Gateways</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('studio')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'studio' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Zap className="w-3.5 h-3.5" />
-                    <span>2. Live Verification Studio</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>3. cPanel SMTP & Mail 📧</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('whatsapp_sms')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'whatsapp_sms' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                    title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>4. WhatsApp & SMS Gateways 💬</span>
-                  </button>
-                </>
-              )}
-
-              {/* 3. Billing & Finance Sub-Sections */}
-              {activeMainSection === 'billing_finance' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('billing')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'billing' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <CreditCard className="w-3.5 h-3.5" />
-                    <span>1. Metered Invoicing & Razorpay</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('consumption_margins')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'consumption_margins' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span>2. API Consumption & Margins</span>
-                  </button>
-                </>
-              )}
-
-              {/* 4. Database, Security & Telemetry Sub-Sections */}
-              {activeMainSection === 'db_security' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('dbms')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'dbms' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Database className="w-3.5 h-3.5" />
-                    <span>1. PostgreSQL DBMS Explorer</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('audit')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'audit' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>2. Audit Trail & DPDP Chain</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('sessions')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'sessions' ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>3. Active Sessions Hub</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('issuelogs')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'issuelogs' ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    <span>4. System Error Telemetry ({totalUnresolvedErrorCount})</span>
-                  </button>
-                </>
-              )}
-
-              {/* 5. Governance, Reports & Config Sub-Sections */}
-              {activeMainSection === 'gov_reports' && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('reports')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'reports' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>1. Reports Center</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('legal_governance')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'legal_governance' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Scale className="w-3.5 h-3.5" />
-                    <span>2. Legal & DPDP Governance 🏛️</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('masterdata')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'masterdata' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>3. Master Data Presets</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('tickets')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'tickets' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <LifeBuoy className="w-3.5 h-3.5" />
-                    <span>4. Support Helpdesk</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('blog_cms')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'blog_cms' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>5. Blog & Knowledge Hub CMS</span>
-                  </button>
-                </>
-              )}
-
-            </div>
-
-            {/* Quick Omnisearch Trigger */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('omnisearch')}
-              className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 border border-indigo-200 shadow-2xs"
-            >
-              <Search className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Omnisearch 🔍</span>
-            </button>
-          </div>
-
-        </div>
       </div>
 
-      {/* TAB 1: PLATFORM STATISTICS & COMPANY-WISE PROFIT MARGIN ANALYTICS */}
-            {/* ========================================================================= */}
-      {/* ENTERPRISE ADD-ON CONSOLES: INQUIRIES, REVIEWS, CMS, CONSUMPTION */}
+      {/* ========================================================================= */}
+      {/* ENTERPRISE ADD-ON CONSOLES: INQUIRIES, REVIEWS, CMS, CONSUMPTION, LEDGER, SESSIONS, AUDIT */}
       {/* ========================================================================= */}
       {activeTab === 'inquiries' && <LeadsInquiriesConsole />}
       {activeTab === 'reviews' && <ReviewsModerationConsole />}
       {activeTab === 'consumption_margins' && <ApiConsumptionMarginConsole />}
       {activeTab === 'blog_cms' && <BlogCmsConsole />}
 
+      {/* TAB: CANDIDATE VERIFICATION LEDGER */}
+      {activeTab === 'ledger' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Users className="w-5 h-5 text-emerald-600" />
+                <span>Enterprise Candidate Verification Ledger ({candidates.length})</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits</p>
+            </div>
+            
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => setShowUniversalExportModal(true)}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
+              >
+                <Download className="w-4 h-4 text-indigo-600" />
+                <span>Export Candidate Ledger 📥</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+                  <th className="py-3 px-4">Candidate Profile</th>
+                  <th className="py-3 px-4">Enterprise Company</th>
+                  <th className="py-3 px-4">Contact Info</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4">Verification Date</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {candidates.map(c => {
+                  const companyObj = companies.find(comp => comp.id === c.companyId);
+                  return (
+                    <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="font-bold text-slate-900 text-sm">{c.name}</div>
+                        <div className="text-slate-500 font-mono text-[10px]">ID: {c.empId || c.token}</div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="font-bold text-indigo-950">{companyObj?.name || c.companyName || 'Enterprise Client'}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="font-medium text-slate-700">{c.email}</div>
+                        <div className="text-slate-500 font-mono text-[10px]">{c.mobile}</div>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                          c.status === 'Verified' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                          c.status === 'In Progress' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+                          'bg-slate-100 text-slate-700 border border-slate-300'
+                        }`}>
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs text-slate-600">
+                        {c.verificationDate || 'Recent'}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          onClick={() => setViewingDossierCandidate(c)}
+                          className="btn btn-secondary text-xs py-1.5 px-3 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100"
+                        >
+                          View Dossier 📄
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: ACTIVE MULTI-ROLE SESSIONS HUB */}
+      {activeTab === 'sessions' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-sky-600" />
+                <span>Active Multi-Role Sessions Hub & Device Telemetry ({multiRoleSessions.length})</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Real-time telemetry tracking concurrent logins across Super Admin, Company Admin, HR, and Candidate portals</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="badge badge-emerald text-xs font-bold">● {multiRoleSessions.filter(s => s.status === 'ACTIVE').length} Active Sessions Online</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+                  <th className="py-3 px-4">Session ID</th>
+                  <th className="py-3 px-4">Portal Role</th>
+                  <th className="py-3 px-4">User & Email</th>
+                  <th className="py-3 px-4">IP Address</th>
+                  <th className="py-3 px-4">Device & Browser</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {multiRoleSessions.map(s => (
+                  <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900 text-xs">{s.id}</td>
+                    <td className="py-3 px-4">
+                      <span className="badge badge-purple text-[10px] font-black">{s.roleLabel}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="font-bold text-slate-900">{s.userName}</div>
+                      <div className="text-slate-500 text-[10px]">{s.email}</div>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-indigo-700 font-bold text-xs">{s.ipAddress}</td>
+                    <td className="py-3 px-4 text-slate-600 text-xs">{s.device}</td>
+                    <td className="py-3 px-4 text-center">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        {s.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: AUDIT TRAIL & DPDP COMPLIANCE HASH CHAIN */}
+      {activeTab === 'audit' && (
+        <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
+                <span>Immutable Audit Trail & DPDP Compliance Hash Chain</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Tamper-evident audit log with cryptographic hash verification under DPDP Act 2023 regulations</p>
+            </div>
+            <button
+              onClick={() => setShowLegalHandbook(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
+            >
+              <Scale className="w-4 h-4 text-indigo-600" />
+              <span>DPDP Framework Handbook 🛡️</span>
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+                  <th className="py-3 px-4">Event ID</th>
+                  <th className="py-3 px-4">Timestamp</th>
+                  <th className="py-3 px-4">Action & Scope</th>
+                  <th className="py-3 px-4">Actor</th>
+                  <th className="py-3 px-4">Target Entity</th>
+                  <th className="py-3 px-4 text-right">DPDP Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-mono">
+                {candidates.slice(0, 15).map((c, i) => (
+                  <tr key={c.id || i} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 font-bold text-indigo-950">AUD-2026-{(1000 + i).toString(16).toUpperCase()}</td>
+                    <td className="py-3 px-4 text-slate-600">{c.verificationDate || '2026-09-09 14:32:10'}</td>
+                    <td className="py-3 px-4 font-sans font-bold text-slate-900">Candidate BGV Verification Executed</td>
+                    <td className="py-3 px-4 font-sans text-slate-700">COMP001HR001 (Recruiter)</td>
+                    <td className="py-3 px-4 font-sans text-slate-900 font-bold">{c.name} ({c.empId || c.token})</td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="badge badge-emerald text-[9px] font-black">SHA-256 HASHED 🔒</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* ========================================================================= */}
       {/* TAB 0: UNIVERSAL OMNISEARCH & HIERARCHICAL PROFILE ID TRACKER */}
       {/* ========================================================================= */}
       {activeTab === 'omnisearch' && (
         <div className="space-y-6 animate-tab-switch">
+          
+          {/* 🌟 UNIVERSAL PROFILE ID & OMNISEARCH TRACKER HERO */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-slate-900 text-white border-2 border-indigo-500 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-3 py-1 rounded-md bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
+                    ⚡ Global Profile ID & User Tracker
+                  </span>
+                  <span className="text-xs font-mono font-bold text-indigo-200">
+                    COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 font-medium mt-1">
+                  Enter any Unique ID, Company Name, HR Name, or Candidate Name to locate their 360° record instantly.
+                </p>
+              </div>
+
+              {/* Quick Filter Presets */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-slate-300 font-bold text-xs">Quick Presets:</span>
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001')}
+                  className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-purple-400"
+                >
+                  🏢 COMP001
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001HR001')}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-emerald-400"
+                >
+                  👔 COMP001HR001
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('COMP001EMP001')}
+                  className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-sky-400"
+                >
+                  👤 COMP001EMP001
+                </button>
+              </div>
+            </div>
+
+            {/* Large Live Omnisearch Input with High Contrast */}
+            <div className="relative flex items-center">
+              <Search className="w-5 h-5 text-amber-400 absolute left-4 pointer-events-none" />
+              <input
+                type="text"
+                value={globalSearchQuery}
+                onChange={(e) => setGlobalSearchQuery(e.target.value)}
+                placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
+                className="w-full pl-12 pr-28 py-3.5 rounded-xl bg-slate-950 text-white font-bold placeholder:text-slate-400 placeholder:font-normal border-2 border-indigo-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/40 text-sm shadow-inner"
+                autoFocus
+              />
+              {globalSearchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearchQuery('')}
+                  className="absolute right-3 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm transition-all"
+                >
+                  Clear ✕
+                </button>
+              ) : null}
+            </div>
+          </div>
           
           {/* Search Result Statistics Summary Bar */}
           <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">

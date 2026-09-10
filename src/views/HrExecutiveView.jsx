@@ -82,6 +82,7 @@ import {
   Sparkles,
   Stethoscope,
   Trash2,
+  TrendingUp,
   Truck,
   Upload,
   User,
@@ -1696,6 +1697,44 @@ export const HrExecutiveView = () => {
     }
   };
 
+  const hrDivisionMetaMap = {
+    pipeline: {
+      pillarBadge: '📱 1. Candidate List & Records',
+      badgeText: `${candidates.length} Applications Registered`,
+      title: 'Candidate Applications Pipeline & Verification Dossiers',
+      subtitle: 'Real-time candidate tracker, live magic link dispatch, and verified point-in-time employment dossiers',
+      icon: Smartphone,
+      colorClass: 'from-emerald-600 to-teal-700'
+    },
+    profiler: {
+      pillarBadge: '🎛️ 2. Add New Candidate',
+      badgeText: 'New Onboarding Dossier',
+      title: 'Candidate Profiler, Onboarding Particulars & Verification Dispatch',
+      subtitle: 'Create individual employee profiles, auto-fill industry mock templates, or bulk upload candidate rosters via Excel',
+      icon: Sliders,
+      colorClass: 'from-teal-600 to-emerald-700'
+    },
+    analytics: {
+      pillarBadge: '📊 3. Analytics & Settings',
+      badgeText: 'TAT & Verification Telemetry',
+      title: 'Verification Turnaround Times, Throughput & Statutory Form Previews',
+      subtitle: 'Mean turnaround time telemetry, completed verification rate distributions, and EPFO / ESIC statutory form previews',
+      icon: TrendingUp,
+      colorClass: 'from-indigo-600 to-purple-700'
+    },
+    settings: {
+      pillarBadge: '⚙️ 3. Analytics & Settings',
+      badgeText: 'Preferences & Compliance Rules',
+      title: 'Workstation Preferences, Statutory Rules & Notification Alerts',
+      subtitle: 'Configure automated candidate reminder intervals, SMS/WhatsApp gateways, and statutory compliance parameters',
+      icon: Settings,
+      colorClass: 'from-purple-600 to-indigo-800'
+    }
+  };
+
+  const currentHrDivMeta = hrDivisionMetaMap[activeTab] || hrDivisionMetaMap.pipeline;
+  const CurrentHrDivIcon = currentHrDivMeta.icon || Smartphone;
+
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
@@ -1780,171 +1819,45 @@ export const HrExecutiveView = () => {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* 👔 2-TIER HIERARCHICAL SECTIONS & SUB-SECTIONS NAVIGATION ENGINE          */}
-        {/* ========================================================================= */}
-        <div className="space-y-4">
-          
-          {/* TIER 1: 3 MAIN PILLAR CATEGORY CARDS */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-            {[
-              {
-                id: 'pipeline_dossiers',
-                title: '1. Candidate List & Records',
-                subtitle: 'View, verify, and manage all candidate applications',
-                icon: Smartphone,
-                activeBorder: 'border-emerald-500 bg-emerald-50/90 text-emerald-950 shadow-md',
-                badgeText: `${candidates.length} Candidates`,
-                defaultTab: 'pipeline'
-              },
-              {
-                id: 'profiler_dispatch',
-                title: '2. Add New Candidate',
-                subtitle: 'Enter candidate details & send verification link',
-                icon: Sliders,
-                activeBorder: 'border-teal-500 bg-teal-50/90 text-teal-950 shadow-md',
-                badgeText: 'New Onboarding',
-                defaultTab: 'profiler'
-              },
-              {
-                id: 'statutory_settings',
-                title: '3. Analytics & Settings',
-                subtitle: 'Turnaround times, verification reports & rules',
-                icon: Settings,
-                activeBorder: 'border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-md',
-                badgeText: 'Analytics & Rules',
-                defaultTab: 'analytics'
-              }
-            ].map(cat => {
-              const Icon = cat.icon;
-              const isSelected = activeMainSection === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveMainSection(cat.id);
-                    setActiveTab(cat.defaultTab);
-                    if (cat.id === 'profiler_dispatch') {
-                      setShowAddForm(true);
-                    } else {
-                      setShowAddForm(false);
-                    }
-                  }}
-                  className={`p-3 sm:p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex flex-col justify-between relative group ${
-                    isSelected 
-                      ? `${cat.activeBorder} scale-[1.02]` 
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700 shadow-2xs'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-transform group-hover:scale-110 ${
-                      isSelected ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                    }`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                      isSelected ? 'bg-white/80 text-slate-900 font-extrabold shadow-2xs' : 'bg-slate-100 text-slate-500'
-                    }`}>
-                      {cat.badgeText}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-extrabold text-xs sm:text-sm tracking-tight">{cat.title}</h4>
-                    <p className="text-[10px] text-slate-500 font-medium truncate">{cat.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
+        {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
+        <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentHrDivMeta.colorClass || 'from-emerald-600 to-teal-700'} shrink-0 transition-all duration-200`}>
+              <CurrentHrDivIcon className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200 shadow-2xs">
+                  {currentHrDivMeta.pillarBadge}
+                </span>
+                <span className="text-xs text-slate-300 font-bold">•</span>
+                <span className="text-[11px] font-bold text-slate-500">
+                  {currentHrDivMeta.badgeText}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight truncate mt-1">
+                {currentHrDivMeta.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                {currentHrDivMeta.subtitle}
+              </p>
+            </div>
           </div>
 
-          {/* TIER 2: ACTIVE NAVIGATION TABS RIBBON */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-white text-slate-900 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5 text-xs">
-
-              {/* 1. Candidate List & Records Tabs */}
-              {activeMainSection === 'pipeline_dossiers' && (
-                <>
-                  <button
-                    onClick={() => { setActiveMainSection('pipeline_dossiers'); setActiveTab('pipeline'); setShowAddForm(false); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'pipeline' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    <span>1. Candidate List ({candidates.length})</span>
-                  </button>
-                </>
-              )}
-
-              {/* 2. Add Candidate Tabs */}
-              {activeMainSection === 'profiler_dispatch' && (
-                <>
-                  <button
-                    onClick={() => { setActiveMainSection('profiler_dispatch'); setActiveTab('profiler'); setShowAddForm(true); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'profiler' ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>1. Single Candidate Profiler</span>
-                  </button>
-
-                  <button
-                    onClick={() => setShowBulkImportModal(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 shadow-2xs"
-                    title="Bulk import all types of employees via Excel with document verification checklist"
-                  >
-                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>2. Bulk Excel Import & Link Dispatch 📥</span>
-                  </button>
-                </>
-              )}
-
-              {/* 3. Analytics & Settings Tabs */}
-              {activeMainSection === 'statutory_settings' && (
-                <>
-                  <button
-                    onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('analytics'); setShowAddForm(false); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span>1. Verification Analytics & Turnaround Time</span>
-                  </button>
-                  <button
-                    onClick={() => { setActiveMainSection('statutory_settings'); setActiveTab('settings'); setShowAddForm(false); }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      activeTab === 'settings' ? 'bg-indigo-700 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200'
-                    }`}
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                    <span>2. Settings & Notifications</span>
-                  </button>
-                </>
-              )}
-
-            </div>
-
-            {/* Quick Add Profile Action */}
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               type="button"
               onClick={() => {
-                setActiveMainSection('profiler_dispatch');
-                setActiveTab('profiler');
                 setShowAddForm(true);
+                setActiveTab('profiler');
               }}
-              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
+              title="Add New Candidate Profile"
             >
               <UserPlus className="w-3.5 h-3.5 text-white" />
               <span>+ New Profile</span>
             </button>
-
           </div>
-
         </div>
       </div>
 
