@@ -13,6 +13,7 @@ import {
   User,
   Users,
   Building2,
+  Crown,
   Smartphone,
   ShieldCheck,
   Zap,
