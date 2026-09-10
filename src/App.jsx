@@ -1,12 +1,10 @@
 import React, { useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
-import { Navbar } from './components/Navbar';
+import { PortalLayout } from './components/PortalLayout';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
-import { InteractiveTourGuideModal } from './components/InteractiveTourGuideModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { RefreshCw } from 'lucide-react';
 
 // Resilient Lazy Loader with Automatic Chunk Reload & Cache-Busting Recovery
 function lazyWithRetry(componentImport, chunkName = 'chunk') {
@@ -69,14 +67,9 @@ const SuperAdminRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'superadmin') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
-        <div>
-          <Navbar />
-          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
-            <SuperAdminView />
-          </main>
-        </div>
-      </div>
+      <PortalLayout>
+        <SuperAdminView />
+      </PortalLayout>
     );
   }
   return <LoginView initialRole="superadmin" />;
@@ -87,14 +80,9 @@ const CompanyRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'company') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
-        <div>
-          <Navbar />
-          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
-            <CompanyAdminView />
-          </main>
-        </div>
-      </div>
+      <PortalLayout>
+        <CompanyAdminView />
+      </PortalLayout>
     );
   }
   return <LoginView initialRole="company" />;
@@ -105,14 +93,9 @@ const HrRoute = () => {
   const { currentRole, currentUser } = useApp();
   if (currentUser && currentRole === 'hrexecutive') {
     return (
-      <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
-        <div>
-          <Navbar />
-          <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
-            <HrExecutiveView />
-          </main>
-        </div>
-      </div>
+      <PortalLayout>
+        <HrExecutiveView />
+      </PortalLayout>
     );
   }
   return <LoginView initialRole="hrexecutive" />;
@@ -120,7 +103,7 @@ const HrRoute = () => {
 
 // Wrapper for Candidate Verification Route (/verify or /candidate)
 const CandidateRoute = () => {
-  const { currentRole, currentUser, loginUser, setSelectedCandidateToken, candidates } = useApp();
+  const { currentRole, currentUser, loginUser, setSelectedCandidateToken } = useApp();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') || 'tok_karan_903';
 
@@ -134,14 +117,9 @@ const CandidateRoute = () => {
   }, [token, currentUser, currentRole, loginUser, setSelectedCandidateToken]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-between text-slate-900 overflow-x-hidden">
-      <div>
-        <Navbar />
-        <main className="max-w-[1600px] mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 w-full overflow-x-hidden pb-32 sm:pb-12">
-          <EmployeePortalView />
-        </main>
-      </div>
-    </div>
+    <PortalLayout>
+      <EmployeePortalView />
+    </PortalLayout>
   );
 };
 

@@ -719,10 +719,28 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   };
 
-  // Smooth Dashboard Positioning on Tab Switches
+  // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.dispatchEvent(new CustomEvent('portal_nav_state_sync', {
+      detail: { activeMainSection, activeTab }
+    }));
   }, [activeTab, activeMainSection]);
+
+  // Listen to navigation events dispatched from Left Portal Sidebar
+  useEffect(() => {
+    const handlePortalNav = (e) => {
+      const { section, tab, modal, query } = e.detail || {};
+      if (section) setActiveMainSection(section);
+      if (tab) setActiveTab(tab);
+      if (query !== undefined && query !== null) setGlobalSearchQuery(query);
+      if (modal === 'add_company') setShowAddCompanyModal(true);
+      else if (modal === 'razorpay_admin') setShowSuperAdminRazorpayModal(true);
+      else if (modal === 'comm_gateways') setShowGatewaysModal(true);
+    };
+    window.addEventListener('portal_nav_navigate', handlePortalNav);
+    return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
+  }, []);
 
   useEffect(() => {
     loadCompanyRequests();

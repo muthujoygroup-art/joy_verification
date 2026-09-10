@@ -502,6 +502,34 @@ export const HrExecutiveView = () => {
     setViewingUploadedDocsCandidate(cand);
   };
 
+  // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.dispatchEvent(new CustomEvent('portal_nav_state_sync', {
+      detail: { activeMainSection, activeTab }
+    }));
+  }, [activeTab, activeMainSection]);
+
+  // Listen to navigation events from Left Portal Sidebar
+  useEffect(() => {
+    const handlePortalNav = (e) => {
+      const { section, tab, modal } = e.detail || {};
+      if (section) setActiveMainSection(section);
+      if (tab) {
+        setActiveTab(tab);
+        if (tab === 'profiler') setShowAddForm(true);
+        else if (tab === 'pipeline') setShowAddForm(false);
+      }
+      if (modal === 'bulk_import') setShowBulkImportModal(true);
+      else if (modal === 'add_candidate') {
+        setShowAddForm(true);
+        setActiveTab('profiler');
+      }
+    };
+    window.addEventListener('portal_nav_navigate', handlePortalNav);
+    return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {

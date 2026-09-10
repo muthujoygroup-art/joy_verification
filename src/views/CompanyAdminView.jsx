@@ -562,9 +562,27 @@ export const CompanyAdminView = () => {
   };
 
   // Smooth Dashboard Positioning on Tab Switches
+  // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.dispatchEvent(new CustomEvent('portal_nav_state_sync', {
+      detail: { activeMainSection, activeTab }
+    }));
   }, [activeTab, activeMainSection]);
+
+  // Listen to navigation events from Left Portal Sidebar
+  useEffect(() => {
+    const handlePortalNav = (e) => {
+      const { section, tab, modal } = e.detail || {};
+      if (section) setActiveMainSection(section);
+      if (tab) setActiveTab(tab);
+      if (modal === 'add_hr') setShowAddHrModal(true);
+      else if (modal === 'razorpay') setShowRazorpayModal(true);
+      else if (modal === 'add_vendor') setShowAddVendorModal(true);
+    };
+    window.addEventListener('portal_nav_navigate', handlePortalNav);
+    return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
+  }, []);
 
   // Listen to tour action events from Navbar / Tour Modal
   useEffect(() => {
