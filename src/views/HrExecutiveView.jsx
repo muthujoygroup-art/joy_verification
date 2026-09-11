@@ -1822,8 +1822,8 @@ export const HrExecutiveView = () => {
         {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentHrDivMeta.colorClass || 'from-emerald-600 to-teal-700'} shrink-0 transition-all duration-200`}>
-              <CurrentHrDivIcon className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-800 shrink-0 transition-all duration-200">
+              <CurrentHrDivIcon className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">

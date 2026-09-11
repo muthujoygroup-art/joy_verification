@@ -1455,8 +1455,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentDivisionMeta.colorClass || 'from-indigo-600 to-purple-600'} shrink-0 transition-all duration-200`}>
-              <CurrentDivIcon className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 shrink-0 transition-all duration-200">
+              <CurrentDivIcon className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">

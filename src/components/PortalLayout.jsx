@@ -103,14 +103,32 @@ export const PortalLayout = ({ children }) => {
     return () => window.removeEventListener('portal_nav_navigate', handleNavEvent);
   }, []);
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('portal_sidebar_collapsed') === 'true';
+  });
+
+  const toggleSidebarCollapse = () => {
+    soundEngine.playClick?.();
+    setSidebarCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem('portal_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex text-slate-900 font-sans antialiased overflow-x-hidden">
       
       {/* ========================================================================= */}
       {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (FIXED ON >= lg SCREENS)           */}
       {/* ========================================================================= */}
-      <aside className="hidden lg:flex flex-col w-72 xl:w-80 shrink-0 min-h-screen sticky top-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs">
-        <PortalSidebarNav />
+      <aside className={`hidden lg:flex flex-col shrink-0 min-h-screen sticky top-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
+        sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
+      }`}>
+        <PortalSidebarNav 
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={toggleSidebarCollapse}
+        />
       </aside>
 
       {/* ========================================================================= */}

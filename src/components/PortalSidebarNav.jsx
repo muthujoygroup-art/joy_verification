@@ -40,7 +40,7 @@ import {
   Mail
 } from 'lucide-react';
 
-export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
+export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed = false, onToggleCollapse }) => {
   const {
     currentUser,
     currentRole,
@@ -564,12 +564,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
   }, [pillarsConfig, searchQuery]);
 
   return (
-    <div className="h-full flex flex-col justify-between bg-white text-slate-800 font-sans select-none overflow-hidden">
+    <div className="h-full flex flex-col justify-between bg-white text-slate-800 font-sans select-none overflow-hidden relative">
       
       {/* ========================================================================= */}
       {/* 1. TOP BRAND HEADER                                                       */}
       {/* ========================================================================= */}
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+      <div className={`border-b border-slate-100 flex items-center shrink-0 bg-white transition-all ${
+        isCollapsed ? 'p-3 justify-center flex-col gap-2' : 'p-4 justify-between'
+      }`}>
         <Link 
           to="/" 
           className="flex items-center gap-2.5 group cursor-pointer"
@@ -584,16 +586,30 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
             />
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
           </div>
-          <div>
-            <h1 className="font-black text-sm tracking-tight text-slate-900 leading-none">
-              JOY <span className="text-amber-500">TRUE PROFILE</span>
-            </h1>
-            <p className="text-[9.5px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              {currentTheme.label}
-            </p>
-          </div>
+          {!isCollapsed && (
+            <div className="animate-fadeIn">
+              <h1 className="font-black text-sm tracking-tight text-slate-900 leading-none">
+                JOY <span className="text-amber-500">TRUE PROFILE</span>
+              </h1>
+              <p className="text-[9.5px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                {currentTheme.label}
+              </p>
+            </div>
+          )}
         </Link>
+
+        {/* Desktop Collapsible Rail Toggle Button */}
+        {!isMobile && onToggleCollapse && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="p-1.5 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-500 hover:text-indigo-700 transition-all cursor-pointer border border-slate-200/80 shadow-2xs hover:scale-105"
+            title={isCollapsed ? "Expand Sidebar (Wider)" : "Collapse Sidebar (Compact Rail)"}
+          >
+            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '' : 'rotate-180'}`} />
+          </button>
+        )}
 
         {isMobile && onCloseMobile && (
           <button
@@ -609,69 +625,75 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
       {/* ========================================================================= */}
       {/* 2. TOP SEGMENTED SWITCHER: [ COMPANY ] [ PERSONAL ]                       */}
       {/* ========================================================================= */}
-      <div className="px-3 pt-3 pb-1 shrink-0 bg-white">
-        <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 shadow-2xs">
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playClick?.();
-              setWorkspaceMode('company');
-            }}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
-              workspaceMode === 'company'
-                ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
-            }`}
-          >
-            COMPANY
-          </button>
+      {!isCollapsed && (
+        <div className="px-3 pt-3 pb-1 shrink-0 bg-white animate-fadeIn">
+          <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playClick?.();
+                setWorkspaceMode('company');
+              }}
+              className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
+                workspaceMode === 'company'
+                  ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              COMPANY
+            </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playClick?.();
-              setWorkspaceMode('personal');
-            }}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
-              workspaceMode === 'personal'
-                ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
-            }`}
-          >
-            PERSONAL
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playClick?.();
+                setWorkspaceMode('personal');
+              }}
+              className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
+                workspaceMode === 'personal'
+                  ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              PERSONAL
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 3. REAL-TIME QUICK SEARCH INPUT: 🔍 Quick search...                       */}
       {/* ========================================================================= */}
-      <div className="px-3 py-2 shrink-0 bg-white">
-        <div className="relative flex items-center">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Quick search modules & divisions..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium transition-all shadow-inner"
-          />
-          {searchQuery ? (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 p-0.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors"
-              title="Clear Search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          ) : null}
+      {!isCollapsed && (
+        <div className="px-3 py-2 shrink-0 bg-white animate-fadeIn">
+          <div className="relative flex items-center">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Quick search modules & divisions..."
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium transition-all shadow-inner"
+            />
+            {searchQuery ? (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 p-0.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors"
+                title="Clear Search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 4. INNOVATIVE 5 PILLARS & RESPECTIVE DIVISIONS ACCORDION LIST             */}
       {/* ========================================================================= */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2.5 scrollbar-thin scrollbar-thumb-slate-200">
+      <div className={`flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-200 ${
+        isCollapsed ? 'px-2 py-3' : 'px-3 py-2'
+      }`}>
         {filteredPillars.length === 0 ? (
           <div className="p-6 text-center text-slate-400 space-y-2">
             <Search className="w-8 h-8 mx-auto text-slate-300 stroke-1" />
@@ -690,6 +712,65 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
             const isExpanded = searchQuery.trim() ? true : !!expandedPillars[pillar.id];
             const divisions = pillar.divisions || [];
 
+            // =========================================================================
+            // 📍 COLLAPSED RAIL MODE POPUP MENU ITEM
+            // =========================================================================
+            if (isCollapsed) {
+              return (
+                <div key={pillar.id} className="relative group flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => handleNavigate(pillar)}
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black transition-all cursor-pointer shadow-xs ${
+                      isPillarActive
+                        ? `bg-gradient-to-br ${pillar.colorClass} text-white ring-2 ring-indigo-400 ring-offset-2 scale-105`
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </button>
+
+                  {/* 🚀 Hover Floating Flyout Menu */}
+                  <div className="hidden group-hover:flex absolute left-full top-0 ml-3 w-64 bg-white border border-slate-200/90 shadow-2xl rounded-2xl p-3 z-50 flex-col gap-2 animate-fadeIn font-sans text-left">
+                    <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                      <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${pillar.colorClass} shrink-0`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-extrabold text-xs text-slate-900 truncate">{pillar.title}</h4>
+                        <p className="text-[9.5px] text-slate-500 font-medium truncate">{pillar.subtitle}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
+                      {divisions.map((div) => {
+                        const isDivActive = activeDivisionId === div.id || activeDivisionId === div.tab;
+                        const DivIcon = div.icon || ChevronRight;
+                        return (
+                          <button
+                            key={div.id}
+                            type="button"
+                            onClick={() => handleNavigate(pillar, div)}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs transition-all text-left cursor-pointer ${
+                              isDivActive
+                                ? 'bg-emerald-50 text-emerald-950 font-black border border-emerald-300'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium'
+                            }`}
+                          >
+                            <DivIcon className={`w-3.5 h-3.5 shrink-0 ${isDivActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+                            <span className="truncate">{div.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            // =========================================================================
+            // 📖 FULL EXPANDED SIDEBAR ACCORDION ITEM
+            // =========================================================================
             return (
               <div 
                 key={pillar.id} 
@@ -749,9 +830,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
                   </div>
                 </div>
 
-                {/* 📂 RESPECTIVE DIVISIONS LIST (Expanded Nested Modules) */}
+                {/* 📂 RESPECTIVE DIVISIONS LIST WITH TREE-GUIDELINE CONNECTORS */}
                 {isExpanded && divisions.length > 0 && (
-                  <div className="px-2 pb-2 pt-0.5 space-y-1 border-t border-slate-100/90 bg-white/70 animate-in slide-in-from-top-1 duration-150">
+                  <div className="ml-3 pl-2.5 border-l-2 border-slate-200/80 my-1 space-y-1 bg-white/70 animate-in slide-in-from-top-1 duration-150 pr-2 pb-1.5">
                     {divisions.map((div) => {
                       const isDivActive = activeDivisionId === div.id || activeDivisionId === div.tab;
                       const DivIcon = div.icon || ChevronRight;
@@ -764,10 +845,10 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
                             e.stopPropagation();
                             handleNavigate(pillar, div);
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 text-left cursor-pointer group/div ${
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all duration-150 text-left cursor-pointer group/div ${
                             isDivActive
-                              ? 'bg-emerald-50 text-emerald-950 font-black shadow-2xs border border-emerald-300 translate-x-1'
-                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium hover:translate-x-1'
+                              ? 'bg-emerald-50 text-emerald-950 font-black border-l-2 border-emerald-500 shadow-2xs translate-x-0.5'
+                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium hover:translate-x-0.5'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-1">
@@ -778,7 +859,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
                           </div>
 
                           {isDivActive && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse ml-1" />
                           )}
                         </button>
                       );
@@ -795,57 +876,79 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
       {/* ========================================================================= */}
       {/* 5. BOTTOM PROFILE, ACTIVE SESSION & DOCK SECTION                          */}
       {/* ========================================================================= */}
-      <div className="p-3 border-t border-slate-100 bg-slate-50/80 space-y-2 shrink-0">
+      <div className={`border-t border-slate-100 bg-slate-50/80 space-y-2 shrink-0 ${
+        isCollapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-3'
+      }`}>
         
-        {/* Profile Card Pill with Unique Profile Code */}
-        <div className="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black text-xs">
-              <User className="w-3.5 h-3.5" />
+        {isCollapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-xs shadow-xs" title={currentUser?.name || 'User'}>
+              <User className="w-4 h-4" />
             </div>
-            <div className="min-w-0">
-              <div className="font-black text-xs text-slate-900 truncate leading-tight">
-                {currentUser?.name || currentUser?.email || 'User'}
+            <button
+              onClick={() => {
+                soundEngine.playClick?.();
+                logoutUser();
+              }}
+              className="p-2 rounded-xl text-rose-700 hover:bg-rose-100 bg-rose-50 border border-rose-200 transition-all cursor-pointer"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Profile Card Pill with Unique Profile Code */}
+            <div className="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black text-xs">
+                  <User className="w-3.5 h-3.5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-black text-xs text-slate-900 truncate leading-tight">
+                    {currentUser?.name || currentUser?.email || 'User'}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[9px] border border-indigo-200 truncate">
+                      {currentRole === 'superadmin' ? 'SUPERADMIN' : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentTheme.codePrefix)}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[9px] border border-indigo-200 truncate">
-                  {currentRole === 'superadmin' ? 'SUPERADMIN' : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentTheme.codePrefix)}
-                </span>
-              </div>
+
+              <button
+                onClick={toggleSound}
+                className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                  isMuted 
+                    ? 'bg-slate-100 text-slate-400 border-slate-200 hover:text-slate-700' 
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                }`}
+                title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
             </div>
-          </div>
 
-          <button
-            onClick={toggleSound}
-            className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
-              isMuted 
-                ? 'bg-slate-100 text-slate-400 border-slate-200 hover:text-slate-700' 
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-            }`}
-            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
-          >
-            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-          </button>
-        </div>
+            {/* Session Countdown & Logout Button */}
+            <div className="flex items-center justify-between gap-1.5 text-xs">
+              <div className="shrink-0">
+                <ActiveSessionBadge />
+              </div>
 
-        {/* Session Countdown & Logout Button */}
-        <div className="flex items-center justify-between gap-1.5 text-xs">
-          <div className="shrink-0">
-            <ActiveSessionBadge />
-          </div>
-
-          <button
-            onClick={() => {
-              soundEngine.playClick?.();
-              logoutUser();
-            }}
-            className="px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 font-bold transition-all cursor-pointer text-xs shadow-2xs hover:shadow-xs shrink-0"
-            title="Sign Out / End Session"
-          >
-            <LogOut className="w-3 h-3" />
-            <span>Logout</span>
-          </button>
-        </div>
+              <button
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  logoutUser();
+                }}
+                className="px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 font-bold transition-all cursor-pointer text-xs shadow-2xs hover:shadow-xs shrink-0"
+                title="Sign Out / End Session"
+              >
+                <LogOut className="w-3 h-3" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </>
+        )}
 
       </div>
 

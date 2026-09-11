@@ -984,8 +984,8 @@ export const CompanyAdminView = () => {
         {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br ${currentCompanyDivMeta.colorClass || 'from-sky-600 to-teal-700'} shrink-0 transition-all duration-200`}>
-              <CurrentCompanyDivIcon className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br from-sky-600 via-teal-600 to-sky-800 shrink-0 transition-all duration-200">
+              <CurrentCompanyDivIcon className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
