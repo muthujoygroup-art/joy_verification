@@ -1494,12 +1494,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       </div>
 
       {/* ========================================================================= */}
-      {/* ENTERPRISE ADD-ON CONSOLES: INQUIRIES, REVIEWS, CMS, CONSUMPTION, LEDGER, SESSIONS, AUDIT */}
+      {/* ENTERPRISE ADD-ON CONSOLES: INQUIRIES, REVIEWS, CONSUMPTION, LEDGER, SESSIONS, AUDIT */}
       {/* ========================================================================= */}
       {activeTab === 'inquiries' && <LeadsInquiriesConsole />}
       {activeTab === 'reviews' && <ReviewsModerationConsole />}
       {activeTab === 'consumption_margins' && <ApiConsumptionMarginConsole />}
-      {activeTab === 'blog_cms' && <BlogCmsConsole />}
 
       {/* TAB: CANDIDATE VERIFICATION LEDGER */}
       {activeTab === 'ledger' && (

@@ -53,7 +53,6 @@ const HrExecutiveView = lazyWithRetry(() => import('./views/HrExecutiveView').th
 const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })), 'EmployeePortalView');
 const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
-const BlogView = lazyWithRetry(() => import('./views/BlogView').then(m => ({ default: m.BlogView })), 'BlogView');
 
 // Seamless Light Loading Fallback Component
 const RouteLoadingSpinner = () => (
@@ -131,33 +130,32 @@ export const App = () => {
           <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
-                {/* 1. Public Marketing Landing Page (No Portal URLs Leaked) */}
+                {/* 1. Public Marketing Landing Page */}
                 <Route path="/" element={<LandingPageView />} />
 
-                {/* 2. Public Knowledge Hub / Blog */}
-                <Route path="/blog" element={<BlogView />} />
-
-                {/* 3. Role-Based Login Workstations */}
+                {/* 2. Single-Role Login Routes */}
                 <Route path="/login" element={<LoginView />} />
                 <Route path="/superadmin/login" element={<LoginView initialRole="superadmin" />} />
                 <Route path="/company/login" element={<LoginView initialRole="company" />} />
                 <Route path="/hr/login" element={<LoginView initialRole="hrexecutive" />} />
 
-                {/* 4. Authenticated & Role-Gated Portal Dashboards */}
+                {/* 3. Authenticated & Role-Gated Portal Dashboards with Slugs */}
                 <Route path="/superadmin/*" element={<SuperAdminRoute />} />
+                <Route path="/company/:companySlug/*" element={<CompanyRoute />} />
                 <Route path="/company/*" element={<CompanyRoute />} />
+                <Route path="/hr/:companySlug/*" element={<HrRoute />} />
                 <Route path="/hr/*" element={<HrRoute />} />
 
-                {/* 5. Mobile Candidate Verification Magic Links */}
+                {/* 4. Mobile Candidate Verification Magic Links */}
                 <Route path="/verify" element={<CandidateRoute />} />
                 <Route path="/candidate" element={<CandidateRoute />} />
 
-                {/* 6. Onboarding & Activation Flows */}
+                {/* 5. Onboarding & Activation Flows */}
                 <Route path="/activate" element={<CompanyActivationView />} />
                 <Route path="/activate-company" element={<CompanyActivationView />} />
                 <Route path="/activate-hr" element={<HrActivationView />} />
 
-                {/* 7. Fallback Wildcard Redirect */}
+                {/* 6. Fallback Wildcard Redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

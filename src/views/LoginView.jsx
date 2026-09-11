@@ -187,9 +187,10 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           return;
         }
 
-        const comp = (companies || []).find(c => c.email?.toLowerCase() === email);
+        const comp = (companies || []).find(c => c.email?.toLowerCase() === email) || (companies || [])[0];
+        const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         await loginUser('company', { email, password, companyId: comp?.id });
-        navigate('/company');
+        navigate(`/company/${compSlug}`);
       } 
       else if (selectedRoleTab === 'hrexecutive') {
         const email = emailInput.trim().toLowerCase();
@@ -201,9 +202,11 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           return;
         }
 
-        const hr = (hrUsers || []).find(h => h.email?.toLowerCase() === email);
+        const hr = (hrUsers || []).find(h => h.email?.toLowerCase() === email) || (hrUsers || [])[0];
+        const comp = (companies || []).find(c => c.id === hr?.companyId) || (companies || [])[0];
+        const hrSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         await loginUser('hrexecutive', { email, password, hrId: hr?.id });
-        navigate('/hr');
+        navigate(`/hr/${hrSlug}`);
       }
     } catch (err) {
       setLoginError(err.message || 'Authentication failed. Please verify credentials.');
@@ -224,19 +227,22 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         await loginUser('superadmin', { email: 'admin@joycorporatesolutions.com', password: 'admin123' });
         navigate('/superadmin');
       } else if (roleKey === 'company') {
-        const comp = (companies || [])[0] || { id: 'comp_1', email: 'muthukumar@joyglobalcorp.com' };
+        const comp = (companies || [])[0] || { id: 'comp_1', email: 'muthukumar@joyglobalcorp.com', name: 'Joy Corporate Solutions' };
         const compEmail = comp.email || 'muthukumar@joyglobalcorp.com';
+        const compSlug = (comp.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         setEmailInput(compEmail);
         setPasswordInput('company123');
         await loginUser('company', { email: compEmail, password: 'company123', companyId: comp.id });
-        navigate('/company');
+        navigate(`/company/${compSlug}`);
       } else if (roleKey === 'hrexecutive') {
-        const hr = (hrUsers || [])[0] || { id: 'hr_1', email: 'muthujoygroup@gmail.com' };
+        const hr = (hrUsers || [])[0] || { id: 'hr_1', email: 'muthujoygroup@gmail.com', companyId: 'comp_1' };
         const hrEmail = hr.email || 'muthujoygroup@gmail.com';
+        const comp = (companies || []).find(c => c.id === hr.companyId) || (companies || [])[0] || { name: 'Joy Corporate Solutions' };
+        const hrSlug = (comp.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         setEmailInput(hrEmail);
         setPasswordInput('hr123');
         await loginUser('hrexecutive', { email: hrEmail, password: 'hr123', hrId: hr.id });
-        navigate('/hr');
+        navigate(`/hr/${hrSlug}`);
       } else if (roleKey === 'employee_link') {
         const firstCand = (candidates || [])[0] || { token: 'DEMO-TOK-7821', portalPassword: '1234' };
         const tok = firstCand.token || 'DEMO-TOK-7821';
@@ -369,64 +375,6 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
               </div>
               <div className="text-[10px] text-slate-500 font-mono mt-0.5">PIN: 1234</div>
             </button>
-          </div>
-        </div>
-
-        {/* 4 Multi-Role Access Selector Cards */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 uppercase tracking-wider px-1">
-            <span>Or Choose Role & Authenticate</span>
-            <span className="text-indigo-600 font-bold hidden sm:inline">Hierarchical RBAC Architecture</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.keys(roleDetails).map((rKey) => {
-              const rInfo = roleDetails[rKey];
-              const RIcon = rInfo.icon;
-              const isSelected = selectedRoleTab === rKey;
-              return (
-                <div
-                  key={rKey}
-                  onClick={() => {
-                    setSelectedRoleTab(rKey);
-                    setEmailInput('');
-                    setPasswordInput('');
-                    setCandidateTokenInput('');
-                    setCandidatePinInput('');
-                    setLoginError('');
-                  }}
-                  className={`glass-panel p-5 cursor-pointer transition-all relative overflow-hidden flex flex-col justify-between space-y-4 rounded-2xl ${
-                    isSelected 
-                      ? `bg-white ${rInfo.borderClass} border-2 shadow-xl scale-[1.02]` 
-                      : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white'
-                  }`}
-                >
-                  {/* Top Gradient Bar for Active Selection */}
-                  {isSelected && (
-                    <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: rInfo.headerGradient }} />
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className={`p-3 rounded-xl ${rInfo.iconBgClass} flex items-center justify-center shrink-0`}>
-                      <RIcon className="w-5 h-5 text-white" />
-                    </div>
-                    <span className={`badge ${rInfo.badgeClass} text-[10px]`}>{rInfo.badge}</span>
-                  </div>
-
-                  <div>
-                    <h3 className="font-extrabold text-slate-900 text-sm">{rInfo.title}</h3>
-                    <p className="text-[11px] text-slate-500 mt-1 font-medium line-clamp-2">{rInfo.subtitle}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
-                    <span className={isSelected ? 'text-indigo-600 font-extrabold' : 'text-slate-500'}>
-                      {isSelected ? 'Active Selection ✓' : 'Select Portal'}
-                    </span>
-                    <ArrowRight className={`w-3.5 h-3.5 ${isSelected ? 'text-indigo-600' : 'text-slate-400'}`} />
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
 

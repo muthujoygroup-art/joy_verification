@@ -32,9 +32,19 @@ export const UniversalDocumentExportModal = ({
 }) => {
   const { candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem } = useApp();
 
+  // Role Tab State
+  const [activeRole, setActiveRole] = useState(initialRole);
+
+  // Division Tab State per Role
+  const [activeDivision, setActiveDivision] = useState(() => {
+    if (initialRole === 'superadmin') return 'billing';
+    if (initialRole === 'company') return 'candidate_dir';
+    return 'pipeline';
+  });
+
   // Date Range State
   const [datePreset, setDatePreset] = useState('all');
- // 'today' | 'yesterday' | 'last7' | 'thisMonth' | 'lastMonth' | 'custom' | 'all'
+  // 'today' | 'yesterday' | 'last7' | 'thisMonth' | 'lastMonth' | 'custom' | 'all'
   const [startDate, setStartDate] = useState('2026-08-01');
   const [endDate, setEndDate] = useState('2026-08-26');
   const [singleDate, setSingleDate] = useState('2026-08-26');
@@ -51,6 +61,13 @@ export const UniversalDocumentExportModal = ({
   const [exportingFormat, setExportingFormat] = useState(null);
 
   useEffect(() => {
+    setActiveRole(initialRole);
+    if (initialRole === 'superadmin') setActiveDivision('billing');
+    else if (initialRole === 'company') setActiveDivision('candidate_dir');
+    else setActiveDivision('pipeline');
+  }, [initialRole]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (typeof onClose === 'function') onClose();
@@ -59,6 +76,30 @@ export const UniversalDocumentExportModal = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  // Role Divisions Definition
+  const roleDivisions = useMemo(() => ({
+    superadmin: [
+      { id: 'billing', label: '💳 Billing & Revenue Ledger', desc: 'Company Invoices, Tariffs, Revenue Ledgers & Unpaid Statements' },
+      { id: 'company_profile', label: '🏢 Corporate Directory & Quotas', desc: 'Tenant Profiles, Master Plan Quotas & Verification Limits' },
+      { id: 'error_logs', label: '⚠️ Incident & Exception Logs', desc: 'System Incident Records, Stack Traces & Resolution Telemetry' },
+      { id: 'api_usage', label: '⚡ API Telemetry & Cost Analysis', desc: 'UIDAI / NSDL / NPCI Upstream Consumptions & Profit Margins' },
+      { id: 'legal_dpdp', label: '🛡️ Legal & DPDP Audit Dossiers', desc: 'DPDP Section 6 Consent Chain & Audit Trail Exports' }
+    ],
+    company: [
+      { id: 'candidate_dir', label: '👥 Candidate Verification Directory', desc: 'Candidate verification dossiers, e-KYC status & date logs' },
+      { id: 'company_credentials', label: '🏢 Corporate CIN & GSTIN Master', desc: 'Official Company Profile, CIN, GSTIN & PAN Credentials' },
+      { id: 'vendor_verification', label: '🤝 Vendor Audit & PDF Certificates', desc: 'Corporate Vendor Validation Certificates & Tax Verification' },
+      { id: 'billing_wallet', label: '💳 Billing & Wallet Credit Receipts', desc: 'Razorpay Top-Up Receipts, Credit Balance & Monthly Statements' },
+      { id: 'hr_activity', label: '👔 HR Recruiter Staff Activity', desc: 'Recruiter Onboarding Stats, Verification Speed & Access Logs' }
+    ],
+    hrexecutive: [
+      { id: 'pipeline', label: '📋 Candidate Verification Pipeline', desc: 'Active verification links, e-KYC pipeline & completion' },
+      { id: 'tat', label: '⏱️ Speed & TAT Metrics', desc: 'Turnaround Time analytics per candidate & department' },
+      { id: 'statutory_forms', label: '📜 Statutory Labor Compliance Dossiers', desc: 'EPFO Form 11, ESIC, Gratuity & Form 2 Pre-filled packages' },
+      { id: 'exporter', label: '📥 Multi-Format Date Exporter', desc: 'Excel, PDF, Word & ZIP package generator for candidate data' }
+    ]
+  }), []);
 
 
   // Handle Date Presets
@@ -489,6 +530,64 @@ export const UniversalDocumentExportModal = ({
         {/* Scrollable Filtering & Selection Area */}
         <div className="p-4 sm:p-8 overflow-y-auto space-y-6 text-xs">
           
+          {/* 🏷️ Role & Report Division Selection Bar */}
+          <div className="glass-panel p-4 bg-slate-900 text-white rounded-2xl space-y-3 shadow-md border border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-amber-400" />
+                <span className="font-extrabold text-xs text-slate-200">Portal Console Context:</span>
+              </div>
+
+              {/* Role Context Selector Pills */}
+              <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                {[
+                  { id: 'superadmin', label: '👑 Super Admin', bg: 'bg-indigo-600' },
+                  { id: 'company', label: '🏢 Company Admin', bg: 'bg-sky-600' },
+                  { id: 'hrexecutive', label: '👔 HR Executive', bg: 'bg-emerald-600' }
+                ].map(role => (
+                  <button
+                    key={role.id}
+                    onClick={() => {
+                      setActiveRole(role.id);
+                      const firstDiv = roleDivisions[role.id]?.[0]?.id || 'pipeline';
+                      setActiveDivision(firstDiv);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                      activeRole === role.id 
+                        ? `${role.bg} text-white shadow-xs` 
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    }`}
+                  >
+                    {role.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Division Sub-Tabs */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              {(roleDivisions[activeRole] || roleDivisions.hrexecutive).map((div) => {
+                const isSelected = activeDivision === div.id;
+                return (
+                  <button
+                    key={div.id}
+                    onClick={() => setActiveDivision(div.id)}
+                    className={`px-3 py-2 rounded-xl text-left transition-all cursor-pointer border flex flex-col gap-0.5 ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 border-amber-400 shadow-md font-black'
+                        : 'bg-slate-950/70 hover:bg-slate-800 text-slate-300 border-slate-800 font-semibold'
+                    }`}
+                  >
+                    <span className="text-xs font-bold">{div.label}</span>
+                    <span className={`text-[10px] ${isSelected ? 'text-slate-900 font-medium' : 'text-slate-400'}`}>
+                      {div.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* 🗓️ 1. Date Filtering Panel */}
           <div className="glass-panel p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4 shadow-2xs">
             <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">

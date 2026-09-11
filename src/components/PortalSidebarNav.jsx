@@ -278,7 +278,6 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'ledger', label: 'Candidate Ledger & Records', tab: 'ledger', icon: Users },
             { id: 'leads_inquiries', label: 'Enterprise Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
             { id: 'reviews_moderation', label: 'Reviews & Public Testimonials', tab: 'reviews', icon: Star },
-            { id: 'blog_cms', label: 'SEO Articles & Blog CMS', tab: 'blog_cms', icon: FileText },
             { id: 'terms_hub', label: 'Terms & Agreements Hub', tab: 'terms_hub', icon: Scale },
             { id: 'logins', label: 'Unified Logins Directory', tab: 'logins', icon: UserCheck }
           ]
