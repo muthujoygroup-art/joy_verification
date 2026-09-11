@@ -36,7 +36,8 @@ import {
   Layers,
   MessageSquare,
   FileSpreadsheet,
-  CheckCircle2
+  CheckCircle2,
+  Mail
 } from 'lucide-react';
 
 export const PortalSidebarNav = ({ onCloseMobile, isMobile = false }) => {
