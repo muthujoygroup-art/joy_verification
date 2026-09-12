@@ -1725,8 +1725,12 @@ export const AppProvider = ({ children }) => {
     }
 
     if (uniqueCandidatesList.length === 0) {
-      showToast('⚠️ All candidates in file already exist in directory.');
-      return [];
+      showToast('ℹ️ Candidates already exist in directory. Displaying records.');
+      const existingMatches = candidates.filter(c => {
+        const cEmail = (c.email || '').trim().toLowerCase();
+        return candidatesList.some(item => (item.email || '').trim().toLowerCase() === cEmail);
+      });
+      return existingMatches.length > 0 ? existingMatches : candidatesList;
     }
 
     try {
