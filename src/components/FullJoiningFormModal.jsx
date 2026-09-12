@@ -107,17 +107,6 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     }
   };
 
-  const handleSaveDraft = () => {
-    try {
-      localStorage.setItem(draftKey, JSON.stringify(formData));
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      setLastAutoSaveTime(nowStr);
-      showToast('💾 Application draft progress saved successfully!');
-    } catch (e) {
-      showToast('Draft saved to local storage.', 'info');
-    }
-  };
-
 
   const jfd = candidate?.joiningFormData || {};
   const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
@@ -340,6 +329,17 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
     return defaults;
   });
+
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(draftKey, JSON.stringify(formData));
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLastAutoSaveTime(nowStr);
+      showToast('💾 Application draft progress saved successfully!');
+    } catch (e) {
+      showToast('Draft saved to local storage.', 'info');
+    }
+  };
 
 
   // Lock Body Scroll while Master Joining Form Modal is Open

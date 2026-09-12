@@ -126,22 +126,6 @@ export const BulkEmployeeImportModal = ({
   const [importStatusMessage, setImportStatusMessage] = useState('');
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !isImporting) {
-        if (typeof onClose === 'function') onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    const origOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = origOverflow;
-    };
-  }, [isOpen, isImporting, onClose]);
-
   // Link Sending Option States
   const [autoSendLinks, setAutoSendLinks] = useState(true);
   const [dispatchChannels, setDispatchChannels] = useState({
@@ -177,15 +161,21 @@ export const BulkEmployeeImportModal = ({
   const [importedCandidates, setImportedCandidates] = useState([]);
   const [copiedToken, setCopiedToken] = useState(null);
 
-  // Close on Escape key
+  // Body scroll lock & Escape key listener
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen && !isImporting) {
-        onClose();
+      if (e.key === 'Escape' && !isImporting) {
+        if (typeof onClose === 'function') onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
   }, [isOpen, isImporting, onClose]);
 
   if (!isOpen) return null;

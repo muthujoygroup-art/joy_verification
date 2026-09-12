@@ -211,6 +211,7 @@ export const CompanyAdminView = () => {
     industry_sector: company?.industry_sector || 'Information Technology (IT/ITeS)',
     website: company?.website || ''
   });
+  const [companyUploadedDocs, setCompanyUploadedDocs] = useState(company?.documents || {});
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // 🔐 Company Administrator Login Password Update State
@@ -452,8 +453,6 @@ export const CompanyAdminView = () => {
     }
   };
 
-
-  const [companyUploadedDocs, setCompanyUploadedDocs] = useState(company?.documents || {});
 
   // 📧 Company Custom Email Gateway & SMTP States
   const [compEmailConfig, setCompEmailConfig] = useState({
