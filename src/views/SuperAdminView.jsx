@@ -719,6 +719,23 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   };
 
+  // Sync URL Path when activeTab changes
+  useEffect(() => {
+    const targetPath = `/superadmin/console/${activeTab}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.replaceState(null, '', targetPath);
+    }
+  }, [activeTab]);
+
+  // Parse initial tab from URL path
+  useEffect(() => {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const lastPart = parts[parts.length - 1];
+    if (['companies', 'apiconfig', 'billing', 'dbms', 'reports', 'settings', 'audit', 'analytics'].includes(lastPart)) {
+      setActiveTab(lastPart);
+    }
+  }, []);
+
   // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -146,7 +146,12 @@ const HrRoute = () => {
 const CandidateRoute = () => {
   const { currentRole, currentUser, loginUser, setSelectedCandidateToken } = useApp();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || 'tok_karan_903';
+  const location = useLocation();
+  
+  // Extract token from route param, query param, or path split
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const pathToken = pathParts[pathParts.length - 1];
+  const token = (pathToken && pathToken.startsWith('tok_')) ? pathToken : (searchParams.get('token') || 'tok_karan_903');
 
   useEffect(() => {
     if (token) {
@@ -182,14 +187,25 @@ export const App = () => {
                 <Route path="/company/login" element={<LoginView initialRole="company" />} />
                 <Route path="/hr/login" element={<LoginView initialRole="hrexecutive" />} />
 
-                {/* 3. Authenticated & Role-Gated Portal Dashboards with Slugs */}
+                {/* 3. Authenticated & Role-Gated Portal Dashboards with Hierarchical Slugs */}
                 <Route path="/superadmin/*" element={<SuperAdminRoute />} />
+                
+                {/* Company Admin Routes */}
+                <Route path="/:companySlug/company/admin/*" element={<CompanyRoute />} />
+                <Route path="/:companySlug/company/*" element={<CompanyRoute />} />
                 <Route path="/company/:companySlug/*" element={<CompanyRoute />} />
                 <Route path="/company/*" element={<CompanyRoute />} />
+
+                {/* HR Executive Routes (Domain/company-name/hr/hr-name/tab) */}
+                <Route path="/:companySlug/hr/:hrSlug/*" element={<HrRoute />} />
+                <Route path="/:companySlug/hr/*" element={<HrRoute />} />
+                <Route path="/hr/:companySlug/:hrSlug/*" element={<HrRoute />} />
                 <Route path="/hr/:companySlug/*" element={<HrRoute />} />
                 <Route path="/hr/*" element={<HrRoute />} />
 
-                {/* 4. Mobile Candidate Verification Magic Links */}
+                {/* 4. Candidate Verification Magic Links */}
+                <Route path="/:companySlug/verify/:token" element={<CandidateRoute />} />
+                <Route path="/verify/:token" element={<CandidateRoute />} />
                 <Route path="/verify" element={<CandidateRoute />} />
                 <Route path="/candidate" element={<CandidateRoute />} />
 

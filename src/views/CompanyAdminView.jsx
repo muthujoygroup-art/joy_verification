@@ -571,6 +571,27 @@ export const CompanyAdminView = () => {
     }));
   }, [activeTab, activeMainSection]);
 
+  // Slugify Helper
+  const slugify = (text) => (text || '').toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const companySlug = slugify(company?.name || 'joy-corporate-solutions');
+
+  // Sync URL path when activeTab changes
+  useEffect(() => {
+    const targetPath = `/${companySlug}/company/admin/${activeTab}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.replaceState(null, '', targetPath);
+    }
+  }, [activeTab, companySlug]);
+
+  // Parse initial tab from URL path
+  useEffect(() => {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const lastPart = parts[parts.length - 1];
+    if (['telemetry', 'registry', 'hrteam', 'vendor_verification', 'dochub', 'billing_wallet', 'profile_details', 'smtp_settings'].includes(lastPart)) {
+      setActiveTab(lastPart);
+    }
+  }, []);
+
   // Listen to navigation events from Left Portal Sidebar
   useEffect(() => {
     const handlePortalNav = (e) => {

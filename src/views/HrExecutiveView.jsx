@@ -503,6 +503,50 @@ export const HrExecutiveView = () => {
     setViewingUploadedDocsCandidate(cand);
   };
 
+  // Slugify Helper
+  const slugify = (text) => (text || '').toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const companySlug = slugify(currentCompany?.name || 'joy-corporate-solutions');
+  const hrSlug = slugify(activeHr?.name || 'hari-priya');
+
+  // Map activeTab to clean URL tab slug
+  const tabSlugMap = {
+    pipeline: 'candidates',
+    profiler: 'add-candidate',
+    analytics: 'reports',
+    settings: 'settings'
+  };
+
+  // Sync URL Path when activeTab changes
+  useEffect(() => {
+    const currentTabSlug = tabSlugMap[activeTab] || 'candidates';
+    const targetPath = `/${companySlug}/hr/${hrSlug}/${currentTabSlug}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.replaceState(null, '', targetPath);
+    }
+  }, [activeTab, companySlug, hrSlug]);
+
+  // Parse initial tab from URL on page load / direct entry
+  useEffect(() => {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const lastPart = parts[parts.length - 1];
+    if (lastPart === 'add-candidate' || lastPart === 'profiler') {
+      setActiveTab('profiler');
+      setActiveMainSection('profiler_dispatch');
+      setShowAddForm(true);
+    } else if (lastPart === 'reports' || lastPart === 'analytics') {
+      setActiveTab('analytics');
+      setActiveMainSection('statutory_settings');
+    } else if (lastPart === 'settings') {
+      setActiveTab('settings');
+      setActiveMainSection('statutory_settings');
+    } else if (lastPart === 'candidates' || lastPart === 'pipeline') {
+      setActiveTab('pipeline');
+      setActiveMainSection('pipeline_dossiers');
+      setShowAddForm(false);
+    }
+  }, []);
+
   // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -168,6 +168,11 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     return () => window.removeEventListener('portal_nav_state_sync', handleStateSync);
   }, []);
 
+  const slugify = (text) => (text || '').toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const companySlug = slugify(currentUser?.companyName || 'joy-corporate-solutions');
+  const hrSlug = slugify(currentUser?.name || 'hari-priya');
+
   // Handle navigation trigger to portal views
   const handleNavigate = (pillar, division = null) => {
     soundEngine.playClick?.();
@@ -178,6 +183,17 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       setActiveDivisionId(division.id);
     } else if (pillar.divisions && pillar.divisions.length > 0) {
       setActiveDivisionId(pillar.divisions[0].id);
+    }
+
+    // Update browser address bar with hierarchical URL
+    if (currentRole === 'hrexecutive') {
+      const tabSlugMap = { pipeline: 'candidates', profiler: 'add-candidate', analytics: 'reports', settings: 'settings' };
+      const currentTabSlug = tabSlugMap[targetTab] || targetTab || 'candidates';
+      window.history.pushState(null, '', `/${companySlug}/hr/${hrSlug}/${currentTabSlug}`);
+    } else if (currentRole === 'company') {
+      window.history.pushState(null, '', `/${companySlug}/company/admin/${targetTab || 'telemetry'}`);
+    } else if (currentRole === 'superadmin') {
+      window.history.pushState(null, '', `/superadmin/console/${targetTab || 'companies'}`);
     }
 
     // Dispatch global event for Portal views to consume
