@@ -46,6 +46,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     currentRole,
     logoutUser,
     candidates,
+    selectedCandidateToken,
     hrUsers,
     notifications,
     platformLogoEmblem,
