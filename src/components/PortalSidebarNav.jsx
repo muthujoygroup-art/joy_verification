@@ -48,7 +48,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     candidates,
     hrUsers,
     notifications,
-    platformLogoEmblem
+    platformLogoEmblem,
+    companies,
+    showToast
   } = useApp();
 
   // 1. Top Segmented Switcher: 'company' (Enterprise Operations) vs 'personal' (My Workspace)
