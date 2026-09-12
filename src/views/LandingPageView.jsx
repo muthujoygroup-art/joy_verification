@@ -471,7 +471,7 @@ export const LandingPageView = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070A11] text-slate-100 font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white relative overflow-x-hidden">
       
       {/* Innovative First-Load / Reload Holographic Logo Preloader */}
       {showPreloader && (
@@ -479,11 +479,11 @@ export const LandingPageView = () => {
       )}
 
       {/* TOP KINETIC MARQUEE TICKER */}
-      <div className="w-full bg-gradient-to-r from-purple-950 via-slate-950 to-indigo-950 border-b border-purple-500/30 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-300 relative z-50 shadow-md">
+      <div className="w-full bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border-b border-purple-300/30 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-100 relative z-50 shadow-sm">
         <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
           {[...Array(2)].map((_, mIdx) => (
             <React.Fragment key={mIdx}>
-              <span className="inline-flex items-center gap-2 text-emerald-400">
+              <span className="inline-flex items-center gap-2 text-emerald-300">
                 <Sparkles className="w-3.5 h-3.5" /> e-KYC UIDAI Aadhaar Verification (100% Authentic)
               </span>
               <span className="text-purple-400">✦</span>
@@ -495,15 +495,15 @@ export const LandingPageView = () => {
                 <Mail className="w-3.5 h-3.5" /> Multi-Channel Magic Link Dispatcher (WhatsApp / SMS / Email)
               </span>
               <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-purple-300">
+              <span className="inline-flex items-center gap-2 text-purple-200">
                 <FileSpreadsheet className="w-3.5 h-3.5" /> Excel Bulk Import Engine (500+ Hires in 10s)
               </span>
               <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-emerald-400">
+              <span className="inline-flex items-center gap-2 text-emerald-300">
                 <CreditCard className="w-3.5 h-3.5" /> Razorpay GST Auto-Invoicing & Prepaid Metered Credits
               </span>
               <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-indigo-300">
+              <span className="inline-flex items-center gap-2 text-indigo-200">
                 <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Audit Vault
               </span>
               <span className="text-purple-400">✦</span>
@@ -513,9 +513,9 @@ export const LandingPageView = () => {
       </div>
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION: SINGLE ELEGANT EXECUTIVE NAVBAR WITH NEAT PILL TOGGLE
+       * 1. TOP NAVIGATION: SINGLE ELEGANT LIGHT THEME NAVBAR WITH NEAT PILL TOGGLE
        * ============================================================================== */}
-      <header className="sticky top-0 z-50 w-full bg-[#070A11]/90 backdrop-blur-2xl border-b border-slate-800/80 shadow-[0_4px_30px_rgba(0,0,0,0.6)] transition-all">
+      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-2xl border-b border-slate-200 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo - Single Line, Clean, Balanced */}
@@ -524,23 +524,23 @@ export const LandingPageView = () => {
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="JOY TRUE PROFILE Logo" 
-                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-transform" 
+                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(147,51,234,0.3)] group-hover:scale-105 transition-transform" 
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
             </div>
             <div className="flex flex-col text-left justify-center">
               <div className="flex items-center gap-1.5 whitespace-nowrap leading-none">
-                <span className="text-lg sm:text-xl font-black text-white font-outfit tracking-tight">JOY</span>
-                <span className="text-lg sm:text-xl font-black text-emerald-400 font-outfit tracking-tight">TRUE PROFILE</span>
+                <span className="text-lg sm:text-xl font-black text-slate-900 font-outfit tracking-tight">JOY</span>
+                <span className="text-lg sm:text-xl font-black text-purple-600 font-outfit tracking-tight">TRUE PROFILE</span>
               </div>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-300 font-bold whitespace-nowrap mt-1">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-bold whitespace-nowrap mt-1">
                 Zero-Trust Verification
               </span>
             </div>
           </button>
 
           {/* Center Navigation: Single Neat Segmented Pill Switcher */}
-          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-950/80 border border-slate-800/90 shadow-inner backdrop-blur-xl">
+          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/90 border border-slate-200 shadow-inner backdrop-blur-xl">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'features', label: 'Features' },
@@ -558,8 +558,8 @@ export const LandingPageView = () => {
                   onClick={() => handleTabChange(tab.id)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-500 text-white font-black shadow-[0_0_18px_rgba(147,51,234,0.4)] border border-purple-400/50 scale-[1.03]'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900/50'
+                      ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black shadow-xs border border-purple-400/50 scale-[1.03]'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
                   }`}
                 >
                   {tab.label}
@@ -573,25 +573,25 @@ export const LandingPageView = () => {
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
-              className="p-2.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+              className="p-2.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-all cursor-pointer shadow-2xs"
               title={soundMuted ? "Unmute Audio Effects" : "Mute Audio Effects"}
             >
-              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-500" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-purple-600" />}
             </button>
 
             {/* Portal Logins Drawer Trigger */}
             <button
               onClick={() => setShowPortalDrawer(true)}
-              className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700 shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
               <span>Portal Logins ⚡</span>
             </button>
 
             {/* Book Live Demo Primary Button */}
             <button
               onClick={() => setShowDemoModal(true)}
-              className="whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-500 hover:from-purple-500 hover:to-indigo-500 shadow-[0_0_25px_rgba(147,51,234,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-purple-400/50"
+              className="whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-700 hover:to-indigo-700 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-purple-500/50"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -601,7 +601,7 @@ export const LandingPageView = () => {
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:bg-slate-800 shadow-md cursor-pointer"
+            className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 shadow-xs cursor-pointer"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -610,27 +610,27 @@ export const LandingPageView = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-800 px-4 py-4 bg-slate-950 shadow-2xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Overview</button>
-            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Verification Modules</button>
-            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Moonlighting Radar</button>
-            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Turnstile Simulator</button>
-            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Comparison Matrix</button>
-            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">ROI Calculator</button>
-            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Enterprise Solutions</button>
-            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-purple-400 hover:bg-slate-900 font-bold text-left">Resources & FAQ</button>
+          <div className="lg:hidden border-t border-slate-200 px-4 py-4 bg-white shadow-2xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Overview</button>
+            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Verification Modules</button>
+            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Moonlighting Radar</button>
+            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Turnstile Simulator</button>
+            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Comparison Matrix</button>
+            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">ROI Calculator</button>
+            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Enterprise Solutions</button>
+            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Resources & FAQ</button>
             
-            <div className="pt-3 mt-1 border-t border-slate-800 flex flex-col gap-2">
+            <div className="pt-3 mt-1 border-t border-slate-200 flex flex-col gap-2">
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowPortalDrawer(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-slate-200 bg-slate-900 border border-slate-700 text-center cursor-pointer"
+                className="w-full py-2.5 rounded-xl font-black text-xs text-slate-800 bg-slate-100 border border-slate-300 text-center cursor-pointer"
               >
                 <span>Portal Logins ⚡</span>
               </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 text-center shadow-lg border border-purple-500/50 cursor-pointer"
+                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 text-center shadow-md border border-purple-500/50 cursor-pointer"
               >
                 <span>Book Live Demo</span>
               </button>
@@ -639,27 +639,27 @@ export const LandingPageView = () => {
         )}
       </header>
 
-      {/* Slide-Over Quick Portal Login Drawer */}
+      {/* Slide-Over Quick Portal Login Drawer (Light Theme) */}
       {showPortalDrawer && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex justify-end animate-fadeIn">
-          <div className="w-full max-w-md bg-slate-900 text-white h-full shadow-2xl border-l border-slate-800 p-6 flex flex-col justify-between overflow-y-auto animate-modal-spring">
+        <div className="fixed inset-0 z-[9999] bg-slate-950/40 backdrop-blur-md flex justify-end animate-fadeIn">
+          <div className="w-full max-w-md bg-white text-slate-900 h-full shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between overflow-y-auto animate-modal-spring">
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-purple-600/30 border border-purple-400/40 text-purple-300">
-                    <Zap className="w-5 h-5 text-amber-300 fill-amber-300" />
+                  <div className="p-2 rounded-xl bg-purple-100 border border-purple-200 text-purple-700">
+                    <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-black uppercase text-purple-400 tracking-wider">Quick Portal Access</span>
-                    <h3 className="text-lg font-black text-white">Select Login Console</h3>
+                    <span className="text-[10px] font-black uppercase text-purple-700 tracking-wider">Quick Portal Access</span>
+                    <h3 className="text-lg font-black text-slate-900">Select Login Console</h3>
                   </div>
                 </div>
-                <button onClick={() => setShowPortalDrawer(false)} className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer">
+                <button onClick={() => setShowPortalDrawer(false)} className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-400 font-medium">
+              <p className="text-xs text-slate-600 font-medium">
                 Select a platform role portal below to navigate directly or test live features:
               </p>
 
@@ -667,75 +667,75 @@ export const LandingPageView = () => {
                 {/* SuperAdmin */}
                 <div 
                   onClick={() => { setShowPortalDrawer(false); navigate('/superadmin/console/omnisearch'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-purple-950/70 to-slate-900 border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all hover:scale-[1.02] space-y-2 group"
+                  className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-white border border-purple-200 hover:border-purple-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
                 >
                   <div className="flex items-center justify-between">
                     <span className="badge badge-purple text-[10px] font-black">SUPERADMIN CONSOLE</span>
-                    <ArrowRight className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h4 className="text-sm font-black text-white flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-amber-400" />
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <Crown className="w-4 h-4 text-amber-500" />
                     <span>1. Super Admin Master Console</span>
                   </h4>
-                  <p className="text-[11px] text-slate-400">Tenant management, dual API gateways, metered billing ledger & PostgreSQL error logs.</p>
+                  <p className="text-[11px] text-slate-600">Tenant management, dual API gateways, metered billing ledger & PostgreSQL error logs.</p>
                 </div>
 
                 {/* Company Admin */}
                 <div 
                   onClick={() => { setShowPortalDrawer(false); navigate('/company/console/dashboard'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/70 to-slate-900 border border-indigo-500/30 hover:border-indigo-400 cursor-pointer transition-all hover:scale-[1.02] space-y-2 group"
+                  className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-white border border-indigo-200 hover:border-indigo-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
                 >
                   <div className="flex items-center justify-between">
                     <span className="badge badge-indigo text-[10px] font-black">COMPANY ADMIN</span>
-                    <ArrowRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h4 className="text-sm font-black text-white flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-indigo-400" />
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-indigo-600" />
                     <span>2. Company Admin Workstation</span>
                   </h4>
-                  <p className="text-[11px] text-slate-400">Quota usage card, HR seat allocation, Razorpay top-ups & compliance document vault.</p>
+                  <p className="text-[11px] text-slate-600">Quota usage card, HR seat allocation, Razorpay top-ups & compliance document vault.</p>
                 </div>
 
                 {/* HR Executive */}
                 <div 
                   onClick={() => { setShowPortalDrawer(false); navigate('/hr/console/pipeline'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/70 to-slate-900 border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all hover:scale-[1.02] space-y-2 group"
+                  className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-white border border-emerald-200 hover:border-emerald-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
                 >
                   <div className="flex items-center justify-between">
                     <span className="badge badge-emerald text-[10px] font-black">HR RECRUITER</span>
-                    <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h4 className="text-sm font-black text-white flex items-center gap-2">
-                    <UserPlus className="w-4 h-4 text-emerald-400" />
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <UserPlus className="w-4 h-4 text-emerald-600" />
                     <span>3. HR Executive Candidate Workstation</span>
                   </h4>
-                  <p className="text-[11px] text-slate-400">WhatsApp / SMS magic link dispatcher, bulk Excel spreadsheet import & 360° dossiers.</p>
+                  <p className="text-[11px] text-slate-600">WhatsApp / SMS magic link dispatcher, bulk Excel spreadsheet import & 360° dossiers.</p>
                 </div>
 
                 {/* Candidate */}
                 <div 
                   onClick={() => { setShowPortalDrawer(false); navigate('/employee/verify/COMP001EMP001'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/70 to-slate-900 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02] space-y-2 group"
+                  className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-white border border-amber-200 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
                 >
                   <div className="flex items-center justify-between">
                     <span className="badge badge-amber text-[10px] font-black">CANDIDATE PORTAL</span>
-                    <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h4 className="text-sm font-black text-white flex items-center gap-2">
-                    <Smartphone className="w-4 h-4 text-amber-400" />
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <Smartphone className="w-4 h-4 text-amber-600" />
                     <span>4. Candidate Verification Portal</span>
                   </h4>
-                  <p className="text-[11px] text-slate-400">4-digit PIN security, Aadhaar e-KYC UIDAI OTP, contact validation & 3D WebCam face camera.</p>
+                  <p className="text-[11px] text-slate-600">4-digit PIN security, Aadhaar e-KYC UIDAI OTP, contact validation & 3D WebCam face camera.</p>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-800 space-y-3">
+            <div className="pt-6 border-t border-slate-200 space-y-3">
               <button
                 onClick={() => { setShowPortalDrawer(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
-                className="w-full btn btn-superadmin text-xs py-3 font-black flex items-center justify-center gap-2 rounded-xl shadow-lg cursor-pointer"
+                className="w-full btn btn-superadmin text-xs py-3 font-black flex items-center justify-center gap-2 rounded-xl shadow-md cursor-pointer"
               >
-                <Compass className="w-4 h-4 text-indigo-300 animate-spin-slow" />
+                <Compass className="w-4 h-4 text-purple-200 animate-spin-slow" />
                 <span>Launch Interactive Tour Guide 🧭</span>
               </button>
             </div>
@@ -750,10 +750,10 @@ export const LandingPageView = () => {
       {/* VIEW 1: OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <>
-          {/* ADOBE MAX KINETIC HERO SECTION */}
+          {/* ADOBE MAX KINETIC HERO SECTION (LIGHT THEME) */}
           <section className="relative z-10 pt-10 pb-16 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {/* Ambient Neon Mesh Glow Flares */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-r from-purple-600/20 via-indigo-600/20 to-emerald-500/20 blur-[140px] pointer-events-none rounded-full" />
+            {/* Soft Ambient Light Mesh Glow Flares */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-r from-purple-200/50 via-indigo-200/50 to-emerald-200/40 blur-[150px] pointer-events-none rounded-full" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
               
@@ -761,35 +761,35 @@ export const LandingPageView = () => {
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
                 {/* Dynamic Eyebrow Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-400/40 bg-slate-950/80 backdrop-blur-xl text-xs font-bold text-purple-300 shadow-2xl">
-                  <Crown className="w-4 h-4 text-amber-400 animate-bounce" />
-                  <span className="uppercase font-mono tracking-wider text-[11px] text-white">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-300/80 bg-purple-50/90 backdrop-blur-xl text-xs font-bold text-purple-900 shadow-2xs">
+                  <Crown className="w-4 h-4 text-amber-500 animate-bounce" />
+                  <span className="uppercase font-mono tracking-wider text-[11px] text-purple-950 font-black">
                     ADOBE MAX DESIGNED • ZERO-TRUST WORKFORCE SCREENING
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-500/40">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
                     TAT &lt;45s
                   </span>
                 </div>
 
                 {/* Main Expressive Headline */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] font-outfit">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.08] font-outfit">
                   Zero-Trust <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-300 to-emerald-400 font-black">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-emerald-600 font-black">
                     Workforce Verification.
                   </span> <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-emerald-300 to-cyan-300">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-teal-600 font-black">
                     In 45 Seconds Flat.
                   </span>
                 </h1>
 
                 {/* High-Impact Subtitle */}
-                <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed font-medium">
+                <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-medium">
                   Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
                 </p>
 
                 {/* Interactive Role Switcher Preview Pills */}
                 <div className="pt-1 flex items-center gap-2 flex-wrap text-xs">
-                  <span className="text-slate-400 font-mono font-bold uppercase tracking-wider text-[10px]">Preview Role:</span>
+                  <span className="text-slate-500 font-mono font-bold uppercase tracking-wider text-[10px]">Preview Role:</span>
                   {[
                     { role: 'all', label: 'All Portals 🚀' },
                     { role: 'superadmin', label: '👑 SuperAdmin' },
@@ -802,8 +802,8 @@ export const LandingPageView = () => {
                       onClick={() => setActiveRolePreview(item.role)}
                       className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer text-xs ${
                         activeRolePreview === item.role
-                          ? 'bg-purple-600 text-white shadow-md border border-purple-400/50 scale-105'
-                          : 'bg-slate-900/90 text-slate-400 hover:text-white border border-slate-800'
+                          ? 'bg-purple-600 text-white shadow-xs border border-purple-500 scale-105 font-black'
+                          : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100 shadow-2xs'
                       }`}
                     >
                       {item.label}
@@ -815,7 +815,7 @@ export const LandingPageView = () => {
                 <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
                   <button
                     onClick={() => setShowDemoModal(true)}
-                    className="btn-superadmin px-7 py-4 rounded-2xl font-black text-sm text-white shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_40px_rgba(147,51,234,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                    className="btn-superadmin px-7 py-4 rounded-2xl font-black text-sm text-white shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
                   >
                     <span>Book Free Live Demo 🚀</span>
                     <ArrowRight className="w-4 h-4 text-white" />
@@ -823,38 +823,38 @@ export const LandingPageView = () => {
 
                   <button
                     onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
-                    className="bg-slate-900/90 hover:bg-slate-800 border-2 border-indigo-500/50 hover:border-indigo-400 px-6 py-4 rounded-2xl font-bold text-sm text-indigo-300 hover:text-white shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border-2 border-indigo-400 px-6 py-4 rounded-2xl font-bold text-sm text-indigo-950 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-indigo-400 animate-spin-slow" />
+                    <Compass className="w-4 h-4 text-indigo-600 animate-spin-slow" />
                     <span>Launch Interactive Tour 🧭</span>
                   </button>
 
                   <button
                     onClick={() => setShowPortalDrawer(true)}
-                    className="bg-slate-900/80 hover:bg-slate-800 border border-slate-700 px-5 py-4 rounded-2xl font-bold text-sm text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-5 py-4 rounded-2xl font-bold text-sm text-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
                   >
-                    <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
                     <span>Portal Logins ⚡</span>
                   </button>
                 </div>
 
                 {/* Key Value Metrics Bar */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-800/80 w-full max-w-2xl">
-                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                    <div className="text-xl sm:text-2xl font-black text-emerald-400 font-outfit">&lt;45s</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Verification TAT</div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-200 w-full max-w-2xl">
+                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div className="text-xl sm:text-2xl font-black text-purple-700 font-outfit">&lt;45s</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Verification TAT</div>
                   </div>
-                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                    <div className="text-xl sm:text-2xl font-black text-white font-outfit">99.98%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Precision Rate</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div className="text-xl sm:text-2xl font-black text-slate-900 font-outfit">99.98%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Precision Rate</div>
                   </div>
-                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                    <div className="text-xl sm:text-2xl font-black text-teal-300 font-outfit">100%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">DPDP 2023 Compliant</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div className="text-xl sm:text-2xl font-black text-emerald-700 font-outfit">100%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">DPDP 2023 Compliant</div>
                   </div>
-                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                    <div className="text-xl sm:text-2xl font-black text-amber-400 font-outfit">80%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Cost Reduction</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div className="text-xl sm:text-2xl font-black text-amber-600 font-outfit">80%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Cost Reduction</div>
                   </div>
                 </div>
 
@@ -868,20 +868,20 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* ADOBE MAX STYLE 4-PORTAL INTERACTIVE EXPERIENCE SHOWCASE */}
+          {/* ADOBE MAX STYLE 4-PORTAL INTERACTIVE EXPERIENCE SHOWCASE (LIGHT THEME) */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
             <div className="text-center space-y-3 max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-black uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-amber-300" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 border border-purple-200 text-purple-900 text-xs font-black uppercase tracking-wider shadow-2xs">
+                <Sparkles className="w-4 h-4 text-amber-500" />
                 <span>Role-Tailored Platform Architecture</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
+              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit tracking-tight">
                 Four Specialized Portals. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-teal-300 to-amber-300 font-black">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-emerald-600 font-black">
                   One Unified Verification Engine.
                 </span>
               </h2>
-              <p className="text-sm sm:text-base text-slate-400 font-medium">
+              <p className="text-sm sm:text-base text-slate-600 font-medium">
                 Designed specifically for every stakeholder in your hiring ecosystem — from master platform admins to corporate HRs and onboarding candidates.
               </p>
             </div>
@@ -889,116 +889,116 @@ export const LandingPageView = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Card 1: Super Admin */}
-              <div className="glass-panel p-6 rounded-3xl border border-purple-500/30 bg-gradient-to-b from-purple-950/40 via-slate-900 to-slate-950 hover:border-purple-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 rounded-3xl border border-purple-200 bg-gradient-to-b from-purple-50/90 via-white to-slate-50 hover:border-purple-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-400/40 text-purple-300 flex items-center justify-center shadow-lg">
-                    <Crown className="w-6 h-6 text-amber-300" />
+                  <div className="w-12 h-12 rounded-2xl bg-purple-100 border border-purple-200 text-purple-700 flex items-center justify-center shadow-2xs">
+                    <Crown className="w-6 h-6 text-amber-500" />
                   </div>
                   <span className="badge badge-purple text-[10px] font-black uppercase tracking-wider">01. GOVERNANCE</span>
-                  <h3 className="text-xl font-black text-white font-outfit group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-purple-700 transition-colors">
                     Super Admin Master Console
                   </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     Master control panel to manage enterprise client tenants, dual API gateways, database telemetry, and Razorpay metered ledger.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-300 font-medium">
-                    <li className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Multi-Tenant Company Registry</li>
-                    <li className="flex items-center gap-2 text-cyan-400"><CheckCircle2 className="w-3.5 h-3.5" /> Dual Server 1 & 2 API Gateways</li>
-                    <li className="flex items-center gap-2 text-amber-300"><CheckCircle2 className="w-3.5 h-3.5" /> PostgreSQL Error Logs & Telemetry</li>
+                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                    <li className="flex items-center gap-2 text-emerald-700 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Tenant Company Registry</li>
+                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> Dual Server 1 & 2 API Gateways</li>
+                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> PostgreSQL Error Logs & Telemetry</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => navigate('/superadmin/console/omnisearch')}
-                  className="w-full btn bg-purple-600 hover:bg-purple-500 text-white font-black text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full btn bg-purple-600 hover:bg-purple-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <span>Open SuperAdmin Console 🚀</span>
                 </button>
               </div>
 
               {/* Card 2: Company Admin */}
-              <div className="glass-panel p-6 rounded-3xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/40 via-slate-900 to-slate-950 hover:border-indigo-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 rounded-3xl border border-indigo-200 bg-gradient-to-b from-indigo-50/90 via-white to-slate-50 hover:border-indigo-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-600/30 border border-indigo-400/40 text-indigo-300 flex items-center justify-center shadow-lg">
-                    <Building2 className="w-6 h-6 text-indigo-400" />
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center shadow-2xs">
+                    <Building2 className="w-6 h-6 text-indigo-600" />
                   </div>
                   <span className="badge badge-indigo text-[10px] font-black uppercase tracking-wider">02. ENTERPRISE</span>
-                  <h3 className="text-xl font-black text-white font-outfit group-hover:text-indigo-300 transition-colors">
+                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-indigo-700 transition-colors">
                     Company Admin Portal
                   </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     Monitor monthly verification check credit quotas, assign recruiter seats (COMP001HR001), top-up wallet via Razorpay, and download invoices.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-300 font-medium">
-                    <li className="flex items-center gap-2 text-indigo-400"><CheckCircle2 className="w-3.5 h-3.5" /> Real-Time Quota Usage Card</li>
-                    <li className="flex items-center gap-2 text-cyan-400"><CheckCircle2 className="w-3.5 h-3.5" /> Provision HR Recruiter Seats</li>
-                    <li className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> 1-Click Razorpay Wallet Top-up</li>
+                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                    <li className="flex items-center gap-2 text-indigo-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Real-Time Quota Usage Card</li>
+                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> Provision HR Recruiter Seats</li>
+                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> 1-Click Razorpay Wallet Top-up</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => navigate('/company/console/dashboard')}
-                  className="w-full btn bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <span>Open Company Portal 🚀</span>
                 </button>
               </div>
 
               {/* Card 3: HR Executive */}
-              <div className="glass-panel p-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-950 hover:border-emerald-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 rounded-3xl border border-emerald-200 bg-gradient-to-b from-emerald-50/90 via-white to-slate-50 hover:border-emerald-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-600/30 border border-emerald-400/40 text-emerald-300 flex items-center justify-center shadow-lg">
-                    <UserPlus className="w-6 h-6 text-emerald-400" />
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center shadow-2xs">
+                    <UserPlus className="w-6 h-6 text-emerald-600" />
                   </div>
                   <span className="badge badge-emerald text-[10px] font-black uppercase tracking-wider">03. RECRUITMENT</span>
-                  <h3 className="text-xl font-black text-white font-outfit group-hover:text-emerald-300 transition-colors">
+                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-emerald-700 transition-colors">
                     HR Executive Workstation
                   </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     Dispatch instant magic links via WhatsApp, SMS & Email. Import 500+ candidates via Excel spreadsheet and inspect 360° verification dossiers.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-300 font-medium">
-                    <li className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Multi-Channel Magic Link Dispatcher</li>
-                    <li className="flex items-center gap-2 text-amber-300"><CheckCircle2 className="w-3.5 h-3.5" /> Excel Bulk Import Engine</li>
-                    <li className="flex items-center gap-2 text-cyan-400"><CheckCircle2 className="w-3.5 h-3.5" /> 360° Candidate BGV Dossiers</li>
+                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Channel Magic Link Dispatcher</li>
+                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> Excel Bulk Import Engine</li>
+                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> 360° Candidate BGV Dossiers</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => navigate('/hr/console/pipeline')}
-                  className="w-full btn bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <span>Open HR Workstation 🚀</span>
                 </button>
               </div>
 
               {/* Card 4: Candidate Portal */}
-              <div className="glass-panel p-6 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-950 hover:border-amber-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 rounded-3xl border border-amber-200 bg-gradient-to-b from-amber-50/90 via-white to-slate-50 hover:border-amber-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-600/30 border border-amber-400/40 text-amber-300 flex items-center justify-center shadow-lg">
-                    <Smartphone className="w-6 h-6 text-amber-400" />
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center shadow-2xs">
+                    <Smartphone className="w-6 h-6 text-amber-600" />
                   </div>
                   <span className="badge badge-amber text-[10px] font-black uppercase tracking-wider">04. ONBOARDING</span>
-                  <h3 className="text-xl font-black text-white font-outfit group-hover:text-amber-300 transition-colors">
+                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-amber-700 transition-colors">
                     Candidate Onboarding Portal
                   </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     Mobile-first self-verification flow with 4-digit PIN access, Aadhaar e-KYC UIDAI OTP, contact validation, and 3D WebCam biometric liveness scan.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-300 font-medium">
-                    <li className="flex items-center gap-2 text-amber-300"><CheckCircle2 className="w-3.5 h-3.5" /> 4-Digit Security PIN Gate</li>
-                    <li className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Aadhaar e-KYC UIDAI OTP Verification</li>
-                    <li className="flex items-center gap-2 text-purple-400"><CheckCircle2 className="w-3.5 h-3.5" /> 3D AI Biometric Face Camera</li>
+                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> 4-Digit Security PIN Gate</li>
+                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Aadhaar e-KYC UIDAI OTP Verification</li>
+                    <li className="flex items-center gap-2 text-purple-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-purple-600" /> 3D AI Biometric Face Camera</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => navigate('/employee/verify/COMP001EMP001')}
-                  className="w-full btn bg-amber-600 hover:bg-amber-500 text-white font-black text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full btn bg-amber-600 hover:bg-amber-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <span>Open Candidate Portal 🚀</span>
                 </button>
