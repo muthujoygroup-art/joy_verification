@@ -1781,6 +1781,22 @@ export const HrExecutiveView = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-auto">
+            {candidates.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('⚠️ Are you sure you want to delete ALL employee candidate profiles and start completely from the beginning?')) {
+                    clearAllCandidates();
+                  }
+                }}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-rose-800 bg-rose-50 border-rose-200 hover:bg-rose-100 shadow-2xs cursor-pointer transition-all"
+                title="Delete all employee candidate profiles for a clean slate"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>Delete All Employees 🗑️</span>
+              </button>
+            )}
+
             <button 
               onClick={() => {
                 if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {

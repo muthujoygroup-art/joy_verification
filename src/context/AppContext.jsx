@@ -1888,6 +1888,9 @@ export const AppProvider = ({ children }) => {
       try {
         localStorage.removeItem('joy_candidates_v1');
         localStorage.setItem('joy_candidates_v1', JSON.stringify([]));
+        localStorage.removeItem('joy_hr_employee_draft_v1');
+        localStorage.removeItem('joy_hr_delegated_map_v1');
+        localStorage.removeItem('joy_hr_draft_saved_time_v1');
       } catch (e) {}
       
       for (const cand of currentList) {
@@ -1897,7 +1900,7 @@ export const AppProvider = ({ children }) => {
           } catch (e) {}
         }
       }
-      showToast('🧹 All candidate profiles cleared! Ready for new original employees.');
+      showToast('🧹 All candidate profiles deleted! HR portal is now clean and ready to start from the beginning.');
       return true;
     } catch (e) {
       console.warn('Error clearing candidates:', e);
