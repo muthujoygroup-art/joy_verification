@@ -597,14 +597,18 @@ export const HrExecutiveView = () => {
       if (section) setActiveMainSection(section);
       if (tab) {
         setActiveTab(tab);
-        if (tab === 'profiler') setShowAddForm(true);
-        else if (tab === 'pipeline') setShowAddForm(false);
+        if (tab === 'profiler') {
+          setShowAddForm(true);
+        } else {
+          setShowAddForm(false);
+        }
       }
       if (modal === 'bulk_import') setShowBulkImportModal(true);
       else if (modal === 'add_candidate') {
         setShowAddForm(true);
         setActiveTab('profiler');
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     window.addEventListener('portal_nav_navigate', handlePortalNav);
     return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
@@ -2670,7 +2674,7 @@ export const HrExecutiveView = () => {
       )}
 
       {/* TAB 2: CANDIDATE PROFILER & JOINING FORM TEMPLATES */}
-      {(activeTab === 'profiler' || showAddForm) && (
+      {activeTab === 'profiler' && (
         <div className="glass-panel p-4 sm:p-6 border-emerald-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>

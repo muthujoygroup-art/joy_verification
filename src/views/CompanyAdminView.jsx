@@ -2997,7 +2997,7 @@ export const CompanyAdminView = () => {
       )}
 
       {/* TAB: COMPANY ADMIN CONFIGURATION & SETTINGS */}
-      {activeTab === 'settings' && (
+      {(activeTab === 'settings' || activeTab === 'smtp_settings' || activeTab === 'support') && (
         <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 animate-fadeIn">
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
             <div>

@@ -638,43 +638,55 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. TOP SEGMENTED SWITCHER: [ COMPANY ] [ PERSONAL ]                       */}
+      {/* 2. TOP SEGMENTED SWITCHER: Dynamic Role-Based Modes                       */}
       {/* ========================================================================= */}
-      {!isCollapsed && (
-        <div className="px-3 pt-3 pb-1 shrink-0 bg-white animate-fadeIn">
-          <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.playClick?.();
-                setWorkspaceMode('company');
-              }}
-              className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
-                workspaceMode === 'company'
-                  ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
-              }`}
-            >
-              COMPANY
-            </button>
+      {!isCollapsed && (() => {
+        const segmentedTabLabels = {
+          superadmin: { mode1: 'PLATFORM OPERATIONS', mode2: 'ADMIN WORKSPACE' },
+          company: { mode1: 'ENTERPRISE MODULES', mode2: 'MY WORKSPACE' },
+          hrexecutive: { mode1: 'HR WORKSTATION', mode2: 'MY WORKSPACE' },
+          employee_link: { mode1: 'VERIFICATION FORM', mode2: 'MY DOCUMENTS' }
+        };
+        const currentModeLabels = segmentedTabLabels[currentRole] || { mode1: 'OPERATIONS', mode2: 'MY WORKSPACE' };
 
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.playClick?.();
-                setWorkspaceMode('personal');
-              }}
-              className={`flex-1 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all duration-200 cursor-pointer ${
-                workspaceMode === 'personal'
-                  ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
-              }`}
-            >
-              PERSONAL
-            </button>
+        return (
+          <div className="px-3 pt-3 pb-1 shrink-0 bg-white animate-fadeIn">
+            <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  setWorkspaceMode('company');
+                }}
+                className={`flex-1 py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wider transition-all duration-200 cursor-pointer truncate ${
+                  workspaceMode === 'company'
+                    ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                }`}
+                title={currentModeLabels.mode1}
+              >
+                {currentModeLabels.mode1}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  setWorkspaceMode('personal');
+                }}
+                className={`flex-1 py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wider transition-all duration-200 cursor-pointer truncate ${
+                  workspaceMode === 'personal'
+                    ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                }`}
+                title={currentModeLabels.mode2}
+              >
+                {currentModeLabels.mode2}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ========================================================================= */}
       {/* 3. REAL-TIME QUICK SEARCH INPUT: 🔍 Quick search...                       */}
