@@ -226,10 +226,16 @@ export const AppProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const clean = parsed.filter(c => c && c.empId !== 'JOY-2026-001' && c.token !== 'cand-token-001' && !c.name?.toUpperCase().includes('MUTHUKUMAR'));
-          if (clean.length !== parsed.length) {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(clean));
-          }
+          const defaultCompId = 'comp-joy';
+          const clean = parsed
+            .filter(c => c && c.empId !== 'JOY-2026-001' && c.token !== 'cand-token-001' && !c.name?.toUpperCase().includes('MUTHUKUMAR'))
+            .map(c => ({
+              ...c,
+              companyId: c.companyId === 'comp-1' ? defaultCompId : (c.companyId || defaultCompId),
+              company_id: c.company_id === 'comp-1' ? defaultCompId : (c.company_id || defaultCompId),
+              status: (c.status === 'Verified' && !c.verificationsCompleted?.aadhaar && !c.verificationsCompleted?.face && !c.verificationsCompleted?.mobile && !c.verificationsCompleted?.email) ? 'Link Sent' : (c.status || 'Link Sent')
+            }));
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(clean));
           return clean;
         }
       }
