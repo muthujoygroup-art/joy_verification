@@ -131,16 +131,29 @@ export const GuidedTourSpotlight = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
+  const [customProcess, setCustomProcess] = useState(null);
 
   const effectiveRole = currentRole || 'superadmin';
   const roleConfig = ROLE_TOUR_STEPS[effectiveRole] || ROLE_TOUR_STEPS.superadmin;
-  const steps = roleConfig.steps || [];
-  const roleTitle = roleConfig.roleTitle || 'Platform Guide';
+  const defaultSteps = roleConfig.steps || [];
+  const defaultRoleTitle = roleConfig.roleTitle || 'Platform Guide';
+
+  const steps = customProcess ? customProcess.steps : defaultSteps;
+  const roleTitle = customProcess ? customProcess.title : defaultRoleTitle;
   const currentStep = steps[currentStepIndex];
 
-  // Listen for global launch_guided_tour event triggered from Navbar
+  // Listen for global launch_guided_tour event
   useEffect(() => {
-    const handleLaunchTour = () => {
+    const handleLaunchTour = (e) => {
+      const detail = e?.detail;
+      if (detail && detail.steps && detail.steps.length > 0) {
+        setCustomProcess({
+          title: detail.processTitle || 'Interactive Process Guide',
+          steps: detail.steps
+        });
+      } else {
+        setCustomProcess(null);
+      }
       setCurrentStepIndex(0);
       setIsOpen(true);
     };
@@ -185,6 +198,27 @@ export const GuidedTourSpotlight = () => {
     };
   }, [isOpen, currentStepIndex, currentStep, currentRole]);
 
+  // Interactive Target Click Auto-Advance Listener
+  useEffect(() => {
+    if (!isOpen || !currentStep) return;
+    const el = document.querySelector(`[data-tour-step="${currentStep.target}"]`);
+    if (!el) return;
+
+    const handleTargetClick = () => {
+      setTimeout(() => {
+        if (currentStepIndex < steps.length - 1) {
+          setCurrentStepIndex(prev => prev + 1);
+        } else {
+          confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+          setIsOpen(false);
+        }
+      }, 300);
+    };
+
+    el.addEventListener('click', handleTargetClick);
+    return () => el.removeEventListener('click', handleTargetClick);
+  }, [isOpen, currentStepIndex, currentStep, steps]);
+
   if (!isOpen || !currentStep) return null;
 
   const handleNext = () => {
@@ -220,17 +254,17 @@ export const GuidedTourSpotlight = () => {
             width: targetRect.width + 12,
             height: targetRect.height + 12,
             borderRadius: '18px',
-            border: '2px solid #4f46e5',
-            boxShadow: '0 0 0 6px rgba(79, 70, 229, 0.25), 0 0 30px rgba(79, 70, 229, 0.4)',
+            border: '2.5px solid #6366f1',
+            boxShadow: '0 0 0 6px rgba(99, 102, 241, 0.3), 0 0 35px rgba(99, 102, 241, 0.5)',
             transition: 'all 0.3s ease-in-out',
             pointerEvents: 'none'
           }}
           className="animate-pulse"
         >
           {/* Animated Directional Pointer Tag */}
-          <div className="absolute -top-7 left-2 bg-indigo-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg uppercase tracking-wider">
-            <Zap className="w-3 h-3 text-amber-300 fill-amber-300" />
-            <span>Step {currentStepIndex + 1} Spotlight</span>
+          <div className="absolute -top-8 left-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-[10px] px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xl uppercase tracking-wider">
+            <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300 animate-bounce" />
+            <span>Step {currentStepIndex + 1} Spotlight: CLICK HERE 👈</span>
           </div>
         </div>
       )}
@@ -275,6 +309,10 @@ export const GuidedTourSpotlight = () => {
           <p className="text-xs text-slate-600 font-medium leading-relaxed">
             {currentStep.description}
           </p>
+          <div className="pt-1 flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+            <span>🎯 Action Required:</span>
+            <span className="font-medium text-slate-600">Click the highlighted target element on screen or tap Next Step 👉</span>
+          </div>
         </div>
 
         {/* Progress Dots & Navigation Controls */}

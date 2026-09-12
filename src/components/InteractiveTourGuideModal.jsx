@@ -69,16 +69,20 @@ export const InteractiveTourGuideModal = ({
       return [
         {
           id: 'superadmin_overview',
-          title: '👑 Super Admin Master Console Overview',
+          title: '👑 Super Admin Master Console & Profit Telemetry Overview',
           category: 'governance',
           badge: 'SUPERADMIN',
           badgeClass: 'badge-purple',
           icon: Crown,
-          summary: 'Master control dashboard for managing platform tenants, overall system health, and database metrics.',
+          summary: 'Master control dashboard for managing platform tenants, overall system health, revenue telemetry, and database metrics.',
           steps: [
             '1. View total registered companies, overall verification volume, and active subscriber contracts.',
             '2. Monitor live system health, API gateway latencies, and server status.',
             '3. Inspect master revenue telemetry and metered consumption analytics.'
+          ],
+          tourSteps: [
+            { target: 'superadmin-analytics-tab', title: '1. Platform Telemetry Dashboard', description: 'Click here to view overall system health, total active enterprise tenants, and verification check metrics.' },
+            { target: 'superadmin-companies-tab', title: '2. Client Companies Registry', description: 'Inspect all registered enterprise client tenants, manage credit quotas, and provision feature suites.' }
           ],
           actionLabel: 'Explore Master Console 🚀',
           actionPayload: { type: 'navigate_tab', tab: 'omnisearch' }
@@ -97,8 +101,54 @@ export const InteractiveTourGuideModal = ({
             '3. Assign initial verification check credit quotas (e.g. 1000 checks).',
             '4. Submit form - tenant database entries and admin access credentials are issued instantly!'
           ],
+          tourSteps: [
+            { target: 'superadmin-companies-tab', title: '1. Open Companies Tab', description: 'Navigate to the Companies management section to view registered client accounts.' },
+            { target: 'onboard-company-btn', title: '2. Click "+ Onboard Company"', description: 'Click this highlighted button to launch the instant company registration wizard.' }
+          ],
           actionLabel: 'Open Company Onboarding Form 🚀',
           actionPayload: { type: 'open_modal', modal: 'onboard_company' }
+        },
+        {
+          id: 'superadmin_apiconfig',
+          title: '⚡ Dual Upstream API Gateways (Server 1 Sandbox / Server 2 CoinCircleTrust)',
+          category: 'governance',
+          badge: 'INFRASTRUCTURE',
+          badgeClass: 'badge-amber',
+          icon: Zap,
+          summary: 'Manage dual upstream API server engines, API keys, endpoints, and fallback routing priorities.',
+          steps: [
+            '1. Open "Dual Upstream API Gateways" tab.',
+            '2. Inspect Server 1 (Sandbox API Gateway) credentials and response times.',
+            '3. Inspect Server 2 (CoinCircleTrust 47+ APIs Gateway) production endpoints.',
+            '4. Test API ping and configure failover routing rules.'
+          ],
+          tourSteps: [
+            { target: 'superadmin-apiconfig-tab', title: '1. API Gateway Configuration', description: 'Manage dual upstream API provider credentials and system endpoints.' },
+            { target: 'apigateway-server1-card', title: '2. Server 1 Sandbox Gateway', description: 'Configure Server 1 Sandbox API key, API URL, and status.' },
+            { target: 'apigateway-server2-card', title: '3. Server 2 Production Gateway', description: 'Configure Server 2 (CoinCircleTrust 47+ APIs) production credentials.' }
+          ],
+          actionLabel: 'Configure API Gateways 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'apiconfig' }
+        },
+        {
+          id: 'superadmin_billing',
+          title: '💳 Company Billing Ledger & GST Tax Invoices',
+          category: 'billing',
+          badge: 'FINANCIALS',
+          badgeClass: 'badge-emerald',
+          icon: CreditCard,
+          summary: 'Audit monthly metered check consumption, Razorpay wallet top-ups, and dispatch GST invoices.',
+          steps: [
+            '1. Open "Metered Billing & Ledger" tab.',
+            '2. Review company wallet balances and payment transactions.',
+            '3. Generate and dispatch official GST tax invoice bills to client corporate emails.'
+          ],
+          tourSteps: [
+            { target: 'superadmin-billing-tab', title: '1. Open Billing Ledger', description: 'Inspect wallet balances, metered check usage, and transaction logs.' },
+            { target: 'superadmin-invoice-dispatch-btn', title: '2. Dispatch GST Invoices', description: 'Click here to issue official tax invoice bills to corporate clients.' }
+          ],
+          actionLabel: 'View Billing & Invoices 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'billing' }
         },
         {
           id: 'superadmin_db',
@@ -113,8 +163,32 @@ export const InteractiveTourGuideModal = ({
             '2. Check active PostgreSQL connections, table record counts, and migration status.',
             '3. Inspect real-time client error trace logs for troubleshooting.'
           ],
+          tourSteps: [
+            { target: 'superadmin-dbms-tab', title: '1. Database & Telemetry Tab', description: 'Inspect live PostgreSQL database tables, connection pools, and records.' },
+            { target: 'superadmin-log-filter', title: '2. Live Error Logs Filter', description: 'Filter system error traces by portal, severity level, or timeframe.' }
+          ],
           actionLabel: 'View Database Telemetry 🚀',
           actionPayload: { type: 'navigate_tab', tab: 'database' }
+        },
+        {
+          id: 'superadmin_comm',
+          title: '📧 Communication Gateways (WhatsApp Cloud & Carrier SMS DLT)',
+          category: 'governance',
+          badge: 'MESSAGING',
+          badgeClass: 'badge-indigo',
+          icon: Mail,
+          summary: 'Configure Meta WhatsApp Business API tokens and Twilio/DLT SMS carrier credentials.',
+          steps: [
+            '1. Open Communication Gateways configuration modal.',
+            '2. Enter WhatsApp WABA ID, Phone Number ID, and Permanent Access Token.',
+            '3. Enter SMS DLT Entity ID and Twilio credentials.',
+            '4. Send live test dispatch to verify delivery status.'
+          ],
+          tourSteps: [
+            { target: 'superadmin-comm-gateways-btn', title: '1. Open Messaging Gateways', description: 'Click here to open WhatsApp & Carrier SMS gateway settings.' }
+          ],
+          actionLabel: 'Configure Messaging Gateways 🚀',
+          actionPayload: { type: 'open_modal', modal: 'comm_gateways' }
         }
       ];
     }
@@ -137,6 +211,10 @@ export const InteractiveTourGuideModal = ({
             'Step 5: Capture a live 3D face portrait using your device camera.',
             'Step 6: Review and submit statutory declarations to complete your profile.'
           ],
+          tourSteps: [
+            { target: 'candidate-docs-gate', title: '1. Onboarding Advisory Guidelines', description: 'Review the mandatory verification requirements and expected documents.' },
+            { target: 'candidate-pin-input', title: '2. 4-Digit PIN Security Gate', description: 'Enter your 4-digit access PIN (default: 1234) to unlock your portal.' }
+          ],
           actionLabel: 'Proceed to Verification Checklist 🚀',
           actionPayload: { type: 'scroll_to', elementId: 'verification_checklist' }
         },
@@ -154,8 +232,32 @@ export const InteractiveTourGuideModal = ({
             '3. Tap "Send UIDAI OTP" - an official OTP will be dispatched to your Aadhaar-linked mobile.',
             '4. Enter the 6-digit OTP and tap Verify. Your demographic details match instantly!'
           ],
+          tourSteps: [
+            { target: 'candidate-aadhaar-gate', title: '1. Aadhaar Verification Card', description: 'Locate the e-KYC Aadhaar verification step on your portal.' },
+            { target: 'candidate-aadhaar-input', title: '2. Enter 12-Digit Aadhaar', description: 'Input your 12-digit Aadhaar number and click Send UIDAI OTP.' }
+          ],
           actionLabel: 'Start Aadhaar Verification 🚀',
           actionPayload: { type: 'trigger_action', action: 'open_aadhaar_modal' }
+        },
+        {
+          id: 'cand_mobile',
+          title: '📱 Mobile Phone & Official Email SMS OTP Validation',
+          category: 'kyc',
+          badge: 'CONTACT OTP',
+          badgeClass: 'badge-cyan',
+          icon: Mail,
+          summary: 'Validate your mobile number via instant carrier SMS OTP.',
+          steps: [
+            '1. Click "Validate Phone Number" in Step 2.',
+            '2. Check your phone SMS inbox for 6-digit verification OTP.',
+            '3. Enter OTP code and submit to confirm phone ownership.'
+          ],
+          tourSteps: [
+            { target: 'candidate-mobile-gate', title: '1. Contact OTP Card', description: 'Locate the mobile phone verification card.' },
+            { target: 'candidate-mobile-otp-btn', title: '2. Send SMS OTP', description: 'Click to dispatch an instant 6-digit OTP to your registered phone.' }
+          ],
+          actionLabel: 'Validate Phone Number 🚀',
+          actionPayload: { type: 'scroll_to', elementId: 'candidate-mobile-gate' }
         },
         {
           id: 'cand_photo',
@@ -171,8 +273,51 @@ export const InteractiveTourGuideModal = ({
             '3. Align your face inside the oval guide overlay in good lighting.',
             '4. Click "Capture Photo" - AI biometric liveness and face match score are calculated instantly!'
           ],
+          tourSteps: [
+            { target: 'candidate-face-gate', title: '1. Biometric Liveness Gate', description: 'Locate the live face camera capture step.' },
+            { target: 'candidate-camera-trigger', title: '2. Open Camera', description: 'Click to launch your device camera for a 3D liveness selfie scan.' }
+          ],
           actionLabel: 'Open Live Photo Camera 🚀',
           actionPayload: { type: 'trigger_action', action: 'open_photo_modal' }
+        },
+        {
+          id: 'cand_docs',
+          title: '📄 Document Vault & Statutory Declarations Upload',
+          category: 'documents',
+          badge: 'DOCUMENTS',
+          badgeClass: 'badge-indigo',
+          icon: FileDown,
+          summary: 'Upload PAN card, educational degrees, and previous employment records.',
+          steps: [
+            '1. Click "Upload Files" on the Document Vault card.',
+            '2. Select clear PDF or image files of your PAN card and certificates.',
+            '3. Confirm statutory declaration statements.'
+          ],
+          tourSteps: [
+            { target: 'candidate-doc-upload-btn', title: '1. Upload Document Files', description: 'Click here to upload your statutory ID & qualification documents.' }
+          ],
+          actionLabel: 'Go to Document Upload 🚀',
+          actionPayload: { type: 'scroll_to', elementId: 'candidate-doc-upload-btn' }
+        },
+        {
+          id: 'cand_checklist',
+          title: '🏁 Final Candidate Verification Checklist & Submission Receipt',
+          category: 'completion',
+          badge: 'CHECKLIST',
+          badgeClass: 'badge-emerald',
+          icon: CheckCircle2,
+          summary: 'Review your 100% verification progress status and download submission receipt.',
+          steps: [
+            '1. Check that all verification items display green status.',
+            '2. Click "Download Verification Receipt" for your records.',
+            '3. HR will review your dossier instantly!'
+          ],
+          tourSteps: [
+            { target: 'candidate-checklist-gate', title: '1. Verification Checklist', description: 'Inspect your completed check items and overall readiness percentage.' },
+            { target: 'candidate-receipt-btn', title: '2. Download Submission Receipt', description: 'Download your official verification submission confirmation receipt.' }
+          ],
+          actionLabel: 'View Checklist & Receipt 🚀',
+          actionPayload: { type: 'scroll_to', elementId: 'verification_checklist' }
         }
       ];
     }
@@ -192,8 +337,35 @@ export const InteractiveTourGuideModal = ({
             '2. View real-time readiness progress percentage (e.g. 85% completed).',
             '3. Click "Inspect Dossier" to view candidate KYC submissions and original document scans.'
           ],
+          tourSteps: [
+            { target: 'hr-pipeline-tab', title: '1. Open Pipeline Tab', description: 'View and filter all onboarded candidate profiles.' },
+            { target: 'hr-candidate-filter-pending', title: '2. Filter Pending Candidates', description: 'Quickly isolate candidates awaiting e-KYC completion.' },
+            { target: 'hr-candidate-filter-verified', title: '3. Filter Verified Candidates', description: 'View fully verified candidates ready for background certificates.' }
+          ],
           actionLabel: 'Go to Candidate Directory 🚀',
           actionPayload: { type: 'navigate_tab', tab: 'pipeline' }
+        },
+        {
+          id: 'hr_profiler',
+          title: '➕ Create Profile & Select API Verification Suite',
+          category: 'recruitment',
+          badge: 'CREATE PROFILE',
+          badgeClass: 'badge-indigo',
+          icon: UserPlus,
+          summary: 'Input candidate demographics and pick custom verification checks per employee with live Server 1 / Server 2 tags.',
+          steps: [
+            '1. Open "Create Profile" tab.',
+            '2. Enter candidate Full Name, Email, Phone, and Department.',
+            '3. Select mandatory API check boxes (Aadhaar, PAN, Bank, DL, UAN).',
+            '4. Click "Create Candidate Profile" - login PIN and magic links are issued instantly!'
+          ],
+          tourSteps: [
+            { target: 'hr-profiler-tab', title: '1. Create Profile Tab', description: 'Open candidate profile creation form.' },
+            { target: 'hr-create-profile-form', title: '2. Demographic Form', description: 'Enter candidate name, email ID, and mobile number.' },
+            { target: 'hr-checks-selector', title: '3. Select Verification Checks', description: 'Choose API checks to execute (Aadhaar, PAN, DL, UAN, Bank).' }
+          ],
+          actionLabel: 'Create Candidate Profile 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'profiler' }
         },
         {
           id: 'hr_dispatch',
@@ -208,6 +380,9 @@ export const InteractiveTourGuideModal = ({
             '2. Enter candidate Name, Email ID, Mobile Number, and Department.',
             '3. Select notification channels: WhatsApp, SMS, or Email.',
             '4. Click "Dispatch Verification Link" - candidate receives magic link instantly!'
+          ],
+          tourSteps: [
+            { target: 'hr-dispatch-btn', title: '1. Click Dispatch Link Button', description: 'Open instant candidate magic link dispatcher modal.' }
           ],
           actionLabel: 'Add Candidate & Dispatch Link 🚀',
           actionPayload: { type: 'open_modal', modal: 'add_candidate' }
@@ -226,8 +401,50 @@ export const InteractiveTourGuideModal = ({
             '3. Add candidate Name and Email ID columns and upload the file.',
             '4. System auto-generates sequential employee IDs (JOY-EMP-002) and dispatches links!'
           ],
+          tourSteps: [
+            { target: 'hr-bulk-btn', title: '1. Click Bulk Import Button', description: 'Launch the Excel spreadsheet bulk candidate import wizard.' }
+          ],
           actionLabel: 'Open Excel Bulk Import Wizard 🚀',
           actionPayload: { type: 'open_modal', modal: 'bulk_import' }
+        },
+        {
+          id: 'hr_dossier',
+          title: '🔍 360° Background Verification Dossier & Certificate Viewer',
+          category: 'recruitment',
+          badge: 'DOSSIER',
+          badgeClass: 'badge-purple',
+          icon: ShieldCheck,
+          summary: 'Inspect complete 360° KYC submissions, verify document scans, and issue digital PDF certificates.',
+          steps: [
+            '1. Click "Inspect Dossier" on candidate card.',
+            '2. Review e-KYC verification status, facial match score, and uploaded documents.',
+            '3. Click "Generate Digital Certificate" to issue official JOY Verification Certificate.'
+          ],
+          tourSteps: [
+            { target: 'hr-bgv-dossier-btn', title: '1. Inspect Candidate Dossier', description: 'Click to open comprehensive 360° background dossier.' },
+            { target: 'hr-view-certificate-btn', title: '2. View Certificate', description: 'Generate and download official PDF background verification certificate.' }
+          ],
+          actionLabel: 'Inspect Candidate Dossier 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'pipeline' }
+        },
+        {
+          id: 'hr_redispatch',
+          title: '🔄 Re-dispatch Magic Link & Expiry Deadline Extension',
+          category: 'recruitment',
+          badge: 'MANAGEMENT',
+          badgeClass: 'badge-emerald',
+          icon: ArrowRight,
+          summary: 'Re-send onboarding magic links to pending candidates or update recipient phone/email.',
+          steps: [
+            '1. Locate candidate card in Pipeline tab.',
+            '2. Click "Re-dispatch Magic Link".',
+            '3. Confirm channel (WhatsApp / SMS / Email) and re-send instantly!'
+          ],
+          tourSteps: [
+            { target: 'hr-redispatch-btn', title: '1. Click Re-dispatch Link', description: 'Re-send verification link to candidate via WhatsApp or SMS.' }
+          ],
+          actionLabel: 'Go to Pipeline & Re-dispatch 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'pipeline' }
         }
       ];
     }
@@ -247,6 +464,10 @@ export const InteractiveTourGuideModal = ({
           '2. Review active HR recruiter seats and department allocations.',
           '3. Update company statutory records (CIN, GSTIN, PAN).'
         ],
+        tourSteps: [
+          { target: 'company-quota-card', title: '1. Verification Quota Card', description: 'Check remaining verification check credits and subscription plan status.' },
+          { target: 'company-analytics-overview', title: '2. Analytics Overview', description: 'Monitor total verified employees, pending checks, and turnaround time.' }
+        ],
         actionLabel: 'Go to Company Dashboard 🚀',
         actionPayload: { type: 'navigate_tab', tab: 'dashboard' }
       },
@@ -265,6 +486,10 @@ export const InteractiveTourGuideModal = ({
           '4. Assign their specific Recruitment Department.',
           '5. Click "Create HR Account" - their hierarchical ID (COMP001HR001) will be issued instantly!'
         ],
+        tourSteps: [
+          { target: 'company-hr-tab', title: '1. Open HR Team Tab', description: 'Navigate to HR Recruiter team management.' },
+          { target: 'company-add-hr-btn', title: '2. Click "+ Add HR User"', description: 'Click this highlighted button to open the HR Recruiter creation modal.' }
+        ],
         actionLabel: 'Go to HR Team & Add Recruiter 🚀',
         actionPayload: { type: 'navigate_tab', tab: 'hrteam', openModal: 'add_hr' }
       },
@@ -282,8 +507,72 @@ export const InteractiveTourGuideModal = ({
           '3. Complete payment via UPI, Credit/Debit Card, or Net Banking.',
           '4. Download official GST-compliant tax invoices anytime from the Invoices table.'
         ],
+        tourSteps: [
+          { target: 'company-billing-tab', title: '1. Open Billing & Wallet Tab', description: 'Inspect wallet balance, metered rates, and invoice history.' },
+          { target: 'company-topup-wallet-btn', title: '2. Click Top-up Wallet', description: 'Click to launch Razorpay instant payment top-up modal.' }
+        ],
         actionLabel: 'Go to Billing & Top-up Wallet 🚀',
         actionPayload: { type: 'navigate_tab', tab: 'billing_wallet', openModal: 'razorpay' }
+      },
+      {
+        id: 'company_registry',
+        title: '📋 Master Employee Verification Registry & Dossiers',
+        category: 'general',
+        badge: 'VERIFICATION',
+        badgeClass: 'badge-emerald',
+        icon: ShieldCheck,
+        summary: 'Inspect verified employee profiles, check 60-day certificate lifecycle deadlines, and download reports.',
+        steps: [
+          '1. Open "Employee Verification Registry" tab.',
+          '2. Filter by company department or search by employee name/ID.',
+          '3. Click "Inspect Dossier" or "Download Certificate".'
+        ],
+        tourSteps: [
+          { target: 'company-registry-tab', title: '1. Open Registry Tab', description: 'Access master employee verification registry.' },
+          { target: 'company-candidate-search', title: '2. Search Candidate', description: 'Use search input to find specific employee records.' },
+          { target: 'company-dossier-download-btn', title: '3. Download Dossier', description: 'Click to download 360° background verification dossier.' }
+        ],
+        actionLabel: 'Go to Employee Registry 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'registry' }
+      },
+      {
+        id: 'company_dochub',
+        title: '📁 Compliance Vault & Corporate Document Storage Hub',
+        category: 'support',
+        badge: 'COMPLIANCE',
+        badgeClass: 'badge-purple',
+        icon: FileDown,
+        summary: 'Access encrypted cloud document vaults, tax invoices, and official JOY Corporate compliance certificates.',
+        steps: [
+          '1. Open "Document Hub" tab.',
+          '2. Download statutory compliance handbooks, GST invoices, and security policies.'
+        ],
+        tourSteps: [
+          { target: 'company-dochub-tab', title: '1. Open Document Hub', description: 'Access statutory corporate document vault.' },
+          { target: 'company-compliance-cert-btn', title: '2. Download Compliance Cert', description: 'Download official corporate verification compliance certificate.' }
+        ],
+        actionLabel: 'Open Compliance Document Hub 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'dochub' }
+      },
+      {
+        id: 'company_settings',
+        title: '⚙️ Upstream API Routing Engine Selector',
+        category: 'general',
+        badge: 'SETTINGS',
+        badgeClass: 'badge-indigo',
+        icon: Sliders,
+        summary: 'Choose your upstream routing engine: Smart Hybrid Engine (Sandbox + CoinCircleTrust fallback), Server 1 Only, or Server 2 Only.',
+        steps: [
+          '1. Open "Settings & API Engine" tab.',
+          '2. Toggle desired API Routing Engine mode.',
+          '3. Click "Save Settings" - engine switches routing dynamically.'
+        ],
+        tourSteps: [
+          { target: 'company-settings-tab', title: '1. Open Settings Tab', description: 'Access company configurations and API routing settings.' },
+          { target: 'company-api-selector', title: '2. Upstream API Routing Selector', description: 'Choose between Smart Hybrid Gateway, Server 1 Sandbox, or Server 2 Production.' }
+        ],
+        actionLabel: 'Configure API Engine 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'settings' }
       }
     ];
   };
@@ -299,14 +588,32 @@ export const InteractiveTourGuideModal = ({
     return true;
   });
 
-  const handleExecuteAction = (actionPayload) => {
+  const handleExecuteAction = (topic) => {
     onClose();
+    const actionPayload = topic.actionPayload || {};
     if (onSelectAction) {
       onSelectAction(actionPayload);
     } else {
       // Global fallback event
       window.dispatchEvent(new CustomEvent('tour_feature_action', { detail: actionPayload }));
     }
+
+    // Launch guided tour spotlight with step targets!
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('launch_guided_tour', {
+        detail: {
+          processId: topic.id,
+          processTitle: topic.title,
+          steps: topic.tourSteps || [
+            {
+              target: actionPayload.targetStep || topic.id,
+              title: topic.title,
+              description: topic.summary
+            }
+          ]
+        }
+      }));
+    }, 250);
   };
 
   return createPortal((

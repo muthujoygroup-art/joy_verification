@@ -760,6 +760,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
   }, []);
 
+  // Listen to Interactive Tour Guide action clicks
+  useEffect(() => {
+    const handleTourAction = (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      if (payload.type === 'navigate_tab') {
+        if (payload.tab) setActiveTab(payload.tab);
+      } else if (payload.type === 'open_modal') {
+        if (payload.modal === 'onboard_company' || payload.modal === 'add_company') setShowAddCompanyModal(true);
+        if (payload.modal === 'comm_gateways') setShowGatewaysModal(true);
+        if (payload.modal === 'razorpay_admin') setShowSuperAdminRazorpayModal(true);
+      } else if (payload.type === 'scroll_to') {
+        const el = document.getElementById(payload.elementId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    window.addEventListener('tour_feature_action', handleTourAction);
+    return () => window.removeEventListener('tour_feature_action', handleTourAction);
+  }, []);
+
   useEffect(() => {
     loadCompanyRequests();
 
@@ -1453,6 +1473,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             <button 
               onClick={() => setShowGatewaysModal(true)}
+              data-tour-step="superadmin-comm-gateways-btn"
               className="btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
               title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
             >
@@ -1462,7 +1483,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             <button 
               onClick={() => setShowAddCompanyModal(true)}
-              className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold"
+              data-tour-step="onboard-company-btn"
+              className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Onboard Company</span>

@@ -244,6 +244,26 @@ export const EmployeePortalView = () => {
     return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
   }, []);
 
+  // Listen to Interactive Tour Guide action clicks
+  useEffect(() => {
+    const handleTourAction = (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      if (payload.type === 'trigger_action') {
+        if (payload.action === 'open_aadhaar_modal') setShowAadhaarOtpModal(true);
+        else if (payload.action === 'open_photo_modal') setShowLivePhotoModal(true);
+      } else if (payload.type === 'open_modal') {
+        if (payload.modal === 'aadhaar') setShowAadhaarOtpModal(true);
+        else if (payload.modal === 'photo') setShowLivePhotoModal(true);
+      } else if (payload.type === 'scroll_to') {
+        const el = document.getElementById(payload.elementId) || document.querySelector(`[data-tour-step="${payload.elementId}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    window.addEventListener('tour_feature_action', handleTourAction);
+    return () => window.removeEventListener('tour_feature_action', handleTourAction);
+  }, []);
+
   // Ensure portal strictly enforces manual PIN entry on arrival
   useEffect(() => {
     setIsUnlocked(false);

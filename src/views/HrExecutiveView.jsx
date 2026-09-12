@@ -653,6 +653,28 @@ export const HrExecutiveView = () => {
     return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
   }, []);
 
+  // Listen to Interactive Tour Guide action clicks
+  useEffect(() => {
+    const handleTourAction = (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      if (payload.type === 'navigate_tab') {
+        if (payload.tab) setActiveTab(payload.tab);
+      } else if (payload.type === 'open_modal') {
+        if (payload.modal === 'bulk_import') setShowBulkImportModal(true);
+        else if (payload.modal === 'add_candidate') {
+          setShowAddForm(true);
+          setActiveTab('profiler');
+        }
+      } else if (payload.type === 'scroll_to') {
+        const el = document.getElementById(payload.elementId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    window.addEventListener('tour_feature_action', handleTourAction);
+    return () => window.removeEventListener('tour_feature_action', handleTourAction);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -2159,6 +2181,7 @@ export const HrExecutiveView = () => {
               <button
                 type="button"
                 onClick={() => setShowBulkImportModal(true)}
+                data-tour-step="hr-bulk-btn"
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer"
                 title="Bulk upload multiple candidates via Excel spreadsheet"
               >
@@ -2171,7 +2194,8 @@ export const HrExecutiveView = () => {
                   setShowAddForm(true);
                   setActiveTab('profiler');
                 }}
-                className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-sm"
+                data-tour-step="hr-dispatch-btn"
+                className="btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-sm cursor-pointer font-bold"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span>+ Add New Employee</span>

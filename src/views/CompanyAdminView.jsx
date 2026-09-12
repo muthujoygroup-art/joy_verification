@@ -980,6 +980,7 @@ export const CompanyAdminView = () => {
             {/* ⚡ 1-Click Verification Wallet Recharge via Razorpay */}
             <button
               onClick={() => setShowRazorpayModal(true)}
+              data-tour-step="company-topup-wallet-btn"
               className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black shadow-md cursor-pointer"
               title="Recharge Verification Credits via Razorpay UPI / Cards / NetBanking / Payment Link"
             >
@@ -1529,7 +1530,8 @@ export const CompanyAdminView = () => {
             
             <button 
               onClick={() => setShowAddHrModal(true)}
-              className="btn btn-company text-xs flex items-center gap-1.5 py-2 px-4 shadow-md font-bold"
+              data-tour-step="company-add-hr-btn"
+              className="btn btn-company text-xs flex items-center gap-1.5 py-2 px-4 shadow-md font-bold cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>+ Onboard HR Recruiter 🚀</span>
