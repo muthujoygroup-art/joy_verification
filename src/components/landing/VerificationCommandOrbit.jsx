@@ -22,7 +22,7 @@ const ORBIT_MODULES = [
     title: 'Government ID & Photo Match',
     badge: 'INSTANT IDENTITY',
     icon: ShieldCheck,
-    color: 'from-emerald-500 via-teal-500 to-cyan-600',
+    color: 'from-emerald-600 via-teal-600 to-cyan-600',
     turnaround: 'Under 30 Seconds',
     accuracy: '100% Verified',
     image3d: '/assets/3d/hero_3d_verification.jpg',
@@ -189,17 +189,17 @@ export const VerificationCommandOrbit = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Column: 6 Module Selector Cards (lg:col-span-5) */}
-        <div className="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-2xl backdrop-blur-xl">
+        <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-xl">
           
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
-              <Zap className="w-4 h-4 text-amber-400" />
+            <div className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider mb-1">
+              <Zap className="w-4 h-4 text-purple-600" />
               <span>CORE SCREENING CHECKS</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-white font-outfit mb-2">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-outfit mb-2">
               Select a Verification Check
             </h3>
-            <p className="text-slate-400 text-xs leading-relaxed mb-5">
+            <p className="text-slate-600 text-xs leading-relaxed mb-5">
               Click any module to see how JOY Verification protects your hiring and delivers instant, reliable results.
             </p>
 
@@ -214,25 +214,25 @@ export const VerificationCommandOrbit = () => {
                     onClick={() => handleSelectModule(idx)}
                     className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between group cursor-pointer ${
                       isSelected
-                        ? 'bg-slate-950 border-emerald-500/50 text-white shadow-xl ring-2 ring-emerald-500/30 scale-[1.02]'
-                        : 'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:border-emerald-500/30 hover:bg-slate-800/50 hover:text-white'
+                        ? 'bg-purple-50/80 border-purple-400 text-slate-900 shadow-md ring-2 ring-purple-400/30 scale-[1.02]'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-purple-300 hover:bg-purple-50/30 hover:text-slate-900'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                           isSelected
-                            ? `bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/30`
-                            : 'bg-slate-800 text-slate-400 group-hover:bg-emerald-950 group-hover:text-emerald-300'
+                            ? `bg-purple-600 text-white font-black shadow-md shadow-purple-500/30`
+                            : 'bg-white border border-slate-200 text-slate-600 group-hover:bg-purple-100 group-hover:text-purple-700'
                         }`}
                       >
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className={`font-bold text-sm font-outfit leading-snug ${isSelected ? 'text-white' : 'text-slate-200'}`}>
+                        <h4 className={`font-bold text-sm font-outfit leading-snug ${isSelected ? 'text-purple-950 font-black' : 'text-slate-900'}`}>
                           {mod.title}
                         </h4>
-                        <span className={`text-[10px] block mt-0.5 font-mono font-bold tracking-wider uppercase ${isSelected ? 'text-emerald-400' : 'text-slate-400'}`}>
+                        <span className={`text-[10px] block mt-0.5 font-mono font-bold tracking-wider uppercase ${isSelected ? 'text-purple-700' : 'text-slate-500'}`}>
                           {mod.badge}
                         </span>
                       </div>
@@ -241,8 +241,8 @@ export const VerificationCommandOrbit = () => {
                     <div className="text-right shrink-0">
                       <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border ${
                         isSelected 
-                          ? 'text-emerald-300 bg-emerald-950/80 border-emerald-500/40' 
-                          : 'text-slate-400 bg-slate-900 border-slate-800'
+                          ? 'text-purple-800 bg-purple-100 border-purple-300' 
+                          : 'text-slate-600 bg-white border-slate-200'
                       }`}>
                         {mod.turnaround}
                       </span>
@@ -253,31 +253,31 @@ export const VerificationCommandOrbit = () => {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+            <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               All 6 Screening Engines Active
             </span>
-            <span className="text-slate-400 font-mono text-[11px]">100% Automated</span>
+            <span className="text-slate-500 font-mono text-[11px] font-bold">100% Automated</span>
           </div>
 
         </div>
 
         {/* Right Column: Feature Breakdown & Interactive Preview (lg:col-span-7) */}
-        <div className="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl backdrop-blur-xl">
+        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl">
           
           <div>
             {/* Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
               <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-white font-black shadow-lg shadow-slate-950/40 shrink-0 border border-white/20`}>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${activeModule.color} flex items-center justify-center text-white font-black shadow-lg shrink-0 border border-white/20`}>
                   <activeModule.icon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold block">
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-purple-700 font-bold block">
                     {activeModule.badge}
                   </span>
-                  <h3 className="text-2xl font-black text-white font-outfit">
+                  <h3 className="text-2xl font-black text-slate-900 font-outfit">
                     {activeModule.title}
                   </h3>
                 </div>
@@ -286,16 +286,16 @@ export const VerificationCommandOrbit = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode(viewMode === 'benefits' ? 'certificate' : 'benefits')}
-                  className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs font-bold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-800 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                  <Eye className="w-3.5 h-3.5 text-purple-600" />
                   <span>{viewMode === 'benefits' ? 'View Sample Certificate' : 'View Key Benefits'}</span>
                 </button>
 
                 <button
                   onClick={handleRunTest}
                   disabled={isSimulating}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/30 border border-emerald-400/50 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-700 text-white font-black text-xs flex items-center gap-1.5 transition-all shadow-md border border-purple-500/50 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSimulating ? 'animate-spin' : ''}`} />
                   <span>{isSimulating ? 'Verifying...' : 'Simulate Check'}</span>
@@ -304,7 +304,7 @@ export const VerificationCommandOrbit = () => {
             </div>
 
             {/* Description */}
-            <p className="text-slate-300 text-sm leading-relaxed mb-4 font-normal">
+            <p className="text-slate-600 text-sm leading-relaxed mb-4 font-normal">
               {activeModule.summary}
             </p>
 
@@ -336,17 +336,17 @@ export const VerificationCommandOrbit = () => {
             {/* Switchable View: Benefits or Sample Certificate */}
             {viewMode === 'benefits' ? (
               <div>
-                <h4 className="text-xs uppercase tracking-wider text-amber-400 font-bold mb-3">
+                <h4 className="text-xs uppercase tracking-wider text-purple-800 font-bold mb-3">
                   Key Business Benefits:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                   {activeModule.benefits.map((benefit, bIdx) => (
                     <div
                       key={bIdx}
-                      className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start gap-2.5"
+                      className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-300 leading-snug font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="text-xs text-slate-700 leading-snug font-medium">
                         {benefit}
                       </span>
                     </div>
@@ -354,7 +354,7 @@ export const VerificationCommandOrbit = () => {
                 </div>
               </div>
             ) : (
-              <div className="mb-6 p-5 rounded-2xl bg-slate-950 border border-slate-800 shadow-xl relative overflow-hidden">
+              <div className="mb-6 p-5 rounded-2xl bg-slate-950 border border-slate-800 shadow-xl relative overflow-hidden text-white">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-amber-400" />
@@ -389,35 +389,35 @@ export const VerificationCommandOrbit = () => {
             )}
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-center">
+            <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Turnaround</span>
-                <span className="text-sm font-black text-amber-400">{activeModule.turnaround}</span>
+                <span className="text-[10px] text-slate-500 block font-semibold uppercase">Turnaround</span>
+                <span className="text-sm font-black text-purple-700">{activeModule.turnaround}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Accuracy</span>
-                <span className="text-sm font-black text-emerald-400">{activeModule.accuracy}</span>
+                <span className="text-[10px] text-slate-500 block font-semibold uppercase">Accuracy</span>
+                <span className="text-sm font-black text-emerald-700">{activeModule.accuracy}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Compliance</span>
-                <span className="text-sm font-black text-teal-300">100% Legal</span>
+                <span className="text-[10px] text-slate-500 block font-semibold uppercase">Compliance</span>
+                <span className="text-sm font-black text-indigo-700">100% Legal</span>
               </div>
             </div>
 
           </div>
 
           {/* Bottom Action */}
-          <div className="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
-            <span className="text-xs text-slate-400">
+          <div className="mt-6 pt-5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <span className="text-xs text-slate-600">
               Ready to automate this check for your company?
             </span>
-            <a
-              href="#roi-calculator"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center gap-2 shadow-md shadow-emerald-600/30 border border-emerald-400/50 transition-all cursor-pointer"
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-700 text-white font-black text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
             >
-              <span>Calculate Your Savings</span>
+              <span>Explore Interactive Tour</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </button>
           </div>
 
         </div>

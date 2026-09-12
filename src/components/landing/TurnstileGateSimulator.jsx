@@ -8,10 +8,10 @@ import {
   Activity, 
   Lock, 
   Unlock, 
-  RefreshCw,
-  Zap,
-  Clock,
-  UserCheck
+  RefreshCw, 
+  Zap, 
+  Clock, 
+  UserCheck 
 } from 'lucide-react';
 import { soundEngine } from '../../utils/uiSoundEffects';
 
@@ -40,7 +40,7 @@ const TEST_WORKERS = [
   }
 ];
 
-const TurnstileGateSimulator = () => {
+export const TurnstileGateSimulator = () => {
   const [selectedWorker, setSelectedWorker] = useState(TEST_WORKERS[0]);
   const [gateState, setGateState] = useState('idle'); // 'idle' | 'scanning' | 'granted' | 'denied'
   const [accessLogs, setAccessLogs] = useState([
@@ -79,24 +79,24 @@ const TurnstileGateSimulator = () => {
   };
 
   return (
-    <div className="w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-9 shadow-xl relative overflow-hidden">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">
-            <HardHat className="w-3.5 h-3.5 text-amber-400" />
+          <div className="flex items-center gap-2 font-mono text-[10px] text-emerald-800 font-bold uppercase tracking-wider mb-1">
+            <HardHat className="w-3.5 h-3.5 text-emerald-600" />
             <span>INTELLIGENT ACCESS & TURNSTILE CONTROLLER</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
             Workforce Digital Turnstile Gate Simulator
           </h3>
-          <p className="text-slate-400 text-xs sm:text-sm mt-1">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1">
             Experience sub-second biometric QR pass authentication directly integrated with facility turnstiles and plant security gates.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 p-1.5 rounded-2xl font-mono text-xs">
+        <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 p-1.5 rounded-2xl font-mono text-xs">
           {TEST_WORKERS.map((w) => (
             <button
               key={w.id}
@@ -107,8 +107,8 @@ const TurnstileGateSimulator = () => {
               }}
               className={`px-3 py-2 rounded-xl font-bold transition-all cursor-pointer ${
                 selectedWorker.id === w.id
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-md border border-emerald-400/50'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-md'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {w.valid ? '✅ Valid Pass Profile' : '⚠️ Incomplete Pass Profile'}
@@ -122,10 +122,10 @@ const TurnstileGateSimulator = () => {
         
         {/* Left Column: Digital QR Badge Preview (lg:col-span-5) */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <span className="font-mono text-[10px] uppercase text-slate-400 font-bold">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+              <span className="font-mono text-[10px] uppercase text-slate-500 font-bold">
                 CANDIDATE PASS CREDENTIAL
               </span>
               <span className={`font-mono text-[9px] px-2 py-0.5 rounded border font-bold ${selectedWorker.badgeColor}`}>
@@ -134,35 +134,35 @@ const TurnstileGateSimulator = () => {
             </div>
 
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-black font-outfit shadow-lg shrink-0 border border-emerald-400/50">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-xl font-black font-outfit shadow-md shrink-0 border border-emerald-400/50">
                 {selectedWorker.name.charAt(0)}
               </div>
               <div>
-                <h4 className="font-bold text-base text-white font-outfit">{selectedWorker.name}</h4>
-                <p className="text-xs text-slate-300 font-semibold">{selectedWorker.role}</p>
-                <p className="text-[11px] text-amber-400 font-mono mt-0.5">{selectedWorker.company}</p>
+                <h4 className="font-bold text-base text-slate-900 font-outfit">{selectedWorker.name}</h4>
+                <p className="text-xs text-slate-600 font-semibold">{selectedWorker.role}</p>
+                <p className="text-[11px] text-purple-700 font-mono mt-0.5 font-bold">{selectedWorker.company}</p>
               </div>
             </div>
 
             {/* Simulated Interactive QR Code Card */}
-            <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-center relative my-3 shadow-inner">
-              <QrCode className="w-28 h-28 text-emerald-400" />
+            <div className="bg-white border border-slate-200 p-4 rounded-xl flex items-center justify-center relative my-3 shadow-sm">
+              <QrCode className="w-28 h-28 text-emerald-600" />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center text-[10px] font-black shadow-md border border-white">
+                <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black shadow-md border border-white">
                   JOY
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 mt-2">
               <span>Pass ID: {selectedWorker.passId}</span>
-              <span className="text-amber-400 font-bold">{selectedWorker.codeTime}</span>
+              <span className="text-purple-700 font-bold">{selectedWorker.codeTime}</span>
             </div>
 
             <button
               onClick={handleSimulateScan}
               disabled={gateState === 'scanning'}
-              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-lg shadow-emerald-600/30 border border-emerald-400/50 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full mt-4 py-3.5 rounded-xl font-black font-mono text-xs uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Zap className="w-4 h-4 text-white" />
               <span>{gateState === 'scanning' ? 'Authenticating Turnstile...' : 'Tap Digital QR Pass to Scan'}</span>
@@ -175,7 +175,7 @@ const TurnstileGateSimulator = () => {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Turnstile Physical Representation with 3D Render Backdrop */}
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[300px] shadow-xl relative overflow-hidden group">
+          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[300px] shadow-xl relative overflow-hidden group text-white">
             
             {/* 3D Facility Turnstile Render Viewport */}
             <div className="w-full relative rounded-xl overflow-hidden aspect-[16/9] mb-4 border border-slate-800 shadow-md bg-slate-900">
@@ -295,7 +295,7 @@ const TurnstileGateSimulator = () => {
           </div>
 
           {/* Real-time Turnstile Muster Roll Log Feed */}
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs shadow-xl">
+          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-xs shadow-xl text-white">
             <div className="flex items-center justify-between text-slate-400 text-[10px] uppercase font-bold border-b border-slate-800/80 pb-2 mb-2">
               <span className="flex items-center gap-1.5 text-amber-400">
                 <Activity className="w-3.5 h-3.5 text-amber-400" />

@@ -46,7 +46,6 @@ import {
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
-import VideoLoopBackground from '../components/VideoLoopBackground';
 import HeroInteractiveCard3D from '../components/landing/HeroInteractiveCard3D';
 import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
 import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentRadarVisualizer';
@@ -55,6 +54,7 @@ import InteractiveProcessPipeline from '../components/landing/InteractiveProcess
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
+import LiveVideoSimulationShowcase from '../components/landing/LiveVideoSimulationShowcase';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -64,13 +64,11 @@ import { useApp } from '../context/AppContext';
 export const LandingPageView = () => {
   const navigate = useNavigate();
   const { platformLogoEmblem } = useApp() || {};
-  // Innovative First-Load / Reload Logo Preloader (Plays full cinematic sequence on every page reload)
+  // Innovative First-Load / Reload Logo Preloader
   const [showPreloader, setShowPreloader] = useState(true);
 
   // Active View Tab State (Single Unified Tab Switcher)
   const [activeTab, setActiveTab] = useState('overview');
-  const [showPortalDrawer, setShowPortalDrawer] = useState(false);
-  const [activeRolePreview, setActiveRolePreview] = useState('all');
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -569,7 +567,7 @@ export const LandingPageView = () => {
           </nav>
 
           {/* Right Action CTAs */}
-          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
@@ -579,13 +577,13 @@ export const LandingPageView = () => {
               {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-purple-600" />}
             </button>
 
-            {/* Portal Logins Drawer Trigger */}
+            {/* Launch Guided Tour Guide Trigger */}
             <button
-              onClick={() => setShowPortalDrawer(true)}
-              className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+              onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
+              className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span>Portal Logins ⚡</span>
+              <Compass className="w-3.5 h-3.5 text-indigo-600 animate-spin-slow" />
+              <span>Interactive Tour 🧭</span>
             </button>
 
             {/* Book Live Demo Primary Button */}
@@ -622,10 +620,11 @@ export const LandingPageView = () => {
             
             <div className="pt-3 mt-1 border-t border-slate-200 flex flex-col gap-2">
               <button
-                onClick={() => { setMobileMenuOpen(false); setShowPortalDrawer(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-slate-800 bg-slate-100 border border-slate-300 text-center cursor-pointer"
+                onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
+                className="w-full py-2.5 rounded-xl font-black text-xs text-indigo-900 bg-indigo-50 border border-indigo-200 text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <span>Portal Logins ⚡</span>
+                <Compass className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Interactive Tour Guide 🧭</span>
               </button>
 
               <button
@@ -638,110 +637,6 @@ export const LandingPageView = () => {
           </div>
         )}
       </header>
-
-      {/* Slide-Over Quick Portal Login Drawer (Light Theme) */}
-      {showPortalDrawer && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/40 backdrop-blur-md flex justify-end animate-fadeIn">
-          <div className="w-full max-w-md bg-white text-slate-900 h-full shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between overflow-y-auto animate-modal-spring">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-purple-100 border border-purple-200 text-purple-700">
-                    <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-purple-700 tracking-wider">Quick Portal Access</span>
-                    <h3 className="text-lg font-black text-slate-900">Select Login Console</h3>
-                  </div>
-                </div>
-                <button onClick={() => setShowPortalDrawer(false)} className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 cursor-pointer">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <p className="text-xs text-slate-600 font-medium">
-                Select a platform role portal below to navigate directly or test live features:
-              </p>
-
-              <div className="space-y-3">
-                {/* SuperAdmin */}
-                <div 
-                  onClick={() => { setShowPortalDrawer(false); navigate('/superadmin/console/omnisearch'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-white border border-purple-200 hover:border-purple-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="badge badge-purple text-[10px] font-black">SUPERADMIN CONSOLE</span>
-                    <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-amber-500" />
-                    <span>1. Super Admin Master Console</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-600">Tenant management, dual API gateways, metered billing ledger & PostgreSQL error logs.</p>
-                </div>
-
-                {/* Company Admin */}
-                <div 
-                  onClick={() => { setShowPortalDrawer(false); navigate('/company/console/dashboard'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-white border border-indigo-200 hover:border-indigo-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="badge badge-indigo text-[10px] font-black">COMPANY ADMIN</span>
-                    <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-indigo-600" />
-                    <span>2. Company Admin Workstation</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-600">Quota usage card, HR seat allocation, Razorpay top-ups & compliance document vault.</p>
-                </div>
-
-                {/* HR Executive */}
-                <div 
-                  onClick={() => { setShowPortalDrawer(false); navigate('/hr/console/pipeline'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-white border border-emerald-200 hover:border-emerald-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="badge badge-emerald text-[10px] font-black">HR RECRUITER</span>
-                    <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <UserPlus className="w-4 h-4 text-emerald-600" />
-                    <span>3. HR Executive Candidate Workstation</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-600">WhatsApp / SMS magic link dispatcher, bulk Excel spreadsheet import & 360° dossiers.</p>
-                </div>
-
-                {/* Candidate */}
-                <div 
-                  onClick={() => { setShowPortalDrawer(false); navigate('/employee/verify/COMP001EMP001'); }}
-                  className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-white border border-amber-200 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02] shadow-2xs space-y-2 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="badge badge-amber text-[10px] font-black">CANDIDATE PORTAL</span>
-                    <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Smartphone className="w-4 h-4 text-amber-600" />
-                    <span>4. Candidate Verification Portal</span>
-                  </h4>
-                  <p className="text-[11px] text-slate-600">4-digit PIN security, Aadhaar e-KYC UIDAI OTP, contact validation & 3D WebCam face camera.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-slate-200 space-y-3">
-              <button
-                onClick={() => { setShowPortalDrawer(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
-                className="w-full btn btn-superadmin text-xs py-3 font-black flex items-center justify-center gap-2 rounded-xl shadow-md cursor-pointer"
-              >
-                <Compass className="w-4 h-4 text-purple-200 animate-spin-slow" />
-                <span>Launch Interactive Tour Guide 🧭</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ==============================================================================
        * TAB VIEW CONTENT SWITCHING
@@ -764,7 +659,7 @@ export const LandingPageView = () => {
                 <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-300/80 bg-purple-50/90 backdrop-blur-xl text-xs font-bold text-purple-900 shadow-2xs">
                   <Crown className="w-4 h-4 text-amber-500 animate-bounce" />
                   <span className="uppercase font-mono tracking-wider text-[11px] text-purple-950 font-black">
-                    ADOBE MAX DESIGNED • ZERO-TRUST WORKFORCE SCREENING
+                    ZERO-TRUST WORKFORCE BACKGROUND SCREENING
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
                     TAT &lt;45s
@@ -787,30 +682,6 @@ export const LandingPageView = () => {
                   Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
                 </p>
 
-                {/* Interactive Role Switcher Preview Pills */}
-                <div className="pt-1 flex items-center gap-2 flex-wrap text-xs">
-                  <span className="text-slate-500 font-mono font-bold uppercase tracking-wider text-[10px]">Preview Role:</span>
-                  {[
-                    { role: 'all', label: 'All Portals 🚀' },
-                    { role: 'superadmin', label: '👑 SuperAdmin' },
-                    { role: 'company', label: '🏢 Company Admin' },
-                    { role: 'hrexecutive', label: '👔 HR Recruiter' },
-                    { role: 'employee_link', label: '🤳 Candidate' }
-                  ].map((item) => (
-                    <button
-                      key={item.role}
-                      onClick={() => setActiveRolePreview(item.role)}
-                      className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer text-xs ${
-                        activeRolePreview === item.role
-                          ? 'bg-purple-600 text-white shadow-xs border border-purple-500 scale-105 font-black'
-                          : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100 shadow-2xs'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-
                 {/* Hero Primary Action Buttons */}
                 <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
                   <button
@@ -828,33 +699,25 @@ export const LandingPageView = () => {
                     <Compass className="w-4 h-4 text-indigo-600 animate-spin-slow" />
                     <span>Launch Interactive Tour 🧭</span>
                   </button>
-
-                  <button
-                    onClick={() => setShowPortalDrawer(true)}
-                    className="bg-slate-100 hover:bg-slate-200 border border-slate-300 px-5 py-4 rounded-2xl font-bold text-sm text-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-                  >
-                    <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-                    <span>Portal Logins ⚡</span>
-                  </button>
                 </div>
 
                 {/* Key Value Metrics Bar */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-200 w-full max-w-2xl">
                   <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
                     <div className="text-xl sm:text-2xl font-black text-purple-700 font-outfit">&lt;45s</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Verification TAT</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Verification TAT</div>
                   </div>
                   <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
                     <div className="text-xl sm:text-2xl font-black text-slate-900 font-outfit">99.98%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Precision Rate</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Precision Rate</div>
                   </div>
                   <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
                     <div className="text-xl sm:text-2xl font-black text-emerald-700 font-outfit">100%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">DPDP 2023 Compliant</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">DPDP 2023 Compliant</div>
                   </div>
                   <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
                     <div className="text-xl sm:text-2xl font-black text-amber-600 font-outfit">80%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-0.5">Cost Reduction</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Cost Reduction</div>
                   </div>
                 </div>
 
@@ -903,7 +766,7 @@ export const LandingPageView = () => {
                   </p>
 
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2 text-emerald-700 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Tenant Company Registry</li>
+                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Tenant Company Registry</li>
                     <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> Dual Server 1 & 2 API Gateways</li>
                     <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> PostgreSQL Error Logs & Telemetry</li>
                   </ul>
@@ -1007,70 +870,75 @@ export const LandingPageView = () => {
             </div>
           </section>
 
+          {/* 60 FPS LIVE VIDEO SIMULATION REEL & MOTION SHOWCASE */}
+          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <LiveVideoSimulationShowcase />
+          </section>
+
           {/* QUICK FEATURE HIGHLIGHTS */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-2 inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+              <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-2 inline-block px-3 py-1 rounded-full bg-amber-100 border border-amber-300">
                 4 CORE PILLARS OF JOY VERIFICATION
               </span>
-              <h2 className="text-3xl font-black text-white font-outfit">Built for Enterprise Scale & Speed</h2>
+              <h2 className="text-3xl font-black text-slate-900 font-outfit">Built for Enterprise Scale & Speed</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div onClick={() => handleTabChange('features')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div onClick={() => handleTabChange('features')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit mb-2">Digital ID & Liveness</h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">Instant Aadhaar/PAN checksum validation with biometric facial liveness match.</p>
-                <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Digital ID & Liveness</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">Instant Aadhaar/PAN checksum validation with biometric facial liveness match.</p>
+                <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
               </div>
 
-              <div onClick={() => handleTabChange('moonlighting')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer group">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div onClick={() => handleTabChange('moonlighting')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Search className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit mb-2">Moonlighting Radar</h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">Detect EPFO UAN active contribution overlaps and secondary undisclosed employment.</p>
-                <span className="text-xs text-amber-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Moonlighting Radar</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">Detect EPFO UAN active contribution overlaps and secondary undisclosed employment.</p>
+                <span className="text-xs text-amber-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
               </div>
 
-              <div onClick={() => handleTabChange('turnstile')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div onClick={() => handleTabChange('turnstile')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <HardHat className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit mb-2">Turnstile Gate Access</h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">Real-time QR gate pass issuance for factory workers and contractor labor.</p>
-                <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Turnstile Gate Access</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">Real-time QR gate pass issuance for factory workers and contractor labor.</p>
+                <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
               </div>
 
-              <div onClick={() => handleTabChange('roi')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-teal-500/50 transition-all cursor-pointer group">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-300 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div onClick={() => handleTabChange('roi')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-teal-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <DollarSign className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit mb-2">80% Cost Reduction</h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">Eliminate manual background verification fees and ghost worker payroll leakages.</p>
-                <span className="text-xs text-teal-300 font-bold flex items-center gap-1">Calculate Savings <ArrowRight className="w-3.5 h-3.5" /></span>
+                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">80% Cost Reduction</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">Eliminate manual background verification fees and ghost worker payroll leakages.</p>
+                <span className="text-xs text-teal-700 font-bold flex items-center gap-1">Calculate Savings <ArrowRight className="w-3.5 h-3.5" /></span>
               </div>
             </div>
           </section>
 
           {/* LIVE INDIA RADAR PREVIEW */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
+              <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
+                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-600" />
                 <span>REAL-TIME NETWORK ACTIVITY</span>
               </span>
-              <h2 className="text-3xl font-black text-white font-outfit">Live India Industrial Telemetry</h2>
+              <h2 className="text-3xl font-black text-slate-900 font-outfit">Live India Industrial Telemetry</h2>
             </div>
             
             {/* Telemetry Hub */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
               <div className="lg:col-span-5 flex flex-col gap-3">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between font-bold">
-                  <span className="text-slate-200">ACTIVE REGIONAL CORRIDORS</span>
-                  <span className="text-emerald-400 font-bold">● 5 HUBS ONLINE</span>
+                <div className="font-mono text-[10px] uppercase tracking-wider text-slate-500 mb-2 flex items-center justify-between font-bold">
+                  <span className="text-slate-800">ACTIVE REGIONAL CORRIDORS</span>
+                  <span className="text-emerald-600 font-bold">● 5 HUBS ONLINE</span>
                 </div>
                 {Object.keys(radarCities).map((key) => {
                   const hub = radarCities[key];
@@ -1081,19 +949,19 @@ export const LandingPageView = () => {
                       onClick={() => setActiveRadarCity(key)}
                       className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
-                          : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-500 text-white shadow-md'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-600'}`}></span>
-                          <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-200'}`}>{hub.name}</h4>
+                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-400'}`}></span>
+                          <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-900'}`}>{hub.name}</h4>
                         </div>
-                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{hub.state} • {hub.tag}</p>
+                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
                       </div>
                       <span className={`font-mono text-[10px] font-bold px-2.5 py-1 rounded border ${
-                        isSelected ? 'text-white bg-black/20 border-white/30' : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
+                        isSelected ? 'text-white bg-black/20 border-white/30' : 'text-amber-800 bg-amber-100 border-amber-300'
                       }`}>
                         {hub.avgTat}
                       </span>
@@ -1102,7 +970,7 @@ export const LandingPageView = () => {
                 })}
               </div>
 
-              <div className="lg:col-span-7 bg-slate-950/90 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
+              <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
                   <div>
                     <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">{radarCities[activeRadarCity].state}</span>
@@ -1140,15 +1008,15 @@ export const LandingPageView = () => {
           </section>
 
           {/* HIGH IMPACT CTA */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-8 sm:p-12 text-center flex flex-col items-center">
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+            <div className="rounded-3xl border border-purple-200 bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 p-8 sm:p-12 text-center flex flex-col items-center text-white shadow-xl">
               <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">Transform Your Employee Verification Today</h2>
-              <p className="text-slate-300 max-w-xl mb-8">Schedule a 15-minute live walkthrough with our enterprise security team.</p>
+              <p className="text-slate-200 max-w-xl mb-8">Schedule a 15-minute live walkthrough with our enterprise security team.</p>
               <button
                 onClick={() => setShowDemoModal(true)}
                 className="px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-[1.02] transition-all cursor-pointer border border-emerald-400/50"
               >
-                Book Enterprise Demo
+                Book Enterprise Demo 🚀
               </button>
             </div>
           </section>
@@ -1159,11 +1027,11 @@ export const LandingPageView = () => {
       {activeTab === 'features' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               FEATURE SUITE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Complete Employee Background Verification Engine</h2>
-            <p className="text-slate-300 text-base">Explore all core screening modules designed for fast, error-free onboarding.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Complete Employee Background Verification Engine</h2>
+            <p className="text-slate-600 text-base">Explore all core screening modules designed for fast, error-free onboarding.</p>
           </div>
 
           {/* Verification Command Orbit */}
@@ -1174,8 +1042,8 @@ export const LandingPageView = () => {
           {/* Interactive Lab / Simulator */}
           <div className="mb-20">
             <div className="text-center max-w-3xl mx-auto mb-10">
-              <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-2 inline-block">LIVE DEMO LAB</span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">Run a Live Verification Simulation</h3>
+              <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold mb-2 inline-block px-3 py-1 bg-emerald-100 border border-emerald-300 rounded-full">LIVE DEMO LAB</span>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">Run a Live Verification Simulation</h3>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
@@ -1189,28 +1057,28 @@ export const LandingPageView = () => {
                     onClick={() => handleRunSimulation(key)}
                     className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
                       isSelected
-                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
-                        : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white backdrop-blur-xl'
+                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border-emerald-400 text-white shadow-lg'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900 shadow-sm'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-emerald-100 text-emerald-700'}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-400'}`}>
+                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-700'}`}>
                         {isSelected ? 'SELECTED' : 'TEST'}
                       </span>
                     </div>
                     <div>
-                      <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-200'}`}>{item.title}</h4>
-                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{item.category}</p>
+                      <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-900'}`}>{item.title}</h4>
+                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-500'}`}>{item.category}</p>
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+            <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
@@ -1238,7 +1106,7 @@ export const LandingPageView = () => {
                     <span>Running automated background screening checks...</span>
                     <span>{simProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
                     <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
                   </div>
                 </div>
@@ -1246,7 +1114,7 @@ export const LandingPageView = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {simModes[selectedSimMode].checks.map((check, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-950 shadow-xs flex items-center justify-between gap-4">
+                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-900 shadow-xs flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                         <CheckCircle2 className="w-4 h-4" />
@@ -1269,31 +1137,31 @@ export const LandingPageView = () => {
       {activeTab === 'moonlighting' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
               EPFO UAN INTEGRATED
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Dual-Employment & Moonlighting Detection</h2>
-            <p className="text-slate-300 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Dual-Employment & Moonlighting Detection</h2>
+            <p className="text-slate-600 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
           </div>
 
           <DualEmploymentRadarVisualizer />
 
           {/* Moonlighting Information Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <Zap className="w-8 h-8 text-amber-400 mb-4" />
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">EPFO Service Overlap Audit</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Identifies exact overlapping contribution dates across multiple employer IDs in real time.</p>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <Zap className="w-8 h-8 text-amber-600 mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">EPFO Service Overlap Audit</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">Identifies exact overlapping contribution dates across multiple employer IDs in real time.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <Scale className="w-8 h-8 text-emerald-400 mb-4" />
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">Form 26AS Tax Cross-Check</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Verifies multiple salary streams and tax deductions to confirm single employment compliance.</p>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <Scale className="w-8 h-8 text-emerald-600 mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Form 26AS Tax Cross-Check</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">Verifies multiple salary streams and tax deductions to confirm single employment compliance.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
-              <FileCheck className="w-8 h-8 text-teal-300 mb-4" />
-              <h3 className="text-lg font-bold text-white font-outfit mb-2">Relieving Date Verification</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Validates exit dates and relieving letters directly with past verified company records.</p>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <FileCheck className="w-8 h-8 text-teal-600 mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Relieving Date Verification</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">Validates exit dates and relieving letters directly with past verified company records.</p>
             </div>
           </div>
         </div>
@@ -1303,11 +1171,11 @@ export const LandingPageView = () => {
       {activeTab === 'turnstile' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-300 bg-emerald-100">
               PLANT & FACILITY ACCESS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
-            <p className="text-slate-300 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
+            <p className="text-slate-600 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
           </div>
 
           <TurnstileGateSimulator />
@@ -1318,11 +1186,11 @@ export const LandingPageView = () => {
       {activeTab === 'comparison' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               PERFORMANCE BENCHMARK
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
-            <p className="text-slate-300 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
+            <p className="text-slate-600 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
           </div>
 
           <InteractiveSpeedComparison />
@@ -1335,17 +1203,17 @@ export const LandingPageView = () => {
       {activeTab === 'roi' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
               FINANCIAL IMPACT ESTIMATOR
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
-            <p className="text-slate-300 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
+            <p className="text-slate-600 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xl">
             <div className="lg:col-span-6 flex flex-col justify-between gap-6">
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold block mb-3">1. Select Workforce Structure</label>
+                <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold block mb-3">1. Select Workforce Structure</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'labor', label: 'Factory / Labor' },
@@ -1357,8 +1225,8 @@ export const LandingPageView = () => {
                       onClick={() => setWorkforceType(item.id)}
                       className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                         workforceType === item.id
-                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-400 shadow-md'
-                          : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white'
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-500 shadow-md'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-900'
                       }`}
                     >
                       {item.label}
@@ -1369,8 +1237,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">2. Monthly Candidate Volume</label>
-                  <span className="font-mono text-base font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
+                  <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">2. Monthly Candidate Volume</label>
+                  <span className="font-mono text-base font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300">
                     {monthlyHires.toLocaleString()} workers / mo
                   </span>
                 </div>
@@ -1381,16 +1249,16 @@ export const LandingPageView = () => {
                   step="50"
                   value={monthlyHires}
                   onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-emerald-400 border border-slate-800"
+                  className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 border border-slate-300"
                 />
                 <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                  <span className="text-[10px] font-mono text-slate-400 font-bold mr-1">PRESETS:</span>
+                  <span className="text-[10px] font-mono text-slate-500 font-bold mr-1">PRESETS:</span>
                   {[250, 500, 1000, 2500, 5000].map((preset) => (
                     <button
                       key={preset}
                       onClick={() => setMonthlyHires(preset)}
                       className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                        monthlyHires === preset ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400' : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                        monthlyHires === preset ? 'bg-emerald-600 text-white font-black border-emerald-700' : 'bg-slate-100 text-slate-700 border-slate-200 hover:text-slate-900'
                       }`}
                     >
                       {preset.toLocaleString()}
@@ -1401,8 +1269,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">3. Annual Contractor Churn</label>
-                  <span className="font-mono text-base font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30">
+                  <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">3. Annual Contractor Churn</label>
+                  <span className="font-mono text-base font-black text-amber-800 bg-amber-100 px-3 py-1 rounded-lg border border-amber-300">
                     {contractorTurnover}% / year
                   </span>
                 </div>
@@ -1413,17 +1281,17 @@ export const LandingPageView = () => {
                   step="5"
                   value={contractorTurnover}
                   onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-400 border border-slate-800"
+                  className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-600 border border-slate-300"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 font-mono text-xs text-emerald-300 flex items-start gap-2.5">
-                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 font-mono text-xs text-emerald-900 flex items-start gap-2.5">
+                <HelpCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 text-white border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
+            <div className="lg:col-span-6 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
               <div>
                 <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
                 <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
@@ -1437,19 +1305,19 @@ export const LandingPageView = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                   <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
                   <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span></div>
                 </div>
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                   <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
                   <div className="text-lg font-black text-rose-400 font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
                 </div>
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                   <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
                   <div className="text-lg font-black text-emerald-400 font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
                 </div>
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                   <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
                   <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">100% Protected</div>
                 </div>
@@ -1459,7 +1327,7 @@ export const LandingPageView = () => {
                 onClick={() => setShowDemoModal(true)}
                 className="w-full py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-lg border border-emerald-400/50 cursor-pointer text-center"
               >
-                Unlock These Savings Now
+                Unlock These Savings Now 🚀
               </button>
             </div>
           </div>
@@ -1470,39 +1338,39 @@ export const LandingPageView = () => {
       {activeTab === 'solutions' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-indigo-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-indigo-200 bg-indigo-100">
               INDUSTRY ARCHITECTURE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Enterprise-Grade Solutions & Security</h2>
-            <p className="text-slate-300 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Enterprise-Grade Solutions & Security</h2>
+            <p className="text-slate-600 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
               <div>
-                <Smartphone className="w-10 h-10 text-emerald-400 mb-4" />
-                <h3 className="text-xl font-bold text-white font-outfit mb-2">Seamless Mobile Flow</h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-4">Zero app installs. Candidates complete identity verification & selfie liveness via an encrypted magic link.</p>
+                <Smartphone className="w-10 h-10 text-emerald-600 mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Seamless Mobile Flow</h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-4">Zero app installs. Candidates complete identity verification & selfie liveness via an encrypted magic link.</p>
               </div>
-              <div className="font-mono text-xs text-emerald-400 font-bold pt-3 border-t border-slate-800">98% Candidate Completion Rate</div>
+              <div className="font-mono text-xs text-emerald-700 font-bold pt-3 border-t border-slate-200">98% Candidate Completion Rate</div>
             </div>
 
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
               <div>
-                <HardHat className="w-10 h-10 text-emerald-400 mb-4" />
-                <h3 className="text-xl font-bold text-white font-outfit mb-2">Workforce Digital QR Passes</h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-4">Automated workforce compliance and digital credential issuance for facility turnstile gates.</p>
+                <HardHat className="w-10 h-10 text-emerald-600 mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Workforce Digital QR Passes</h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-4">Automated workforce compliance and digital credential issuance for facility turnstile gates.</p>
               </div>
-              <div className="font-mono text-xs text-emerald-400 font-bold pt-3 border-t border-slate-800">Sub-Second Gate Turnstile Response</div>
+              <div className="font-mono text-xs text-emerald-700 font-bold pt-3 border-t border-slate-200">Sub-Second Gate Turnstile Response</div>
             </div>
 
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
               <div>
-                <Search className="w-10 h-10 text-amber-400 mb-4" />
-                <h3 className="text-xl font-bold text-white font-outfit mb-2">Dual-Employment Radar</h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-4">Cross-references career service records and employment tenures to detect undisclosed secondary jobs.</p>
+                <Search className="w-10 h-10 text-amber-600 mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Dual-Employment Radar</h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-4">Cross-references career service records and employment tenures to detect undisclosed secondary jobs.</p>
               </div>
-              <div className="font-mono text-xs text-amber-400 font-bold pt-3 border-t border-slate-800">Zero-Tamper Work History Audit</div>
+              <div className="font-mono text-xs text-amber-700 font-bold pt-3 border-t border-slate-200">Zero-Tamper Work History Audit</div>
             </div>
           </div>
         </div>
@@ -1512,16 +1380,16 @@ export const LandingPageView = () => {
       {activeTab === 'resources' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               SPECIFICATIONS & REVIEWS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Resources, Client Reviews & FAQ</h2>
-            <p className="text-slate-300 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Resources, Client Reviews & FAQ</h2>
+            <p className="text-slate-600 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
           </div>
 
           {/* Specs Segmented Control */}
           <div className="flex justify-center mb-10">
-            <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
+            <div className="inline-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
               {[
                 { id: 'performance', label: 'Performance' },
                 { id: 'security', label: 'Security & DPDP' },
@@ -1533,8 +1401,8 @@ export const LandingPageView = () => {
                   onClick={() => setActiveSpecCategory(cat.id)}
                   className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
                     activeSpecCategory === cat.id
-                      ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-lg shadow-emerald-500/20 border border-emerald-400/50'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black shadow-md border border-purple-500'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {cat.label}
@@ -1544,16 +1412,16 @@ export const LandingPageView = () => {
           </div>
 
           {/* Specs Table */}
-          <div className="max-w-4xl mx-auto divide-y divide-slate-800 bg-slate-900/90 rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-2xl backdrop-blur-xl text-white mb-20">
+          <div className="max-w-4xl mx-auto divide-y divide-slate-200 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl text-slate-900 mb-20">
             {technicalSpecs[activeSpecCategory].map((spec, idx) => (
               <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
-                <dt className="font-mono text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <dt className="font-mono text-xs uppercase tracking-wider text-slate-600 flex items-center gap-2 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-purple-600"></span>
                   <span>{spec.label}</span>
                 </dt>
                 <dd className="text-left sm:text-right">
-                  <span className="text-base sm:text-lg font-black text-white font-outfit">{spec.value}</span>
-                  <span className="block font-mono text-[11px] text-emerald-400 mt-0.5">{spec.detail}</span>
+                  <span className="text-base sm:text-lg font-black text-slate-900 font-outfit">{spec.value}</span>
+                  <span className="block font-mono text-[11px] text-purple-700 mt-0.5">{spec.detail}</span>
                 </dd>
               </div>
             ))}
@@ -1561,10 +1429,10 @@ export const LandingPageView = () => {
 
           {/* Client Reviews */}
           <div className="mb-20">
-            <h3 className="text-2xl font-black text-white font-outfit text-center mb-8">What Industrial Leaders Say</h3>
+            <h3 className="text-2xl font-black text-slate-900 font-outfit text-center mb-8">What Industrial Leaders Say</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {clientReviews.map((rev, idx) => (
-                <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col justify-between gap-6 shadow-2xl">
+                <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 shadow-sm hover:shadow-md transition-all">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-1">
@@ -1572,13 +1440,13 @@ export const LandingPageView = () => {
                           <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="font-mono text-[10px] uppercase text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 font-bold">{rev.badge}</span>
+                      <span className="font-mono text-[10px] uppercase text-amber-800 bg-amber-100 px-2.5 py-1 rounded border border-amber-300 font-bold">{rev.badge}</span>
                     </div>
-                    <p className="text-slate-300 text-sm italic">"{rev.quote}"</p>
+                    <p className="text-slate-700 text-sm italic">"{rev.quote}"</p>
                   </div>
-                  <div className="border-t border-slate-800 pt-4">
-                    <h5 className="font-bold text-sm text-white font-outfit">{rev.name}</h5>
-                    <p className="text-xs text-slate-400 mt-0.5">{rev.role} — <span className="text-emerald-400">{rev.company}</span></p>
+                  <div className="border-t border-slate-200 pt-4">
+                    <h5 className="font-bold text-sm text-slate-900 font-outfit">{rev.name}</h5>
+                    <p className="text-xs text-slate-500 mt-0.5">{rev.role} — <span className="text-purple-700 font-semibold">{rev.company}</span></p>
                   </div>
                 </div>
               ))}
@@ -1587,21 +1455,21 @@ export const LandingPageView = () => {
 
           {/* FAQ Accordion */}
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-black text-white font-outfit text-center mb-8">Frequently Asked Questions</h3>
+            <h3 className="text-2xl font-black text-slate-900 font-outfit text-center mb-8">Frequently Asked Questions</h3>
             <div className="flex flex-col gap-3">
               {faqData.map((faq, idx) => {
                 const isOpen = openFaq === idx;
                 return (
-                  <div key={idx} className={`rounded-2xl border transition-all shadow-xl bg-slate-900/90 ${isOpen ? 'border-emerald-500/50' : 'border-slate-800'}`}>
+                  <div key={idx} className={`rounded-2xl border transition-all shadow-xs bg-white ${isOpen ? 'border-purple-300 bg-purple-50/20' : 'border-slate-200'}`}>
                     <button
                       onClick={() => setOpenFaq(isOpen ? -1 : idx)}
-                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-white flex items-center justify-between gap-4 cursor-pointer"
+                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer"
                     >
                       <span>{faq.q}</span>
-                      <ChevronDown className={`w-4 h-4 text-emerald-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-purple-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800 pt-3">
+                      <div className="px-5 pb-5 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100 pt-3">
                         {faq.a}
                       </div>
                     )}
@@ -1684,51 +1552,51 @@ export const LandingPageView = () => {
 
       {/* MODALS */}
       {showDemoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
+          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {demoSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 mb-4">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Demo Request Received!</h3>
-                <p className="text-slate-400 text-sm max-w-sm mb-6">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
-                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-emerald-400/50 cursor-pointer">Close Window</button>
+                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Demo Request Received!</h3>
+                <p className="text-slate-600 text-sm max-w-sm mb-6">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
+                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 cursor-pointer shadow-md">Close Window</button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-amber-400 font-bold mb-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                <div className="flex items-center gap-2 font-mono text-xs text-purple-700 font-bold mb-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
                   <span>ENTERPRISE WALKTHROUGH</span>
                 </div>
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Schedule a Custom Live Demo</h3>
-                <p className="text-slate-400 text-xs mb-6">Experience sub-second employee profile verification configured for your workflow.</p>
+                <h3 className="text-2xl font-black text-slate-900 font-outfit mb-2">Schedule a Custom Live Demo</h3>
+                <p className="text-slate-600 text-xs mb-6">Experience sub-second employee profile verification configured for your workflow.</p>
 
                 <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs font-mono">
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Full Name *</label>
-                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
+                    <label className="text-slate-700 font-bold block mb-1">Full Name *</label>
+                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Work Email *</label>
-                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
+                      <label className="text-slate-700 font-bold block mb-1">Work Email *</label>
+                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
                     </div>
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Phone Number *</label>
-                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
+                      <label className="text-slate-700 font-bold block mb-1">Phone Number *</label>
+                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Company / Organization *</label>
-                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
+                    <label className="text-slate-700 font-bold block mb-1">Company / Organization *</label>
+                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
                   </div>
-                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border border-emerald-400/50 cursor-pointer">
-                    {demoLoading ? 'Submitting...' : 'Confirm Demo Booking'}
+                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 shadow-md cursor-pointer">
+                    {demoLoading ? 'Submitting...' : 'Confirm Demo Booking 🚀'}
                   </button>
                 </form>
               </div>
@@ -1738,37 +1606,37 @@ export const LandingPageView = () => {
       )}
 
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
+          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {reviewSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mb-4" />
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Review Submitted!</h3>
-                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 cursor-pointer">Close Window</button>
+                <CheckCircle2 className="w-12 h-12 text-emerald-600 mb-4" />
+                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Review Submitted!</h3>
+                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 cursor-pointer shadow-md">Close Window</button>
               </div>
             ) : (
               <div>
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Submit Client Review</h3>
+                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Submit Client Review</h3>
                 <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs font-mono">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Your Name *</label>
-                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
+                      <label className="text-slate-700 font-bold block mb-1">Your Name *</label>
+                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900" />
                     </div>
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Role *</label>
-                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
+                      <label className="text-slate-700 font-bold block mb-1">Role *</label>
+                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Review *</label>
-                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white resize-none" />
+                    <label className="text-slate-700 font-bold block mb-1">Review *</label>
+                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 resize-none" />
                   </div>
-                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border border-emerald-400/50 cursor-pointer">
+                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 shadow-md cursor-pointer">
                     {reviewLoading ? 'Submitting...' : 'Post Client Review'}
                   </button>
                 </form>
