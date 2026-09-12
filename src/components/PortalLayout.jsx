@@ -122,7 +122,7 @@ export const PortalLayout = ({ children }) => {
       {/* ========================================================================= */}
       {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (FIXED ON >= lg SCREENS)           */}
       {/* ========================================================================= */}
-      <aside className={`hidden lg:flex flex-col shrink-0 min-h-screen sticky top-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
+      <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
         sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
       }`}>
         <PortalSidebarNav 
@@ -154,7 +154,9 @@ export const PortalLayout = ({ children }) => {
       {/* ========================================================================= */}
       {/* 🏛️ RIGHT-HAND MAIN WORKSPACE & CONTENT COLUMN                              */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72 xl:ml-80'
+      }`}>
         
         {/* TOP SLIM PORTAL WORKSPACE HEADER BAR */}
         <header className="sticky top-0 z-20 backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-3 sm:px-6 py-2 transition-all shadow-2xs select-none">
