@@ -223,6 +223,41 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   customDocSlots: []
 });
 
+const HR_DIVISION_META_MAP = {
+  pipeline: {
+    pillarBadge: '📱 1. Candidate List & Records',
+    badgeText: (count) => `${count} Applications Registered`,
+    title: 'Candidate Applications Pipeline & Verification Dossiers',
+    subtitle: 'Real-time candidate tracker, live magic link dispatch, and verified point-in-time employment dossiers',
+    icon: Smartphone,
+    colorClass: 'from-emerald-600 to-teal-700'
+  },
+  profiler: {
+    pillarBadge: '🎛️ 2. Add New Candidate',
+    badgeText: () => 'New Onboarding Dossier',
+    title: 'Candidate Profiler, Onboarding Particulars & Verification Dispatch',
+    subtitle: 'Create individual employee profiles, auto-fill industry mock templates, or bulk upload candidate rosters via Excel',
+    icon: Sliders,
+    colorClass: 'from-teal-600 to-emerald-700'
+  },
+  analytics: {
+    pillarBadge: '📊 3. Analytics & Settings',
+    badgeText: () => 'TAT & Verification Telemetry',
+    title: 'Verification Turnaround Times, Throughput & Statutory Form Previews',
+    subtitle: 'Mean turnaround time telemetry, completed verification rate distributions, and EPFO / ESIC statutory form previews',
+    icon: TrendingUp,
+    colorClass: 'from-indigo-600 to-purple-700'
+  },
+  settings: {
+    pillarBadge: '⚙️ 3. Analytics & Settings',
+    badgeText: () => 'Preferences & Compliance Rules',
+    title: 'Workstation Preferences, Statutory Rules & Notification Alerts',
+    subtitle: 'Configure automated candidate reminder intervals, SMS/WhatsApp gateways, and statutory compliance parameters',
+    icon: Settings,
+    colorClass: 'from-purple-600 to-indigo-800'
+  }
+};
+
 export const HrExecutiveView = () => {
   const { 
     currentUser,
@@ -1741,42 +1776,13 @@ export const HrExecutiveView = () => {
     }
   };
 
-  const hrDivisionMetaMap = {
-    pipeline: {
-      pillarBadge: '📱 1. Candidate List & Records',
-      badgeText: `${candidates.length} Applications Registered`,
-      title: 'Candidate Applications Pipeline & Verification Dossiers',
-      subtitle: 'Real-time candidate tracker, live magic link dispatch, and verified point-in-time employment dossiers',
-      icon: Smartphone,
-      colorClass: 'from-emerald-600 to-teal-700'
-    },
-    profiler: {
-      pillarBadge: '🎛️ 2. Add New Candidate',
-      badgeText: 'New Onboarding Dossier',
-      title: 'Candidate Profiler, Onboarding Particulars & Verification Dispatch',
-      subtitle: 'Create individual employee profiles, auto-fill industry mock templates, or bulk upload candidate rosters via Excel',
-      icon: Sliders,
-      colorClass: 'from-teal-600 to-emerald-700'
-    },
-    analytics: {
-      pillarBadge: '📊 3. Analytics & Settings',
-      badgeText: 'TAT & Verification Telemetry',
-      title: 'Verification Turnaround Times, Throughput & Statutory Form Previews',
-      subtitle: 'Mean turnaround time telemetry, completed verification rate distributions, and EPFO / ESIC statutory form previews',
-      icon: TrendingUp,
-      colorClass: 'from-indigo-600 to-purple-700'
-    },
-    settings: {
-      pillarBadge: '⚙️ 3. Analytics & Settings',
-      badgeText: 'Preferences & Compliance Rules',
-      title: 'Workstation Preferences, Statutory Rules & Notification Alerts',
-      subtitle: 'Configure automated candidate reminder intervals, SMS/WhatsApp gateways, and statutory compliance parameters',
-      icon: Settings,
-      colorClass: 'from-purple-600 to-indigo-800'
-    }
+  const currentHrDivMetaRaw = HR_DIVISION_META_MAP[activeTab] || HR_DIVISION_META_MAP.pipeline;
+  const currentHrDivMeta = {
+    ...currentHrDivMetaRaw,
+    badgeText: typeof currentHrDivMetaRaw.badgeText === 'function' 
+      ? currentHrDivMetaRaw.badgeText(candidates.length) 
+      : currentHrDivMetaRaw.badgeText
   };
-
-  const currentHrDivMeta = hrDivisionMetaMap[activeTab] || hrDivisionMetaMap.pipeline;
   const CurrentHrDivIcon = currentHrDivMeta.icon || Smartphone;
 
   return (

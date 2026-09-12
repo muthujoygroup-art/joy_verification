@@ -472,7 +472,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'profiler',
           divisions: [
             { id: 'profiler', label: 'New Candidate Form', tab: 'profiler', icon: Sliders },
-            { id: 'bulk_import_btn', label: 'Bulk Import (Excel) 📥', modal: 'bulk_import', icon: FileSpreadsheet },
+            { id: 'bulk_import_btn', label: 'Bulk Import (Excel) 📥', tab: 'profiler', modal: 'bulk_import', icon: FileSpreadsheet },
             { id: 'autofill_mock', label: 'Auto-Fill Sample Data', tab: 'profiler', icon: Sparkles }
           ]
         },
