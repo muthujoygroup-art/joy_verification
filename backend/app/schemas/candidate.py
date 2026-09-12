@@ -19,11 +19,11 @@ class CandidateBase(BaseModel):
     emp_id: Optional[str] = None
     employee_number: Optional[str] = None
     email: Optional[str] = None
-    mobile: str
+    mobile: Optional[str] = ""
     aadhaar_no: Optional[str] = None
     designation: Optional[str] = None
     dept: Optional[str] = None
-    company_id: str
+    company_id: Optional[str] = "comp-joy"
     hr_id: Optional[str] = None
     portal_password: Optional[str] = "1234"
     employee_type: Optional[str] = "it_tech"

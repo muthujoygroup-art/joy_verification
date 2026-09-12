@@ -12,7 +12,7 @@ class Candidate(Base):
     emp_id = Column(String(50), index=True)
     employee_number = Column(String(50), index=True, nullable=True)
     email = Column(String(150), index=True)
-    mobile = Column(String(50), index=True, nullable=False)
+    mobile = Column(String(50), index=True, nullable=True)
     aadhaar_no = Column(String(50))
     designation = Column(String(100))
     dept = Column(String(100))
@@ -33,7 +33,7 @@ class Candidate(Base):
     native_district = Column(String(100), nullable=True)
     identification_marks = Column(Text, nullable=True)
     
-    company_id = Column(String(50), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
+    company_id = Column(String(50), ForeignKey("companies.id", ondelete="CASCADE"), nullable=True)
     hr_id = Column(String(50), ForeignKey("hr_users.id", ondelete="SET NULL"), nullable=True)
     status = Column(String(50), default="Link Sent")  # 'Link Sent' | 'In Verification' | 'Verified' | 'Rejected'
     portal_password = Column(String(50), default="1234")  # HR-configured unlock passcode for verification portal

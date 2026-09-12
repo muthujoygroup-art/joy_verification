@@ -2075,10 +2075,16 @@ export const AppProvider = ({ children }) => {
       }
 
       const config = cand.verificationConfig || {};
-      const aadhaarDone = !config.requireAadhaar || updatedVerifs.aadhaar;
-      const mobileDone = !config.requireMobileOtp || updatedVerifs.mobile;
-      const faceDone = !config.requireFaceMatch || updatedVerifs.face;
-      const allFinished = aadhaarDone && mobileDone && faceDone;
+      const requireAadhaar = config.requireAadhaar ?? config.aadhaar?.enabled ?? true;
+      const requireMobileOtp = config.requireMobileOtp ?? config.mobile?.enabled ?? true;
+      const requireFaceMatch = config.requireFaceMatch ?? config.face?.enabled ?? true;
+      const requireEmailOtp = config.requireEmailOtp ?? config.email?.enabled ?? true;
+
+      const aadhaarDone = !requireAadhaar || Boolean(updatedVerifs.aadhaar);
+      const mobileDone = !requireMobileOtp || Boolean(updatedVerifs.mobile);
+      const faceDone = !requireFaceMatch || Boolean(updatedVerifs.face);
+      const emailDone = !requireEmailOtp || Boolean(updatedVerifs.email);
+      const allFinished = aadhaarDone && mobileDone && faceDone && emailDone;
 
       const newStatus = allFinished ? 'Verified' : 'In Verification';
 

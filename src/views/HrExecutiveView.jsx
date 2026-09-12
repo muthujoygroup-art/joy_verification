@@ -2270,25 +2270,32 @@ export const HrExecutiveView = () => {
                     <div className="space-y-1">
                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Verification Gates</span>
                       <div className="flex flex-wrap gap-1 text-[10px]">
-                        {cand.verificationConfig?.requireAadhaar && (
+                        {(cand.verificationConfig?.requireAadhaar ?? cand.verificationConfig?.aadhaar?.enabled ?? cand.verificationConfig?.aadhaar ?? true) && (
                           <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
                             cand.verificationsCompleted?.aadhaar ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                           }`}>
                             Aadhaar {cand.verificationsCompleted?.aadhaar ? '✓' : '⌛'}
                           </span>
                         )}
-                        {cand.verificationConfig?.requireMobileOtp && (
+                        {(cand.verificationConfig?.requireMobileOtp ?? cand.verificationConfig?.mobile?.enabled ?? cand.verificationConfig?.mobile ?? true) && (
                           <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
                             cand.verificationsCompleted?.mobile ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                           }`}>
                             Mobile {cand.verificationsCompleted?.mobile ? '✓' : '⌛'}
                           </span>
                         )}
-                        {cand.verificationConfig?.requireFaceMatch && (
+                        {(cand.verificationConfig?.requireFaceMatch ?? cand.verificationConfig?.face?.enabled ?? cand.verificationConfig?.face ?? true) && (
                           <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
                             cand.verificationsCompleted?.face ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                           }`}>
                             Face {cand.verificationsCompleted?.face ? '✓' : '⌛'}
+                          </span>
+                        )}
+                        {(cand.verificationConfig?.requireEmailOtp ?? cand.verificationConfig?.email?.enabled ?? cand.verificationConfig?.email) && (
+                          <span className={`px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 ${
+                            cand.verificationsCompleted?.email ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            Email {cand.verificationsCompleted?.email ? '✓' : '⌛'}
                           </span>
                         )}
                       </div>
@@ -2479,25 +2486,32 @@ export const HrExecutiveView = () => {
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex flex-wrap gap-1 max-w-xs text-[10px]">
-                          {cand.verificationConfig?.requireAadhaar && (
+                          {(cand.verificationConfig?.requireAadhaar ?? cand.verificationConfig?.aadhaar?.enabled ?? cand.verificationConfig?.aadhaar ?? true) && (
                             <span className={`px-1.5 py-0.5 rounded border font-bold ${
                               cand.verificationsCompleted?.aadhaar ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                             }`}>
                               Aadhaar {cand.verificationsCompleted?.aadhaar ? '✓' : '⌛'}
                             </span>
                           )}
-                          {cand.verificationConfig?.requireMobileOtp && (
+                          {(cand.verificationConfig?.requireMobileOtp ?? cand.verificationConfig?.mobile?.enabled ?? cand.verificationConfig?.mobile ?? true) && (
                             <span className={`px-1.5 py-0.5 rounded border font-bold ${
                               cand.verificationsCompleted?.mobile ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                             }`}>
                               Mobile {cand.verificationsCompleted?.mobile ? '✓' : '⌛'}
                             </span>
                           )}
-                          {cand.verificationConfig?.requireFaceMatch && (
+                          {(cand.verificationConfig?.requireFaceMatch ?? cand.verificationConfig?.face?.enabled ?? cand.verificationConfig?.face ?? true) && (
                             <span className={`px-1.5 py-0.5 rounded border font-bold ${
                               cand.verificationsCompleted?.face ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
                             }`}>
                               Face {cand.verificationsCompleted?.face ? '✓' : '⌛'}
+                            </span>
+                          )}
+                          {(cand.verificationConfig?.requireEmailOtp ?? cand.verificationConfig?.email?.enabled ?? cand.verificationConfig?.email) && (
+                            <span className={`px-1.5 py-0.5 rounded border font-bold ${
+                              cand.verificationsCompleted?.email ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                              Email {cand.verificationsCompleted?.email ? '✓' : '⌛'}
                             </span>
                           )}
                         </div>
