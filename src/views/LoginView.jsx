@@ -45,7 +45,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     return (
       <GlobalPlatformPreloader 
         isFullScreen={true} 
-        autoDismissMs={0} 
+        autoDismissMs={2200} 
         subtitleText="AUTHENTICATING AUTHORIZED SESSION" 
       />
     );

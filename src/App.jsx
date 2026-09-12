@@ -1,5 +1,5 @@
-import React, { useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { PortalLayout } from './components/PortalLayout';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
@@ -19,7 +19,6 @@ function lazyWithRetry(componentImport, chunkName = 'chunk') {
     } catch (error) {
       console.warn(`Dynamic chunk import failed for [${chunkName}]:`, error);
 
-      // If this is the first failure in current session, clear caches and reload
       if (!isRetried) {
         window.sessionStorage.setItem(`chunk_retry_${chunkName}`, 'true');
 
@@ -36,7 +35,6 @@ function lazyWithRetry(componentImport, chunkName = 'chunk') {
         return new Promise(() => {}); // Keep Suspense active until reload completes
       }
 
-      // If already retried and failed again, bubble to ErrorBoundary
       window.sessionStorage.removeItem(`chunk_retry_${chunkName}`);
       throw error;
     }
@@ -55,10 +53,55 @@ const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalVie
 const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
 
-// Seamless Innovative Brand Loading Component
+// Seamless Innovative Brand Loading Component for Suspense Fallback
 const RouteLoadingSpinner = () => (
-  <GlobalPlatformPreloader isFullScreen={true} autoDismissMs={0} subtitleText="AUTHENTICATING SECURE PORTAL SESSION" />
+  <GlobalPlatformPreloader isFullScreen={true} autoDismissMs={2200} subtitleText="AUTHENTICATING SECURE PORTAL SESSION" />
 );
+
+// Global Route & Reload Cinematic Preloader Component (Triggers on initial load, page refresh F5, and long processes)
+const GlobalPageReloadPreloader = () => {
+  const location = useLocation();
+  const [showPreloader, setShowPreloader] = useState(true);
+  const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
+
+  const getSubtitleForPath = (pathname) => {
+    if (pathname.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
+    if (pathname.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
+    if (pathname.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
+    if (pathname.startsWith('/verify') || pathname.startsWith('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
+    if (pathname.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
+    return 'INSTANT WORKFORCE VERIFICATION';
+  };
+
+  // Trigger full loading animation on route change, page refresh, or initial load
+  useEffect(() => {
+    setSubtitle(getSubtitleForPath(location.pathname));
+    setShowPreloader(true);
+  }, [location.pathname]);
+
+  // Listen to custom window events for long-running processes / manual triggers
+  useEffect(() => {
+    const handleTriggerAnimation = (e) => {
+      const { subtitle: customSub } = e.detail || {};
+      if (customSub) setSubtitle(customSub);
+      setShowPreloader(true);
+    };
+
+    window.addEventListener('trigger_full_loading_animation', handleTriggerAnimation);
+    return () => window.removeEventListener('trigger_full_loading_animation', handleTriggerAnimation);
+  }, []);
+
+  if (!showPreloader) return null;
+
+  return (
+    <GlobalPlatformPreloader
+      onFinish={() => setShowPreloader(false)}
+      subtitleText={subtitle}
+      isFullScreen={true}
+      autoDismissMs={2200}
+    />
+  );
+};
 
 // Wrapper for Super Admin Route (/superadmin)
 const SuperAdminRoute = () => {
@@ -126,6 +169,7 @@ export const App = () => {
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
+          <GlobalPageReloadPreloader />
           <div className="min-h-screen bg-[#070A11] text-slate-100 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
