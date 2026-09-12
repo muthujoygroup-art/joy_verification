@@ -229,12 +229,17 @@ export const AppProvider = ({ children }) => {
           const defaultCompId = 'comp-joy';
           const clean = parsed
             .filter(c => c && c.empId !== 'JOY-2026-001' && c.token !== 'cand-token-001' && !c.name?.toUpperCase().includes('MUTHUKUMAR'))
-            .map(c => ({
-              ...c,
-              companyId: c.companyId === 'comp-1' ? defaultCompId : (c.companyId || defaultCompId),
-              company_id: c.company_id === 'comp-1' ? defaultCompId : (c.company_id || defaultCompId),
-              status: (c.status === 'Verified' && !c.verificationsCompleted?.aadhaar && !c.verificationsCompleted?.face && !c.verificationsCompleted?.mobile && !c.verificationsCompleted?.email) ? 'Link Sent' : (c.status || 'Link Sent')
-            }));
+            .map(c => {
+              const verifs = c.verificationsCompleted || c.verifications_completed || {};
+              const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
+              const safeStatus = (c.status === 'Verified' && !isFullyVerified) ? 'Link Sent' : (c.status || 'Link Sent');
+              return {
+                ...c,
+                companyId: c.companyId === 'comp-1' ? defaultCompId : (c.companyId || defaultCompId),
+                company_id: c.company_id === 'comp-1' ? defaultCompId : (c.company_id || defaultCompId),
+                status: safeStatus
+              };
+            });
           localStorage.setItem('joy_candidates_v1', JSON.stringify(clean));
           return clean;
         }
@@ -1101,7 +1106,7 @@ export const AppProvider = ({ children }) => {
             companyName: c.company_name || c.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
             hrId: c.hr_id || c.hrId,
             hr_id: c.hr_id || c.hrId,
-            status: c.status,
+            status: ((c.status === 'Verified' && !(c.verifications_completed?.aadhaar || c.verificationsCompleted?.aadhaar)) ? 'Link Sent' : (c.status || 'Link Sent')),
             portalPassword: c.portal_password || c.portalPassword || '1234',
             portal_password: c.portal_password || c.portalPassword || '1234',
             employeeType: c.employee_type || c.employeeType || 'it_tech',

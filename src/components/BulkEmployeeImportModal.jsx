@@ -1034,8 +1034,12 @@ export const BulkEmployeeImportModal = ({
       .filter(([_, v]) => v.enabled)
       .map(([k, _]) => k);
 
-    const candidatePayloads = candidatesToImport.map(row => {
+    const existingCandidateCount = (candidates && candidates.length) || 0;
+    const candidatePayloads = candidatesToImport.map((row, idx) => {
       const candidatePin = '1234';
+      const autoEmpId = `JOY-EMP-${String(existingCandidateCount + idx + 1).padStart(3, '0')}`;
+      const resolvedEmpId = (row.empId && row.empId.trim()) ? row.empId.trim() : autoEmpId;
+
       const verificationConfig = {
         requireAadhaar: checklist.aadhaar?.enabled ?? true,
         requireMobileOtp: checklist.mobile?.enabled ?? true,
@@ -1083,8 +1087,8 @@ export const BulkEmployeeImportModal = ({
         presentPincode: row.presentPincode || row.permanentPincode,
 
         // 4. Employment Details
-        empId: row.empId,
-        employeeNumber: row.empId,
+        empId: resolvedEmpId,
+        employeeNumber: resolvedEmpId,
         designation: row.designation,
         dept: row.dept,
         employeeType: row.employeeType,
@@ -1130,12 +1134,12 @@ export const BulkEmployeeImportModal = ({
         name: row.name,
         email: row.email,
         mobile: row.mobile,
-        empId: row.empId,
-        employeeNumber: row.empId,
-        employeeCategory: row.employeeType.toLowerCase().replace(/[^a-z]/g, '_'),
-        employeeType: row.employeeType,
-        designation: row.designation,
-        dept: row.dept,
+        empId: resolvedEmpId,
+        employeeNumber: resolvedEmpId,
+        employeeCategory: (row.employeeType || 'it_tech').toLowerCase().replace(/[^a-z]/g, '_'),
+        employeeType: row.employeeType || 'IT & Tech',
+        designation: row.designation || 'Associate',
+        dept: row.dept || 'General',
         doj: row.doj,
         dob: row.dob,
         age: row.age ? parseInt(row.age) : null,

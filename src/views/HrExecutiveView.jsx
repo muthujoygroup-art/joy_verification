@@ -1980,16 +1980,16 @@ export const HrExecutiveView = () => {
         />
         <MetricCard 
           title="Verified Candidates" 
-          value={candidates.filter(c => c.status === 'Verified').length} 
+          value={candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} 
           subtext="Verification Completed" 
           icon={CheckCircle2} 
           color="indigo" 
           onClick={() => setActiveDrilldown({
             title: 'Verified Candidates',
             subtitle: 'Candidates with completed identity and document verifications',
-            metricValue: `${candidates.filter(c => c.status === 'Verified').length} Verified`,
+            metricValue: `${candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} Verified`,
             metricType: 'hr_verified',
-            data: candidates.filter(c => c.status === 'Verified').map(c => ({
+            data: candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -2004,16 +2004,16 @@ export const HrExecutiveView = () => {
         />
         <MetricCard 
           title="Pending Verification" 
-          value={candidates.filter(c => c.status !== 'Verified').length} 
+          value={candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} 
           subtext="Awaiting Candidate Form" 
           icon={Clock} 
           color="amber" 
           onClick={() => setActiveDrilldown({
             title: 'Pending Candidate Verifications',
             subtitle: 'Candidates who have not yet submitted their OTP or photo verifications',
-            metricValue: `${candidates.filter(c => c.status !== 'Verified').length} Pending`,
+            metricValue: `${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} Pending`,
             metricType: 'hr_pending',
-            data: candidates.filter(c => c.status !== 'Verified').map(c => ({
+            data: candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,

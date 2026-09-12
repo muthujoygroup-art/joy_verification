@@ -322,12 +322,14 @@ export const EmployeePortalView = () => {
           if (!localCand) {
             const tokenNameMatch = cleanToken.match(/tok_([^_]+)_/);
             const extractedName = tokenNameMatch ? tokenNameMatch[1].replace(/_/g, ' ') : 'Candidate';
+            const candidateSeqCount = (candidates?.length || 1) + 1;
+            const assignedEmpId = `JOY-EMP-${String(candidateSeqCount).padStart(3, '0')}`;
             const fallbackCand = {
               id: `emp-${cleanToken}`,
               token: cleanToken,
               name: extractedName.charAt(0).toUpperCase() + extractedName.slice(1),
-              empId: 'JOY-EMP-001',
-              employeeNumber: 'JOY-EMP-001',
+              empId: assignedEmpId,
+              employeeNumber: assignedEmpId,
               email: 'candidate@gmail.com',
               mobile: '+91 9876543210',
               designation: 'Associate',

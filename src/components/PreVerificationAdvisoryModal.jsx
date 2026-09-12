@@ -16,9 +16,9 @@ export const PreVerificationAdvisoryModal = ({ isOpen, onClose, candidateName, c
   if (!isOpen) return null;
 
   return createPortal((
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn overflow-y-auto">
       <div 
-        className="w-full max-w-lg bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden my-auto"
+        className="w-full max-w-lg bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 text-slate-900 animate-modal-spring relative overflow-hidden my-auto max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />

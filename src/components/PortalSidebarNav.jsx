@@ -111,6 +111,28 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         if (token && candidates?.length) {
           const found = candidates.find(c => c.verificationToken === token || c.token === token || c.id === token || c.empId === token || c.employeeNumber === token);
           if (found) return found;
+
+          // Check if candidate name is embedded in token (e.g. tok_dharun_782)
+          const nameInTokenMatch = token.match(/tok_([^_]+)_/);
+          const extractedTokenName = nameInTokenMatch ? nameInTokenMatch[1].toLowerCase() : null;
+          if (extractedTokenName) {
+            const foundByName = candidates.find(c => c.name && c.name.toLowerCase().includes(extractedTokenName));
+            if (foundByName) return foundByName;
+          }
+        }
+
+        if (token) {
+          const nameInTokenMatch = token.match(/tok_([^_]+)_/);
+          const rawName = nameInTokenMatch ? nameInTokenMatch[1].replace(/_/g, ' ') : 'Candidate';
+          const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+          const candidateSeqCount = (candidates?.length || 1) + 1;
+          const assignedEmpCode = `JOY-EMP-${String(candidateSeqCount).padStart(3, '0')}`;
+          return {
+            name: formattedName,
+            empId: assignedEmpCode,
+            employeeCode: assignedEmpCode,
+            id: token
+          };
         }
       }
       if (selectedCandidateToken && candidates?.length) {
@@ -504,8 +526,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'pipeline',
           divisions: [
             { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
-            { id: 'pipeline_active', label: `Pending Verifications (${candidates.filter(c => c.status !== 'Verified').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
-            { id: 'pipeline_verified', label: `Verified Candidates (${candidates.filter(c => c.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
+            { id: 'pipeline_active', label: `Pending Verifications (${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_verified', label: `Verified Candidates (${candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
         {
