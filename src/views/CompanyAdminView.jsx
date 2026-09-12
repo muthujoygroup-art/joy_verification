@@ -17,6 +17,7 @@ import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
 import { HrGovernanceModal } from '../components/HrGovernanceModal';
 import { VendorVerificationCertificateModal } from '../components/VendorVerificationCertificateModal';
+import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import {
   AlertTriangle,
   BarChart3,
@@ -4232,6 +4233,11 @@ export const CompanyAdminView = () => {
             <span className="badge badge-indigo text-[9px] font-mono">Real-time Policy Enforcement</span>
           </div>
         </div>
+      )}
+
+      {/* TAB: MY WORKSPACE PERSONAL VIEW */}
+      {['profile', 'security', 'identity', 'sessions', 'audit_log', 'session_ping', 'active_session', 'login_history', 'exports', 'tickets'].includes(activeTab) && (
+        <MyWorkspacePersonalView activeTab={activeTab} userRole="company" />
       )}
 
       {/* Document Downloader Modal */}

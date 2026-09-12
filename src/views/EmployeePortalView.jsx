@@ -14,6 +14,7 @@ import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { AiFaceMatchModal } from '../components/AiFaceMatchModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { PreVerificationAdvisoryModal } from '../components/PreVerificationAdvisoryModal';
+import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -80,6 +81,7 @@ export const EmployeePortalView = () => {
   const [showPreVerificationAdvisory, setShowPreVerificationAdvisory] = useState(true);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
+  const [activePersonalTab, setActivePersonalTab] = useState(null);
 
   // Aadhaar Live Data Fetching & e-KYC telemetry states
   const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
@@ -217,6 +219,11 @@ export const EmployeePortalView = () => {
   useEffect(() => {
     const handlePortalNav = (e) => {
       const { tab, modal } = e.detail || {};
+      if (['profile', 'security', 'identity', 'sessions', 'audit_log', 'session_ping', 'active_session', 'login_history', 'exports', 'tickets'].includes(tab)) {
+        setActivePersonalTab(tab);
+      } else if (tab) {
+        setActivePersonalTab(null);
+      }
       if (tab === 'aadhaar' || tab === 'aadhaar_step') setShowAadhaarOtpModal(true);
       else if (tab === 'otp' || tab === 'otp_step') setShowMobileOtpModal(true);
       else if (tab === 'face' || tab === 'face_step') setShowAiFaceMatchModal(true);
@@ -722,6 +729,11 @@ export const EmployeePortalView = () => {
           })}
         </div>
       </div>
+
+      {/* MY WORKSPACE PERSONAL VIEW */}
+      {activePersonalTab && (
+        <MyWorkspacePersonalView activeTab={activePersonalTab} userRole="employee_link" />
+      )}
 
       {/* 🏢 SECTION 1: EMPLOYER VERIFICATION INVITATION HEADER */}
       <div className="glass-panel p-6 sm:p-7 border-2 border-slate-200/90 bg-white relative overflow-hidden rounded-3xl shadow-sm space-y-5">

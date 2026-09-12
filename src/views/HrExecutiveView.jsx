@@ -26,6 +26,7 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
 import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
+import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
 import {
   AlertCircle,
@@ -5608,6 +5609,11 @@ export const HrExecutiveView = () => {
             </div>
           </form>
         </div>
+      )}
+
+      {/* TAB: MY WORKSPACE PERSONAL VIEW */}
+      {['profile', 'security', 'identity', 'sessions', 'audit_log', 'session_ping', 'active_session', 'login_history', 'exports', 'tickets'].includes(activeTab) && (
+        <MyWorkspacePersonalView activeTab={activeTab} userRole="hrexecutive" />
       )}
 
             {/* 📸 Dedicated HR Live WebCam Photo Capture Modal */}

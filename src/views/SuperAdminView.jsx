@@ -23,6 +23,7 @@ import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
+import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
@@ -6572,6 +6573,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
 
         </div>
+      )}
+
+      {/* TAB: MY WORKSPACE PERSONAL VIEW */}
+      {['profile', 'security', 'identity', 'sessions', 'audit_log', 'session_ping', 'active_session', 'login_history', 'exports', 'tickets'].includes(activeTab) && (
+        <MyWorkspacePersonalView activeTab={activeTab} userRole="superadmin" />
       )}
 
 
