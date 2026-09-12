@@ -126,8 +126,8 @@ export const EmployeePortalView = () => {
 
   const isAadhaarReq = (companyFeatures.aadhaar !== false) && (verificationConfig.aadhaar !== false);
   const isMobileReq = (companyFeatures.mobileOtp === true) || (verificationConfig.mobileOtp === true);
-  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email === true);
-  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture === true);
+  const isEmailReq = (companyFeatures.emailGateway === true) || (companyFeatures.emailOtp === true) || (verificationConfig.email !== false);
+  const isFaceReq = (companyFeatures.aiFaceBiometrics === true) || (companyFeatures.faceCapture === true) || (verificationConfig.faceCapture !== false);
   const isPanReq = (companyFeatures.pan === true) || (verificationConfig.pan === true);
   const isBankReq = (companyFeatures.bankCheck === true) || (verificationConfig.bankCheck === true);
   const isDlReq = (companyFeatures.drivingLicense === true) || (verificationConfig.drivingLicense === true);

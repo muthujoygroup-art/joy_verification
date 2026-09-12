@@ -84,18 +84,41 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     cand_certs: false
   });
 
-  // 5. Active Selected Pillar & Division State
+  // 5. Candidate verification route detection & effective role override
+  const isCandidateRoute = typeof window !== 'undefined' && (
+    window.location.pathname.includes('/verify') ||
+    window.location.pathname.includes('/candidate')
+  );
+
+  const effectiveRole = isCandidateRoute ? 'employee_link' : (currentRole || 'superadmin');
+
+  const currentCandidate = useMemo(() => {
+    if (effectiveRole === 'employee_link' || isCandidateRoute) {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        if (token && candidates?.length) {
+          const found = candidates.find(c => c.verificationToken === token || c.token === token || c.id === token);
+          if (found) return found;
+        }
+      }
+      return candidates?.[0] || null;
+    }
+    return null;
+  }, [effectiveRole, isCandidateRoute, candidates]);
+
+  // 6. Active Selected Pillar & Division State
   const [activePillarId, setActivePillarId] = useState(() => {
-    if (currentRole === 'superadmin') return 'core_ops';
-    if (currentRole === 'company') return 'telemetry_candidates';
-    if (currentRole === 'hrexecutive') return 'pipeline_dossiers';
+    if (effectiveRole === 'superadmin') return 'core_ops';
+    if (effectiveRole === 'company') return 'telemetry_candidates';
+    if (effectiveRole === 'hrexecutive') return 'pipeline_dossiers';
     return 'cand_identity';
   });
 
   const [activeDivisionId, setActiveDivisionId] = useState(() => {
-    if (currentRole === 'superadmin') return 'companies';
-    if (currentRole === 'company') return 'registry';
-    if (currentRole === 'hrexecutive') return 'pipeline';
+    if (effectiveRole === 'superadmin') return 'companies';
+    if (effectiveRole === 'company') return 'registry';
+    if (effectiveRole === 'hrexecutive') return 'pipeline';
     return 'aadhaar';
   });
 
@@ -131,7 +154,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
   };
 
-  const currentTheme = roleThemeDetails[currentRole] || roleThemeDetails.superadmin;
+  const currentTheme = roleThemeDetails[effectiveRole] || roleThemeDetails.superadmin;
   const unreadCount = (notifications || []).filter(n => !n.isRead).length;
 
   // Toggle Sound Effects
@@ -278,7 +301,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     // =========================================================================
     // 👑 1. SUPER ADMIN: EXACT MATCH WITH USER SCREENSHOT 2
     // =========================================================================
-    if (currentRole === 'superadmin') {
+    if (effectiveRole === 'superadmin') {
       return [
         {
           id: 'core_ops',
@@ -369,7 +392,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     // =========================================================================
     // 🏢 2. COMPANY ADMIN: 5 PILLARS & RESPECTIVE DIVISIONS
     // =========================================================================
-    if (currentRole === 'company') {
+    if (effectiveRole === 'company') {
       return [
         {
           id: 'telemetry_candidates',
@@ -447,7 +470,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     // =========================================================================
     // 👔 3. HR EXECUTIVE: 3 PILLARS & RESPECTIVE DIVISIONS
     // =========================================================================
-    if (currentRole === 'hrexecutive') {
+    if (effectiveRole === 'hrexecutive') {
       return [
         {
           id: 'pipeline_dossiers',
@@ -934,11 +957,13 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                 </div>
                 <div className="min-w-0">
                   <div className="font-black text-xs text-slate-900 truncate leading-tight">
-                    {currentUser?.name || currentUser?.email || 'User'}
+                    {effectiveRole === 'employee_link' 
+                      ? (currentCandidate?.name || 'Candidate User') 
+                      : (currentUser?.name || currentUser?.email || 'User')}
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[9px] border border-indigo-200 truncate">
-                      {currentRole === 'superadmin' ? 'SUPERADMIN' : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentTheme.codePrefix)}
+                      {effectiveRole === 'superadmin' ? 'SUPERADMIN' : (effectiveRole === 'employee_link' ? (currentCandidate?.employeeCode || currentCandidate?.empId || currentCandidate?.id || currentTheme.codePrefix) : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentTheme.codePrefix))}
                     </span>
                   </div>
                 </div>
