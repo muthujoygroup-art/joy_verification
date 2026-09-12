@@ -22,7 +22,8 @@ import {
   ShieldCheck,
   Zap,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Crown
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
