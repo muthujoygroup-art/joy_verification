@@ -89,15 +89,15 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   // 5. Candidate verification route detection & effective role override
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
   const isCandidateRoute = (
-    path.startsWith('/verify') ||
-    path.includes('/verify?') ||
+    path.includes('/verify') ||
+    path.includes('/employee') ||
     path.startsWith('/candidate-') ||
     (path.includes('/candidate') && !path.includes('/hr/') && !path.includes('/candidates') && !path.includes('/company/') && !path.includes('/superadmin'))
   );
 
-  const effectiveRole = (currentRole && currentRole !== 'employee_link')
-    ? currentRole
-    : (isCandidateRoute ? 'employee_link' : (currentRole || 'superadmin'));
+  const effectiveRole = (isCandidateRoute || currentRole === 'employee_link')
+    ? 'employee_link'
+    : (currentRole || 'superadmin');
 
   const currentCandidate = useMemo(() => {
     if (effectiveRole === 'employee_link' || isCandidateRoute) {
@@ -109,10 +109,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           if (found) return found;
         }
       }
+      if (selectedCandidateToken && candidates?.length) {
+        const found = candidates.find(c => c.verificationToken === selectedCandidateToken || c.token === selectedCandidateToken || c.id === selectedCandidateToken);
+        if (found) return found;
+      }
       return candidates?.[0] || null;
     }
     return null;
-  }, [effectiveRole, isCandidateRoute, candidates]);
+  }, [effectiveRole, isCandidateRoute, candidates, selectedCandidateToken]);
 
   const activeCandidateCompanyFeatures = useMemo(() => {
     if (effectiveRole !== 'employee_link') return null;

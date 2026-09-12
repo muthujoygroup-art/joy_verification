@@ -53,7 +53,16 @@ export const PortalLayout = ({ children }) => {
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
 
-  const roleKey = currentRole === 'employee_link' ? 'candidate' : currentRole;
+  const locationPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isCandidateRoute = (
+    currentRole === 'employee_link' ||
+    locationPath.includes('/verify') || 
+    locationPath.includes('/employee') || 
+    (locationPath.includes('/candidate') && !locationPath.includes('/hr/') && !locationPath.includes('/candidates') && !locationPath.includes('/company/') && !locationPath.includes('/superadmin'))
+  );
+
+  const effectiveRole = isCandidateRoute ? 'employee_link' : (currentRole || 'superadmin');
+  const roleKey = effectiveRole === 'employee_link' ? 'candidate' : effectiveRole;
   const unreadCount = (notifications || []).filter(n => n.role === roleKey && !n.isRead).length;
 
   const roleThemeDetails = {
@@ -83,7 +92,7 @@ export const PortalLayout = ({ children }) => {
     }
   };
 
-  const currentTheme = roleThemeDetails[currentRole] || roleThemeDetails.superadmin;
+  const currentTheme = roleThemeDetails[effectiveRole] || roleThemeDetails.superadmin;
 
   // Listen to navigation events from sidebar or other components requesting modals
   useEffect(() => {
@@ -207,27 +216,9 @@ export const PortalLayout = ({ children }) => {
               </div>
             </div>
 
-            {/* Candidate verification link token switcher (when in Candidate view) */}
-            {currentRole === 'employee_link' && (
-              <div className="hidden md:flex items-center gap-2 text-xs bg-amber-50/80 px-2.5 py-1 rounded-xl border border-amber-200 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span className="text-amber-900 font-bold text-[11px]">Active Candidate:</span>
-                <select
-                  value={selectedCandidateToken}
-                  onChange={(e) => setSelectedCandidateToken(e.target.value)}
-                  className="bg-white border border-amber-300 text-slate-900 rounded-lg px-2 py-0.5 text-xs outline-none focus:border-amber-500 font-mono font-bold"
-                >
-                  {(candidates || []).map(c => (
-                    <option key={c.id} value={c.token}>
-                      {c.name} ({c.companyName || 'JOY CORPORATE'}) - [{c.status}]
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Right: Quick Action Controls Toolbar */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
+            {/* Right: Quick Action Controls Toolbar (Only shown for SuperAdmin, Company & HR Consoles) */}
+            {effectiveRole !== 'employee_link' && (
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
               
               {/* Quick Role Switcher Dropdown */}
               <div className="relative">
@@ -371,26 +362,11 @@ export const PortalLayout = ({ children }) => {
               </div>
 
             </div>
+            )}
 
           </div>
 
-          {/* Candidate token switcher helper on mobile when in Employee Portal view */}
-          {currentRole === 'employee_link' && (
-            <div className="mt-2 pt-2 border-t border-slate-200/80 md:hidden flex items-center justify-between gap-2 text-xs bg-amber-50/80 p-2 rounded-xl border border-amber-200">
-              <span className="text-amber-900 font-semibold text-[11px] truncate">Candidate:</span>
-              <select 
-                value={selectedCandidateToken} 
-                onChange={(e) => setSelectedCandidateToken(e.target.value)}
-                className="bg-white border border-amber-300 text-slate-900 rounded-lg px-2 py-0.5 text-xs outline-none focus:border-amber-500 font-mono font-bold max-w-[200px]"
-              >
-                {(candidates || []).map(c => (
-                  <option key={c.id} value={c.token}>
-                    {c.name} - [{c.status}]
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+
 
         </header>
 

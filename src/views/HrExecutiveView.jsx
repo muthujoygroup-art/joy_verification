@@ -359,7 +359,7 @@ export const HrExecutiveView = () => {
               ? c.status?.toLowerCase() === 'inactive' 
               : statusFilter === 'Verified'
                 ? c.status === 'Verified'
-                : statusFilter === 'Pending Verification' || statusFilter === 'Pending' || statusFilter === 'In Verification'
+                : (statusFilter === 'Pending Verification' || statusFilter === 'Pending Verifications' || statusFilter === 'Pending' || statusFilter === 'In Verification')
                   ? c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive'
                   : c.status === statusFilter;
 

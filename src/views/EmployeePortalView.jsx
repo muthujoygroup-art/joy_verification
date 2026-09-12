@@ -758,41 +758,43 @@ export const EmployeePortalView = () => {
         </div>
       )}
       
-      {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR */}
-      <div className="p-3.5 bg-amber-50/90 text-slate-900 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs border border-amber-200">
-        <div className="flex items-center gap-2">
-          <span className="text-amber-800 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-600" />
-            <span>Switch Candidate Scenario:</span>
-          </span>
+      {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR (ONLY VISIBLE FOR ADMIN/HR TESTERS) */}
+      {(currentRole === 'superadmin' || currentRole === 'hrexecutive') && (
+        <div className="p-3.5 bg-amber-50/90 text-slate-900 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs border border-amber-200">
+          <div className="flex items-center gap-2">
+            <span className="text-amber-800 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <span>Switch Candidate Scenario:</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {candidates.map(c => {
+              const isSelected = candidate?.token === c.token;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setSelectedCandidateToken(c.token)}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 cursor-pointer ${
+                    isSelected 
+                      ? 'bg-amber-600 text-white ring-2 ring-amber-400 shadow-sm scale-102'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200 shadow-2xs'
+                  }`}
+                >
+                  <span>{c.name}</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
+                    c.status === 'Submitted - Pending HR Review' ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse' :
+                    c.status === 'Corrections Requested' ? 'bg-rose-100 text-rose-900 border border-rose-300' :
+                    c.status === 'Verified' ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
+                  }`}>
+                    {c.status === 'Submitted - Pending HR Review' ? 'Pending HR Review' : c.status}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {candidates.map(c => {
-            const isSelected = candidate?.token === c.token;
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setSelectedCandidateToken(c.token)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 cursor-pointer ${
-                  isSelected 
-                    ? 'bg-amber-600 text-white ring-2 ring-amber-400 shadow-sm scale-102'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200 shadow-2xs'
-                }`}
-              >
-                <span>{c.name}</span>
-                <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
-                  c.status === 'Submitted - Pending HR Review' ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse' :
-                  c.status === 'Corrections Requested' ? 'bg-rose-100 text-rose-900 border border-rose-300' :
-                  c.status === 'Verified' ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                }`}>
-                  {c.status === 'Submitted - Pending HR Review' ? 'Pending HR Review' : c.status}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       {/* MY WORKSPACE PERSONAL VIEW */}
       {activePersonalTab && (
