@@ -90,7 +90,7 @@ export const initGlobalErrorListeners = () => {
 
       const currentPath = window.location.pathname || '';
       let portal = 'HR Executive Portal';
-      if (currentPath.includes('/candidate') || currentPath.includes('/verify') || currentPath.includes('employee_link')) {
+      if ((currentPath.includes('/candidate') && !currentPath.includes('/hr/') && !currentPath.includes('/candidates')) || currentPath.includes('/verify') || currentPath.includes('employee_link')) {
         portal = 'Employee Verification Link';
       } else if (currentPath.includes('/company') || currentPath.includes('/hr-onboarding')) {
         portal = 'Company Admin Portal';

@@ -87,12 +87,17 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   });
 
   // 5. Candidate verification route detection & effective role override
-  const isCandidateRoute = typeof window !== 'undefined' && (
-    window.location.pathname.includes('/verify') ||
-    window.location.pathname.includes('/candidate')
+  const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isCandidateRoute = (
+    path.startsWith('/verify') ||
+    path.includes('/verify?') ||
+    path.startsWith('/candidate-') ||
+    (path.includes('/candidate') && !path.includes('/hr/') && !path.includes('/candidates') && !path.includes('/company/') && !path.includes('/superadmin'))
   );
 
-  const effectiveRole = isCandidateRoute ? 'employee_link' : (currentRole || 'superadmin');
+  const effectiveRole = (currentRole && currentRole !== 'employee_link')
+    ? currentRole
+    : (isCandidateRoute ? 'employee_link' : (currentRole || 'superadmin'));
 
   const currentCandidate = useMemo(() => {
     if (effectiveRole === 'employee_link' || isCandidateRoute) {
