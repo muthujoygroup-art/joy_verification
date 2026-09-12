@@ -1738,15 +1738,15 @@ export const HrExecutiveView = () => {
   return (
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
-      {/* Top Header Banner & Navigation Tabs */}
-      <div className="glass-panel p-6 border-emerald-200 bg-white space-y-6 relative overflow-hidden shadow-sm">
+      {/* Top Header Banner */}
+      <div className="glass-panel p-5 sm:p-6 border-emerald-200 bg-white space-y-4 relative overflow-hidden shadow-xs rounded-2xl">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5 min-w-0">
             {/* Employer Corporate Logo Display */}
             {currentCompany?.logo || currentCompany?.logo_url || (currentCompany?.features || {}).logo || (currentCompany?.documents || {}).company_logo ? (
-              <div className="w-16 h-16 rounded-2xl bg-white border-2 border-emerald-200 shadow-sm p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name}`}>
+              <div className="w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name}`}>
                 <img 
                   src={currentCompany.logo || currentCompany.logo_url || (currentCompany.features || {}).logo || (currentCompany.documents || {}).company_logo} 
                   alt={currentCompany.name} 
@@ -1754,34 +1754,33 @@ export const HrExecutiveView = () => {
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-2xl flex items-center justify-center shrink-0 shadow-md border-2 border-white">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-xs border-2 border-white">
                 {(currentCompany?.name || 'JC').charAt(0).toUpperCase()}
               </div>
             )}
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Executive Workstation</span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Management</span>
                 <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
                   • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany?.name || 'Joy Corporate Solutions'})</span>
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[11px] border border-emerald-300 shadow-2xs">
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[10.5px] border border-emerald-300 shadow-2xs">
                   👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany?.code || 'COMP001'}HR001`}
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[11px] border border-purple-300 shadow-2xs">
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[10.5px] border border-purple-300 shadow-2xs">
                   🏢 Company: {currentCompany?.code || 'COMP001'}
                 </span>
-                {(currentCompany?.location || currentCompany?.registered_address) && (
-                  <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                    📍 {currentCompany.location || currentCompany.registered_address}
-                  </span>
-                )}
               </div>
-              <h2 className="text-2xl font-black text-slate-900 mt-1">Employee Profiler, Verification & Document Generator</h2>
-              <p className="text-xs text-slate-600 mt-0.5 font-medium">Create candidate profiles, auto-fill mock values, dispatch multi-channel verification links, and export official PDF compliance documents.</p>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight truncate">
+                {currentHrDivMeta.title}
+              </h2>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium truncate">
+                {currentHrDivMeta.subtitle}
+              </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-auto">
             <button 
               onClick={() => {
                 if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {
@@ -1790,10 +1789,10 @@ export const HrExecutiveView = () => {
                 }
                 setShowBulkImportModal(true);
               }}
-              className={`btn btn-secondary text-xs flex items-center gap-1.5 shadow-xs font-bold text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 transition-all ${
+              className={`btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 transition-all ${
                 (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
               }`}
-              title="Bulk import all types of employees via Excel with document verification checklist"
+              title="Bulk import candidates via Excel"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
               <span>Bulk Import (Excel) 📥</span>
@@ -1808,54 +1807,13 @@ export const HrExecutiveView = () => {
                 setShowAddForm(true);
                 setActiveTab('profiler');
               }}
-              className={`btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-md font-bold transition-all ${
+              className={`btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-xs font-bold transition-all ${
                 hrPerms.allowProfileCreation === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
               }`}
-              title={hrPerms.allowProfileCreation === false ? '🚫 Access Restricted: Profile Creation Disabled by Company Admin' : 'Create Employee & Send Link'}
+              title={hrPerms.allowProfileCreation === false ? 'Access Restricted: Profile Creation Disabled by Company Admin' : 'Add Candidate & Send Link'}
             >
               <SendHorizontal className="w-4 h-4" />
-              <span>Create Employee & Send Link</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
-        <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-800 shrink-0 transition-all duration-200">
-              <CurrentHrDivIcon className="w-5 h-5 text-white" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200 shadow-2xs">
-                  {currentHrDivMeta.pillarBadge}
-                </span>
-                <span className="text-xs text-slate-300 font-bold">•</span>
-                <span className="text-[11px] font-bold text-slate-500">
-                  {currentHrDivMeta.badgeText}
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight truncate mt-1">
-                {currentHrDivMeta.title}
-              </h3>
-              <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
-                {currentHrDivMeta.subtitle}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0 flex-wrap">
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddForm(true);
-                setActiveTab('profiler');
-              }}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
-              title="Add New Candidate Profile"
-            >
-              <UserPlus className="w-3.5 h-3.5 text-white" />
-              <span>+ New Profile</span>
+              <span>+ Add Candidate & Send Link</span>
             </button>
           </div>
         </div>
@@ -1864,13 +1822,13 @@ export const HrExecutiveView = () => {
             {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
-          title="Active Candidate Forms" 
+          title="Total Candidates" 
           value={candidates.length} 
           subtext="Profiles Managed by HR" 
           icon={UserCheck} 
           color="emerald" 
           onClick={() => setActiveDrilldown({
-            title: 'Active Candidate Employee Profiles',
+            title: 'All Candidate Profiles',
             subtitle: `All candidate profiles managed under ${currentCompany?.name || 'Joy Corporate Solutions'}`,
             metricValue: `${candidates.length} Profiles`,
             metricType: 'hr_active',
@@ -1888,14 +1846,14 @@ export const HrExecutiveView = () => {
           })}
         />
         <MetricCard 
-          title="Links Dispatched (WhatsApp/SMS)" 
+          title="Sent Links" 
           value={candidates.filter(c => c.status !== 'Draft').length} 
-          subtext="Sent via Multi-Channel Router" 
+          subtext="Verification Links Sent" 
           icon={Send} 
           color="cyan" 
           onClick={() => setActiveDrilldown({
-            title: 'Dispatched Verification Links Audit',
-            subtitle: 'Candidates who have received a magic link via WhatsApp, SMS, or Email',
+            title: 'Sent Verification Links',
+            subtitle: 'Candidates who have received a verification link via WhatsApp, SMS, or Email',
             metricValue: `${candidates.filter(c => c.status !== 'Draft').length} Dispatched`,
             metricType: 'hr_dispatched',
             data: candidates.filter(c => c.status !== 'Draft').map(c => ({
@@ -1912,14 +1870,14 @@ export const HrExecutiveView = () => {
           })}
         />
         <MetricCard 
-          title="Verified Successfully" 
+          title="Verified Candidates" 
           value={candidates.filter(c => c.status === 'Verified').length} 
-          subtext="Aadhaar + Mobile + Face Completed" 
+          subtext="Verification Completed" 
           icon={CheckCircle2} 
           color="indigo" 
           onClick={() => setActiveDrilldown({
-            title: 'Successfully Verified Employees',
-            subtitle: 'Candidates with 100% completed Aadhaar, Mobile, and Face verifications',
+            title: 'Verified Candidates',
+            subtitle: 'Candidates with completed identity and document verifications',
             metricValue: `${candidates.filter(c => c.status === 'Verified').length} Verified`,
             metricType: 'hr_verified',
             data: candidates.filter(c => c.status === 'Verified').map(c => ({
@@ -1938,7 +1896,7 @@ export const HrExecutiveView = () => {
         <MetricCard 
           title="Pending Verification" 
           value={candidates.filter(c => c.status !== 'Verified').length} 
-          subtext="Awaiting Candidate Response" 
+          subtext="Awaiting Candidate Form" 
           icon={Clock} 
           color="amber" 
           onClick={() => setActiveDrilldown({

@@ -434,44 +434,44 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       return [
         {
           id: 'pipeline_dossiers',
-          title: '1. Candidate List & Records',
-          subtitle: 'Candidate Applications & Dossiers',
+          title: '1. Candidate Directory',
+          subtitle: 'Manage Employee Candidates',
           badgeText: `${candidates.length} CANDIDATES`,
           icon: Smartphone,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'pipeline',
           divisions: [
-            { id: 'pipeline', label: `All Candidates Pipeline (${candidates.length})`, tab: 'pipeline', icon: Smartphone },
-            { id: 'pipeline_active', label: 'Active Verification Magic Links', tab: 'pipeline', icon: Zap },
-            { id: 'pipeline_verified', label: 'Verified Candidates & Dossiers', tab: 'pipeline', icon: CheckCircle2 }
+            { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', icon: Smartphone },
+            { id: 'pipeline_active', label: 'Pending Verifications', tab: 'pipeline', icon: Zap },
+            { id: 'pipeline_verified', label: 'Verified Candidates', tab: 'pipeline', icon: CheckCircle2 }
           ]
         },
         {
           id: 'profiler_dispatch',
-          title: '2. Add New Candidate',
-          subtitle: 'Form Profiler & Dispatch Links',
-          badgeText: 'ONBOARDING',
+          title: '2. Add Candidate',
+          subtitle: 'New Candidate & Verification Link',
+          badgeText: 'ADD CANDIDATE',
           icon: Sliders,
           colorClass: 'from-teal-600 to-emerald-700',
           defaultTab: 'profiler',
           divisions: [
-            { id: 'profiler', label: 'Create Employee Profile Form', tab: 'profiler', icon: Sliders },
-            { id: 'bulk_import_btn', label: 'Bulk Import (Excel Spreadsheet) 📥', modal: 'bulk_import', icon: FileSpreadsheet },
-            { id: 'autofill_mock', label: '1-Click Multi-Industry Mock Auto-Fill', tab: 'profiler', icon: Sparkles }
+            { id: 'profiler', label: 'New Candidate Form', tab: 'profiler', icon: Sliders },
+            { id: 'bulk_import_btn', label: 'Bulk Import (Excel) 📥', modal: 'bulk_import', icon: FileSpreadsheet },
+            { id: 'autofill_mock', label: 'Auto-Fill Sample Data', tab: 'profiler', icon: Sparkles }
           ]
         },
         {
           id: 'statutory_settings',
-          title: '3. Analytics & Settings',
-          subtitle: 'Turnaround Times & Compliance Rules',
+          title: '3. Reports & Settings',
+          subtitle: 'Analytics & HR Configurations',
           badgeText: 'SETTINGS',
           icon: Settings,
           colorClass: 'from-indigo-600 to-purple-700',
           defaultTab: 'analytics',
           divisions: [
-            { id: 'analytics', label: 'Verification TAT & Throughput Analytics', tab: 'analytics', icon: TrendingUp },
-            { id: 'statutory_forms', label: 'EPFO / ESIC / Gratuity Forms Preview', tab: 'analytics', icon: Scale },
-            { id: 'settings', label: 'Workstation Preferences & Audit Rules', tab: 'settings', icon: Settings }
+            { id: 'analytics', label: 'Verification Reports', tab: 'analytics', icon: TrendingUp },
+            { id: 'statutory_forms', label: 'Government Forms (EPF/ESI)', tab: 'analytics', icon: Scale },
+            { id: 'settings', label: 'HR Settings', tab: 'settings', icon: Settings }
           ]
         }
       ];
@@ -483,57 +483,57 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     return [
       {
         id: 'cand_identity',
-        title: '1. Identity & e-KYC Verification',
-        subtitle: 'UIDAI Aadhaar, OTP & Face Match',
-        badgeText: 'STAGE 1',
+        title: '1. Identity Verification',
+        subtitle: 'Aadhaar, Mobile & Photo',
+        badgeText: 'STEP 1',
         icon: ShieldCheck,
         colorClass: 'from-amber-600 to-orange-600',
         defaultTab: 'aadhaar_step',
         divisions: [
-          { id: 'aadhaar_step', label: 'Aadhaar OTP e-KYC Verification', tab: 'aadhaar', icon: ShieldCheck },
-          { id: 'otp_step', label: 'Mobile & Email Two-Factor OTP', tab: 'otp', icon: Smartphone },
-          { id: 'face_step', label: 'Live AI Face Match Biometrics', tab: 'face', icon: Sparkles }
+          { id: 'aadhaar_step', label: 'Aadhaar Verification', tab: 'aadhaar', icon: ShieldCheck },
+          { id: 'otp_step', label: 'Mobile & Email OTP', tab: 'otp', icon: Smartphone },
+          { id: 'face_step', label: 'Photo Verification', tab: 'face', icon: Sparkles }
         ]
       },
       {
         id: 'cand_financial',
-        title: '2. Financial & Professional Credentials',
-        subtitle: 'PAN, Bank & Statutory Numbers',
-        badgeText: 'STAGE 2',
+        title: '2. Bank & Tax Checks',
+        subtitle: 'PAN Card & Bank Account',
+        badgeText: 'STEP 2',
         icon: CreditCard,
         colorClass: 'from-sky-600 to-indigo-600',
         defaultTab: 'pan_step',
         divisions: [
-          { id: 'pan_step', label: 'Income Tax PAN Card Check', tab: 'pan', icon: CreditCard },
-          { id: 'bank_step', label: 'Bank Account Penny-Drop Validation', tab: 'bank', icon: Building2 },
-          { id: 'dl_step', label: 'Driving License / Passport / UAN', tab: 'dl', icon: Layers }
+          { id: 'pan_step', label: 'PAN Card Check', tab: 'pan', icon: CreditCard },
+          { id: 'bank_step', label: 'Bank Account Check', tab: 'bank', icon: Building2 },
+          { id: 'dl_step', label: 'Driving License / UAN', tab: 'dl', icon: Layers }
         ]
       },
       {
         id: 'cand_joining',
-        title: '3. Joining Dossier & Digital Sign',
-        subtitle: 'Employment Particulars & Enclosures',
-        badgeText: 'STAGE 3',
+        title: '3. Joining Form & Signature',
+        subtitle: 'Personal Details & Signature',
+        badgeText: 'STEP 3',
         icon: FileText,
         colorClass: 'from-emerald-600 to-teal-700',
         defaultTab: 'joining_form',
         divisions: [
-          { id: 'joining_form', label: 'Candidate Onboarding Particulars', tab: 'joining_form', icon: FileText },
-          { id: 'signature_step', label: 'Digital E-Signature Specimen Pad', tab: 'signature', icon: Scale }
+          { id: 'joining_form', label: 'Candidate Onboarding Details', tab: 'joining_form', icon: FileText },
+          { id: 'signature_step', label: 'Digital Signature Pad', tab: 'signature', icon: Scale }
         ]
       },
       {
         id: 'cand_certs',
-        title: '4. Official Certificates & Downloads',
-        subtitle: 'Official PDF Dossier & DPDP Consent',
+        title: '4. Downloads & Rights',
+        subtitle: 'Certificates & DPDP Consent',
         badgeText: 'FINAL',
         icon: Download,
         colorClass: 'from-purple-600 to-indigo-700',
         defaultTab: 'cert_download',
         divisions: [
-          { id: 'cert_download', label: 'Official Verification Certificate (PDF)', modal: 'cert', icon: Download },
-          { id: 'labor_dossier', label: 'Statutory Labor Law Dossier (PDF)', modal: 'dossier', icon: FileText },
-          { id: 'dpdp_rights', label: 'DPDP Act 2023 Statutory Rights', modal: 'legal_handbook', icon: Scale }
+          { id: 'cert_download', label: 'Verification Certificate (PDF)', modal: 'cert', icon: Download },
+          { id: 'labor_dossier', label: 'Labor Law Record (PDF)', modal: 'dossier', icon: FileText },
+          { id: 'dpdp_rights', label: 'DPDP Legal Rights', modal: 'legal_handbook', icon: Scale }
         ]
       }
     ];
