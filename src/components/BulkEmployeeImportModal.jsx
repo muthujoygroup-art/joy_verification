@@ -622,8 +622,8 @@ export const BulkEmployeeImportModal = ({
     // 📑 Guidelines Sheet Data
     const guideData = [
       { 'Field Name': 'Full Name', 'Mandatory': 'YES', 'Section': '1. Personal Information', 'Allowed Values': 'Legal candidate name as per Aadhaar / PAN', 'Notes': 'Used on official BGV certificates' },
-      { 'Field Name': 'Official Email Address', 'Mandatory': 'YES', 'Section': '2. Contact Details', 'Allowed Values': 'Valid email address format (user@domain.com)', 'Notes': 'Candidate receives login credentials & verification link' },
-      { 'Field Name': 'Mobile Number', 'Mandatory': 'YES', 'Section': '2. Contact Details', 'Allowed Values': '10-digit Indian mobile number', 'Notes': 'Used for SMS OTP, link dispatches & WhatsApp' },
+      { 'Field Name': 'Official Email Address', 'Mandatory': 'EITHER EMAIL OR MOBILE', 'Section': '2. Contact Details', 'Allowed Values': 'Valid email address format (user@domain.com)', 'Notes': 'Candidate receives login credentials & verification link' },
+      { 'Field Name': 'Mobile Number', 'Mandatory': 'EITHER EMAIL OR MOBILE', 'Section': '2. Contact Details', 'Allowed Values': '10-digit Indian mobile number', 'Notes': 'Used for SMS OTP, link dispatches & WhatsApp' },
       { 'Field Name': 'Employment Type', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Full-Time | Contract | Intern | Part-Time | Executive | Vendor', 'Notes': 'Controls profile classification in Master Registry' },
       { 'Field Name': 'Designation', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Any corporate or plant job title', 'Notes': 'Printed on official candidate TrueProfile dossier' },
       { 'Field Name': 'Department', 'Mandatory': 'YES', 'Section': '4. Employment Details', 'Allowed Values': 'Engineering, Plant, BFSI, Healthcare, Logistics, etc.', 'Notes': 'Used for organizational reporting' },
@@ -841,9 +841,19 @@ export const BulkEmployeeImportModal = ({
           const bankBranch = findVal(['branchname', 'bankbranch', 'branch']);
 
           const errors = [];
-          if (!name || name.length < 2) errors.push('Candidate Name is required');
-          if (!email || !email.includes('@') || !email.includes('.')) errors.push('Valid Email is required');
-          if (!mobile || mobile.length !== 10) errors.push('10-digit Indian Mobile is required');
+          if (!name || name.length < 2) {
+            errors.push('Candidate Name is required');
+          }
+          if (!email && !mobile) {
+            errors.push('At least an Email Address or 10-digit Mobile Number is required');
+          } else {
+            if (email && (!email.includes('@') || !email.includes('.'))) {
+              errors.push('Valid Email Address format (e.g. name@company.com) is required');
+            }
+            if (mobile && mobile.length !== 10) {
+              errors.push('10-digit Indian Mobile Number is required if provided');
+            }
+          }
 
           return {
             rowId: idx + 1,
