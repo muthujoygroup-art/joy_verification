@@ -121,6 +121,9 @@ export const BulkEmployeeImportModal = ({
   const [parseError, setParseError] = useState(null);
   const [selectedEmployeeTypeFilter, setSelectedEmployeeTypeFilter] = useState('ALL');
   const [selectedSectorTemplate, setSelectedSectorTemplate] = useState('master');
+  
+  // Real-Time Progress & Import Status Message State
+  const [importStatusMessage, setImportStatusMessage] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {

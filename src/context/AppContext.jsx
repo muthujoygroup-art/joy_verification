@@ -1533,9 +1533,34 @@ export const AppProvider = ({ children }) => {
     showToast(`Verification Engine set to ${engineLabels[engine] || engine}`);
   };
 
-  // Add Candidate (Persists to PostgreSQL)
+  // Add Candidate (Persists to PostgreSQL with Duplicate Validation)
   const addCandidate = async (candidateData) => {
     const candidatePin = candidateData.portalPassword || candidateData.securityPin || '1234';
+    
+    // 🚫 Duplicate Prevention Check
+    const cleanEmail = (candidateData.email || '').trim().toLowerCase();
+    const cleanMobile = (candidateData.mobile || '').replace(/\s+/g, '');
+    const cleanEmpId = (candidateData.empId || candidateData.employeeNumber || '').trim().toUpperCase();
+
+    const existingDuplicate = candidates.find(c => {
+      const cEmail = (c.email || '').trim().toLowerCase();
+      const cMobile = (c.mobile || '').replace(/\s+/g, '');
+      const cEmpId = (c.empId || c.employeeNumber || '').trim().toUpperCase();
+
+      return (cleanEmail && cEmail === cleanEmail) ||
+             (cleanMobile && cMobile === cleanMobile) ||
+             (cleanEmpId && cEmpId === cleanEmpId);
+    });
+
+    if (existingDuplicate) {
+      showToast(`⚠️ Duplicate candidate skipped: ${existingDuplicate.name} (${existingDuplicate.email || existingDuplicate.mobile}) already exists.`);
+      return existingDuplicate.token || existingDuplicate.id;
+    }
+
+    // Resolve Employer Company Logo
+    const matchedCompany = companies.find(c => c.id === candidateData.companyId || c.name === candidateData.companyName) || companies[0] || {};
+    const resolvedCompanyLogo = matchedCompany.logo || matchedCompany.logo_url || matchedCompany.features?.logo || null;
+
     try {
       const created = await api.createCandidate({
         name: candidateData.name,
@@ -1601,6 +1626,7 @@ export const AppProvider = ({ children }) => {
         nativeDistrict: created.native_district,
         identificationMarks: created.identification_marks,
         companyId: created.company_id,
+        companyLogo: resolvedCompanyLogo,
         hrId: created.hr_id,
         status: created.status,
         portalPassword: created.portal_password || candidatePin,
@@ -1626,6 +1652,7 @@ export const AppProvider = ({ children }) => {
         token: newToken,
         status: 'Link Sent',
         portalPassword: candidatePin,
+        companyLogo: resolvedCompanyLogo,
         verificationsCompleted: { aadhaar: false, mobile: false, face: false },
         photo: candidateData.photo || null,
         faceImages: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
@@ -1639,11 +1666,46 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Bulk Add Candidates (Persists in single atomic transaction to PostgreSQL)
+  // Bulk Add Candidates (Persists in single atomic transaction to PostgreSQL with Duplicate Validation)
   const bulkAddCandidates = async (candidatesList) => {
     if (!candidatesList || candidatesList.length === 0) return [];
+    
+    // 🚫 Filter out exact duplicate candidates
+    const existingEmails = new Set(candidates.map(c => (c.email || '').trim().toLowerCase()).filter(Boolean));
+    const existingMobiles = new Set(candidates.map(c => (c.mobile || '').replace(/\s+/g, '')).filter(Boolean));
+    const existingEmpIds = new Set(candidates.map(c => (c.empId || c.employeeNumber || '').trim().toUpperCase()).filter(Boolean));
+
+    const uniqueCandidatesList = [];
+    let skippedCount = 0;
+
+    for (const cand of candidatesList) {
+      const candEmail = (cand.email || '').trim().toLowerCase();
+      const candMobile = (cand.mobile || '').replace(/\s+/g, '');
+      const candEmpId = (cand.empId || cand.employeeNumber || '').trim().toUpperCase();
+
+      if ((candEmail && existingEmails.has(candEmail)) || 
+          (candMobile && existingMobiles.has(candMobile)) || 
+          (candEmpId && existingEmpIds.has(candEmpId))) {
+        skippedCount++;
+      } else {
+        uniqueCandidatesList.push(cand);
+        if (candEmail) existingEmails.add(candEmail);
+        if (candMobile) existingMobiles.add(candMobile);
+        if (candEmpId) existingEmpIds.add(candEmpId);
+      }
+    }
+
+    if (skippedCount > 0) {
+      showToast(`ℹ️ Skipped ${skippedCount} duplicate candidate records.`);
+    }
+
+    if (uniqueCandidatesList.length === 0) {
+      showToast('⚠️ All candidates in file already exist in directory.');
+      return [];
+    }
+
     try {
-      const payloads = candidatesList.map(candidateData => ({
+      const payloads = uniqueCandidatesList.map(candidateData => ({
         name: candidateData.name,
         emp_id: candidateData.empId,
         employee_number: candidateData.employeeNumber || candidateData.empId,

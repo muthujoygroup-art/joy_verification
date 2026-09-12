@@ -13,6 +13,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { AiFaceMatchModal } from '../components/AiFaceMatchModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
+import { PreVerificationAdvisoryModal } from '../components/PreVerificationAdvisoryModal';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -76,6 +77,7 @@ export const EmployeePortalView = () => {
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
+  const [showPreVerificationAdvisory, setShowPreVerificationAdvisory] = useState(true);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
 
@@ -1928,6 +1930,15 @@ export const EmployeePortalView = () => {
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
         onClose={() => setShowLegalHandbook(false)}
+      />
+
+      {/* Pre-Verification Advisory Guidelines Modal */}
+      <PreVerificationAdvisoryModal
+        isOpen={showPreVerificationAdvisory}
+        onClose={() => setShowPreVerificationAdvisory(false)}
+        candidateName={candidate?.name}
+        companyName={company?.name || candidate?.companyName}
+        companyLogo={candidate?.companyLogo || company?.logo || company?.logo_url}
       />
 
     </div>
