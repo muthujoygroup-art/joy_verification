@@ -44,34 +44,34 @@ export const DualEmploymentRadarVisualizer = () => {
   };
 
   return (
-    <div className="w-full dark-glass-card border border-slate-200/90 rounded-3xl p-6 sm:p-9 shadow-xl backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl relative overflow-hidden">
       
       {/* Top Header & Scenario Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6 mb-8">
         <div>
-          <div className="flex items-center gap-2 text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">
-            <Search className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2 text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">
+            <Search className="w-3.5 h-3.5 text-amber-400" />
             <span>AI MOONLIGHTING & CONFLICT OF INTEREST SCANNER</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
+          <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">
             Detect Secondary Jobs Before You Hire
           </h3>
-          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
+          <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
             See how JOY Verification spots overlapping employment and undeclared second jobs in real time to protect your company's intellectual property.
           </p>
         </div>
 
         {/* Interactive Scenario Toggle Buttons */}
-        <div className="flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 shrink-0 text-xs">
+        <div className="flex items-center p-1.5 rounded-2xl bg-slate-950 border border-slate-800 shrink-0 text-xs">
           <button
             onClick={() => handleToggleScenario('violation')}
             className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
               scenario === 'violation'
-                ? 'bg-rose-100 text-rose-800 border border-rose-300 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-rose-950/80 text-rose-300 border border-rose-500/50 shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
             <span>Simulate Moonlighting</span>
           </button>
 
@@ -79,11 +79,11 @@ export const DualEmploymentRadarVisualizer = () => {
             onClick={() => handleToggleScenario('clean')}
             className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
               scenario === 'clean'
-                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/50 shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>Simulate Clean Record</span>
           </button>
         </div>
@@ -93,7 +93,7 @@ export const DualEmploymentRadarVisualizer = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive Timeline Matrix */}
-        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 overflow-hidden shadow-md relative flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-7 overflow-hidden shadow-xl relative flex flex-col justify-between">
           
           {/* Scanning Laser Line */}
           {isScanning && (
@@ -105,30 +105,30 @@ export const DualEmploymentRadarVisualizer = () => {
 
           <div>
             {/* Timeline Header (Years Axis) */}
-            <div className="grid grid-cols-6 gap-2 text-center text-[11px] sm:text-xs text-slate-500 border-b border-slate-200 pb-3 mb-5 font-mono font-medium">
+            <div className="grid grid-cols-6 gap-2 text-center text-[11px] sm:text-xs text-slate-400 border-b border-slate-800 pb-3 mb-5 font-mono font-medium">
               <span>2021</span>
               <span>2022</span>
               <span>2023</span>
               <span>2024</span>
               <span>2025</span>
-              <span className="text-amber-700 font-bold">2026 (NOW)</span>
+              <span className="text-amber-400 font-bold">2026 (NOW)</span>
             </div>
 
             {/* Company Stream 1: Primary Full-Time Job */}
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-amber-600" />
-                  <span className="font-bold text-xs sm:text-sm text-slate-900 font-outfit truncate">
+                  <Building2 className="w-4 h-4 text-amber-400" />
+                  <span className="font-bold text-xs sm:text-sm text-white font-outfit truncate">
                     Primary Employer: Global IT Solutions Ltd
                   </span>
                 </div>
-                <span className="text-[10px] sm:text-[11px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-bold shrink-0">
+                <span className="text-[10px] sm:text-[11px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/40 font-bold shrink-0">
                   Active Primary Job
                 </span>
               </div>
 
-              <div className="w-full h-10 bg-slate-200/80 rounded-xl border border-slate-300/70 relative overflow-hidden p-1">
+              <div className="w-full h-10 bg-slate-900 rounded-xl border border-slate-800 relative overflow-hidden p-1">
                 <div className="h-full w-[88%] bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 rounded-lg flex items-center px-3 text-[11px] font-bold text-white shadow-md truncate">
                   <span>Jan 2021 – Present (Verified Primary Payroll Stream)</span>
                 </div>
@@ -139,18 +139,18 @@ export const DualEmploymentRadarVisualizer = () => {
             {scenario === 'violation' ? (
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-rose-700">
+                  <div className="flex items-center gap-2 text-rose-400">
                     <ShieldAlert className="w-4 h-4" />
-                    <span className="font-bold text-xs sm:text-sm text-rose-800 font-outfit truncate">
+                    <span className="font-bold text-xs sm:text-sm text-rose-300 font-outfit truncate">
                       Second Job: Apex Web Systems
                     </span>
                   </div>
-                  <span className="text-[10px] sm:text-[11px] text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200 font-bold animate-pulse shrink-0">
+                  <span className="text-[10px] sm:text-[11px] text-rose-300 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-500/40 font-bold animate-pulse shrink-0">
                     OVERLAPPING JOB DETECTED
                   </span>
                 </div>
 
-                <div className="w-full h-10 bg-slate-200/80 rounded-xl border border-rose-300 relative overflow-hidden p-1">
+                <div className="w-full h-10 bg-slate-900 rounded-xl border border-rose-500/40 relative overflow-hidden p-1">
                   <div className="h-full w-[52%] bg-gradient-to-r from-rose-600 to-orange-600 rounded-lg flex items-center px-3 text-[11px] font-bold text-white shadow-lg relative ml-[36%] truncate">
                     <span>Jul 2023 – Present (Overlap: 28 Months)</span>
                     <span className="absolute right-2 top-2.5 w-2 h-2 rounded-full bg-yellow-300 animate-ping"></span>
@@ -160,18 +160,18 @@ export const DualEmploymentRadarVisualizer = () => {
             ) : (
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-emerald-700">
+                  <div className="flex items-center gap-2 text-emerald-400">
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="font-bold text-xs sm:text-sm text-emerald-800 font-outfit truncate">
+                    <span className="font-bold text-xs sm:text-sm text-emerald-300 font-outfit truncate">
                       Past Employer: Sterling Infotech Ltd (Relieved)
                     </span>
                   </div>
-                  <span className="text-[10px] sm:text-[11px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold shrink-0">
+                  <span className="text-[10px] sm:text-[11px] text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40 font-bold shrink-0">
                     CLEAN EXIT CONFIRMED
                   </span>
                 </div>
 
-                <div className="w-full h-10 bg-slate-200/80 rounded-xl border border-emerald-300 relative overflow-hidden p-1">
+                <div className="w-full h-10 bg-slate-900 rounded-xl border border-emerald-500/40 relative overflow-hidden p-1">
                   <div className="h-full w-[35%] bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center px-3 text-[11px] font-bold text-white shadow-md truncate">
                     <span>Jan 2019 – Dec 2020 (Official Relieving Letter Verified)</span>
                   </div>
@@ -184,25 +184,25 @@ export const DualEmploymentRadarVisualizer = () => {
           <div
             className={`mt-4 p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all ${
               scenario === 'violation'
-                ? 'bg-rose-50 border-rose-200 text-rose-900'
-                : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                ? 'bg-rose-950/60 border-rose-500/40 text-rose-200'
+                : 'bg-emerald-950/60 border-emerald-500/40 text-emerald-200'
             }`}
           >
             <div className="flex items-center gap-3">
               <div
                 className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                   scenario === 'violation'
-                    ? 'bg-rose-100 text-rose-700 border border-rose-300'
-                    : 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                    ? 'bg-rose-900/80 text-rose-300 border border-rose-500/50'
+                    : 'bg-emerald-900/80 text-emerald-300 border border-emerald-500/50'
                 }`}
               >
                 {scenario === 'violation' ? <ShieldAlert className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
               </div>
               <div>
-                <span className="text-[9px] font-mono uppercase tracking-wider block font-bold text-slate-500">
+                <span className="text-[9px] font-mono uppercase tracking-wider block font-bold text-slate-400">
                   VERIFICATION AUDIT RESULT
                 </span>
-                <h4 className="text-xs sm:text-sm font-bold text-slate-900 font-outfit">
+                <h4 className="text-xs sm:text-sm font-bold text-white font-outfit">
                   {scenario === 'violation'
                     ? '⚠️ Conflict Flag: Active Dual-Employment Found'
                     : '✅ Clean Record: Zero Overlapping Tenures Found'}
@@ -213,9 +213,9 @@ export const DualEmploymentRadarVisualizer = () => {
             <button
               onClick={triggerScanAnimation}
               disabled={isScanning}
-              className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+              className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-white flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-md self-start sm:self-auto"
             >
-              <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin text-amber-600' : 'text-slate-600'}`} />
+              <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin text-amber-400' : 'text-emerald-400'}`} />
               <span>Re-Scan</span>
             </button>
           </div>
@@ -223,27 +223,27 @@ export const DualEmploymentRadarVisualizer = () => {
         </div>
 
         {/* Right Column: 3D Isometric AI Scanner & Passbook Card */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 bg-white p-5 flex flex-col justify-between shadow-md relative overflow-hidden group">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-slate-950 p-5 flex flex-col justify-between shadow-xl relative overflow-hidden group">
           
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
-              <span className="font-mono text-[10px] text-slate-700 font-bold uppercase tracking-wider">
+              <span className="font-mono text-[10px] text-slate-300 font-bold uppercase tracking-wider">
                 AI DUAL-EMPLOYMENT SCANNER
               </span>
             </div>
             <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded border ${
               scenario === 'violation' 
-                ? 'bg-rose-50 text-rose-700 border-rose-200' 
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                ? 'bg-rose-950 text-rose-300 border-rose-500/40' 
+                : 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
             }`}>
               {scenario === 'violation' ? 'RISK: HIGH (94.2%)' : 'RISK: LOW (0.01%)'}
             </span>
           </div>
 
           {/* 3D Image Viewport */}
-          <div className="relative rounded-xl overflow-hidden aspect-[16/10] border border-slate-200 bg-slate-950 shadow-inner group-hover:scale-[1.01] transition-transform duration-500">
+          <div className="relative rounded-xl overflow-hidden aspect-[16/10] border border-slate-800 bg-slate-900 shadow-inner group-hover:scale-[1.01] transition-transform duration-500">
             <img
               src="/assets/3d/corporate_3d_bgv.jpg"
               alt="3D Dual-Employment Fraud Scanner & Passbook"
@@ -259,12 +259,12 @@ export const DualEmploymentRadarVisualizer = () => {
             )}
 
             {/* Overlaid Badges */}
-            <div className="absolute top-2 left-2 bg-slate-900/85 backdrop-blur-md px-2 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1 shadow-md">
+            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-md px-2 py-1 rounded-lg border border-amber-400/50 font-mono text-[9px] text-amber-300 font-bold flex items-center gap-1 shadow-md">
               <Activity className="w-3 h-3 text-amber-400" />
               <span>EPFO UAN Audit Engine</span>
             </div>
 
-            <div className="absolute bottom-2 right-2 bg-slate-900/85 backdrop-blur-md px-2 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1 shadow-md">
+            <div className="absolute bottom-2 right-2 bg-slate-950/85 backdrop-blur-md px-2 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1 shadow-md">
               <Lock className="w-3 h-3 text-emerald-400" />
               <span>Form 26AS Cryptographic Sync</span>
             </div>
@@ -272,13 +272,13 @@ export const DualEmploymentRadarVisualizer = () => {
 
           {/* Micro Telemetry Details */}
           <div className="mt-3.5 space-y-2 font-mono text-[11px]">
-            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500">UAN Record Match:</span>
-              <span className="font-bold text-slate-800">1004XXXX7729 (Masked)</span>
+            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/90 border border-slate-800">
+              <span className="text-slate-400">UAN Record Match:</span>
+              <span className="font-bold text-white">1004XXXX7729 (Masked)</span>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500">Parallel Monthly Contributions:</span>
-              <span className={`font-bold ${scenario === 'violation' ? 'text-rose-700' : 'text-emerald-700'}`}>
+            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/90 border border-slate-800">
+              <span className="text-slate-400">Parallel Monthly Contributions:</span>
+              <span className={`font-bold ${scenario === 'violation' ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {scenario === 'violation' ? '2 Active PF Remittances Detected' : '1 Single Verified Remittance Stream'}
               </span>
             </div>
