@@ -59,7 +59,7 @@ export const LandingPageView = () => {
   // Innovative First-Load / Reload Logo Preloader (Plays full cinematic sequence on every page reload)
   const [showPreloader, setShowPreloader] = useState(true);
 
-  // Active View Tab State (Multi-View Tabbed Navigation)
+  // Active View Tab State (Single Unified Tab Switcher)
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tabId) => {
@@ -69,7 +69,6 @@ export const LandingPageView = () => {
 
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
@@ -474,15 +473,15 @@ export const LandingPageView = () => {
 
       {/* Ambient Deep Radial Mesh Lighting Flares */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[140px] animate-pulse" />
-        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[130px]" />
-        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-amber-500/05 rounded-full blur-[150px]" />
+        <div className="absolute -top-40 left-1/4 w-[600px] h-[600px] bg-emerald-600/15 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[140px]" />
+        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-amber-500/05 rounded-full blur-[160px]" />
       </div>
 
       {/* ==============================================================================
-       * 1. TOP NAVIGATION: SLEEK EXECUTIVE ENTERPRISE NAVBAR
+       * 1. TOP NAVIGATION: SINGLE ELEGANT EXECUTIVE NAVBAR WITH NEAT PILL TOGGLE
        * ============================================================================== */}
-      <header className="sticky top-0 z-50 w-full bg-slate-950/85 backdrop-blur-2xl border-b border-slate-800/80 shadow-[0_4px_30px_rgba(0,0,0,0.5)] transition-all">
+      <header className="sticky top-0 z-50 w-full bg-[#070A11]/90 backdrop-blur-2xl border-b border-slate-800/80 shadow-[0_4px_30px_rgba(0,0,0,0.6)] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo - Single Line, Clean, Balanced */}
@@ -506,98 +505,33 @@ export const LandingPageView = () => {
             </div>
           </button>
 
-          {/* Center Navigation Links - Tab Triggers */}
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-7 font-sans text-xs font-bold text-slate-300">
-            <button 
-              onClick={() => handleTabChange('features')} 
-              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'features' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-            >
-              Features
-            </button>
-            <button 
-              onClick={() => handleTabChange('moonlighting')} 
-              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'moonlighting' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-            >
-              Moonlighting Radar
-            </button>
-            <button 
-              onClick={() => handleTabChange('turnstile')} 
-              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'turnstile' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-            >
-              Turnstile Gate
-            </button>
-            <button 
-              onClick={() => handleTabChange('comparison')} 
-              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'comparison' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-            >
-              Speed Matrix
-            </button>
-            <button 
-              onClick={() => handleTabChange('roi')} 
-              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'roi' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-            >
-              ROI Calculator
-            </button>
-            
-            {/* Resources Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
-                className={`whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-bold ${activeTab === 'resources' || activeTab === 'solutions' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
-              >
-                <span>Resources</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-
-              {resourcesDropdownOpen && (
-                <div 
-                  className="absolute left-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-xl"
-                  onMouseLeave={() => setResourcesDropdownOpen(false)}
+          {/* Center Navigation: Single Neat Segmented Pill Switcher (No Duplicate Bars!) */}
+          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-950/80 border border-slate-800/90 shadow-inner backdrop-blur-xl">
+            {[
+              { id: 'overview', label: 'Overview' },
+              { id: 'features', label: 'Features' },
+              { id: 'moonlighting', label: 'Moonlighting Radar' },
+              { id: 'turnstile', label: 'Turnstile Gate' },
+              { id: 'comparison', label: 'Speed Matrix' },
+              { id: 'roi', label: 'ROI Calculator' },
+              { id: 'solutions', label: 'Solutions' },
+              { id: 'resources', label: 'Resources' }
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    isActive
+                      ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-[0_0_18px_rgba(16,185,129,0.4)] border border-emerald-400/50 scale-[1.03]'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900/50'
+                  }`}
                 >
-                  <button onClick={() => { handleTabChange('solutions'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <Layers className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Solutions & Architecture</span>
-                  </button>
-                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Specifications & SLA</span>
-                  </button>
-                  <button onClick={() => { handleTabChange('overview'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <Radio className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Live India Radar</span>
-                  </button>
-                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <Star className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Client Reviews</span>
-                  </button>
-                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Knowledge Hub</span>
-                  </button>
-                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
-                    <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>FAQ</span>
-                  </button>
-
-                  <div className="pt-2 mt-1 border-t border-slate-800 flex flex-col gap-1">
-                    <button
-                      onClick={() => { setResourcesDropdownOpen(false); setShowPreloader(true); }}
-                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2 text-left cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Replay Intro Animation</span>
-                    </button>
-                    <button
-                      onClick={handleToggleSound}
-                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2 text-left cursor-pointer"
-                    >
-                      {soundMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
-                      <span>{soundMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+                  {tab.label}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Right Action CTAs */}
@@ -605,7 +539,7 @@ export const LandingPageView = () => {
             {/* Book Live Demo Primary Button */}
             <button
               onClick={() => setShowDemoModal(true)}
-              className="whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-[0_0_25px_rgba(16,185,129,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-emerald-400/50"
+              className="whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-[0_0_25px_rgba(16,185,129,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-emerald-400/50"
             >
               <span>Book Live Demo</span>
               <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -645,39 +579,6 @@ export const LandingPageView = () => {
           </div>
         )}
       </header>
-
-      {/* ==============================================================================
-       * SECONDARY STICKY SUB-NAV PILL BAR FOR INSTANT VIEW SWITCHING
-       * ============================================================================== */}
-      <div className="sticky top-18 sm:top-20 z-40 w-full bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/90 shadow-md py-2.5 px-4 overflow-x-auto">
-        <div className="max-w-7xl mx-auto flex items-center justify-start md:justify-center gap-2 min-w-max">
-          {[
-            { id: 'overview', label: '🚀 Overview' },
-            { id: 'features', label: '🛡️ Verification Modules' },
-            { id: 'moonlighting', label: '📡 Moonlighting Radar' },
-            { id: 'turnstile', label: '🚧 Turnstile Gate' },
-            { id: 'comparison', label: '⚡ Speed Matrix' },
-            { id: 'roi', label: '💰 ROI Calculator' },
-            { id: 'solutions', label: '🏢 Enterprise Solutions' },
-            { id: 'resources', label: '📚 Specs & Knowledge Hub' }
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-md shadow-emerald-500/25 border border-emerald-400/50 scale-[1.02]'
-                    : 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* ==============================================================================
        * TAB VIEW CONTENT SWITCHING
