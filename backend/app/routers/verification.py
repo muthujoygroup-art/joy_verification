@@ -99,7 +99,15 @@ class UnlockPortalRequest(BaseModel):
 @router.get("/candidate/{token}", response_model=CandidateResponse)
 def get_candidate_by_token(token: str, db: Session = Depends(get_db)):
     """Resolves token link for employee verification portal"""
-    candidate = db.query(Candidate).filter(Candidate.token == token).first()
+    clean_token = (token or "").strip()
+    candidate = db.query(Candidate).filter(Candidate.token == clean_token).first()
+    if not candidate:
+        candidate = db.query(Candidate).filter(
+            (Candidate.token == clean_token) |
+            (Candidate.id == clean_token) |
+            (Candidate.emp_id == clean_token) |
+            (Candidate.token.ilike(f"%{clean_token}%"))
+        ).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Invalid or expired verification token")
     return candidate
@@ -107,7 +115,12 @@ def get_candidate_by_token(token: str, db: Session = Depends(get_db)):
 @router.post("/candidate/{token}/set-password")
 def set_candidate_password(token: str, payload: SetPasswordRequest, db: Session = Depends(get_db)):
     """Updates candidate portal unlock password in PostgreSQL database"""
-    candidate = db.query(Candidate).filter(Candidate.token == token).first()
+    clean_token = (token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) |
+        (Candidate.id == clean_token) |
+        (Candidate.emp_id == clean_token)
+    ).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
     
@@ -128,7 +141,12 @@ def set_candidate_password(token: str, payload: SetPasswordRequest, db: Session 
 @router.post("/unlock")
 def unlock_employee_portal(payload: UnlockPortalRequest, db: Session = Depends(get_db)):
     """Validates entered password against candidate.portal_password in database"""
-    candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) |
+        (Candidate.id == clean_token) |
+        (Candidate.emp_id == clean_token)
+    ).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
         

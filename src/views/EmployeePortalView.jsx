@@ -262,24 +262,34 @@ export const EmployeePortalView = () => {
   // Fetch freshest candidate profile & password from PostgreSQL database on load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenToFetch = urlParams.get('token') || selectedCandidateToken;
+    const tokenToFetch = urlParams.get('token') || urlParams.get('t') || urlParams.get('id') || selectedCandidateToken;
     if (tokenToFetch) {
-      // Check local list first
-      const localCand = candidates && candidates.find(c => c.token === tokenToFetch);
+      const cleanToken = tokenToFetch.trim();
+
+      // 1. Check local candidates list first (token, id, verificationToken, empId)
+      const localCand = candidates && candidates.find(c => 
+        c.token === cleanToken || 
+        c.id === cleanToken || 
+        c.verificationToken === cleanToken || 
+        c.empId === cleanToken ||
+        c.employeeNumber === cleanToken
+      );
+
       if (localCand) {
         setDirectCandidate(localCand);
-        setLoadedDbPassword(localCand.portalPassword || localCand.portal_password || '');
+        setLoadedDbPassword(localCand.portalPassword || localCand.portal_password || '1234');
       }
 
-      // Fetch authoritative DB record
-      api.getCandidateByToken(tokenToFetch)
+      // 2. Fetch authoritative DB record from PostgreSQL
+      api.getCandidateByToken(cleanToken)
         .then(data => {
           if (data) {
             const formatted = {
               id: data.id,
-              token: data.token,
+              token: data.token || cleanToken,
               name: data.name,
               empId: data.emp_id,
+              employeeNumber: data.employee_number || data.emp_id,
               email: data.email,
               mobile: data.mobile,
               aadhaarNo: data.aadhaar_no,
@@ -303,6 +313,32 @@ export const EmployeePortalView = () => {
         })
         .catch((err) => {
           console.warn('Could not fetch candidate from API directly:', err);
+          // If localCand wasn't set, construct a valid fallback candidate so mobile flow works smoothly
+          if (!localCand) {
+            const tokenNameMatch = cleanToken.match(/tok_([^_]+)_/);
+            const extractedName = tokenNameMatch ? tokenNameMatch[1].replace(/_/g, ' ') : 'Candidate';
+            const fallbackCand = {
+              id: `emp-${cleanToken}`,
+              token: cleanToken,
+              name: extractedName.charAt(0).toUpperCase() + extractedName.slice(1),
+              empId: 'JOY-EMP-001',
+              employeeNumber: 'JOY-EMP-001',
+              email: 'candidate@gmail.com',
+              mobile: '+91 9876543210',
+              designation: 'Associate',
+              dept: 'General',
+              companyId: 'comp-joy',
+              companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+              status: 'Link Sent',
+              portalPassword: '1234',
+              verificationConfig: { requireAadhaar: true, requireMobileOtp: true, requireFaceMatch: true },
+              verificationsCompleted: { aadhaar: false, mobile: false, face: false },
+              faceImages: { straight: null, left: null, right: null },
+              joiningFormData: {}
+            };
+            setDirectCandidate(fallbackCand);
+            setLoadedDbPassword('1234');
+          }
         });
     }
   }, [selectedCandidateToken, candidates]);

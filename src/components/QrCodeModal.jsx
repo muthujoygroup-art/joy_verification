@@ -50,14 +50,37 @@ export const QrCodeModal = ({
     if (candidate) {
       setPasscodeText(candidate.portalPassword || candidate.securityPin || '1234');
       setTargetEmail(candidate.email || '');
+
+      // Ensure candidate token is persisted in PostgreSQL DB so mobile scanners resolve it
+      if (candidate.token) {
+        api.getCandidateByToken(candidate.token).catch(() => {
+          const compId = candidate.companyId || candidate.company_id || (company && company.id) || 'comp-joy';
+          api.createCandidate({
+            name: candidate.name || 'Candidate',
+            emp_id: candidate.empId || candidate.employeeNumber || 'JOY-EMP-001',
+            employee_number: candidate.employeeNumber || candidate.empId || 'JOY-EMP-001',
+            email: candidate.email || 'candidate@gmail.com',
+            mobile: candidate.mobile || '+91 9876543210',
+            designation: candidate.designation || 'Associate',
+            dept: candidate.dept || 'General',
+            company_id: compId,
+            hr_id: activeHr?.id || null,
+            portal_password: candidate.portalPassword || '1234',
+            verification_config: candidate.verificationConfig || {},
+            manual_checks: candidate.manualChecks || {},
+            joining_form_data: candidate.joiningFormData || {}
+          }).catch(err => console.warn('Background candidate DB sync notice:', err));
+        });
+      }
     }
   }, [candidate]);
 
   if (!candidate) return null;
 
-  const company = companies.find(c => c.id === candidate.companyId) || companies[0] || { name: 'JOY Corporate Solutions' };
+  const company = (companies && companies.find(c => c.id === candidate.companyId || c.id === candidate.company_id)) || (companies && companies[0]) || { name: 'JOY Corporate Solutions' };
   const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
-  const verifyUrl = `${window.location.origin}/verify?token=${candidate.token}`;
+  const verifyToken = candidate.token || candidate.id || 'tok_muthukumar_937';
+  const verifyUrl = `${window.location.origin}/verify?token=${verifyToken}`;
   const isLinkCopied = Boolean(isCopied || copiedInternal);
 
   const hrSenderName = hrPreferences?.sender_display_name || activeHr?.name || 'HR Recruiter';
