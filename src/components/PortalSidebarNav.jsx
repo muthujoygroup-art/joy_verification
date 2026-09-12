@@ -201,6 +201,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       detail: {
         section: pillar.id,
         tab: targetTab,
+        division: division?.id || null,
         modal: division?.modal || pillar.modal || null,
         query: division?.query || null
       }
@@ -457,9 +458,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'pipeline',
           divisions: [
-            { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', icon: Smartphone },
-            { id: 'pipeline_active', label: 'Pending Verifications', tab: 'pipeline', icon: Zap },
-            { id: 'pipeline_verified', label: 'Verified Candidates', tab: 'pipeline', icon: CheckCircle2 }
+            { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
+            { id: 'pipeline_active', label: `Pending Verifications (${candidates.filter(c => c.status !== 'Verified').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_verified', label: `Verified Candidates (${candidates.filter(c => c.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
         {

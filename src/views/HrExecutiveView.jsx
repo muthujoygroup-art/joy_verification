@@ -338,6 +338,31 @@ export const HrExecutiveView = () => {
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+
+  const filteredCandidates = useMemo(() => {
+    return (candidates || []).filter(c => {
+      const matchesSearch = !searchQuery.trim() || 
+        c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.empId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.mobile?.includes(searchQuery) ||
+        c.aadhaarNo?.includes(searchQuery);
+      
+      const matchesStatus = 
+        statusFilter === 'All' 
+          ? true 
+          : statusFilter === 'Active' 
+            ? c.status?.toLowerCase() !== 'inactive' 
+            : statusFilter === 'Inactive' 
+              ? c.status?.toLowerCase() === 'inactive' 
+              : statusFilter === 'Verified'
+                ? c.status === 'Verified'
+                : statusFilter === 'Pending Verification' || statusFilter === 'Pending' || statusFilter === 'In Verification'
+                  ? c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive'
+                  : c.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [candidates, searchQuery, statusFilter]);
   const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
 
   // Dynamic Custom Fields State
@@ -594,7 +619,7 @@ export const HrExecutiveView = () => {
   // Listen to navigation events from Left Portal Sidebar
   useEffect(() => {
     const handlePortalNav = (e) => {
-      const { section, tab, modal } = e.detail || {};
+      const { section, tab, division, modal, query } = e.detail || {};
       if (section) setActiveMainSection(section);
       if (tab) {
         setActiveTab(tab);
@@ -604,6 +629,16 @@ export const HrExecutiveView = () => {
           setShowAddForm(false);
         }
       }
+      if (query) {
+        setStatusFilter(query);
+      } else if (division === 'pipeline_verified') {
+        setStatusFilter('Verified');
+      } else if (division === 'pipeline_active') {
+        setStatusFilter('Pending Verification');
+      } else if (division === 'pipeline') {
+        setStatusFilter('All');
+      }
+
       if (modal === 'bulk_import') setShowBulkImportModal(true);
       else if (modal === 'add_candidate') {
         setShowAddForm(true);
@@ -2169,10 +2204,10 @@ export const HrExecutiveView = () => {
                 className="form-select text-xs py-1.5 px-3 bg-white font-bold rounded-xl border-slate-200"
               >
                 <option value="All">All Statuses ({candidates.length})</option>
+                <option value="Pending Verification">⏳ Pending Verifications ({candidates.filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})</option>
+                <option value="Verified">✅ Verified Candidates ({candidates.filter(c => c.status === 'Verified').length})</option>
                 <option value="Active">🟢 Active ({candidates.filter(c => c.status?.toLowerCase() !== 'inactive').length})</option>
                 <option value="Inactive">⚪ Inactive ({candidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
-                <option value="Verified">Verified ({candidates.filter(c => c.status === 'Verified').length})</option>
-                <option value="In Verification">In Verification ({candidates.filter(c => c.status === 'In Verification' || c.status === 'Pending').length})</option>
                 <option value="Submitted - Pending HR Review">Pending HR Review ({candidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
                 <option value="Draft">Draft ({candidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
               </select>
@@ -2181,24 +2216,7 @@ export const HrExecutiveView = () => {
 
           {/* 📱 ADAPTIVE MOBILE CANDIDATE CARDS (SHOWN ON MOBILE SCREENS < 640px) */}
           <div className="block sm:hidden space-y-3.5">
-            {candidates
-              .filter(c => {
-                const matchesSearch = !searchQuery.trim() || 
-                  c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  c.empId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  c.mobile?.includes(searchQuery) ||
-                  c.aadhaarNo?.includes(searchQuery);
-                
-                const matchesStatus = statusFilter === 'All' 
-  ? true 
-  : statusFilter === 'Active' 
-    ? c.status?.toLowerCase() !== 'inactive' 
-    : statusFilter === 'Inactive' 
-      ? c.status?.toLowerCase() === 'inactive' 
-      : c.status === statusFilter;
-                return matchesSearch && matchesStatus;
-              })
-              .map((cand, index) => {
+            {filteredCandidates.map((cand, index) => {
                 const lc = getCertificateLifecycle(cand);
                 return (
                   <div 
@@ -2414,9 +2432,18 @@ export const HrExecutiveView = () => {
                   </div>
                 );
               })}
-            {candidates.length === 0 && (
-              <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-xs">
-                No candidates registered yet. Click "+ Add New Employee" to get started.
+            {filteredCandidates.length === 0 && (
+              <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-xs space-y-1">
+                <div className="font-extrabold text-slate-800 text-sm">
+                  No candidates match "{statusFilter}"
+                </div>
+                <p className="text-slate-500 text-xs">
+                  {statusFilter === 'Verified' 
+                    ? 'There are currently no candidates with verified point-in-time certificates.' 
+                    : statusFilter === 'Pending Verification' 
+                      ? 'No candidate profiles are currently awaiting verification.' 
+                      : 'Try adjusting your search query or selecting a different status filter.'}
+                </p>
               </div>
             )}
           </div>
@@ -2435,24 +2462,7 @@ export const HrExecutiveView = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
-                {candidates
-                  .filter(c => {
-                    const matchesSearch = !searchQuery.trim() || 
-                      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      c.empId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      c.mobile?.includes(searchQuery) ||
-                      c.aadhaarNo?.includes(searchQuery);
-                    
-                    const matchesStatus = statusFilter === 'All' 
-  ? true 
-  : statusFilter === 'Active' 
-    ? c.status?.toLowerCase() !== 'inactive' 
-    : statusFilter === 'Inactive' 
-      ? c.status?.toLowerCase() === 'inactive' 
-      : c.status === statusFilter;
-                    return matchesSearch && matchesStatus;
-                  })
-                  .map((cand, index) => {
+                {filteredCandidates.map((cand, index) => {
                   const lc = getCertificateLifecycle(cand);
                   return (
                     <tr key={cand.id} className="hover:bg-slate-50/80 transition-colors">
@@ -2668,6 +2678,27 @@ export const HrExecutiveView = () => {
                     </tr>
                   );
                 })}
+                {filteredCandidates.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="py-12 text-center bg-slate-50/50">
+                      <div className="max-w-md mx-auto space-y-2">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto text-xl font-bold">
+                          {statusFilter === 'Verified' ? '🏅' : statusFilter === 'Pending Verification' ? '⏳' : '🔍'}
+                        </div>
+                        <div className="font-extrabold text-slate-800 text-sm">
+                          No candidates match "{statusFilter}"
+                        </div>
+                        <p className="text-slate-500 text-xs leading-relaxed">
+                          {statusFilter === 'Verified' 
+                            ? 'There are currently no candidates with completed point-in-time verification certificates.' 
+                            : statusFilter === 'Pending Verification' 
+                              ? 'No candidate profiles are currently awaiting verification.' 
+                              : 'Try adjusting your search query or selecting a different status filter.'}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
