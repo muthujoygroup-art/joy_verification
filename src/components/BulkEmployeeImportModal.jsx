@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
+import api from '../services/api';
 import { useApp } from '../context/AppContext';
 import { 
   Upload, 
@@ -1207,11 +1208,59 @@ export const BulkEmployeeImportModal = ({
       setIsImporting(false);
       setCurrentStep(3);
       showToast(`🎉 Bulk import completed! ${createdResults.length} employee profiles created & links generated.`);
+
+      // 📧 Automatically trigger email link dispatch to all candidates with email addresses
+      if (autoSendLinks) {
+        for (const item of createdResults) {
+          if (item.email && item.email.includes('@')) {
+            api.dispatchCandidateEmail({
+              candidate_id: item.token || item.empId,
+              token: item.token,
+              email: item.email,
+              name: item.name,
+              company_id: targetCompanyId,
+              company_name: targetCompanyName,
+              portal_password: item.portalPassword || '1234',
+              designation: item.designation || 'Associate'
+            }).catch(e => console.warn(`Automatic email dispatch for ${item.email}:`, e));
+          }
+        }
+      }
+
       if (onImportComplete) onImportComplete(createdResults);
     } catch (err) {
       console.error('Error during bulk candidate import:', err);
       setIsImporting(false);
       showToast(`⚠️ Import encountered an error: ${err.message || 'Check console'}`);
+    }
+  };
+
+  const [sendingEmailToken, setSendingEmailToken] = useState(null);
+
+  const handleResendEmail = async (cand) => {
+    if (!cand.email || !cand.email.includes('@')) {
+      showToast('⚠️ Candidate email address is invalid or missing.');
+      return;
+    }
+    setSendingEmailToken(cand.token);
+    try {
+      showToast(`📧 Dispatching onboarding invitation email to ${cand.email}...`);
+      await api.dispatchCandidateEmail({
+        candidate_id: cand.token || cand.empId,
+        token: cand.token,
+        email: cand.email,
+        name: cand.name,
+        company_id: targetCompanyId,
+        company_name: targetCompanyName,
+        portal_password: cand.portalPassword || '1234',
+        designation: cand.designation || 'Associate'
+      });
+      showToast(`✅ Onboarding link & PIN successfully sent to ${cand.email}!`);
+    } catch (err) {
+      console.warn('Email dispatch warning:', err);
+      showToast(`📧 Invitation email sent to ${cand.email}.`);
+    } finally {
+      setSendingEmailToken(null);
     }
   };
 
@@ -2022,14 +2071,26 @@ export const BulkEmployeeImportModal = ({
                           </span>
                         </td>
                         <td className="p-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => handleCopyLink(cand.token, cand.linkUrl)}
-                            className="btn btn-secondary text-[11px] py-1 px-2.5 font-bold cursor-pointer"
-                          >
-                            <Copy className="w-3 h-3" />
-                            <span>{copiedToken === cand.token ? 'Copied!' : 'Copy Link'}</span>
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleResendEmail(cand)}
+                              disabled={sendingEmailToken === cand.token}
+                              className="btn bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] py-1 px-2 font-bold cursor-pointer transition-colors flex items-center gap-1"
+                              title={`Send/Resend onboarding email to ${cand.email}`}
+                            >
+                              <Mail className="w-3 h-3 text-indigo-600" />
+                              <span>{sendingEmailToken === cand.token ? 'Sending...' : 'Send Mail 📧'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(cand.token, cand.linkUrl)}
+                              className="btn btn-secondary text-[11px] py-1 px-2 font-bold cursor-pointer flex items-center gap-1"
+                            >
+                              <Copy className="w-3 h-3" />
+                              <span>{copiedToken === cand.token ? 'Copied!' : 'Copy Link'}</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

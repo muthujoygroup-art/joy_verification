@@ -272,8 +272,8 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
             db.refresh(cand)
             refreshed_list.append(cand)
             
-            # Optional dispatch email if email is present
-            if is_new and cand.email:
+            # Dispatch email if email is present
+            if cand.email:
                 try:
                     comp_obj = db.query(Company).filter(Company.id == cand.company_id).first() if cand.company_id else None
                     comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
@@ -288,8 +288,9 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
                         designation=cand.designation or "Associate",
                         db=db
                     )
-                except Exception:
-                    pass
+                    print(f"✅ Onboarding email dispatched successfully to {cand.email}")
+                except Exception as mail_err:
+                    print(f"⚠️ Warning: Failed to dispatch candidate onboarding email for {cand.email}: {mail_err}")
         except Exception:
             continue
 
