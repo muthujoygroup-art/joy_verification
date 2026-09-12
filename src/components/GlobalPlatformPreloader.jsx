@@ -140,35 +140,21 @@ export const GlobalPlatformPreloader = ({
         />
 
         {/* =========================================================================
-         * 1. 3D GOLDEN SHIELD LOGO EMBLEM
+         * 1. 3D GOLDEN SHIELD LOGO EMBLEM (Seamless, No Box Clipping)
          * ========================================================================= */}
-        <div className="relative flex items-center justify-center">
-          
-          {/* Golden Shield Container */}
-          <div className="relative z-10 overflow-hidden p-2">
-            <img 
-              src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
-              alt="JOY TRUE PROFILE" 
-              className={`w-36 h-36 sm:w-44 sm:h-44 object-contain transition-all duration-700 ease-out ${
-                stage >= 1 
-                  ? 'opacity-100 transform scale-100 drop-shadow-[0_14px_40px_rgba(16,185,129,0.45)]' 
-                  : 'opacity-0 transform scale-75 filter blur-[4px]'
-              }`}
-              style={{
-                transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease-out'
-              }}
-            />
-
-            {/* Holographic Cyan-Emerald Laser Sweep */}
-            <div 
-              className={`absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_24px_rgba(52,211,153,1)] pointer-events-none transition-all duration-900 ${
-                stage >= 1 && stage < 3 ? 'translate-y-36 opacity-100' : 'translate-y-0 opacity-0'
-              }`}
-              style={{
-                transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease'
-              }}
-            />
-          </div>
+        <div className="relative flex items-center justify-center pointer-events-none">
+          <img 
+            src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
+            alt="JOY TRUE PROFILE" 
+            className={`w-36 h-36 sm:w-44 sm:h-44 object-contain transition-all duration-700 ease-out ${
+              stage >= 1 
+                ? 'opacity-100 transform scale-100 drop-shadow-[0_0_35px_rgba(16,185,129,0.5)]' 
+                : 'opacity-0 transform scale-75 filter blur-[4px]'
+            }`}
+            style={{
+              transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease-out'
+            }}
+          />
         </div>
 
         {/* =========================================================================
