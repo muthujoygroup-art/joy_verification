@@ -103,15 +103,18 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   const currentCandidate = useMemo(() => {
     if (effectiveRole === 'employee_link' || isCandidateRoute) {
       if (typeof window !== 'undefined') {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const lastPart = pathParts[pathParts.length - 1];
         const params = new URLSearchParams(window.location.search);
-        const token = params.get('token');
+        const pathToken = (lastPart && !['verify', 'employee', 'candidate', 'portal', 'verification'].includes(lastPart.toLowerCase())) ? lastPart : null;
+        const token = params.get('token') || params.get('t') || params.get('id') || pathToken;
         if (token && candidates?.length) {
-          const found = candidates.find(c => c.verificationToken === token || c.token === token || c.id === token);
+          const found = candidates.find(c => c.verificationToken === token || c.token === token || c.id === token || c.empId === token || c.employeeNumber === token);
           if (found) return found;
         }
       }
       if (selectedCandidateToken && candidates?.length) {
-        const found = candidates.find(c => c.verificationToken === selectedCandidateToken || c.token === selectedCandidateToken || c.id === selectedCandidateToken);
+        const found = candidates.find(c => c.verificationToken === selectedCandidateToken || c.token === selectedCandidateToken || c.id === selectedCandidateToken || c.empId === selectedCandidateToken || c.employeeNumber === selectedCandidateToken);
         if (found) return found;
       }
       return candidates?.[0] || null;

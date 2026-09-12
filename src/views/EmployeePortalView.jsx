@@ -53,6 +53,8 @@ import {
 
 export const EmployeePortalView = () => {
   const { 
+    currentUser,
+    currentRole,
     companies,
     candidates, 
     selectedCandidateToken, 
@@ -262,7 +264,10 @@ export const EmployeePortalView = () => {
   // Fetch freshest candidate profile & password from PostgreSQL database on load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenToFetch = urlParams.get('token') || urlParams.get('t') || urlParams.get('id') || selectedCandidateToken;
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const lastPart = pathParts[pathParts.length - 1];
+    const pathToken = (lastPart && !['verify', 'employee', 'candidate', 'portal', 'verification'].includes(lastPart.toLowerCase())) ? lastPart : null;
+    const tokenToFetch = urlParams.get('token') || urlParams.get('t') || urlParams.get('id') || pathToken || selectedCandidateToken;
     if (tokenToFetch) {
       const cleanToken = tokenToFetch.trim();
 
