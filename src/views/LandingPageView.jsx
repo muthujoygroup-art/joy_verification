@@ -61,7 +61,6 @@ export const LandingPageView = () => {
 
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
   const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
@@ -513,12 +512,6 @@ export const LandingPageView = () => {
               Turnstile Gate
             </a>
             <a 
-              href="#how-it-works" 
-              className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
-            >
-              Pipeline
-            </a>
-            <a 
               href="#comparison" 
               className="whitespace-nowrap hover:text-[#047857] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#047857] hover:after:w-full after:transition-all"
             >
@@ -592,77 +585,8 @@ export const LandingPageView = () => {
             </div>
           </nav>
 
-          {/* Right Action CTAs & Portal Switcher */}
+          {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3 shrink-0">
-            {/* Portal Login Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-                className="whitespace-nowrap px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-950 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-              >
-                <span>Select Portal</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-
-              {portalDropdownOpen && (
-                <div 
-                  className="absolute right-0 mt-3 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150"
-                  onMouseLeave={() => setPortalDropdownOpen(false)}
-                >
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold border-b border-slate-100">
-                    Authentication Gateways
-                  </div>
-                  <a
-                    href="/login?role=superadmin"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-slate-900 transition-colors group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-colors font-bold">
-                      <Crown className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Super Admin Console</div>
-                      <div className="text-[10px] text-slate-500">Platform Control & Margins</div>
-                    </div>
-                  </a>
-                  <a
-                    href="/login?role=company"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-slate-900 transition-colors group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors font-bold">
-                      <Building2 className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Company Admin Portal</div>
-                      <div className="text-[10px] text-slate-500">Corporate Quotas & HR Teams</div>
-                    </div>
-                  </a>
-                  <a
-                    href="/login?role=hrexecutive"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-slate-900 transition-colors group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors font-bold">
-                      <UserCheck className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">HR Executive Workstation</div>
-                      <div className="text-[10px] text-slate-500">Candidate Profiler & Links</div>
-                    </div>
-                  </a>
-                  <a
-                    href="/login?role=employee_link"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-slate-700 hover:text-slate-900 transition-colors group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors font-bold">
-                      <Smartphone className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Candidate Mobile Link</div>
-                      <div className="text-[10px] text-slate-500">Passwordless Self-Verification</div>
-                    </div>
-                  </a>
-                </div>
-              )}
-            </div>
             
             {/* Book Live Demo Primary Button */}
             <button
@@ -725,7 +649,7 @@ export const LandingPageView = () => {
             
             {/* Trust Eyebrow Pill */}
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-6 shadow-xs border border-emerald-500/30 text-slate-800 font-bold text-xs bg-white/90 backdrop-blur-md hover:border-emerald-500/60 transition-all cursor-pointer">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <ShieldCheck className="w-4 h-4 text-[#047857] shrink-0" />
               <span className="font-bold font-mono uppercase tracking-wider text-[11px] text-slate-900">
                 INDIA'S FIRST ZERO-TRUST WORKFORCE VERIFICATION PLATFORM
               </span>
@@ -2317,14 +2241,6 @@ export const LandingPageView = () => {
           }}
         />
       )}
-
-      {/* ==============================================================================
-       * 16. LUXURY FLOATING WHATSAPP CHAT DRAWER
-       * ============================================================================== */}
-      {/* ==============================================================================
-       * 13. WORLD-CLASS 3D GLASSMORPHIC WHATSAPP CONCIERGE
-       * ============================================================================== */}
-      <WhatsAppConcierge3D />
 
     </div>
   );

@@ -93,7 +93,7 @@ export const DualEmploymentRadarVisualizer = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive Timeline Matrix */}
-        <div className="lg:col-span-7 bg-slate-50/90 border border-slate-200 rounded-2xl p-5 sm:p-7 overflow-hidden shadow-inner relative flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 overflow-hidden shadow-md relative flex flex-col justify-between">
           
           {/* Scanning Laser Line */}
           {isScanning && (

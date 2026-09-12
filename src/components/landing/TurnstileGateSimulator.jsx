@@ -25,7 +25,7 @@ const TEST_WORKERS = [
     valid: true,
     passId: 'QR-PASS-99824',
     codeTime: 'Expires in 8h 45m',
-    badgeColor: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/80'
+    badgeColor: 'border-emerald-300 text-emerald-800 bg-emerald-50 font-bold'
   },
   {
     id: 'pass2',
@@ -36,7 +36,7 @@ const TEST_WORKERS = [
     valid: false,
     passId: 'QR-PASS-10243',
     codeTime: 'Statutory Form XVI Incomplete',
-    badgeColor: 'border-rose-500/40 text-rose-400 bg-rose-950/80'
+    badgeColor: 'border-rose-300 text-rose-800 bg-rose-50 font-bold'
   }
 ];
 

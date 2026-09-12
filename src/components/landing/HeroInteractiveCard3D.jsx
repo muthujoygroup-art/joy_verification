@@ -236,7 +236,7 @@ const HeroInteractiveCard3D = () => {
               {/* Top Bar: Company & Verification Status */}
               <div className="flex items-center justify-between border-b border-slate-200 pb-4 relative z-10">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white font-black shadow-sm border border-emerald-400">
+                  <div className="w-8 h-8 rounded-xl bg-[#047857] text-white flex items-center justify-center font-black shadow-md border border-emerald-500 shrink-0">
                     <ShieldCheck className="w-4 h-4 text-white" />
                   </div>
                   <div>
