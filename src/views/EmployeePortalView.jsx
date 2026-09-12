@@ -414,6 +414,14 @@ export const EmployeePortalView = () => {
     }
   }, [isAllComplete]);
 
+  useEffect(() => {
+    if (!showEmailOtpModal || emailOtpCountdown <= 0) return;
+    const timer = setInterval(() => {
+      setEmailOtpCountdown(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [showEmailOtpModal, emailOtpCountdown]);
+
   if (!candidate) {
     return (
       <div className="glass-panel p-8 text-center max-w-lg mx-auto my-12 space-y-4 bg-white border-slate-200 shadow-xl rounded-2xl">
@@ -661,13 +669,6 @@ export const EmployeePortalView = () => {
     showToast('📱 Mobile Number SMS OTP Verified Successfully!');
   };
 
-  useEffect(() => {
-    if (!showEmailOtpModal || emailOtpCountdown <= 0) return;
-    const timer = setInterval(() => {
-      setEmailOtpCountdown(prev => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [showEmailOtpModal, emailOtpCountdown]);
 
   const handleSendEmailOtp = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
