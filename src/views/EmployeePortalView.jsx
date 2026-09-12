@@ -707,7 +707,7 @@ export const EmployeePortalView = () => {
   const currentCapturedPhoto = candidate.faceImages?.livePhoto || candidate.faceImages?.straight;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-16 text-slate-900">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-16 text-slate-900 px-3 sm:px-6">
       
       {/* 📶 SLOW NETWORK / LATENCY INDICATOR */}
       {isSlowNetwork && (
@@ -1468,7 +1468,7 @@ export const EmployeePortalView = () => {
         )}
 
         {/* STEP 4: PAN Card NSDL Verification & Aadhaar Link */}
-        {isPanReq && (
+        {isPanReq ? (
           <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
             verificationsCompleted.pan ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
           }`}>
@@ -1501,7 +1501,7 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'pan', true);
                     showToast('💳 PAN Card Verified via NSDL Database & Linked with Aadhaar!');
                   }}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify PAN Identity</span>
@@ -1509,10 +1509,38 @@ export const EmployeePortalView = () => {
               )}
             </div>
           </div>
+        ) : (
+          <div className="glass-panel p-4 border border-slate-200 bg-slate-50/70 rounded-2xl opacity-60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-bold text-sm border border-slate-200 shrink-0">
+                🔒
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-extrabold text-slate-600 text-sm">PAN Card Tax Identity & Aadhaar Link</h4>
+                  <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-mono font-bold text-[10px]">
+                    Deactivated by Enterprise Policy
+                  </span>
+                </div>
+                <p className="text-slate-400 mt-0.5 text-[11px]">
+                  This check is disabled for your organization by Super Admin policy.
+                </p>
+              </div>
+            </div>
+            <button 
+              disabled 
+              onClick={() => showToast('🚫 Feature Deactivated: PAN Verification is disabled by Super Admin for your company.', 'error')}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-200 text-slate-500 font-bold text-xs cursor-not-allowed flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+              title="Feature Disabled by Super Admin"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Deactivated by Admin</span>
+            </button>
+          </div>
         )}
 
         {/* STEP 5: Bank Account Penny Drop IMPS */}
-        {isBankReq && (
+        {isBankReq ? (
           <div className={`glass-panel p-5 border transition-all bg-white rounded-2xl shadow-sm ${
             verificationsCompleted.bankCheck ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'
           }`}>
@@ -1545,13 +1573,41 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'bankCheck', true);
                     showToast('🏦 Bank Account Verified via IMPS Penny Drop (Account Holder Matched)!');
                   }}
-                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify Bank Account</span>
                 </button>
               )}
             </div>
+          </div>
+        ) : (
+          <div className="glass-panel p-4 border border-slate-200 bg-slate-50/70 rounded-2xl opacity-60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-bold text-sm border border-slate-200 shrink-0">
+                🔒
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-extrabold text-slate-600 text-sm">Bank Account Verification (Penny Drop ₹1)</h4>
+                  <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-600 font-mono font-bold text-[10px]">
+                    Deactivated by Enterprise Policy
+                  </span>
+                </div>
+                <p className="text-slate-400 mt-0.5 text-[11px]">
+                  This check is disabled for your organization by Super Admin policy.
+                </p>
+              </div>
+            </div>
+            <button 
+              disabled 
+              onClick={() => showToast('🚫 Feature Deactivated: Bank Verification is disabled by Super Admin for your company.', 'error')}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-200 text-slate-500 font-bold text-xs cursor-not-allowed flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+              title="Feature Disabled by Super Admin"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Deactivated by Admin</span>
+            </button>
           </div>
         )}
 

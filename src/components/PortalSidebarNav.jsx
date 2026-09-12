@@ -107,6 +107,13 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     return null;
   }, [effectiveRole, isCandidateRoute, candidates]);
 
+  const activeCandidateCompanyFeatures = useMemo(() => {
+    if (effectiveRole !== 'employee_link') return null;
+    const candCompId = currentCandidate?.companyId || currentCandidate?.company_id;
+    const foundComp = (companies || []).find(c => c.id === candCompId || c.code === currentCandidate?.companyName || c.name === currentCandidate?.companyName) || companies?.[0];
+    return foundComp?.features || {};
+  }, [effectiveRole, currentCandidate, companies]);
+
   // 6. Active Selected Pillar & Division State
   const [activePillarId, setActivePillarId] = useState(() => {
     if (effectiveRole === 'superadmin') return 'core_ops';
@@ -888,30 +895,54 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                       const isDivActive = activeDivisionId === div.id || activeDivisionId === div.tab;
                       const DivIcon = div.icon || ChevronRight;
 
+                      // Determine if candidate division is disabled by SuperAdmin / Company feature flags
+                      let isDivDisabled = false;
+                      if (effectiveRole === 'employee_link' && activeCandidateCompanyFeatures) {
+                        const feats = activeCandidateCompanyFeatures;
+                        if (div.tab === 'aadhaar' && feats.aadhaar === false) isDivDisabled = true;
+                        if (div.tab === 'otp' && (feats.mobileOtp === false && feats.emailGateway === false && feats.email === false && feats.emailOtp === false)) isDivDisabled = true;
+                        if (div.tab === 'face' && (feats.aiFaceBiometrics === false && feats.faceCapture === false)) isDivDisabled = true;
+                        if (div.tab === 'pan' && feats.pan === false) isDivDisabled = true;
+                        if (div.tab === 'bank' && feats.bankCheck === false) isDivDisabled = true;
+                        if (div.tab === 'dl' && (feats.drivingLicense === false && feats.uan === false && feats.passport === false)) isDivDisabled = true;
+                      }
+
                       return (
                         <button
                           key={div.id}
                           type="button"
+                          title={isDivDisabled ? "🔒 Feature Disabled by Enterprise Administrator Policy" : div.label}
                           onClick={(e) => {
                             e.stopPropagation();
+                            if (isDivDisabled) {
+                              try { soundEngine?.playError?.(); } catch (err) {}
+                              showToast('🚫 Feature Disabled: This verification module is deactivated for your organization by Super Admin.', 'error');
+                              return;
+                            }
                             handleNavigate(pillar, div);
                           }}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all duration-150 text-left cursor-pointer group/div ${
-                            isDivActive
-                              ? 'bg-emerald-50 text-emerald-950 font-black border-l-2 border-emerald-500 shadow-2xs translate-x-0.5'
-                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium hover:translate-x-0.5'
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all duration-150 text-left group/div ${
+                            isDivDisabled
+                              ? 'bg-slate-100/70 text-slate-400 opacity-60 cursor-not-allowed select-none'
+                              : isDivActive
+                              ? 'bg-emerald-50 text-emerald-950 font-black border-l-2 border-emerald-500 shadow-2xs translate-x-0.5 cursor-pointer'
+                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium hover:translate-x-0.5 cursor-pointer'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-1">
-                            <DivIcon className={`w-3.5 h-3.5 shrink-0 transition-transform group-hover/div:scale-110 ${
-                              isDivActive ? 'text-emerald-600' : 'text-slate-400 group-hover/div:text-slate-700'
+                            <DivIcon className={`w-3.5 h-3.5 shrink-0 transition-transform ${
+                              isDivDisabled ? 'text-slate-300' : isDivActive ? 'text-emerald-600 group-hover/div:scale-110' : 'text-slate-400 group-hover/div:text-slate-700 group-hover/div:scale-110'
                             }`} />
-                            <span className="truncate">{div.label}</span>
+                            <span className={`truncate ${isDivDisabled ? 'line-through decoration-slate-300' : ''}`}>{div.label}</span>
                           </div>
 
-                          {isDivActive && (
+                          {isDivDisabled ? (
+                            <span className="text-[10px] text-slate-400 font-bold flex items-center gap-0.5 shrink-0 ml-1" title="Disabled by Admin">
+                              <Lock className="w-3 h-3 text-slate-400 shrink-0" />
+                            </span>
+                          ) : isDivActive ? (
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse ml-1" />
-                          )}
+                          ) : null}
                         </button>
                       );
                     })}

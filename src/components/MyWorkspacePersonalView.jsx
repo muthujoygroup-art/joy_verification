@@ -207,38 +207,53 @@ export const MyWorkspacePersonalView = ({ activeTab = 'profile', userRole = 'hre
               </div>
             </div>
 
-            <form onSubmit={handleUpdatePassword} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-bold text-slate-700 block">New Workstation Passcode</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none font-mono text-xs"
-                />
+            {(userRole === 'employee_link' || currentRole === 'employee_link') ? (
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-bold text-slate-800">
+                  <Lock className="w-4 h-4 text-indigo-600" />
+                  <span>Candidate Access Control</span>
+                </div>
+                <p className="text-slate-500 leading-relaxed text-[11px]">
+                  Passcode and password modifications are managed directly by your employer's HR Administrator under Section 7 of the DPDP Act 2023. Self-service password changes are disabled for candidate verification sessions.
+                </p>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold">
+                  <span>🔒 Password Modification Restricted for Candidate Links</span>
+                </div>
               </div>
+            ) : (
+              <form onSubmit={handleUpdatePassword} className="space-y-4 text-xs">
+                <div className="space-y-1.5">
+                  <label className="font-bold text-slate-700 block">New Workstation Passcode</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password..."
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none font-mono text-xs"
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold text-slate-700 block">Confirm Passcode</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter password..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none font-mono text-xs"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="font-bold text-slate-700 block">Confirm Passcode</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter password..."
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none font-mono text-xs"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={isUpdatingPassword}
-                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <Lock className="w-4 h-4" />
-                <span>{isUpdatingPassword ? 'Updating...' : 'Update Security Passcode'}</span>
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={isUpdatingPassword}
+                  className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>{isUpdatingPassword ? 'Updating...' : 'Update Security Passcode'}</span>
+                </button>
+              </form>
+            )}
           </div>
 
         </div>

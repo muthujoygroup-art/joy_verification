@@ -1494,10 +1494,30 @@ export const AppProvider = ({ children }) => {
 
   // Update Company Features
   const updateCompanyFeatures = async (companyId, newFeatures, newPlan) => {
-    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, features: newFeatures, plan: newPlan || c.plan } : c));
+    // Synchronize all email keys
+    const isMailOn = Boolean(newFeatures.email || newFeatures.emailOtp || newFeatures.emailGateway);
+    const syncedFeatures = {
+      ...newFeatures,
+      email: isMailOn,
+      emailOtp: isMailOn,
+      emailGateway: isMailOn
+    };
+
+    setCompanies(prev => {
+      const updated = prev.map(c => c.id === companyId ? { ...c, features: syncedFeatures, plan: newPlan || c.plan } : c);
+      try {
+        localStorage.setItem('joy_companies_v1', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
     try {
-      await api.updateCompanyFeatures(companyId, newFeatures);
-      showToast('Company features updated & synced to PostgreSQL');
+      localStorage.setItem('joy_company_features', JSON.stringify(syncedFeatures));
+    } catch (e) {}
+
+    try {
+      await api.updateCompanyFeatures(companyId, syncedFeatures);
+      showToast('Company feature flags updated & synced to PostgreSQL');
     } catch (err) {
       showToast('Company feature flags updated');
     }
