@@ -56,14 +56,8 @@ import { useApp } from '../context/AppContext';
 
 export const LandingPageView = () => {
   const { platformLogoEmblem } = useApp() || {};
-  // Innovative First-Load / Reload Logo Preloader (Cached in session for instant subsequent loads)
-  const [showPreloader, setShowPreloader] = useState(() => {
-    try {
-      return !sessionStorage.getItem('joy_intro_seen');
-    } catch {
-      return true;
-    }
-  });
+  // Innovative First-Load / Reload Logo Preloader (Plays full cinematic sequence on every page reload)
+  const [showPreloader, setShowPreloader] = useState(true);
 
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

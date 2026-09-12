@@ -13,7 +13,7 @@ export default function LandingPagePreloader({ onFinish }) {
       onFinish={onFinish} 
       subtitleText="INSTANT WORKFORCE VERIFICATION"
       isFullScreen={true}
-      autoDismissMs={1300}
+      autoDismissMs={2200}
     />
   );
 }
