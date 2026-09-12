@@ -5,6 +5,7 @@ import { PortalLayout } from './components/PortalLayout';
 import { SessionInactivityModal } from './components/SessionInactivityModal';
 import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { GlobalPlatformPreloader } from './components/GlobalPlatformPreloader';
 
 // Resilient Lazy Loader with Automatic Chunk Reload & Cache-Busting Recovery
 function lazyWithRetry(componentImport, chunkName = 'chunk') {
@@ -54,11 +55,9 @@ const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalVie
 const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
 
-// Seamless Light Loading Fallback Component
+// Seamless Innovative Brand Loading Component
 const RouteLoadingSpinner = () => (
-  <div className="fixed inset-0 bg-[#F8FAFC] flex flex-col items-center justify-center z-50">
-    <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-500 animate-spin"></div>
-  </div>
+  <GlobalPlatformPreloader isFullScreen={true} autoDismissMs={0} subtitleText="AUTHENTICATING SECURE PORTAL SESSION" />
 );
 
 // Wrapper for Super Admin Route (/superadmin)

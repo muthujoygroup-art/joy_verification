@@ -24,6 +24,8 @@ import {
   Zap
 } from 'lucide-react';
 
+import { GlobalPlatformPreloader } from '../components/GlobalPlatformPreloader';
+
 export const LoginView = ({ initialRole = 'superadmin' }) => {
   const { loginUser, candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem } = useApp();
   const navigate = useNavigate();
@@ -36,6 +38,18 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
   const [candidatePinInput, setCandidatePinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  // ... (rest of details)
+
+  if (isLoading) {
+    return (
+      <GlobalPlatformPreloader 
+        isFullScreen={true} 
+        autoDismissMs={0} 
+        subtitleText="AUTHENTICATING AUTHORIZED SESSION" 
+      />
+    );
+  }
 
   const roleDetails = {
     superadmin: {
