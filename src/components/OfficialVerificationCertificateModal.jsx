@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShieldCheck, 
   Download, 
@@ -77,7 +78,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
     window.print();
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
@@ -450,5 +451,5 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

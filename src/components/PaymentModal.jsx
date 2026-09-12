@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { 
   CreditCard, 
@@ -60,7 +61,7 @@ export const PaymentModal = ({ company, onClose }) => {
     }, 1200);
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -251,5 +252,5 @@ export const PaymentModal = ({ company, onClose }) => {
       </div>
     </div>
     </div>
-  );
+  ), document.body);
 };

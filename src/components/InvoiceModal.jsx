@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Printer, Download, CheckCircle2, ShieldCheck, FileText, Sliders, Edit3, Save } from 'lucide-react';
 
 export const InvoiceModal = ({ company, onClose }) => {
@@ -35,7 +36,7 @@ export const InvoiceModal = ({ company, onClose }) => {
     window.print();
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
@@ -284,5 +285,5 @@ export const InvoiceModal = ({ company, onClose }) => {
 
         </div>
       </div>
-  );
+  ), document.body);
 };

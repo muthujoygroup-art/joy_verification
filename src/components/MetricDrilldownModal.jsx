@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   X, 
   Search, 
@@ -110,7 +111,7 @@ export const MetricDrilldownModal = ({
     document.body.removeChild(link);
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
       onClick={(e) => {
@@ -301,5 +302,5 @@ export const MetricDrilldownModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShieldCheck, 
   Wifi, 
@@ -14,7 +15,7 @@ import {
 export const PreVerificationAdvisoryModal = ({ isOpen, onClose, candidateName, companyName, companyLogo }) => {
   if (!isOpen) return null;
 
-  return (
+  return createPortal((
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn">
       <div 
         className="w-full max-w-lg bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden my-auto"
@@ -123,5 +124,5 @@ export const PreVerificationAdvisoryModal = ({ isOpen, onClose, candidateName, c
         </button>
       </div>
     </div>
-  );
+  ), document.body);
 };

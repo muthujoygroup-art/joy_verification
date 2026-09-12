@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -363,7 +364,7 @@ export const AiFaceMatchModal = ({
     onClose();
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -686,5 +687,5 @@ export const AiFaceMatchModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

@@ -267,7 +267,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
     setTimeout(() => setDownloadSuccess(null), 3500);
   };
 
-  return (
+  return createPortal((
     <>
       <div 
         className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
@@ -634,6 +634,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
           onClose={() => setShowDossierPreview(false)}
         />
       )}
-    </>
+    </>),
+    document.body
   );
 };

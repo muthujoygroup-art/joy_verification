@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { 
   FileText, 
@@ -286,7 +287,7 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
     if (onClose) onClose();
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -506,5 +507,5 @@ export const CustomReportBuilderModal = ({ candidate = null, initialScope = 'ove
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

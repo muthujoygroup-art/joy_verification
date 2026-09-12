@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Building2, 
   ShieldCheck, 
@@ -136,7 +137,7 @@ export const CompanyGovernanceModal = ({
   const isPendingApproval = company.status === 'Pending Approval' || company.activation_status === 'Pending Approval';
   const isActive = company.status === 'Active';
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -659,5 +660,5 @@ export const CompanyGovernanceModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

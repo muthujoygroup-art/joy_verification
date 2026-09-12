@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShieldCheck, 
   Lock, 
@@ -177,7 +178,7 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
 
   const currentSection = complianceSections[activeTab];
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/40 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -340,5 +341,5 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
 
       </div>
     </div>
-  );
+  ), document.body);
 };

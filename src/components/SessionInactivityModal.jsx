@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Clock, RefreshCw, LogOut } from 'lucide-react';
 
 export const SessionInactivityModal = ({ isOpen, remainingSeconds = 300, onExtend, onLogout }) => {
@@ -9,7 +10,7 @@ export const SessionInactivityModal = ({ isOpen, remainingSeconds = 300, onExten
   const secs = validSecs % 60;
   const timeFormatted = `${mins}:${secs.toString().padStart(2, '0')}`;
 
-  return (
+  return createPortal((
     <div className="fixed inset-0 z-[99999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
       <div className="glass-panel w-full max-w-md p-6 space-y-5 border-amber-300 bg-white text-slate-900 shadow-2xl rounded-2xl text-center">
         
@@ -50,5 +51,5 @@ export const SessionInactivityModal = ({ isOpen, remainingSeconds = 300, onExten
 
       </div>
     </div>
-  );
+  ), document.body);
 };

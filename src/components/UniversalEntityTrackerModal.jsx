@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Building2, 
   UserCheck, 
@@ -61,7 +62,7 @@ export const UniversalEntityTrackerModal = ({
 
   const profileId = entity.uniqueProfileId || entity.code || entity.hrCode || entity.employeeCode || entity.empId || entity.id;
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -364,5 +365,5 @@ export const UniversalEntityTrackerModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

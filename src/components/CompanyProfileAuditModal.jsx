@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Building2, 
   ShieldCheck, 
@@ -108,7 +109,7 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
     }
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm p-3 sm:p-6 flex items-center justify-center overflow-y-auto animate-fadeIn select-none"
       onClick={(e) => {
@@ -497,5 +498,5 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
 
       </div>
     </div>
-  );
+  ), document.body);
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { 
   CreditCard, 
@@ -182,7 +183,7 @@ export const RazorpayPaymentModal = ({
     setTimeout(() => setCopiedAccount(false), 2500);
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/40 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -518,5 +519,5 @@ export const RazorpayPaymentModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

@@ -8,6 +8,7 @@ import { PoshPolicyDeclaration } from './statutory/PoshPolicyDeclaration';
 import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
 import { ContractFormXIII } from './statutory/ContractFormXIII';
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   FileText, 
   Download, 
@@ -305,7 +306,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     };
   }, [onClose]);
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
@@ -1325,7 +1326,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
       </div>
     </div>
-  );
+  ), document.body);;
 };
 
 export default EmployeeProfileDossierModal;

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   FileText, 
   Download, 
@@ -87,7 +88,7 @@ export const EmployeeLaborProfileModal = ({ candidate, onClose }) => {
   const nominee = jf.nomineeName ? `${jf.nomineeName} (${jf.nomineeRelation || 'Nominee'})` : (maritalStatus === 'Married' && (jf.spouseName || c.spouseName) ? `${jf.spouseName || c.spouseName} (Spouse)` : (fatherName !== '-' ? `${fatherName} (Father)` : '-'));
   const signatureUrl = jf.signature || jf.specimenSignature || c.specimenSignature || null;
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn"
       onClick={(e) => {
@@ -298,6 +299,6 @@ export const EmployeeLaborProfileModal = ({ candidate, onClose }) => {
 
       </div>
     </div>
-  );
+  ), document.body);
 };
 

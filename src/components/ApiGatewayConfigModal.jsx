@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   X, Server, KeyRound, Globe, Shield, Zap, Check, 
   AlertCircle, Eye, EyeOff, Copy, RefreshCw, Sparkles, CheckCircle2, Lock
@@ -133,7 +134,7 @@ export default function ApiGatewayConfigModal({
     }
   };
 
-  return (
+  return createPortal((
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
       <div 
         className="glass-panel w-full max-w-2xl bg-slate-900 border-2 border-indigo-500/50 text-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-scaleUp"
@@ -400,5 +401,5 @@ export default function ApiGatewayConfigModal({
         </form>
       </div>
     </div>
-  );
+  ), document.body);
 }

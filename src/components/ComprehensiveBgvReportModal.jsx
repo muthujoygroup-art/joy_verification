@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 import { 
@@ -309,7 +310,7 @@ export const ComprehensiveBgvReportModal = ({
     }, 400);
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center print:p-0 print:bg-white animate-fadeIn overflow-hidden"
       onClick={(e) => {
@@ -814,5 +815,5 @@ export const ComprehensiveBgvReportModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

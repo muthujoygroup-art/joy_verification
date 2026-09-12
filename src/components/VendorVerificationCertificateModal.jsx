@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Building2, 
   ShieldCheck, 
@@ -64,7 +65,7 @@ export const VendorVerificationCertificateModal = ({ vendor, checkType = 'all', 
     ? Object.keys(verifs) 
     : [checkType].filter(k => verifs[k]);
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm p-3 sm:p-6 flex items-center justify-center overflow-y-auto animate-fadeIn select-none print:p-0 print:bg-white"
       onClick={(e) => {
@@ -416,5 +417,5 @@ export const VendorVerificationCertificateModal = ({ vendor, checkType = 'all', 
 
       </div>
     </div>
-  );
+  ), document.body);
 };

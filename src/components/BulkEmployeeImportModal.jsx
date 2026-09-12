@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
 import { useApp } from '../context/AppContext';
 import { 
@@ -1212,7 +1213,7 @@ export const BulkEmployeeImportModal = ({
     setTimeout(() => setCopiedToken(null), 3000);
   };
 
-  return (
+  return createPortal(
     <div 
       className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
       onClick={(e) => {
@@ -2014,6 +2015,7 @@ export const BulkEmployeeImportModal = ({
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

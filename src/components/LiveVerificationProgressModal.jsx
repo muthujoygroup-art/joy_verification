@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -133,7 +134,7 @@ export const LiveVerificationProgressModal = ({
   const currentTip = securityTips[tipIndex];
   const TipIcon = currentTip.icon;
 
-  return (
+  return createPortal((
     <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn select-none">
       <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl w-full max-w-xl overflow-hidden relative animate-modal-spring">
         
@@ -276,5 +277,5 @@ export const LiveVerificationProgressModal = ({
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

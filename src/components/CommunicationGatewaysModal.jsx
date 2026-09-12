@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { 
   MessageSquare, 
@@ -70,7 +71,7 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
     showToast(`⚡ Test automated ${channel} notification dispatched successfully! API Gateway 200 OK.`);
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -406,5 +407,5 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
 
       </div>
     </div>
-  );
+  ), document.body);
 };

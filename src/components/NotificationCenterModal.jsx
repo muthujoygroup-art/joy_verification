@@ -95,7 +95,7 @@ export const NotificationCenterModal = ({ onClose }) => {
     }
   };
 
-  return (
+  return createPortal((
     <>
       <div 
         className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
@@ -414,7 +414,8 @@ export const NotificationCenterModal = ({ onClose }) => {
           onClose={() => setDossierCandidate(null)}
         />
       )}
-    </>
+    </>),
+    document.body
   );
 };
 

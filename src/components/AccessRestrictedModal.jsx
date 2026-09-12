@@ -1,4 +1,5 @@
-﻿import React from 'react';
+import React from 'react';
+import { createPortal } from 'react-dom';
 import { Ban, ShieldAlert, X, AlertTriangle } from 'lucide-react';
 import { soundEngine } from '../utils/uiSoundEffects';
 
@@ -12,7 +13,7 @@ export const AccessRestrictedModal = ({ notice, onClose }) => {
     onClose();
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-150"
       onClick={handleClose}
@@ -78,5 +79,5 @@ export const AccessRestrictedModal = ({ notice, onClose }) => {
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

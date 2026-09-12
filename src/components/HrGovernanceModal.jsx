@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   User, 
   ShieldCheck, 
@@ -170,7 +171,7 @@ export const HrGovernanceModal = ({
   const isPendingApproval = hrUser.status === 'Pending Approval' || hrUser.activation_status === 'Pending Approval';
   const isActive = hrUser.status === 'Active';
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -696,5 +697,5 @@ export const HrGovernanceModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);
 };

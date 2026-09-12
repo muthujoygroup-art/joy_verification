@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
@@ -210,7 +211,7 @@ export const QrCodeModal = ({
     window.location.href = `mailto:${destEmail}?subject=${subject}&body=${body}`;
   };
 
-  return (
+  return createPortal((
     <div 
       className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
       onClick={(e) => {
@@ -488,7 +489,7 @@ export const QrCodeModal = ({
 
       </div>
     </div>
-  );
+  ), document.body);;
 };
 
 export default QrCodeModal;
