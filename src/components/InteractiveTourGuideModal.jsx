@@ -57,193 +57,237 @@ export const InteractiveTourGuideModal = ({
     if (onClose) onClose();
   };
 
-  const tourTopics = [
-    {
-      id: 'full_tour',
-      title: '🎓 Complete Platform Guided Tour (All Features Overview)',
-      category: 'general',
-      badge: 'ALL FEATURES',
-      badgeClass: 'badge-purple',
-      icon: Compass,
-      summary: 'Step-by-step sequential interactive walkthrough across all tabs, metrics, and workflows.',
-      steps: [
-        'Step 1: Check your Monthly Verification Quota and remaining balance.',
-        'Step 2: Inspect candidate profiles and 60-day certificate expiry in Candidate Registry.',
-        'Step 3: Provision HR recruiter seats with hierarchical COMP001HR001 IDs.',
-        'Step 4: Update company statutory documents, CIN, and GSTIN.',
-        'Step 5: Configure custom SMTP email and communication gateways.',
-        'Step 6: Top-up your prepaid wallet via Razorpay and download GST invoices.'
-      ],
-      actionLabel: 'Launch Full Spotlight Tour ▶',
-      actionPayload: { type: 'launch_full_tour' }
-    },
-    {
-      id: 'create_hr',
-      title: '👔 How to Create an HR & Assign Recruiter Seats',
-      category: 'hr_management',
-      badge: 'TEAM SETUP',
-      badgeClass: 'badge-indigo',
-      icon: UserPlus,
-      summary: 'Provision recruiter seats, assign department access (e.g. Engineering, Sales), and generate COMP001HR001 login credentials.',
-      steps: [
-        '1. Open the "3. HR Team" tab in the Company Portal.',
-        '2. Click the "+ Add HR User" button at the top-right.',
-        '3. Enter the HR Recruiter Full Name and official Email Address.',
-        '4. Assign their specific Recruitment Department (e.g. Technology Hiring, Operations).',
-        '5. Set a secure password or keep the default (Hr@Recruiter2026).',
-        '6. Click "Create HR Account" - their hierarchical ID (COMP001HR001) will be issued instantly!'
-      ],
-      actionLabel: 'Go to HR Team & Add Recruiter 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'hrteam', openModal: 'add_hr' }
-    },
-    {
-      id: 'configure_email',
-      title: '📧 How to Configure Company Email & Custom SMTP Gateway',
-      category: 'communication',
-      badge: 'COMMUNICATION',
-      badgeClass: 'badge-purple',
-      icon: Mail,
-      summary: 'Switch between the Master JOY cPanel Mail Gateway and your own corporate SMTP server, save credentials, and send live test emails.',
-      steps: [
-        '1. Go to the "⚙️ Settings & Gateways" tab in the Company Portal.',
-        '2. Scroll to the "📧 Company Email Gateway & Notification Rules" card.',
-        '3. Select either "JOY Master cPanel Mail Gateway" (Default) or "Custom Corporate SMTP".',
-        '4. If using Custom SMTP, enter Host (e.g. mail.yourcompany.com), Port (465 SSL or 587 TLS), Username, and Password.',
-        '5. Click "Save Email Settings 💾" to persist your gateway.',
-        '6. Click "Test Connection / Send Test Email 🧪" to verify instant delivery to your inbox!'
-      ],
-      actionLabel: 'Open Email Configuration 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'settings', scrollTo: 'email_config' }
-    },
-    {
-      id: 'configure_whatsapp',
-      title: '💬 How to Configure WhatsApp & SMS Dispatch Gateways',
-      category: 'communication',
-      badge: 'COMMUNICATION',
-      badgeClass: 'badge-emerald',
-      icon: MessageSquare,
-      summary: 'Connect Meta WhatsApp Cloud API and Karix / Twilio SMS gateways to dispatch instant verification magic links to candidate mobiles.',
-      steps: [
-        '1. Click on the "💬 Communication Gateways" button in the top bar or settings.',
-        '2. Choose between "WhatsApp Gateway" or "SMS Gateway".',
-        '3. For WhatsApp: Enter your Meta App ID, Permanent Access Token, and WhatsApp Business Phone Number ID.',
-        '4. For SMS: Configure your SMS Provider API Key and Sender ID (e.g. JOYBGV).',
-        '5. Click "Save Gateway Credentials" to enable instant mobile link dispatch!'
-      ],
-      actionLabel: 'Open Communication Gateways Modal 🚀',
-      actionPayload: { type: 'open_modal', modal: 'gateways' }
-    },
-    {
-      id: 'recharge_wallet',
-      title: '💳 How to Recharge Company Wallet & Download Invoices',
-      category: 'billing',
-      badge: 'FINANCIALS',
-      badgeClass: 'badge-amber',
-      icon: CreditCard,
-      summary: 'Top-up your prepaid verification balance using Razorpay UPI/Cards or Bank Wire transfer, and download itemized GST 18% tax invoices.',
-      steps: [
-        '1. Open the "💳 Billing & Wallet" tab in the Company Portal.',
-        '2. Check your current wallet balance and remaining checks quota.',
-        '3. Click "⚡ Top-up Wallet with Razorpay" or select a Quick Top-up Pack (₹5,000 / ₹15,000 / ₹50,000).',
-        '4. Complete payment via UPI, Credit/Debit Card, or Net Banking in the secure Razorpay popup.',
-        '5. Your wallet balance updates instantly in real-time!',
-        '6. Download official GST-compliant tax invoices anytime from the Invoices table.'
-      ],
-      actionLabel: 'Go to Billing & Top-up Wallet 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'billing_wallet', openModal: 'razorpay' }
-    },
-    {
-      id: 'hr_notifications',
-      title: '🔔 How to Configure Notification Alerts for HRs & Company',
-      category: 'communication',
-      badge: 'AUTOMATION',
-      badgeClass: 'badge-purple',
-      icon: Bell,
-      summary: 'Set automated trigger notifications for HR account creation, candidate verification completion, low wallet balance warnings, and discrepancies.',
-      steps: [
-        '1. Go to "⚙️ Settings & Gateways" tab in the Company Portal.',
-        '2. Under "Automated Notification Triggers", toggle the rules you want active:',
-        '   • ✅ Notify on HR Account Created (Sends welcome credentials email to new HR).',
-        '   • ✅ Notify on Candidate Verified (Sends instant alert when candidate passes KYC).',
-        '   • ✅ Notify on Verification Discrepancy (Flags failed biometric/PAN mismatches).',
-        '   • ✅ Low Wallet Balance Warning (Alerts admin when balance falls below threshold).',
-        '3. Click "Save Email Settings 💾" to activate your rules.'
-      ],
-      actionLabel: 'Configure Notification Triggers 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'settings', scrollTo: 'notification_rules' }
-    },
-    {
-      id: 'support_ticket',
-      title: '🎫 How to Raise a Customer Support Ticket to Super Admin',
-      category: 'support',
-      badge: 'HELPDESK',
-      badgeClass: 'badge-cyan',
-      icon: LifeBuoy,
-      summary: 'Report gateway issues, request quota increases, or seek assistance from Super Admin support specialists with live message threads.',
-      steps: [
-        '1. Click the "🎫 Support / Tickets" button or help icon in the header.',
-        '2. Click "+ Raise New Ticket".',
-        '3. Enter your Ticket Subject and select Priority (Normal, High, Urgent).',
-        '4. Describe your query or issue in detail and attach error codes if applicable.',
-        '5. Submit the ticket - Super Admin will review and reply directly in your thread!'
-      ],
-      actionLabel: 'Open Customer Support Helpdesk 🚀',
-      actionPayload: { type: 'open_modal', modal: 'support' }
-    },
-    {
-      id: 'company_profile',
-      title: '🛡️ How to Update Company Profile & Statutory Documents',
-      category: 'general',
-      badge: 'GOVERNANCE',
-      badgeClass: 'badge-indigo',
-      icon: Building2,
-      summary: 'Maintain accurate corporate records, update CIN, GSTIN, Company PAN, registered headquarters address, and upload official statutory certificates.',
-      steps: [
-        '1. Click on the "🏢 Company Profile & Documents" tab in the Company Portal.',
-        '2. Review and edit your Corporate Identification Number (CIN), GSTIN, and Company PAN.',
-        '3. Update Registered Headquarters Address and official website URL.',
-        '4. Upload PDF / Image copies of your Certificate of Incorporation, GST Certificate, and Board Resolutions.',
-        '5. Click "Save Company Profile 💾" to update your official corporate record.'
-      ],
-      actionLabel: 'Go to Company Profile & Docs 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'profile_details' }
-    },
-    {
-      id: 'verification_features',
-      title: '⚙️ How to Configure Verification Modules (Aadhaar, PAN, EPFO)',
-      category: 'general',
-      badge: 'KYC SUITE',
-      badgeClass: 'badge-amber',
-      icon: Sliders,
-      summary: 'Customize the verification checks enabled for your candidates (Aadhaar OTP, PAN 2.0, Face Biometrics, EPFO Passbook, Bank Check, Driving License).',
-      steps: [
-        '1. Go to the "⚙️ Settings & Gateways" tab.',
-        '2. Under "Verification Feature Modules Matrix", toggle individual check switches ON or OFF.',
-        '3. Quick Modes: Click "Enable All Standard Modules" to activate full 10-check KYC suite, or "Aadhaar-Only Mode" for single-check validation.',
-        '4. Changes take effect instantly for all new candidate links issued by your HR team!'
-      ],
-      actionLabel: 'Configure Verification Modules 🚀',
-      actionPayload: { type: 'navigate_tab', tab: 'settings', scrollTo: 'features_matrix' }
-    },
-    {
-      id: 'batch_export',
-      title: '📂 How to Use Universal Batch Exporter & Download Dossiers',
-      category: 'general',
-      badge: 'EXPORTS',
-      badgeClass: 'badge-emerald',
-      icon: FileDown,
-      summary: 'Filter candidate verification records by date range, department, and pass/fail status, and export in PDF dossiers, Excel spreadsheets, or ZIP archives.',
-      steps: [
-        '1. Click the "📥 Reports / Export" button in the navigation bar or Candidate Registry.',
-        '2. Choose Date Presets: "Today", "Yesterday", "Last 7 Days", "This Month", or "Custom Range".',
-        '3. Filter by Status (Verified, Pending, Action Needed) or Department.',
-        '4. Select candidate dossiers or click "Select All".',
-        '5. Choose your export format: "Export as PDF Dossiers", "Export as Excel (.xlsx)", "Word Document (.docx)", or "Download Certificates ZIP Pack"!'
-      ],
-      actionLabel: 'Open Batch Export Wizard 🚀',
-      actionPayload: { type: 'open_modal', modal: 'universal_export' }
+  const { currentRole: appRole } = useApp();
+  const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isCandidateRoute = path.includes('/verify') || path.includes('/employee') || path.startsWith('/candidate');
+  const activeRole = (isCandidateRoute || appRole === 'employee_link') ? 'employee_link' : (currentRole || appRole || 'superadmin');
+
+  // Role-Specific Dynamic Tour Topics
+  const getRoleTourTopics = () => {
+    if (activeRole === 'superadmin') {
+      return [
+        {
+          id: 'superadmin_overview',
+          title: '👑 Super Admin Master Console Overview',
+          category: 'governance',
+          badge: 'SUPERADMIN',
+          badgeClass: 'badge-purple',
+          icon: Crown,
+          summary: 'Master control dashboard for managing platform tenants, overall system health, and database metrics.',
+          steps: [
+            '1. View total registered companies, overall verification volume, and active subscriber contracts.',
+            '2. Monitor live system health, API gateway latencies, and server status.',
+            '3. Inspect master revenue telemetry and metered consumption analytics.'
+          ],
+          actionLabel: 'Explore Master Console 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'omnisearch' }
+        },
+        {
+          id: 'superadmin_onboard',
+          title: '🏢 Onboarding New Client Companies & Setting Quotas',
+          category: 'governance',
+          badge: 'TENANT MGMT',
+          badgeClass: 'badge-indigo',
+          icon: Building2,
+          summary: 'Register new corporate accounts, issue company codes (COMP001), and allocate verification credits.',
+          steps: [
+            '1. Click "+ Onboard Company" button at top or open Companies tab.',
+            '2. Fill company legal name, CIN, GSTIN, and primary contact email.',
+            '3. Assign initial verification check credit quotas (e.g. 1000 checks).',
+            '4. Submit form - tenant database entries and admin access credentials are issued instantly!'
+          ],
+          actionLabel: 'Open Company Onboarding Form 🚀',
+          actionPayload: { type: 'open_modal', modal: 'onboard_company' }
+        },
+        {
+          id: 'superadmin_db',
+          title: '🗄️ Real-Time PostgreSQL Telemetry & System Error Logs',
+          category: 'governance',
+          badge: 'DATABASE',
+          badgeClass: 'badge-cyan',
+          icon: Sliders,
+          summary: 'Audit live database tables, check connection pools, and monitor client error logs.',
+          steps: [
+            '1. Go to "Database & Telemetry" tab in the SuperAdmin console.',
+            '2. Check active PostgreSQL connections, table record counts, and migration status.',
+            '3. Inspect real-time client error trace logs for troubleshooting.'
+          ],
+          actionLabel: 'View Database Telemetry 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'database' }
+        }
+      ];
     }
-  ];
+
+    if (activeRole === 'employee_link') {
+      return [
+        {
+          id: 'cand_quickstart',
+          title: '🚀 Candidate Self-Verification Quickstart Guide',
+          category: 'onboarding',
+          badge: 'CANDIDATE PORTAL',
+          badgeClass: 'badge-amber',
+          icon: Compass,
+          summary: 'Step-by-step walkthrough to complete your employee background verification in under 3 minutes.',
+          steps: [
+            'Step 1: Read the Onboarding Advisory Guidelines before starting.',
+            'Step 2: Enter your 4-digit security PIN (default: 1234) when prompted.',
+            'Step 3: Complete Aadhaar e-KYC verification using UIDAI OTP.',
+            'Step 4: Verify your mobile phone and official email via 6-digit OTP.',
+            'Step 5: Capture a live 3D face portrait using your device camera.',
+            'Step 6: Review and submit statutory declarations to complete your profile.'
+          ],
+          actionLabel: 'Proceed to Verification Checklist 🚀',
+          actionPayload: { type: 'scroll_to', elementId: 'verification_checklist' }
+        },
+        {
+          id: 'cand_aadhaar',
+          title: '🆔 Aadhaar UIDAI e-KYC & Demographic Verification',
+          category: 'kyc',
+          badge: 'GOVERNMENT ID',
+          badgeClass: 'badge-emerald',
+          icon: ShieldCheck,
+          summary: 'How to validate your 12-digit Aadhaar number securely with official UIDAI OTP.',
+          steps: [
+            '1. Click "Start Aadhaar Verification" in Step 1.',
+            '2. Enter your 12-Digit Aadhaar number.',
+            '3. Tap "Send UIDAI OTP" - an official OTP will be dispatched to your Aadhaar-linked mobile.',
+            '4. Enter the 6-digit OTP and tap Verify. Your demographic details match instantly!'
+          ],
+          actionLabel: 'Start Aadhaar Verification 🚀',
+          actionPayload: { type: 'trigger_action', action: 'open_aadhaar_modal' }
+        },
+        {
+          id: 'cand_photo',
+          title: '🤳 Live 3D AI WebCam Biometric Liveness & Photo Match',
+          category: 'kyc',
+          badge: 'BIOMETRICS',
+          badgeClass: 'badge-purple',
+          icon: Zap,
+          summary: 'How to capture a clear live face photo for anti-spoofing liveness verification.',
+          steps: [
+            '1. Click "Capture Live Photo" in Step 4.',
+            '2. Allow camera access permission on your mobile or desktop browser.',
+            '3. Align your face inside the oval guide overlay in good lighting.',
+            '4. Click "Capture Photo" - AI biometric liveness and face match score are calculated instantly!'
+          ],
+          actionLabel: 'Open Live Photo Camera 🚀',
+          actionPayload: { type: 'trigger_action', action: 'open_photo_modal' }
+        }
+      ];
+    }
+
+    if (activeRole === 'hrexecutive') {
+      return [
+        {
+          id: 'hr_pipeline',
+          title: '📋 Candidate Directory & Status Pipeline Tracker',
+          category: 'recruitment',
+          badge: 'HR WORKSTATION',
+          badgeClass: 'badge-emerald',
+          icon: UserPlus,
+          summary: 'Track candidate applications, verification links sent, pending items, and verified profiles.',
+          steps: [
+            '1. Use "All Candidates", "Pending Verifications", or "Verified Candidates" quick filters.',
+            '2. View real-time readiness progress percentage (e.g. 85% completed).',
+            '3. Click "Inspect Dossier" to view candidate KYC submissions and original document scans.'
+          ],
+          actionLabel: 'Go to Candidate Directory 🚀',
+          actionPayload: { type: 'navigate_tab', tab: 'pipeline' }
+        },
+        {
+          id: 'hr_dispatch',
+          title: '📲 Multi-Channel Magic Link Dispatcher (WhatsApp / SMS / Email)',
+          category: 'recruitment',
+          badge: 'DISPATCHER',
+          badgeClass: 'badge-cyan',
+          icon: Mail,
+          summary: 'Dispatch instant verification links directly to candidate mobile numbers and email addresses.',
+          steps: [
+            '1. Click "+ Add Candidate & Send Link" button.',
+            '2. Enter candidate Name, Email ID, Mobile Number, and Department.',
+            '3. Select notification channels: WhatsApp, SMS, or Email.',
+            '4. Click "Dispatch Verification Link" - candidate receives magic link instantly!'
+          ],
+          actionLabel: 'Add Candidate & Dispatch Link 🚀',
+          actionPayload: { type: 'open_modal', modal: 'add_candidate' }
+        },
+        {
+          id: 'hr_bulk',
+          title: '📥 Bulk Candidate Import via Excel Spreadsheet',
+          category: 'recruitment',
+          badge: 'BULK IMPORT',
+          badgeClass: 'badge-amber',
+          icon: FileDown,
+          summary: 'Upload Excel files with employee names & email IDs to issue verification links in bulk.',
+          steps: [
+            '1. Click "Bulk Import (Excel) 📥" button.',
+            '2. Download the pre-formatted Excel template.',
+            '3. Add candidate Name and Email ID columns and upload the file.',
+            '4. System auto-generates sequential employee IDs (JOY-EMP-002) and dispatches links!'
+          ],
+          actionLabel: 'Open Excel Bulk Import Wizard 🚀',
+          actionPayload: { type: 'open_modal', modal: 'bulk_import' }
+        }
+      ];
+    }
+
+    // Default Company Admin Tour Topics
+    return [
+      {
+        id: 'company_quota',
+        title: '🏢 Company Dashboard & Verification Quota Management',
+        category: 'general',
+        badge: 'COMPANY ADMIN',
+        badgeClass: 'badge-cyan',
+        icon: Building2,
+        summary: 'Monitor remaining verification credits, active HR seats, and corporate settings.',
+        steps: [
+          '1. Check your Monthly Verification Quota and remaining check balance.',
+          '2. Review active HR recruiter seats and department allocations.',
+          '3. Update company statutory records (CIN, GSTIN, PAN).'
+        ],
+        actionLabel: 'Go to Company Dashboard 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'dashboard' }
+      },
+      {
+        id: 'create_hr',
+        title: '👔 How to Create an HR & Assign Recruiter Seats',
+        category: 'hr_management',
+        badge: 'TEAM SETUP',
+        badgeClass: 'badge-indigo',
+        icon: UserPlus,
+        summary: 'Provision recruiter seats, assign department access, and generate COMP001HR001 login credentials.',
+        steps: [
+          '1. Open the "3. HR Team" tab in the Company Portal.',
+          '2. Click the "+ Add HR User" button at the top-right.',
+          '3. Enter the HR Recruiter Full Name and official Email Address.',
+          '4. Assign their specific Recruitment Department.',
+          '5. Click "Create HR Account" - their hierarchical ID (COMP001HR001) will be issued instantly!'
+        ],
+        actionLabel: 'Go to HR Team & Add Recruiter 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'hrteam', openModal: 'add_hr' }
+      },
+      {
+        id: 'recharge_wallet',
+        title: '💳 How to Recharge Company Wallet & Download Invoices',
+        category: 'billing',
+        badge: 'FINANCIALS',
+        badgeClass: 'badge-amber',
+        icon: CreditCard,
+        summary: 'Top-up your prepaid verification balance using Razorpay UPI/Cards and download GST invoices.',
+        steps: [
+          '1. Open the "💳 Billing & Wallet" tab.',
+          '2. Click "⚡ Top-up Wallet with Razorpay".',
+          '3. Complete payment via UPI, Credit/Debit Card, or Net Banking.',
+          '4. Download official GST-compliant tax invoices anytime from the Invoices table.'
+        ],
+        actionLabel: 'Go to Billing & Top-up Wallet 🚀',
+        actionPayload: { type: 'navigate_tab', tab: 'billing_wallet', openModal: 'razorpay' }
+      }
+    ];
+  };
+
+  const tourTopics = getRoleTourTopics();
 
   const filteredTopics = tourTopics.filter(t => {
     if (selectedCategory !== 'all' && t.category !== selectedCategory) return false;

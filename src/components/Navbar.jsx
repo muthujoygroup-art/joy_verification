@@ -162,61 +162,63 @@ export const Navbar = () => {
                 <span>Home 🌐</span>
               </Link>
 
-              {/* Quick Role Switcher Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setPortalSwitcherOpen(!portalSwitcherOpen)}
-                  className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-blue-900 bg-blue-50 hover:bg-blue-100 font-bold border border-blue-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                  title="Switch Active Portal or View Other Roles"
-                >
-                  <Zap className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span>Switch ⚡</span>
-                  <ChevronDown className="w-3 h-3 text-blue-500 shrink-0" />
-                </button>
-
-                {portalSwitcherOpen && (
-                  <div
-                    className="absolute left-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150 text-left"
-                    onMouseLeave={() => setPortalSwitcherOpen(false)}
+              {/* Quick Role Switcher Dropdown (Hidden for SuperAdmin & Candidate) */}
+              {currentRole !== 'superadmin' && currentRole !== 'employee_link' && (
+                <div className="relative">
+                  <button
+                    onClick={() => setPortalSwitcherOpen(!portalSwitcherOpen)}
+                    className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-blue-900 bg-blue-50 hover:bg-blue-100 font-bold border border-blue-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                    title="Switch Active Portal or View Other Roles"
                   >
-                    <div className="px-3 py-1 font-mono text-[9px] uppercase tracking-wider font-bold text-slate-400 border-b border-slate-100">
-                      Switch Active Console
+                    <Zap className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span>Switch ⚡</span>
+                    <ChevronDown className="w-3 h-3 text-blue-500 shrink-0" />
+                  </button>
+
+                  {portalSwitcherOpen && (
+                    <div
+                      className="absolute left-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150 text-left"
+                      onMouseLeave={() => setPortalSwitcherOpen(false)}
+                    >
+                      <div className="px-3 py-1 font-mono text-[9px] uppercase tracking-wider font-bold text-slate-400 border-b border-slate-100">
+                        Switch Active Console
+                      </div>
+                      <Link
+                        to="/login?role=superadmin"
+                        onClick={() => setPortalSwitcherOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-800 hover:text-indigo-900 transition-colors"
+                      >
+                        <Crown className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        <span className="text-xs font-bold">Super Admin</span>
+                      </Link>
+                      <Link
+                        to="/login?role=company"
+                        onClick={() => setPortalSwitcherOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-800 hover:text-sky-900 transition-colors"
+                      >
+                        <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                        <span className="text-xs font-bold">Company Admin</span>
+                      </Link>
+                      <Link
+                        to="/login?role=hrexecutive"
+                        onClick={() => setPortalSwitcherOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 transition-colors"
+                      >
+                        <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-xs font-bold">HR Executive</span>
+                      </Link>
+                      <Link
+                        to="/login?role=employee_link"
+                        onClick={() => setPortalSwitcherOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-800 hover:text-amber-900 transition-colors"
+                      >
+                        <Smartphone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span className="text-xs font-bold">Candidate Portal</span>
+                      </Link>
                     </div>
-                    <Link
-                      to="/login?role=superadmin"
-                      onClick={() => setPortalSwitcherOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-800 hover:text-indigo-900 transition-colors"
-                    >
-                      <Crown className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span className="text-xs font-bold">Super Admin</span>
-                    </Link>
-                    <Link
-                      to="/login?role=company"
-                      onClick={() => setPortalSwitcherOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-800 hover:text-sky-900 transition-colors"
-                    >
-                      <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-                      <span className="text-xs font-bold">Company Admin</span>
-                    </Link>
-                    <Link
-                      to="/login?role=hrexecutive"
-                      onClick={() => setPortalSwitcherOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 transition-colors"
-                    >
-                      <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span className="text-xs font-bold">HR Executive</span>
-                    </Link>
-                    <Link
-                      to="/login?role=employee_link"
-                      onClick={() => setPortalSwitcherOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-800 hover:text-amber-900 transition-colors"
-                    >
-                      <Smartphone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span className="text-xs font-bold">Candidate Portal</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
               
               {/* Interactive Guided Tour & Feature Guide Dropdown Button */}
               <button
@@ -364,69 +366,92 @@ export const Navbar = () => {
       {/* ========================================================================= */}
       {/* 📱 INNOVATIVE FLOATING BOTTOM ISLAND DOCK (MOBILE & TABLET < 1024px)       */}
       {/* ========================================================================= */}
-      {currentRole !== 'employee_link' && (
-        <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
-          <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
-            
-            {/* 1. Dashboard / Home Tab */}
-            <Link
-              to="/"
-              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
-              title="Dashboard"
-            >
-              <Home className="w-4 h-4" />
-              <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
-            </Link>
+      {/* ========================================================================= */}
+      {/* 📱 INNOVATIVE FLOATING BOTTOM ISLAND DOCK (MOBILE & TABLET < 1024px)       */}
+      {/* ========================================================================= */}
+      {(() => {
+        const isCandidate = (typeof window !== 'undefined' && (window.location.pathname.includes('/verify') || window.location.pathname.includes('/employee'))) || currentRole === 'employee_link';
+        return (
+          <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
+            <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
+              
+              {/* 1. Dashboard / Home Tab */}
+              <Link
+                to="/"
+                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
+                title="Dashboard"
+              >
+                <Home className="w-4 h-4" />
+                <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
+              </Link>
 
-            {/* 2. Universal Reports Hub */}
-            <button
-              onClick={() => setShowUniversalExportModal(true)}
-              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
-              title="Download Reports"
-            >
-              <Download className="w-4 h-4" />
-              <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
-            </button>
+              {/* 2. Candidate: Verify Checklist / Admin: Universal Reports Hub */}
+              {isCandidate ? (
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('verification_checklist') || document.querySelector('.verification-steps-card');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
+                  title="Verify Checklist"
+                >
+                  <UserCheck className="w-4 h-4 text-emerald-600" />
+                  <span className="text-[9px] font-black uppercase tracking-wider text-emerald-700">Verify</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowUniversalExportModal(true)}
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
+                  title="Download Reports"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
+                </button>
+              )}
 
-            {/* 3. Center Vibrant Action Button */}
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('launch_guided_tour'))}
-              className="w-11 h-11 -mt-4 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-lg shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white flex items-center justify-center shrink-0"
-              title="Interactive Guided Tour"
-            >
-              <Compass className="w-5 h-5 animate-spin-slow text-amber-300" />
-            </button>
+              {/* 3. Center Vibrant Compass Action Button (Guided Product Tour) */}
+              <button
+                onClick={() => {
+                  setShowTourGuideModal(true);
+                  window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
+                }}
+                className="w-11 h-11 -mt-4 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-lg shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white flex items-center justify-center shrink-0"
+                title="Interactive Guided Tour & Feature Walkthrough"
+              >
+                <Compass className="w-5 h-5 animate-spin-slow text-amber-300" />
+              </button>
 
-            {/* 4. Real-time Alerts */}
-            <button
-              onClick={() => setShowNotificationsModal(true)}
-              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
-              title="Notifications"
-            >
-              <div className="relative">
-                <Bell className="w-4 h-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
-            </button>
+              {/* 4. Real-time Alerts */}
+              <button
+                onClick={() => setShowNotificationsModal(true)}
+                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
+                title="Notifications"
+              >
+                <div className="relative">
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
+              </button>
 
-            {/* 5. More Menu Sheet Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
-              title="More Options"
-            >
-              <Sliders className="w-4 h-4" />
-              <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
-            </button>
+              {/* 5. More Menu Sheet Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
+                title="More Options"
+              >
+                <Sliders className="w-4 h-4" />
+                <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
+              </button>
 
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ========================================================================= */}
       {/* 📱 SLIDE-UP MOBILE SHEET DRAWER (MODAL OVERLAY)                           */}
