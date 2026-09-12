@@ -126,7 +126,7 @@ export const App = () => {
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between overflow-x-hidden">
+          <div className="min-h-screen bg-[#070A11] text-slate-100 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
                 {/* 1. Public Marketing Landing Page */}

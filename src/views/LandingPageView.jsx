@@ -59,6 +59,14 @@ export const LandingPageView = () => {
   // Innovative First-Load / Reload Logo Preloader (Plays full cinematic sequence on every page reload)
   const [showPreloader, setShowPreloader] = useState(true);
 
+  // Active View Tab State (Multi-View Tabbed Navigation)
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
@@ -77,7 +85,7 @@ export const LandingPageView = () => {
     }
   };
 
-  // Interactive Spec Customizer Tab State (Capricorn Zagato Style)
+  // Interactive Spec Customizer Tab State
   const [activeSpecCategory, setActiveSpecCategory] = useState('performance');
 
   // Interactive Live India Radar State
@@ -478,7 +486,7 @@ export const LandingPageView = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo - Single Line, Clean, Balanced */}
-          <a href="#" className="flex items-center gap-3 shrink-0 group">
+          <button onClick={() => handleTabChange('overview')} className="flex items-center gap-3 shrink-0 group text-left cursor-pointer border-none bg-transparent">
             <div className="relative shrink-0">
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
@@ -496,46 +504,46 @@ export const LandingPageView = () => {
                 Zero-Trust Verification
               </span>
             </div>
-          </a>
+          </button>
 
-          {/* Center Navigation Links - Spacious, Single Line, No Cramping */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-sans text-xs font-bold text-slate-300">
-            <a 
-              href="#features" 
-              className="whitespace-nowrap hover:text-emerald-400 transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-emerald-400 hover:after:w-full after:transition-all"
+          {/* Center Navigation Links - Tab Triggers */}
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7 font-sans text-xs font-bold text-slate-300">
+            <button 
+              onClick={() => handleTabChange('features')} 
+              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'features' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
             >
               Features
-            </a>
-            <a 
-              href="#moonlighting-radar" 
-              className="whitespace-nowrap hover:text-emerald-400 transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-emerald-400 hover:after:w-full after:transition-all"
+            </button>
+            <button 
+              onClick={() => handleTabChange('moonlighting')} 
+              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'moonlighting' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
             >
               Moonlighting Radar
-            </a>
-            <a 
-              href="#turnstile-access" 
-              className="whitespace-nowrap hover:text-emerald-400 transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-emerald-400 hover:after:w-full after:transition-all"
+            </button>
+            <button 
+              onClick={() => handleTabChange('turnstile')} 
+              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'turnstile' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
             >
               Turnstile Gate
-            </a>
-            <a 
-              href="#comparison" 
-              className="whitespace-nowrap hover:text-emerald-400 transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-emerald-400 hover:after:w-full after:transition-all"
+            </button>
+            <button 
+              onClick={() => handleTabChange('comparison')} 
+              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'comparison' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
             >
               Speed Matrix
-            </a>
-            <a 
-              href="#roi-calculator" 
-              className="whitespace-nowrap hover:text-emerald-400 transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-emerald-400 hover:after:w-full after:transition-all"
+            </button>
+            <button 
+              onClick={() => handleTabChange('roi')} 
+              className={`whitespace-nowrap transition-colors py-1 cursor-pointer font-bold ${activeTab === 'roi' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
             >
               ROI Calculator
-            </a>
+            </button>
             
             {/* Resources Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
-                className="whitespace-nowrap hover:text-emerald-400 transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-bold"
+                className={`whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-bold ${activeTab === 'resources' || activeTab === 'solutions' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'hover:text-emerald-400'}`}
               >
                 <span>Resources</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -546,30 +554,30 @@ export const LandingPageView = () => {
                   className="absolute left-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 flex flex-col gap-1 font-sans animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-xl"
                   onMouseLeave={() => setResourcesDropdownOpen(false)}
                 >
-                  <a href="#craft" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Architecture</span>
-                  </a>
-                  <a href="#specs" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                  <button onClick={() => { handleTabChange('solutions'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
+                    <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Solutions & Architecture</span>
+                  </button>
+                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
                     <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Specifications</span>
-                  </a>
-                  <a href="#live-radar" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                    <span>Specifications & SLA</span>
+                  </button>
+                  <button onClick={() => { handleTabChange('overview'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
                     <Radio className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>India Radar</span>
-                  </a>
-                  <a href="#reviews" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                    <span>Live India Radar</span>
+                  </button>
+                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
                     <Star className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Client Reviews</span>
-                  </a>
-                  <a href="#knowledge-hub" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                  </button>
+                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
                     <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Knowledge Hub</span>
-                  </a>
-                  <a href="#faq" onClick={() => setResourcesDropdownOpen(false)} className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                  </button>
+                  <button onClick={() => { handleTabChange('resources'); setResourcesDropdownOpen(false); }} className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-emerald-400 transition-colors flex items-center gap-2 cursor-pointer">
                     <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
                     <span>FAQ</span>
-                  </a>
+                  </button>
 
                   <div className="pt-2 mt-1 border-t border-slate-800 flex flex-col gap-1">
                     <button
@@ -594,7 +602,6 @@ export const LandingPageView = () => {
 
           {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3 shrink-0">
-            
             {/* Book Live Demo Primary Button */}
             <button
               onClick={() => setShowDemoModal(true)}
@@ -618,22 +625,19 @@ export const LandingPageView = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-800 px-4 py-4 bg-slate-950 shadow-2xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold">Verification Modules</a>
-            <a href="#moonlighting-radar" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold">Moonlighting Radar</a>
-            <a href="#turnstile-access" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold">Turnstile Simulator</a>
-            <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold">Comparison Matrix</a>
-            <a href="#roi-calculator" onClick={() => setMobileMenuOpen(false)} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold">ROI Calculator</a>
+            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Overview</button>
+            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Verification Modules</button>
+            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Moonlighting Radar</button>
+            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Turnstile Simulator</button>
+            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Comparison Matrix</button>
+            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">ROI Calculator</button>
+            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Enterprise Solutions</button>
+            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-200 hover:text-emerald-400 hover:bg-slate-900 font-bold text-left">Resources & FAQ</button>
             
             <div className="pt-3 mt-1 border-t border-slate-800 flex flex-col gap-2">
-              <a
-                href="/login?role=hrexecutive"
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-slate-900 hover:bg-slate-800 text-center border border-slate-800"
-              >
-                Portals & Login
-              </a>
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 text-center shadow-lg border border-emerald-500/50"
+                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 text-center shadow-lg border border-emerald-500/50 cursor-pointer"
               >
                 <span>Book Live Demo</span>
               </button>
@@ -643,1228 +647,769 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * 2. HERO SECTION: VERIFIED EMPLOYEE PASS SHOWCASE
+       * SECONDARY STICKY SUB-NAV PILL BAR FOR INSTANT VIEW SWITCHING
        * ============================================================================== */}
-      <section className="relative z-10 pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-16 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
-          
-          {/* Left Column: Value Proposition & CTAs */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
-            
-            {/* Trust Eyebrow Pill */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-6 shadow-xl border border-emerald-500/40 text-emerald-300 font-bold text-xs bg-slate-900/90 backdrop-blur-md hover:border-emerald-400/60 transition-all cursor-pointer">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="font-bold font-mono uppercase tracking-wider text-[11px] text-white">
-                INDIA'S FIRST ZERO-TRUST WORKFORCE VERIFICATION PLATFORM
-              </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 text-[10px] font-black border border-emerald-500/40">
-                500K+ CHECKS
-              </span>
-            </div>
-
-            {/* Main Marketing Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12] mb-5 font-outfit">
-              Zero-Trust Workforce Verification. <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 font-black">
-                In 45 Seconds Flat.
-              </span>
-            </h1>
-
-            {/* Clear, High-Impact Subtitle */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8 font-medium">
-              Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
-            </p>
-
-            {/* Primary Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-10 w-full sm:w-auto">
-              <button
-                onClick={() => setShowDemoModal(true)}
-                className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-emerald-400/50"
-              >
-                <span className="tracking-wide text-white font-black text-base">Book a Free Live Demo</span>
-                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <a
-                href="#features"
-                className="bg-slate-900 border border-slate-700 hover:border-emerald-500/60 px-6 py-4 rounded-2xl font-bold text-sm text-slate-200 hover:text-emerald-400 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-emerald-400" />
-                <span>See All Features</span>
-              </a>
-            </div>
-
-            {/* Key Value Metrics Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-800/80 w-full max-w-2xl">
-              <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                <div className="text-xl sm:text-2xl font-black text-emerald-400 font-outfit">&lt;45s</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Verification TAT</div>
-              </div>
-              <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                <div className="text-xl sm:text-2xl font-black text-white font-outfit">99.98%</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Precision Rate</div>
-              </div>
-              <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                <div className="text-xl sm:text-2xl font-black text-teal-300 font-outfit">100%</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">DPDP 2023 Compliant</div>
-              </div>
-              <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
-                <div className="text-xl sm:text-2xl font-black text-amber-400 font-outfit">80%</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Cost Reduction</div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Right Column: 3D Holographic Employee ID Passport Centerpiece */}
-          <div className="lg:col-span-5 flex justify-center">
-            <HeroInteractiveCard3D />
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==============================================================================
-       * 3. STATUTORY COMPLIANCE & VERIFIED RAILS TICKER
-       * ============================================================================== */}
-      <section className="relative z-10 py-4 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="relative rounded-2xl bg-slate-950/90 border border-slate-800/80 py-3.5 px-2 overflow-hidden shadow-2xl backdrop-blur-xl [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
-          <div className="flex items-center gap-6 whitespace-nowrap animate-marquee text-xs text-slate-300 tracking-wider uppercase font-bold">
-            {[...Array(2)].map((_, loopIdx) => (
-              <React.Fragment key={loopIdx}>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> ISO 27001 CERTIFIED CLOUD
-                </span>
-                <span className="text-emerald-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <Lock className="w-3.5 h-3.5 text-teal-400" /> DPDP ACT 2023 STATUTORY CONSENT
-                </span>
-                <span className="text-emerald-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <Fingerprint className="w-3.5 h-3.5 text-emerald-400" /> UIDAI & AADHAAR ECOSYSTEM INTEGRATED
-                </span>
-                <span className="text-emerald-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <Zap className="w-3.5 h-3.5 text-amber-400" /> EPFO UAN REAL-TIME PASSBOOK RADAR
-                </span>
-                <span className="text-emerald-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <Scale className="w-3.5 h-3.5 text-indigo-400" /> PAN-INDIA DISTRICT & HIGH COURT REPOSITORIES
-                </span>
-                <span className="text-emerald-400">✦</span>
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
-                  <CreditCard className="w-3.5 h-3.5 text-emerald-400" /> NPCI & IMPS DIRECT BANK ACCOUNT RAILS
-                </span>
-                <span className="text-emerald-400">✦</span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ==============================================================================
-       * 4. VERIFICATION MODULES SHOWCASE (#features)
-       * ============================================================================== */}
-      <section id="features" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>ALL-IN-ONE SCREENING SUITE</span>
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4 tracking-tight">
-            Everything You Need to <br className="hidden sm:inline" />
-            <span className="text-gradient-electric">
-              Hire with Total Confidence
-            </span>
-          </h2>
-          <p className="text-slate-400 text-base max-w-2xl leading-relaxed font-normal">
-            Explore our core background screening checks designed to protect your company, speed up onboarding, and eliminate hiring fraud.
-          </p>
-        </div>
-
-        {/* Verification Command Orbit Component */}
-        <VerificationCommandOrbit />
-      </section>
-
-      {/* ==============================================================================
-       * 5. DUAL-EMPLOYMENT & MOONLIGHTING RADAR VISUALIZER (#moonlighting-radar)
-       * ============================================================================== */}
-      <section id="moonlighting-radar" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <DualEmploymentRadarVisualizer />
-      </section>
-
-      {/* ==============================================================================
-       * 6. WORKFORCE DIGITAL TURNSTILE GATE SIMULATOR (#turnstile-access)
-       * ============================================================================== */}
-      <section id="turnstile-access" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <TurnstileGateSimulator />
-      </section>
-
-      {/* ==============================================================================
-       * 7. KINETIC PROCESS PIPELINE (#how-it-works)
-       * ============================================================================== */}
-      <section id="how-it-works" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <InteractiveProcessPipeline />
-      </section>
-
-      {/* ==============================================================================
-       * 8. TRADITIONAL 15-DAY AGENCY VS JOY TRUEPROFILE COMPARISON (#comparison)
-       * ============================================================================== */}
-      <section id="comparison" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <InteractiveSpeedComparison />
-      </section>
-
-      {/* ==============================================================================
-       * 9. ARCHITECTURE & SECURITY CRAFT SECTION (#craft)
-       * ============================================================================== */}
-      <section id="craft" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
-          {/* Left Column: Monospace Category Header */}
-          <div className="lg:col-span-4">
-            <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold inline-block mb-3 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10">
-              ENTERPRISE ARCHITECTURE & VAULT
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white font-outfit leading-tight mb-4">
-              Enterprise Trust Meets High-Speed Accuracy
-            </h2>
-            <p className="text-slate-300 text-sm leading-relaxed mb-6 font-normal">
-              Whether verifying executive leadership, corporate IT specialists, logistics drivers, or plant workers, JOY TrueProfile provides unified, cryptographic verification built on automated enterprise connectors.
-            </p>
-            <button
-              onClick={() => setShowLegalHandbook(true)}
-              className="bg-slate-900/90 px-5 py-3 rounded-xl text-slate-200 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-xl hover-jump-subtle transition-all font-bold cursor-pointer border border-slate-800 hover:border-emerald-500/50 hover:text-emerald-400"
-            >
-              <span>Compliance Handbook</span>
-              <FileText className="w-3.5 h-3.5 text-amber-400" />
-            </button>
-          </div>
-
-          {/* Right Column: Split Dual Cards with Dark Glass & 3D Assets */}
-          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Card 1: Enterprise Cryptographic Shield & Security Vault */}
-            <div className="bg-slate-900/90 rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-slate-800 backdrop-blur-xl group hover:border-emerald-500/40">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-800 bg-slate-950 shadow-inner relative">
-                <img
-                  src="/assets/3d/corporate_shield_vault_3d.jpg"
-                  alt="Enterprise Cryptographic Security Vault"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/90 backdrop-blur-md border border-amber-500/40 font-mono text-[9px] uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5 shadow-md">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>0.9s Sub-Second Sync</span>
-                </div>
-              </div>
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-2">
-                  CRYPTOGRAPHIC ARCHITECTURE
-                </span>
-                <h3 className="text-xl font-bold text-white mb-2 font-outfit">
-                  Enterprise Security Vault
-                </h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
-                  Military-grade 256-bit AES encryption, immutable audit trails, and automatic Aadhaar / PAN redaction built into every check.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 2: DPDP Act 2023 Statutory Compliance Seal */}
-            <div className="bg-slate-900/90 rounded-3xl p-6 flex flex-col justify-between gap-6 hover-jump shadow-2xl border border-slate-800 backdrop-blur-xl group hover:border-emerald-500/40">
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] border border-slate-800 bg-slate-950 shadow-inner relative">
-                <img
-                  src="/assets/3d/security_3d_shield.jpg"
-                  alt="DPDP Act 2023 Statutory Compliance Seal"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/90 backdrop-blur-md border border-emerald-500/40 font-mono text-[9px] uppercase tracking-wider text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
-                  <Lock className="w-3 h-3 text-emerald-400" />
-                  <span>100% DPDP Act 2023</span>
-                </div>
-              </div>
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400 font-bold block mb-2">
-                  DATA PRIVACY & STATUTORY ASSURANCE
-                </span>
-                <h3 className="text-xl font-bold text-white mb-2 font-outfit">
-                  DPDP Act 2023 Certified Shield
-                </h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
-                  Explicit OTP-driven candidate consent architecture, immutable logging, and ISO 27001 audited cloud infrastructure.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==============================================================================
-       * 5. SYSTEM SPECIFICATIONS & PERFORMANCE MATRIX (#specs)
-       * ============================================================================== */}
-      <section id="specs" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-            <Sliders className="w-3.5 h-3.5 text-amber-400" />
-            <span>ENTERPRISE STANDARDS & RELIABILITY</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Enterprise-Grade Reliability & Security
-          </h2>
-          <p className="text-slate-400 text-sm font-normal">
-            Built for organizations that cannot afford to compromise on hiring safety, data privacy, or candidate turnaround time.
-          </p>
-        </div>
-
-        {/* Spec Category Segmented Control */}
-        <div className="flex justify-center mb-10">
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
-            {[
-              { id: 'performance', label: 'Performance' },
-              { id: 'security', label: 'Security & DPDP' },
-              { id: 'statutory', label: 'Statutory Law' },
-              { id: 'infrastructure', label: 'Infrastructure' }
-            ].map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveSpecCategory(cat.id)}
-                className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
-                  activeSpecCategory === cat.id
-                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-lg shadow-emerald-500/20 border border-emerald-400/50'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Specification Parameters Table (Dark Glass Grid) */}
-        <div className="max-w-4xl mx-auto divide-y divide-slate-800 bg-slate-900/90 rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-2xl backdrop-blur-xl text-white">
-          {technicalSpecs[activeSpecCategory].map((spec, idx) => (
-            <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
-              <dt className="font-mono text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 font-bold">
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>{spec.label}</span>
-              </dt>
-              <dd className="text-left sm:text-right">
-                <span className="text-base sm:text-lg font-black text-white font-outfit">
-                  {spec.value}
-                </span>
-                <span className="block font-mono text-[11px] text-emerald-400 mt-0.5">
-                  {spec.detail}
-                </span>
-              </dd>
-            </div>
-          ))}
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 6. LIVE INDIA WORKFORCE VERIFICATION RADAR (#live-radar)
-       * ============================================================================== */}
-      <section id="live-radar" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
-            <span>REAL-TIME NETWORK ACTIVITY</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Live Workforce Verification Radar
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Monitor real-time profile verifications and digital gate pass generation streaming across key manufacturing corridors and tech hubs.
-          </p>
-        </div>
-
-        {/* Radar Interactive Stage */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
-          
-          {/* Left: Industrial Corridor Selector */}
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between font-bold">
-              <span className="text-slate-200">ACTIVE REGIONAL CORRIDORS</span>
-              <span className="text-emerald-400 font-bold">● 5 HUBS ONLINE</span>
-            </div>
-
-            {Object.keys(radarCities).map((key) => {
-              const hub = radarCities[key];
-              const isSelected = activeRadarCity === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveRadarCity(key)}
-                  className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
-                      : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-600'}`}></span>
-                      <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-200'}`}>{hub.name}</h4>
-                    </div>
-                    <p className={`text-[11px] mt-1 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{hub.state} • {hub.tag}</p>
-                  </div>
-                  <span className={`font-mono text-[10px] font-bold px-2.5 py-1 rounded border ${
-                    isSelected 
-                      ? 'text-white bg-black/20 border-white/30' 
-                      : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
-                  }`}>
-                    {hub.avgTat}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Right: Telemetry Event Stream Display */}
-          <div className="lg:col-span-7 bg-slate-950/90 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
-            
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-              <div>
-                <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">
-                  {radarCities[activeRadarCity].state}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit">
-                  {radarCities[activeRadarCity].name}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
-                <Activity className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-                <span>TELEMETRY ACTIVE</span>
-              </div>
-            </div>
-
-            {/* Metrics Row */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Daily Active Passes</span>
-                <div className="text-lg font-black text-white mt-1 font-outfit">
-                  {radarCities[activeRadarCity].activePasses.split(' ')[0]} <span className="text-xs font-normal text-slate-400">Passes</span>
-                </div>
-              </div>
-
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
-                <div className="text-lg font-black text-amber-400 mt-1 font-outfit">
-                  {radarCities[activeRadarCity].avgTat}
-                </div>
-              </div>
-
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
-                <div className="text-lg font-black text-emerald-400 mt-1 font-outfit">
-                  {radarCities[activeRadarCity].accuracy}
-                </div>
-              </div>
-            </div>
-
-            {/* Event Log */}
-            <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 font-mono text-xs">
-              <span className="text-slate-400 text-[10px] uppercase tracking-wider block mb-2 flex items-center justify-between font-bold">
-                <span className="text-slate-300">// LATEST TELEMETRY EVENT STREAM</span>
-                <span className="text-emerald-400 text-[9px] bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">REAL-TIME SYNC</span>
-              </span>
-              <p className="text-slate-300 leading-relaxed font-mono">
-                <span className="text-emerald-400 font-bold">[14:15:45 PASS]</span> {radarCities[activeRadarCity].recentEvent}
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==============================================================================
-       * 7. LIVE VERIFICATION DEMO & SIMULATOR (#interactive-lab)
-       * ============================================================================== */}
-      <section id="interactive-lab" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>INTERACTIVE PRODUCT DEMO</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Try a Live Verification Check
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Select any hiring profile below to see how our platform automatically runs background checks, validates details, and generates a certified report in seconds.
-          </p>
-        </div>
-
-        {/* Mode Selector Tabs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-          {Object.keys(simModes).map((key) => {
-            const item = simModes[key];
-            const Icon = item.icon;
-            const isSelected = selectedSimMode === key;
+      <div className="sticky top-18 sm:top-20 z-40 w-full bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/90 shadow-md py-2.5 px-4 overflow-x-auto">
+        <div className="max-w-7xl mx-auto flex items-center justify-start md:justify-center gap-2 min-w-max">
+          {[
+            { id: 'overview', label: '🚀 Overview' },
+            { id: 'features', label: '🛡️ Verification Modules' },
+            { id: 'moonlighting', label: '📡 Moonlighting Radar' },
+            { id: 'turnstile', label: '🚧 Turnstile Gate' },
+            { id: 'comparison', label: '⚡ Speed Matrix' },
+            { id: 'roi', label: '💰 ROI Calculator' },
+            { id: 'solutions', label: '🏢 Enterprise Solutions' },
+            { id: 'resources', label: '📚 Specs & Knowledge Hub' }
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
             return (
               <button
-                key={key}
-                onClick={() => handleRunSimulation(key)}
-                className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
-                    : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white backdrop-blur-xl'
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-md shadow-emerald-500/25 border border-emerald-400/50 scale-[1.02]'
+                    : 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 hover:border-slate-700'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-emerald-500/10 text-emerald-400'}`}>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-400'}`}>
-                    {isSelected ? 'SELECTED' : 'CLICK TO TEST'}
-                  </span>
-                </div>
-                <div>
-                  <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-200'}`}>{item.title}</h4>
-                  <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{item.category}</p>
-                </div>
+                <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Live Simulation Console */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
-          
-          {/* Top Console Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
+      {/* ==============================================================================
+       * TAB VIEW CONTENT SWITCHING
+       * ============================================================================== */}
+
+      {/* VIEW 1: OVERVIEW TAB */}
+      {activeTab === 'overview' && (
+        <>
+          {/* HERO SECTION */}
+          <section className="relative z-10 pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-16 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
+              
+              {/* Left Column: Value Proposition & CTAs */}
+              <div className="lg:col-span-7 flex flex-col items-start text-left">
+                
+                {/* Trust Eyebrow Pill */}
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-6 shadow-xl border border-emerald-500/40 text-emerald-300 font-bold text-xs bg-slate-900/90 backdrop-blur-md hover:border-emerald-400/60 transition-all cursor-pointer">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-bold font-mono uppercase tracking-wider text-[11px] text-white">
+                    INDIA'S FIRST ZERO-TRUST WORKFORCE VERIFICATION PLATFORM
+                  </span>
+                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 text-[10px] font-black border border-emerald-500/40">
+                    500K+ CHECKS
+                  </span>
+                </div>
+
+                {/* Main Marketing Headline */}
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12] mb-5 font-outfit">
+                  Zero-Trust Workforce Verification. <br className="hidden sm:inline" />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 font-black">
+                    In 45 Seconds Flat.
+                  </span>
+                </h1>
+
+                {/* Clear, High-Impact Subtitle */}
+                <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed mb-8 font-medium">
+                  Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
+                </p>
+
+                {/* Primary Action Buttons */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-10 w-full sm:w-auto">
+                  <button
+                    onClick={() => setShowDemoModal(true)}
+                    className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-emerald-400/50"
+                  >
+                    <span className="tracking-wide text-white font-black text-base">Book a Free Live Demo</span>
+                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                  </button>
+
+                  <button
+                    onClick={() => handleTabChange('features')}
+                    className="bg-slate-900 border border-slate-700 hover:border-emerald-500/60 px-6 py-4 rounded-2xl font-bold text-sm text-slate-200 hover:text-emerald-400 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    <span>Explore All Features</span>
+                  </button>
+                </div>
+
+                {/* Key Value Metrics Bar */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-800/80 w-full max-w-2xl">
+                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div className="text-xl sm:text-2xl font-black text-emerald-400 font-outfit">&lt;45s</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Verification TAT</div>
+                  </div>
+                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div className="text-xl sm:text-2xl font-black text-white font-outfit">99.98%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Precision Rate</div>
+                  </div>
+                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div className="text-xl sm:text-2xl font-black text-teal-300 font-outfit">100%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">DPDP 2023 Compliant</div>
+                  </div>
+                  <div className="bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div className="text-xl sm:text-2xl font-black text-amber-400 font-outfit">80%</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-bold mt-0.5">Cost Reduction</div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Right Column: 3D Holographic Employee ID Passport Centerpiece */}
+              <div className="lg:col-span-5 flex justify-center">
+                <HeroInteractiveCard3D />
+              </div>
+
+            </div>
+          </section>
+
+          {/* STATUTORY TICKER */}
+          <section className="relative z-10 py-4 px-4 sm:px-6 max-w-7xl mx-auto">
+            <div className="relative rounded-2xl bg-slate-950/90 border border-slate-800/80 py-3.5 px-2 overflow-hidden shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-6 whitespace-nowrap animate-marquee text-xs text-slate-300 tracking-wider uppercase font-bold">
+                {[...Array(2)].map((_, loopIdx) => (
+                  <React.Fragment key={loopIdx}>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> ISO 27001 CERTIFIED CLOUD
+                    </span>
+                    <span className="text-emerald-400">✦</span>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
+                      <Lock className="w-3.5 h-3.5 text-teal-400" /> DPDP ACT 2023 STATUTORY CONSENT
+                    </span>
+                    <span className="text-emerald-400">✦</span>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
+                      <Fingerprint className="w-3.5 h-3.5 text-emerald-400" /> UIDAI & AADHAAR ECOSYSTEM INTEGRATED
+                    </span>
+                    <span className="text-emerald-400">✦</span>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
+                      <Zap className="w-3.5 h-3.5 text-amber-400" /> EPFO UAN REAL-TIME PASSBOOK RADAR
+                    </span>
+                    <span className="text-emerald-400">✦</span>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-200 shadow-md">
+                      <Scale className="w-3.5 h-3.5 text-indigo-400" /> PAN-INDIA DISTRICT & HIGH COURT REPOSITORIES
+                    </span>
+                    <span className="text-emerald-400">✦</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* QUICK FEATURE HIGHLIGHTS */}
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-2 inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+                4 CORE PILLARS OF JOY VERIFICATION
+              </span>
+              <h2 className="text-3xl font-black text-white font-outfit">Built for Enterprise Scale & Speed</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div onClick={() => handleTabChange('features')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white font-outfit mb-2">Digital ID & Liveness</h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">Instant Aadhaar/PAN checksum validation with biometric facial liveness match.</p>
+                <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+              </div>
+
+              <div onClick={() => handleTabChange('moonlighting')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer group">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Search className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white font-outfit mb-2">Moonlighting Radar</h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">Detect EPFO UAN active contribution overlaps and secondary undisclosed employment.</p>
+                <span className="text-xs text-amber-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+              </div>
+
+              <div onClick={() => handleTabChange('turnstile')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <HardHat className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white font-outfit mb-2">Turnstile Gate Access</h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">Real-time QR gate pass issuance for factory workers and contractor labor.</p>
+                <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
+              </div>
+
+              <div onClick={() => handleTabChange('roi')} className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-teal-500/50 transition-all cursor-pointer group">
+                <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-300 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <DollarSign className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white font-outfit mb-2">80% Cost Reduction</h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">Eliminate manual background verification fees and ghost worker payroll leakages.</p>
+                <span className="text-xs text-teal-300 font-bold flex items-center gap-1">Calculate Savings <ArrowRight className="w-3.5 h-3.5" /></span>
+              </div>
+            </div>
+          </section>
+
+          {/* LIVE INDIA RADAR PREVIEW */}
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
+            <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
+              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
+                <span>REAL-TIME NETWORK ACTIVITY</span>
+              </span>
+              <h2 className="text-3xl font-black text-white font-outfit">Live India Industrial Telemetry</h2>
+            </div>
+            
+            {/* Telemetry Hub */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+              <div className="lg:col-span-5 flex flex-col gap-3">
+                <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between font-bold">
+                  <span className="text-slate-200">ACTIVE REGIONAL CORRIDORS</span>
+                  <span className="text-emerald-400 font-bold">● 5 HUBS ONLINE</span>
+                </div>
+                {Object.keys(radarCities).map((key) => {
+                  const hub = radarCities[key];
+                  const isSelected = activeRadarCity === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setActiveRadarCity(key)}
+                      className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
+                          : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-600'}`}></span>
+                          <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-200'}`}>{hub.name}</h4>
+                        </div>
+                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{hub.state} • {hub.tag}</p>
+                      </div>
+                      <span className={`font-mono text-[10px] font-bold px-2.5 py-1 rounded border ${
+                        isSelected ? 'text-white bg-black/20 border-white/30' : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
+                      }`}>
+                        {hub.avgTat}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="lg:col-span-7 bg-slate-950/90 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                  <div>
+                    <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">{radarCities[activeRadarCity].state}</span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit">{radarCities[activeRadarCity].name}</h3>
+                  </div>
+                  <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
+                    <Activity className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
+                    <span>TELEMETRY ACTIVE</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Daily Active Passes</span>
+                    <div className="text-lg font-black text-white mt-1 font-outfit">{radarCities[activeRadarCity].activePasses.split(' ')[0]}</div>
+                  </div>
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
+                    <div className="text-lg font-black text-amber-400 mt-1 font-outfit">{radarCities[activeRadarCity].avgTat}</div>
+                  </div>
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
+                    <div className="text-lg font-black text-emerald-400 mt-1 font-outfit">{radarCities[activeRadarCity].accuracy}</div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 font-mono text-xs">
+                  <span className="text-slate-400 text-[10px] uppercase tracking-wider block mb-2 font-bold">// LATEST TELEMETRY EVENT STREAM</span>
+                  <p className="text-slate-300 leading-relaxed font-mono">
+                    <span className="text-emerald-400 font-bold">[14:15:45 PASS]</span> {radarCities[activeRadarCity].recentEvent}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* HIGH IMPACT CTA */}
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-8 sm:p-12 text-center flex flex-col items-center">
+              <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">Transform Your Employee Verification Today</h2>
+              <p className="text-slate-300 max-w-xl mb-8">Schedule a 15-minute live walkthrough with our enterprise security team.</p>
+              <button
+                onClick={() => setShowDemoModal(true)}
+                className="px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-[1.02] transition-all cursor-pointer border border-emerald-400/50"
+              >
+                Book Enterprise Demo
+              </button>
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* VIEW 2: FEATURES TAB */}
+      {activeTab === 'features' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              FEATURE SUITE
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Complete Employee Background Verification Engine</h2>
+            <p className="text-slate-300 text-base">Explore all core screening modules designed for fast, error-free onboarding.</p>
+          </div>
+
+          {/* Verification Command Orbit */}
+          <div className="mb-20">
+            <VerificationCommandOrbit />
+          </div>
+
+          {/* Interactive Lab / Simulator */}
+          <div className="mb-20">
+            <div className="text-center max-w-3xl mx-auto mb-10">
+              <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-2 inline-block">LIVE DEMO LAB</span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit">Run a Live Verification Simulation</h3>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+              {Object.keys(simModes).map((key) => {
+                const item = simModes[key];
+                const Icon = item.icon;
+                const isSelected = selectedSimMode === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleRunSimulation(key)}
+                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
+                        : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white backdrop-blur-xl'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-400'}`}>
+                        {isSelected ? 'SELECTED' : 'TEST'}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-200'}`}>{item.title}</h4>
+                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-400'}`}>{item.category}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
+                  <div>
+                    <span className="text-xs uppercase tracking-wider text-slate-400 font-bold block">CANDIDATE PROFILE</span>
+                    <h3 className="text-lg sm:text-xl font-bold text-white font-outfit">
+                      {simModes[selectedSimMode].candidate.name} — <span className="text-emerald-400 font-bold">{simModes[selectedSimMode].candidate.role}</span>
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleRunSimulation(selectedSimMode)}
+                  disabled={simulating}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg border border-emerald-400/50 cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
+                  <span>{simulating ? 'Verifying...' : 'Re-Run Verification Check'}</span>
+                </button>
+              </div>
+
+              {simulating && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between text-xs text-emerald-400 font-bold mb-1.5">
+                    <span>Running automated background screening checks...</span>
+                    <span>{simProgress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {simModes[selectedSimMode].checks.map((check, idx) => (
+                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-950 shadow-xs flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-sm text-white">{check.title}</h5>
+                        <span className="text-xs text-emerald-400 font-bold block mt-0.5">{check.status}</span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 shrink-0 font-bold">{check.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 3: MOONLIGHTING RADAR TAB */}
+      {activeTab === 'moonlighting' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              EPFO UAN INTEGRATED
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Dual-Employment & Moonlighting Detection</h2>
+            <p className="text-slate-300 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
+          </div>
+
+          <DualEmploymentRadarVisualizer />
+
+          {/* Moonlighting Information Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+              <Zap className="w-8 h-8 text-amber-400 mb-4" />
+              <h3 className="text-lg font-bold text-white font-outfit mb-2">EPFO Service Overlap Audit</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">Identifies exact overlapping contribution dates across multiple employer IDs in real time.</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+              <Scale className="w-8 h-8 text-emerald-400 mb-4" />
+              <h3 className="text-lg font-bold text-white font-outfit mb-2">Form 26AS Tax Cross-Check</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">Verifies multiple salary streams and tax deductions to confirm single employment compliance.</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800">
+              <FileCheck className="w-8 h-8 text-teal-300 mb-4" />
+              <h3 className="text-lg font-bold text-white font-outfit mb-2">Relieving Date Verification</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">Validates exit dates and relieving letters directly with past verified company records.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 4: TURNSTILE GATE TAB */}
+      {activeTab === 'turnstile' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10">
+              PLANT & FACILITY ACCESS
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
+            <p className="text-slate-300 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
+          </div>
+
+          <TurnstileGateSimulator />
+        </div>
+      )}
+
+      {/* VIEW 5: SPEED MATRIX COMPARISON TAB */}
+      {activeTab === 'comparison' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              PERFORMANCE BENCHMARK
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
+            <p className="text-slate-300 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
+          </div>
+
+          <InteractiveSpeedComparison />
+
+          <InteractiveProcessPipeline />
+        </div>
+      )}
+
+      {/* VIEW 6: ROI CALCULATOR TAB */}
+      {activeTab === 'roi' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              FINANCIAL IMPACT ESTIMATOR
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
+            <p className="text-slate-300 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
+            <div className="lg:col-span-6 flex flex-col justify-between gap-6">
               <div>
-                <span className="text-xs uppercase tracking-wider text-slate-400 font-bold block">CANDIDATE PROFILE</span>
-                <h3 className="text-lg sm:text-xl font-bold text-white font-outfit">
-                  {simModes[selectedSimMode].candidate.name} — <span className="text-emerald-400 font-bold">{simModes[selectedSimMode].candidate.role}</span>
-                </h3>
+                <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold block mb-3">1. Select Workforce Structure</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'labor', label: 'Factory / Labor' },
+                    { id: 'corporate', label: 'Corporate / IT' },
+                    { id: 'mixed', label: 'Mixed Workforce' }
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setWorkforceType(item.id)}
+                      className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                        workforceType === item.id
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-400 shadow-md'
+                          : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">2. Monthly Candidate Volume</label>
+                  <span className="font-mono text-base font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
+                    {monthlyHires.toLocaleString()} workers / mo
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="50"
+                  max="5000"
+                  step="50"
+                  value={monthlyHires}
+                  onChange={(e) => setMonthlyHires(Number(e.target.value))}
+                  className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-emerald-400 border border-slate-800"
+                />
+                <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                  <span className="text-[10px] font-mono text-slate-400 font-bold mr-1">PRESETS:</span>
+                  {[250, 500, 1000, 2500, 5000].map((preset) => (
+                    <button
+                      key={preset}
+                      onClick={() => setMonthlyHires(preset)}
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                        monthlyHires === preset ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400' : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                      }`}
+                    >
+                      {preset.toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">3. Annual Contractor Churn</label>
+                  <span className="font-mono text-base font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30">
+                    {contractorTurnover}% / year
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="5"
+                  max="60"
+                  step="5"
+                  value={contractorTurnover}
+                  onChange={(e) => setContractorTurnover(Number(e.target.value))}
+                  className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-400 border border-slate-800"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 font-mono text-xs text-emerald-300 flex items-start gap-2.5">
+                <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowJsonPayload(!showJsonPayload)}
-                className="px-3.5 py-2 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer"
-              >
-                <Eye className="w-3.5 h-3.5 text-amber-400" />
-                <span>{showJsonPayload ? 'View Checklist' : 'View Certified Certificate'}</span>
-              </button>
+            <div className="lg:col-span-6 bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 text-white border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
+              <div>
+                <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
+                <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
+                  ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
+                  <span className="text-xs sm:text-sm font-normal text-slate-400 ml-2">/ year</span>
+                </div>
+                <div className="text-xs font-mono text-emerald-400 mt-2 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Estimated Payback Period: Under 12 Business Days</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
+                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
+                  <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span></div>
+                </div>
+                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
+                  <div className="text-lg font-black text-rose-400 font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
+                </div>
+                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
+                  <div className="text-lg font-black text-emerald-400 font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
+                </div>
+                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
+                  <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">100% Protected</div>
+                </div>
+              </div>
 
               <button
-                onClick={() => handleRunSimulation(selectedSimMode)}
-                disabled={simulating}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20 border border-emerald-400/50 cursor-pointer"
+                onClick={() => setShowDemoModal(true)}
+                className="w-full py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-lg border border-emerald-400/50 cursor-pointer text-center"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
-                <span>{simulating ? 'Verifying...' : 'Re-Run Verification Check'}</span>
+                Unlock These Savings Now
               </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Progress Bar when Simulating */}
-          {simulating && (
-            <div className="mb-6">
-              <div className="flex items-center justify-between text-xs text-emerald-400 font-bold mb-1.5">
-                <span>Running automated background screening checks...</span>
-                <span>{simProgress}%</span>
+      {/* VIEW 7: SOLUTIONS TAB */}
+      {activeTab === 'solutions' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              INDUSTRY ARCHITECTURE
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Enterprise-Grade Solutions & Security</h2>
+            <p className="text-slate-300 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+              <div>
+                <Smartphone className="w-10 h-10 text-emerald-400 mb-4" />
+                <h3 className="text-xl font-bold text-white font-outfit mb-2">Seamless Mobile Flow</h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Zero app installs. Candidates complete identity verification & selfie liveness via an encrypted magic link.</p>
               </div>
-              <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 transition-all duration-100"
-                  style={{ width: `${simProgress}%` }}
-                ></div>
-              </div>
+              <div className="font-mono text-xs text-emerald-400 font-bold pt-3 border-t border-slate-800">98% Candidate Completion Rate</div>
             </div>
-          )}
 
-          {/* Main Visual or Certificate Output */}
-          {showJsonPayload ? (
-            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 text-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-bold block">
-                      OFFICIAL BACKGROUND VERIFICATION CERTIFICATE
-                    </span>
-                    <h4 className="text-base font-bold text-white font-outfit">
-                      Verification Pass #{simModes[selectedSimMode].json.verificationId || 'JOY-VERIFIED-9921'}
-                    </h4>
-                  </div>
-                </div>
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
-                  VERIFIED & COMPLIANT
-                </span>
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+              <div>
+                <HardHat className="w-10 h-10 text-emerald-400 mb-4" />
+                <h3 className="text-xl font-bold text-white font-outfit mb-2">Workforce Digital QR Passes</h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Automated workforce compliance and digital credential issuance for facility turnstile gates.</p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-slate-400 block mb-1">Candidate Name:</span>
-                  <span className="text-white font-bold text-sm">{simModes[selectedSimMode].candidate.name}</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-slate-400 block mb-1">Position / Department:</span>
-                  <span className="text-white font-bold text-sm">{simModes[selectedSimMode].candidate.role}</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-slate-400 block mb-1">Turnaround Time:</span>
-                  <span className="text-emerald-400 font-bold">Under 60 Seconds (Instant)</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-slate-400 block mb-1">Audit Status:</span>
-                  <span className="text-emerald-400 font-bold">100% Verified & Certified</span>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">🔒 Signed & Secured by JOY Verification</span>
-                <span className="text-amber-400 font-medium">Ready for Onboarding</span>
-              </div>
+              <div className="font-mono text-xs text-emerald-400 font-bold pt-3 border-t border-slate-800">Sub-Second Gate Turnstile Response</div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {simModes[selectedSimMode].checks.map((check, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl border border-slate-800 bg-slate-950 shadow-xs flex items-center justify-between gap-4"
+
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 flex flex-col justify-between shadow-2xl">
+              <div>
+                <Search className="w-10 h-10 text-amber-400 mb-4" />
+                <h3 className="text-xl font-bold text-white font-outfit mb-2">Dual-Employment Radar</h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">Cross-references career service records and employment tenures to detect undisclosed secondary jobs.</p>
+              </div>
+              <div className="font-mono text-xs text-amber-400 font-bold pt-3 border-t border-slate-800">Zero-Tamper Work History Audit</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 8: RESOURCES TAB */}
+      {activeTab === 'resources' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              SPECIFICATIONS & REVIEWS
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit mb-4">Resources, Client Reviews & FAQ</h2>
+            <p className="text-slate-300 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
+          </div>
+
+          {/* Specs Segmented Control */}
+          <div className="flex justify-center mb-10">
+            <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
+              {[
+                { id: 'performance', label: 'Performance' },
+                { id: 'security', label: 'Security & DPDP' },
+                { id: 'statutory', label: 'Statutory Law' },
+                { id: 'infrastructure', label: 'Infrastructure' }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveSpecCategory(cat.id)}
+                  className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
+                    activeSpecCategory === cat.id
+                      ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black shadow-lg shadow-emerald-500/20 border border-emerald-400/50'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Specs Table */}
+          <div className="max-w-4xl mx-auto divide-y divide-slate-800 bg-slate-900/90 rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-2xl backdrop-blur-xl text-white mb-20">
+            {technicalSpecs[activeSpecCategory].map((spec, idx) => (
+              <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
+                <dt className="font-mono text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span>{spec.label}</span>
+                </dt>
+                <dd className="text-left sm:text-right">
+                  <span className="text-base sm:text-lg font-black text-white font-outfit">{spec.value}</span>
+                  <span className="block font-mono text-[11px] text-emerald-400 mt-0.5">{spec.detail}</span>
+                </dd>
+              </div>
+            ))}
+          </div>
+
+          {/* Client Reviews */}
+          <div className="mb-20">
+            <h3 className="text-2xl font-black text-white font-outfit text-center mb-8">What Industrial Leaders Say</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {clientReviews.map((rev, idx) => (
+                <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col justify-between gap-6 shadow-2xl">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-1">
+                        {[...Array(rev.stars)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <span className="font-mono text-[10px] uppercase text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 font-bold">{rev.badge}</span>
                     </div>
-                    <div>
-                      <h5 className="font-bold text-sm text-white">{check.title}</h5>
-                      <span className="text-xs text-emerald-400 font-bold block mt-0.5">{check.status}</span>
-                    </div>
+                    <p className="text-slate-300 text-sm italic">"{rev.quote}"</p>
                   </div>
-                  <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 shrink-0 font-bold">
-                    {check.time}
-                  </span>
+                  <div className="border-t border-slate-800 pt-4">
+                    <h5 className="font-bold text-sm text-white font-outfit">{rev.name}</h5>
+                    <p className="text-xs text-slate-400 mt-0.5">{rev.role} — <span className="text-emerald-400">{rev.company}</span></p>
+                  </div>
                 </div>
               ))}
             </div>
-          )}
-
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 8. ROI CALCULATOR & SAVINGS ESTIMATOR (#roi-calculator)
-       * ============================================================================== */}
-      <section id="roi-calculator" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-            <DollarSign className="w-3.5 h-3.5 text-amber-400" />
-            <span>ENTERPRISE VALUE & ROI ESTIMATOR</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Calculate Your Organization's Savings
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Discover how much your enterprise saves by replacing slow, manual background verification with automated profile verification workflows.
-          </p>
-        </div>
-
-        {/* ROI Calculator Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
-          
-          {/* Controls Left Column */}
-          <div className="lg:col-span-6 flex flex-col justify-between gap-6">
-            
-            {/* Workforce Type Selector */}
-            <div>
-              <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold block mb-3">
-                1. Select Workforce Structure
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'labor', label: 'Factory / Contract Labor' },
-                  { id: 'corporate', label: 'Corporate / IT Staff' },
-                  { id: 'mixed', label: 'Mixed Workforce' }
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setWorkforceType(item.id)}
-                    className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                      workforceType === item.id
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-400 shadow-md shadow-emerald-500/20'
-                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-900'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Slider 1: Monthly Hires */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">
-                  2. Monthly Candidate Onboarding Volume
-                </label>
-                <span className="font-mono text-base sm:text-lg font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
-                  {monthlyHires.toLocaleString()} workers / mo
-                </span>
-              </div>
-              <input
-                type="range"
-                min="50"
-                max="5000"
-                step="50"
-                value={monthlyHires}
-                onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-emerald-400 border border-slate-800"
-              />
-              {/* Quick Presets */}
-              <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                <span className="text-[10px] font-mono text-slate-400 font-bold mr-1">PRESETS:</span>
-                {[250, 500, 1000, 2500, 5000].map((preset) => (
-                  <button
-                    key={preset}
-                    onClick={() => setMonthlyHires(preset)}
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                      monthlyHires === preset ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400' : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
-                    }`}
-                  >
-                    {preset.toLocaleString()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Slider 2: Contractor Turnover Rate */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-300 font-bold">
-                  3. Annual Contractor Churn / Turnover
-                </label>
-                <span className="font-mono text-base font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30">
-                  {contractorTurnover}% / year
-                </span>
-              </div>
-              <input
-                type="range"
-                min="5"
-                max="60"
-                step="5"
-                value={contractorTurnover}
-                onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-400 border border-slate-800"
-              />
-              <div className="flex justify-between font-mono text-[10px] text-slate-400 font-semibold mt-1">
-                <span>5% (Low Churn)</span>
-                <span>25% (Industry Avg)</span>
-                <span>60% (High Churn)</span>
-              </div>
-            </div>
-
-            {/* Benchmark Note */}
-            <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 font-mono text-xs text-emerald-300 flex items-start gap-2.5">
-              <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span className="leading-relaxed">
-                Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated verification at a fraction of the cost and time.
-              </span>
-            </div>
-
           </div>
 
-          {/* Savings Output Right Column */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 text-white border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
-            
-            <div>
-              <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">
-                TOTAL ESTIMATED ANNUAL VALUE CREATED
-              </span>
-              <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
-                ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
-                <span className="text-xs sm:text-sm font-normal text-slate-400 ml-2">/ year</span>
-              </div>
-              <div className="text-xs font-mono text-emerald-400 mt-2 font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Estimated Payback Period: Under 12 Business Days</span>
-              </div>
-            </div>
-
-            {/* 4 KPI Grid */}
-            <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
-              <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 shadow-xs">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
-                <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">
-                  ₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span>
-                </div>
-              </div>
-
-              <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 shadow-xs">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
-                <div className="text-lg font-black text-rose-400 font-outfit mt-0.5">
-                  ~{ghostWorkerPrevented * 12} profiles
-                </div>
-              </div>
-
-              <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 shadow-xs">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
-                <div className="text-lg font-black text-emerald-400 font-outfit mt-0.5">
-                  {(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr
-                </div>
-              </div>
-
-              <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 shadow-xs">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
-                <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">
-                  100% Protected
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                onClick={() => setShowDemoModal(true)}
-                className="group relative flex-1 py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-[0_0_25px_rgba(16,185,129,0.35)] hover:scale-[1.02] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer border border-emerald-400/50 overflow-hidden"
-              >
-                <span className="tracking-wide text-white font-black">Unlock These Savings</span>
-                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                onClick={() => {
-                  confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
-                  alert(`✅ Executive ROI Business Case generated for ${monthlyHires.toLocaleString()} monthly hires! Estimated Annual Savings: ₹${((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}`);
-                }}
-                className="py-4 px-4 rounded-xl font-bold text-xs text-slate-200 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-              >
-                <Download className="w-4 h-4 text-emerald-400" />
-                <span>Export ROI Summary</span>
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 9. COMPREHENSIVE SOLUTIONS BENTO GRID (#solutions)
-       * ============================================================================== */}
-      <section id="solutions" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 shadow-xs">
-            <Layers className="w-3.5 h-3.5 text-amber-400" />
-            <span>ENTERPRISE SOLUTIONS</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Architected for High-Trust Organizations
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Whether managing thousands of plant and logistics personnel or screening executive leadership, JOY TrueProfile provides unified, audit-ready employee profile verification.
-          </p>
-        </div>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          {/* Card 1: Seamless Mobile Flow */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 shadow-xs">
-                <Smartphone className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Seamless Mobile Flow
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Zero app installs required. Candidates complete digital identity verification, live selfie liveness checks, and consent via a simple, encrypted magic link.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-emerald-400 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>98% Candidate Completion Rate</span>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            </div>
-          </div>
-
-          {/* Card 2: Workplace & Gate Access Passes */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 shadow-xs">
-                <HardHat className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Workforce Digital Gate Passes
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Automated workforce compliance and digital credential issuance. Generates secure QR passes that seamlessly integrate with facility turnstiles and scanners.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-emerald-400 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>Sub-Second Gate Turnstile Response</span>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            </div>
-          </div>
-
-          {/* Card 3: Dual-Employment Radar */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-amber-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 shadow-xs">
-                <Search className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Dual-Employment Radar
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Cross-references career service records and employment tenures to detect undeclared secondary employment, overlapping tenures, and integrity risks.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-amber-400 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>Zero-Tamper Work History Audit</span>
-              <Check className="w-3.5 h-3.5 text-amber-400" />
-            </div>
-          </div>
-
-          {/* Card 4: National Legal & Litigation Screening */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 shadow-xs">
-                <Scale className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Court & Legal Records Screening
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Real-time criminal and civil court records screening across national judicial registries, commercial tribunals, and public registries.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-emerald-400 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>Fuzzy Match & Cross-Check</span>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            </div>
-          </div>
-
-          {/* Card 5: Bank & Payroll Match */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 shadow-xs">
-                <CreditCard className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Direct Bank & Name Validation
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Performs automated validation to verify bank account active status and confirm exact account holder name before wage disbursement.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-emerald-400 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>Eliminates Failed Salary Transfers</span>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            </div>
-          </div>
-
-          {/* Card 6: Audit-Ready Dossier Reports */}
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-500/50 hover-jump shadow-2xl backdrop-blur-xl transition-all">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-300 mb-5 shadow-xs">
-                <FileCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white font-outfit mb-2">
-                Audit-Ready Profile Dossiers
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Instantly compiles downloadable PDF audit reports stamped with cryptographic verification hashes, fully compliant with DPDP Act 2023.
-              </p>
-            </div>
-            <div className="font-mono text-xs text-teal-300 font-bold flex items-center gap-1.5 pt-3 border-t border-slate-800">
-              <span>DPDP Act 2023 Masked & Certified</span>
-              <Check className="w-3.5 h-3.5 text-teal-300" />
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 10. CLIENT REVIEWS & VERIFIED TESTIMONIALS (#reviews)
-       * ============================================================================== */}
-      <section id="reviews" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 shadow-xs">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span>ENTERPRISE TRUST & PROVEN IMPACT</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Trusted by Industrial & Corporate Leaders
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Read how manufacturing plants, logistics fleets, and corporate enterprises transform onboarding and employee profile verification.
-          </p>
-        </div>
-
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {clientReviews.map((rev, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 sm:p-8 flex flex-col justify-between gap-6 hover:border-emerald-500/50 transition-all shadow-2xl backdrop-blur-xl"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1">
-                    {[...Array(rev.stars)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    ))}
+          {/* FAQ Accordion */}
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl font-black text-white font-outfit text-center mb-8">Frequently Asked Questions</h3>
+            <div className="flex flex-col gap-3">
+              {faqData.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div key={idx} className={`rounded-2xl border transition-all shadow-xl bg-slate-900/90 ${isOpen ? 'border-emerald-500/50' : 'border-slate-800'}`}>
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? -1 : idx)}
+                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-white flex items-center justify-between gap-4 cursor-pointer"
+                    >
+                      <span>{faq.q}</span>
+                      <ChevronDown className={`w-4 h-4 text-emerald-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800 pt-3">
+                        {faq.a}
+                      </div>
+                    )}
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 font-bold">
-                    {rev.badge}
-                  </span>
-                </div>
-
-                <p className="text-slate-300 text-sm leading-relaxed italic">
-                  "{rev.quote}"
-                </p>
-              </div>
-
-              <div className="border-t border-slate-800 pt-4 flex items-center justify-between">
-                <div>
-                  <h5 className="font-bold text-sm text-white font-outfit">{rev.name}</h5>
-                  <p className="text-xs text-slate-400 mt-0.5">{rev.role}</p>
-                  <p className="text-[11px] text-emerald-400 font-mono font-bold mt-0.5">{rev.company}</p>
-                </div>
-                <div className="w-9 h-9 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center text-emerald-400">
-                  <Building2 className="w-4 h-4" />
-                </div>
-              </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
-
-        {/* Submit Review CTA Banner */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4 shadow-2xl backdrop-blur-xl">
-          <div>
-            <h4 className="font-bold text-white text-base sm:text-lg font-outfit">Are you an active JOY TrueProfile enterprise partner?</h4>
-            <p className="text-slate-400 text-xs sm:text-sm mt-0.5">Share your verification turnaround and efficiency experience with the community.</p>
           </div>
-          <button
-            onClick={() => setShowReviewModal(true)}
-            className="px-5 py-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-emerald-500/50 text-slate-200 hover:text-white font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all font-bold shadow-xs cursor-pointer"
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
-            <span>Submit Client Review</span>
-          </button>
         </div>
-
-      </section>
+      )}
 
       {/* ==============================================================================
-       * 11. KNOWLEDGE HUB & COMPLIANCE ARTICLES (#knowledge-hub)
+       * FOOTER
        * ============================================================================== */}
-      <section id="knowledge-hub" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 shadow-xs">
-            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-            <span>INTELLIGENCE & INSIGHTS</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Knowledge Hub & Compliance Guides
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Expert resources on workforce compliance, DPDP Act 2023 regulations, audit blueprints, and dual-employment detection.
-          </p>
-        </div>
-
-        {/* Articles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(publicArticles.length > 0 ? publicArticles.slice(0, 3) : fallbackArticles).map((art, idx) => (
-            <div
-              key={art.id || idx}
-              className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col justify-between hover:border-emerald-500/50 transition-all shadow-2xl backdrop-blur-xl group"
-            >
-              <div>
-                <div className="flex items-center justify-between font-mono text-[10px] text-slate-400 mb-3 font-semibold">
-                  <span className="text-emerald-400 uppercase tracking-wider font-bold">{art.category || 'Compliance'}</span>
-                  <span>{art.readTime || '4 min read'}</span>
-                </div>
-                <h3 className="text-lg font-bold text-white font-outfit group-hover:text-emerald-400 transition-colors mb-2.5">
-                  {art.title}
-                </h3>
-                <p className="text-slate-400 text-xs leading-relaxed line-clamp-3">
-                  {art.excerpt || art.summary || 'Essential technical blueprint for enterprise compliance and background verification architecture.'}
-                </p>
-              </div>
-
-              <div className="border-t border-slate-800 pt-4 mt-6 flex items-center justify-between text-xs font-mono text-emerald-400 font-bold">
-                <span>Read Full Article</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 12. FREQUENTLY ASKED QUESTIONS (#faq)
-       * ============================================================================== */}
-      <section id="faq" className="section-lazy-render scroll-mt-24 relative z-10 py-20 px-4 sm:px-6 max-w-4xl mx-auto border-t border-slate-800/80">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center mb-14">
-          <span className="dark-glass-pill font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 shadow-xs">
-            <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-            <span>CLARITY & ASSURANCE</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Everything you need to know about employee profile verification, turnstile integration, and DPDP compliance.
-          </p>
-        </div>
-
-        {/* FAQ Accordions */}
-        <div className="flex flex-col gap-3">
-          {faqData.map((faq, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <div
-                key={idx}
-                className={`rounded-2xl border transition-all shadow-xl bg-slate-900/90 backdrop-blur-xl ${isOpen ? 'border-emerald-500/50 bg-slate-900' : 'border-slate-800 hover:border-slate-700'}`}
-              >
-                <button
-                  onClick={() => setOpenFaq(isOpen ? -1 : idx)}
-                  className="w-full p-5 text-left font-bold text-sm sm:text-base text-white font-outfit flex items-center justify-between gap-4 cursor-pointer"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-emerald-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-      </section>
-
-      {/* ==============================================================================
-       * 13. HIGH IMPACT ENTERPRISE CTA & CONVERSION BANNER
-       * ============================================================================== */}
-      <section className="relative z-10 py-20 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800/80">
-        <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/90 p-6 sm:p-12 shadow-2xl backdrop-blur-xl">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Content (7 Cols) */}
-            <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white mb-5 shadow-lg shadow-emerald-600/25">
-                <Zap className="w-6 h-6" />
-              </div>
-
-              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight mb-4 leading-tight">
-                Ready to Streamline Your Employee <br className="hidden sm:inline" />
-                <span className="text-gradient-electric">Profile Verification?</span>
-              </h2>
-
-              <p className="text-slate-300 text-sm sm:text-base max-w-xl mb-8 leading-relaxed">
-                Join leading enterprises and nationwide supply chains automating employee profile verification, stopping moonlighting fraud, and eliminating onboarding delays today.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-                <button
-                  onClick={() => setShowDemoModal(true)}
-                  className="group relative px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.96] active:translate-y-0.5 transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-emerald-400/50"
-                >
-                  <span className="tracking-wide text-white font-black">Book Live Enterprise Walkthrough</span>
-                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                <button
-                  onClick={() => {
-                    setLandingSelectedAmount(5000);
-                    setShowLandingRazorpayModal(true);
-                  }}
-                  className="px-7 py-4 rounded-2xl font-bold text-sm text-slate-200 bg-slate-950 border border-slate-800 hover:bg-slate-900 hover:border-emerald-500/40 shadow-sm hover:scale-[1.02] active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <CreditCard className="w-4 h-4 text-emerald-400" />
-                  <span>Get Verification Credits</span>
-                </button>
-              </div>
-
-              {/* Compliance Guarantee Badges */}
-              <div className="flex flex-wrap items-center gap-5 mt-8 font-mono text-[11px] text-slate-400 font-bold border-t border-slate-800 pt-6">
-                <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> 100% DPDP Act 2023</span>
-                <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-teal-300" /> Audit-Ready PDF Dossiers</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-emerald-400" /> 256-Bit AES Cryptography</span>
-              </div>
-            </div>
-
-            {/* Right 3D Visual Centerpiece (5 Cols) */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-md rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl relative group">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src="/assets/3d/liquid_glass_vault_3d.jpg"
-                    alt="Liquid Glass Cryptographic Vault 3D"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-95"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
-                    <Sparkles className="w-3 h-3 text-emerald-400" />
-                    <span>Joy Neural Verification Mesh</span>
-                  </div>
-
-                  <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-400/50 font-mono text-[9px] text-emerald-300 font-bold flex items-center gap-1.5 shadow-md">
-                    <Activity className="w-3 h-3 text-emerald-400" />
-                    <span>99.99% Cloud SLA</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==============================================================================
-       * 14. MODERN ENTERPRISE 4-COLUMN FOOTER
-       * ============================================================================== */}
-      <footer className="relative z-10 py-16 bg-[#04060B] border-t border-slate-800/80 px-4 sm:px-8 font-mono text-xs text-slate-400 backdrop-blur-xl">
+      <footer className="relative z-10 py-16 bg-[#04060B] border-t border-slate-800/80 px-4 sm:px-8 font-mono text-xs text-slate-400 backdrop-blur-xl mt-20">
         <div className="max-w-7xl mx-auto">
-          
-          {/* Top 4-Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
-            
-            {/* Column 1: Brand & Credentials */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <img 
@@ -1877,121 +1422,73 @@ export const LandingPageView = () => {
                   <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Zero-Trust Verification</p>
                 </div>
               </div>
-
               <p className="text-slate-400 text-xs leading-relaxed font-sans font-normal">
                 Automated employee background verification platform built for modern enterprises, high-growth teams, and secure workplaces across India.
               </p>
-
-              <div className="flex items-center gap-2 mt-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  ISO 27001 & DPDP Ready
-                </span>
-              </div>
             </div>
 
-            {/* Column 2: Verification Engines */}
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">
-                Verification Modules
-              </h4>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Navigation Tabs</h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-400">
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Digital Identity & Liveness Check</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Employment History & Tenure Radar</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">National Judicial & Court Screening</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Direct Bank & Name Validation</a></li>
-                <li><a href="#features" className="hover:text-emerald-400 transition-colors">Workplace Digital QR Passes</a></li>
+                <li><button onClick={() => handleTabChange('overview')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🚀 Executive Overview</button></li>
+                <li><button onClick={() => handleTabChange('features')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🛡️ Verification Modules</button></li>
+                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">📡 Moonlighting Radar</button></li>
+                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🚧 Turnstile Gate Access</button></li>
+                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">⚡ Speed Matrix</button></li>
               </ul>
             </div>
 
-            {/* Column 3: Platform & Tools */}
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">
-                Platform & Solutions
-              </h4>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Platform Resources</h4>
               <ul className="flex flex-col gap-2 text-xs text-slate-400">
-                <li><a href="#interactive-lab" className="hover:text-emerald-400 transition-colors">TrueProfile Simulator Studio</a></li>
-                <li><a href="#live-radar" className="hover:text-emerald-400 transition-colors">Live India Workforce Radar</a></li>
-                <li><a href="#roi-calculator" className="hover:text-emerald-400 transition-colors">Enterprise ROI Calculator</a></li>
-                <li><a href="#specs" className="hover:text-emerald-400 transition-colors">Technical SLA & Performance</a></li>
-                <li><a href="#knowledge-hub" className="hover:text-emerald-400 transition-colors">Knowledge Hub & Insights</a></li>
+                <li><button onClick={() => handleTabChange('roi')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">💰 ROI Calculator</button></li>
+                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🏢 Enterprise Solutions</button></li>
+                <li><button onClick={() => handleTabChange('resources')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">📚 Technical Specs & FAQ</button></li>
               </ul>
             </div>
 
-            {/* Column 4: Compliance & Direct Helpdesk */}
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">
-                Support & Contact
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Enterprise support desk with dedicated onboarding specialists and 24/7 SLA monitoring.
-              </p>
-              <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-mono mt-1">
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Support & Legal</h4>
+              <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-mono">
                 <span className="text-white font-bold">Email: support@joygroup.art</span>
-                <span className="text-white font-bold">WhatsApp: +91 99400 00000</span>
                 <span className="text-emerald-400">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
               </div>
             </div>
-
           </div>
 
-          {/* Bottom Status & Copyright Bar */}
           <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
-            
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="text-slate-300 font-bold">All Verification Nodes Operational (99.99% SLA)</span>
             </div>
-
             <div className="flex flex-wrap items-center gap-6">
-              <button
-                onClick={() => setShowLegalHandbook(true)}
-                className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold"
-              >
-                Statutory Compliance Handbook
-              </button>
-              <a href="/login" className="hover:text-emerald-400 transition-colors text-slate-400 font-bold">
-                Client Portal Login
-              </a>
-              <span className="text-slate-700">|</span>
+              <button onClick={() => setShowLegalHandbook(true)} className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold">Statutory Compliance Handbook</button>
+              <a href="/login" className="hover:text-emerald-400 transition-colors text-slate-400 font-bold">Client Portal Login</a>
               <span>© {new Date().getFullYear()} JOY Corporate Solutions Pvt Ltd.</span>
             </div>
-
           </div>
-
         </div>
       </footer>
 
-      {/* ==============================================================================
-       * 15. MODALS & OVERLAYS
-       * ============================================================================== */}
+      {/* WHATSAPP CONCIERGE FLOATING WIDGET */}
+      <WhatsAppConcierge3D />
 
-      {/* Enterprise Demo Modal */}
+      {/* MODALS */}
       {showDemoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setShowDemoModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
+            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {demoSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/10">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">Demo Request Received!</h3>
-                <p className="text-slate-400 text-sm max-w-sm mb-6">
-                  Our enterprise solutions team will contact you within 15 minutes to schedule your live walkthrough and configure test verification credits.
-                </p>
-                <button
-                  onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/25 border border-emerald-400/50 cursor-pointer"
-                >
-                  Close Window
-                </button>
+                <p className="text-slate-400 text-sm max-w-sm mb-6">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
+                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-emerald-400/50 cursor-pointer">Close Window</button>
               </div>
             ) : (
               <div>
@@ -1999,108 +1496,30 @@ export const LandingPageView = () => {
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>ENTERPRISE WALKTHROUGH</span>
                 </div>
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">
-                  Schedule a Custom Live Demo
-                </h3>
-                <p className="text-slate-400 text-xs mb-6">
-                  Experience sub-second employee profile verification configured specifically for your organization's workflow.
-                </p>
+                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Schedule a Custom Live Demo</h3>
+                <p className="text-slate-400 text-xs mb-6">Experience sub-second employee profile verification configured for your workflow.</p>
 
                 <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs font-mono">
                   <div>
                     <label className="text-slate-300 font-bold block mb-1">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={demoForm.name}
-                      onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })}
-                      placeholder="e.g. Anand Mahindra"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                    />
+                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-slate-300 font-bold block mb-1">Work Email *</label>
-                      <input
-                        type="email"
-                        required
-                        value={demoForm.email}
-                        onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })}
-                        placeholder="anand@company.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      />
+                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
                     </div>
                     <div>
                       <label className="text-slate-300 font-bold block mb-1">Phone Number *</label>
-                      <input
-                        type="tel"
-                        required
-                        value={demoForm.phone}
-                        onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      />
+                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
                     </div>
                   </div>
-
                   <div>
                     <label className="text-slate-300 font-bold block mb-1">Company / Organization *</label>
-                    <input
-                      type="text"
-                      required
-                      value={demoForm.company}
-                      onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })}
-                      placeholder="e.g. Apex Enterprises Ltd"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                    />
+                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-emerald-500" />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-300 font-bold block mb-1">Monthly Hires / Passes</label>
-                      <select
-                        value={demoForm.hires}
-                        onChange={(e) => setDemoForm({ ...demoForm, hires: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        <option value="50-200">50 - 200 / month</option>
-                        <option value="200-1000">200 - 1,000 / month</option>
-                        <option value="1000-5000">1,000 - 5,000 / month</option>
-                        <option value="5000+">5,000+ / month</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-slate-300 font-bold block mb-1">Workforce Focus</label>
-                      <select
-                        value={demoForm.workforceType}
-                        onChange={(e) => setDemoForm({ ...demoForm, workforceType: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        <option value="both">Both Factory & Corporate</option>
-                        <option value="labor">Factory & Contract Labor</option>
-                        <option value="corporate">Corporate / IT Staff</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={demoLoading}
-                    className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-emerald-400/50 cursor-pointer"
-                  >
-                    {demoLoading ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Submitting Request...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Confirm Demo Booking</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
+                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border border-emerald-400/50 cursor-pointer">
+                    {demoLoading ? 'Submitting...' : 'Confirm Demo Booking'}
                   </button>
                 </form>
               </div>
@@ -2109,116 +1528,39 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* Client Review Submission Modal */}
       {showReviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setShowReviewModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
+            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {reviewSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/10">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
+                <CheckCircle2 className="w-12 h-12 text-emerald-400 mb-4" />
                 <h3 className="text-2xl font-bold text-white font-outfit mb-2">Review Submitted!</h3>
-                <p className="text-slate-400 text-sm max-w-sm mb-6">
-                  Thank you for your feedback. Your verified client review will be published to the community wall upon moderation.
-                </p>
-                <button
-                  onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }}
-                  className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/25 border border-emerald-400/50 cursor-pointer"
-                >
-                  Close Window
-                </button>
+                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-emerald-600 to-teal-600 cursor-pointer">Close Window</button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-amber-400 font-bold mb-2">
-                  <MessageSquare className="w-4 h-4 text-amber-400" />
-                  <span>CLIENT COMMUNITY WALL</span>
-                </div>
-                <h3 className="text-2xl font-bold text-white font-outfit mb-2">
-                  Submit Verified Enterprise Review
-                </h3>
-                <p className="text-slate-400 text-xs mb-6">
-                  Share your experience with JOY TRUE PROFILE turnaround speed and employee background verification.
-                </p>
-
+                <h3 className="text-2xl font-bold text-white font-outfit mb-2">Submit Client Review</h3>
                 <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs font-mono">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-slate-300 font-bold block mb-1">Your Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={reviewForm.name}
-                        onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-                        placeholder="e.g. Priya Iyer"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      />
+                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
                     </div>
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Designation / Role *</label>
-                      <input
-                        type="text"
-                        required
-                        value={reviewForm.role}
-                        onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })}
-                        placeholder="e.g. Head of HR"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      />
+                      <label className="text-slate-300 font-bold block mb-1">Role *</label>
+                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-300 font-bold block mb-1">Company / Organization *</label>
-                      <input
-                        type="text"
-                        required
-                        value={reviewForm.company}
-                        onChange={(e) => setReviewForm({ ...reviewForm, company: e.target.value })}
-                        placeholder="e.g. Nexus 3PL Corp"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-300 font-bold block mb-1">Rating (1 to 5 Stars)</label>
-                      <select
-                        value={reviewForm.rating}
-                        onChange={(e) => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        <option value={5}>⭐⭐⭐⭐⭐ (5 - Exceptional)</option>
-                        <option value={4}>⭐⭐⭐⭐ (4 - Very Good)</option>
-                        <option value={3}>⭐⭐⭐ (3 - Good)</option>
-                      </select>
-                    </div>
-                  </div>
-
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Your Review / Impact Story *</label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={reviewForm.comment}
-                      onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                      placeholder="Describe how JOY TRUE PROFILE accelerated your turnaround time or eliminated verification delays..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none"
-                    ></textarea>
+                    <label className="text-slate-300 font-bold block mb-1">Review *</label>
+                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white resize-none" />
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={reviewLoading}
-                    className="w-full mt-2 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-emerald-400/50 cursor-pointer"
-                  >
-                    {reviewLoading ? 'Submitting Review...' : 'Post Client Testimonial'}
+                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border border-emerald-400/50 cursor-pointer">
+                    {reviewLoading ? 'Submitting...' : 'Post Client Review'}
                   </button>
                 </form>
               </div>
@@ -2227,12 +1569,10 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* Statutory Compliance Handbook Modal */}
       {showLegalHandbook && (
         <LegalComplianceHandbookModal isOpen={showLegalHandbook} onClose={() => setShowLegalHandbook(false)} />
       )}
 
-      {/* Razorpay Instant Checkout Modal */}
       {showLandingRazorpayModal && (
         <RazorpayPaymentModal
           amount={landingSelectedAmount}
@@ -2249,4 +1589,3 @@ export const LandingPageView = () => {
 };
 
 export default LandingPageView;
-
