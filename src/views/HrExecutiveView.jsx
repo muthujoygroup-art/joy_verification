@@ -316,6 +316,8 @@ export const HrExecutiveView = () => {
 
   // 📑 Verification Checklist & Mode Configuration (HR Verified vs Through Link)
   const [verificationChecklist, setVerificationChecklist] = useState({
+    email: { enabled: true, mode: 'through_link', title: 'Official Candidate Email Address OTP Verification' },
+    faceCapture: { enabled: true, mode: 'through_link', title: '3D AI Live Photo & Face Biometrics' },
     aadhaar: { enabled: true, mode: 'through_link', title: 'Aadhaar Card (UIDAI OTP e-KYC)' },
     pan: { enabled: true, mode: 'through_link', title: 'PAN Card Verification (NSDL/ITD)' },
     bankCheck: { enabled: true, mode: 'through_link', title: 'Bank Account & IFSC (Penny Drop / IMPS)' },

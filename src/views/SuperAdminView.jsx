@@ -7046,7 +7046,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       whatsappGateway: true, emailGateway: true, smsGateway: true,
                       allowCompanyAdminLogin: true, allowHrLogin: true, allowEmployeePortalAccess: true,
                       documentVaultVerification: true, statutoryAgreements: true, aiFaceBiometrics: true,
-                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, uan: false, drivingLicense: false
+                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, email: true, emailOtp: true, uan: false, drivingLicense: false
                     };
                     setEditingFeaturesCompany({ ...editingFeaturesCompany, features: preset });
                     showToast('Standard Plan Preset Loaded');
@@ -7064,7 +7064,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       whatsappGateway: true, emailGateway: true, smsGateway: true,
                       allowCompanyAdminLogin: true, allowHrLogin: true, allowEmployeePortalAccess: true,
                       documentVaultVerification: true, statutoryAgreements: true, aiFaceBiometrics: true,
-                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, uan: true, drivingLicense: true,
+                      aadhaar: true, pan: true, bankCheck: true, mobileOtp: true, email: true, emailOtp: true, uan: true, drivingLicense: true,
                       passport: true, criminalCheck: true, education: true, directorship: true, voterId: true, addressCheck: true
                     };
                     setEditingFeaturesCompany({ ...editingFeaturesCompany, features: preset });
@@ -7146,7 +7146,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           type="checkbox"
                           checked={isChecked}
                           onChange={(e) => {
-                            const updated = { ...editingFeaturesCompany.features, [gate.id]: e.target.checked };
+                            const val = e.target.checked;
+                            const updated = { ...editingFeaturesCompany.features, [gate.id]: val };
+                            if (gate.id === 'emailGateway') {
+                              updated.email = val;
+                              updated.emailOtp = val;
+                            }
                             setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
                           }}
                           className="accent-emerald-600 w-4 h-4 mt-0.5 shrink-0"
@@ -7219,10 +7224,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           type="checkbox"
                           checked={isChecked}
                           onChange={(e) => {
+                            const val = e.target.checked;
                             const updated = {
                               ...editingFeaturesCompany.features,
-                              [feat.id]: e.target.checked
+                              [feat.id]: val
                             };
+                            if (feat.id === 'email' || feat.id === 'emailOtp') {
+                              updated.email = val;
+                              updated.emailOtp = val;
+                              updated.emailGateway = val;
+                            }
                             setEditingFeaturesCompany({ ...editingFeaturesCompany, features: updated });
                           }}
                           className="accent-sky-600 w-4 h-4 mt-0.5 shrink-0"

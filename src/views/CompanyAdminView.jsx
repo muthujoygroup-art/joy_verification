@@ -714,6 +714,11 @@ export const CompanyAdminView = () => {
     if (featKey === 'aiFaceBiometrics') {
       updated.faceCapture = val;
     }
+    if (featKey === 'emailGateway' || featKey === 'email' || featKey === 'emailOtp') {
+      updated.emailGateway = val;
+      updated.email = val;
+      updated.emailOtp = val;
+    }
     try {
       localStorage.setItem('joy_company_features', JSON.stringify(updated));
     } catch (e) {}
@@ -726,6 +731,8 @@ export const CompanyAdminView = () => {
       aadhaar: true,
       mobileOtp: false,
       emailGateway: false,
+      email: false,
+      emailOtp: false,
       aiFaceBiometrics: false,
       faceCapture: false,
       pan: false,
@@ -746,6 +753,8 @@ export const CompanyAdminView = () => {
       aadhaar: true,
       mobileOtp: true,
       emailGateway: true,
+      email: true,
+      emailOtp: true,
       aiFaceBiometrics: true,
       faceCapture: true,
       pan: true,
