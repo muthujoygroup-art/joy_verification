@@ -202,7 +202,9 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
     signedNda: false
   },
   verificationConfig: {
-    aadhaar: true,
+    email: true,
+    faceCapture: true,
+    aadhaar: false,
     pan: false,
     bankCheck: false,
     drivingLicense: false,
@@ -212,8 +214,7 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
     uan: false,
     criminalCheck: false,
     education: false,
-    directorship: false,
-    faceCapture: false
+    directorship: false
   },
   manualChecks: {
     hrReferenceCompleted: true,
@@ -3121,16 +3122,16 @@ export const HrExecutiveView = () => {
               {/* Document Selection Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
                 {[
-                  { key: 'aadhaar', name: '1. Aadhaar UIDAI e-KYC', icon: '🪪', provider: 'UIDAI OTP Gateway', desc: 'UIDAI Biometric / OTP Authentication' },
-                  { key: 'pan', name: '2. Income Tax PAN Card', icon: '💳', provider: 'NSDL Direct Gateway', desc: 'Name, DOB & Aadhaar Seeding Match' },
-                  { key: 'bankCheck', name: '3. Bank Account & Penny Drop', icon: '🏦', provider: 'NPCI IMPS Gateway', desc: '₹1 Live Beneficiary Verification' },
-                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'EPFO Unified Portal', desc: 'Past Service & Moonlighting Clearance' },
-                  { key: 'drivingLicense', name: '5. Driving License Check', icon: '🚗', provider: 'MoRTH Sarathi API', desc: 'State Transport & Vehicle Classes' },
-                  { key: 'passport', name: '6. Passport Verification', icon: '✈️', provider: 'MEA Direct File API', desc: 'Passport Seeding & Nationality Check' },
-                  { key: 'voterId', name: '7. Voter ID Verification', icon: '🗳️', provider: 'Election Commission', desc: 'EPIC Number & Electoral Roll Audit' },
-                  { key: 'faceCapture', name: '8. 3D Face Biometric Liveness', icon: '👤', provider: 'AI Liveness Engine', desc: 'Anti-Spoofing & Aadhaar Face Match' },
-                  { key: 'education', name: '9. Educational Degree / Marksheet', icon: '🎓', provider: 'Academic Registry', desc: 'Highest Qualification Verification' },
-                  { key: 'criminalCheck', name: '10. Relieving / Experience Letter', icon: '💼', provider: 'Past Employer Audit', desc: 'Previous Work History & Relieving' }
+                  { key: 'email', name: '1. Official Email OTP Check ✉️', icon: '📧', provider: 'Corporate SMTP / OTP Gateway', desc: '6-Digit Email Confirmation Code' },
+                  { key: 'faceCapture', name: '2. 3D Face Biometric Liveness 👤', icon: '👤', Provider: 'AI Liveness Engine', desc: 'Anti-Spoofing & Live WebCam Pose Match' },
+                  { key: 'aadhaar', name: '3. Aadhaar UIDAI e-KYC', icon: '🪪', provider: 'UIDAI OTP Gateway', desc: 'UIDAI Biometric / OTP Authentication' },
+                  { key: 'pan', name: '4. Income Tax PAN Card', icon: '💳', provider: 'NSDL Direct Gateway', desc: 'Name, DOB & Aadhaar Seeding Match' },
+                  { key: 'bankCheck', name: '5. Bank Account & Penny Drop', icon: '🏦', provider: 'NPCI IMPS Gateway', desc: '₹1 Live Beneficiary Verification' },
+                  { key: 'uan', name: '6. EPFO UAN Service History', icon: '🏛️', provider: 'EPFO Unified Portal', desc: 'Past Service & Moonlighting Clearance' },
+                  { key: 'drivingLicense', name: '7. Driving License Check', icon: '🚗', provider: 'MoRTH Sarathi API', desc: 'State Transport & Vehicle Classes' },
+                  { key: 'passport', name: '8. Passport Verification', icon: '✈️', provider: 'MEA Direct File API', desc: 'Passport Seeding & Nationality Check' },
+                  { key: 'voterId', name: '9. Voter ID Verification', icon: '🗳️', provider: 'Election Commission', desc: 'EPIC Number & Electoral Roll Audit' },
+                  { key: 'education', name: '10. Educational Degree / Marksheet', icon: '🎓', provider: 'Academic Registry', desc: 'Highest Qualification Verification' }
                 ].map(item => {
                   const isChecked = !!formData.verificationConfig?.[item.key];
                   return (

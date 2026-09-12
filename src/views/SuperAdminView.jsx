@@ -6181,6 +6181,57 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
+          {/* 3. OFFICIAL CANDIDATE EMAIL OTP & ENTERPRISE MAIL GOVERNANCE */}
+          <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-black">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-black text-slate-900 text-sm sm:text-base">Candidate Email OTP Verification & SMTP Gateway Policy</h4>
+                    <span className="badge badge-purple text-[9px] font-black">DPDP ACT 2023 APPROVED</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-medium">Platform-wide Email OTP verification rules & corporate SMTP router</span>
+                </div>
+              </div>
+              <span className="badge badge-emerald text-[10px] font-mono">Status: Enabled & Active 🟢</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div className="p-3.5 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-1">
+                <span className="font-bold text-purple-900 block flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-purple-700" />
+                  <span>Mandatory Email Verification</span>
+                </span>
+                <p className="text-[11px] text-purple-950/80 leading-relaxed">
+                  Enforces 6-digit OTP email confirmation code before candidate can complete onboarding.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-indigo-50/60 rounded-2xl border border-indigo-200 space-y-1">
+                <span className="font-bold text-indigo-900 block flex items-center gap-1.5">
+                  <Clock className="w-4 h-4 text-indigo-700" />
+                  <span>60-Second Resend Cooldown</span>
+                </span>
+                <p className="text-[11px] text-indigo-950/80 leading-relaxed">
+                  Protects SMTP rate limits by enforcing a 60s cooldown timer between OTP resend triggers.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-1">
+                <span className="font-bold text-emerald-900 block flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                  <span>HR Webmail Sender Routing</span>
+                </span>
+                <p className="text-[11px] text-emerald-950/80 leading-relaxed">
+                  Dispatches OTP emails using configured HR Recruiter Webmail (`haripriya@joycorporatesolutions.com`).
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
       )}
 

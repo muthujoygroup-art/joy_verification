@@ -49,9 +49,10 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const companyName = candidate.companyName || candidate.joiningFormData?.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
 
   const verifs = candidate.verificationsCompleted || {};
+  const emailPassed = !!verifs.email || !!candidate.emailVerified;
   const aadhaarPassed = !!verifs.aadhaar;
   const mobilePassed = !!verifs.mobile;
-  const facePassed = !!verifs.face;
+  const facePassed = !!verifs.face || !!candidate.faceImages?.livePhoto || !!candidate.faceImages?.straight;
   const panPassed = !!verifs.pan;
   const bankPassed = !!verifs.bank || !!verifs.bankCheck;
 
@@ -288,7 +289,24 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
                   
-                  {/* Check 1: Aadhaar */}
+                  {/* Check 0: Email OTP */}
+                  <tr className="hover:bg-purple-50/40">
+                    <td className="p-2 font-bold text-slate-800 flex items-center gap-1.5">
+                      <span>1. Official Candidate Email OTP</span>
+                      <span className="badge badge-purple text-[8px]">PRIMARY</span>
+                    </td>
+                    <td className="p-2 text-slate-600">Corporate SMTP / OTP Gateway</td>
+                    <td className="p-2 text-slate-500 font-mono text-[11px]">
+                      {emailPassed ? '6-Digit OTP Authenticated' : 'Awaiting Email OTP Check'}
+                    </td>
+                    <td className="p-2 text-right">
+                      {emailPassed ? (
+                        <span className="badge badge-purple text-[10px]">VERIFIED ✓</span>
+                      ) : (
+                        <span className="badge badge-amber text-[10px]">NEED TO VERIFY ⌛</span>
+                      )}
+                    </td>
+                  </tr>
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">1. Aadhaar UIDAI Check</td>
                     <td className="p-2 text-slate-600">Govt API SETU DigiLocker Gateway</td>
