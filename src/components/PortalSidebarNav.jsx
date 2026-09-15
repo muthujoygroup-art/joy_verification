@@ -1052,7 +1052,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             {/* Session Countdown & Logout Button */}
             <div className="flex items-center justify-between gap-1.5 text-xs">
               <div className="shrink-0">
-                <ActiveSessionBadge />
+                <ActiveSessionBadge placement="top" />
               </div>
 
               <button

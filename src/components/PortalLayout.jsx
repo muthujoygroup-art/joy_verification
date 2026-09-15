@@ -297,9 +297,9 @@ export const PortalLayout = ({ children }) => {
                 <span>Support 🛟</span>
               </button>
 
-              {/* Active Session Badge (Visible on < lg screens where sidebar is hidden) */}
-              <div className="lg:hidden shrink-0">
-                <ActiveSessionBadge />
+              {/* Active Session Badge (Visible on all screen sizes) */}
+              <div className="shrink-0">
+                <ActiveSessionBadge placement="bottom" />
               </div>
 
             </div>

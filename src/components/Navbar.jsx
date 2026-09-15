@@ -202,7 +202,7 @@ export const Navbar = () => {
 
             {/* Desktop Active Session Countdown Badge */}
             <div className="shrink-0">
-              <ActiveSessionBadge />
+              <ActiveSessionBadge placement="bottom" />
             </div>
 
             {/* User Profile Pill with Unique Profile Code */}
@@ -233,7 +233,7 @@ export const Navbar = () => {
 
           {/* Top Mobile Controls (< lg screens) */}
           <div className="flex lg:hidden items-center gap-1.5 shrink-0">
-            <ActiveSessionBadge />
+            <ActiveSessionBadge placement="bottom" />
             
             <button
               onClick={() => setShowNotificationsModal(true)}
