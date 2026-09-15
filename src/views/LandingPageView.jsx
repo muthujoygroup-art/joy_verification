@@ -12,54 +12,50 @@ import {
   Lock, 
   FileText, 
   Zap, 
-  Check,
-  FileCheck,
+  Check, 
+  FileCheck, 
   Scale, 
   CreditCard, 
   HelpCircle, 
-  ChevronDown,
-  Layers,
-  Eye,
-  X,
-  Menu,
-  Star,
-  HardHat,
-  Fingerprint,
-  MessageSquare,
-  BookOpen,
-  Activity,
-  Radio,
-  Cpu,
-  RefreshCw,
-  Search,
-  Sliders,
-  DollarSign,
-  Download,
-  Volume2,
-  VolumeX,
-  Compass,
-  FileSpreadsheet,
-  Play,
-  ArrowUpRight,
-  Mail,
-  UserPlus,
-  Share2
+  ChevronDown, 
+  Layers, 
+  Eye, 
+  X, 
+  Menu, 
+  Star, 
+  HardHat, 
+  Fingerprint, 
+  MessageSquare, 
+  BookOpen, 
+  Activity, 
+  Radio, 
+  Cpu, 
+  RefreshCw, 
+  Search, 
+  DollarSign, 
+  Volume2, 
+  VolumeX, 
+  Compass, 
+  FileSpreadsheet, 
+  Mail, 
+  UserPlus, 
+  Share2,
+  Scan
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
-import HeroInteractiveCard3D from '../components/landing/HeroInteractiveCard3D';
-import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
+import BespokeWorkforceMatrixHero from '../components/landing/BespokeWorkforceMatrixHero';
+import CinematicVerificationStoryboard from '../components/landing/CinematicVerificationStoryboard';
+import QuantumWorkforceMesh from '../components/landing/QuantumWorkforceMesh';
+import EditorialBentoArchitecture from '../components/landing/EditorialBentoArchitecture';
+import CryptographicVaultPillars from '../components/landing/CryptographicVaultPillars';
 import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentRadarVisualizer';
 import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator';
-import InteractiveProcessPipeline from '../components/landing/InteractiveProcessPipeline';
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
+import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
+import LiveVideoSimulationShowcase from '../components/landing/LiveVideoSimulationShowcase';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
-import LiveVideoSimulationShowcase from '../components/landing/LiveVideoSimulationShowcase';
-import VerificationExperiencePipeline from '../components/landing/VerificationExperiencePipeline';
-import WorkforceConnectivityHub from '../components/landing/WorkforceConnectivityHub';
-import AsymmetricFeatureGrid from '../components/landing/AsymmetricFeatureGrid';
-import TrustSecurityPillars from '../components/landing/TrustSecurityPillars';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -74,10 +70,10 @@ export const LandingPageView = () => {
     ...(landingPageContent || {})
   };
 
-  // Innovative First-Load / Reload Logo Preloader (Strictly preserved)
+  // Innovative Holographic Logo Preloader (Preserved strictly untouched)
   const [showPreloader, setShowPreloader] = useState(true);
 
-  // Active View Tab State (Single Unified Tab Switcher)
+  // Active View Tab State (Unified Tab Switcher)
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tabId) => {
@@ -103,16 +99,16 @@ export const LandingPageView = () => {
     }
   };
 
-  // Interactive Spec Customizer Tab State
+  // Technical Specs Category State
   const [activeSpecCategory, setActiveSpecCategory] = useState('performance');
 
-  // Interactive Live India Radar State
+  // Live India Radar State
   const [activeRadarCity, setActiveRadarCity] = useState('sriperumbudur');
 
   // ROI Calculator State
   const [monthlyHires, setMonthlyHires] = useState(500);
   const [workforceType, setWorkforceType] = useState('mixed');
-  const [contractorTurnover, setContractorTurnover] = useState(25); // 25% annual churn
+  const [contractorTurnover, setContractorTurnover] = useState(25);
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState(0);
@@ -126,56 +122,13 @@ export const LandingPageView = () => {
   const [reviewForm, setReviewForm] = useState({ name: '', company: '', role: '', industry: 'labor', rating: 5, comment: '' });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [reviewLoading, setReviewLoading] = useState(false);
-  const [publicArticles, setPublicArticles] = useState([]);
 
-  // Interactive Live Simulator State
+  // Simulator State
   const [selectedSimMode, setSelectedSimMode] = useState('labor_pass');
   const [simulating, setSimulating] = useState(false);
   const [simProgress, setSimProgress] = useState(100);
 
-  // Fallback Articles for Knowledge Hub
-  const fallbackArticles = [
-    {
-      id: 1,
-      title: 'Guide to CLRA Form XVI Compliance & Contract Labor Passports',
-      category: 'Labor Law & Statutory',
-      readTime: '4 min read',
-      excerpt: 'How modern Indian manufacturing plants automate statutory gate passes, avoid inspector penalties, and audit contractor muster rolls in real time.'
-    },
-    {
-      id: 2,
-      title: 'Detecting Dual-Employment & Moonlighting via EPFO UAN Service Audits',
-      category: 'Corporate BGV',
-      readTime: '5 min read',
-      excerpt: 'A comprehensive technical overview on how provident fund contribution overlaps and Form 26AS data detect undeclared secondary employment.'
-    },
-    {
-      id: 3,
-      title: 'DPDP Act 2023 Compliance Blueprint for Enterprise Background Screening',
-      category: 'Data Privacy & Legal',
-      readTime: '6 min read',
-      excerpt: 'Essential requirements for consent architecture, audit log immutability, and Aadhaar masking under the Digital Personal Data Protection Act.'
-    }
-  ];
-
-  // Fetch Public Knowledge Hub Articles
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const res = await api.getPublicArticles();
-        if (res && res.data && res.data.length > 0) {
-          setPublicArticles(res.data);
-        } else {
-          setPublicArticles(fallbackArticles);
-        }
-      } catch {
-        setPublicArticles(fallbackArticles);
-      }
-    };
-    fetchArticles();
-  }, []);
-
-  // Trigger Interactive Engine Simulator
+  // Trigger Live Simulation
   const handleRunSimulation = (modeKey) => {
     soundEngine.playScan();
     setSelectedSimMode(modeKey);
@@ -194,7 +147,7 @@ export const LandingPageView = () => {
     }, 100);
   };
 
-  // Handle Demo Form Submit
+  // Demo Submit Handler
   const handleDemoSubmit = async (e) => {
     e.preventDefault();
     if (!checkNetworkBeforeAction('Book Enterprise Demo')) return;
@@ -203,7 +156,7 @@ export const LandingPageView = () => {
       await api.submitDemoRequest(demoForm);
       setDemoSubmitted(true);
       soundEngine.playSuccess();
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
+      confetti({ particleCount: 90, spread: 70, origin: { y: 0.5 } });
     } catch {
       setDemoSubmitted(true);
       soundEngine.playSuccess();
@@ -212,7 +165,7 @@ export const LandingPageView = () => {
     }
   };
 
-  // Handle Review Form Submit
+  // Review Submit Handler
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!checkNetworkBeforeAction('Submit Client Review')) return;
@@ -221,7 +174,7 @@ export const LandingPageView = () => {
       await api.submitReview(reviewForm);
       setReviewSubmitted(true);
       soundEngine.playSuccess();
-      confetti({ particleCount: 60, spread: 60, origin: { y: 0.5 } });
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.5 } });
     } catch {
       setReviewSubmitted(true);
       soundEngine.playSuccess();
@@ -230,35 +183,35 @@ export const LandingPageView = () => {
     }
   };
 
-  // Technical Specifications Data
+  // Technical Specs Data
   const technicalSpecs = {
     performance: [
-      { label: 'Verification Speed', value: 'Under 45 Seconds', detail: 'Instant parallel automated queries across all official registries' },
-      { label: 'Biometric Face Match', value: '99.98% Precision', detail: '3D anti-spoofing camera liveness eliminates fake and duplicate profiles' },
-      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Zero app download web magic link with 4-digit PIN security' },
-      { label: 'System Capacity', value: '50,000+ Checks / Day', detail: 'Cloud-native microservices built for high-volume enterprise hiring' },
-      { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Round-the-clock redundant infrastructure across sovereign Indian data centers' }
+      { label: 'Verification Latency', value: 'Under 45 Seconds', detail: 'Instant parallel automated queries across UIDAI, NSDL, NPCI, EPFO & e-Courts' },
+      { label: 'Biometric Face Match', value: '99.98% Precision', detail: '3D anti-spoofing camera liveness eliminates duplicate and synthetic profiles' },
+      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Zero app download web magic link with 4-digit PIN security authorization' },
+      { label: 'Platform Capacity', value: '50,000+ Checks / Day', detail: 'Cloud-native microservices architecture built for high-volume enterprise hiring' },
+      { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Sovereign Indian data center infrastructure with round-the-clock telemetry' }
     ],
     security: [
-      { label: 'Data Encryption', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted in transit (TLS 1.3) and encrypted at rest (AES-256)' },
-      { label: 'DPDP Act 2023 Compliance', value: '100% Consent Architecture', detail: 'Explicit candidate OTP consent recorded in permanent audit logs' },
-      { label: 'Aadhaar Privacy', value: 'Automated Masking', detail: 'Zero unredacted storage of national identity numbers' },
-      { label: 'Industry Standards', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud controls and security policies' },
-      { label: 'Certified PDF Reports', value: 'Tamper-Proof Dossiers', detail: 'Cryptographic hash signatures and verifiable timestamped badges' }
+      { label: 'Cryptographic Standard', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted in transit (TLS 1.3) and encrypted at rest (AES-256 GCM)' },
+      { label: 'DPDP Act 2023 Law', value: '100% Consent Architecture', detail: 'Explicit candidate OTP consent recorded in permanent immutable audit logs' },
+      { label: 'Aadhaar Redaction', value: 'Automated Data Masking', detail: 'Zero unredacted storage of national identity numbers across all databases' },
+      { label: 'Enterprise Audits', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud controls and security policies' },
+      { label: 'Certified PDF Dossiers', value: 'Tamper-Proof Seals', detail: 'Cryptographic SHA-256 hash signatures and verifiable digital timestamps' }
     ],
     statutory: [
-      { label: 'Workforce Gate Passes', value: 'Scannable Digital QR', detail: 'Sub-second access clearance for turnstiles and security guards' },
-      { label: 'CLRA Form XVI Audit', value: 'Always Audit-Ready', detail: 'Permanent statutory compliance muster roll and contractor tracking' },
+      { label: 'Workforce Gate Passes', value: 'Scannable Digital QR', detail: 'Sub-second access clearance for industrial turnstiles and security guards' },
+      { label: 'CLRA Form XVI Muster', value: 'Always Audit-Ready', detail: 'Permanent statutory compliance muster roll and contractor labor ledger' },
       { label: 'EPFO Moonlighting Audit', value: 'Full Career Timeline', detail: 'Detects active secondary provident fund employer contributions' },
-      { label: 'Bank Account Penny Drop', value: 'Instant ₹1 IMPS Match', detail: 'Direct NPCI validation confirms beneficiary account name 100%' },
-      { label: 'Court Record Scope', value: '3,500+ Pan-India Courts', detail: 'Broad civil, criminal, and commercial tribunal coverage' }
+      { label: 'Bank Penny Drop (IMPS)', value: 'Instant ₹1 Account Check', detail: 'Direct NPCI validation confirms beneficiary account name 100%' },
+      { label: 'Court Record Scope', value: '3,500+ Pan-India Courts', detail: 'Civil, criminal, and commercial tribunal queries with fuzzy matching' }
     ],
     infrastructure: [
-      { label: 'Cloud Native Rails', value: 'Indian Sovereign Cloud', detail: 'High-speed edge nodes with sub-200ms API response latency' },
+      { label: 'Cloud Architecture', value: 'Indian Sovereign Cloud', detail: 'High-speed edge nodes with sub-200ms API response latency' },
       { label: 'Multi-Tenant Portals', value: '4 Dedicated Workstations', detail: 'Super Admin, Company Admin, HR Recruiter, and Candidate Mobile' },
-      { label: 'Candidate Delivery', value: 'Multi-Channel Dispatch', detail: 'Automated 1-click delivery via WhatsApp, SMS, and Email' },
-      { label: 'Billing Model', value: '100% Postpaid & Metered', detail: 'Pay-per-check with official automated Razorpay GST tax invoices' },
-      { label: 'Report Delivery', value: 'Instant PDF & Web Link', detail: 'Certified downloadable dossier generated immediately upon completion' }
+      { label: 'Candidate Dispatch', value: 'Multi-Channel Rails', detail: 'Automated 1-click delivery via WhatsApp, SMS, and Email' },
+      { label: 'Commercial Model', value: '100% Postpaid & Metered', detail: 'Pay-per-check with official automated Razorpay GST tax invoices' },
+      { label: 'Report Delivery', value: 'Instant PDF & Web Dossier', detail: 'Certified downloadable dossier generated immediately upon completion' }
     ]
   };
 
@@ -326,7 +279,7 @@ export const LandingPageView = () => {
     }
   };
 
-  // Interactive Simulator Simulation Modes Data
+  // Simulator Data
   const simModes = {
     labor_pass: {
       id: 'labor_pass',
@@ -382,7 +335,7 @@ export const LandingPageView = () => {
     }
   };
 
-  // ROI Calculator Calculations
+  // ROI Calculations
   const costPerManualVerification = 1800;
   const costPerJoyVerification = 250;
   const savingsPerWorker = costPerManualVerification - costPerJoyVerification;
@@ -455,60 +408,60 @@ export const LandingPageView = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
       
-      {/* 1. Innovative First-Load Holographic Preloader (Preserved exactly as-is) */}
+      {/* 1. Innovative First-Load Holographic Preloader (Strictly preserved untouched) */}
       {showPreloader && (
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
       {/* 2. Top Database-Driven Announcement Banner */}
       {content.showAnnouncement && content.announcementText && (
-        <div className="w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 border-b border-indigo-400/40 py-2 px-3 sm:px-6 text-center text-xs font-semibold text-indigo-200 relative z-50 flex items-center justify-center gap-2 shadow-inner">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-wider shrink-0 border border-indigo-400/30">
-            📢 Update
+        <div className="w-full bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 border-b border-amber-500/30 py-2 px-3 sm:px-6 text-center text-xs font-mono font-semibold text-amber-200 relative z-50 flex items-center justify-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider shrink-0 border border-amber-500/30">
+            📢 UPDATE
           </span>
-          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-indigo-100">{content.announcementText}</span>
+          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-amber-100">{content.announcementText}</span>
         </div>
       )}
 
       {/* 3. Top Kinetic Marquee Ticker */}
-      <div className="w-full bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border-b border-purple-300/30 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-100 relative z-50 shadow-sm">
+      <div className="w-full bg-[#060A14] border-b border-slate-800/80 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-300 relative z-50 shadow-sm">
         <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
           {[...Array(2)].map((_, mIdx) => (
             <React.Fragment key={mIdx}>
-              <span className="inline-flex items-center gap-2 text-emerald-300">
+              <span className="inline-flex items-center gap-2 text-amber-400">
                 <Sparkles className="w-3.5 h-3.5" /> e-KYC UIDAI Aadhaar Verification (100% Authentic)
               </span>
-              <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-cyan-300">
+              <span className="text-slate-600">✦</span>
+              <span className="inline-flex items-center gap-2 text-emerald-400">
                 <Zap className="w-3.5 h-3.5" /> 3D AI Biometric Face Liveness Camera Scan
               </span>
-              <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-amber-300">
+              <span className="text-slate-600">✦</span>
+              <span className="inline-flex items-center gap-2 text-cyan-400">
                 <Mail className="w-3.5 h-3.5" /> Multi-Channel Magic Link Dispatcher (WhatsApp / SMS / Email)
               </span>
-              <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-purple-200">
+              <span className="text-slate-600">✦</span>
+              <span className="inline-flex items-center gap-2 text-purple-400">
                 <FileSpreadsheet className="w-3.5 h-3.5" /> Excel Bulk Import Engine (500+ Hires in 10s)
               </span>
-              <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-emerald-300">
+              <span className="text-slate-600">✦</span>
+              <span className="inline-flex items-center gap-2 text-emerald-400">
                 <CreditCard className="w-3.5 h-3.5" /> Razorpay GST Auto-Invoicing & Prepaid Metered Credits
               </span>
-              <span className="text-purple-400">✦</span>
-              <span className="inline-flex items-center gap-2 text-indigo-200">
+              <span className="text-slate-600">✦</span>
+              <span className="inline-flex items-center gap-2 text-amber-400">
                 <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Vault
               </span>
-              <span className="text-purple-400">✦</span>
+              <span className="text-slate-600">✦</span>
             </React.Fragment>
           ))}
         </div>
       </div>
 
-      {/* 4. Top Glass Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-2xl border-b border-slate-200 shadow-xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+      {/* 4. Ultra-Thin Glassmorphic Cyber Header */}
+      <header className="sticky top-0 z-50 w-full bg-[#050811]/90 backdrop-blur-2xl border-b border-slate-800/80 shadow-2xl transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo */}
           <button onClick={() => handleTabChange('overview')} className="flex items-center gap-3 shrink-0 group text-left cursor-pointer border-none bg-transparent">
@@ -516,42 +469,42 @@ export const LandingPageView = () => {
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="JOY TRUE PROFILE Logo" 
-                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(147,51,234,0.3)] group-hover:scale-105 transition-transform" 
+                className="w-11 h-11 object-contain drop-shadow-[0_0_20px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform" 
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#050811] animate-pulse" />
             </div>
             <div className="flex flex-col text-left justify-center">
-              <div className="flex items-center gap-1.5 whitespace-nowrap leading-none">
-                <span className="text-lg sm:text-xl font-black text-slate-900 font-outfit tracking-tight">JOY</span>
-                <span className="text-lg sm:text-xl font-black text-purple-600 font-outfit tracking-tight">TRUE PROFILE</span>
+              <div className="flex items-center gap-2 whitespace-nowrap leading-none">
+                <span className="text-xl sm:text-2xl font-black text-white font-outfit tracking-tighter">JOY</span>
+                <span className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 font-outfit tracking-tighter">TRUE PROFILE</span>
               </div>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-bold whitespace-nowrap mt-1">
-                Zero-Trust Verification
+              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold whitespace-nowrap mt-1">
+                Zero-Trust Verification Engine
               </span>
             </div>
           </button>
 
-          {/* Center Navigation: Segmented Pill Switcher */}
-          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/90 border border-slate-200 shadow-inner backdrop-blur-xl">
+          {/* Center Navigation: Segmented Cyber Pill Switcher */}
+          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-900/90 border border-slate-800 shadow-inner backdrop-blur-xl">
             {[
               { id: 'overview', label: 'Overview' },
-              { id: 'features', label: 'Features' },
+              { id: 'features', label: 'Capabilities' },
               { id: 'moonlighting', label: 'Moonlighting Radar' },
               { id: 'turnstile', label: 'Turnstile Gate' },
               { id: 'comparison', label: 'Speed Matrix' },
-              { id: 'roi', label: 'ROI Calculator' },
-              { id: 'solutions', label: 'Solutions' },
-              { id: 'resources', label: 'Resources' }
+              { id: 'roi', label: 'ROI Engine' },
+              { id: 'solutions', label: 'Architecture' },
+              { id: 'resources', label: 'Specs & FAQ' }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black shadow-xs border border-purple-400/50 scale-[1.03]'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
+                      ? 'bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 scale-[1.03]'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                   }`}
                 >
                   {tab.label}
@@ -565,22 +518,22 @@ export const LandingPageView = () => {
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
-              className="p-2.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-all cursor-pointer shadow-2xs"
+              className="p-2.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
               title={soundMuted ? "Unmute Audio Effects" : "Mute Audio Effects"}
             >
-              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-purple-600" />}
+              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-500" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
             </button>
 
-            {/* Launch Guided Tour Guide Trigger */}
+            {/* Tour Guide Modal Trigger */}
             <button
               onClick={() => {
                 soundEngine.playClick();
                 window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
               }}
-              className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-mono font-bold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
-              <Compass className="w-3.5 h-3.5 text-indigo-600 animate-spin-slow" />
-              <span>Interactive Tour 🧭</span>
+              <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
+              <span>TOUR 🧭</span>
             </button>
 
             {/* Book Live Demo Primary Button */}
@@ -589,49 +542,49 @@ export const LandingPageView = () => {
                 soundEngine.playClick();
                 setShowDemoModal(true);
               }}
-              className="whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-700 hover:to-indigo-700 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-purple-500/50"
+              className="whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-mono font-black text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 hover:opacity-90 shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-amber-300/40"
             >
-              <span>Book Live Demo</span>
-              <ArrowRight className="w-3.5 h-3.5 text-white" />
+              <span>BOOK DEMO</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
             </button>
           </div>
 
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 shadow-xs cursor-pointer"
+            className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 shadow-xs cursor-pointer"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
-        {/* Mobile Dropdown Navigation */}
+        {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200 px-4 py-4 bg-white shadow-2xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Overview</button>
-            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Verification Modules</button>
-            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Moonlighting Radar</button>
-            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Turnstile Simulator</button>
-            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Comparison Matrix</button>
-            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">ROI Calculator</button>
-            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Enterprise Solutions</button>
-            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Resources & FAQ</button>
+          <div className="lg:hidden border-t border-slate-800 px-4 py-5 bg-[#070A14] shadow-2xl flex flex-col gap-2 font-mono text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">01. Overview</button>
+            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">02. Capabilities</button>
+            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">03. Moonlighting Radar</button>
+            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">04. Turnstile Simulator</button>
+            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">05. Speed Matrix</button>
+            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">06. ROI Engine</button>
+            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">07. Architecture</button>
+            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">08. Specs & FAQ</button>
             
-            <div className="pt-3 mt-1 border-t border-slate-200 flex flex-col gap-2">
+            <div className="pt-4 mt-2 border-t border-slate-800 flex flex-col gap-2.5">
               <button
                 onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-indigo-900 bg-indigo-50 border border-indigo-200 text-center cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-3 rounded-xl font-bold text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 text-center cursor-pointer flex items-center justify-center gap-2"
               >
-                <Compass className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Interactive Tour Guide 🧭</span>
+                <Compass className="w-4 h-4 text-cyan-400" />
+                <span>LAUNCH INTERACTIVE TOUR 🧭</span>
               </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 text-center shadow-md border border-purple-500/50 cursor-pointer"
+                className="w-full py-3 rounded-xl font-black text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 text-center shadow-lg cursor-pointer"
               >
-                <span>Book Live Demo</span>
+                <span>BOOK ENTERPRISE DEMO 🚀</span>
               </button>
             </div>
           </div>
@@ -645,48 +598,52 @@ export const LandingPageView = () => {
       {/* VIEW 1: MASTER OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <>
-          {/* KINETIC HERO SECTION */}
-          <section className="relative z-10 pt-10 pb-16 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {/* Soft Ambient Light Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-r from-purple-200/50 via-indigo-200/50 to-emerald-200/40 blur-[150px] pointer-events-none rounded-full" />
+          {/* CINEMATIC BRUTALIST HERO SECTION */}
+          <section className="relative z-10 pt-12 pb-20 lg:pt-24 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            {/* Chromatic background mesh glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-amber-500/15 via-emerald-500/10 to-transparent blur-[160px] pointer-events-none rounded-full" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 xl:gap-14 items-center">
               
-              {/* Left Column: Bold Kinetic Typography & CTAs */}
+              {/* Left Column: Monumental Kinetic Typography & Narrative */}
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
                 {/* Dynamic Eyebrow Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-300/80 bg-purple-50/90 backdrop-blur-xl text-xs font-bold text-purple-900 shadow-2xs">
-                  <Crown className="w-4 h-4 text-amber-500 animate-bounce" />
-                  <span className="uppercase font-mono tracking-wider text-[11px] text-purple-950 font-black">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/40 bg-amber-500/10 backdrop-blur-xl text-xs font-mono font-bold text-amber-300 shadow-lg shadow-amber-500/10">
+                  <Crown className="w-4 h-4 text-amber-400 animate-bounce" />
+                  <span className="uppercase tracking-widest text-[11px] font-black">
                     {content.heroBadge || 'ZERO-TRUST WORKFORCE BACKGROUND SCREENING'}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-500/40">
                     TAT &lt;45s
                   </span>
                 </div>
 
-                {/* Main Expressive Headline */}
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 tracking-tight leading-[1.12] sm:leading-[1.08] font-outfit">
-                  {content.heroTitle || 'Instant & Accurate Employee Background Verification'}
+                {/* Monumental Heavy Headline */}
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tighter leading-[0.95] font-outfit uppercase">
+                  VERIFY EVERY <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400">
+                    PROFILE.
+                  </span> <br />
+                  ELIMINATE RISK.
                 </h1>
 
                 {/* High-Impact Subtitle */}
-                <p className="text-sm sm:text-base lg:text-lg text-slate-600 max-w-xl leading-relaxed font-medium">
-                  {content.heroSubtitle || 'Verify identity, PAN, past employment, bank details, and criminal records in under 60 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.'}
+                <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
+                  {content.heroSubtitle || 'Verify identity, PAN, past employment, bank details, and criminal records in under 45 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.'}
                 </p>
 
-                {/* Hero Action Buttons */}
-                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
+                {/* Hero Primary Action Buttons */}
+                <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
                   <button
                     onClick={() => {
                       soundEngine.playClick();
                       setShowDemoModal(true);
                     }}
-                    className="btn-superadmin px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl font-black text-xs sm:text-sm text-white shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                    className="px-8 py-4 rounded-2xl font-mono font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 hover:opacity-90 shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-amber-300/40"
                   >
-                    <span>{content.ctaPrimaryText || 'Book Free Live Demo 🚀'}</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
+                    <span>{content.ctaPrimaryText || 'BOOK LIVE DEMO 🚀'}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-950" />
                   </button>
 
                   <button
@@ -694,218 +651,218 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
                     }}
-                    className="bg-white hover:bg-slate-50 border-2 border-indigo-400 px-5 sm:px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-xs sm:text-sm text-indigo-950 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-slate-900/90 hover:bg-slate-800 border border-slate-700 px-7 py-4 rounded-2xl font-mono font-bold text-xs sm:text-sm text-slate-200 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-indigo-600 animate-spin-slow" />
-                    <span>{content.ctaSecondaryText || 'Launch Interactive Tour 🧭'}</span>
+                    <Compass className="w-4 h-4 text-cyan-400 animate-spin-slow" />
+                    <span>{content.ctaSecondaryText || 'EXPLORE TOUR 🧭'}</span>
                   </button>
                 </div>
 
-                {/* Key Value Metrics Bar */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-200 w-full max-w-2xl">
-                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
-                    <div className="text-lg sm:text-2xl font-black text-purple-700 font-outfit">{content.statSpeed || '<45s'}</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statSpeedLabel || 'Verification Speed'}</div>
+                {/* Telemetry Counter Bars */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-800 w-full max-w-2xl font-mono">
+                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-black text-amber-400 font-outfit">{content.statSpeed || '<45s'}</div>
+                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statSpeedLabel || 'Verification Speed'}</div>
                   </div>
-                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
-                    <div className="text-lg sm:text-2xl font-black text-slate-900 font-outfit">{content.statAccuracy || '99.98%'}</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statAccuracyLabel || 'Precision Rate'}</div>
+                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-black text-emerald-400 font-outfit">{content.statAccuracy || '99.98%'}</div>
+                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statAccuracyLabel || 'Precision Rate'}</div>
                   </div>
-                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
-                    <div className="text-lg sm:text-2xl font-black text-emerald-700 font-outfit">{content.statClients || '150+'}</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statClientsLabel || 'Enterprise Clients'}</div>
+                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-black text-cyan-400 font-outfit">{content.statClients || '150+'}</div>
+                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statClientsLabel || 'Enterprise Clients'}</div>
                   </div>
-                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
-                    <div className="text-lg sm:text-2xl font-black text-amber-600 font-outfit">{content.statProfiles || '500k+'}</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
+                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-black text-purple-400 font-outfit">{content.statProfiles || '500k+'}</div>
+                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statProfilesLabel || 'Profiles Checked'}</div>
                   </div>
                 </div>
 
               </div>
 
-              {/* Right Column: 3D Holographic Employee ID Card */}
+              {/* Right Column: Bespoke Workforce Identity Holographic Console */}
               <div className="lg:col-span-5 flex justify-center">
-                <HeroInteractiveCard3D />
+                <BespokeWorkforceMatrixHero />
               </div>
 
             </div>
           </section>
 
-          {/* SECTION 5: 5-STAGE VERIFICATION EXPERIENCE PIPELINE */}
+          {/* SECTION 5: CINEMATIC VERIFICATION STORYBOARD */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <VerificationExperiencePipeline />
+            <CinematicVerificationStoryboard />
           </section>
 
-          {/* SECTION 6: WORKFORCE CONNECTIVITY ECOSYSTEM */}
+          {/* SECTION 6: QUANTUM WORKFORCE MESH */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <WorkforceConnectivityHub />
+            <QuantumWorkforceMesh />
           </section>
 
-          {/* SECTION 7: 4-PORTAL SPECIALIZED WORKSTATION SHOWCASE */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
-            <div className="text-center space-y-3 max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 border border-purple-200 text-purple-900 text-xs font-black uppercase tracking-wider shadow-2xs">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>Role-Tailored Platform Architecture</span>
+          {/* SECTION 7: 4 SPECIALIZED ENTERPRISE PORTALS */}
+          <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>ROLE-TAILORED PLATFORM ARCHITECTURE</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit tracking-tight">
+              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight">
                 Four Specialized Portals. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-emerald-600 font-black">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 font-black">
                   One Unified Verification Engine.
                 </span>
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 font-medium">
-                Designed specifically for every stakeholder in your hiring ecosystem — from master platform admins to corporate HRs and onboarding candidates.
+              <p className="text-sm sm:text-base text-slate-400 font-normal">
+                Designed specifically for every stakeholder in your hiring ecosystem — from platform admins to corporate HRs, recruiters, and onboarding candidates.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Card 1: Super Admin */}
-              <div className="p-6 rounded-3xl border border-purple-200 bg-gradient-to-b from-purple-50/90 via-white to-slate-50 hover:border-purple-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-amber-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 border border-purple-200 text-purple-700 flex items-center justify-center shadow-2xs">
-                    <Crown className="w-6 h-6 text-amber-500" />
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                    <Crown className="w-6 h-6" />
                   </div>
-                  <span className="badge badge-purple text-[10px] font-black uppercase tracking-wider">01. GOVERNANCE</span>
-                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-purple-700 transition-colors">
-                    Super Admin Master Console
+                  <span className="font-mono text-[10px] text-amber-400 uppercase tracking-widest font-black block">01. GOVERNANCE</span>
+                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-amber-300 transition-colors">
+                    Super Admin Console
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
                     Master control panel to manage enterprise client tenants, dual API gateways, database telemetry, and Razorpay metered ledger.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Tenant Company Registry</li>
-                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> Dual Server 1 & 2 API Gateways</li>
-                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> PostgreSQL Error Logs & Telemetry</li>
+                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
+                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Multi-Tenant Registry</li>
+                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Dual Server Gateways</li>
+                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Database Telemetry Logs</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="w-full btn bg-purple-600 hover:bg-purple-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/30 cursor-pointer transition-all"
                 >
-                  <span>Request Enterprise Demo 🚀</span>
+                  Request Master Demo →
                 </button>
               </div>
 
               {/* Card 2: Company Admin */}
-              <div className="p-6 rounded-3xl border border-indigo-200 bg-gradient-to-b from-indigo-50/90 via-white to-slate-50 hover:border-indigo-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-cyan-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center shadow-2xs">
-                    <Building2 className="w-6 h-6 text-indigo-600" />
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+                    <Building2 className="w-6 h-6" />
                   </div>
-                  <span className="badge badge-indigo text-[10px] font-black uppercase tracking-wider">02. ENTERPRISE</span>
-                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-indigo-700 transition-colors">
+                  <span className="font-mono text-[10px] text-cyan-400 uppercase tracking-widest font-black block">02. ENTERPRISE</span>
+                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-cyan-300 transition-colors">
                     Company Admin Portal
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
                     Monitor monthly verification check credit quotas, assign recruiter seats (COMP001HR001), top-up wallet via Razorpay, and download invoices.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2 text-indigo-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" /> Real-Time Quota Usage Card</li>
-                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> Provision HR Recruiter Seats</li>
-                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> 1-Click Razorpay Wallet Top-up</li>
+                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
+                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Quota Consumption HUD</li>
+                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Provision HR Recruiter Seats</li>
+                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Automated Razorpay Invoicing</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 cursor-pointer transition-all"
                 >
-                  <span>Explore Company Features 🏢</span>
+                  Explore Company Portal →
                 </button>
               </div>
 
               {/* Card 3: HR Executive */}
-              <div className="p-6 rounded-3xl border border-emerald-200 bg-gradient-to-b from-emerald-50/90 via-white to-slate-50 hover:border-emerald-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
+              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-emerald-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center shadow-2xs">
-                    <UserPlus className="w-6 h-6 text-emerald-600" />
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                    <UserPlus className="w-6 h-6" />
                   </div>
-                  <span className="badge badge-emerald text-[10px] font-black uppercase tracking-wider">03. RECRUITMENT</span>
-                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-emerald-700 transition-colors">
-                    HR Executive Workstation
+                  <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest font-black block">03. RECRUITMENT</span>
+                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-emerald-300 transition-colors">
+                    HR Recruiter Cockpit
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
                     Dispatch instant magic links via WhatsApp, SMS & Email. Import 500+ candidates via Excel spreadsheet and inspect 360° verification dossiers.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Multi-Channel Magic Link Dispatcher</li>
-                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> Excel Bulk Import Engine</li>
-                    <li className="flex items-center gap-2 text-cyan-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" /> 360° Candidate BGV Dossiers</li>
+                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
+                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> WhatsApp & SMS Dispatcher</li>
+                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Excel Bulk Import Engine</li>
+                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 360° Candidate BGV Dossiers</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 cursor-pointer transition-all"
                 >
-                  <span>Explore Recruiter Tools 👔</span>
+                  Explore Recruiter Cockpit →
                 </button>
               </div>
 
-              {/* Card 4: Candidate Portal */}
-              <div className="p-6 rounded-3xl border border-amber-200 bg-gradient-to-b from-amber-50/90 via-white to-slate-50 hover:border-amber-400 transition-all hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6 group">
+              {/* Card 4: Candidate Mobile */}
+              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-purple-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
                 <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center shadow-2xs">
-                    <Smartphone className="w-6 h-6 text-amber-600" />
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+                    <Smartphone className="w-6 h-6" />
                   </div>
-                  <span className="badge badge-amber text-[10px] font-black uppercase tracking-wider">04. ONBOARDING</span>
-                  <h3 className="text-xl font-black text-slate-900 font-outfit group-hover:text-amber-700 transition-colors">
-                    Candidate Onboarding Portal
+                  <span className="font-mono text-[10px] text-purple-400 uppercase tracking-widest font-black block">04. ONBOARDING</span>
+                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-purple-300 transition-colors">
+                    Candidate Mobile Portal
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
                     Mobile-first self-verification flow with 4-digit PIN access, Aadhaar e-KYC UIDAI OTP, contact validation, and 3D WebCam biometric liveness scan.
                   </p>
 
-                  <ul className="space-y-2 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> 4-Digit Security PIN Gate</li>
-                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Aadhaar e-KYC UIDAI OTP Check</li>
-                    <li className="flex items-center gap-2 text-purple-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-purple-600" /> 3D AI Biometric Face Camera</li>
+                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
+                    <li className="flex items-center gap-2 text-purple-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 4-Digit Security PIN Gate</li>
+                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Aadhaar UIDAI OTP Check</li>
+                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 3D AI Biometric Face Camera</li>
                   </ul>
                 </div>
 
                 <button
                   onClick={() => setShowDemoModal(true)}
-                  className="w-full btn bg-amber-600 hover:bg-amber-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-purple-400 border border-purple-500/30 cursor-pointer transition-all"
                 >
-                  <span>View Candidate Experience 📱</span>
+                  View Candidate Mobile →
                 </button>
               </div>
 
             </div>
           </section>
 
-          {/* SECTION 8: ASYMMETRIC BENTO BOX GRID OF VERIFICATION SERVICES */}
+          {/* SECTION 8: ASYMMETRIC BENTO ARCHITECTURE */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <AsymmetricFeatureGrid onOpenDemo={() => setShowDemoModal(true)} />
+            <EditorialBentoArchitecture onOpenDemo={() => setShowDemoModal(true)} />
           </section>
 
-          {/* SECTION 9: 60 FPS LIVE VIDEO SIMULATION REEL */}
+          {/* SECTION 9: 60 FPS MOTION REEL */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <LiveVideoSimulationShowcase />
           </section>
 
           {/* SECTION 10: REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
-                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-600" />
-                <span>REAL-TIME NETWORK ACTIVITY</span>
+              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
+                <span>REAL-TIME INDUSTRIAL TELEMETRY</span>
               </span>
-              <h2 className="text-3xl font-black text-slate-900 font-outfit">Live India Industrial Telemetry</h2>
+              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight">Pan-India Regional Mesh</h2>
             </div>
             
             {/* Telemetry Hub */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
-              <div className="lg:col-span-5 flex flex-col gap-3">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-slate-500 mb-2 flex items-center justify-between font-bold">
-                  <span className="text-slate-800">ACTIVE REGIONAL CORRIDORS</span>
-                  <span className="text-emerald-600 font-bold">● 6 HUBS ONLINE</span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+              <div className="lg:col-span-5 flex flex-col gap-3 font-mono">
+                <div className="text-[10px] uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between font-bold">
+                  <span className="text-slate-300">ACTIVE REGIONAL CORRIDORS</span>
+                  <span className="text-emerald-400 font-bold">● 6 HUBS ONLINE</span>
                 </div>
                 {Object.keys(radarCities).map((key) => {
                   const hub = radarCities[key];
@@ -919,19 +876,19 @@ export const LandingPageView = () => {
                       }}
                       className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-500 text-white shadow-md'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900'
+                          ? 'bg-slate-900 border-amber-400 text-white shadow-lg shadow-amber-500/10'
+                          : 'bg-slate-950/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white animate-ping' : 'bg-slate-400'}`}></span>
-                          <h4 className={`font-mono text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-900'}`}>{hub.name}</h4>
+                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-amber-400 animate-ping' : 'bg-slate-600'}`}></span>
+                          <h4 className={`text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-300'}`}>{hub.name}</h4>
                         </div>
-                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
+                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-amber-300' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
                       </div>
-                      <span className={`font-mono text-[10px] font-bold px-2.5 py-1 rounded border ${
-                        isSelected ? 'text-white bg-black/20 border-white/30' : 'text-amber-800 bg-amber-100 border-amber-300'
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded border ${
+                        isSelected ? 'text-slate-950 bg-amber-400 border-amber-400' : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
                       }`}>
                         {hub.avgTat}
                       </span>
@@ -940,29 +897,29 @@ export const LandingPageView = () => {
                 })}
               </div>
 
-              <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
+              <div className="lg:col-span-7 bg-[#050711] border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
                   <div>
                     <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">{radarCities[activeRadarCity].state}</span>
-                    <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit">{radarCities[activeRadarCity].name}</h3>
+                    <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit uppercase">{radarCities[activeRadarCity].name}</h3>
                   </div>
                   <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
                     <Activity className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-                    <span>TELEMETRY ACTIVE</span>
+                    <span>TELEMETRY STREAM ACTIVE</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 font-mono">
                   <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Daily Active Passes</span>
+                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Active Passes</span>
                     <div className="text-lg font-black text-white mt-1 font-outfit">{radarCities[activeRadarCity].activePasses.split(' ')[0]}</div>
                   </div>
                   <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
+                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
                     <div className="text-lg font-black text-amber-400 mt-1 font-outfit">{radarCities[activeRadarCity].avgTat}</div>
                   </div>
                   <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
+                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
                     <div className="text-lg font-black text-emerald-400 mt-1 font-outfit">{radarCities[activeRadarCity].accuracy}</div>
                   </div>
                 </div>
@@ -977,55 +934,58 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* SECTION 11: TRUST, SECURITY & DPDP COMPLIANCE PILLARS */}
+          {/* SECTION 11: CRYPTOGRAPHIC TRUST & DPDP VAULT PILLARS */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <TrustSecurityPillars 
+            <CryptographicVaultPillars 
               onOpenLegalHandbook={() => setShowLegalHandbook(true)}
               onOpenDemo={() => setShowDemoModal(true)}
             />
           </section>
 
-          {/* HIGH IMPACT CTA */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
-            <div className="rounded-3xl border border-purple-200 bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 p-8 sm:p-12 text-center flex flex-col items-center text-white shadow-xl">
-              <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">Transform Your Employee Verification Today</h2>
-              <p className="text-slate-200 max-w-xl mb-8">Schedule a 15-minute live walkthrough with our enterprise security team.</p>
+          {/* SECTION 12: HIGH IMPACT CONVERSION BANNER */}
+          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800">
+            <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/60 via-slate-900 to-[#070A12] p-8 sm:p-14 text-center flex flex-col items-center text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+              
+              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4 relative z-10">
+                Transform Your Workforce Verification Today
+              </h2>
+              <p className="text-slate-300 max-w-xl mb-8 text-sm sm:text-base font-normal relative z-10">
+                Schedule a 15-minute live walkthrough with our enterprise security team and experience sub-second screening.
+              </p>
               <button
                 onClick={() => {
                   soundEngine.playClick();
                   setShowDemoModal(true);
                 }}
-                className="px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-[1.02] transition-all cursor-pointer border border-emerald-400/50"
+                className="px-9 py-4 rounded-2xl font-mono font-black text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-xl shadow-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative z-10 border border-amber-300/40"
               >
-                Book Enterprise Demo 🚀
+                BOOK ENTERPRISE DEMO 🚀
               </button>
             </div>
           </section>
         </>
       )}
 
-      {/* VIEW 2: FEATURES TAB */}
+      {/* VIEW 2: CAPABILITIES TAB */}
       {activeTab === 'features' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
-              FEATURE SUITE
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+              CAPABILITY ARCHITECTURE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Complete Employee Background Verification Engine</h2>
-            <p className="text-slate-600 text-base">Explore all core screening modules designed for fast, error-free onboarding.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Complete Workforce Verification Rail</h2>
+            <p className="text-slate-400 text-base">Explore all core screening modules designed for fast, error-free workforce onboarding.</p>
           </div>
 
-          {/* Verification Command Orbit */}
           <VerificationCommandOrbit />
+          <EditorialBentoArchitecture onOpenDemo={() => setShowDemoModal(true)} />
 
-          {/* Asymmetric Bento Box Grid */}
-          <AsymmetricFeatureGrid onOpenDemo={() => setShowDemoModal(true)} />
-
-          {/* Interactive Lab / Simulator */}
+          {/* Interactive Simulation Lab */}
           <div className="space-y-8">
             <div className="text-center max-w-3xl mx-auto">
-              <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold mb-2 inline-block px-3 py-1 bg-emerald-100 border border-emerald-300 rounded-full">LIVE DEMO LAB</span>
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">Run a Live Verification Simulation</h3>
+              <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-2 inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full">LIVE DEMO LAB</span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit uppercase">Run Live Verification Simulation</h3>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1037,37 +997,37 @@ export const LandingPageView = () => {
                   <button
                     key={key}
                     onClick={() => handleRunSimulation(key)}
-                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
+                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer font-mono ${
                       isSelected
-                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border-emerald-400 text-white shadow-lg'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900 shadow-sm'
+                        ? 'bg-slate-900 border-amber-400 text-white shadow-lg'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20 text-white font-black' : 'bg-emerald-100 text-emerald-700'}`}>
+                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-900 text-slate-400'}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isSelected ? 'text-white font-black' : 'text-amber-700'}`}>
+                      <span className={`text-[10px] uppercase font-bold ${isSelected ? 'text-amber-400' : 'text-slate-500'}`}>
                         {isSelected ? 'SELECTED' : 'TEST'}
                       </span>
                     </div>
                     <div>
-                      <h4 className={`font-bold text-sm font-outfit ${isSelected ? 'text-white' : 'text-slate-900'}`}>{item.title}</h4>
-                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100 font-medium' : 'text-slate-500'}`}>{item.category}</p>
+                      <h4 className={`font-bold text-sm font-outfit uppercase ${isSelected ? 'text-white' : 'text-slate-300'}`}>{item.title}</h4>
+                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-amber-300' : 'text-slate-500'}`}>{item.category}</p>
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
+            <div className="bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
                   <div>
-                    <span className="text-xs uppercase tracking-wider text-slate-400 font-bold block">CANDIDATE PROFILE</span>
-                    <h3 className="text-lg sm:text-xl font-bold text-white font-outfit">
-                      {simModes[selectedSimMode].candidate.name} — <span className="text-emerald-400 font-bold">{simModes[selectedSimMode].candidate.role}</span>
+                    <span className="font-mono text-xs uppercase tracking-wider text-slate-400 font-bold block">CANDIDATE DOSSIER</span>
+                    <h3 className="text-lg sm:text-xl font-bold text-white font-outfit uppercase">
+                      {simModes[selectedSimMode].candidate.name} — <span className="text-emerald-400">{simModes[selectedSimMode].candidate.role}</span>
                     </h3>
                   </div>
                 </div>
@@ -1075,7 +1035,7 @@ export const LandingPageView = () => {
                 <button
                   onClick={() => handleRunSimulation(selectedSimMode)}
                   disabled={simulating}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg border border-emerald-400/50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl font-mono font-bold text-xs bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
                   <span>{simulating ? 'Verifying...' : 'Re-Run Verification Check'}</span>
@@ -1083,20 +1043,20 @@ export const LandingPageView = () => {
               </div>
 
               {simulating && (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between text-xs text-emerald-400 font-bold mb-1.5">
-                    <span>Running automated background screening checks...</span>
+                <div className="mb-6 font-mono text-xs">
+                  <div className="flex items-center justify-between text-emerald-400 font-bold mb-1.5">
+                    <span>Executing automated background queries...</span>
                     <span>{simProgress}%</span>
                   </div>
                   <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                    <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
+                    <div className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
                   </div>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono">
                 {simModes[selectedSimMode].checks.map((check, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-900 shadow-xs flex items-center justify-between gap-4">
+                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                         <CheckCircle2 className="w-4 h-4" />
@@ -1117,85 +1077,65 @@ export const LandingPageView = () => {
 
       {/* VIEW 3: MOONLIGHTING RADAR TAB */}
       {activeTab === 'moonlighting' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
               EPFO UAN INTEGRATED
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Dual-Employment & Moonlighting Detection</h2>
-            <p className="text-slate-600 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Dual-Employment Detection</h2>
+            <p className="text-slate-400 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
           </div>
 
           <DualEmploymentRadarVisualizer />
-
-          {/* Moonlighting Information Breakdown */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <Zap className="w-8 h-8 text-amber-600 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">EPFO Service Overlap Audit</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">Identifies exact overlapping contribution dates across multiple employer IDs in real time.</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <Scale className="w-8 h-8 text-emerald-600 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Form 26AS Tax Cross-Check</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">Verifies multiple salary streams and tax deductions to confirm single employment compliance.</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <FileCheck className="w-8 h-8 text-teal-600 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Relieving Date Verification</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">Validates exit dates and relieving letters directly with past verified company records.</p>
-            </div>
-          </div>
         </div>
       )}
 
       {/* VIEW 4: TURNSTILE GATE TAB */}
       {activeTab === 'turnstile' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-300 bg-emerald-100">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10">
               PLANT & FACILITY ACCESS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
-            <p className="text-slate-600 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Workforce Turnstile Simulator</h2>
+            <p className="text-slate-400 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
           </div>
 
           <TurnstileGateSimulator />
         </div>
       )}
 
-      {/* VIEW 5: SPEED MATRIX COMPARISON TAB */}
+      {/* VIEW 5: SPEED MATRIX TAB */}
       {activeTab === 'comparison' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
+            <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10">
               PERFORMANCE BENCHMARK
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
-            <p className="text-slate-600 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
+            <p className="text-slate-400 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
           </div>
 
           <InteractiveSpeedComparison />
-
-          <VerificationExperiencePipeline />
+          <CinematicVerificationStoryboard />
         </div>
       )}
 
-      {/* VIEW 6: ROI CALCULATOR TAB */}
+      {/* VIEW 6: ROI ENGINE TAB */}
       {activeTab === 'roi' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
               FINANCIAL IMPACT ESTIMATOR
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
-            <p className="text-slate-600 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Enterprise ROI & Savings Engine</h2>
+            <p className="text-slate-400 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xl">
-            <div className="lg:col-span-6 flex flex-col justify-between gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div className="lg:col-span-6 flex flex-col justify-between gap-6 font-mono">
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold block mb-3">1. Select Workforce Structure</label>
+                <label className="text-xs uppercase tracking-wider text-slate-300 font-bold block mb-3">1. Select Workforce Structure</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'labor', label: 'Factory / Labor' },
@@ -1210,8 +1150,8 @@ export const LandingPageView = () => {
                       }}
                       className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                         workforceType === item.id
-                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-500 shadow-md'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-900'
+                          ? 'bg-amber-500 text-slate-950 font-black border-amber-400 shadow-md'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
                       }`}
                     >
                       {item.label}
@@ -1222,8 +1162,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">2. Monthly Candidate Volume</label>
-                  <span className="font-mono text-base font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300">
+                  <label className="text-xs uppercase tracking-wider text-slate-300 font-bold">2. Monthly Candidate Volume</label>
+                  <span className="text-base font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
                     {monthlyHires.toLocaleString()} workers / mo
                   </span>
                 </div>
@@ -1234,10 +1174,10 @@ export const LandingPageView = () => {
                   step="50"
                   value={monthlyHires}
                   onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 border border-slate-300"
+                  className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-700"
                 />
                 <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                  <span className="text-[10px] font-mono text-slate-500 font-bold mr-1">PRESETS:</span>
+                  <span className="text-[10px] text-slate-500 font-bold mr-1">PRESETS:</span>
                   {[250, 500, 1000, 2500, 5000].map((preset) => (
                     <button
                       key={preset}
@@ -1245,8 +1185,8 @@ export const LandingPageView = () => {
                         soundEngine.playClick();
                         setMonthlyHires(preset);
                       }}
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                        monthlyHires === preset ? 'bg-emerald-600 text-white font-black border-emerald-700' : 'bg-slate-100 text-slate-700 border-slate-200 hover:text-slate-900'
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold border transition-colors cursor-pointer ${
+                        monthlyHires === preset ? 'bg-amber-500 text-slate-950 font-black border-amber-400' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
                       }`}
                     >
                       {preset.toLocaleString()}
@@ -1257,8 +1197,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">3. Annual Contractor Churn</label>
-                  <span className="font-mono text-base font-black text-amber-800 bg-amber-100 px-3 py-1 rounded-lg border border-amber-300">
+                  <label className="text-xs uppercase tracking-wider text-slate-300 font-bold">3. Annual Contractor Churn</label>
+                  <span className="text-base font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30">
                     {contractorTurnover}% / year
                   </span>
                 </div>
@@ -1269,45 +1209,45 @@ export const LandingPageView = () => {
                   step="5"
                   value={contractorTurnover}
                   onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-600 border border-slate-300"
+                  className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-700"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 font-mono text-xs text-emerald-900 flex items-start gap-2.5">
-                <HelpCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 flex items-start gap-2.5">
+                <HelpCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
+            <div className="lg:col-span-6 bg-gradient-to-br from-[#090D18] via-[#050811] to-[#04060E] text-white border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl font-mono">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
+                <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
                 <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
                   ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
                   <span className="text-xs sm:text-sm font-normal text-slate-400 ml-2">/ year</span>
                 </div>
-                <div className="text-xs font-mono text-emerald-400 mt-2 font-bold flex items-center gap-1.5">
+                <div className="text-xs text-emerald-400 mt-2 font-bold flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Estimated Payback Period: Under 12 Business Days</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
                   <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span></div>
                 </div>
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
                   <div className="text-lg font-black text-rose-400 font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
                 </div>
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
                   <div className="text-lg font-black text-emerald-400 font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
                 </div>
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
-                  <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">100% Protected</div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
+                  <div className="text-lg font-black text-cyan-400 font-outfit mt-0.5">100% Protected</div>
                 </div>
               </div>
 
@@ -1316,49 +1256,48 @@ export const LandingPageView = () => {
                   soundEngine.playClick();
                   setShowDemoModal(true);
                 }}
-                className="w-full py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-lg border border-emerald-400/50 cursor-pointer text-center"
+                className="w-full py-4 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-lg cursor-pointer text-center"
               >
-                Unlock These Savings Now 🚀
+                UNLOCK SAVINGS NOW 🚀
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* VIEW 7: SOLUTIONS TAB */}
+      {/* VIEW 7: ARCHITECTURE TAB */}
       {activeTab === 'solutions' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-indigo-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-indigo-200 bg-indigo-100">
-              INDUSTRY ARCHITECTURE
+            <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10">
+              ENTERPRISE ARCHITECTURE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Enterprise-Grade Solutions & Security</h2>
-            <p className="text-slate-600 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Enterprise Verification Infrastructure</h2>
+            <p className="text-slate-400 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
           </div>
 
-          <WorkforceConnectivityHub />
-
-          <TrustSecurityPillars 
+          <QuantumWorkforceMesh />
+          <CryptographicVaultPillars 
             onOpenLegalHandbook={() => setShowLegalHandbook(true)}
             onOpenDemo={() => setShowDemoModal(true)}
           />
         </div>
       )}
 
-      {/* VIEW 8: RESOURCES TAB */}
+      {/* VIEW 8: SPECS & FAQ TAB */}
       {activeTab === 'resources' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-20">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
+            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
               SPECIFICATIONS & REVIEWS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-outfit mb-4">Resources, Client Reviews & FAQ</h2>
-            <p className="text-slate-600 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Specifications, Client Reviews & FAQ</h2>
+            <p className="text-slate-400 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
           </div>
 
-          {/* Specs Segmented Control */}
+          {/* Specs Control */}
           <div className="flex justify-center">
-            <div className="inline-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
+            <div className="inline-flex p-1.5 rounded-2xl bg-slate-900 border border-slate-800 font-mono text-xs uppercase tracking-wider">
               {[
                 { id: 'performance', label: 'Performance' },
                 { id: 'security', label: 'Security & DPDP' },
@@ -1373,8 +1312,8 @@ export const LandingPageView = () => {
                   }}
                   className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
                     activeSpecCategory === cat.id
-                      ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black shadow-md border border-purple-500'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   {cat.label}
@@ -1384,16 +1323,16 @@ export const LandingPageView = () => {
           </div>
 
           {/* Specs Table */}
-          <div className="max-w-4xl mx-auto divide-y divide-slate-200 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl text-slate-900">
+          <div className="max-w-4xl mx-auto divide-y divide-slate-800 bg-[#070A14] rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-2xl text-white font-mono">
             {technicalSpecs[activeSpecCategory].map((spec, idx) => (
               <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
-                <dt className="font-mono text-xs uppercase tracking-wider text-slate-600 flex items-center gap-2 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                <dt className="text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                   <span>{spec.label}</span>
                 </dt>
                 <dd className="text-left sm:text-right">
-                  <span className="text-base sm:text-lg font-black text-slate-900 font-outfit">{spec.value}</span>
-                  <span className="block font-mono text-[11px] text-purple-700 mt-0.5">{spec.detail}</span>
+                  <span className="text-base sm:text-lg font-black text-white font-outfit uppercase">{spec.value}</span>
+                  <span className="block text-[11px] text-emerald-400 mt-0.5">{spec.detail}</span>
                 </dd>
               </div>
             ))}
@@ -1401,22 +1340,22 @@ export const LandingPageView = () => {
 
           {/* Client Reviews */}
           <div>
-            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8 font-mono">
               <div>
-                <h3 className="text-2xl font-black text-slate-900 font-outfit">What Industrial Leaders Say</h3>
-                <p className="text-xs text-slate-500 mt-0.5 font-medium">Verified executive feedback from enterprise plants and workforce teams.</p>
+                <h3 className="text-2xl font-black text-white font-outfit uppercase">Client Feedback</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Verified executive feedback from enterprise plants and workforce teams.</p>
               </div>
               <button
                 onClick={() => setShowReviewModal(true)}
-                className="px-4 py-2 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-xs font-bold cursor-pointer shadow-2xs"
+                className="px-4 py-2 rounded-xl bg-slate-900 text-amber-400 hover:bg-slate-800 border border-amber-500/30 text-xs font-bold cursor-pointer"
               >
-                + Post Review
+                + POST REVIEW
               </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {clientReviews.map((rev, idx) => (
-                <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 shadow-sm hover:shadow-md transition-all">
+                <div key={idx} className="rounded-2xl border border-slate-800 bg-[#070A14] p-6 flex flex-col justify-between gap-6 shadow-xl">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-1">
@@ -1424,13 +1363,13 @@ export const LandingPageView = () => {
                           <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="font-mono text-[10px] uppercase text-amber-800 bg-amber-100 px-2.5 py-1 rounded border border-amber-300 font-bold">{rev.badge}</span>
+                      <span className="font-mono text-[10px] uppercase text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 font-bold">{rev.badge}</span>
                     </div>
-                    <p className="text-slate-700 text-sm italic">"{rev.quote}"</p>
+                    <p className="text-slate-300 text-sm italic font-sans">"{rev.quote}"</p>
                   </div>
-                  <div className="border-t border-slate-200 pt-4">
-                    <h5 className="font-bold text-sm text-slate-900 font-outfit">{rev.name}</h5>
-                    <p className="text-xs text-slate-500 mt-0.5">{rev.role} — <span className="text-purple-700 font-semibold">{rev.company}</span></p>
+                  <div className="border-t border-slate-800 pt-4">
+                    <h5 className="font-bold text-sm text-white font-outfit uppercase">{rev.name}</h5>
+                    <p className="text-xs text-slate-400 mt-0.5">{rev.role} — <span className="text-amber-400 font-semibold">{rev.company}</span></p>
                   </div>
                 </div>
               ))}
@@ -1439,24 +1378,24 @@ export const LandingPageView = () => {
 
           {/* FAQ Accordion */}
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-black text-slate-900 font-outfit text-center mb-8">Frequently Asked Questions</h3>
+            <h3 className="text-2xl font-black text-white font-outfit uppercase text-center mb-8">Frequently Asked Questions</h3>
             <div className="flex flex-col gap-3">
               {faqData.map((faq, idx) => {
                 const isOpen = openFaq === idx;
                 return (
-                  <div key={idx} className={`rounded-2xl border transition-all shadow-xs bg-white ${isOpen ? 'border-purple-300 bg-purple-50/20' : 'border-slate-200'}`}>
+                  <div key={idx} className={`rounded-2xl border transition-all shadow-xs bg-[#070A14] ${isOpen ? 'border-amber-400 bg-amber-500/5' : 'border-slate-800'}`}>
                     <button
                       onClick={() => {
                         soundEngine.playClick();
                         setOpenFaq(isOpen ? -1 : idx);
                       }}
-                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer"
+                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-white flex items-center justify-between gap-4 cursor-pointer"
                     >
                       <span>{faq.q}</span>
-                      <ChevronDown className={`w-4 h-4 text-purple-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-amber-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-5 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100 pt-3">
+                      <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800 pt-3 font-sans font-normal">
                         {faq.a}
                       </div>
                     )}
@@ -1469,9 +1408,9 @@ export const LandingPageView = () => {
       )}
 
       {/* ==============================================================================
-       * FOOTER
+       * CINEMATIC SOVEREIGN ENTERPRISE FOOTER
        * ============================================================================== */}
-      <footer className="relative z-10 py-16 bg-[#04060B] border-t border-slate-800/80 px-4 sm:px-8 font-mono text-xs text-slate-400 backdrop-blur-xl mt-20">
+      <footer className="relative z-10 py-16 bg-[#02040A] border-t border-slate-800 px-4 sm:px-8 font-mono text-xs text-slate-400 backdrop-blur-xl mt-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
             <div className="flex flex-col gap-4">
@@ -1479,44 +1418,44 @@ export const LandingPageView = () => {
                 <img 
                   src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY TRUE PROFILE Logo" 
-                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.25)]" 
+                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.25)]" 
                 />
                 <div>
-                  <span className="font-black text-white font-outfit text-base tracking-tight">JOY <span className="text-emerald-400 font-black">TRUE PROFILE</span></span>
+                  <span className="font-black text-white font-outfit text-base tracking-tight uppercase">JOY <span className="text-amber-400 font-black">TRUE PROFILE</span></span>
                   <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Zero-Trust Verification</p>
                 </div>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed font-sans font-normal">
-                Automated employee background verification platform built for modern enterprises, high-growth teams, and secure workplaces across India.
+                Autonomous employee background verification platform built for modern enterprises, high-growth teams, and secure workplaces across India.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Navigation Tabs</h4>
-              <ul className="flex flex-col gap-2 text-xs text-slate-400">
-                <li><button onClick={() => handleTabChange('overview')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🚀 Executive Overview</button></li>
-                <li><button onClick={() => handleTabChange('features')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🛡️ Verification Modules</button></li>
-                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">📡 Moonlighting Radar</button></li>
-                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🚧 Turnstile Gate Access</button></li>
-                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">⚡ Speed Matrix</button></li>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Navigation</h4>
+              <ul className="flex flex-col gap-2 text-xs text-slate-400 font-mono">
+                <li><button onClick={() => handleTabChange('overview')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🚀 01. Overview</button></li>
+                <li><button onClick={() => handleTabChange('features')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🛡️ 02. Capabilities</button></li>
+                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">📡 03. Moonlighting Radar</button></li>
+                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🚧 04. Turnstile Simulator</button></li>
+                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">⚡ 05. Speed Matrix</button></li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Platform Resources</h4>
-              <ul className="flex flex-col gap-2 text-xs text-slate-400">
-                <li><button onClick={() => handleTabChange('roi')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">💰 ROI Calculator</button></li>
-                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">🏢 Enterprise Solutions</button></li>
-                <li><button onClick={() => handleTabChange('resources')} className="hover:text-emerald-400 transition-colors cursor-pointer text-left">📚 Technical Specs & FAQ</button></li>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Resources</h4>
+              <ul className="flex flex-col gap-2 text-xs text-slate-400 font-mono">
+                <li><button onClick={() => handleTabChange('roi')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">💰 06. ROI Engine</button></li>
+                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🏢 07. Architecture</button></li>
+                <li><button onClick={() => handleTabChange('resources')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">📚 08. Specs & FAQ</button></li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Corporate & Communication</h4>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Corporate</h4>
               <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-sans">
                 <span className="text-white font-bold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
-                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-indigo-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
-                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-indigo-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
+                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-amber-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
+                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-amber-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
                 <span className="text-slate-400">💬 WhatsApp: <span className="text-emerald-400 font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
                 <span className="text-slate-400">🕒 Hours: <span className="text-slate-300">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
                 <span className="text-[11px] text-slate-400 mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
@@ -1524,7 +1463,7 @@ export const LandingPageView = () => {
             </div>
           </div>
 
-          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
+          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400 font-mono">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="text-slate-300 font-bold">All Verification Nodes Operational (99.99% SLA)</span>
@@ -1535,7 +1474,7 @@ export const LandingPageView = () => {
                   soundEngine.playClick();
                   setShowLegalHandbook(true);
                 }} 
-                className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold"
+                className="hover:text-amber-400 transition-colors cursor-pointer text-slate-400 font-bold"
               >
                 Statutory Compliance Handbook
               </button>
@@ -1545,55 +1484,55 @@ export const LandingPageView = () => {
         </div>
       </footer>
 
-      {/* FLOATING WHATSAPP CONCIERGE WIDGET */}
+      {/* FLOATING WHATSAPP CONCIERGE */}
       <WhatsAppConcierge3D />
 
       {/* DEMO MODAL */}
       {showDemoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-lg bg-[#090D18] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto font-mono">
+            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {demoSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Demo Request Received!</h3>
-                <p className="text-slate-600 text-sm max-w-sm mb-6">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
-                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 cursor-pointer shadow-md">Close Window</button>
+                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Demo Request Received!</h3>
+                <p className="text-slate-300 text-sm max-w-sm mb-6 font-sans">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
+                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 cursor-pointer shadow-md">Close Window</button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 font-mono text-xs text-purple-700 font-bold mb-2">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
+                <div className="flex items-center gap-2 text-xs text-amber-400 font-bold mb-2">
+                  <Sparkles className="w-4 h-4" />
                   <span>ENTERPRISE WALKTHROUGH</span>
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 font-outfit mb-2">Schedule a Custom Live Demo</h3>
-                <p className="text-slate-600 text-xs mb-6">Experience sub-second employee profile verification configured for your workflow.</p>
+                <h3 className="text-2xl font-black text-white font-outfit uppercase mb-2">Schedule a Custom Live Demo</h3>
+                <p className="text-slate-400 text-xs mb-6 font-sans">Experience sub-second employee profile verification configured for your workflow.</p>
 
-                <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs font-mono">
+                <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs">
                   <div>
-                    <label className="text-slate-700 font-bold block mb-1">Full Name *</label>
-                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
+                    <label className="text-slate-300 font-bold block mb-1">Full Name *</label>
+                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 font-bold block mb-1">Work Email *</label>
-                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
+                      <label className="text-slate-300 font-bold block mb-1">Work Email *</label>
+                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
                     </div>
                     <div>
-                      <label className="text-slate-700 font-bold block mb-1">Phone Number *</label>
-                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
+                      <label className="text-slate-300 font-bold block mb-1">Phone Number *</label>
+                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-700 font-bold block mb-1">Company / Organization *</label>
-                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-purple-600" />
+                    <label className="text-slate-300 font-bold block mb-1">Company / Organization *</label>
+                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
                   </div>
-                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 shadow-md cursor-pointer">
+                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-md cursor-pointer">
                     {demoLoading ? 'Submitting...' : 'Confirm Demo Booking 🚀'}
                   </button>
                 </form>
@@ -1605,37 +1544,37 @@ export const LandingPageView = () => {
 
       {/* REVIEW MODAL */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-lg bg-[#090D18] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto font-mono">
+            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
               <X className="w-5 h-5" />
             </button>
 
             {reviewSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <CheckCircle2 className="w-12 h-12 text-emerald-600 mb-4" />
-                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Review Submitted!</h3>
-                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-purple-600 to-indigo-600 cursor-pointer shadow-md">Close Window</button>
+                <CheckCircle2 className="w-12 h-12 text-emerald-400 mb-4" />
+                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Review Submitted!</h3>
+                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 cursor-pointer shadow-md">Close Window</button>
               </div>
             ) : (
               <div>
-                <h3 className="text-2xl font-bold text-slate-900 font-outfit mb-2">Submit Client Review</h3>
-                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs font-mono">
+                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Submit Client Review</h3>
+                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 font-bold block mb-1">Your Name *</label>
-                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900" />
+                      <label className="text-slate-300 font-bold block mb-1">Your Name *</label>
+                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
                     </div>
                     <div>
-                      <label className="text-slate-700 font-bold block mb-1">Role *</label>
-                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900" />
+                      <label className="text-slate-300 font-bold block mb-1">Role *</label>
+                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-700 font-bold block mb-1">Review *</label>
-                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 resize-none" />
+                    <label className="text-slate-300 font-bold block mb-1">Review *</label>
+                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white resize-none" />
                   </div>
-                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 shadow-md cursor-pointer">
+                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-md cursor-pointer">
                     {reviewLoading ? 'Submitting...' : 'Post Client Review'}
                   </button>
                 </form>
@@ -1645,7 +1584,7 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* LEGAL COMPLIANCE HANDBOOK MODAL */}
+      {/* LEGAL HANDBOOK MODAL */}
       {showLegalHandbook && (
         <LegalComplianceHandbookModal isOpen={showLegalHandbook} onClose={() => setShowLegalHandbook(false)} />
       )}
