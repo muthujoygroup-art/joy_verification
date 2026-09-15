@@ -2170,15 +2170,6 @@ export const HrExecutiveView = () => {
               )}
 
               <button
-                onClick={() => setShowUniversalExportModal(true)}
-                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
-                title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
-              >
-                <Download className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Date-Filtered Reports 📥</span>
-              </button>
-
-              <button
                 type="button"
                 onClick={() => setShowBulkImportModal(true)}
                 data-tour-step="hr-bulk-btn"

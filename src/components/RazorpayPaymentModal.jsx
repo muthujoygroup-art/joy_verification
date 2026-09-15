@@ -28,19 +28,44 @@ export const RazorpayPaymentModal = ({
   isOpen, 
   onClose, 
   targetCompanyId = 'comp-1',
-  defaultAmount = 5000 
+  defaultAmount = null 
 }) => {
-  const { companies, rechargeCompanyWallet, paymentGatewayConfig, showToast, platformLogo, platformLogoEmblem } = useApp();
+  const { 
+    companies, 
+    candidates, 
+    vendors, 
+    calculateCompanyPostpaidBill, 
+    settlePostpaidInvoice, 
+    paymentGatewayConfig, 
+    showToast, 
+    platformLogo, 
+    platformLogoEmblem 
+  } = useApp();
 
   const company = (companies || []).find(c => c.id === targetCompanyId) || (companies && companies[0]) || {
     id: 'comp-joy',
     name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    walletBalance: 100000,
-    pricePerVerification: 120
+    plan: 'Tier 1 (Starter)',
+    walletBalance: 0,
+    pricePerVerification: 180
   };
 
-  const [selectedPackage, setSelectedPackage] = useState(defaultAmount);
+  const postpaidBill = typeof calculateCompanyPostpaidBill === 'function'
+    ? calculateCompanyPostpaidBill(company, candidates, vendors)
+    : {
+        plan: { name: 'Tier 1 (Starter)', maxProfiles: 50, ratePerProfile: 180, overageRate: 200 },
+        baseProfilesCount: 50,
+        overageProfilesCount: 2,
+        baseCost: 9000,
+        overageCost: 400,
+        subtotal: 9400,
+        gstAmount: 1692,
+        totalAmountDue: 11092
+      };
 
+  const initialAmount = defaultAmount || postpaidBill.subtotal || 9400;
+
+  const [selectedPackage, setSelectedPackage] = useState(initialAmount);
   const [customAmount, setCustomAmount] = useState('');
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [activePaymentTab, setActivePaymentTab] = useState('razorpay'); // 'razorpay' | 'link' | 'bank'
@@ -59,24 +84,21 @@ export const RazorpayPaymentModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-
   if (!isOpen) return null;
 
   const rechargeBaseAmount = isCustomMode ? (Number(customAmount) || 1000) : selectedPackage;
   const gstAmount = Math.round(rechargeBaseAmount * 0.18);
   const totalPayableAmount = rechargeBaseAmount + gstAmount;
-  const unitCost = company.pricePerVerification || 120;
-  const estimatedVerifications = Math.floor(rechargeBaseAmount / unitCost);
 
   const quickPackages = [
-    { amount: 2500, label: 'Starter Pack', checks: Math.floor(2500 / unitCost), bonus: null },
-    { amount: 5000, label: 'Growth Pack', checks: Math.floor(5000 / unitCost), bonus: 'Popular ⭐', isPopular: true },
-    { amount: 15000, label: 'Scale Pack', checks: Math.floor(15000 / unitCost) + 10, bonus: '+10 Bonus Checks 🎁' },
-    { amount: 50000, label: 'Enterprise Pack', checks: Math.floor(50000 / unitCost) + 45, bonus: '+45 Bonus Checks 👑' }
+    { amount: postpaidBill.subtotal || 9000, label: 'Full Month Unbilled', desc: `${postpaidBill.totalVerifiedProfiles || 50} Profiles (Base + Overage)`, isPopular: true, bonus: 'Exact Due ⭐' },
+    { amount: postpaidBill.baseCost || 9000, label: 'Base Tier Quota', desc: `${postpaidBill.baseProfilesCount || 50} Profiles @ ₹${postpaidBill.baseRate || 180}`, bonus: null },
+    { amount: 5000, label: 'Partial Settle', desc: 'Custom installment balance', bonus: null },
+    { amount: 15000, label: 'Advance Deposit', desc: 'Credit for upcoming cycles', bonus: 'Corporate 👑' }
   ];
 
   // Generated shareable payment link
-  const generatedPaymentLink = `https://rzp.io/l/joy-verif-${company.code || 'JOYCORP'}-${rechargeBaseAmount}`;
+  const generatedPaymentLink = `https://rzp.io/l/joy-postpaid-${company.code || 'JOYCORP'}-${totalPayableAmount}`;
 
   // ⚡ Execute Razorpay Checkout
   const handleLaunchRazorpay = () => {
@@ -89,31 +111,33 @@ export const RazorpayPaymentModal = ({
         amount: totalPayableAmount * 100, // Amount in paise
         currency: 'INR',
         name: 'JOY CORPORATE SOLUTIONS PVT LTD',
-        description: `Wallet Recharge: ${estimatedVerifications} BGV Verification Credits (${company.name})`,
+        description: `Postpaid BGV Invoice Settlement (${company.name} • ${postpaidBill.plan.name})`,
         image: platformLogoEmblem || '/assets/logos/joy_true_profile_shield_emblem.png',
         handler: function (response) {
           setIsProcessing(false);
           const paymentRecord = {
-            id: `PAY-RZP-${Math.floor(100000 + Math.random() * 900000)}`,
+            id: `PAY-POSTPAID-${Math.floor(100000 + Math.random() * 900000)}`,
             paymentId: response.razorpay_payment_id || `pay_${Math.random().toString(36).substring(2, 12)}`,
             orderId: response.razorpay_order_id || `order_${Math.random().toString(36).substring(2, 12)}`,
             date: new Date().toLocaleString(),
             baseAmount: rechargeBaseAmount,
             gstAmount: gstAmount,
             totalAmount: totalPayableAmount,
-            creditsAdded: estimatedVerifications,
-            method: 'Razorpay Gateway (UPI / Cards / NetBanking)',
+            creditsAdded: postpaidBill.totalVerifiedProfiles || 50,
+            baseProfiles: postpaidBill.baseProfilesCount,
+            overageProfiles: postpaidBill.overageProfilesCount,
+            method: 'Razorpay Gateway (Corporate Cards / UPI / NetBanking)',
             status: 'Success 🟢',
-            invoiceNumber: `INV-2026-${Math.floor(1000 + Math.random() * 9000)}`
+            invoiceNumber: `JDV-INV-2026-${Math.floor(1000 + Math.random() * 9000)}`
           };
 
-          if (typeof rechargeCompanyWallet === 'function') {
-            rechargeCompanyWallet(company.id, rechargeBaseAmount, paymentRecord);
+          if (typeof settlePostpaidInvoice === 'function') {
+            settlePostpaidInvoice(company.id, paymentRecord);
           }
 
           setPaymentSuccessData(paymentRecord);
           confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-          showToast(`₹${rechargeBaseAmount.toLocaleString('en-IN')} credited to ${company.name} wallet!`);
+          showToast(`₹${totalPayableAmount.toLocaleString('en-IN')} Postpaid Bill settled successfully for ${company.name}!`);
         },
         prefill: {
           name: company.contactPerson || 'Company Administrator',
@@ -146,27 +170,29 @@ export const RazorpayPaymentModal = ({
     setTimeout(() => {
       setIsProcessing(false);
       const paymentRecord = {
-        id: `PAY-SIM-${Math.floor(100000 + Math.random() * 900000)}`,
+        id: `PAY-SIM-POSTPAID-${Math.floor(100000 + Math.random() * 900000)}`,
         paymentId: `pay_test_${Math.random().toString(36).substring(2, 10)}`,
         orderId: `order_test_${Math.random().toString(36).substring(2, 10)}`,
         date: new Date().toLocaleString(),
         baseAmount: rechargeBaseAmount,
         gstAmount: gstAmount,
         totalAmount: totalPayableAmount,
-        creditsAdded: estimatedVerifications,
-        method: 'Razorpay Sandbox (Instant Test Payment)',
+        creditsAdded: postpaidBill.totalVerifiedProfiles || 50,
+        baseProfiles: postpaidBill.baseProfilesCount,
+        overageProfiles: postpaidBill.overageProfilesCount,
+        method: 'Razorpay Sandbox (Postpaid Settlement)',
         status: 'Success 🟢',
-        invoiceNumber: `INV-2026-TEST-${Math.floor(1000 + Math.random() * 9000)}`
+        invoiceNumber: `JDV-INV-2026-${Math.floor(1000 + Math.random() * 9000)}`
       };
 
-      if (typeof rechargeCompanyWallet === 'function') {
-        rechargeCompanyWallet(company.id, rechargeBaseAmount, paymentRecord);
+      if (typeof settlePostpaidInvoice === 'function') {
+        settlePostpaidInvoice(company.id, paymentRecord);
       }
 
       setPaymentSuccessData(paymentRecord);
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-      showToast(`⚡ Instant Sandbox: ₹${rechargeBaseAmount.toLocaleString('en-IN')} credited to ${company.name}!`);
-    }, 900);
+      showToast(`⚡ Postpaid Settlement: ₹${totalPayableAmount.toLocaleString('en-IN')} paid for ${company.name}!`);
+    }, 850);
   };
 
   const handleCopyPaymentLink = () => {
@@ -199,12 +225,12 @@ export const RazorpayPaymentModal = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-black text-sm sm:text-base text-slate-900 tracking-tight font-outfit">
-                  Verification Wallet & Razorpay Gateway
+                  Postpaid Invoice Settlement & Razorpay Gateway
                 </h3>
-                <span className="badge badge-purple text-[8px] font-black">B2B BILLING</span>
+                <span className="badge badge-purple text-[8px] font-black uppercase">{postpaidBill.plan.shortName}</span>
               </div>
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
-                {company.name} • Live Quota: ₹{(company.walletBalance || 0).toLocaleString('en-IN')}
+                {company.name} • Total Unbilled Due: ₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')} (incl. 18% GST)
               </p>
             </div>
           </div>
@@ -228,12 +254,12 @@ export const RazorpayPaymentModal = ({
               </div>
 
               <div>
-                <span className="badge badge-emerald text-xs font-black py-0.5 px-3">PAYMENT SUCCESSFUL 🟢</span>
+                <span className="badge badge-emerald text-xs font-black py-0.5 px-3">POSTPAID BILL SETTLED 🟢</span>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
-                  ₹{paymentSuccessData.baseAmount.toLocaleString('en-IN')} Credited to Wallet!
+                  ₹{paymentSuccessData.totalAmount.toLocaleString('en-IN')} Settled via Razorpay!
                 </h3>
                 <p className="text-xs text-slate-600 font-semibold mt-1">
-                  Added <strong className="text-emerald-700">+{paymentSuccessData.creditsAdded} BGV Candidate Verifications</strong> to {company.name}.
+                  Postpaid verification cycle for <strong className="text-emerald-700">{company.name}</strong> marked as Paid in full.
                 </p>
               </div>
 
@@ -314,8 +340,8 @@ export const RazorpayPaymentModal = ({
               {/* Package Amount Selector */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                  <span>1. Select Verification Recharge Tier</span>
-                  <span className="text-indigo-600 font-bold">₹{unitCost}/check</span>
+                  <span>1. Select Postpaid Settlement Amount</span>
+                  <span className="text-indigo-600 font-bold">{postpaidBill.plan.name}</span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -345,8 +371,8 @@ export const RazorpayPaymentModal = ({
                             ₹{pkg.amount.toLocaleString('en-IN')}
                           </span>
                         </div>
-                        <span className="text-[10px] text-indigo-700 font-extrabold mt-2 block">
-                          +{pkg.checks} Checks
+                        <span className="text-[10px] text-indigo-700 font-medium mt-1 block">
+                          {pkg.desc}
                         </span>
                       </div>
                     );
@@ -370,9 +396,9 @@ export const RazorpayPaymentModal = ({
                       <span className="absolute left-3 top-2 text-xs font-bold text-slate-500">₹</span>
                       <input
                         type="number"
-                        min="1000"
+                        min="500"
                         step="500"
-                        placeholder="Enter amount (min ₹1,000)"
+                        placeholder="Enter settlement amount (min ₹500)"
                         value={customAmount}
                         onChange={(e) => setCustomAmount(e.target.value)}
                         className="form-input pl-7 py-1.5 text-xs font-bold w-full bg-slate-50 border-slate-300 rounded-xl"
@@ -388,7 +414,7 @@ export const RazorpayPaymentModal = ({
                   {/* Tax & Calculation Breakdown Card */}
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs text-slate-700">
                     <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
-                      <span className="font-semibold text-slate-600">Recharge Base Balance:</span>
+                      <span className="font-semibold text-slate-600">Base Postpaid Amount:</span>
                       <span className="font-extrabold text-slate-900">₹{rechargeBaseAmount.toLocaleString('en-IN')}</span>
                     </div>
                     <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
@@ -396,7 +422,7 @@ export const RazorpayPaymentModal = ({
                       <span className="font-extrabold text-slate-900">₹{gstAmount.toLocaleString('en-IN')}</span>
                     </div>
                     <div className="flex items-center justify-between font-black text-sm text-indigo-950 pt-1">
-                      <span>Total Payable via Razorpay:</span>
+                      <span>Total Net Payable via Razorpay:</span>
                       <span className="text-base text-indigo-700">₹{totalPayableAmount.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
@@ -422,7 +448,7 @@ export const RazorpayPaymentModal = ({
                   >
                     <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
                     <span>
-                      {isProcessing ? 'Connecting to Razorpay Secure Gateway...' : `Pay ₹${totalPayableAmount.toLocaleString('en-IN')} & Add +${estimatedVerifications} Verifications`}
+                      {isProcessing ? 'Connecting to Razorpay Secure Gateway...' : `Settle ₹${totalPayableAmount.toLocaleString('en-IN')} Postpaid Bill via Razorpay`}
                     </span>
                   </button>
                 </div>

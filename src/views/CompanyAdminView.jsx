@@ -90,7 +90,13 @@ export const CompanyAdminView = () => {
     deleteCompanyVendor,
     verifyVendorDocument,
     verifyCompanyProfileDetail,
-    requestCompanyProfileReview
+    requestCompanyProfileReview,
+    POSTPAID_PLANS,
+    getCompanyPostpaidPlan,
+    calculateCompanyPostpaidBill,
+    updateCompanyPostpaidPlan,
+    settlePostpaidInvoice,
+    setActiveInvoiceModal
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
 
@@ -102,7 +108,7 @@ export const CompanyAdminView = () => {
         name: currentUser?.companyName || 'Joy Corporate Solutions Pvt Ltd',
         code: 'COMP001',
         email: currentUser?.email || 'info@joycorporatesolutions.com',
-        plan: 'Enterprise Platinum',
+        plan: 'Tier 1 (Starter)',
         features: {},
         documents: {}
       });
@@ -112,10 +118,14 @@ export const CompanyAdminView = () => {
     name: 'Joy Corporate Solutions Pvt Ltd',
     code: 'COMP001',
     email: 'info@joycorporatesolutions.com',
-    plan: 'Enterprise Platinum',
+    plan: 'Tier 1 (Starter)',
     features: {},
     documents: {}
   };
+
+  // 💳 Real-time Postpaid Billing Telemetry & Calculation
+  const postpaidBill = calculateCompanyPostpaidBill(company, candidates, vendors);
+  const currentPlan = postpaidBill?.plan || (POSTPAID_PLANS && POSTPAID_PLANS.tier1);
 
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
   const [activeTab, setActiveTab] = useState('telemetry');
@@ -360,13 +370,6 @@ export const CompanyAdminView = () => {
       return;
     }
 
-    // Check company wallet balance (₹60 required)
-    if ((company.walletBalance || 0) < 60) {
-      showToast('⚠️ Insufficient Wallet Credits (₹60 needed per check). Please recharge your wallet.', 'error');
-      setShowRazorpayModal(true);
-      return;
-    }
-
     setIsProcessingVendorCheck(true);
     try {
       const additionalData = {
@@ -380,7 +383,7 @@ export const CompanyAdminView = () => {
 
       const result = await verifyVendorDocument(company.id, vendor.id, checkType, docVal, additionalData);
       
-      showToast(`🎉 ${checkType.toUpperCase()} verified successfully! ₹60 deducted from wallet credits.`);
+      showToast(`🎉 ${checkType.toUpperCase()} verified successfully! Added to monthly postpaid bill.`);
       setVerifyingDocModal(null);
     } catch (err) {
       showToast(`❌ Verification failed: ${err.message}`, 'error');
@@ -875,10 +878,10 @@ export const CompanyAdminView = () => {
       colorClass: 'from-teal-600 to-sky-700'
     },
     billing_wallet: {
-      pillarBadge: '💳 5. Billing & Gateways',
-      badgeText: `₹${company.walletBalance?.toLocaleString() || 50000} Wallet Balance`,
-      title: 'Verification Wallet Balance, Invoices & Metered Tariffs',
-      subtitle: 'Real-time prepaid balance, transaction statements, itemized GST tax invoices, and per-check tariff rates',
+      pillarBadge: '💳 5. Postpaid Billing',
+      badgeText: `${currentPlan?.shortName || 'Postpaid'} • ₹${postpaidBill.totalAmountDue.toLocaleString()} Due`,
+      title: 'Postpaid Plan Tier, Monthly Accruals & GST Invoices',
+      subtitle: 'Real-time metered unbilled usage, non-blocking overage handling, 1:1 vendor parity, and official month-end GST tax invoices',
       icon: CreditCard,
       colorClass: 'from-amber-600 to-orange-700'
     },
@@ -950,15 +953,6 @@ export const CompanyAdminView = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setShowUniversalExportModal(true)}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
-              title="Download date-filtered candidate dossiers and Excel CSVs"
-            >
-              <Download className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Date-Filtered Reports 📥</span>
-            </button>
-
             {/* 🤝 Enterprise Vendor Verification & Point-in-Time PDF Quick-Access */}
             <button
               type="button"
@@ -1073,12 +1067,15 @@ export const CompanyAdminView = () => {
               onClick={() => {}}
             />
             <MetricCard 
-              title="Verification Wallet Balance" 
-              value={`₹${(company.walletBalance || 0).toLocaleString()}`} 
-              subtext={`~${Math.floor((company.walletBalance || 0) / 60)} checks (@ ₹60/check)`} 
+              title="Postpaid Accrued Total" 
+              value={`₹${postpaidBill.totalAmountDue.toLocaleString()}`} 
+              subtext={`${postpaidBill.totalVerifiedProfiles} Verified Profiles (${postpaidBill.plan.shortName})`} 
               icon={CreditCard} 
               color="amber" 
-              onClick={() => setShowRazorpayModal(true)}
+              onClick={() => {
+                setActiveMainSection('billing_wallet');
+                setActiveTab('billing_wallet');
+              }}
             />
             <MetricCard 
               title="Statutory PDF Audit" 
@@ -1449,16 +1446,18 @@ export const CompanyAdminView = () => {
                 <span className="badge badge-cyan text-[10px]">{company.plan}</span>
               </div>
               <div className="text-2xl font-black text-slate-900">
-                {(company.maxLimit - company.verifiedCountThisMonth).toLocaleString()} Credits Left
+                {postpaidBill.overageProfilesCount > 0 
+                  ? `+${postpaidBill.overageProfilesCount} Overage Active` 
+                  : `${(postpaidBill.baseQuota - postpaidBill.baseProfilesCount).toLocaleString()} Base Quota Left`}
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200 mt-1">
                 <div 
-                  style={{ width: `${Math.min(Math.round((company.verifiedCountThisMonth / company.maxLimit) * 100), 100)}%` }} 
-                  className="h-full bg-gradient-to-r from-sky-500 to-teal-600 rounded-full"
+                  style={{ width: `${Math.min(Math.round((postpaidBill.totalVerifiedProfiles / postpaidBill.baseQuota) * 100), 100)}%` }} 
+                  className={`h-full rounded-full ${postpaidBill.isOverage ? 'bg-gradient-to-r from-amber-500 to-rose-600' : 'bg-gradient-to-r from-sky-500 to-teal-600'}`}
                 />
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
-                Used <strong>{company.verifiedCountThisMonth}</strong> of <strong>{company.maxLimit}</strong> monthly credits ({company.verifiedCountThisMonth * 5} API calls executed).
+                Verified <strong>{postpaidBill.totalVerifiedProfiles}</strong> profiles (Base Tier: {postpaidBill.baseProfilesCount}/{postpaidBill.baseQuota} @ ₹{postpaidBill.baseRate}{postpaidBill.isOverage ? `, +${postpaidBill.overageProfilesCount} overage @ ₹${postpaidBill.overageRate}` : ''}).
               </p>
             </div>
 
@@ -3902,70 +3901,210 @@ export const CompanyAdminView = () => {
         </div>
       )}
 
-      {/* TAB: BILLING & RAZORPAY VERIFICATION WALLET */}
+      {/* TAB: 100% POSTPAID BILLING, TIER PLANS & MONTH-END GST INVOICES */}
       {activeTab === 'billing_wallet' && (
         <div className="space-y-6 animate-fadeIn">
           
-          {/* Top Wallet Hero Banner */}
-          <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/70 via-white to-purple-50/70 rounded-3xl space-y-6 shadow-sm relative overflow-hidden">
+          {/* Top Postpaid Hero Banner */}
+          <div className="glass-panel p-6 border-indigo-200 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/80 rounded-3xl space-y-6 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-purple text-xs font-black">B2B VERIFICATION WALLET</span>
+                  <span className="badge badge-purple text-xs font-black uppercase">100% Postpaid Billing</span>
                   <span className="text-xs text-slate-500 font-bold">• {company.name}</span>
+                  <span className="badge badge-emerald text-[10px] font-black">Active Unbilled Cycle 🟢</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 flex items-center gap-2">
                   <CreditCard className="w-6 h-6 text-indigo-600" />
-                  <span>Prepaid Verification Credits & Razorpay Gateway</span>
+                  <span>Corporate Postpaid Plans, Quota & Month-End Invoicing</span>
                 </h3>
-                <p className="text-xs text-slate-600 mt-0.5 font-medium">
-                  Recharge your BGV verification wallet instantly via UPI, Corporate Cards, NetBanking, or send a Razorpay payment link to your accounts department.
+                <p className="text-xs text-slate-600 mt-0.5 font-medium max-w-3xl">
+                  Pay only for verified profiles at the end of each monthly billing cycle. 
+                  Verifications are <strong>never blocked</strong> on exceeding your tier quota — exceeding profiles are automatically billed at your tier's designated overage rate. Each verified vendor counts as 1 employee profile.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
                 <button
+                  type="button"
                   onClick={() => setShowRazorpayModal(true)}
                   className="btn btn-superadmin text-xs py-2.5 px-5 flex items-center gap-2 font-black shadow-lg cursor-pointer hover:scale-102 transition-all"
                 >
                   <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-                  <span>Recharge Wallet (Razorpay) ⚡</span>
+                  <span>Settle Postpaid Bill (Razorpay) ⚡</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveInvoiceModal({ company, postpaidBill })}
+                  className="btn btn-company text-xs py-2.5 px-4 flex items-center gap-2 font-black shadow-md cursor-pointer hover:scale-102 transition-all"
+                >
+                  <FileText className="w-4 h-4 text-indigo-200" />
+                  <span>Official GST Tax Invoice 📄</span>
                 </button>
               </div>
             </div>
 
-            {/* Live Wallet & Quota Telemetry Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-white border-2 border-indigo-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Live Wallet Balance</span>
-                <div className="text-2xl font-black text-indigo-700">
-                  ₹{(company.walletBalance || 0).toLocaleString('en-IN')}
-                </div>
-                <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  Active & Ready for Verifications
-                </span>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-white border-2 border-emerald-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Available Verification Quota</span>
-                <div className="text-2xl font-black text-emerald-700">
-                  ~{Math.floor((company.walletBalance || 0) / (company.pricePerVerification || 120))} Candidate Checks
-                </div>
-                <span className="text-[11px] text-slate-500 font-medium">
-                  Based on current plan rate (₹{company.pricePerVerification || 120}/check)
-                </span>
-              </div>
-
+            {/* Real-Time Postpaid Unbilled Usage Telemetry Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
+              
+              {/* Card 1: Active Postpaid Tier */}
               <div className="p-4 rounded-2xl bg-white border-2 border-purple-200 shadow-2xs space-y-1">
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Billing Plan Tier</span>
-                <div className="text-xl font-black text-purple-900 mt-1">
-                  {company.plan || 'Enterprise Premier'}
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Subscribed Postpaid Tier</span>
+                <div className="text-xl font-black text-purple-900">
+                  {currentPlan.name}
                 </div>
-                <span className="badge badge-purple text-[9px] font-bold">18% GST Tax Invoices Included</span>
+                <span className="text-[11px] text-slate-600 font-semibold block">
+                  Quota: <strong>{currentPlan.maxProfiles === 999999 ? '500+ (Custom)' : `${currentPlan.maxProfiles} Profiles`}</strong>
+                </span>
+                <span className="badge badge-purple text-[9px] font-bold mt-1">
+                  ₹{currentPlan.ratePerProfile} / Base • ₹{currentPlan.overageRate} / Overage
+                </span>
               </div>
+
+              {/* Card 2: Included Quota Consumption */}
+              <div className="p-4 rounded-2xl bg-white border-2 border-indigo-200 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Base Quota Consumed</span>
+                <div className="text-2xl font-black text-indigo-700">
+                  {postpaidBill.baseProfilesCount} <span className="text-sm font-semibold text-slate-400">/ {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles}</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    style={{ width: `${Math.min(Math.round((postpaidBill.baseProfilesCount / (currentPlan.maxProfiles === 999999 ? 500 : currentPlan.maxProfiles)) * 100), 100)}%` }} 
+                    className="h-full bg-indigo-600 rounded-full"
+                  />
+                </div>
+                <span className="text-[11px] text-slate-500 font-medium block">
+                  ₹{postpaidBill.baseCost.toLocaleString('en-IN')} (@ ₹{postpaidBill.baseRate}/profile)
+                </span>
+              </div>
+
+              {/* Card 3: Exceeding Profiles & Overage */}
+              <div className={`p-4 rounded-2xl bg-white border-2 shadow-2xs space-y-1 ${postpaidBill.isOverage ? 'border-amber-400 bg-amber-50/30' : 'border-slate-200'}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Exceeding Profiles</span>
+                  {postpaidBill.isOverage && (
+                    <span className="badge badge-amber text-[9px] font-black animate-pulse">Overage Active ⚡</span>
+                  )}
+                </div>
+                <div className="text-2xl font-black text-amber-700">
+                  +{postpaidBill.overageProfilesCount} <span className="text-xs font-bold text-slate-500">Profiles</span>
+                </div>
+                <span className="text-[11px] text-slate-600 font-semibold block">
+                  {postpaidBill.isOverage ? `₹${postpaidBill.overageCost.toLocaleString('en-IN')} (@ ₹${postpaidBill.overageRate}/profile)` : 'Within Tier Limit (No Overage)'}
+                </span>
+                <span className="text-[10px] text-emerald-700 font-bold block">
+                  ✓ Verifications Never Interrupted
+                </span>
+              </div>
+
+              {/* Card 4: Month-End Net Total Due */}
+              <div className="p-4 rounded-2xl bg-white border-2 border-emerald-300 shadow-2xs space-y-1 bg-gradient-to-br from-white to-emerald-50/40">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Month-End Net Payable Due</span>
+                <div className="text-2xl font-black text-emerald-700">
+                  ₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}
+                </div>
+                <span className="text-[11px] text-slate-600 font-medium block">
+                  Subtotal: ₹{postpaidBill.subtotal.toLocaleString('en-IN')} + 18% GST (₹{postpaidBill.gstAmount.toLocaleString('en-IN')})
+                </span>
+                <span className="text-[10px] text-slate-500 font-bold block">
+                  SAC Code: 998311 (IT BGV Services)
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 5 POSTPAID TIER PLANS SELECTOR & UPGRADE MATRIX */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-3xl shadow-sm">
+            <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 className="font-black text-base text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                  <span>Choose Your Corporate Postpaid Subscription Tier</span>
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">
+                  Select the plan matching your employee volume. Higher tiers provide lower per-profile verification rates and favorable overage pricing.
+                </p>
+              </div>
+              <span className="badge badge-purple text-[10px] font-bold">100% Postpaid • Month-End Settlement</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {Object.values(POSTPAID_PLANS).map((plan) => {
+                const isActive = currentPlan.id === plan.id;
+                return (
+                  <div
+                    key={plan.id}
+                    className={`p-5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-4 relative ${
+                      isActive 
+                        ? 'border-indigo-600 bg-indigo-50/40 shadow-md ring-2 ring-indigo-200' 
+                        : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-sm'
+                    }`}
+                  >
+                    {isActive && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[9px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                        Current Active Plan ⭐
+                      </span>
+                    )}
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`badge text-[10px] font-bold ${plan.badgeColor}`}>
+                          {plan.employeeThreshold}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h5 className="font-black text-base text-slate-900">{plan.name}</h5>
+                        <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{plan.description}</p>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1 text-xs">
+                        <div className="flex justify-between items-center text-slate-600">
+                          <span>Base Rate:</span>
+                          <span className="font-black text-slate-900 font-mono">₹{plan.ratePerProfile} <span className="text-[10px] font-normal text-slate-500">/ profile</span></span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-600">
+                          <span>Included Limit:</span>
+                          <span className="font-bold text-indigo-700">{plan.maxProfiles === 999999 ? '500+ (Custom)' : `${plan.maxProfiles} Profiles`}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-600 pt-1 border-t border-slate-200/60">
+                          <span className="text-amber-700 font-bold">Overage Rate:</span>
+                          <span className="font-extrabold text-amber-800 font-mono">₹{plan.overageRate} <span className="text-[10px] font-normal text-slate-500">/ profile</span></span>
+                        </div>
+                      </div>
+
+                      <ul className="space-y-1 pt-1 text-[11px] text-slate-600">
+                        {plan.features.slice(0, 3).map((feat, fIdx) => (
+                          <li key={fIdx} className="flex items-start gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pt-2">
+                      {isActive ? (
+                        <div className="text-center py-2 px-3 bg-indigo-100/70 text-indigo-800 text-xs font-black rounded-xl border border-indigo-200">
+                          ✓ Subscribed
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => updateCompanyPostpaidPlan(company.id, plan.id)}
+                          className="btn btn-secondary w-full text-xs py-2 px-3 font-bold text-slate-700 hover:text-indigo-900 hover:bg-indigo-50 border-slate-300 cursor-pointer transition-colors"
+                        >
+                          Switch to {plan.shortName}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -3977,20 +4116,21 @@ export const CompanyAdminView = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-black text-xs text-slate-900">
                   <ExternalLink className="w-4 h-4 text-indigo-600" />
-                  <span>Shareable Razorpay Payment Link</span>
+                  <span>Finance Dept Shareable Payment Link</span>
                 </div>
-                <span className="badge badge-indigo text-[9px]">Finance Team Ready</span>
+                <span className="badge badge-indigo text-[9px]">Accounts Team Ready</span>
               </div>
               <p className="text-xs text-slate-600 font-medium">
-                Need your finance/accounts department to pay? Generate an encrypted Razorpay link that they can pay via corporate card or corporate banking.
+                Need your finance or accounts department to settle the monthly bill? Generate an instant encrypted Razorpay link that they can pay via corporate cards, NEFT, or net banking.
               </p>
               <div className="flex items-center gap-2 pt-1">
                 <button
+                  type="button"
                   onClick={() => setShowRazorpayModal(true)}
                   className="btn btn-secondary text-xs py-2 px-4 flex-1 flex items-center justify-center gap-1.5 font-bold cursor-pointer"
                 >
                   <SendHorizontal className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Generate Custom Payment Link 🔗</span>
+                  <span>Generate Payment Link (₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}) 🔗</span>
                 </button>
               </div>
             </div>
@@ -4018,47 +4158,99 @@ export const CompanyAdminView = () => {
 
           </div>
 
-          {/* Recharge & Transaction History Table */}
+          {/* Historical Settlements & GST Invoices Ledger */}
           <div className="glass-panel p-6 border-slate-200 bg-white rounded-2xl space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-indigo-600" />
-                  <span>Recharge History & GST Tax Invoices Ledger</span>
+                  <span>Postpaid Settlement History & Official GST Tax Invoices</span>
                 </h4>
-                <p className="text-xs text-slate-500 font-medium">All historical wallet recharges, Razorpay transaction IDs, and official GST tax invoices.</p>
+                <p className="text-xs text-slate-500 font-medium">Monthly billing statements, Razorpay transaction IDs, and electronically certified GST tax invoices.</p>
               </div>
-              <span className="badge badge-emerald text-[9px] font-bold">100% Tax Compliant</span>
+              <span className="badge badge-emerald text-[9px] font-bold">100% Statutory Compliant</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-500 font-bold bg-slate-50/50">
-                    <th className="py-2.5 px-3">Transaction Ref</th>
-                    <th className="py-2.5 px-3">Razorpay Payment ID</th>
-                    <th className="py-2.5 px-3">Date & Time</th>
-                    <th className="py-2.5 px-3">Base Recharge</th>
+                    <th className="py-2.5 px-3">Invoice / Ref No</th>
+                    <th className="py-2.5 px-3">Billing Cycle / Date</th>
+                    <th className="py-2.5 px-3">Base Profiles</th>
+                    <th className="py-2.5 px-3">Overage Profiles</th>
+                    <th className="py-2.5 px-3">Base Amount</th>
                     <th className="py-2.5 px-3">GST (18%)</th>
-                    <th className="py-2.5 px-3">Total Paid</th>
-                    <th className="py-2.5 px-3">Credits Added</th>
+                    <th className="py-2.5 px-3">Total Amount</th>
                     <th className="py-2.5 px-3">Payment Method</th>
                     <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {/* Current Active Unbilled Cycle Item */}
+                  <tr className="bg-indigo-50/30 hover:bg-indigo-50/50 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-indigo-900">
+                      CURRENT-UNBILLED-2026
+                    </td>
+                    <td className="py-3 px-3 text-slate-700 font-semibold">
+                      Current Month Cycle (Live)
+                    </td>
+                    <td className="py-3 px-3 font-bold text-slate-900">
+                      {postpaidBill.baseProfilesCount} / {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles}
+                    </td>
+                    <td className="py-3 px-3 font-bold text-amber-700">
+                      {postpaidBill.overageProfilesCount > 0 ? `+${postpaidBill.overageProfilesCount} (@ ₹${postpaidBill.overageRate})` : '0 (None)'}
+                    </td>
+                    <td className="py-3 px-3 font-mono font-bold text-slate-900">
+                      ₹{postpaidBill.subtotal.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-3 font-mono text-slate-600">
+                      ₹{postpaidBill.gstAmount.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-3 font-mono font-black text-indigo-800 text-sm">
+                      ₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-3 text-slate-600">
+                      Postpaid Metered Accrual
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className="badge badge-amber text-[9px] font-bold">Unbilled Cycle ⏳</span>
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setActiveInvoiceModal({ company, postpaidBill })}
+                        className="btn btn-secondary text-[10px] py-1 px-2.5 font-bold text-indigo-700 hover:bg-indigo-100"
+                        title="View Current Month GST Invoice Preview"
+                      >
+                        Preview Invoice 📄
+                      </button>
+                    </td>
+                  </tr>
+
                   {(company.rechargeTransactions || []).map((tx, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-slate-900">{tx.id}</td>
-                      <td className="py-3 px-3 font-mono text-indigo-700 font-bold">{tx.paymentId}</td>
-                      <td className="py-3 px-3 text-slate-500">{tx.date}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-slate-900">{tx.id || tx.invoiceNumber || `INV-2026-${idx+101}`}</td>
+                      <td className="py-3 px-3 text-slate-500">{tx.date || tx.timestamp}</td>
+                      <td className="py-3 px-3 font-bold text-slate-900">{tx.creditsAdded || tx.baseProfiles || 50}</td>
+                      <td className="py-3 px-3 text-slate-500">{tx.overageProfiles || 0}</td>
                       <td className="py-3 px-3 font-mono font-bold text-slate-900">₹{(tx.baseAmount || 0).toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-3 font-mono text-slate-600">₹{(tx.gstAmount || 0).toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-3 font-mono font-black text-emerald-700">₹{(tx.totalAmount || 0).toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-3 font-bold text-indigo-700">+{tx.creditsAdded} Checks</td>
-                      <td className="py-3 px-3 text-slate-600">{tx.method}</td>
+                      <td className="py-3 px-3 font-mono text-slate-600">₹{(tx.gstAmount || Math.round((tx.baseAmount || 0)*0.18)).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 font-mono font-black text-emerald-700">₹{(tx.totalAmount || (tx.baseAmount || 0) + Math.round((tx.baseAmount || 0)*0.18)).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3 text-slate-600">{tx.method || 'Razorpay Settlement'}</td>
                       <td className="py-3 px-3">
-                        <span className="badge badge-emerald text-[9px] font-bold">{tx.status}</span>
+                        <span className="badge badge-emerald text-[9px] font-bold">{tx.status || 'Settled 🟢'}</span>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setActiveInvoiceModal({ company, postpaidBill, transaction: tx })}
+                          className="btn btn-secondary text-[10px] py-1 px-2.5 font-bold text-indigo-700 hover:bg-indigo-100"
+                          title="Download Official Tax Invoice PDF"
+                        >
+                          Invoice PDF 📥
+                        </button>
                       </td>
                     </tr>
                   ))}

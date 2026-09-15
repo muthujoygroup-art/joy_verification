@@ -21,6 +21,170 @@ const INITIAL_FEATURE_LIST = [
   { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', serverMode: 'both', serverTag: 'Internal Ops', defaultOn: false, description: 'GPS geotagged physical home/office visit' }
 ];
 
+export const POSTPAID_PLANS = {
+  tier1: {
+    id: 'tier1',
+    name: 'Tier 1 (Starter)',
+    shortName: 'Tier 1',
+    tierNumber: 1,
+    maxProfiles: 50,
+    ratePerProfile: 180,
+    overageRate: 200,
+    badgeColor: 'badge-purple',
+    employeeThreshold: '< 50 Employees',
+    description: 'For companies with up to 50 employees/vendors',
+    features: [
+      'Up to 50 Verified Profiles',
+      '₹180 / Base Verified Profile',
+      '₹200 / Exceeding Profile (Never Blocked)',
+      'Vendor Profile Parity (1 Vendor = 1 Profile)',
+      'Automated Month-End GST Invoices',
+      'Full Statutory Verifications Suite'
+    ]
+  },
+  tier2: {
+    id: 'tier2',
+    name: 'Tier 2 (Growth)',
+    shortName: 'Tier 2',
+    tierNumber: 2,
+    maxProfiles: 100,
+    ratePerProfile: 150,
+    overageRate: 180,
+    badgeColor: 'badge-indigo',
+    employeeThreshold: '< 100 Employees',
+    description: 'For growing teams with up to 100 employees/vendors',
+    features: [
+      'Up to 100 Verified Profiles',
+      '₹150 / Base Verified Profile',
+      '₹180 / Exceeding Profile (Never Blocked)',
+      'Vendor Profile Parity (1 Vendor = 1 Profile)',
+      'Automated Month-End GST Invoices',
+      'Dual-Server Fallback Engine'
+    ]
+  },
+  tier3: {
+    id: 'tier3',
+    name: 'Tier 3 (Scale / Pro)',
+    shortName: 'Tier 3',
+    tierNumber: 3,
+    maxProfiles: 300,
+    ratePerProfile: 120,
+    overageRate: 150,
+    badgeColor: 'badge-cyan',
+    employeeThreshold: '< 300 Employees',
+    description: 'For mid-size companies with up to 300 employees/vendors',
+    features: [
+      'Up to 300 Verified Profiles',
+      '₹120 / Base Verified Profile',
+      '₹150 / Exceeding Profile (Never Blocked)',
+      'Vendor Profile Parity (1 Vendor = 1 Profile)',
+      'Priority Processing Queue',
+      'Automated Month-End GST Invoices'
+    ]
+  },
+  tier4: {
+    id: 'tier4',
+    name: 'Tier 4 (Enterprise)',
+    shortName: 'Tier 4',
+    tierNumber: 4,
+    maxProfiles: 500,
+    ratePerProfile: 100,
+    overageRate: 120,
+    badgeColor: 'badge-emerald',
+    employeeThreshold: '< 500 Employees',
+    description: 'For large enterprises with up to 500 employees/vendors',
+    features: [
+      'Up to 500 Verified Profiles',
+      '₹100 / Base Verified Profile',
+      '₹120 / Exceeding Profile (Never Blocked)',
+      'Vendor Profile Parity (1 Vendor = 1 Profile)',
+      'Dedicated Account Support',
+      'Automated Month-End GST Invoices'
+    ]
+  },
+  tier5: {
+    id: 'tier5',
+    name: 'Tier 5 (Custom Enterprise)',
+    shortName: 'Tier 5',
+    tierNumber: 5,
+    maxProfiles: 999999,
+    ratePerProfile: 85,
+    overageRate: 95,
+    badgeColor: 'badge-amber',
+    employeeThreshold: '500+ Employees (Custom)',
+    description: 'For large corporate organizations with 500+ employees/vendors',
+    features: [
+      '500+ Verified Profiles (Custom)',
+      '₹85 / Base Verified Profile (Volume Discount)',
+      '₹95 / Exceeding Profile',
+      'Vendor Profile Parity (1 Vendor = 1 Profile)',
+      'Custom SLA & Dedicated Account Manager',
+      'Automated Month-End GST Invoices'
+    ]
+  }
+};
+
+export const getCompanyPostpaidPlan = (companyOrPlan) => {
+  if (!companyOrPlan) return POSTPAID_PLANS.tier1;
+  const planKey = typeof companyOrPlan === 'string'
+    ? companyOrPlan.toLowerCase()
+    : ((companyOrPlan.planTier || companyOrPlan.plan || '').toLowerCase());
+
+  if (planKey.includes('tier 1') || planKey.includes('tier1') || planKey.includes('starter')) return POSTPAID_PLANS.tier1;
+  if (planKey.includes('tier 2') || planKey.includes('tier2') || planKey.includes('growth')) return POSTPAID_PLANS.tier2;
+  if (planKey.includes('tier 3') || planKey.includes('tier3') || planKey.includes('scale') || planKey.includes('pro')) return POSTPAID_PLANS.tier3;
+  if (planKey.includes('tier 4') || planKey.includes('tier4') || (planKey.includes('enterprise') && !planKey.includes('custom') && !planKey.includes('platinum'))) return POSTPAID_PLANS.tier4;
+  if (planKey.includes('tier 5') || planKey.includes('tier5') || planKey.includes('custom') || planKey.includes('platinum')) return POSTPAID_PLANS.tier5;
+
+  return POSTPAID_PLANS.tier1;
+};
+
+export const calculateCompanyPostpaidBill = (company, candidates = [], vendors = []) => {
+  const plan = getCompanyPostpaidPlan(company);
+  const compId = company?.id || 'comp-joy';
+
+  // Verified Employees
+  const compCandidates = Array.isArray(candidates) ? candidates.filter(c => (c.companyId === compId || c.company_id === compId)) : [];
+  const verifiedEmployees = compCandidates.filter(c => c.status === 'Verified');
+  const verifiedEmployeesCount = Math.max(verifiedEmployees.length, company?.verifiedCountThisMonth || 0);
+
+  // Verified Vendors (1 verified vendor = 1 employee profile parity)
+  const compVendors = Array.isArray(vendors) ? vendors.filter(v => v.companyId === compId) : [];
+  const verifiedVendors = compVendors.filter(v => v.overallStatus === 'Verified');
+  const verifiedVendorsCount = verifiedVendors.length;
+
+  const totalVerifiedProfiles = verifiedEmployeesCount + verifiedVendorsCount;
+  const baseQuota = plan.maxProfiles;
+  const baseProfilesCount = Math.min(totalVerifiedProfiles, baseQuota);
+  const overageProfilesCount = Math.max(0, totalVerifiedProfiles - baseQuota);
+
+  const baseCost = baseProfilesCount * plan.ratePerProfile;
+  const overageCost = overageProfilesCount * plan.overageRate;
+  const subtotal = baseCost + overageCost;
+  const gstTaxPercent = 18;
+  const gstAmount = Math.round(subtotal * (gstTaxPercent / 100));
+  const totalAmountDue = subtotal + gstAmount;
+
+  return {
+    plan,
+    verifiedEmployeesCount,
+    verifiedVendorsCount,
+    totalVerifiedProfiles,
+    baseQuota,
+    baseProfilesCount,
+    overageProfilesCount,
+    baseRate: plan.ratePerProfile,
+    overageRate: plan.overageRate,
+    baseCost,
+    overageCost,
+    subtotal,
+    gstTaxPercent,
+    gstAmount,
+    totalAmountDue,
+    isOverage: overageProfilesCount > 0
+  };
+};
+
 const INITIAL_COMPANIES = [];
 
 const INITIAL_HR_USERS = [];
@@ -3049,30 +3213,59 @@ export const AppProvider = ({ children }) => {
     showToast('Payment Gateway settings updated successfully!');
   };
 
-  // ⚡ 1-Click Verification Wallet Recharge via Razorpay / Payment Link
-  const rechargeCompanyWallet = (companyId, amount, paymentRecord) => {
-    setCompanies(prev => prev.map(c => {
-      if (c.id === companyId) {
-        const currentBal = c.walletBalance || 0;
-        const newBalance = currentBal + amount;
-        const addedChecks = paymentRecord?.creditsAdded || Math.floor(amount / (c.pricePerVerification || 120));
-        const updatedTx = [paymentRecord, ...(c.rechargeTransactions || [])];
-        return {
-          ...c,
-          walletBalance: newBalance,
-          maxLimit: (c.maxLimit || 500) + addedChecks,
-          rechargeTransactions: updatedTx
-        };
-      }
-      return c;
-    }));
+  // ⚡ Update Company Postpaid Plan Tier (Tier 1 through Tier 5)
+  const updateCompanyPostpaidPlan = (companyId, planId) => {
+    const targetPlan = POSTPAID_PLANS[planId] || POSTPAID_PLANS.tier1;
+    setCompanies(prev => {
+      const updated = prev.map(c => {
+        if (c.id === companyId) {
+          return {
+            ...c,
+            plan: targetPlan.name,
+            planTier: targetPlan.id,
+            pricePerVerification: targetPlan.ratePerProfile,
+            maxLimit: targetPlan.maxProfiles
+          };
+        }
+        return c;
+      });
+      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+    showToast(`🎉 Subscription updated to ${targetPlan.name} (Quota: ${targetPlan.maxProfiles} Profiles @ ₹${targetPlan.ratePerProfile}/profile)`);
+  };
 
+  // ⚡ Settle Postpaid Month-End Verification Invoice via Razorpay / Payment Link
+  const settlePostpaidInvoice = (companyId, paymentRecord, overrideAmount = null) => {
+    const paidAmount = overrideAmount || paymentRecord?.totalAmount || paymentRecord?.baseAmount || 0;
     const targetComp = companies.find(c => c.id === companyId);
+
+    setCompanies(prev => {
+      const updated = prev.map(c => {
+        if (c.id === companyId) {
+          const currentBal = c.walletBalance || 0;
+          const newBalance = currentBal + (paymentRecord?.baseAmount || paidAmount);
+          const updatedTx = [paymentRecord, ...(c.rechargeTransactions || [])];
+          return {
+            ...c,
+            walletBalance: newBalance,
+            lastSettlementDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
+            lastSettledAmount: paidAmount,
+            paymentStatus: 'SETTLED 🟢',
+            rechargeTransactions: updatedTx
+          };
+        }
+        return c;
+      });
+      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+
     const newNotif = {
-      id: `notif-recharge-${Date.now()}`,
+      id: `notif-settle-${Date.now()}`,
       role: 'company',
-      title: `⚡ Wallet Recharged: ₹${amount.toLocaleString('en-IN')}`,
-      message: `Successfully credited ₹${amount.toLocaleString('en-IN')} (${paymentRecord?.creditsAdded || ''} BGV checks) to ${targetComp?.name || 'Company'} wallet via ${paymentRecord?.method || 'Razorpay'}.`,
+      title: `⚡ Postpaid Bill Settled: ₹${paidAmount.toLocaleString('en-IN')}`,
+      message: `Successfully settled month-end postpaid verification invoice of ₹${paidAmount.toLocaleString('en-IN')} for ${targetComp?.name || 'Company'} via ${paymentRecord?.method || 'Razorpay'}.`,
       timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
       isRead: false,
       priority: 'high',
@@ -3080,6 +3273,11 @@ export const AppProvider = ({ children }) => {
     };
 
     setNotifications(prev => [newNotif, ...prev]);
+  };
+
+  // ⚡ 1-Click Verification Wallet Recharge & Postpaid Settlement via Razorpay / Payment Link
+  const rechargeCompanyWallet = (companyId, amount, paymentRecord) => {
+    settlePostpaidInvoice(companyId, paymentRecord, amount);
   };
 
   // 🏛️ COMPANY STATUTORY PROFILE VERIFICATION WORKFLOW (GST, PAN, CIN, Bank, Documents)
@@ -3278,49 +3476,38 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // ⚡ Execute Vendor Document Verification & Automatically Deduct Credits
+  // ⚡ Execute Vendor Document Verification in Postpaid Model (Never Blocks)
   const verifyVendorDocument = async (companyId, vendorId, checkType, documentValue, additionalData = {}) => {
-    const CHECK_COST = 60; // ₹60 deducted per verification check
     const targetComp = companies.find(c => c.id === companyId) || (companies && companies[0]);
-    const currentBal = targetComp?.walletBalance || 0;
-
-    if (currentBal < CHECK_COST) {
-      if (typeof showToast === 'function') {
-        showToast(`⚠️ Insufficient company wallet credits (Current balance: ₹${currentBal.toLocaleString('en-IN')}). Minimum ₹${CHECK_COST} required per check. Please recharge wallet.`, 'error');
-      }
-      return { success: false, error: 'INSUFFICIENT_CREDITS', requiredAmount: CHECK_COST, currentBalance: currentBal };
-    }
-
-    // 1. Deduct Credits from Company Wallet Balance
-    const newBalance = Math.max(0, currentBal - CHECK_COST);
     const timestampIso = new Date().toISOString();
     const timestampReadable = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'medium' }) + ' IST';
     const cleanVal = (documentValue || '').trim().toUpperCase();
 
-    const debitTx = {
-      id: `TX-DEBIT-${Date.now()}`,
-      type: 'debit',
-      amount: CHECK_COST,
+    const checkRecordTx = {
+      id: `TX-POSTPAID-VEND-${Date.now()}`,
+      type: 'postpaid_verification',
       category: 'vendor_verification',
       checkType,
       documentValue: cleanVal,
       vendorId,
       description: `Vendor Check: ${checkType.toUpperCase()} (${cleanVal})`,
-      timestamp: timestampReadable,
-      balanceAfter: newBalance
+      timestamp: timestampReadable
     };
 
-    setCompanies(prev => prev.map(c => {
-      if (c.id === (targetComp?.id || companyId)) {
-        return {
-          ...c,
-          walletBalance: newBalance,
-          verifiedCountThisMonth: (c.verifiedCountThisMonth || 0) + 1,
-          rechargeTransactions: [debitTx, ...(c.rechargeTransactions || [])]
-        };
-      }
-      return c;
-    }));
+    setCompanies(prev => {
+      const updated = prev.map(c => {
+        if (c.id === (targetComp?.id || companyId)) {
+          return {
+            ...c,
+            verifiedCountThisMonth: (c.verifiedCountThisMonth || 0) + 1,
+            rechargeTransactions: [checkRecordTx, ...(c.rechargeTransactions || [])]
+          };
+        }
+        return c;
+      });
+      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
 
     // 2. Perform Live Gateway Verification Check
     let verificationData = {};
@@ -3424,10 +3611,10 @@ export const AppProvider = ({ children }) => {
     });
 
     if (typeof showToast === 'function') {
-      showToast(`✅ Vendor ${checkType.toUpperCase()} verified! ₹${CHECK_COST} deducted from company credits.`);
+      showToast(`✅ Vendor ${checkType.toUpperCase()} verified! Added to monthly postpaid verification billing.`);
     }
 
-    return { success: true, verificationData, vendor: updatedVendor, balanceAfter: newBalance };
+    return { success: true, verificationData, vendor: updatedVendor };
   };
 
   return (
@@ -3543,7 +3730,13 @@ export const AppProvider = ({ children }) => {
       // 🏛️ Company Statutory Profile Verification
       verifyCompanyProfileDetail,
       updateCompanyVerificationStatus,
-      requestCompanyProfileReview
+      requestCompanyProfileReview,
+      // 💳 100% Postpaid Tier Billing Engine
+      POSTPAID_PLANS,
+      getCompanyPostpaidPlan,
+      calculateCompanyPostpaidBill,
+      updateCompanyPostpaidPlan,
+      settlePostpaidInvoice
     }}>
       {children}
     </AppContext.Provider>

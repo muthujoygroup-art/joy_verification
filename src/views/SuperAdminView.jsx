@@ -150,7 +150,13 @@ export const SuperAdminView = () => {
     platformLogoEmblem,
     platformLogoDark,
     updatePlatformLogo,
-    resetPlatformLogo
+    resetPlatformLogo,
+    vendors,
+    POSTPAID_PLANS,
+    getCompanyPostpaidPlan,
+    calculateCompanyPostpaidBill,
+    updateCompanyPostpaidPlan,
+    settlePostpaidInvoice
   } = useApp();
 
   const navigate = useNavigate();
@@ -2634,31 +2640,43 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
-          {/* 3. Corporate Clients Wallet & Invoicing Status Grid */}
+          {/* 3. Corporate Clients Postpaid Tiers & Invoicing Status Grid */}
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
             <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-sky-600" />
-                  <span>Corporate Client Wallets & Monthly Metered Invoicing</span>
+                  <span>Corporate Client Postpaid Tiers & Monthly Metered Invoicing</span>
                 </h3>
-                <p className="text-xs text-slate-500 font-medium">Manage company prepaid balances, recharge credits via Razorpay on their behalf, or dispatch monthly tax bills</p>
+                <p className="text-xs text-slate-500 font-medium">Manage company postpaid tiers, review live unbilled usage, non-blocking overages, and dispatch official month-end GST tax bills</p>
               </div>
-              <span className="badge badge-cyan text-[10px]">Auto GST 18% Compliant</span>
+              <span className="badge badge-purple text-[10px] font-bold">100% Postpaid Billing Model</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {companies.map((comp) => {
-                const subtotal = comp.verifiedCountThisMonth * comp.pricePerVerification;
-                const gst = Math.round(subtotal * 0.18);
-                const netTotal = subtotal + gst;
-                const paymentStatus = companyPaymentLedger[comp.id]?.status || 'PENDING DEBIT ⏳';
+                const bill = typeof calculateCompanyPostpaidBill === 'function' 
+                  ? calculateCompanyPostpaidBill(comp, candidates, vendors) 
+                  : {
+                      plan: { name: comp.plan || 'Tier 1 (Starter)', ratePerProfile: 180, overageRate: 200, maxProfiles: 50 },
+                      baseProfilesCount: comp.verifiedCountThisMonth || 0,
+                      overageProfilesCount: 0,
+                      totalVerifiedProfiles: comp.verifiedCountThisMonth || 0,
+                      baseCost: (comp.verifiedCountThisMonth || 0) * 180,
+                      overageCost: 0,
+                      subtotal: (comp.verifiedCountThisMonth || 0) * 180,
+                      gstAmount: Math.round(((comp.verifiedCountThisMonth || 0) * 180) * 0.18),
+                      totalAmountDue: Math.round(((comp.verifiedCountThisMonth || 0) * 180) * 1.18),
+                      isOverage: false
+                    };
+
+                const paymentStatus = comp.paymentStatus || companyPaymentLedger[comp.id]?.status || 'ACTIVE UNBILLED ⏳';
 
                 return (
                   <div key={comp.id} className="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/60 hover:border-indigo-300 transition-all space-y-4 shadow-2xs">
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="badge badge-purple text-[10px]">{comp.plan}</span>
+                        <span className={`badge text-[10px] font-bold ${bill.plan.badgeColor || 'badge-purple'}`}>{bill.plan.name}</span>
                         <h4 className="font-black text-slate-900 text-base mt-1">{comp.name}</h4>
                         <p className="text-slate-500 text-[11px]">{comp.email}</p>
                       </div>
@@ -2669,32 +2687,38 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                     <div className="space-y-1.5 p-3.5 bg-white rounded-xl border border-slate-200 text-xs">
                       <div className="flex justify-between text-slate-600">
-                        <span>Prepaid Wallet Balance:</span>
-                        <strong className="text-indigo-700 font-mono font-black">₹{(comp.walletBalance || 0).toLocaleString('en-IN')}</strong>
+                        <span>Included Base Quota:</span>
+                        <strong className="text-indigo-700 font-mono font-black">{bill.baseProfilesCount} / {bill.plan.maxProfiles === 999999 ? '∞' : bill.plan.maxProfiles}</strong>
                       </div>
                       <div className="flex justify-between text-slate-600">
-                        <span>Verifications this Month:</span>
-                        <strong className="text-slate-900 font-mono">{comp.verifiedCountThisMonth} checks</strong>
+                        <span>Base Rate:</span>
+                        <strong className="text-slate-900 font-mono">₹{bill.baseRate} / profile</strong>
+                      </div>
+                      {bill.overageProfilesCount > 0 && (
+                        <div className="flex justify-between text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          <span className="font-bold">Exceeding Overage:</span>
+                          <strong className="font-mono font-black">+{bill.overageProfilesCount} (@ ₹{bill.overageRate}/ea)</strong>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-slate-600">
+                        <span>Total Verified Profiles:</span>
+                        <strong className="text-slate-900 font-mono">{bill.totalVerifiedProfiles} Profiles</strong>
                       </div>
                       <div className="flex justify-between text-slate-600">
-                        <span>Tariff Rate:</span>
-                        <strong className="text-slate-900 font-mono">₹{comp.pricePerVerification} / check</strong>
+                        <span>Taxable Subtotal:</span>
+                        <span className="font-mono font-bold text-slate-900">₹{bill.subtotal.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-slate-600">
-                        <span>Subtotal:</span>
-                        <span className="font-mono">₹{subtotal.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between text-slate-600">
-                        <span>GST (18%):</span>
-                        <span className="font-mono">₹{gst.toLocaleString()}</span>
+                        <span>GST (18% SAC 998311):</span>
+                        <span className="font-mono">₹{bill.gstAmount.toLocaleString()}</span>
                       </div>
                       <div className="border-t border-slate-100 pt-1.5 flex justify-between font-black text-sm text-indigo-950">
-                        <span>Net Monthly Consumption:</span>
-                        <span className="text-emerald-700 font-mono font-black">₹{netTotal.toLocaleString()}</span>
+                        <span>Net Month-End Due:</span>
+                        <span className="text-emerald-700 font-mono font-black">₹{bill.totalAmountDue.toLocaleString()}</span>
                       </div>
                     </div>
 
-                    {/* Actions: Recharge, Send Bill & Invoice PDF */}
+                    {/* Actions: Settle Bill, Send Bill & Invoice PDF */}
                     <div className="space-y-2 pt-1">
                       <button
                         type="button"
@@ -2703,17 +2727,17 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           setShowSuperAdminRazorpayModal(true);
                         }}
                         className="btn btn-superadmin text-xs py-2 px-3 w-full flex items-center justify-center gap-1.5 font-black shadow-sm cursor-pointer"
-                        title="Recharge Wallet via Razorpay for this Company"
+                        title="Settle Postpaid Bill via Razorpay for this Company"
                       >
                         <Zap className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
-                        <span>Recharge Wallet (Razorpay) ⚡</span>
+                        <span>Settle Postpaid Bill (Razorpay) ⚡</span>
                       </button>
 
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => sendCompanyInvoiceBill(comp.id)}
-                          className="btn btn-hrexecutive text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1.5 font-bold shadow-2xs"
+                          className="btn btn-hrexecutive text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1.5 font-bold shadow-2xs cursor-pointer"
                           title="Dispatch Invoice to Company via Email & WhatsApp"
                         >
                           <Mail className="w-3.5 h-3.5" />
@@ -2722,11 +2746,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                         <button
                           type="button"
-                          onClick={() => setActiveInvoiceModal(comp)}
-                          className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                          onClick={() => setActiveInvoiceModal({ company: comp, postpaidBill: bill })}
+                          className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 font-bold cursor-pointer"
+                          title="View Official GST Tax Invoice"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>PDF</span>
+                          <span>Invoice 📄</span>
                         </button>
                       </div>
                     </div>
