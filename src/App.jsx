@@ -44,6 +44,9 @@ function lazyWithRetry(componentImport, chunkName = 'chunk') {
 // Statically import LandingPageView to prevent Suspense fallback flash on reload
 import { LandingPageView } from './views/LandingPageView';
 
+// Public Specialized Pages
+const PublicPagesView = lazyWithRetry(() => import('./views/PublicPagesView').then(m => ({ default: m.PublicPagesView })), 'PublicPagesView');
+
 // Route-Level Code Splitting for Authenticated Portals
 const LoginView = lazyWithRetry(() => import('./views/LoginView').then(m => ({ default: m.LoginView })), 'LoginView');
 const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })), 'SuperAdminView');
@@ -178,8 +181,16 @@ export const App = () => {
           <div className="min-h-screen bg-[#070A11] text-slate-100 flex flex-col justify-between overflow-x-hidden">
             <Suspense fallback={<RouteLoadingSpinner />}>
               <Routes>
-                {/* 1. Public Marketing Landing Page */}
+                {/* 1. Public Marketing Landing Page & Specialized Public Pages */}
                 <Route path="/" element={<LandingPageView />} />
+                <Route path="/features" element={<PublicPagesView initialPage="features" />} />
+                <Route path="/solutions" element={<PublicPagesView initialPage="solutions" />} />
+                <Route path="/how-it-works" element={<PublicPagesView initialPage="how-it-works" />} />
+                <Route path="/about" element={<PublicPagesView initialPage="about" />} />
+                <Route path="/contact" element={<PublicPagesView initialPage="contact" />} />
+                <Route path="/resources" element={<PublicPagesView initialPage="resources" />} />
+                <Route path="/faq" element={<PublicPagesView initialPage="faq" />} />
+                <Route path="/pricing" element={<PublicPagesView initialPage="pricing" />} />
 
                 {/* 2. Single-Role Login Routes */}
                 <Route path="/login" element={<LoginView />} />
