@@ -1039,6 +1039,16 @@ export const CompanyAdminView = () => {
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               type="button"
+              onClick={() => setShowUniversalExportModal(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer transition-all"
+              title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
+            >
+              <Download className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Date-Filtered Reports 📥</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setShowRazorpayModal(true)}
               className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
               title="Instant Wallet Top-Up via Razorpay"

@@ -261,7 +261,7 @@ export const PortalLayout = ({ children }) => {
                 title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span className="hidden sm:inline">Reports 📥</span>
+                <span className="text-[11px] sm:text-xs font-bold text-emerald-950">Reports 📥</span>
               </button>
 
               {/* Notifications Alert Bell */}
@@ -321,16 +321,13 @@ export const PortalLayout = ({ children }) => {
       {/* ========================================================================= */}
       {/* 📱 MOBILE FLOATING ACTION ISLAND DOCK (< lg SCREENS)                      */}
       {/* ========================================================================= */}
-      {/* ========================================================================= */}
-      {/* 📱 MOBILE FLOATING ACTION ISLAND DOCK (< lg SCREENS)                      */}
-      {/* ========================================================================= */}
       {(() => {
         const isCandidate = isCandidateRoute || effectiveRole === 'employee_link';
         return (
           <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
             <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
               
-              {/* 1. Candidate: Verify Checklist / Admin: Legal & Compliance */}
+              {/* 1. For Admin & HR: Reports Hub / For Candidate: Verify Checklist */}
               {isCandidate ? (
                 <button
                   type="button"
@@ -350,15 +347,29 @@ export const PortalLayout = ({ children }) => {
                   type="button"
                   onClick={() => {
                     soundEngine.playClick?.();
-                    setShowLegalHandbook(true);
+                    setShowUniversalExportModal(true);
                   }}
-                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all cursor-pointer"
-                  title="Legal & DPDP Compliance"
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-700 active:scale-95 transition-all cursor-pointer group"
+                  title="Date-Filtered Candidate & Platform Reports"
                 >
-                  <Scale className="w-4 h-4 text-indigo-600" />
-                  <span className="text-[9px] font-black uppercase tracking-wider">Compliance</span>
+                  <Download className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                  <span className="text-[9px] font-black uppercase tracking-wider text-emerald-800">Reports</span>
                 </button>
               )}
+
+              {/* 2. For Admin & HR: Compliance / For Candidate: Legal */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  setShowLegalHandbook(true);
+                }}
+                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all cursor-pointer"
+                title="Legal & DPDP Compliance"
+              >
+                <Scale className="w-4 h-4 text-indigo-600" />
+                <span className="text-[9px] font-black uppercase tracking-wider">{isCandidate ? 'Legal' : 'Compliance'}</span>
+              </button>
 
               {/* 3. Center Vibrant Compass Action Button (Guided Product Tour) */}
               <button
@@ -374,39 +385,54 @@ export const PortalLayout = ({ children }) => {
                 <Compass className="w-5 h-5 animate-spin-slow text-amber-300" />
               </button>
 
-              {/* 4. Real-time Alerts */}
-              <button
-                type="button"
-                onClick={() => {
-                  soundEngine.playClick?.();
-                  setShowNotificationsModal(true);
-                }}
-                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
-                title="Notifications"
-              >
-                <div className="relative">
-                  <Bell className="w-4 h-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
-                      {unreadCount}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
-              </button>
+              {/* 4. Real-time Alerts (For Candidate: Support Ticket) */}
+              {isCandidate ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEngine.playClick?.();
+                    setShowSupportModal(true);
+                  }}
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-purple-600 active:scale-95 transition-all cursor-pointer"
+                  title="Helpdesk & Support"
+                >
+                  <LifeBuoy className="w-4 h-4 text-purple-600" />
+                  <span className="text-[9px] font-black uppercase tracking-wider">Support</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEngine.playClick?.();
+                    setShowNotificationsModal(true);
+                  }}
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-amber-600 active:scale-95 transition-all relative cursor-pointer"
+                  title="Notifications"
+                >
+                  <div className="relative">
+                    <Bell className="w-4 h-4" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1.5 w-3 h-3 rounded-full bg-rose-500 text-white text-[7.5px] font-black flex items-center justify-center animate-pulse">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider">Alerts</span>
+                </button>
+              )}
 
               {/* 5. More Menu Sheet Toggle (Opens Left Sidebar Drawer) */}
-            <button
-              onClick={() => {
-                soundEngine.playClick?.();
-                setMobileDrawerOpen(true);
-              }}
-              className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
-              title="More Options"
-            >
-              <Sliders className="w-4 h-4" />
-              <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
-            </button>
+              <button
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  setMobileDrawerOpen(true);
+                }}
+                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-slate-900 active:scale-95 transition-all cursor-pointer"
+                title="More Options"
+              >
+                <Sliders className="w-4 h-4" />
+                <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
+              </button>
 
             </div>
           </div>
