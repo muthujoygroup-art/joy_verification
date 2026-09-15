@@ -1,0 +1,27 @@
+﻿# Robots.txt for Joy True Profile (JOY CORPORATE SOLUTIONS PRIVATE LIMITED)
+# Website: https://test2.joycorporatesolutions.com/
+
+User-agent: *
+Allow: /$
+Allow: /assets/
+Allow: /favicon*
+Allow: /joy_logo.png
+
+# Strictly disallow authenticated portal dashboards, candidate links, and private API routes
+Disallow: /superadmin/
+Disallow: /superadmin/*
+Disallow: /company/
+Disallow: /company/*
+Disallow: /hr/
+Disallow: /hr/*
+Disallow: /candidate/
+Disallow: /candidate/*
+Disallow: /verify/
+Disallow: /verify/*
+Disallow: /activate/
+Disallow: /activate*
+Disallow: /api/
+Disallow: /api/*
+
+# Canonical XML Sitemap
+Sitemap: https://test2.joycorporatesolutions.com/sitemap.xml
