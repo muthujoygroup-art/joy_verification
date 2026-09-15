@@ -42,7 +42,8 @@ import {
   Play,
   ArrowUpRight,
   Mail,
-  UserPlus
+  UserPlus,
+  Share2
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
@@ -55,6 +56,10 @@ import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedCo
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
 import LiveVideoSimulationShowcase from '../components/landing/LiveVideoSimulationShowcase';
+import VerificationExperiencePipeline from '../components/landing/VerificationExperiencePipeline';
+import WorkforceConnectivityHub from '../components/landing/WorkforceConnectivityHub';
+import AsymmetricFeatureGrid from '../components/landing/AsymmetricFeatureGrid';
+import TrustSecurityPillars from '../components/landing/TrustSecurityPillars';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -68,13 +73,15 @@ export const LandingPageView = () => {
     ...DEFAULT_LANDING_PAGE_CONTENT,
     ...(landingPageContent || {})
   };
-  // Innovative First-Load / Reload Logo Preloader
+
+  // Innovative First-Load / Reload Logo Preloader (Strictly preserved)
   const [showPreloader, setShowPreloader] = useState(true);
 
   // Active View Tab State (Single Unified Tab Switcher)
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tabId) => {
+    soundEngine.playClick();
     setActiveTab(tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -125,7 +132,6 @@ export const LandingPageView = () => {
   const [selectedSimMode, setSelectedSimMode] = useState('labor_pass');
   const [simulating, setSimulating] = useState(false);
   const [simProgress, setSimProgress] = useState(100);
-  const [showJsonPayload, setShowJsonPayload] = useState(false);
 
   // Fallback Articles for Knowledge Hub
   const fallbackArticles = [
@@ -171,6 +177,7 @@ export const LandingPageView = () => {
 
   // Trigger Interactive Engine Simulator
   const handleRunSimulation = (modeKey) => {
+    soundEngine.playScan();
     setSelectedSimMode(modeKey);
     setSimulating(true);
     setSimProgress(0);
@@ -182,6 +189,7 @@ export const LandingPageView = () => {
       if (progress >= 100) {
         clearInterval(timer);
         setSimulating(false);
+        soundEngine.playSuccess();
       }
     }, 100);
   };
@@ -194,9 +202,11 @@ export const LandingPageView = () => {
     try {
       await api.submitDemoRequest(demoForm);
       setDemoSubmitted(true);
+      soundEngine.playSuccess();
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
     } catch {
       setDemoSubmitted(true);
+      soundEngine.playSuccess();
     } finally {
       setDemoLoading(false);
     }
@@ -210,43 +220,45 @@ export const LandingPageView = () => {
     try {
       await api.submitReview(reviewForm);
       setReviewSubmitted(true);
+      soundEngine.playSuccess();
       confetti({ particleCount: 60, spread: 60, origin: { y: 0.5 } });
     } catch {
       setReviewSubmitted(true);
+      soundEngine.playSuccess();
     } finally {
       setReviewLoading(false);
     }
   };
 
-  // Technical Specifications Data (Enterprise Standards & Reliability)
+  // Technical Specifications Data
   const technicalSpecs = {
     performance: [
-      { label: 'Verification Speed', value: 'Under 60 Seconds', detail: 'Instant automated checks across all databases' },
-      { label: 'Photo & Identity Match', value: '100% Genuine Match', detail: 'Eliminates duplicate, fake, or fraudulent profiles' },
-      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Mobile-friendly link with zero app downloads' },
-      { label: 'System Capacity', value: '50,000+ Checks / Day', detail: 'Built to effortlessly handle high-volume hiring' },
-      { label: 'Service Reliability', value: '99.99% Uptime', detail: 'Always-available cloud platform with round-the-clock monitoring' }
+      { label: 'Verification Speed', value: 'Under 45 Seconds', detail: 'Instant parallel automated queries across all official registries' },
+      { label: 'Biometric Face Match', value: '99.98% Precision', detail: '3D anti-spoofing camera liveness eliminates fake and duplicate profiles' },
+      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Zero app download web magic link with 4-digit PIN security' },
+      { label: 'System Capacity', value: '50,000+ Checks / Day', detail: 'Cloud-native microservices built for high-volume enterprise hiring' },
+      { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Round-the-clock redundant infrastructure across sovereign Indian data centers' }
     ],
     security: [
-      { label: 'Data Encryption', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted at all times during transit and storage' },
-      { label: 'Privacy Law Compliance', value: '100% DPDP Act Compliant', detail: 'Explicit OTP candidate consent and automated data masking' },
-      { label: 'Industry Certifications', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud infrastructure' },
-      { label: 'Data Masking', value: 'Automatic Redaction', detail: 'Masks sensitive numbers like Aadhaar for complete privacy' },
-      { label: 'Certified Reports', value: 'Tamper-Proof PDF', detail: 'Official certified dossiers with verification badge' }
+      { label: 'Data Encryption', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted in transit (TLS 1.3) and encrypted at rest (AES-256)' },
+      { label: 'DPDP Act 2023 Compliance', value: '100% Consent Architecture', detail: 'Explicit candidate OTP consent recorded in permanent audit logs' },
+      { label: 'Aadhaar Privacy', value: 'Automated Masking', detail: 'Zero unredacted storage of national identity numbers' },
+      { label: 'Industry Standards', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud controls and security policies' },
+      { label: 'Certified PDF Reports', value: 'Tamper-Proof Dossiers', detail: 'Cryptographic hash signatures and verifiable timestamped badges' }
     ],
     statutory: [
-      { label: 'Workforce Gate Passes', value: 'Digital Scannable QR', detail: 'Instant digital employee badges for security gates' },
-      { label: 'Audit Trail Records', value: 'Always Audit-Ready', detail: 'Permanent, verifiable compliance log for statutory audits' },
-      { label: 'Employment History', value: 'Full Career Timeline', detail: 'Past company tenures and relieving dates confirmed' },
-      { label: 'Bank Account Match', value: 'Instant ₹1 Verification', detail: 'Validates beneficiary name directly with recipient bank' },
-      { label: 'Court Record Scope', value: 'Pan-India Databases', detail: 'Covers civil, criminal, and commercial tribunals' }
+      { label: 'Workforce Gate Passes', value: 'Scannable Digital QR', detail: 'Sub-second access clearance for turnstiles and security guards' },
+      { label: 'CLRA Form XVI Audit', value: 'Always Audit-Ready', detail: 'Permanent statutory compliance muster roll and contractor tracking' },
+      { label: 'EPFO Moonlighting Audit', value: 'Full Career Timeline', detail: 'Detects active secondary provident fund employer contributions' },
+      { label: 'Bank Account Penny Drop', value: 'Instant ₹1 IMPS Match', detail: 'Direct NPCI validation confirms beneficiary account name 100%' },
+      { label: 'Court Record Scope', value: '3,500+ Pan-India Courts', detail: 'Broad civil, criminal, and commercial tribunal coverage' }
     ],
     infrastructure: [
-      { label: 'Cloud Architecture', value: 'Modern Cloud Native', detail: 'High-speed distributed servers across India' },
-      { label: 'Official Connectors', value: 'Official Registry Connectors', detail: 'Direct validation with official government and banking rails' },
-      { label: 'Candidate Experience', value: 'Zero-App Web Link', detail: 'Runs instantly on WhatsApp, SMS, or any mobile browser' },
-      { label: 'HR System Integration', value: 'Seamless Integrations', detail: 'Works with your existing HRMS, ATS, or turnstile gates' },
-      { label: 'Report Delivery', value: 'Instant PDF & Dashboard', detail: 'Downloadable certified audit record with 1 click' }
+      { label: 'Cloud Native Rails', value: 'Indian Sovereign Cloud', detail: 'High-speed edge nodes with sub-200ms API response latency' },
+      { label: 'Multi-Tenant Portals', value: '4 Dedicated Workstations', detail: 'Super Admin, Company Admin, HR Recruiter, and Candidate Mobile' },
+      { label: 'Candidate Delivery', value: 'Multi-Channel Dispatch', detail: 'Automated 1-click delivery via WhatsApp, SMS, and Email' },
+      { label: 'Billing Model', value: '100% Postpaid & Metered', detail: 'Pay-per-check with official automated Razorpay GST tax invoices' },
+      { label: 'Report Delivery', value: 'Instant PDF & Web Link', detail: 'Certified downloadable dossier generated immediately upon completion' }
     ]
   };
 
@@ -327,23 +339,11 @@ export const LandingPageView = () => {
         { title: 'Photo & Duplicate Profile Check', status: '0 Duplicates ✓', time: '0.4s' },
         { title: 'Digital Gate Pass Issued', status: 'Pass #7821 Ready ✓', time: '0.6s' },
         { title: 'Bank Account Name Match', status: 'Bank Match 100% ✓', time: '1.1s' }
-      ],
-      json: {
-        status: 'VERIFIED_ACTIVE',
-        verificationId: 'JOY-EMP-994208',
-        timestamp: '2026-09-05T14:15:20Z',
-        time_taken_ms: 780,
-        match_score: 99.8,
-        gate_pass: {
-          pass_status: 'ACTIVE',
-          qr_code: 'QR_PASS_88492',
-          is_valid: true
-        }
-      }
+      ]
     },
     dual_employment: {
       id: 'dual_employment',
-      title: 'Past Job & Company Check',
+      title: 'Past Job & Moonlighting Check',
       category: 'Corporate & Tech Roles',
       icon: Search,
       candidate: { name: 'Pooja Narang', role: 'Senior Software Engineer', contractor: 'Direct Enterprise Hire' },
@@ -352,15 +352,7 @@ export const LandingPageView = () => {
         { title: 'Job Overlap Check (Moonlighting)', status: '0 Overlaps (Clean) ✓', time: '0.8s' },
         { title: 'Relieving Date Confirmation', status: 'Clean Exit Verified ✓', time: '0.9s' },
         { title: 'Income & Salary Stream Check', status: 'Single Salary Stream ✓', time: '1.4s' }
-      ],
-      json: {
-        status: 'CLEAN_VERIFIED',
-        verificationId: 'JOY-EXP-551902',
-        identifier_masked: '1004XXXX7729',
-        overlapping_employments_detected: 0,
-        service_history_count: 4,
-        risk_score: 'LOW (0.01%)'
-      }
+      ]
     },
     court_bgv: {
       id: 'court_bgv',
@@ -373,14 +365,7 @@ export const LandingPageView = () => {
         { title: 'Financial & Default Check', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
         { title: 'College Degree Verification', status: 'IIT Delhi Verified ✓', time: '1.9s' },
         { title: 'Company Directorship Check', status: 'Active Clean Status ✓', time: '1.1s' }
-      ],
-      json: {
-        status: 'LEADERSHIP_CLEARANCE_ISSUED',
-        verificationId: 'JOY-EXEC-331094',
-        court_cases_found: 0,
-        commercial_defaults: 0,
-        education_status: 'VERIFIED'
-      }
+      ]
     },
     whatsapp_kyc: {
       id: 'whatsapp_kyc',
@@ -393,14 +378,7 @@ export const LandingPageView = () => {
         { title: 'Candidate Aadhaar OTP Check', status: 'Verified in 22s ✓', time: '0.6s' },
         { title: 'Live Selfie Photo Match', status: 'Photo Matched 99.4% ✓', time: '1.2s' },
         { title: 'Verification Report Created', status: 'Report Ready (PDF) ✓', time: '0.8s' }
-      ],
-      json: {
-        status: 'ONBOARDING_COMPLETED',
-        session_id: 'WA-MSG-77491',
-        time_taken_seconds: 41,
-        otp_verified: true,
-        location: 'Mumbai, MH'
-      }
+      ]
     }
   };
 
@@ -451,36 +429,40 @@ export const LandingPageView = () => {
   // FAQ Data
   const faqData = [
     {
-      q: 'How does JOY TRUE PROFILE achieve fast and comprehensive employee background verification?',
-      a: 'JOY TRUE PROFILE automatically checks candidate identity, past employment history, public court records, and direct bank details in parallel. Instead of slow manual calls and days of paperwork, verifications are completed in under 60 seconds.'
+      q: 'How does JOY TRUE PROFILE achieve sub-45-second verification speeds?',
+      a: 'JOY TRUE PROFILE connects directly to official verification rails including UIDAI OTP for Aadhaar, NSDL for PAN, NPCI for Bank Penny Drops, and EPFO for employment history. All checks execute in parallel using high-speed cloud microservices, delivering certified results in under 45 seconds.'
     },
     {
-      q: 'How does the platform eliminate duplicate worker profiles and fraudulent entries?',
-      a: 'Applicant pools and staffing rosters can often contain duplicate identities or phantom entries. JOY TRUE PROFILE performs biometric photo matching and digital ID verification to ensure every profile is an authentic, real individual before access is granted.'
+      q: 'How does the platform detect moonlighting and dual employment?',
+      a: 'The platform performs a real-time audit of active provident fund contributions under the candidate’s EPFO UAN. It automatically identifies overlapping employment tenures, checks Form 26AS tax records, and flags secondary undeclared jobs before offer letters are issued.'
     },
     {
       q: 'How is candidate privacy protected under the Digital Personal Data Protection (DPDP) Act 2023?',
-      a: 'All verifications are 100% consent-driven. Candidates grant explicit OTP-based consent. Data in transit and at rest is secured with 256-bit AES encryption, and automated data masking ensures sensitive numbers are protected.'
+      a: 'All verifications are strictly consent-driven. Candidates grant explicit OTP-based authorization before checks begin. Sensitive identifiers like Aadhaar numbers are automatically masked, data in transit and at rest is secured with 256-bit AES encryption, and immutable audit logs ensure complete statutory compliance.'
     },
     {
-      q: 'Can JOY TRUE PROFILE issue digital compliance passes and audit-ready reports?',
-      a: 'Yes. Upon successful verification, the engine automatically compiles certified audit reports, compliance certificates, and digital QR gate passes that can be printed or scanned with any phone camera.'
+      q: 'Can JOY TRUE PROFILE generate digital gate passes for factory turnstiles?',
+      a: 'Yes. Upon successful verification, the engine automatically issues a scannable digital QR gate pass. Security personnel or automated turnstiles can scan the badge in under 0.5 seconds, ensuring compliance with CLRA Form XVI statutory labor regulations.'
     },
     {
-      q: 'Do candidates need to install any mobile app to complete verification?',
-      a: 'No app download is required. Candidates receive a secure magic link via WhatsApp or SMS. They simply open the link in any mobile browser, verify with an OTP, capture a quick selfie, and complete the check in under 2 minutes.'
+      q: 'How does the 100% Postpaid billing model work?',
+      a: 'Enterprises are never blocked during critical recruitment surges. You verify candidate profiles on demand and settle monthly based on actual checks consumed. Official GST tax invoices are generated automatically with itemized transaction ledgers.'
+    },
+    {
+      q: 'Do candidates need to install any mobile application?',
+      a: 'No application install is required. Candidates receive a secure, PIN-protected magic link via WhatsApp, SMS, or Email. The mobile web experience runs smoothly in any mobile browser and completes in under 2 minutes.'
     }
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white relative overflow-x-hidden">
       
-      {/* Innovative First-Load / Reload Holographic Logo Preloader */}
+      {/* 1. Innovative First-Load Holographic Preloader (Preserved exactly as-is) */}
       {showPreloader && (
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
-      {/* TOP DYNAMIC DATABASE-DRIVEN ANNOUNCEMENT BANNER */}
+      {/* 2. Top Database-Driven Announcement Banner */}
       {content.showAnnouncement && content.announcementText && (
         <div className="w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 border-b border-indigo-400/40 py-2 px-3 sm:px-6 text-center text-xs font-semibold text-indigo-200 relative z-50 flex items-center justify-center gap-2 shadow-inner">
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-wider shrink-0 border border-indigo-400/30">
@@ -490,7 +472,7 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* TOP KINETIC MARQUEE TICKER */}
+      {/* 3. Top Kinetic Marquee Ticker */}
       <div className="w-full bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border-b border-purple-300/30 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-100 relative z-50 shadow-sm">
         <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
           {[...Array(2)].map((_, mIdx) => (
@@ -516,7 +498,7 @@ export const LandingPageView = () => {
               </span>
               <span className="text-purple-400">✦</span>
               <span className="inline-flex items-center gap-2 text-indigo-200">
-                <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Audit Vault
+                <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Vault
               </span>
               <span className="text-purple-400">✦</span>
             </React.Fragment>
@@ -524,13 +506,11 @@ export const LandingPageView = () => {
         </div>
       </div>
 
-      {/* ==============================================================================
-       * 1. TOP NAVIGATION: SINGLE ELEGANT LIGHT THEME NAVBAR WITH NEAT PILL TOGGLE
-       * ============================================================================== */}
+      {/* 4. Top Glass Navigation Bar */}
       <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-2xl border-b border-slate-200 shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
           
-          {/* Brand Logo - Single Line, Clean, Balanced */}
+          {/* Brand Logo */}
           <button onClick={() => handleTabChange('overview')} className="flex items-center gap-3 shrink-0 group text-left cursor-pointer border-none bg-transparent">
             <div className="relative shrink-0">
               <img 
@@ -551,7 +531,7 @@ export const LandingPageView = () => {
             </div>
           </button>
 
-          {/* Center Navigation: Single Neat Segmented Pill Switcher */}
+          {/* Center Navigation: Segmented Pill Switcher */}
           <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/90 border border-slate-200 shadow-inner backdrop-blur-xl">
             {[
               { id: 'overview', label: 'Overview' },
@@ -593,7 +573,10 @@ export const LandingPageView = () => {
 
             {/* Launch Guided Tour Guide Trigger */}
             <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
+              onClick={() => {
+                soundEngine.playClick();
+                window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
+              }}
               className="whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Compass className="w-3.5 h-3.5 text-indigo-600 animate-spin-slow" />
@@ -602,7 +585,10 @@ export const LandingPageView = () => {
 
             {/* Book Live Demo Primary Button */}
             <button
-              onClick={() => setShowDemoModal(true)}
+              onClick={() => {
+                soundEngine.playClick();
+                setShowDemoModal(true);
+              }}
               className="whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-700 hover:to-indigo-700 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-purple-500/50"
             >
               <span>Book Live Demo</span>
@@ -620,7 +606,7 @@ export const LandingPageView = () => {
           </button>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown Navigation */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-200 px-4 py-4 bg-white shadow-2xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
             <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-700 hover:text-purple-600 hover:bg-slate-100 font-bold text-left">Overview</button>
@@ -653,20 +639,20 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * TAB VIEW CONTENT SWITCHING
+       * TAB VIEW ROUTING
        * ============================================================================== */}
 
-      {/* VIEW 1: OVERVIEW TAB */}
+      {/* VIEW 1: MASTER OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <>
-          {/* ADOBE MAX KINETIC HERO SECTION (LIGHT THEME) */}
+          {/* KINETIC HERO SECTION */}
           <section className="relative z-10 pt-10 pb-16 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {/* Soft Ambient Light Mesh Glow Flares */}
+            {/* Soft Ambient Light Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-r from-purple-200/50 via-indigo-200/50 to-emerald-200/40 blur-[150px] pointer-events-none rounded-full" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
               
-              {/* Left Column: Expressive Master Typography & Action Controls */}
+              {/* Left Column: Bold Kinetic Typography & CTAs */}
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
                 {/* Dynamic Eyebrow Badge */}
@@ -690,10 +676,13 @@ export const LandingPageView = () => {
                   {content.heroSubtitle || 'Verify identity, PAN, past employment, bank details, and criminal records in under 60 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.'}
                 </p>
 
-                {/* Hero Primary Action Buttons */}
+                {/* Hero Action Buttons */}
                 <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
                   <button
-                    onClick={() => setShowDemoModal(true)}
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setShowDemoModal(true);
+                    }}
                     className="btn-superadmin px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl font-black text-xs sm:text-sm text-white shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
                   >
                     <span>{content.ctaPrimaryText || 'Book Free Live Demo 🚀'}</span>
@@ -701,7 +690,10 @@ export const LandingPageView = () => {
                   </button>
 
                   <button
-                    onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
+                    onClick={() => {
+                      soundEngine.playClick();
+                      window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
+                    }}
                     className="bg-white hover:bg-slate-50 border-2 border-indigo-400 px-5 sm:px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-xs sm:text-sm text-indigo-950 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Compass className="w-4 h-4 text-indigo-600 animate-spin-slow" />
@@ -731,7 +723,7 @@ export const LandingPageView = () => {
 
               </div>
 
-              {/* Right Column: 3D Holographic Employee ID Passport Centerpiece */}
+              {/* Right Column: 3D Holographic Employee ID Card */}
               <div className="lg:col-span-5 flex justify-center">
                 <HeroInteractiveCard3D />
               </div>
@@ -739,7 +731,17 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* ADOBE MAX STYLE 4-PORTAL INTERACTIVE EXPERIENCE SHOWCASE (LIGHT THEME) */}
+          {/* SECTION 5: 5-STAGE VERIFICATION EXPERIENCE PIPELINE */}
+          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <VerificationExperiencePipeline />
+          </section>
+
+          {/* SECTION 6: WORKFORCE CONNECTIVITY ECOSYSTEM */}
+          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <WorkforceConnectivityHub />
+          </section>
+
+          {/* SECTION 7: 4-PORTAL SPECIALIZED WORKSTATION SHOWCASE */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
             <div className="text-center space-y-3 max-w-3xl mx-auto">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 border border-purple-200 text-purple-900 text-xs font-black uppercase tracking-wider shadow-2xs">
@@ -862,7 +864,7 @@ export const LandingPageView = () => {
 
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2 text-amber-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-amber-600" /> 4-Digit Security PIN Gate</li>
-                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Aadhaar e-KYC UIDAI OTP Verification</li>
+                    <li className="flex items-center gap-2 text-emerald-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Aadhaar e-KYC UIDAI OTP Check</li>
                     <li className="flex items-center gap-2 text-purple-800 font-bold"><CheckCircle2 className="w-3.5 h-3.5 text-purple-600" /> 3D AI Biometric Face Camera</li>
                   </ul>
                 </div>
@@ -878,60 +880,17 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* 60 FPS LIVE VIDEO SIMULATION REEL & MOTION SHOWCASE */}
+          {/* SECTION 8: ASYMMETRIC BENTO BOX GRID OF VERIFICATION SERVICES */}
+          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <AsymmetricFeatureGrid onOpenDemo={() => setShowDemoModal(true)} />
+          </section>
+
+          {/* SECTION 9: 60 FPS LIVE VIDEO SIMULATION REEL */}
           <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <LiveVideoSimulationShowcase />
           </section>
 
-          {/* QUICK FEATURE HIGHLIGHTS */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-2 inline-block px-3 py-1 rounded-full bg-amber-100 border border-amber-300">
-                4 CORE PILLARS OF JOY VERIFICATION
-              </span>
-              <h2 className="text-3xl font-black text-slate-900 font-outfit">Built for Enterprise Scale & Speed</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div onClick={() => handleTabChange('features')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Digital ID & Liveness</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">Instant Aadhaar/PAN checksum validation with biometric facial liveness match.</p>
-                <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
-              </div>
-
-              <div onClick={() => handleTabChange('moonlighting')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Search className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Moonlighting Radar</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">Detect EPFO UAN active contribution overlaps and secondary undisclosed employment.</p>
-                <span className="text-xs text-amber-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
-              </div>
-
-              <div onClick={() => handleTabChange('turnstile')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <HardHat className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">Turnstile Gate Access</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">Real-time QR gate pass issuance for factory workers and contractor labor.</p>
-                <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">Open Module <ArrowRight className="w-3.5 h-3.5" /></span>
-              </div>
-
-              <div onClick={() => handleTabChange('roi')} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-teal-500 transition-all cursor-pointer group shadow-sm hover:shadow-lg">
-                <div className="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <DollarSign className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 font-outfit mb-2">80% Cost Reduction</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">Eliminate manual background verification fees and ghost worker payroll leakages.</p>
-                <span className="text-xs text-teal-700 font-bold flex items-center gap-1">Calculate Savings <ArrowRight className="w-3.5 h-3.5" /></span>
-              </div>
-            </div>
-          </section>
-
-          {/* LIVE INDIA RADAR PREVIEW */}
+          {/* SECTION 10: REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
           <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
               <span className="font-mono text-xs uppercase tracking-wider text-amber-800 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100">
@@ -946,7 +905,7 @@ export const LandingPageView = () => {
               <div className="lg:col-span-5 flex flex-col gap-3">
                 <div className="font-mono text-[10px] uppercase tracking-wider text-slate-500 mb-2 flex items-center justify-between font-bold">
                   <span className="text-slate-800">ACTIVE REGIONAL CORRIDORS</span>
-                  <span className="text-emerald-600 font-bold">● 5 HUBS ONLINE</span>
+                  <span className="text-emerald-600 font-bold">● 6 HUBS ONLINE</span>
                 </div>
                 {Object.keys(radarCities).map((key) => {
                   const hub = radarCities[key];
@@ -954,7 +913,10 @@ export const LandingPageView = () => {
                   return (
                     <button
                       key={key}
-                      onClick={() => setActiveRadarCity(key)}
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setActiveRadarCity(key);
+                      }}
                       className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
                           ? 'bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-500 text-white shadow-md'
@@ -1015,13 +977,24 @@ export const LandingPageView = () => {
             </div>
           </section>
 
+          {/* SECTION 11: TRUST, SECURITY & DPDP COMPLIANCE PILLARS */}
+          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <TrustSecurityPillars 
+              onOpenLegalHandbook={() => setShowLegalHandbook(true)}
+              onOpenDemo={() => setShowDemoModal(true)}
+            />
+          </section>
+
           {/* HIGH IMPACT CTA */}
           <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-200">
             <div className="rounded-3xl border border-purple-200 bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 p-8 sm:p-12 text-center flex flex-col items-center text-white shadow-xl">
               <h2 className="text-3xl sm:text-4xl font-black text-white font-outfit mb-4">Transform Your Employee Verification Today</h2>
               <p className="text-slate-200 max-w-xl mb-8">Schedule a 15-minute live walkthrough with our enterprise security team.</p>
               <button
-                onClick={() => setShowDemoModal(true)}
+                onClick={() => {
+                  soundEngine.playClick();
+                  setShowDemoModal(true);
+                }}
                 className="px-8 py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-[1.02] transition-all cursor-pointer border border-emerald-400/50"
               >
                 Book Enterprise Demo 🚀
@@ -1033,8 +1006,8 @@ export const LandingPageView = () => {
 
       {/* VIEW 2: FEATURES TAB */}
       {activeTab === 'features' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+          <div className="text-center max-w-3xl mx-auto">
             <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               FEATURE SUITE
             </span>
@@ -1043,18 +1016,19 @@ export const LandingPageView = () => {
           </div>
 
           {/* Verification Command Orbit */}
-          <div className="mb-20">
-            <VerificationCommandOrbit />
-          </div>
+          <VerificationCommandOrbit />
+
+          {/* Asymmetric Bento Box Grid */}
+          <AsymmetricFeatureGrid onOpenDemo={() => setShowDemoModal(true)} />
 
           {/* Interactive Lab / Simulator */}
-          <div className="mb-20">
-            <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="space-y-8">
+            <div className="text-center max-w-3xl mx-auto">
               <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold mb-2 inline-block px-3 py-1 bg-emerald-100 border border-emerald-300 rounded-full">LIVE DEMO LAB</span>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">Run a Live Verification Simulation</h3>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {Object.keys(simModes).map((key) => {
                 const item = simModes[key];
                 const Icon = item.icon;
@@ -1192,8 +1166,8 @@ export const LandingPageView = () => {
 
       {/* VIEW 5: SPEED MATRIX COMPARISON TAB */}
       {activeTab === 'comparison' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+          <div className="text-center max-w-3xl mx-auto">
             <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               PERFORMANCE BENCHMARK
             </span>
@@ -1203,7 +1177,7 @@ export const LandingPageView = () => {
 
           <InteractiveSpeedComparison />
 
-          <InteractiveProcessPipeline />
+          <VerificationExperiencePipeline />
         </div>
       )}
 
@@ -1230,7 +1204,10 @@ export const LandingPageView = () => {
                   ].map((item) => (
                     <button
                       key={item.id}
-                      onClick={() => setWorkforceType(item.id)}
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setWorkforceType(item.id);
+                      }}
                       className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                         workforceType === item.id
                           ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black border-emerald-500 shadow-md'
@@ -1264,7 +1241,10 @@ export const LandingPageView = () => {
                   {[250, 500, 1000, 2500, 5000].map((preset) => (
                     <button
                       key={preset}
-                      onClick={() => setMonthlyHires(preset)}
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setMonthlyHires(preset);
+                      }}
                       className={`px-2.5 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
                         monthlyHires === preset ? 'bg-emerald-600 text-white font-black border-emerald-700' : 'bg-slate-100 text-slate-700 border-slate-200 hover:text-slate-900'
                       }`}
@@ -1332,7 +1312,10 @@ export const LandingPageView = () => {
               </div>
 
               <button
-                onClick={() => setShowDemoModal(true)}
+                onClick={() => {
+                  soundEngine.playClick();
+                  setShowDemoModal(true);
+                }}
                 className="w-full py-4 rounded-xl font-black text-sm text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 shadow-lg border border-emerald-400/50 cursor-pointer text-center"
               >
                 Unlock These Savings Now 🚀
@@ -1344,8 +1327,8 @@ export const LandingPageView = () => {
 
       {/* VIEW 7: SOLUTIONS TAB */}
       {activeTab === 'solutions' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+          <div className="text-center max-w-3xl mx-auto">
             <span className="font-mono text-xs uppercase tracking-wider text-indigo-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-indigo-200 bg-indigo-100">
               INDUSTRY ARCHITECTURE
             </span>
@@ -1353,41 +1336,19 @@ export const LandingPageView = () => {
             <p className="text-slate-600 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
-              <div>
-                <Smartphone className="w-10 h-10 text-emerald-600 mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Seamless Mobile Flow</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-4">Zero app installs. Candidates complete identity verification & selfie liveness via an encrypted magic link.</p>
-              </div>
-              <div className="font-mono text-xs text-emerald-700 font-bold pt-3 border-t border-slate-200">98% Candidate Completion Rate</div>
-            </div>
+          <WorkforceConnectivityHub />
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
-              <div>
-                <HardHat className="w-10 h-10 text-emerald-600 mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Workforce Digital QR Passes</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-4">Automated workforce compliance and digital credential issuance for facility turnstile gates.</p>
-              </div>
-              <div className="font-mono text-xs text-emerald-700 font-bold pt-3 border-t border-slate-200">Sub-Second Gate Turnstile Response</div>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-white p-7 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
-              <div>
-                <Search className="w-10 h-10 text-amber-600 mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 font-outfit mb-2">Dual-Employment Radar</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-4">Cross-references career service records and employment tenures to detect undisclosed secondary jobs.</p>
-              </div>
-              <div className="font-mono text-xs text-amber-700 font-bold pt-3 border-t border-slate-200">Zero-Tamper Work History Audit</div>
-            </div>
-          </div>
+          <TrustSecurityPillars 
+            onOpenLegalHandbook={() => setShowLegalHandbook(true)}
+            onOpenDemo={() => setShowDemoModal(true)}
+          />
         </div>
       )}
 
       {/* VIEW 8: RESOURCES TAB */}
       {activeTab === 'resources' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-20">
+          <div className="text-center max-w-3xl mx-auto">
             <span className="font-mono text-xs uppercase tracking-wider text-purple-800 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-purple-200 bg-purple-100">
               SPECIFICATIONS & REVIEWS
             </span>
@@ -1396,7 +1357,7 @@ export const LandingPageView = () => {
           </div>
 
           {/* Specs Segmented Control */}
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center">
             <div className="inline-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200 font-mono text-xs uppercase tracking-wider backdrop-blur-xl">
               {[
                 { id: 'performance', label: 'Performance' },
@@ -1406,7 +1367,10 @@ export const LandingPageView = () => {
               ].map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setActiveSpecCategory(cat.id)}
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setActiveSpecCategory(cat.id);
+                  }}
                   className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
                     activeSpecCategory === cat.id
                       ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black shadow-md border border-purple-500'
@@ -1420,7 +1384,7 @@ export const LandingPageView = () => {
           </div>
 
           {/* Specs Table */}
-          <div className="max-w-4xl mx-auto divide-y divide-slate-200 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl text-slate-900 mb-20">
+          <div className="max-w-4xl mx-auto divide-y divide-slate-200 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl text-slate-900">
             {technicalSpecs[activeSpecCategory].map((spec, idx) => (
               <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
                 <dt className="font-mono text-xs uppercase tracking-wider text-slate-600 flex items-center gap-2 font-bold">
@@ -1436,9 +1400,21 @@ export const LandingPageView = () => {
           </div>
 
           {/* Client Reviews */}
-          <div className="mb-20">
-            <h3 className="text-2xl font-black text-slate-900 font-outfit text-center mb-8">What Industrial Leaders Say</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+              <div>
+                <h3 className="text-2xl font-black text-slate-900 font-outfit">What Industrial Leaders Say</h3>
+                <p className="text-xs text-slate-500 mt-0.5 font-medium">Verified executive feedback from enterprise plants and workforce teams.</p>
+              </div>
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="px-4 py-2 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-xs font-bold cursor-pointer shadow-2xs"
+              >
+                + Post Review
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {clientReviews.map((rev, idx) => (
                 <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col justify-between gap-6 shadow-sm hover:shadow-md transition-all">
                   <div>
@@ -1470,7 +1446,10 @@ export const LandingPageView = () => {
                 return (
                   <div key={idx} className={`rounded-2xl border transition-all shadow-xs bg-white ${isOpen ? 'border-purple-300 bg-purple-50/20' : 'border-slate-200'}`}>
                     <button
-                      onClick={() => setOpenFaq(isOpen ? -1 : idx)}
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setOpenFaq(isOpen ? -1 : idx);
+                      }}
                       className="w-full p-5 text-left font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer"
                     >
                       <span>{faq.q}</span>
@@ -1536,8 +1515,8 @@ export const LandingPageView = () => {
               <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Corporate & Communication</h4>
               <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-sans">
                 <span className="text-white font-bold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
-                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail}`} className="text-indigo-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
-                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone}`} className="text-indigo-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
+                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-indigo-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
+                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-indigo-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
                 <span className="text-slate-400">💬 WhatsApp: <span className="text-emerald-400 font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
                 <span className="text-slate-400">🕒 Hours: <span className="text-slate-300">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
                 <span className="text-[11px] text-slate-400 mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
@@ -1551,17 +1530,25 @@ export const LandingPageView = () => {
               <span className="text-slate-300 font-bold">All Verification Nodes Operational (99.99% SLA)</span>
             </div>
             <div className="flex flex-wrap items-center gap-6">
-              <button onClick={() => setShowLegalHandbook(true)} className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold">Statutory Compliance Handbook</button>
+              <button 
+                onClick={() => {
+                  soundEngine.playClick();
+                  setShowLegalHandbook(true);
+                }} 
+                className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold"
+              >
+                Statutory Compliance Handbook
+              </button>
               <span>© {new Date().getFullYear()} {content.companyName || 'JOY Corporate Solutions Pvt Ltd.'}</span>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* WHATSAPP CONCIERGE FLOATING WIDGET */}
+      {/* FLOATING WHATSAPP CONCIERGE WIDGET */}
       <WhatsAppConcierge3D />
 
-      {/* MODALS */}
+      {/* DEMO MODAL */}
       {showDemoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
           <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
@@ -1616,6 +1603,7 @@ export const LandingPageView = () => {
         </div>
       )}
 
+      {/* REVIEW MODAL */}
       {showReviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
           <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-900 max-h-[90vh] overflow-y-auto">
@@ -1657,16 +1645,19 @@ export const LandingPageView = () => {
         </div>
       )}
 
+      {/* LEGAL COMPLIANCE HANDBOOK MODAL */}
       {showLegalHandbook && (
         <LegalComplianceHandbookModal isOpen={showLegalHandbook} onClose={() => setShowLegalHandbook(false)} />
       )}
 
+      {/* RAZORPAY MODAL */}
       {showLandingRazorpayModal && (
         <RazorpayPaymentModal
           amount={landingSelectedAmount}
           onClose={() => setShowLandingRazorpayModal(false)}
           onSuccess={() => {
             setShowLandingRazorpayModal(false);
+            soundEngine.playSuccess();
             confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
           }}
         />
