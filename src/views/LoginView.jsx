@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
-  ShieldCheck, 
   Building2, 
   UserCheck, 
   Smartphone, 
@@ -16,20 +15,44 @@ import {
   EyeOff,
   Mail,
   AlertCircle,
-  QrCode,
-  Fingerprint,
-  ArrowLeft,
   Info,
   Check,
-  Zap
+  ShieldCheck
 } from 'lucide-react';
-
 import { GlobalPlatformPreloader } from '../components/GlobalPlatformPreloader';
 
-export const LoginView = ({ initialRole = 'superadmin' }) => {
-  const { loginUser, candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem } = useApp();
+export const LoginView = ({ initialRole = null, lockRole = false }) => {
+  const { loginUser, candidates, companies, hrUsers, platformLogoEmblem } = useApp();
   const navigate = useNavigate();
-  const [selectedRoleTab, setSelectedRoleTab] = useState(initialRole || 'superadmin');
+  const location = useLocation();
+
+  // Infer effective role from props or URL pathname
+  const inferRole = () => {
+    if (initialRole) return initialRole;
+    const path = location.pathname.toLowerCase();
+    if (path.startsWith('/superadmin')) return 'superadmin';
+    if (path.startsWith('/company')) return 'company';
+    if (path.startsWith('/hr')) return 'hrexecutive';
+    if (path.startsWith('/verify') || path.startsWith('/candidate')) return 'employee_link';
+    return 'superadmin';
+  };
+
+  const effectiveRole = inferRole();
+  const [selectedRoleTab, setSelectedRoleTab] = useState(effectiveRole);
+
+  useEffect(() => {
+    setSelectedRoleTab(effectiveRole);
+  }, [effectiveRole]);
+
+  // Is this a role-isolated view?
+  const isLocked = lockRole || (
+    location.pathname.startsWith('/superadmin') ||
+    location.pathname.startsWith('/company') ||
+    location.pathname.startsWith('/hr') ||
+    location.pathname.startsWith('/verify') ||
+    location.pathname.startsWith('/candidate') ||
+    Boolean(initialRole)
+  );
   
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -38,8 +61,6 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
   const [candidatePinInput, setCandidatePinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
-
-  // ... (rest of details)
 
   if (isLoading) {
     return (
@@ -55,7 +76,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     superadmin: {
       id: 'superadmin',
       title: 'Super Admin Portal',
-      subtitle: 'Platform control, company accounts & billing management',
+      subtitle: 'Master platform control, company governance & billing management',
       badge: 'Super Admin',
       iconBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-500',
       headerGradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
@@ -76,7 +97,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     company: {
       id: 'company',
       title: 'Company Admin Portal',
-      subtitle: 'Manage your company, HR team & verification records',
+      subtitle: 'Manage your company, HR recruiters & workforce verification records',
       badge: 'Company Admin',
       iconBgClass: 'bg-sky-600 text-white shadow-md shadow-sky-200 border border-sky-500',
       headerGradient: 'linear-gradient(135deg, #0284c7 0%, #0d9488 100%)',
@@ -117,7 +138,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     },
     employee_link: {
       id: 'employee_link',
-      title: 'Candidate Verification Link',
+      title: 'Candidate Verification Portal',
       subtitle: 'Quick identity verification using OTP and live selfie',
       badge: 'Candidate',
       iconBgClass: 'bg-amber-500 text-white shadow-md shadow-amber-200 border border-amber-500',
@@ -137,7 +158,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     }
   };
 
-  const currentDetail = roleDetails[selectedRoleTab];
+  const currentDetail = roleDetails[selectedRoleTab] || roleDetails.superadmin;
   const Icon = currentDetail.icon;
 
   const handleLoginSubmit = async (e) => {
@@ -181,7 +202,6 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
           return;
         }
 
-        // Validate superadmin credentials
         if (email.toLowerCase() !== 'admin@joycorporatesolutions.com' && email.toLowerCase() !== 'superadmin@joyverification.com' && !email.includes('admin')) {
           setLoginError('Invalid Super Admin credentials. Please check your official email.');
           setIsLoading(false);
@@ -229,64 +249,21 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     }
   };
 
-  // Instant 1-Click Demo Login Handler for Stakeholders & Testers
-  const handleQuickDemoLogin = async (roleKey) => {
-    setSelectedRoleTab(roleKey);
-    setLoginError('');
-    setIsLoading(true);
-    try {
-      if (roleKey === 'superadmin') {
-        setEmailInput('admin@joycorporatesolutions.com');
-        setPasswordInput('admin123');
-        await loginUser('superadmin', { email: 'admin@joycorporatesolutions.com', password: 'admin123' });
-        navigate('/superadmin');
-      } else if (roleKey === 'company') {
-        const comp = (companies || [])[0] || { id: 'comp_1', email: 'muthukumar@joyglobalcorp.com', name: 'Joy Corporate Solutions' };
-        const compEmail = comp.email || 'muthukumar@joyglobalcorp.com';
-        const compSlug = (comp.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        setEmailInput(compEmail);
-        setPasswordInput('company123');
-        await loginUser('company', { email: compEmail, password: 'company123', companyId: comp.id });
-        navigate(`/company/${compSlug}`);
-      } else if (roleKey === 'hrexecutive') {
-        const hr = (hrUsers || [])[0] || { id: 'hr_1', email: 'muthujoygroup@gmail.com', companyId: 'comp_1' };
-        const hrEmail = hr.email || 'muthujoygroup@gmail.com';
-        const comp = (companies || []).find(c => c.id === hr.companyId) || (companies || [])[0] || { name: 'Joy Corporate Solutions' };
-        const hrSlug = (comp.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        setEmailInput(hrEmail);
-        setPasswordInput('hr123');
-        await loginUser('hrexecutive', { email: hrEmail, password: 'hr123', hrId: hr.id });
-        navigate(`/hr/${hrSlug}`);
-      } else if (roleKey === 'employee_link') {
-        const firstCand = (candidates || [])[0] || { token: 'DEMO-TOK-7821', portalPassword: '1234' };
-        const tok = firstCand.token || 'DEMO-TOK-7821';
-        setCandidateTokenInput(tok);
-        setCandidatePinInput('1234');
-        await loginUser('employee_link', { token: tok });
-        navigate(`/verify?token=${tok}`);
-      }
-    } catch (err) {
-      setLoginError(err.message || 'Demo authentication failed.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-6 sm:py-10 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
       
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto w-full space-y-8 sm:space-y-10 relative z-10 my-auto">
+      <div className="max-w-4xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
         
         {/* Top Header Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
-          <div className="flex items-center gap-3.5">
+          <Link to="/" className="flex items-center gap-3.5 no-underline">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY TRUE PROFILE Logo" 
-              className="w-11 h-11 object-contain" 
+              className="w-10 h-10 object-contain" 
             />
             <div>
               <div className="flex items-center gap-2">
@@ -295,7 +272,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
               </div>
               <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
-          </div>
+          </Link>
 
           <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
             <span className="badge badge-emerald flex items-center gap-1">
@@ -307,85 +284,22 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         </div>
 
         {/* Hero Section */}
-        <div className="text-center space-y-2.5 max-w-3xl mx-auto px-2">
+        <div className="text-center space-y-2 max-w-2xl mx-auto px-2">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-bold shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Role-Based Enterprise Authentication</span>
+            <span>{currentDetail.roleTag}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-            Sign In to Your Authorized Portal
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+            {currentDetail.title} Sign In
           </h1>
           
-          <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-            Select your assigned portal below to authenticate with your official enterprise credentials.
+          <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
+            {currentDetail.subtitle}
           </p>
         </div>
 
-        {/* ⚡ 1-Click Instant Demo Login Access Bar */}
-        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 border border-blue-200 p-4 rounded-2xl shadow-sm">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-blue-600" />
-              <span className="font-mono text-xs font-bold text-slate-800 uppercase tracking-wider">
-                ⚡ 1-Click Instant Demo Login (For Evaluators & Reviewers)
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-500 font-medium">Click any role below to test instantly</span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <button
-              onClick={() => handleQuickDemoLogin('superadmin')}
-              disabled={isLoading}
-              className="p-2.5 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 hover:border-indigo-400 text-left transition-all shadow-2xs group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5">
-                <Crown className="w-3.5 h-3.5 text-indigo-600" />
-                <span className="text-xs font-bold text-slate-900">Super Admin</span>
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono mt-0.5">admin@joycorp...</div>
-            </button>
-
-            <button
-              onClick={() => handleQuickDemoLogin('company')}
-              disabled={isLoading}
-              className="p-2.5 rounded-xl bg-white hover:bg-sky-50 border border-sky-200 hover:border-sky-400 text-left transition-all shadow-2xs group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-sky-600" />
-                <span className="text-xs font-bold text-slate-900">Company Admin</span>
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono mt-0.5">muthukumar@joy...</div>
-            </button>
-
-            <button
-              onClick={() => handleQuickDemoLogin('hrexecutive')}
-              disabled={isLoading}
-              className="p-2.5 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 hover:border-emerald-400 text-left transition-all shadow-2xs group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-xs font-bold text-slate-900">HR Executive</span>
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono mt-0.5">muthujoygroup@...</div>
-            </button>
-
-            <button
-              onClick={() => handleQuickDemoLogin('employee_link')}
-              disabled={isLoading}
-              className="p-2.5 rounded-xl bg-white hover:bg-amber-50 border border-amber-200 hover:border-amber-400 text-left transition-all shadow-2xs group cursor-pointer"
-            >
-              <div className="flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-amber-600" />
-                <span className="text-xs font-bold text-slate-900">Candidate Link</span>
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono mt-0.5">PIN: 1234</div>
-            </button>
-          </div>
-        </div>
-
-        {/* Selected Portal Login Card Form */}
+        {/* Selected Portal Login Card Form (Isolated strictly to this role) */}
         <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl animate-tab-switch">
           
           <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: currentDetail.headerGradient }} />
@@ -473,7 +387,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           <input 
                             type={showPassword ? 'text' : 'password'} 
                             required
-                            placeholder="Enter password"
+                            placeholder="Enter master password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             className="input-field-styled pr-10"
@@ -695,3 +609,5 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     </div>
   );
 };
+
+export default LoginView;

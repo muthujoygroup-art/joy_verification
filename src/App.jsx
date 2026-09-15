@@ -116,7 +116,7 @@ const SuperAdminRoute = () => {
       </PortalLayout>
     );
   }
-  return <LoginView initialRole="superadmin" />;
+  return <LoginView initialRole="superadmin" lockRole={true} />;
 };
 
 // Wrapper for Company Admin Route (/company)
@@ -129,7 +129,7 @@ const CompanyRoute = () => {
       </PortalLayout>
     );
   }
-  return <LoginView initialRole="company" />;
+  return <LoginView initialRole="company" lockRole={true} />;
 };
 
 // Wrapper for HR Executive Route (/hr)
@@ -142,7 +142,7 @@ const HrRoute = () => {
       </PortalLayout>
     );
   }
-  return <LoginView initialRole="hrexecutive" />;
+  return <LoginView initialRole="hrexecutive" lockRole={true} />;
 };
 
 // Wrapper for Candidate Verification Route (/verify or /candidate)
@@ -192,11 +192,12 @@ export const App = () => {
                 <Route path="/faq" element={<PublicPagesView initialPage="faq" />} />
                 <Route path="/pricing" element={<PublicPagesView initialPage="pricing" />} />
 
-                {/* 2. Single-Role Login Routes */}
+                {/* 2. Single-Role Dedicated Login Routes */}
                 <Route path="/login" element={<LoginView />} />
-                <Route path="/superadmin/login" element={<LoginView initialRole="superadmin" />} />
-                <Route path="/company/login" element={<LoginView initialRole="company" />} />
-                <Route path="/hr/login" element={<LoginView initialRole="hrexecutive" />} />
+                <Route path="/superadmin/login" element={<LoginView initialRole="superadmin" lockRole={true} />} />
+                <Route path="/company/login" element={<LoginView initialRole="company" lockRole={true} />} />
+                <Route path="/hr/login" element={<LoginView initialRole="hrexecutive" lockRole={true} />} />
+                <Route path="/candidate/login" element={<LoginView initialRole="employee_link" lockRole={true} />} />
 
                 {/* 3. Authenticated & Role-Gated Portal Dashboards with Hierarchical Slugs */}
                 <Route path="/superadmin/*" element={<SuperAdminRoute />} />
