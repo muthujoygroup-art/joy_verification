@@ -349,85 +349,84 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       return [
         {
           id: 'core_ops',
-          title: '1. Core Operations',
+          title: '1. Companies & Accounts',
           subtitle: 'Tenants & Candidates',
           badgeText: '6 MODULES',
           icon: Building2,
           colorClass: 'from-indigo-600 to-purple-600',
           defaultTab: 'companies',
           divisions: [
-            { id: 'companies', label: 'All Companies Ledger', tab: 'companies', icon: Building2 },
-            { id: 'onboard_company', label: '+ Onboard New Company', modal: 'add_company', icon: Plus },
-            { id: 'omnisearch', label: 'Omnisearch Profile Tracker', tab: 'omnisearch', icon: Search },
-            { id: 'ledger', label: 'Candidate Ledger & Records', tab: 'ledger', icon: Users },
-            { id: 'leads_inquiries', label: 'Enterprise Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
-            { id: 'reviews_moderation', label: 'Reviews & Public Testimonials', tab: 'reviews', icon: Star },
-            { id: 'terms_hub', label: 'Terms & Agreements Hub', tab: 'terms_hub', icon: Scale },
-            { id: 'logins', label: 'Unified Logins Directory', tab: 'logins', icon: UserCheck }
+            { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
+            { id: 'onboard_company', label: '+ Add New Company', modal: 'add_company', icon: Plus },
+            { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search },
+            { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
+            { id: 'leads_inquiries', label: 'Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
+            { id: 'reviews_moderation', label: 'Customer Reviews', tab: 'reviews', icon: Star },
+            { id: 'terms_hub', label: 'Terms & Agreements', tab: 'terms_hub', icon: Scale },
+            { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck }
           ]
         },
         {
           id: 'gateways_engine',
-          title: '2. Upstream Gateways',
+          title: '2. Verification Gateways',
           subtitle: 'APIs & Live Studio',
           badgeText: '4 MODULES',
           icon: Zap,
           colorClass: 'from-teal-600 to-emerald-600',
           defaultTab: 'apiconfig',
           divisions: [
-            { id: 'apiconfig', label: 'Verification APIs Studio (UIDAI/NSDL)', tab: 'apiconfig', icon: Zap },
+            { id: 'apiconfig', label: 'Gateway Settings (UIDAI/NSDL)', tab: 'apiconfig', icon: Zap },
             { id: 'studio', label: 'Live Verification Studio', tab: 'studio', icon: Layers },
             { id: 'api_margins', label: 'API Consumption & Profit Margins', tab: 'consumption_margins', icon: TrendingUp },
-            { id: 'comm_gateways', label: 'Automated Messaging (WhatsApp & SMS)', tab: 'whatsapp_sms', icon: MessageSquare },
-            { id: 'settings_smtp', label: 'cPanel SMTP & Mail 📧', tab: 'settings', icon: Mail }
+            { id: 'comm_gateways', label: 'Messaging (WhatsApp & SMS)', tab: 'whatsapp_sms', icon: MessageSquare },
+            { id: 'settings_smtp', label: 'Email SMTP Server 📧', tab: 'settings', icon: Mail }
           ]
         },
         {
           id: 'billing_finance',
-          title: '3. Financial Billing',
-          subtitle: 'Invoices & Ledger',
+          title: '3. Invoices & Billing',
+          subtitle: 'Postpaid Bills & Invoices',
           badgeText: '2 MODULES',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-600',
           defaultTab: 'billing',
           divisions: [
-            { id: 'billing', label: 'Company Billing Ledger & Invoices', tab: 'billing', icon: CreditCard },
-            { id: 'api_margins_fin', label: 'API Consumption & Margins', tab: 'consumption_margins', icon: TrendingUp },
-            { id: 'razorpay_modal', label: 'Razorpay Instant Payment Gateway', modal: 'razorpay_admin', icon: Zap }
+            { id: 'billing', label: 'Company Invoices & Billing', tab: 'billing', icon: CreditCard },
+            { id: 'api_margins_fin', label: 'API Margins & Costs', tab: 'consumption_margins', icon: TrendingUp },
+            { id: 'razorpay_modal', label: 'Razorpay Payment Gateway', modal: 'razorpay_admin', icon: Zap }
           ]
         },
         {
           id: 'db_security',
-          title: '4. Database & Security',
-          subtitle: 'DBMS & Audit Chain',
+          title: '4. Database & Logs',
+          subtitle: 'Database & System Activity',
           badgeText: '4 MODULES',
           icon: Database,
           colorClass: 'from-rose-600 to-pink-700',
           defaultTab: 'dbms',
           divisions: [
-            { id: 'dbms', label: 'PostgreSQL Live Schema & DBMS', tab: 'dbms', icon: Database },
-            { id: 'audit', label: 'Audit Trail & DPDP Hash Chain', tab: 'audit', icon: FileText },
-            { id: 'sessions', label: 'Active Multi-Role Sessions Hub', tab: 'sessions', icon: ShieldCheck },
-            { id: 'issuelogs', label: 'System Incident Logs & Solved Hub', tab: 'issuelogs', icon: Activity },
-            { id: 'system_health', label: 'Platform Analytics & Telemetry', tab: 'analytics', icon: TrendingUp }
+            { id: 'dbms', label: 'PostgreSQL Database Explorer', tab: 'dbms', icon: Database },
+            { id: 'audit', label: 'Audit Trail & Activity Log', tab: 'audit', icon: FileText },
+            { id: 'sessions', label: 'Active User Sessions', tab: 'sessions', icon: ShieldCheck },
+            { id: 'issuelogs', label: 'System Incident Logs', tab: 'issuelogs', icon: Activity },
+            { id: 'system_health', label: 'Platform Performance & Stats', tab: 'analytics', icon: TrendingUp }
           ]
         },
         {
           id: 'gov_reports',
-          title: '5. Governance & Config',
-          subtitle: 'DPDP, Reports & Help',
+          title: '5. Compliance & Settings',
+          subtitle: 'Reports, Rules & Settings',
           badgeText: '4 MODULES',
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-800',
           defaultTab: 'reports',
-          // Exactly matching bottom sub-tab buttons from Screenshot 2!
           divisions: [
             { id: 'reports', label: '1. Reports Center', tab: 'reports', icon: Download },
-            { id: 'guidelines', label: '2. Legal & DPDP Governance 🏛️', tab: 'legal_governance', icon: Scale },
-            { id: 'masterfields', label: '3. Master Data Presets 🎛️', tab: 'masterdata', icon: Sliders },
+            { id: 'guidelines', label: '2. Legal & Privacy Rules 🏛️', tab: 'legal_governance', icon: Scale },
+            { id: 'masterfields', label: '3. System Field Presets 🎛️', tab: 'masterdata', icon: Sliders },
             { id: 'tickets', label: '4. Support Helpdesk ⚙️', tab: 'tickets', icon: LifeBuoy },
-            { id: 'settings', label: '5. Security & Platform Config 🔒', tab: 'settings', icon: Settings },
-            { id: 'omnisearch_gov', label: 'Omnisearch 🔍', tab: 'omnisearch', icon: Search }
+            { id: 'settings', label: '5. Platform Settings 🔒', tab: 'settings', icon: Settings },
+            { id: 'omnisearch_gov', label: 'Quick Search 🔍', tab: 'omnisearch', icon: Search }
           ]
         }
       ];
@@ -440,72 +439,72 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       return [
         {
           id: 'telemetry_candidates',
-          title: '1. Analytics & Candidates',
-          subtitle: 'Usage & Candidate Directory',
+          title: '1. Dashboard & Candidates',
+          subtitle: 'Verification Records & Stats',
           badgeText: `${candidates.length} PROFILES`,
           icon: ShieldCheck,
           colorClass: 'from-sky-600 to-teal-600',
           defaultTab: 'registry',
           divisions: [
-            { id: 'registry', label: `Candidate Directory (${candidates.length})`, tab: 'registry', icon: Users },
-            { id: 'telemetry', label: 'Verification Telemetry & Stats', tab: 'telemetry', icon: TrendingUp }
+            { id: 'registry', label: `Candidate List (${candidates.length})`, tab: 'registry', icon: Users },
+            { id: 'telemetry', label: 'Verification Stats & Speeds', tab: 'telemetry', icon: TrendingUp }
           ]
         },
         {
           id: 'hr_governance',
-          title: '2. HR Team & Access',
-          subtitle: 'Recruiters & Permissions',
+          title: '2. HR Team & Recruiters',
+          subtitle: 'Staff & Permissions',
           badgeText: `${(hrUsers || []).length} STAFF`,
           icon: Users,
           colorClass: 'from-indigo-600 to-purple-700',
           defaultTab: 'hrteam',
           divisions: [
-            { id: 'hrteam', label: `Recruiter Team Directory (${(hrUsers || []).length})`, tab: 'hrteam', icon: UserCheck },
+            { id: 'hrteam', label: `HR Team Directory (${(hrUsers || []).length})`, tab: 'hrteam', icon: UserCheck },
             { id: 'add_hr_modal', label: '+ Add New HR Recruiter', modal: 'add_hr', icon: Plus },
-            { id: 'hr_permissions', label: 'Recruiter Field & Access Permissions', tab: 'hr_permissions', icon: Sliders }
+            { id: 'hr_permissions', label: 'HR Access & Permissions', tab: 'hr_permissions', icon: Sliders }
           ]
         },
         {
           id: 'vendor_verification',
           title: '3. Vendor Verification 🤝',
-          subtitle: 'Document Checks & Point-in-Time PDF',
-          badgeText: 'STATUTORY',
+          subtitle: 'Company Vendor Checks',
+          badgeText: 'VERIFIED',
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-700',
           defaultTab: 'vendor_verification',
           divisions: [
-            { id: 'vendor_list', label: 'Vendor Directory & Checks (GST/PAN)', tab: 'vendor_verification', icon: ShieldCheck },
-            { id: 'add_vendor_modal', label: '+ Verify New Corporate Vendor', modal: 'add_vendor', icon: Plus },
-            { id: 'vendor_pdf', label: 'Official Point-in-Time PDF Certificates', tab: 'vendor_verification', icon: Download }
+            { id: 'vendor_list', label: 'Vendor List & Checks (GST/PAN)', tab: 'vendor_verification', icon: ShieldCheck },
+            { id: 'add_vendor_modal', label: '+ Verify New Vendor', modal: 'add_vendor', icon: Plus },
+            { id: 'vendor_pdf', label: 'Official Vendor Verification PDF', tab: 'vendor_verification', icon: Download }
           ]
         },
         {
           id: 'corporate_dms',
-          title: '4. Profile & Document Vault',
-          subtitle: 'CIN, GSTIN & Cloud DMS',
+          title: '4. Company Profile & Vault',
+          subtitle: 'Company Details & Documents',
           badgeText: 'VAULT',
           icon: Building2,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'profile_details',
           divisions: [
-            { id: 'profile_details', label: 'Company Master Profile & Branding', tab: 'profile_details', icon: Building2 },
-            { id: 'statutory_creds', label: 'CIN, GSTIN & PAN Credentials', tab: 'profile_details', icon: ShieldCheck },
-            { id: 'dochub', label: 'Cloud Document Hub & Vault', tab: 'dochub', icon: Layers }
+            { id: 'profile_details', label: 'Company Profile & Details', tab: 'profile_details', icon: Building2 },
+            { id: 'statutory_creds', label: 'Tax & Registration (CIN/GSTIN/PAN)', tab: 'profile_details', icon: ShieldCheck },
+            { id: 'dochub', label: 'Company Document Vault', tab: 'dochub', icon: Layers }
           ]
         },
         {
           id: 'billing_gateways',
-          title: '5. Billing & Gateways',
-          subtitle: 'Wallet, SMTP & Alerts',
-          badgeText: 'CREDITS',
+          title: '5. Plans, Invoices & Settings',
+          subtitle: 'Postpaid Bills & Email Setup',
+          badgeText: 'BILLS',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-700',
           defaultTab: 'billing_wallet',
           divisions: [
-            { id: 'billing_wallet', label: 'Wallet Balance, Invoices & Tariffs', tab: 'billing_wallet', icon: CreditCard },
-            { id: 'recharge_wallet', label: '⚡ Recharge Credits (Razorpay)', modal: 'razorpay', icon: Zap },
-            { id: 'smtp_settings', label: 'Outgoing Mail SMTP Server Config', tab: 'smtp_settings', icon: MessageSquare },
-            { id: 'support', label: 'Helpdesk Tickets & Support', tab: 'support', icon: LifeBuoy }
+            { id: 'billing_wallet', label: 'Postpaid Plans & Monthly Invoices', tab: 'billing_wallet', icon: CreditCard },
+            { id: 'recharge_wallet', label: '⚡ Settle Bill (Razorpay)', modal: 'razorpay', icon: Zap },
+            { id: 'smtp_settings', label: 'Email Server Settings', tab: 'smtp_settings', icon: MessageSquare },
+            { id: 'support', label: 'Helpdesk & Support', tab: 'support', icon: LifeBuoy }
           ]
         }
       ];
@@ -518,7 +517,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       return [
         {
           id: 'pipeline_dossiers',
-          title: '1. Candidate Directory',
+          title: '1. Candidate List',
           subtitle: 'Manage Employee Candidates',
           badgeText: `${candidates.length} CANDIDATES`,
           icon: Smartphone,
@@ -526,7 +525,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'pipeline',
           divisions: [
             { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
-            { id: 'pipeline_active', label: `Pending Verifications (${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_active', label: `Pending Verification (${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
             { id: 'pipeline_verified', label: `Verified Candidates (${candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
@@ -547,7 +546,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         {
           id: 'statutory_settings',
           title: '3. Reports & Settings',
-          subtitle: 'Analytics & HR Configurations',
+          subtitle: 'Analytics & HR Settings',
           badgeText: 'SETTINGS',
           icon: Settings,
           colorClass: 'from-indigo-600 to-purple-700',
@@ -567,7 +566,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     return [
       {
         id: 'cand_identity',
-        title: '1. Identity Verification',
+        title: '1. Identity Checks',
         subtitle: 'Aadhaar, Mobile & Photo',
         badgeText: 'STEP 1',
         icon: ShieldCheck,
@@ -576,12 +575,12 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         divisions: [
           { id: 'aadhaar_step', label: 'Aadhaar Verification', tab: 'aadhaar', icon: ShieldCheck },
           { id: 'otp_step', label: 'Mobile & Email OTP', tab: 'otp', icon: Smartphone },
-          { id: 'face_step', label: 'Photo Verification', tab: 'face', icon: Sparkles }
+          { id: 'face_step', label: 'Photo & Selfie Match', tab: 'face', icon: Sparkles }
         ]
       },
       {
         id: 'cand_financial',
-        title: '2. Bank & Tax Checks',
+        title: '2. Bank & Tax Info',
         subtitle: 'PAN Card & Bank Account',
         badgeText: 'STEP 2',
         icon: CreditCard,
@@ -602,22 +601,22 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         colorClass: 'from-emerald-600 to-teal-700',
         defaultTab: 'joining_form',
         divisions: [
-          { id: 'joining_form', label: 'Candidate Onboarding Details', tab: 'joining_form', icon: FileText },
+          { id: 'joining_form', label: 'Personal & Address Details', tab: 'joining_form', icon: FileText },
           { id: 'signature_step', label: 'Digital Signature Pad', tab: 'signature', icon: Scale }
         ]
       },
       {
         id: 'cand_certs',
-        title: '4. Downloads & Rights',
-        subtitle: 'Certificates & DPDP Consent',
+        title: '4. Download Documents',
+        subtitle: 'Certificates & Privacy',
         badgeText: 'FINAL',
         icon: Download,
         colorClass: 'from-purple-600 to-indigo-700',
         defaultTab: 'cert_download',
         divisions: [
           { id: 'cert_download', label: 'Verification Certificate (PDF)', modal: 'cert', icon: Download },
-          { id: 'labor_dossier', label: 'Labor Law Record (PDF)', modal: 'dossier', icon: FileText },
-          { id: 'dpdp_rights', label: 'DPDP Legal Rights', modal: 'legal_handbook', icon: Scale }
+          { id: 'labor_dossier', label: 'Employee Record (PDF)', modal: 'dossier', icon: FileText },
+          { id: 'dpdp_rights', label: 'Privacy & Data Rights', modal: 'legal_handbook', icon: Scale }
         ]
       }
     ];

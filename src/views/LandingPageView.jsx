@@ -249,64 +249,64 @@ export const LandingPageView = () => {
   // Live India Radar Hub Data
   const radarCities = {
     sriperumbudur: {
-      name: 'Sriperumbudur Industrial Corridor',
+      name: 'Chennai / Sriperumbudur Hub',
       state: 'Tamil Nadu',
-      tag: 'Automotive & Heavy Manufacturing Hub',
-      activePasses: '14,820 Passes Streamed',
+      tag: 'Automotive & Manufacturing Hub',
+      activePasses: '14,820 Passes Generated',
       avgTat: '0.8 Seconds',
       accuracy: '99.98%',
-      recentEvent: '120 Assembly Line Technicians verified with digital access passes in 1.2 min batch.',
-      topCheck: 'Identity & Facial Biometric Match'
+      recentEvent: '120 factory technicians verified with digital access passes in under 2 minutes.',
+      topCheck: 'Identity & Photo Match'
     },
     sanand: {
-      name: 'Sanand Industrial Mega Zone',
+      name: 'Gujarat / Sanand Mega Zone',
       state: 'Gujarat',
-      tag: 'EV, Auto & Precision Engineering',
-      activePasses: '18,450 Workers Monitored',
+      tag: 'EV, Auto & Engineering',
+      activePasses: '18,450 Workers Checked',
       avgTat: '0.9 Seconds',
       accuracy: '99.96%',
-      recentEvent: 'Battery plant contractor batch completed with bank account name drop validation.',
-      topCheck: 'Direct Bank & Integrity Check'
+      recentEvent: 'Battery plant contractor batch completed with bank account name verification.',
+      topCheck: 'Bank Account & Name Match'
     },
     bhiwandi: {
-      name: 'Bhiwandi Logistics & 3PL Cluster',
+      name: 'Mumbai / Bhiwandi Cluster',
       state: 'Maharashtra',
-      tag: 'National E-Commerce & Warehousing',
+      tag: 'Logistics & Warehousing Hub',
       activePasses: '32,100 Delivery Associates',
       avgTat: '1.1 Seconds',
       accuracy: '99.94%',
-      recentEvent: '500 Delivery fleet drivers verified via Mobile Magic Links in 35 minutes.',
-      topCheck: 'Commercial License & Digital ID'
+      recentEvent: '500 delivery drivers verified via mobile verification link in 35 minutes.',
+      topCheck: 'Driving License & ID Check'
     },
     manesar: {
-      name: 'Manesar-Gurugram Industrial Belt',
+      name: 'Gurugram / Manesar Belt',
       state: 'Haryana',
       tag: 'Manufacturing & Component Plants',
-      activePasses: '22,700 Active Turnstile Passes',
+      activePasses: '22,700 Active Badges',
       avgTat: '0.7 Seconds',
       accuracy: '99.99%',
-      recentEvent: 'Zero duplicate profile match detected and blocked at East Gate Turnstiles.',
-      topCheck: 'Facial Biometric Deduplication'
+      recentEvent: 'Duplicate profile check passed with zero duplicate records.',
+      topCheck: 'Duplicate Profile Check'
     },
     hosur: {
-      name: 'Hosur-Bengaluru Tech & Precision Belt',
+      name: 'Hosur / Bengaluru Tech Belt',
       state: 'Karnataka / TN',
-      tag: 'EV Manufacturing & Tech Hardware',
-      activePasses: '16,300 Shift Passes Issued',
+      tag: 'EV & Tech Hardware Hub',
+      activePasses: '16,300 Shift Passes',
       avgTat: '0.85 Seconds',
       accuracy: '99.97%',
-      recentEvent: 'Contractor agency monthly records matched against verified employment history.',
-      topCheck: 'Dual Employment & Moonlighting Radar'
+      recentEvent: 'Contractor worker records checked against past employment history.',
+      topCheck: 'Past Job & Employment Check'
     },
     chakan: {
-      name: 'Chakan-Talegaon Industrial Hub',
+      name: 'Pune / Chakan Hub',
       state: 'Maharashtra',
-      tag: 'Automotive & Heavy Engineering',
+      tag: 'Engineering & Industrial Zone',
       activePasses: '24,600 Active Badges',
       avgTat: '0.75 Seconds',
       accuracy: '99.98%',
-      recentEvent: 'Major Tier-1 auto plant completed workforce compliance audit across 850 workers.',
-      topCheck: 'Digital Identity + Legal Clearance'
+      recentEvent: 'Major auto plant completed worker verification across 850 workers.',
+      topCheck: 'ID & Document Checks'
     }
   };
 
@@ -314,40 +314,40 @@ export const LandingPageView = () => {
   const simModes = {
     labor_pass: {
       id: 'labor_pass',
-      title: 'Workforce & Plant Staff Profile',
+      title: 'Factory & Plant Worker Check',
       category: 'Manufacturing & Industrial',
       icon: HardHat,
       candidate: { name: 'Karan Sharma', role: 'Assembly Line Specialist', contractor: 'Apex Manpower Services' },
       checks: [
-        { title: 'Digital ID Checksum & Address Match', status: 'Authenticated ✓', time: '0.7s' },
-        { title: 'Facial Biometric Deduplication', status: '0 Duplicate Flags ✓', time: '0.4s' },
-        { title: 'Workforce Digital Gate Clearance', status: 'Token #7821 Issued ✓', time: '0.6s' },
-        { title: 'Bank Account & Name Match', status: 'SBI Active Match 100% ✓', time: '1.1s' }
+        { title: 'Digital ID & Address Check', status: 'Verified ✓', time: '0.7s' },
+        { title: 'Photo & Duplicate Profile Check', status: '0 Duplicates ✓', time: '0.4s' },
+        { title: 'Digital Gate Pass Issued', status: 'Pass #7821 Ready ✓', time: '0.6s' },
+        { title: 'Bank Account Name Match', status: 'Bank Match 100% ✓', time: '1.1s' }
       ],
       json: {
         status: 'VERIFIED_ACTIVE',
         verificationId: 'JOY-EMP-994208',
         timestamp: '2026-09-05T14:15:20Z',
-        latency_ms: 780,
-        biometric_score: 99.8,
-        statutory_gate_pass: {
-          workforce_pass_status: 'COMPLIANT_ACTIVE',
-          qr_token: 'QR_PASS_88492',
-          contractor_license_valid: true
+        time_taken_ms: 780,
+        match_score: 99.8,
+        gate_pass: {
+          pass_status: 'ACTIVE',
+          qr_code: 'QR_PASS_88492',
+          is_valid: true
         }
       }
     },
     dual_employment: {
       id: 'dual_employment',
-      title: 'Career History & Moonlighting Radar',
-      category: 'Corporate & Executive',
+      title: 'Past Job & Company Check',
+      category: 'Corporate & Tech Roles',
       icon: Search,
       candidate: { name: 'Pooja Narang', role: 'Senior Software Engineer', contractor: 'Direct Enterprise Hire' },
       checks: [
-        { title: 'Employment History & Tenure Extraction', status: '4 Company Records Retrieved ✓', time: '1.2s' },
-        { title: 'Active Contribution Overlap Audit', status: '0 Active Overlaps (Clean) ✓', time: '0.8s' },
-        { title: 'Relieving Date & Experience Check', status: 'Official Clean Exit ✓', time: '0.9s' },
-        { title: 'Income & Tax Record Match', status: 'Single Salary Stream ✓', time: '1.4s' }
+        { title: 'Past Company Records Check', status: '4 Company Records Found ✓', time: '1.2s' },
+        { title: 'Job Overlap Check (Moonlighting)', status: '0 Overlaps (Clean) ✓', time: '0.8s' },
+        { title: 'Relieving Date Confirmation', status: 'Clean Exit Verified ✓', time: '0.9s' },
+        { title: 'Income & Salary Stream Check', status: 'Single Salary Stream ✓', time: '1.4s' }
       ],
       json: {
         status: 'CLEAN_VERIFIED',
@@ -355,47 +355,47 @@ export const LandingPageView = () => {
         identifier_masked: '1004XXXX7729',
         overlapping_employments_detected: 0,
         service_history_count: 4,
-        moonlighting_risk_score: 'LOW (0.01%)'
+        risk_score: 'LOW (0.01%)'
       }
     },
     court_bgv: {
       id: 'court_bgv',
-      title: 'Executive Integrity & Public Records Scan',
+      title: 'Background & Court Check',
       category: 'High-Trust Roles',
       icon: Scale,
       candidate: { name: 'Vikramaditya Sengupta', role: 'VP Operations & Supply Chain', contractor: 'Leadership Executive' },
       checks: [
-        { title: 'National Judicial Litigation Scan', status: '0 Adverse Litigation Flags ✓', time: '1.8s' },
-        { title: 'Commercial Dispute & Default Check', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
-        { title: 'Academic Degree & Credential Check', status: 'IIT Delhi Authenticated ✓', time: '1.9s' },
-        { title: 'Directorship & Corporate Disqualification Check', status: 'Active Clean Status ✓', time: '1.1s' }
+        { title: 'Court Record Check (Civil & Criminal)', status: '0 Cases Found (Clean) ✓', time: '1.8s' },
+        { title: 'Financial & Default Check', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
+        { title: 'College Degree Verification', status: 'IIT Delhi Verified ✓', time: '1.9s' },
+        { title: 'Company Directorship Check', status: 'Active Clean Status ✓', time: '1.1s' }
       ],
       json: {
         status: 'LEADERSHIP_CLEARANCE_ISSUED',
         verificationId: 'JOY-EXEC-331094',
-        criminal_litigation_records: 0,
+        court_cases_found: 0,
         commercial_defaults: 0,
-        educational_integrity: 'AUTHENTICATED_DIRECT'
+        education_status: 'VERIFIED'
       }
     },
     whatsapp_kyc: {
       id: 'whatsapp_kyc',
-      title: 'Seamless Mobile Self-Verification',
-      category: 'Zero-Drop Mobile Flow',
+      title: 'Mobile Verification Link',
+      category: 'Quick Onboarding',
       icon: Smartphone,
       candidate: { name: 'Rahul Deshmukh', role: 'Logistics Fleet Driver', contractor: 'Direct Mobile Flow' },
       checks: [
-        { title: 'Encrypted Magic Link Dispatch', status: 'API Delivered via WhatsApp/SMS ✓', time: '0.3s' },
-        { title: 'Candidate OTP Consent Capture', status: 'Verified in 22s ✓', time: '0.6s' },
-        { title: 'Camera Liveness & Geo-Location', status: 'Selfie Matched 99.4% ✓', time: '1.2s' },
-        { title: 'Audit Dossier PDF Generation', status: 'Dossier Auto-Compiled ✓', time: '0.8s' }
+        { title: 'Link Sent via WhatsApp / SMS', status: 'Link Delivered ✓', time: '0.3s' },
+        { title: 'Candidate Aadhaar OTP Check', status: 'Verified in 22s ✓', time: '0.6s' },
+        { title: 'Live Selfie Photo Match', status: 'Photo Matched 99.4% ✓', time: '1.2s' },
+        { title: 'Verification Report Created', status: 'Report Ready (PDF) ✓', time: '0.8s' }
       ],
       json: {
         status: 'ONBOARDING_COMPLETED',
         session_id: 'WA-MSG-77491',
-        candidate_tat_seconds: 41,
+        time_taken_seconds: 41,
         otp_verified: true,
-        geo_fence_location: '19.0760N, 72.8777E'
+        location: 'Mumbai, MH'
       }
     }
   };

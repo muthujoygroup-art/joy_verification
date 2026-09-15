@@ -3014,11 +3014,11 @@ export const CompanyAdminView = () => {
             <div>
               <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                 <Settings className="w-5 h-5 text-indigo-600" />
-                <span>Company Governance, Verification Rules & Settings</span>
+                <span>Company Settings & Email Setup</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Configure AI face liveness match thresholds, low API credit alerts, and HR team seat limits.</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Manage email notifications, custom SMTP server, and company preferences.</p>
             </div>
-            <span className="badge badge-cyan text-[10px]">Company Account Settings</span>
+            <span className="badge badge-cyan text-[10px]">Company Settings</span>
           </div>
 
           <form 
@@ -3028,7 +3028,7 @@ export const CompanyAdminView = () => {
             }} 
             className="space-y-6 text-xs"
           >
-                        {/* 📧 COMPANY CUSTOM OUTGOING SMTP MAIL SERVER CONFIGURATION */}
+            {/* 📧 COMPANY CUSTOM OUTGOING SMTP MAIL SERVER CONFIGURATION */}
             <div className="p-6 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/70 via-white to-sky-50/70 space-y-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
                 <div className="flex items-center gap-2.5">
@@ -3037,16 +3037,16 @@ export const CompanyAdminView = () => {
                   </div>
                   <div>
                     <h4 className="font-black text-slate-900 text-base">
-                      Company Outgoing Mail Server & SMTP Gateway Configuration
+                      Company Email Server Settings
                     </h4>
                     <p className="text-slate-500 text-[11px]">
-                      Configure your company's dedicated mail server to dispatch HR onboarding invitations and candidate verification links.
+                      Configure your company's email server to send HR invitations and candidate verification links.
                     </p>
                   </div>
                 </div>
 
                 <span className="badge badge-emerald text-[10px] font-black">
-                  {smtpForm.use_custom_smtp ? 'CUSTOM COMPANY SMTP ACTIVE' : 'PLATFORM MASTER FALLBACK'}
+                  {smtpForm.use_custom_smtp ? 'CUSTOM SMTP ACTIVE' : 'DEFAULT PLATFORM EMAIL'}
                 </span>
               </div>
 

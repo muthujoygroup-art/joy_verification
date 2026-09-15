@@ -316,17 +316,17 @@ export const HrActivationView = () => {
               <KeyRound className="w-7 h-7" />
             </div>
             <h2 className="text-lg font-black text-slate-900 tracking-tight">
-              Unlock HR Workstation
+              Unlock HR Account
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              Enter the 4-digit security unlock PIN sent in your invitation email for <strong>{hrDetails.company_name}</strong>.
+              Enter the 4-digit PIN from your invitation email for <strong>{hrDetails.company_name}</strong>.
             </p>
           </div>
 
           <form onSubmit={handleUnlockSecurity} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                4-Digit Security Unlock PIN
+                4-Digit PIN
               </label>
               <div className="relative">
                 <input
@@ -360,7 +360,7 @@ export const HrActivationView = () => {
               className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isUnlocking ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-              <span>{isUnlocking ? 'Verifying PIN...' : 'Unlock & Complete Profile →'}</span>
+              <span>{isUnlocking ? 'Checking PIN...' : 'Unlock & Continue →'}</span>
             </button>
           </form>
         </div>
@@ -381,30 +381,30 @@ export const HrActivationView = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight">HR Recruiter Self-Onboarding</h1>
+                <h1 className="text-lg font-black tracking-tight">HR Account Setup</h1>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
                   {hrDetails.company_name}
                 </span>
               </div>
               <p className="text-xs text-indigo-200/70 mt-0.5">
-                Staff Candidate: {hrDetails.name} ({hrDetails.email})
+                HR Staff: {hrDetails.name} ({hrDetails.email})
               </p>
             </div>
           </div>
 
           <div className="text-right">
             <div className="text-xs font-bold text-indigo-300">Step {activeStep} of 4</div>
-            <div className="text-[10px] text-indigo-200/60 font-medium">Profile Completion</div>
+            <div className="text-[10px] text-indigo-200/60 font-medium">Account Setup</div>
           </div>
         </div>
 
         {/* STEP PROGRESS BAR */}
         <div className="grid grid-cols-4 bg-slate-100 border-b border-slate-200 text-center text-xs font-bold">
           {[
-            { num: 1, label: '👤 Personal Details' },
+            { num: 1, label: '👤 Personal Info' },
             { num: 2, label: '🎓 Education & Work' },
-            { num: 3, label: '📄 Document Proofs' },
-            { num: 4, label: '⚖️ DPDP Consent' }
+            { num: 3, label: '📄 Upload Documents' },
+            { num: 4, label: '⚖️ Terms & Agreement' }
           ].map(s => (
             <button
               key={s.num}

@@ -6271,25 +6271,25 @@ export const HrExecutiveView = () => {
             {/* Modal Body */}
             <div className="overflow-y-auto flex-1 space-y-4 pr-1 text-xs">
               <div className="p-3 bg-indigo-50/80 border border-indigo-200 rounded-2xl text-indigo-950 space-y-1">
-                <span className="font-bold block text-xs">💡 On-Demand Document Verification & Dispatch:</span>
+                <span className="font-bold block text-xs">💡 Document Verification Checks:</span>
                 <p className="text-[11px] text-indigo-900 leading-relaxed font-medium">
-                  Select which document authentications to execute now or dispatch to the candidate via magic onboarding link.
+                  Select which document checks to run now or send to the candidate via verification link.
                 </p>
               </div>
 
               {/* 10-Document Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
-                  { key: 'aadhaar', name: '1. Aadhaar UIDAI e-KYC', icon: '🪪', provider: 'UIDAI OTP Gateway' },
-                  { key: 'pan', name: '2. Income Tax PAN Card', icon: '💳', provider: 'NSDL Direct Gateway' },
-                  { key: 'bankCheck', name: '3. Bank Account & Penny Drop', icon: '🏦', provider: 'NPCI IMPS Gateway' },
-                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'EPFO Unified Portal' },
-                  { key: 'drivingLicense', name: '5. Driving License Check', icon: '🚗', provider: 'MoRTH Sarathi API' },
-                  { key: 'passport', name: '6. Passport Verification', icon: '✈️', provider: 'MEA Direct File API' },
-                  { key: 'voterId', name: '7. Voter ID Verification', icon: '🗳️', provider: 'Election Commission' },
-                  { key: 'faceCapture', name: '8. 3D Face Biometric Liveness', icon: '👤', provider: 'AI Liveness Engine' },
-                  { key: 'education', name: '9. Academic Degree / Marksheet', icon: '🎓', provider: 'Academic Registry' },
-                  { key: 'criminalCheck', name: '10. Relieving / Experience Letter', icon: '💼', provider: 'Past Employer Audit' }
+                  { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'UIDAI Gateway' },
+                  { key: 'pan', name: '2. PAN Card', icon: '💳', provider: 'Income Tax Gateway' },
+                  { key: 'bankCheck', name: '3. Bank Account Check', icon: '🏦', provider: 'Bank IMPS Match' },
+                  { key: 'uan', name: '4. Past PF / UAN Service', icon: '🏛️', provider: 'EPFO Service Check' },
+                  { key: 'drivingLicense', name: '5. Driving License', icon: '🚗', provider: 'Sarathi Gateway' },
+                  { key: 'passport', name: '6. Passport', icon: '✈️', provider: 'Passport Gateway' },
+                  { key: 'voterId', name: '7. Voter ID', icon: '🗳️', provider: 'Election Commission' },
+                  { key: 'faceCapture', name: '8. Live Photo & Face Match', icon: '👤', provider: 'Live Selfie Check' },
+                  { key: 'education', name: '9. Degree / Marksheet', icon: '🎓', provider: 'Education Check' },
+                  { key: 'criminalCheck', name: '10. Experience Letter', icon: '💼', provider: 'Work Experience Check' }
                 ].map((doc) => {
                   const isChecked = !!managingDocVerifCandidate.verificationConfig?.[doc.key];
                   const isVerified = managingDocVerifCandidate.verificationsCompleted?.[doc.key];
@@ -6359,23 +6359,23 @@ export const HrExecutiveView = () => {
                   className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
                 >
                   <QrCode className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Dispatch Link 📲</span>
+                  <span>Send Link 📲</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
                     const cand = managingDocVerifCandidate;
-                    showToast(`⚡ Running live verification checks for ${cand.name}...`);
+                    showToast(`⚡ Running verification checks for ${cand.name}...`);
                     setTimeout(() => {
-                      showToast(`✅ Live document verifications complete for ${cand.name}!`);
+                      showToast(`✅ Document verifications complete for ${cand.name}!`);
                       setManagingDocVerifCandidate(null);
                     }, 1200);
                   }}
                   className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>Execute Gateway Verification ⚡</span>
+                  <span>Verify Now ⚡</span>
                 </button>
               </div>
             </div>

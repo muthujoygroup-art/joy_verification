@@ -55,8 +55,8 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
     superadmin: {
       id: 'superadmin',
       title: 'Super Admin Portal',
-      subtitle: 'Master Governance, Platform Control & Metered Billing',
-      badge: 'Master Console',
+      subtitle: 'Platform control, company accounts & billing management',
+      badge: 'Super Admin',
       iconBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-500',
       headerGradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
       borderClass: 'border-indigo-400',
@@ -64,20 +64,20 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       btnClass: 'btn-superadmin',
       placeholderEmail: 'admin@joycorporatesolutions.com',
       icon: Crown,
-      roleTag: 'Platform Master Governance',
-      provisionNotice: 'Platform Master Access Only. Public registration & sign-up is permanently disabled.',
+      roleTag: 'Platform Master Account',
+      provisionNotice: 'Master admin access only. Direct registration is disabled.',
       features: [
-        'Full System & API Gateway Telemetry (47 Endpoints)',
-        'Company Onboarding & Account Provisioning',
-        'Company-Wise Profit & Margin Matrix',
-        'PostgreSQL Database Management & SQL Explorer'
+        'System health & verification gateway status',
+        'Add & manage corporate company accounts',
+        'Postpaid billing summaries & revenue reports',
+        'Database viewer & activity logs'
       ]
     },
     company: {
       id: 'company',
       title: 'Company Admin Portal',
-      subtitle: 'Executive Telemetry, Quota Management & HR Governance',
-      badge: 'Employer Console',
+      subtitle: 'Manage your company, HR team & verification records',
+      badge: 'Company Admin',
       iconBgClass: 'bg-sky-600 text-white shadow-md shadow-sky-200 border border-sky-500',
       headerGradient: 'linear-gradient(135deg, #0284c7 0%, #0d9488 100%)',
       borderClass: 'border-sky-400',
@@ -85,20 +85,20 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       btnClass: 'btn-company',
       placeholderEmail: 'muthukumar@joyglobalcorp.com',
       icon: Building2,
-      roleTag: 'Corporate Account Management',
-      provisionNotice: 'Company accounts are provisioned exclusively by Super Admin during enterprise onboarding.',
+      roleTag: 'Company Administrator',
+      provisionNotice: 'Company accounts are set up by the Super Admin during company onboarding.',
       features: [
-        'HR Staff Management & HR User Creation',
-        'Turnaround Time (TAT) Analytics & Quota Tracking',
-        'Master Employee Verification Registry & 360° Dossiers',
-        'Document Storage Vault & GST Tax Invoices'
+        'Add & manage HR team recruiters and staff',
+        'Track verification speed, progress & monthly usage',
+        'View employee verification records & full reports',
+        'Document storage vault & GST tax invoices'
       ]
     },
     hrexecutive: {
       id: 'hrexecutive',
-      title: 'HR Executive Workstation',
-      subtitle: 'Candidate Profiler, Multi-API Dispatcher & Expiry Tracker',
-      badge: 'HR Portal',
+      title: 'HR Executive Portal',
+      subtitle: 'Add employees, send verification links & download reports',
+      badge: 'HR Executive',
       iconBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-200 border border-emerald-500',
       headerGradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
       borderClass: 'border-emerald-400',
@@ -106,33 +106,33 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
       btnClass: 'btn-hrexecutive',
       placeholderEmail: 'muthujoygroup@gmail.com',
       icon: UserCheck,
-      roleTag: 'Recruiting & Onboarding Workstation',
-      provisionNotice: 'HR accounts are provisioned exclusively by your Company Administrator in the HR Team tab.',
+      roleTag: 'Recruiting & Onboarding Team',
+      provisionNotice: 'HR accounts are created by your Company Administrator in the HR Team section.',
       features: [
-        'Create Candidate Employee KYC Profiles',
-        'Configure Required 10+ Verification Checks',
-        'Dispatch Magic Token Links via WhatsApp, SMS & Email',
-        '360° Multi-API BGV Dossiers & 60-Day Expiry Tracker'
+        'Add new candidate & employee profiles',
+        'Select required document checks (Aadhaar, PAN, Bank, etc.)',
+        'Send verification links via WhatsApp, SMS & Email',
+        'Download complete verification reports & certificates'
       ]
     },
     employee_link: {
       id: 'employee_link',
       title: 'Candidate Verification Link',
-      subtitle: 'Passwordless Token Access (Aadhaar OTP, Mobile OTP & AI Face Capture)',
-      badge: 'Candidate Portal',
+      subtitle: 'Quick identity verification using OTP and live selfie',
+      badge: 'Candidate',
       iconBgClass: 'bg-amber-500 text-white shadow-md shadow-amber-200 border border-amber-500',
       headerGradient: 'linear-gradient(135deg, #d97706 0%, #ea580c 100%)',
       borderClass: 'border-amber-400',
       badgeClass: 'badge-amber',
       btnClass: 'btn-employee',
       icon: Smartphone,
-      roleTag: 'Self-Service Candidate Verification',
-      provisionNotice: 'Candidates do not have username/password accounts. Access is granted exclusively via HR Magic Links.',
+      roleTag: 'Self-Service Candidate Check',
+      provisionNotice: 'Candidates do not need username/password accounts. Access is granted via the HR verification link.',
       features: [
-        'Passwordless Tokenized Magic Link Access',
-        'Instant UIDAI Aadhaar OTP Verification',
-        'Carrier SMS Mobile OTP Validation',
-        '3-Pose AI WebCam Face Liveness Capture (99.4%)'
+        'Direct access via HR verification link',
+        'Fast Aadhaar OTP verification',
+        'Mobile number & email OTP check',
+        'Quick live selfie photo match'
       ]
     }
   };
@@ -425,7 +425,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
             <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Governance & Privileges</span>
+                <span>Portal Capabilities</span>
               </h4>
 
               <div className="space-y-2 text-xs font-semibold text-slate-700">
@@ -438,7 +438,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
               </div>
 
               <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 font-medium">
-                🔒 Protected with 256-Bit TLS Encryption, Rate Limiting & Tamper-Evident SHA-256 Audit Trail.
+                🔒 Safe and secure with bank-grade 256-bit encryption.
               </div>
             </div>
 
@@ -459,7 +459,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">Super Admin Official Email *</label>
+                        <label className="block text-slate-700 font-bold mb-1">Super Admin Email *</label>
                         <div className="input-wrapper">
                           <Mail className="input-icon-left" />
                           <input 
@@ -474,13 +474,13 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       </div>
 
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">Master Password *</label>
+                        <label className="block text-slate-700 font-bold mb-1">Super Admin Password *</label>
                         <div className="input-wrapper">
                           <KeyRound className="input-icon-left" />
                           <input 
                             type={showPassword ? 'text' : 'password'} 
                             required
-                            placeholder="Enter master password"
+                            placeholder="Enter password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             className="input-field-styled pr-10"
@@ -498,7 +498,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
 
                     <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-200 text-indigo-900 text-[11px] font-medium flex items-center gap-2">
                       <Crown className="w-4 h-4 text-indigo-600 shrink-0" />
-                      <span>Full system privileges: 13 Master Governance Tabs, Profit Engine, and Database Explorer.</span>
+                      <span>Full access to manage companies, plans, database, and system settings.</span>
                     </div>
 
                     <button
@@ -507,7 +507,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                     >
                       <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Authenticating...' : 'Sign In as Super Administrator'}</span>
+                      <span>{isLoading ? 'Signing In...' : 'Sign In as Super Admin'}</span>
                     </button>
                   </div>
                 )}
@@ -517,7 +517,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">Company Administrator Email *</label>
+                        <label className="block text-slate-700 font-bold mb-1">Company Admin Email *</label>
                         <div className="input-wrapper">
                           <Mail className="input-icon-left" />
                           <input 
@@ -532,7 +532,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       </div>
 
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">Corporate Account Password *</label>
+                        <label className="block text-slate-700 font-bold mb-1">Company Password *</label>
                         <div className="input-wrapper">
                           <KeyRound className="input-icon-left" />
                           <input 
@@ -556,7 +556,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
 
                     <div className="p-3 rounded-xl bg-sky-50/80 border border-sky-200 text-sky-900 text-[11px] font-medium flex items-center gap-2">
                       <Building2 className="w-4 h-4 text-sky-600 shrink-0" />
-                      <span>Company accounts are created by Super Admin. Need access? Contact Super Administrator.</span>
+                      <span>Company accounts are created by Super Admin. Need access? Contact Super Admin.</span>
                     </div>
 
                     <button
@@ -565,7 +565,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                     >
                       <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Authenticating...' : 'Sign In as Company Administrator'}</span>
+                      <span>{isLoading ? 'Signing In...' : 'Sign In as Company Admin'}</span>
                     </button>
                   </div>
                 )}
@@ -575,7 +575,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">HR Executive Corporate Email *</label>
+                        <label className="block text-slate-700 font-bold mb-1">HR Email *</label>
                         <div className="input-wrapper">
                           <Mail className="input-icon-left" />
                           <input 
@@ -590,7 +590,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       </div>
 
                       <div>
-                        <label className="block text-slate-700 font-bold mb-1">HR Workstation Password *</label>
+                        <label className="block text-slate-700 font-bold mb-1">HR Password *</label>
                         <div className="input-wrapper">
                           <KeyRound className="input-icon-left" />
                           <input 
@@ -614,7 +614,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
 
                     <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
                       <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>HR Executive accounts are created by your Company Admin inside the HR Team console.</span>
+                      <span>HR accounts are created by your Company Admin in the HR Team section.</span>
                     </div>
 
                     <button
@@ -623,7 +623,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                     >
                       <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Authenticating...' : 'Sign In as HR Executive'}</span>
+                      <span>{isLoading ? 'Signing In...' : 'Sign In as HR Executive'}</span>
                     </button>
                   </div>
                 )}
@@ -634,10 +634,10 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                     <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2">
                       <div className="flex items-center gap-2 font-black text-xs">
                         <Smartphone className="w-4 h-4 text-amber-600" />
-                        <span>Passwordless Magic Link Verification</span>
+                        <span>Direct Access with Verification Link</span>
                       </div>
                       <p className="text-xs text-amber-900 font-medium leading-relaxed">
-                        Candidates do not require a username or password. You can access your personalized e-KYC onboarding portal directly by clicking the secure link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong> by your HR recruiter.
+                        Candidates do not need a username or password. You can open your verification page directly using the link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong> by your HR team.
                       </p>
                     </div>
 
@@ -655,12 +655,11 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                           className="input-field-styled font-mono font-bold"
                         />
                       </div>
-
                     </div>
 
                     <div>
                       <label className="block text-slate-700 font-bold mb-1">
-                        Security Passcode / PIN *
+                        4-Digit PIN (from HR) *
                       </label>
                       <div className="input-wrapper">
                         <Lock className="input-icon-left text-amber-600" />
@@ -680,7 +679,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
                       className="btn btn-employee w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <ArrowRight className="w-4 h-4" />
-                      <span>{isLoading ? 'Opening Portal...' : 'Access Candidate Verification Portal 🚀'}</span>
+                      <span>{isLoading ? 'Opening...' : 'Start Verification 🚀'}</span>
                     </button>
                   </div>
                 )}
@@ -695,7 +694,7 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
 
         {/* Bottom Footer Note */}
         <div className="text-center text-xs text-slate-500 font-medium">
-          <p>© 2026 JOY CORPORATE SOLUTIONS PRIVATE LIMITED • Enterprise Identity & BGV Ecosystem</p>
+          <p>© 2026 JOY CORPORATE SOLUTIONS PRIVATE LIMITED • Employee Verification Platform</p>
         </div>
 
       </div>

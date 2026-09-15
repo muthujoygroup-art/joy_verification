@@ -299,7 +299,7 @@ export const CompanyActivationView = () => {
               <h1 className="text-lg font-black tracking-tight text-white">JOY DATA VERIFICATION</h1>
               <span className="badge badge-emerald text-[9px] font-bold">DPDP ACT 2023 COMPLIANT</span>
             </div>
-            <p className="text-xs text-slate-400">Enterprise Organization Self-Activation & Compliance Gate</p>
+            <p className="text-xs text-slate-400">Company Account Activation</p>
           </div>
         </div>
 
@@ -322,9 +322,9 @@ export const CompanyActivationView = () => {
               <div className="w-14 h-14 bg-indigo-50 border-2 border-indigo-200 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
                 <Lock className="w-7 h-7" />
               </div>
-              <h2 className="text-lg font-black text-slate-900">Protected Organization Portal</h2>
+              <h2 className="text-lg font-black text-slate-900">Unlock Company Account</h2>
               <p className="text-xs text-slate-500 font-medium">
-                Please enter the 4-digit security PIN or password provided by JOY Corporate Solutions to unlock <strong>{companyDetails.name}</strong>.
+                Please enter the 4-digit PIN or password to unlock <strong>{companyDetails.name}</strong>.
               </p>
             </div>
 
@@ -332,7 +332,7 @@ export const CompanyActivationView = () => {
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
                   <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Security Unlock Passcode / PIN *</span>
+                  <span>4-Digit PIN or Password *</span>
                 </label>
                 <div className="relative flex items-center">
                   <input 
@@ -371,12 +371,12 @@ export const CompanyActivationView = () => {
                 ) : (
                   <ArrowRight className="w-4 h-4" />
                 )}
-                <span>{isUnlocking ? 'Verifying Passcode...' : 'Unlock & Complete Activation 🚀'}</span>
+                <span>{isUnlocking ? 'Checking PIN...' : 'Unlock & Continue 🚀'}</span>
               </button>
             </form>
 
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 flex items-center justify-between">
-              <span>Authorized Admin: <strong>{companyDetails.email}</strong></span>
+              <span>Admin: <strong>{companyDetails.email}</strong></span>
               <span>Plan: <strong>{companyDetails.plan}</strong></span>
             </div>
           </div>
@@ -394,8 +394,8 @@ export const CompanyActivationView = () => {
                 <div className="border-b border-slate-100 pb-4 mb-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="badge badge-indigo text-[10px] font-bold uppercase">Enterprise Self-Activation</span>
-                      <h2 className="text-base font-black text-slate-900 mt-1">Complete Corporate Onboarding: {companyDetails.name}</h2>
+                      <span className="badge badge-indigo text-[10px] font-bold uppercase">Company Setup</span>
+                      <h2 className="text-base font-black text-slate-900 mt-1">Activate Company Account: {companyDetails.name}</h2>
                     </div>
                     <span className="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200">
                       Step {activeStep} of 3
@@ -404,9 +404,9 @@ export const CompanyActivationView = () => {
 
                   <div className="grid grid-cols-3 gap-2 mt-4">
                     {[
-                      { step: 1, label: '1. Corporate Profile' },
-                      { step: 2, label: '2. Statutory & Docs' },
-                      { step: 3, label: '3. Legal Agreement' },
+                      { step: 1, label: '1. Company Profile' },
+                      { step: 2, label: '2. Documents & Tax' },
+                      { step: 3, label: '3. Agreement & Terms' },
                     ].map(s => (
                       <button
                         key={s.step}

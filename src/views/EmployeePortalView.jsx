@@ -507,7 +507,7 @@ export const EmployeePortalView = () => {
             <img src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} alt="JOY Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto" />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
               <Lock className="w-3.5 h-3.5" />
-              <span>DPDP Act 2023 Secure Gateway</span>
+              <span>Identity Verification Portal</span>
             </div>
             <h2 className="text-lg sm:text-xl font-black text-slate-900">
               Welcome, {candidate.name}
@@ -520,17 +520,17 @@ export const EmployeePortalView = () => {
           <div className="p-3 sm:p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
             <span className="font-bold block flex items-center gap-1.5 text-amber-900">
               <KeyRound className="w-3.5 h-3.5 text-amber-700" />
-              <span>Security Passcode Required</span>
+              <span>4-Digit PIN Required</span>
             </span>
             <p className="text-[11px] leading-relaxed text-amber-900/90">
-              Please enter the security passcode / PIN provided by your HR to unlock your 15-minute onboarding verification session.
+              Please enter the 4-digit PIN provided by your HR team to start your verification.
             </p>
           </div>
 
           <form onSubmit={handleUnlockSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Security Passcode / PIN *
+                4-Digit PIN (from HR) *
               </label>
               
               <div className="relative flex items-center">
@@ -538,7 +538,7 @@ export const EmployeePortalView = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoFocus
                   required
-                  placeholder="Enter passcode set by HR..."
+                  placeholder="Enter 4-digit PIN..."
                   value={passcodeDigits}
                   onChange={(e) => {
                     setPasscodeDigits(e.target.value);
@@ -551,7 +551,7 @@ export const EmployeePortalView = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-all cursor-pointer"
-                  title={showPassword ? 'Hide passcode' : 'Show passcode'}
+                  title={showPassword ? 'Hide PIN' : 'Show PIN'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -573,20 +573,20 @@ export const EmployeePortalView = () => {
               {isUnlocking ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Verifying Passcode...</span>
+                  <span>Checking PIN...</span>
                 </>
               ) : (
                 <>
                   <KeyRound className="w-4 h-4" />
-                  <span>Unlock Onboarding Portal</span>
+                  <span>Start Verification 🚀</span>
                 </>
               )}
             </button>
           </form>
 
           <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 font-mono">
-            <span>Session: 15-Min TTL</span>
-            <span className="text-emerald-700 font-bold">256-Bit Encrypted ✓</span>
+            <span>Encrypted Session</span>
+            <span className="text-emerald-700 font-bold">100% Secure ✓</span>
           </div>
         </div>
       </div>
