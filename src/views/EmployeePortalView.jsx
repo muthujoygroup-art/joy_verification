@@ -48,8 +48,10 @@ import {
   Pen,
   Trash2,
   Plus,
-  Upload
+  Upload,
+  FileSpreadsheet
 } from 'lucide-react';
+import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
 
 export const EmployeePortalView = () => {
   const { 
@@ -873,6 +875,29 @@ export const EmployeePortalView = () => {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowLaborDossierModal(true)}
+              className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100 flex items-center gap-1.5 shadow-2xs"
+              title="View & Download Official Employee Profile Dossier (PDF)"
+            >
+              <FileText className="w-3.5 h-3.5 text-sky-700" />
+              <span>Profile Dossier (PDF)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const comp = Array.isArray(companies) ? companies.find(c => c.id === candidate.companyId || c.code === candidate.companyCode) : null;
+                exportIndividualCandidateToExcel(candidate, comp || { name: candidate.companyName });
+              }}
+              className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 flex items-center gap-1.5 shadow-2xs"
+              title="Download Full Candidate Profile in Excel (.xlsx) Workbook"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Profile Excel (.xlsx)</span>
+            </button>
+
             {/* ⏳ 15-Minute Session Countdown Indicator */}
             <div className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black flex items-center gap-1.5 border shadow-xs ${
               secondsRemaining < 180 

@@ -26,8 +26,24 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
 import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
-import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
+import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
+import { 
+  GENDER_OPTIONS, 
+  MARITAL_STATUS_OPTIONS, 
+  BLOOD_GROUP_OPTIONS, 
+  RELIGION_OPTIONS, 
+  COMMUNITY_CATEGORY_OPTIONS, 
+  EDUCATION_LEVEL_OPTIONS, 
+  DEPARTMENT_OPTIONS, 
+  EMPLOYEE_TYPE_OPTIONS, 
+  JOB_TYPE_OPTIONS, 
+  JOB_CATEGORY_OPTIONS, 
+  DESIGNATION_OPTIONS, 
+  LANGUAGES_OPTIONS, 
+  isOtherValue 
+} from '../data/masterDropdownOptions';
+import { exportIndividualCandidateToExcel, exportAllCandidatesToExcel } from '../utils/employeeExcelExport';
 import {
   AlertCircle,
   AlertTriangle,
@@ -1361,6 +1377,16 @@ export const HrExecutiveView = () => {
               <span>Date-Filtered Reports 📥</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => exportAllCandidatesToExcel(filteredCandidates, 'Workforce Verification Master Roster', companies)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
+              title="Export all filtered candidates and details to Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export All Excel (.xlsx) 📊</span>
+            </button>
+
             <button 
               onClick={() => {
                 if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {
@@ -1613,6 +1639,16 @@ export const HrExecutiveView = () => {
 
               <button
                 type="button"
+                onClick={() => exportAllCandidatesToExcel(filteredCandidates, 'Workforce Verification Master Roster', companies)}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer"
+                title="Export all filtered candidates and full details to Excel (.xlsx)"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Export All Excel (.xlsx) 📊</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setShowBulkImportModal(true)}
                 data-tour-step="hr-bulk-btn"
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer"
@@ -1814,9 +1850,20 @@ export const HrExecutiveView = () => {
                         type="button"
                         onClick={() => openDossier(cand)}
                         className="p-2 rounded-xl bg-sky-50 text-sky-950 border border-sky-200 hover:bg-sky-100 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                        title="View & Download Comprehensive Employee Profile Dossier (PDF)"
                       >
                         <FileText className="w-3.5 h-3.5 text-sky-700 shrink-0" />
                         <span className="truncate">Profile PDF</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => exportIndividualCandidateToExcel(cand, currentCompany)}
+                        className="p-2 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-300 hover:bg-emerald-100 flex items-center justify-center gap-1.5 cursor-pointer text-center shadow-2xs font-bold"
+                        title="Export Full Candidate Profile & Particulars to Excel (.xlsx)"
+                      >
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                        <span className="truncate">Profile Excel (.xlsx)</span>
                       </button>
 
                       <button
@@ -2045,10 +2092,20 @@ export const HrExecutiveView = () => {
                           <button
                             onClick={() => openDossier(cand)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100"
-                            title="View & Download Comprehensive Employee Profile Dossier"
+                            title="View & Download Comprehensive Employee Profile Dossier (PDF)"
                           >
                             <FileText className="w-3.5 h-3.5 text-sky-700" />
                             <span>Profile PDF</span>
+                          </button>
+
+                          {/* 2b. Employee Profile Excel (.xlsx) Button */}
+                          <button
+                            onClick={() => exportIndividualCandidateToExcel(cand, currentCompany)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs"
+                            title="Export Full Candidate Profile & Particulars to Excel (.xlsx)"
+                          >
+                            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>Profile Excel</span>
                           </button>
 
                           {/* 3. Uploaded Original Documents Inspection Button */}
@@ -2878,11 +2935,20 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     className={getFieldInputClass('gender', 'form-select font-medium')}
                   >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Non-Binary">Non-Binary</option>
-                    <option value="Other">Other</option>
+                    <option value="">-- Select Gender --</option>
+                    {GENDER_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.gender) && (
+                    <input
+                      type="text"
+                      placeholder="Please specify custom gender..."
+                      value={formData.customGender || ''}
+                      onChange={(e) => setFormData({ ...formData, customGender: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Status Married / Unmarried', 'maritalStatus')}
@@ -2891,11 +2957,20 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
                     className={getFieldInputClass('maritalStatus', 'form-select font-medium')}
                   >
-                    <option value="Single">Single / Unmarried</option>
-                    <option value="Married">Married</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Widowed">Widowed</option>
+                    <option value="">-- Select Marital Status --</option>
+                    {MARITAL_STATUS_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.maritalStatus) && (
+                    <input
+                      type="text"
+                      placeholder="Please specify marital status..."
+                      value={formData.customMaritalStatus || ''}
+                      onChange={(e) => setFormData({ ...formData, customMaritalStatus: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Blood Group', 'bloodGroup')}
@@ -2904,20 +2979,49 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
                     className={getFieldInputClass('bloodGroup', 'form-select font-medium')}
                   >
-                    {(masterDropdownOptions?.bloodGroups || ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']).map(bg => (
+                    <option value="">-- Select Blood Group --</option>
+                    {BLOOD_GROUP_OPTIONS.map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
                     ))}
                   </select>
+                  {isOtherValue(formData.bloodGroup) && (
+                    <input
+                      type="text"
+                      placeholder="Please specify blood group..."
+                      value={formData.customBloodGroup || ''}
+                      onChange={(e) => setFormData({ ...formData, customBloodGroup: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Mother Language (Mother Tongue)', 'motherTongue')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Tamil, Hindi, Telugu"
-                    value={formData.motherTongue}
-                    onChange={(e) => setFormData({ ...formData, motherTongue: e.target.value })}
-                    className={getFieldInputClass('motherTongue')}
-                  />
+                  <select
+                    value={LANGUAGES_OPTIONS.includes(formData.motherTongue) ? formData.motherTongue : (formData.motherTongue ? 'Others' : '')}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === 'Others') {
+                        setFormData({ ...formData, motherTongue: 'Others' });
+                      } else {
+                        setFormData({ ...formData, motherTongue: v });
+                      }
+                    }}
+                    className={getFieldInputClass('motherTongue', 'form-select font-medium')}
+                  >
+                    <option value="">-- Select Mother Tongue --</option>
+                    {LANGUAGES_OPTIONS.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                  {(isOtherValue(formData.motherTongue) || (formData.motherTongue && !LANGUAGES_OPTIONS.includes(formData.motherTongue))) && (
+                    <input 
+                      type="text" 
+                      placeholder="Specify mother tongue (e.g. Sourashtra, Tulu, Konkani)..."
+                      value={formData.customMotherTongue || (formData.motherTongue !== 'Others' ? formData.motherTongue : '')}
+                      onChange={(e) => setFormData({ ...formData, customMotherTongue: e.target.value, motherTongue: e.target.value || 'Others' })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -2930,20 +3034,26 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
                     className={getFieldInputClass('religion', 'form-select font-medium')}
                   >
-                    <option value="Hindu">Hindu</option>
-                    <option value="Muslim">Muslim</option>
-                    <option value="Christian">Christian</option>
-                    <option value="Sikh">Sikh</option>
-                    <option value="Jain">Jain</option>
-                    <option value="Buddhist">Buddhist</option>
-                    <option value="Other">Other</option>
+                    <option value="">-- Select Religion --</option>
+                    {RELIGION_OPTIONS.map(rel => (
+                      <option key={rel} value={rel}>{rel}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.religion) && (
+                    <input
+                      type="text"
+                      placeholder="Please specify religion..."
+                      value={formData.customReligion || ''}
+                      onChange={(e) => setFormData({ ...formData, customReligion: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Caste', 'caste')}
                   <input 
                     type="text" 
-                    placeholder="Optional Caste"
+                    placeholder="Optional Caste / Community"
                     value={formData.caste}
                     onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
                     className={getFieldInputClass('caste')}
@@ -2956,12 +3066,20 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className={getFieldInputClass('category', 'form-select font-bold')}
                   >
-                    <option value="General">General (OC)</option>
-                    <option value="OBC">OBC (BC / MBC)</option>
-                    <option value="SC">SC (Scheduled Caste)</option>
-                    <option value="ST">ST (Scheduled Tribe)</option>
-                    <option value="EWS">EWS (Economically Weaker)</option>
+                    <option value="">-- Select Category --</option>
+                    {COMMUNITY_CATEGORY_OPTIONS.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.category) && (
+                    <input
+                      type="text"
+                      placeholder="Please specify category..."
+                      value={formData.customCategory || ''}
+                      onChange={(e) => setFormData({ ...formData, customCategory: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Physical Identification Marks', 'identificationMarks')}
@@ -2988,27 +3106,23 @@ export const HrExecutiveView = () => {
                 </div>
                 <div>
                   {renderFieldLabel('Languages Known (Master)', 'languagesKnown')}
-                  <select 
+                  <input 
+                    type="text" 
+                    placeholder="e.g. English, Tamil, Hindi, Telugu"
                     value={formData.languagesKnown}
                     onChange={(e) => setFormData({ ...formData, languagesKnown: e.target.value })}
-                    className={getFieldInputClass('languagesKnown', 'form-select font-medium')}
-                  >
-                    {(masterDropdownOptions?.languages || ['English (Fluent)', 'Hindi (National)', 'Tamil (Regional)', 'Telugu (Regional)']).map(lang => (
-                      <option key={lang} value={lang}>{lang}</option>
-                    ))}
-                  </select>
+                    className={getFieldInputClass('languagesKnown')}
+                  />
                 </div>
                 <div>
                   {renderFieldLabel('Self Interest / Activities (Master)', 'selfInterests')}
-                  <select 
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Software Architecture, Athletics, Legal Research"
                     value={formData.selfInterests}
                     onChange={(e) => setFormData({ ...formData, selfInterests: e.target.value })}
-                    className={getFieldInputClass('selfInterests', 'form-select font-medium')}
-                  >
-                    {(masterDropdownOptions?.selfInterests || ['Coding & Open Source Development', 'Cricket & Team Athletics', 'Reading, Law & Financial Research']).map(interest => (
-                      <option key={interest} value={interest}>{interest}</option>
-                    ))}
-                  </select>
+                    className={getFieldInputClass('selfInterests')}
+                  />
                 </div>
               </div>
             </div>
@@ -3017,7 +3131,7 @@ export const HrExecutiveView = () => {
             <div className="space-y-3 pt-3 border-t border-slate-100">
               <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-emerald-600" />
-                <span>2. Residential Address & Contact Coordinates</span>
+                <span>2. Residential Address & Geographic Coordinates (All 28 States & 8 UTs)</span>
               </h4>
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
@@ -3064,71 +3178,139 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-emerald-50/40 p-3 rounded-xl border border-emerald-200/60 mb-3">
+              {/* Native Geographic Location (Cascading 28 States + 8 UTs + All Districts) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-emerald-50/50 p-3 rounded-2xl border border-emerald-200/80 mb-3 shadow-2xs">
                 <div>
-                  {renderFieldLabel('Native Hometown State', 'nativeState')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Tamil Nadu"
-                    value={formData.nativeState}
-                    onChange={(e) => setFormData({ ...formData, nativeState: e.target.value })}
-                    className={getFieldInputClass('nativeState', 'form-input font-bold')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Native Hometown District', 'nativeDistrict')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Madurai"
-                    value={formData.nativeDistrict}
-                    onChange={(e) => setFormData({ ...formData, nativeDistrict: e.target.value })}
-                    className={getFieldInputClass('nativeDistrict', 'form-input font-bold')}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
-                <div>
-                  {renderFieldLabel('State (Master)', 'state')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderFieldLabel('Native Hometown State (28 States + 8 UTs)', 'nativeState')}
+                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">Cascading</span>
+                  </div>
                   <select 
-                    value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className={getFieldInputClass('state', 'form-select font-medium')}
+                    value={formData.nativeState}
+                    onChange={(e) => {
+                      const selState = e.target.value;
+                      const dists = getDistrictsByState(selState);
+                      setFormData({ 
+                        ...formData, 
+                        nativeState: selState, 
+                        nativeDistrict: dists[0] || '' 
+                      });
+                    }}
+                    className={getFieldInputClass('nativeState', 'form-select font-bold text-emerald-950')}
                   >
-                    {(masterDropdownOptions?.states || ['Karnataka', 'Tamil Nadu', 'Maharashtra', 'Delhi NCR']).map(st => (
+                    <option value="">-- Select Native State / UT --</option>
+                    {getIndianStates().map(st => (
                       <option key={st} value={st}>{st}</option>
                     ))}
                   </select>
+                  {isOtherLocation(formData.nativeState) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom native state / territory..."
+                      value={formData.customNativeState || ''}
+                      onChange={(e) => setFormData({ ...formData, customNativeState: e.target.value })}
+                      className="form-input text-xs mt-1.5 font-bold text-emerald-900 bg-white"
+                    />
+                  )}
                 </div>
                 <div>
-                  {renderFieldLabel('City (Master)', 'city')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderFieldLabel('Native Hometown District', 'nativeDistrict')}
+                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">
+                      {formData.nativeState ? `${getDistrictsByState(formData.nativeState).length} Districts` : 'Select State First'}
+                    </span>
+                  </div>
+                  <select 
+                    value={formData.nativeDistrict}
+                    onChange={(e) => setFormData({ ...formData, nativeDistrict: e.target.value })}
+                    className={getFieldInputClass('nativeDistrict', 'form-select font-bold text-emerald-950')}
+                  >
+                    <option value="">-- Select Native District --</option>
+                    {getDistrictsByState(formData.nativeState).map(dist => (
+                      <option key={dist} value={dist}>{dist}</option>
+                    ))}
+                  </select>
+                  {isOtherLocation(formData.nativeDistrict) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom native district / municipality..."
+                      value={formData.customNativeDistrict || ''}
+                      onChange={(e) => setFormData({ ...formData, customNativeDistrict: e.target.value })}
+                      className="form-input text-xs mt-1.5 font-bold text-emerald-900 bg-white"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Present Residential Geographic Location (Cascading 28 States + 8 UTs + All Districts) */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  {renderFieldLabel('Present State (28 States + 8 UTs)', 'state')}
+                  <select 
+                    value={formData.state}
+                    onChange={(e) => {
+                      const selState = e.target.value;
+                      const dists = getDistrictsByState(selState);
+                      setFormData({ 
+                        ...formData, 
+                        state: selState, 
+                        city: dists[0] || '' 
+                      });
+                    }}
+                    className={getFieldInputClass('state', 'form-select font-medium')}
+                  >
+                    <option value="">-- Select Present State / UT --</option>
+                    {getIndianStates().map(st => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                  {isOtherLocation(formData.state) && (
+                    <input
+                      type="text"
+                      placeholder="Specify present state..."
+                      value={formData.customPresentState || ''}
+                      onChange={(e) => setFormData({ ...formData, customPresentState: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
+                </div>
+                <div>
+                  {renderFieldLabel('Present District / City', 'city')}
                   <select 
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className={getFieldInputClass('city', 'form-select font-medium')}
                   >
-                    {(masterDropdownOptions?.cities || ['Bengaluru', 'Chennai', 'Mumbai', 'New Delhi']).map(ct => (
+                    <option value="">-- Select City / District --</option>
+                    {getDistrictsByState(formData.state).map(ct => (
                       <option key={ct} value={ct}>{ct}</option>
                     ))}
                   </select>
+                  {isOtherLocation(formData.city) && (
+                    <input
+                      type="text"
+                      placeholder="Specify present district / city..."
+                      value={formData.customPresentCity || ''}
+                      onChange={(e) => setFormData({ ...formData, customPresentCity: e.target.value })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
-                  {renderFieldLabel('Area / Locality (Master)', 'area')}
-                  <select 
+                  {renderFieldLabel('Area / Locality / Tehsil', 'area')}
+                  <input 
+                    type="text"
+                    placeholder="e.g. Guindy Industrial / Koramangala"
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                    className={getFieldInputClass('area', 'form-select font-medium')}
-                  >
-                    {(masterDropdownOptions?.areas || ['Koramangala 4th Block, Bengaluru', 'Whitefield Tech Corridor, Bengaluru', 'Guindy Industrial Estate, Chennai']).map(ar => (
-                      <option key={ar} value={ar}>{ar}</option>
-                    ))}
-                  </select>
+                    className={getFieldInputClass('area')}
+                  />
                 </div>
                 <div>
                   {renderFieldLabel('PIN / Postal Code', 'pincode')}
                   <input 
                     type="text" 
-                    placeholder="560103"
+                    placeholder="e.g. 600032"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
                     className={getFieldInputClass('pincode', 'form-input font-mono')}

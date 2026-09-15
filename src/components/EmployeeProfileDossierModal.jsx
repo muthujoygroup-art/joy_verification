@@ -34,11 +34,13 @@ import {
   Layers,
   HeartPulse,
   Scale,
-  Loader2
+  Loader2,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
+import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const { companies = [], platformLogo, platformLogoEmblem } = useApp() || {};
@@ -283,6 +285,16 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
     }
   };
 
+  const handleDownloadExcel = () => {
+    try {
+      exportIndividualCandidateToExcel(c, candCompany || { name: employerCompanyName });
+      setDownloadSuccess('Candidate Profile Excel (.xlsx) generated successfully!');
+      setTimeout(() => setDownloadSuccess(null), 4000);
+    } catch (err) {
+      console.error('Failed to export candidate Excel:', err);
+    }
+  };
+
   const handlePrint = () => {
     setActiveTab(7);
     setTimeout(() => {
@@ -328,7 +340,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button 
                 type="button" 
                 onClick={handlePrint} 
@@ -337,6 +349,15 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
               >
                 <Printer className="w-3.5 h-3.5 text-slate-600" />
                 <span>Print Packet</span>
+              </button>
+              <button 
+                type="button" 
+                onClick={handleDownloadExcel} 
+                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 transition-all text-xs cursor-pointer shadow-2xs print:hidden"
+                title="Download Comprehensive Candidate Profile in Excel (.xlsx) Workbook"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Export Excel (.xlsx)</span>
               </button>
               <button 
                 type="button" 

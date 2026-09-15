@@ -12,6 +12,22 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
+import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
+import { 
+  GENDER_OPTIONS, 
+  MARITAL_STATUS_OPTIONS, 
+  BLOOD_GROUP_OPTIONS, 
+  RELIGION_OPTIONS, 
+  COMMUNITY_CATEGORY_OPTIONS, 
+  EDUCATION_LEVEL_OPTIONS, 
+  DEPARTMENT_OPTIONS, 
+  EMPLOYEE_TYPE_OPTIONS, 
+  JOB_TYPE_OPTIONS, 
+  JOB_CATEGORY_OPTIONS, 
+  DESIGNATION_OPTIONS, 
+  LANGUAGES_OPTIONS, 
+  isOtherValue 
+} from '../data/masterDropdownOptions';
 import { 
   User, 
   MapPin, 
@@ -887,10 +903,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, dept: e.target.value })}
                     className={getCandidateFieldInputClass('dept', 'form-select text-xs font-bold')}
                   >
-                    {(masterDropdownOptions?.departments || ['Engineering & Software Architecture', 'Operations', 'Finance & Accounts', 'Human Resources', 'Sales & Marketing', 'Quality Assurance']).map(dept => (
+                    {DEPARTMENT_OPTIONS.map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
+                  {isOtherValue(formData.dept) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom department..."
+                      value={formData.otherDept || ''}
+                      onChange={e => setFormData({ ...formData, otherDept: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Designation', 'designation', true)}
@@ -899,10 +924,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, designation: e.target.value })}
                     className={getCandidateFieldInputClass('designation', 'form-select text-xs font-bold')}
                   >
-                    {(masterDropdownOptions?.designations || ['Senior Software Engineer', 'Software Architect', 'Product Specialist', 'Operations Lead', 'Branch Manager', 'Associate']).map(desig => (
+                    {DESIGNATION_OPTIONS.map(desig => (
                       <option key={desig} value={desig}>{desig}</option>
                     ))}
                   </select>
+                  {isOtherValue(formData.designation) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom designation..."
+                      value={formData.otherDesignation || ''}
+                      onChange={e => setFormData({ ...formData, otherDesignation: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Date of Joining (DOJ)', 'doj', true)}
@@ -947,11 +981,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, gender: e.target.value })}
                     className={getCandidateFieldInputClass('gender', 'form-select text-xs')}
                   >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Non-Binary">Non-Binary</option>
-                    <option value="Other">Other</option>
+                    {GENDER_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.gender) && (
+                    <input
+                      type="text"
+                      placeholder="Specify gender..."
+                      value={formData.otherGender || ''}
+                      onChange={e => setFormData({ ...formData, otherGender: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Status Married / Unmarried', 'maritalStatus', true)}
@@ -960,11 +1002,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, maritalStatus: e.target.value })}
                     className={getCandidateFieldInputClass('maritalStatus', 'form-select text-xs')}
                   >
-                    <option value="Single">Single / Unmarried</option>
-                    <option value="Married">Married</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Widowed">Widowed</option>
+                    {MARITAL_STATUS_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.maritalStatus) && (
+                    <input
+                      type="text"
+                      placeholder="Specify marital status..."
+                      value={formData.otherMaritalStatus || ''}
+                      onChange={e => setFormData({ ...formData, otherMaritalStatus: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -999,14 +1049,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, religion: e.target.value })}
                     className={getCandidateFieldInputClass('religion', 'form-select text-xs')}
                   >
-                    <option value="Hindu">Hindu</option>
-                    <option value="Muslim">Muslim</option>
-                    <option value="Christian">Christian</option>
-                    <option value="Sikh">Sikh</option>
-                    <option value="Jain">Jain</option>
-                    <option value="Buddhist">Buddhist</option>
-                    <option value="Other">Other</option>
+                    {RELIGION_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.religion) && (
+                    <input
+                      type="text"
+                      placeholder="Specify religion..."
+                      value={formData.otherReligion || ''}
+                      onChange={e => setFormData({ ...formData, otherReligion: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Caste', 'caste')}
@@ -1025,12 +1080,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                     className={getCandidateFieldInputClass('category', 'form-select text-xs font-bold')}
                   >
-                    <option value="General">General (OC)</option>
-                    <option value="OBC">OBC (BC / MBC)</option>
-                    <option value="SC">SC (Scheduled Caste)</option>
-                    <option value="ST">ST (Scheduled Tribe)</option>
-                    <option value="EWS">EWS (Economically Weaker)</option>
+                    {COMMUNITY_CATEGORY_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
+                  {isOtherValue(formData.category) && (
+                    <input
+                      type="text"
+                      placeholder="Specify community category..."
+                      value={formData.otherCategory || ''}
+                      onChange={e => setFormData({ ...formData, otherCategory: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -1054,10 +1116,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })}
                     className={getCandidateFieldInputClass('bloodGroup', 'form-select text-xs font-bold')}
                   >
-                    {(masterDropdownOptions?.bloodGroups || ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-']).map(bg => (
+                    {BLOOD_GROUP_OPTIONS.map(bg => (
                       <option key={bg} value={bg}>{bg}</option>
                     ))}
                   </select>
+                  {isOtherValue(formData.bloodGroup) && (
+                    <input
+                      type="text"
+                      placeholder="Specify blood group..."
+                      value={formData.otherBloodGroup || ''}
+                      onChange={e => setFormData({ ...formData, otherBloodGroup: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -1123,26 +1194,58 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
-                  {renderCandidateFieldLabel('Native State', 'nativeState', true)}
-                  <input 
-                    type="text" 
+                  {renderCandidateFieldLabel('Native State (28 States & 8 UTs)', 'nativeState', true)}
+                  <select 
                     required 
                     value={formData.nativeState} 
-                    onChange={e => setFormData({ ...formData, nativeState: e.target.value })}
-                    placeholder="e.g. Tamil Nadu"
-                    className={getCandidateFieldInputClass('nativeState')} 
-                  />
+                    onChange={e => {
+                      const st = e.target.value;
+                      const dists = getDistrictsByState(st);
+                      setFormData({ 
+                        ...formData, 
+                        nativeState: st,
+                        nativeDistrict: dists.length > 0 ? dists[0] : ''
+                      });
+                    }}
+                    className={getCandidateFieldInputClass('nativeState', 'form-select text-xs font-bold')} 
+                  >
+                    <option value="">-- Select Indian State / UT --</option>
+                    {getIndianStates().map(st => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                  {isOtherLocation(formData.nativeState) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom state..."
+                      value={formData.otherNativeState || ''}
+                      onChange={e => setFormData({ ...formData, otherNativeState: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Native District', 'nativeDistrict', true)}
-                  <input 
-                    type="text" 
+                  <select 
                     required 
                     value={formData.nativeDistrict} 
                     onChange={e => setFormData({ ...formData, nativeDistrict: e.target.value })}
-                    placeholder="e.g. Madurai"
-                    className={getCandidateFieldInputClass('nativeDistrict')} 
-                  />
+                    className={getCandidateFieldInputClass('nativeDistrict', 'form-select text-xs font-bold')} 
+                  >
+                    <option value="">-- Select District --</option>
+                    {getDistrictsByState(formData.nativeState).map(dst => (
+                      <option key={dst} value={dst}>{dst}</option>
+                    ))}
+                  </select>
+                  {isOtherLocation(formData.nativeDistrict) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom district..."
+                      value={formData.otherNativeDistrict || ''}
+                      onChange={e => setFormData({ ...formData, otherNativeDistrict: e.target.value })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Current City & State', 'city', true)}

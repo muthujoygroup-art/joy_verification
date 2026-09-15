@@ -24,6 +24,7 @@ import {
   Printer
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { exportAllCandidatesToExcel } from '../utils/employeeExcelExport';
 
 export const UniversalDocumentExportModal = ({ 
   isOpen, 
@@ -335,86 +336,17 @@ export const UniversalDocumentExportModal = ({
   // 2. Download Microsoft Excel Spreadsheet (.xlsx)
   const handleDownloadExcel = () => {
     setExportingFormat('excel');
-    const headers = [
-      'Record ID',
-      'Candidate Name',
-      'Employee ID',
-      'Company Name',
-      'Department',
-      'Designation',
-      'Email',
-      'Mobile Number',
-      'Masked Aadhaar Number',
-      'PAN Number',
-      'EPFO UAN Number',
-      'Bank Account Number',
-      'Bank Name Match Status',
-      'Verification Status',
-      'Verification Date (YYYY-MM-DD)',
-      'Certificate Validity',
-      'DPDP Digital Consent Logged'
-    ];
-
-    const rows = selectedList.map((c, i) => [
-      c.id,
-      c.name || 'Candidate',
-      c.empId || `EMP-${400 + i}`,
-      companies.find(comp => comp.id === c.companyId)?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      c.department || c.dept || 'Engineering',
-      c.designation || 'Associate',
-      c.email || '',
-      c.mobile || '',
-      `XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}`,
-      c.pan || 'ABCDE1234F',
-      c.uan || '101234567890',
-      `XXXXXX${c.bankDetails?.accountNumber?.slice(-4) || '7890'}`,
-      c.bankDetails?.nameMatchStatus || 'Matched 100%',
-      c.status || 'VERIFIED',
-      c.verificationDate || '2026-08-26',
-      '60 Days',
-      'YES (DPDP Act Section 6)'
-    ]);
-
-    const excelHtml = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>BGV Audit Ledger</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
-        <style>
-          table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; }
-          th { background-color: #f97316; color: #ffffff; font-weight: bold; text-align: left; padding: 8px 12px; border: 1px solid #cbd5e1; }
-          td { padding: 6px 12px; border: 1px solid #cbd5e1; font-size: 13px; }
-          tr:nth-child(even) { background-color: #f8fafc; }
-        </style>
-      </head>
-      <body>
-        <h2>JOY CORPORATE SOLUTIONS - CANDIDATE VERIFICATION AUDIT LEDGER</h2>
-        <p>Period: ${isSingleDayMode ? singleDate : `${startDate} to ${endDate}`} | Generated: ${new Date().toLocaleString('en-IN')}</p>
-        <table>
-          <thead>
-            <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
-          </tbody>
-        </table>
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `JOY_BGV_Audit_Ledger_${isSingleDayMode ? singleDate : `${startDate}_to_${endDate}`}.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    setExportingFormat(null);
-    showToast(`Exported ${selectedList.length} candidate audit records to Excel (.xlsx)!`);
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+    try {
+      const title = `Date-Filtered BGV Audit Ledger (${isSingleDayMode ? singleDate : `${startDate} to ${endDate}`})`;
+      exportAllCandidatesToExcel(selectedList, title, companies);
+      showToast(`Exported ${selectedList.length} candidate master audit records to Excel (.xlsx)!`);
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+    } catch (err) {
+      console.error('Failed to export Excel spreadsheet:', err);
+      showToast('Error generating Excel file. Please try again.', 'error');
+    } finally {
+      setExportingFormat(null);
+    }
   };
 
   // 3. Download Microsoft Word Document (.docx)
