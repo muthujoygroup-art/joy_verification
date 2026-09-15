@@ -282,11 +282,11 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
         
         {/* Top Header Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
-          <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
+          <div className="flex items-center gap-3.5">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY TRUE PROFILE Logo" 
-              className="w-11 h-11 object-contain group-hover:scale-105 transition-transform" 
+              className="w-11 h-11 object-contain" 
             />
             <div>
               <div className="flex items-center gap-2">
@@ -295,16 +295,9 @@ export const LoginView = ({ initialRole = 'superadmin' }) => {
               </div>
               <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
-          </Link>
+          </div>
 
           <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
-            <Link 
-              to="/" 
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Homepage 🌐</span>
-            </Link>
             <span className="badge badge-emerald flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
               Gateway Online

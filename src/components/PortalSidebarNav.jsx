@@ -37,7 +37,9 @@ import {
   MessageSquare,
   FileSpreadsheet,
   CheckCircle2,
-  Mail
+  Mail,
+  Globe,
+  BookOpen
 } from 'lucide-react';
 
 export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed = false, onToggleCollapse }) => {
@@ -358,10 +360,12 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           divisions: [
             { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
             { id: 'onboard_company', label: '+ Add New Company', modal: 'add_company', icon: Plus },
+            { id: 'landing_cms', label: 'Homepage Content & CMS 🌐', tab: 'landing_cms', icon: Globe },
             { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search },
             { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
             { id: 'leads_inquiries', label: 'Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
             { id: 'reviews_moderation', label: 'Customer Reviews', tab: 'reviews', icon: Star },
+            { id: 'blog_cms', label: 'Knowledge Base & Blog 📚', tab: 'blog', icon: BookOpen },
             { id: 'terms_hub', label: 'Terms & Agreements', tab: 'terms_hub', icon: Scale },
             { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck }
           ]
@@ -654,11 +658,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       <div className={`border-b border-slate-100 flex items-center shrink-0 bg-white transition-all ${
         isCollapsed ? 'p-3 justify-center flex-col gap-2' : 'p-4 justify-between'
       }`}>
-        <Link 
-          to="/" 
-          className="flex items-center gap-2.5 group cursor-pointer"
-          title="Return to Public Homepage"
-          onClick={() => soundEngine.playClick?.()}
+        <div 
+          className="flex items-center gap-2.5"
         >
           <div className="relative shrink-0">
             <img 
@@ -679,7 +680,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
               </p>
             </div>
           )}
-        </Link>
+        </div>
 
         {/* Desktop Collapsible Rail Toggle Button */}
         {!isMobile && onToggleCollapse && (

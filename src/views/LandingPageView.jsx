@@ -59,11 +59,15 @@ import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
-import { useApp } from '../context/AppContext';
+import { useApp, DEFAULT_LANDING_PAGE_CONTENT } from '../context/AppContext';
 
 export const LandingPageView = () => {
   const navigate = useNavigate();
-  const { platformLogoEmblem } = useApp() || {};
+  const { platformLogoEmblem, landingPageContent } = useApp() || {};
+  const content = {
+    ...DEFAULT_LANDING_PAGE_CONTENT,
+    ...(landingPageContent || {})
+  };
   // Innovative First-Load / Reload Logo Preloader
   const [showPreloader, setShowPreloader] = useState(true);
 
@@ -476,6 +480,16 @@ export const LandingPageView = () => {
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
+      {/* TOP DYNAMIC DATABASE-DRIVEN ANNOUNCEMENT BANNER */}
+      {content.showAnnouncement && content.announcementText && (
+        <div className="w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 border-b border-indigo-400/40 py-2 px-3 sm:px-6 text-center text-xs font-semibold text-indigo-200 relative z-50 flex items-center justify-center gap-2 shadow-inner">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-wider shrink-0 border border-indigo-400/30">
+            📢 Update
+          </span>
+          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-indigo-100">{content.announcementText}</span>
+        </div>
+      )}
+
       {/* TOP KINETIC MARQUEE TICKER */}
       <div className="w-full bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border-b border-purple-300/30 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-100 relative z-50 shadow-sm">
         <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
@@ -659,7 +673,7 @@ export const LandingPageView = () => {
                 <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-300/80 bg-purple-50/90 backdrop-blur-xl text-xs font-bold text-purple-900 shadow-2xs">
                   <Crown className="w-4 h-4 text-amber-500 animate-bounce" />
                   <span className="uppercase font-mono tracking-wider text-[11px] text-purple-950 font-black">
-                    ZERO-TRUST WORKFORCE BACKGROUND SCREENING
+                    {content.heroBadge || 'ZERO-TRUST WORKFORCE BACKGROUND SCREENING'}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
                     TAT &lt;45s
@@ -667,57 +681,51 @@ export const LandingPageView = () => {
                 </div>
 
                 {/* Main Expressive Headline */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.08] font-outfit">
-                  Zero-Trust <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-emerald-600 font-black">
-                    Workforce Verification.
-                  </span> <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-teal-600 font-black">
-                    In 45 Seconds Flat.
-                  </span>
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 tracking-tight leading-[1.12] sm:leading-[1.08] font-outfit">
+                  {content.heroTitle || 'Instant & Accurate Employee Background Verification'}
                 </h1>
 
                 {/* High-Impact Subtitle */}
-                <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-medium">
-                  Eliminate fake resumes, ghost workers, dual-employment moonlighting, and statutory penalties. Automated parallel screening across Aadhaar, PAN, EPFO, Court records, and Bank rails — without manual delays or paperwork.
+                <p className="text-sm sm:text-base lg:text-lg text-slate-600 max-w-xl leading-relaxed font-medium">
+                  {content.heroSubtitle || 'Verify identity, PAN, past employment, bank details, and criminal records in under 60 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.'}
                 </p>
 
                 {/* Hero Primary Action Buttons */}
                 <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
                   <button
                     onClick={() => setShowDemoModal(true)}
-                    className="btn-superadmin px-7 py-4 rounded-2xl font-black text-sm text-white shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                    className="btn-superadmin px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl font-black text-xs sm:text-sm text-white shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
                   >
-                    <span>Book Free Live Demo 🚀</span>
+                    <span>{content.ctaPrimaryText || 'Book Free Live Demo 🚀'}</span>
                     <ArrowRight className="w-4 h-4 text-white" />
                   </button>
 
                   <button
                     onClick={() => window.dispatchEvent(new CustomEvent('open_tour_guide_modal'))}
-                    className="bg-white hover:bg-slate-50 border-2 border-indigo-400 px-6 py-4 rounded-2xl font-bold text-sm text-indigo-950 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border-2 border-indigo-400 px-5 sm:px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-xs sm:text-sm text-indigo-950 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Compass className="w-4 h-4 text-indigo-600 animate-spin-slow" />
-                    <span>Launch Interactive Tour 🧭</span>
+                    <span>{content.ctaSecondaryText || 'Launch Interactive Tour 🧭'}</span>
                   </button>
                 </div>
 
                 {/* Key Value Metrics Bar */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-6 border-t border-slate-200 w-full max-w-2xl">
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                    <div className="text-xl sm:text-2xl font-black text-purple-700 font-outfit">&lt;45s</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Verification TAT</div>
+                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
+                    <div className="text-lg sm:text-2xl font-black text-purple-700 font-outfit">{content.statSpeed || '<45s'}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statSpeedLabel || 'Verification Speed'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                    <div className="text-xl sm:text-2xl font-black text-slate-900 font-outfit">99.98%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Precision Rate</div>
+                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
+                    <div className="text-lg sm:text-2xl font-black text-slate-900 font-outfit">{content.statAccuracy || '99.98%'}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statAccuracyLabel || 'Precision Rate'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                    <div className="text-xl sm:text-2xl font-black text-emerald-700 font-outfit">100%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">DPDP 2023 Compliant</div>
+                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
+                    <div className="text-lg sm:text-2xl font-black text-emerald-700 font-outfit">{content.statClients || '150+'}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statClientsLabel || 'Enterprise Clients'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                    <div className="text-xl sm:text-2xl font-black text-amber-600 font-outfit">80%</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">Cost Reduction</div>
+                  <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left">
+                    <div className="text-lg sm:text-2xl font-black text-amber-600 font-outfit">{content.statProfiles || '500k+'}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-600 font-bold mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
                   </div>
                 </div>
 
@@ -773,10 +781,10 @@ export const LandingPageView = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate('/superadmin/console/omnisearch')}
+                  onClick={() => setShowDemoModal(true)}
                   className="w-full btn bg-purple-600 hover:bg-purple-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <span>Open SuperAdmin Console 🚀</span>
+                  <span>Request Enterprise Demo 🚀</span>
                 </button>
               </div>
 
@@ -802,10 +810,10 @@ export const LandingPageView = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate('/company/console/dashboard')}
+                  onClick={() => setShowDemoModal(true)}
                   className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <span>Open Company Portal 🚀</span>
+                  <span>Explore Company Features 🏢</span>
                 </button>
               </div>
 
@@ -831,10 +839,10 @@ export const LandingPageView = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate('/hr/console/pipeline')}
+                  onClick={() => setShowDemoModal(true)}
                   className="w-full btn bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <span>Open HR Workstation 🚀</span>
+                  <span>Explore Recruiter Tools 👔</span>
                 </button>
               </div>
 
@@ -860,10 +868,10 @@ export const LandingPageView = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate('/employee/verify/COMP001EMP001')}
+                  onClick={() => setShowDemoModal(true)}
                   className="w-full btn bg-amber-600 hover:bg-amber-700 text-white font-black text-xs py-3 rounded-xl shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <span>Open Candidate Portal 🚀</span>
+                  <span>View Candidate Experience 📱</span>
                 </button>
               </div>
 
@@ -1525,10 +1533,14 @@ export const LandingPageView = () => {
             </div>
 
             <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Support & Legal</h4>
-              <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-mono">
-                <span className="text-white font-bold">Email: support@joygroup.art</span>
-                <span className="text-emerald-400">Mon - Sat: 9:00 AM - 7:00 PM IST</span>
+              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Corporate & Communication</h4>
+              <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-sans">
+                <span className="text-white font-bold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
+                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail}`} className="text-indigo-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
+                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone}`} className="text-indigo-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
+                <span className="text-slate-400">💬 WhatsApp: <span className="text-emerald-400 font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
+                <span className="text-slate-400">🕒 Hours: <span className="text-slate-300">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
+                <span className="text-[11px] text-slate-400 mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
               </div>
             </div>
           </div>
@@ -1540,8 +1552,7 @@ export const LandingPageView = () => {
             </div>
             <div className="flex flex-wrap items-center gap-6">
               <button onClick={() => setShowLegalHandbook(true)} className="hover:text-emerald-400 transition-colors cursor-pointer text-slate-400 font-bold">Statutory Compliance Handbook</button>
-              <a href="/login" className="hover:text-emerald-400 transition-colors text-slate-400 font-bold">Client Portal Login</a>
-              <span>© {new Date().getFullYear()} JOY Corporate Solutions Pvt Ltd.</span>
+              <span>© {new Date().getFullYear()} {content.companyName || 'JOY Corporate Solutions Pvt Ltd.'}</span>
             </div>
           </div>
         </div>

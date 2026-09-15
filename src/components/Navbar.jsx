@@ -116,12 +116,12 @@ export const Navbar = () => {
           
           {/* Brand Logo & Active Role Badge */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               <div className="relative shrink-0">
                 <img 
                   src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY TRUE PROFILE Logo" 
-                  className="w-9 h-9 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform" 
+                  className="w-9 h-9 sm:w-10 sm:h-10 object-contain" 
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white animate-pulse" title="Gateway Online" />
               </div>
@@ -143,7 +143,7 @@ export const Navbar = () => {
                   </span>
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
 
           {/* Desktop Action Bar (>= lg screens) */}
@@ -151,19 +151,6 @@ export const Navbar = () => {
             
             {/* Grouped Action Navigation Pill Toolbar */}
             <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-2xl border border-slate-200 shadow-2xs">
-              
-              {/* Return to Public Homepage */}
-              <Link
-                to="/"
-                className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-slate-700 bg-white hover:bg-slate-50 font-bold border border-slate-200 shadow-2xs hover:shadow-sm transition-all whitespace-nowrap"
-                title="Return to Public Homepage"
-              >
-                <Home className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>Home 🌐</span>
-              </Link>
-
-
-              
               {/* Interactive Guided Tour & Feature Guide Dropdown Button */}
               <button
                 onClick={() => { setShowTourGuideModal(true); window.dispatchEvent(new CustomEvent("open_tour_guide_modal")); }}
@@ -182,16 +169,6 @@ export const Navbar = () => {
               >
                 <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
                 <span>Legal & DPDP 🛡️</span>
-              </button>
-
-              {/* Universal Date-Filtered Document & Report Export Trigger */}
-              <button
-                onClick={() => setShowUniversalExportModal(true)}
-                className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
-              >
-                <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span>Reports 📥</span>
               </button>
 
               {/* Notification Center Bell Button */}
@@ -319,17 +296,7 @@ export const Navbar = () => {
           <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
             <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
               
-              {/* 1. Dashboard / Home Tab */}
-              <Link
-                to="/"
-                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
-                title="Dashboard"
-              >
-                <Home className="w-4 h-4" />
-                <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
-              </Link>
-
-              {/* 2. Candidate: Verify Checklist / Admin: Universal Reports Hub */}
+              {/* 1. Candidate: Verify Checklist / Admin: Legal & Compliance */}
               {isCandidate ? (
                 <button
                   onClick={() => {
@@ -344,12 +311,12 @@ export const Navbar = () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => setShowUniversalExportModal(true)}
-                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
-                  title="Download Reports"
+                  onClick={() => setShowLegalHandbook(true)}
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all cursor-pointer"
+                  title="Legal & DPDP Compliance"
                 >
-                  <Download className="w-4 h-4" />
-                  <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
+                  <Scale className="w-4 h-4 text-indigo-600" />
+                  <span className="text-[9px] font-black uppercase tracking-wider">Compliance</span>
                 </button>
               )}
 

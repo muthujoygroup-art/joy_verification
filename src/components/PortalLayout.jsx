@@ -192,7 +192,7 @@ export const PortalLayout = ({ children }) => {
               </button>
 
               {/* Mobile Brand Emblem (< lg screens) */}
-              <Link to="/" className="lg:hidden flex items-center gap-2 shrink-0">
+              <div className="lg:hidden flex items-center gap-2 shrink-0">
                 <img 
                   src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY Logo" 
@@ -201,14 +201,13 @@ export const PortalLayout = ({ children }) => {
                 <span className="font-black text-xs text-slate-900 leading-tight hidden sm:inline">
                   JOY <span className="text-amber-500">TRUE PROFILE</span>
                 </span>
-              </Link>
+              </div>
 
               {/* Desktop Breadcrumb Path */}
               <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-500">
-                <Link to="/" className="hover:text-slate-900 transition-colors flex items-center gap-1">
-                  <Home className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Joy Verification</span>
-                </Link>
+                <div className="flex items-center gap-1 font-bold text-slate-700">
+                  <span>Joy True Profile</span>
+                </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                 <span className={`badge ${currentTheme.badgeClass} text-[9px] py-0.5 px-2 font-black`}>
                   {currentTheme.label}
@@ -331,18 +330,7 @@ export const PortalLayout = ({ children }) => {
           <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">
             <div className="backdrop-blur-2xl bg-white/95 border border-slate-200/90 shadow-2xl rounded-3xl p-1.5 flex items-center justify-around gap-1">
               
-              {/* 1. Home Link */}
-              <Link
-                to="/"
-                onClick={() => soundEngine.playClick?.()}
-                className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all"
-                title="Dashboard"
-              >
-                <Home className="w-4 h-4" />
-                <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
-              </Link>
-
-              {/* 2. Candidate: Verify Checklist / Admin: Reports Hub */}
+              {/* 1. Candidate: Verify Checklist / Admin: Legal & Compliance */}
               {isCandidate ? (
                 <button
                   type="button"
@@ -362,13 +350,13 @@ export const PortalLayout = ({ children }) => {
                   type="button"
                   onClick={() => {
                     soundEngine.playClick?.();
-                    setShowUniversalExportModal(true);
+                    setShowLegalHandbook(true);
                   }}
-                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-emerald-600 active:scale-95 transition-all cursor-pointer"
-                  title="Download Reports"
+                  className="flex-1 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-2xl text-slate-600 hover:text-indigo-600 active:scale-95 transition-all cursor-pointer"
+                  title="Legal & DPDP Compliance"
                 >
-                  <Download className="w-4 h-4" />
-                  <span className="text-[9px] font-black uppercase tracking-wider">Reports</span>
+                  <Scale className="w-4 h-4 text-indigo-600" />
+                  <span className="text-[9px] font-black uppercase tracking-wider">Compliance</span>
                 </button>
               )}
 

@@ -79,24 +79,24 @@ export const TurnstileGateSimulator = () => {
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-9 shadow-xl relative overflow-hidden">
+    <div className="w-full bg-white border border-slate-200 rounded-3xl p-4 sm:p-7 md:p-9 shadow-xl relative overflow-hidden">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 border-b border-slate-200 pb-5 sm:pb-6 mb-6 sm:mb-8">
         <div>
           <div className="flex items-center gap-2 font-mono text-[10px] text-emerald-800 font-bold uppercase tracking-wider mb-1">
             <HardHat className="w-3.5 h-3.5 text-emerald-600" />
             <span>INTELLIGENT ACCESS & TURNSTILE CONTROLLER</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 font-outfit">
             Workforce Digital Turnstile Gate Simulator
           </h3>
-          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed">
             Experience sub-second biometric QR pass authentication directly integrated with facility turnstiles and plant security gates.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 p-1.5 rounded-2xl font-mono text-xs">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-100 border border-slate-200 p-1.5 rounded-2xl font-mono text-xs shrink-0">
           {TEST_WORKERS.map((w) => (
             <button
               key={w.id}
@@ -105,7 +105,7 @@ export const TurnstileGateSimulator = () => {
                 setSelectedWorker(w);
                 setGateState('idle');
               }}
-              className={`px-3 py-2 rounded-xl font-bold transition-all cursor-pointer ${
+              className={`px-3 py-2 rounded-xl font-bold transition-all flex items-center justify-center cursor-pointer ${
                 selectedWorker.id === w.id
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-md'
                   : 'text-slate-600 hover:text-slate-900'

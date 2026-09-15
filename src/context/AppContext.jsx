@@ -124,6 +124,38 @@ export const POSTPAID_PLANS = {
   }
 };
 
+export const DEFAULT_LANDING_PAGE_CONTENT = {
+  // Hero Section
+  heroBadge: 'AI-Powered Workforce Verification',
+  heroTitle: 'Instant & Accurate Employee Background Verification',
+  heroSubtitle: 'Verify identity, PAN, past employment, bank details, and criminal records in under 60 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.',
+  ctaPrimaryText: 'Request a Free Demo 🚀',
+  ctaSecondaryText: 'Explore Features',
+
+  // Communication & Contact Details
+  companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+  supportEmail: 'support@joycorporatesolutions.com',
+  salesEmail: 'sales@joycorporatesolutions.com',
+  contactPhone: '+91 98450 11223',
+  whatsappNumber: '+91 98450 11223',
+  officeAddress: 'Ground Floor, Technology Corridor, Sriperumbudur & Guindy Industrial Estate, Chennai, Tamil Nadu 600032',
+  workingHours: 'Monday - Saturday: 9:00 AM - 7:00 PM IST',
+
+  // Announcement Bar
+  showAnnouncement: true,
+  announcementText: '🚀 New: Automated Postpaid Billing with 18% GST Invoices & Never-Block Overage Policy is now live!',
+
+  // Stats & Performance Metrics
+  statSpeed: 'Under 60s',
+  statSpeedLabel: 'Average Verification Speed',
+  statAccuracy: '99.98%',
+  statAccuracyLabel: 'Data Matching Accuracy',
+  statClients: '150+',
+  statClientsLabel: 'Enterprise Clients',
+  statProfiles: '500,000+',
+  statProfilesLabel: 'Profiles Verified'
+};
+
 export const getCompanyPostpaidPlan = (companyOrPlan) => {
   if (!companyOrPlan) return POSTPAID_PLANS.tier1;
   const planKey = typeof companyOrPlan === 'string'
@@ -489,6 +521,44 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
     if (typeof showToast === 'function') {
       showToast('🔄 Platform logo reset to default brand logo.');
+    }
+  };
+
+  // 🌐 DYNAMIC DATABASE-DRIVEN LANDING PAGE CONTENT STATE
+  const [landingPageContent, setLandingPageContent] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_landing_page_content');
+      if (saved) {
+        return { ...DEFAULT_LANDING_PAGE_CONTENT, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved landing page content:', e);
+    }
+    return DEFAULT_LANDING_PAGE_CONTENT;
+  });
+
+  const updateLandingPageContent = (newContent) => {
+    setLandingPageContent(prev => {
+      const updated = { ...prev, ...newContent };
+      try {
+        localStorage.setItem('joy_landing_page_content', JSON.stringify(updated));
+      } catch (e) {
+        console.error('Failed to persist landing page content:', e);
+      }
+      return updated;
+    });
+    if (typeof showToast === 'function') {
+      showToast('✅ Landing page content updated in Database!');
+    }
+  };
+
+  const resetLandingPageContent = () => {
+    setLandingPageContent(DEFAULT_LANDING_PAGE_CONTENT);
+    try {
+      localStorage.setItem('joy_landing_page_content', JSON.stringify(DEFAULT_LANDING_PAGE_CONTENT));
+    } catch (e) {}
+    if (typeof showToast === 'function') {
+      showToast('🔄 Landing page content reset to defaults!');
     }
   };
 
@@ -3720,6 +3790,10 @@ export const AppProvider = ({ children }) => {
       platformLogoDark,
       updatePlatformLogo,
       resetPlatformLogo,
+      // 🌐 Dynamic Database-Driven Landing Page CMS
+      landingPageContent,
+      updateLandingPageContent,
+      resetLandingPageContent,
       // 🤝 Vendor Management & Verification
       vendors,
       setVendors,

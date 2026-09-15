@@ -44,28 +44,28 @@ export const DualEmploymentRadarVisualizer = () => {
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-9 shadow-xl relative overflow-hidden">
+    <div className="w-full bg-white border border-slate-200 rounded-3xl p-4 sm:p-7 md:p-9 shadow-xl relative overflow-hidden">
       
       {/* Top Header & Scenario Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 border-b border-slate-200 pb-5 sm:pb-6 mb-6 sm:mb-8">
         <div>
           <div className="flex items-center gap-2 text-xs text-amber-800 font-bold uppercase tracking-wider mb-1">
             <Search className="w-3.5 h-3.5 text-amber-600" />
             <span>AI MOONLIGHTING & CONFLICT OF INTEREST SCANNER</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 font-outfit">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 font-outfit">
             Detect Secondary Jobs Before You Hire
           </h3>
-          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl leading-relaxed">
             See how JOY Verification spots overlapping employment and undeclared second jobs in real time to protect your company's intellectual property.
           </p>
         </div>
 
         {/* Interactive Scenario Toggle Buttons */}
-        <div className="flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 shrink-0 text-xs">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 shrink-0 text-xs gap-1 sm:gap-0">
           <button
             onClick={() => handleToggleScenario('violation')}
-            className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               scenario === 'violation'
                 ? 'bg-rose-100 text-rose-800 border border-rose-300 shadow-sm font-black'
                 : 'text-slate-600 hover:text-slate-900'
@@ -77,7 +77,7 @@ export const DualEmploymentRadarVisualizer = () => {
 
           <button
             onClick={() => handleToggleScenario('clean')}
-            className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               scenario === 'clean'
                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm font-black'
                 : 'text-slate-600 hover:text-slate-900'

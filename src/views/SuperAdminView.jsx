@@ -21,6 +21,7 @@ import { UniversalEntityTrackerModal } from '../components/UniversalEntityTracke
 import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
 import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
 import { BlogCmsConsole } from '../components/BlogCmsConsole';
+import { LandingPageCmsConsole } from '../components/LandingPageCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
@@ -2174,6 +2175,41 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* TAB: LANDING PAGE CMS & COMMUNICATION CONTROL */}
+      {(activeTab === 'landing_cms' || activeTab === 'cms' || activeTab === 'homepage_cms' || activeTab === 'homepage') && (
+        <div className="animate-fadeIn">
+          <LandingPageCmsConsole />
+        </div>
+      )}
+
+      {/* TAB: INQUIRIES & LEADS CONSOLE */}
+      {(activeTab === 'inquiries' || activeTab === 'leads' || activeTab === 'leads_inquiries') && (
+        <div className="animate-fadeIn">
+          <LeadsInquiriesConsole />
+        </div>
+      )}
+
+      {/* TAB: REVIEWS & TESTIMONIALS MODERATION */}
+      {(activeTab === 'reviews' || activeTab === 'reviews_moderation') && (
+        <div className="animate-fadeIn">
+          <ReviewsModerationConsole />
+        </div>
+      )}
+
+      {/* TAB: KNOWLEDGE BASE & BLOG CMS */}
+      {(activeTab === 'blog' || activeTab === 'blog_cms' || activeTab === 'articles') && (
+        <div className="animate-fadeIn">
+          <BlogCmsConsole />
+        </div>
+      )}
+
+      {/* TAB: API CONSUMPTION & MARGINS CONSOLE */}
+      {(activeTab === 'consumption_margins' || activeTab === 'api_margins') && (
+        <div className="animate-fadeIn">
+          <ApiConsumptionMarginConsole />
         </div>
       )}
 
