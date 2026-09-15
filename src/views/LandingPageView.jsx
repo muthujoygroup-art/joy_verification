@@ -416,51 +416,7 @@ export const LandingPageView = () => {
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
-      {/* 2. Top Announcement Banner */}
-      {content.showAnnouncement && content.announcementText && (
-        <div className="w-full bg-[#F1EEFF] border-b border-[#E5EAF0] py-2 px-3 sm:px-6 text-center text-xs font-semibold text-[#8975E8] relative z-50 flex items-center justify-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white text-[#426CF5] text-[10px] font-bold uppercase tracking-wider shrink-0 border border-[#E5EAF0]">
-            📢 Update
-          </span>
-          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-[#182230] font-medium">{content.announcementText}</span>
-        </div>
-      )}
-
-      {/* 3. Top Clean Marquee Ticker */}
-      <div className="w-full bg-white border-b border-[#E5EAF0] py-2.5 overflow-hidden text-xs font-medium text-[#5C6878] relative z-50">
-        <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
-          {[...Array(2)].map((_, mIdx) => (
-            <React.Fragment key={mIdx}>
-              <span className="inline-flex items-center gap-2 text-[#426CF5] font-semibold">
-                <Sparkles className="w-3.5 h-3.5" /> e-KYC UIDAI Aadhaar Verification (100% Authentic)
-              </span>
-              <span className="text-slate-300">✦</span>
-              <span className="inline-flex items-center gap-2 text-[#299C68] font-semibold">
-                <Zap className="w-3.5 h-3.5" /> 3D AI Biometric Face Liveness Camera Scan
-              </span>
-              <span className="text-slate-300">✦</span>
-              <span className="inline-flex items-center gap-2 text-[#8975E8] font-semibold">
-                <Mail className="w-3.5 h-3.5" /> Multi-Channel Magic Link Dispatcher (WhatsApp / SMS / Email)
-              </span>
-              <span className="text-slate-300">✦</span>
-              <span className="inline-flex items-center gap-2 text-[#E06A26] font-semibold">
-                <FileSpreadsheet className="w-3.5 h-3.5" /> Excel Bulk Import Engine (500+ Hires in 10s)
-              </span>
-              <span className="text-slate-300">✦</span>
-              <span className="inline-flex items-center gap-2 text-[#299C68] font-semibold">
-                <CreditCard className="w-3.5 h-3.5" /> Razorpay GST Auto-Invoicing & 100% Postpaid Credits
-              </span>
-              <span className="text-slate-300">✦</span>
-              <span className="inline-flex items-center gap-2 text-[#426CF5] font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Vault
-              </span>
-              <span className="text-slate-300">✦</span>
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. Premium Light Navbar */}
+      {/* 2. Premium Light Navbar */}
       <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-[#E5EAF0] shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
@@ -516,15 +472,6 @@ export const LandingPageView = () => {
 
           {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3 shrink-0">
-            {/* Sound Toggle */}
-            <button
-              onClick={handleToggleSound}
-              className="p-2.5 rounded-full bg-[#FCFCFA] border border-[#E5EAF0] text-[#5C6878] hover:text-[#182230] hover:bg-white transition-all cursor-pointer shadow-xs"
-              title={soundMuted ? "Unmute Audio Effects" : "Mute Audio Effects"}
-            >
-              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#426CF5]" />}
-            </button>
-
             {/* Tour Guide Trigger */}
             <button
               onClick={() => {
@@ -535,14 +482,6 @@ export const LandingPageView = () => {
             >
               <Compass className="w-3.5 h-3.5 text-[#426CF5] animate-spin-slow" />
               <span>Tour 🧭</span>
-            </button>
-
-            {/* Login Link */}
-            <button
-              onClick={() => navigate('/login')}
-              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#182230] hover:text-[#426CF5] transition-colors cursor-pointer"
-            >
-              Login
             </button>
 
             {/* Book Live Demo Primary Button */}
