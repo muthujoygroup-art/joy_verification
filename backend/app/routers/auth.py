@@ -162,10 +162,18 @@ def refresh_session(token: str = Depends(_extract_token)):
         raise HTTPException(status_code=401, detail="Cannot refresh expired or invalid session.")
     return refreshed
 
+def _extract_token_optional(authorization: str = Header(None)) -> str:
+    if not authorization:
+        return None
+    if authorization.startswith("Bearer "):
+        return authorization.split(" ")[1]
+    return authorization
+
 @router.post("/logout")
-def logout(token: str = Depends(_extract_token)):
-    """Invalidates the active session token"""
-    success = terminate_session(token)
+def logout(authorization: str = Header(None)):
+    """Invalidates the active session token safely without throwing 401 if token is already cleared"""
+    token = _extract_token_optional(authorization)
+    success = terminate_session(token) if token else True
     return {"message": "Logged out successfully", "session_terminated": success}
 
 

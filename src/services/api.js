@@ -921,6 +921,26 @@ export const api = {
       body: JSON.stringify({ resolved_by }),
     });
   },
+  // Enterprise Company Requests & Approvals
+  getCompanyRequests: () => request('/superadmin/company-requests'),
+  submitCompanyRequest: (payload) => request('/superadmin/company-requests', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  approveCompanyRequest: (requestId) => {
+    requestCache.clear();
+    return request(`/superadmin/company-requests/${requestId}/approve`, {
+      method: 'PUT',
+    });
+  },
+  rejectCompanyRequest: (requestId, payload = {}) => {
+    requestCache.clear();
+    return request(`/superadmin/company-requests/${requestId}/reject`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  },
+
   // Public Landing Page & Enterprise Inquiries
   getPublicArticles: async () => {
     try {

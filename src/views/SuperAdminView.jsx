@@ -260,6 +260,8 @@ export const SuperAdminView = () => {
   const [selectedTrackedEntityType, setSelectedTrackedEntityType] = useState('candidate');
   const [selectedDossierCandidate, setSelectedDossierCandidate] = useState(null);
   const [selectedCertCandidate, setSelectedCertCandidate] = useState(null);
+  const [companyRequests, setCompanyRequests] = useState([]);
+  const [loadingCompanyRequests, setLoadingCompanyRequests] = useState(false);
 
   // Enriched entities with hierarchical unique profile IDs
   const enrichedDirectory = useMemo(() => {
