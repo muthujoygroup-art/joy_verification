@@ -39,21 +39,22 @@ import {
   FileSpreadsheet, 
   Mail, 
   UserPlus, 
-  Share2,
-  Scan
+  Share2
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
-import BespokeWorkforceMatrixHero from '../components/landing/BespokeWorkforceMatrixHero';
-import CinematicVerificationStoryboard from '../components/landing/CinematicVerificationStoryboard';
-import QuantumWorkforceMesh from '../components/landing/QuantumWorkforceMesh';
-import EditorialBentoArchitecture from '../components/landing/EditorialBentoArchitecture';
-import CryptographicVaultPillars from '../components/landing/CryptographicVaultPillars';
+import Hero3DCharacter from '../components/landing/Hero3DCharacter';
+import HumanIdentitySection from '../components/landing/HumanIdentitySection';
+import VerificationTimeline from '../components/landing/VerificationTimeline';
+import WorkforceConnectionSection from '../components/landing/WorkforceConnectionSection';
+import FeatureShowcase from '../components/landing/FeatureShowcase';
+import TrustSection from '../components/landing/TrustSection';
+import WhyJoyTrueProfile from '../components/landing/WhyJoyTrueProfile';
+import CTASection from '../components/landing/CTASection';
 import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentRadarVisualizer';
 import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator';
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
 import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
-import LiveVideoSimulationShowcase from '../components/landing/LiveVideoSimulationShowcase';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
 import { soundEngine } from '../utils/uiSoundEffects';
@@ -70,10 +71,10 @@ export const LandingPageView = () => {
     ...(landingPageContent || {})
   };
 
-  // Innovative Holographic Logo Preloader (Preserved strictly untouched)
+  // Innovative Logo Preloader (Preserved strictly untouched)
   const [showPreloader, setShowPreloader] = useState(true);
 
-  // Active View Tab State (Unified Tab Switcher)
+  // Active View Tab State
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tabId) => {
@@ -156,7 +157,7 @@ export const LandingPageView = () => {
       await api.submitDemoRequest(demoForm);
       setDemoSubmitted(true);
       soundEngine.playSuccess();
-      confetti({ particleCount: 90, spread: 70, origin: { y: 0.5 } });
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
     } catch {
       setDemoSubmitted(true);
       soundEngine.playSuccess();
@@ -174,7 +175,7 @@ export const LandingPageView = () => {
       await api.submitReview(reviewForm);
       setReviewSubmitted(true);
       soundEngine.playSuccess();
-      confetti({ particleCount: 70, spread: 60, origin: { y: 0.5 } });
+      confetti({ particleCount: 60, spread: 60, origin: { y: 0.5 } });
     } catch {
       setReviewSubmitted(true);
       soundEngine.playSuccess();
@@ -186,32 +187,32 @@ export const LandingPageView = () => {
   // Technical Specs Data
   const technicalSpecs = {
     performance: [
-      { label: 'Verification Latency', value: 'Under 45 Seconds', detail: 'Instant parallel automated queries across UIDAI, NSDL, NPCI, EPFO & e-Courts' },
-      { label: 'Biometric Face Match', value: '99.98% Precision', detail: '3D anti-spoofing camera liveness eliminates duplicate and synthetic profiles' },
-      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Zero app download web magic link with 4-digit PIN security authorization' },
-      { label: 'Platform Capacity', value: '50,000+ Checks / Day', detail: 'Cloud-native microservices architecture built for high-volume enterprise hiring' },
-      { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Sovereign Indian data center infrastructure with round-the-clock telemetry' }
+      { label: 'Verification Speed', value: 'Under 45 Seconds', detail: 'Parallel automated checks across official registries' },
+      { label: 'Photo & ID Match', value: '99.98% Accuracy', detail: '3D facial liveness scan eliminates duplicate profiles' },
+      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Mobile-friendly link with zero app downloads' },
+      { label: 'Platform Capacity', value: '50,000+ Checks / Day', detail: 'Built to effortlessly handle enterprise hiring spikes' },
+      { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Always-available cloud platform with round-the-clock monitoring' }
     ],
     security: [
-      { label: 'Cryptographic Standard', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted in transit (TLS 1.3) and encrypted at rest (AES-256 GCM)' },
-      { label: 'DPDP Act 2023 Law', value: '100% Consent Architecture', detail: 'Explicit candidate OTP consent recorded in permanent immutable audit logs' },
-      { label: 'Aadhaar Redaction', value: 'Automated Data Masking', detail: 'Zero unredacted storage of national identity numbers across all databases' },
-      { label: 'Enterprise Audits', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud controls and security policies' },
-      { label: 'Certified PDF Dossiers', value: 'Tamper-Proof Seals', detail: 'Cryptographic SHA-256 hash signatures and verifiable digital timestamps' }
+      { label: 'Data Encryption', value: 'Bank-Grade 256-Bit AES', detail: 'Encrypted at all times during transit and storage' },
+      { label: 'Privacy Law Compliance', value: '100% DPDP Act Compliant', detail: 'Explicit OTP candidate consent and automated data masking' },
+      { label: 'Aadhaar Redaction', value: 'Automated Masking', detail: 'Zero unredacted storage of national identity numbers' },
+      { label: 'Industry Standards', value: 'ISO 27001 & SOC-2', detail: 'Independently audited enterprise cloud infrastructure' },
+      { label: 'Certified PDF Reports', value: 'Tamper-Proof Dossiers', detail: 'Cryptographic hash signatures with digital timestamps' }
     ],
     statutory: [
-      { label: 'Workforce Gate Passes', value: 'Scannable Digital QR', detail: 'Sub-second access clearance for industrial turnstiles and security guards' },
-      { label: 'CLRA Form XVI Muster', value: 'Always Audit-Ready', detail: 'Permanent statutory compliance muster roll and contractor labor ledger' },
-      { label: 'EPFO Moonlighting Audit', value: 'Full Career Timeline', detail: 'Detects active secondary provident fund employer contributions' },
-      { label: 'Bank Penny Drop (IMPS)', value: 'Instant ₹1 Account Check', detail: 'Direct NPCI validation confirms beneficiary account name 100%' },
-      { label: 'Court Record Scope', value: '3,500+ Pan-India Courts', detail: 'Civil, criminal, and commercial tribunal queries with fuzzy matching' }
+      { label: 'Workforce Gate Passes', value: 'Digital Scannable QR', detail: 'Instant digital employee badges for security gates' },
+      { label: 'CLRA Form XVI Muster', value: 'Always Audit-Ready', detail: 'Permanent, verifiable compliance log for statutory audits' },
+      { label: 'Employment History', value: 'Full Career Timeline', detail: 'Past company tenures and relieving dates confirmed' },
+      { label: 'Bank Account Match', value: 'Instant ₹1 IMPS Match', detail: 'Validates beneficiary name directly with recipient bank' },
+      { label: 'Court Record Scope', value: 'Pan-India Databases', detail: 'Covers civil, criminal, and commercial tribunals' }
     ],
     infrastructure: [
-      { label: 'Cloud Architecture', value: 'Indian Sovereign Cloud', detail: 'High-speed edge nodes with sub-200ms API response latency' },
-      { label: 'Multi-Tenant Portals', value: '4 Dedicated Workstations', detail: 'Super Admin, Company Admin, HR Recruiter, and Candidate Mobile' },
-      { label: 'Candidate Dispatch', value: 'Multi-Channel Rails', detail: 'Automated 1-click delivery via WhatsApp, SMS, and Email' },
+      { label: 'Cloud Architecture', value: 'Sovereign Indian Cloud', detail: 'High-speed distributed servers across India' },
+      { label: 'Official Connectors', value: 'Direct Rails Connectors', detail: 'Direct validation with official government and banking rails' },
+      { label: 'Candidate Experience', value: 'Zero-App Web Link', detail: 'Runs instantly on WhatsApp, SMS, or any mobile browser' },
       { label: 'Commercial Model', value: '100% Postpaid & Metered', detail: 'Pay-per-check with official automated Razorpay GST tax invoices' },
-      { label: 'Report Delivery', value: 'Instant PDF & Web Dossier', detail: 'Certified downloadable dossier generated immediately upon completion' }
+      { label: 'Report Delivery', value: 'Instant PDF & Web Link', detail: 'Downloadable certified audit record with 1 click' }
     ]
   };
 
@@ -382,8 +383,8 @@ export const LandingPageView = () => {
   // FAQ Data
   const faqData = [
     {
-      q: 'How does JOY TRUE PROFILE achieve sub-45-second verification speeds?',
-      a: 'JOY TRUE PROFILE connects directly to official verification rails including UIDAI OTP for Aadhaar, NSDL for PAN, NPCI for Bank Penny Drops, and EPFO for employment history. All checks execute in parallel using high-speed cloud microservices, delivering certified results in under 45 seconds.'
+      q: 'How does JOY TRUE PROFILE achieve fast employee background verification?',
+      a: 'JOY TRUE PROFILE connects directly to official registries including UIDAI for Aadhaar, NSDL for PAN, NPCI for Bank Penny Drops, and EPFO for employment history. All checks execute in parallel, delivering certified results in under 45 seconds.'
     },
     {
       q: 'How does the platform detect moonlighting and dual employment?',
@@ -408,59 +409,59 @@ export const LandingPageView = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FCFCFA] text-[#182230] font-sans selection:bg-[#426CF5] selection:text-white relative overflow-x-hidden">
       
-      {/* 1. Innovative First-Load Holographic Preloader (Strictly preserved untouched) */}
+      {/* 1. Holographic Preloader (Strictly preserved untouched) */}
       {showPreloader && (
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
-      {/* 2. Top Database-Driven Announcement Banner */}
+      {/* 2. Top Announcement Banner */}
       {content.showAnnouncement && content.announcementText && (
-        <div className="w-full bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 border-b border-amber-500/30 py-2 px-3 sm:px-6 text-center text-xs font-mono font-semibold text-amber-200 relative z-50 flex items-center justify-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider shrink-0 border border-amber-500/30">
-            📢 UPDATE
+        <div className="w-full bg-[#F1EEFF] border-b border-[#E5EAF0] py-2 px-3 sm:px-6 text-center text-xs font-semibold text-[#8975E8] relative z-50 flex items-center justify-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white text-[#426CF5] text-[10px] font-bold uppercase tracking-wider shrink-0 border border-[#E5EAF0]">
+            📢 Update
           </span>
-          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-amber-100">{content.announcementText}</span>
+          <span className="truncate max-w-4xl text-[11px] sm:text-xs text-[#182230] font-medium">{content.announcementText}</span>
         </div>
       )}
 
-      {/* 3. Top Kinetic Marquee Ticker */}
-      <div className="w-full bg-[#060A14] border-b border-slate-800/80 py-2.5 overflow-hidden text-xs font-mono font-bold text-slate-300 relative z-50 shadow-sm">
+      {/* 3. Top Clean Marquee Ticker */}
+      <div className="w-full bg-white border-b border-[#E5EAF0] py-2.5 overflow-hidden text-xs font-medium text-[#5C6878] relative z-50">
         <div className="flex animate-marquee whitespace-nowrap gap-8 items-center">
           {[...Array(2)].map((_, mIdx) => (
             <React.Fragment key={mIdx}>
-              <span className="inline-flex items-center gap-2 text-amber-400">
+              <span className="inline-flex items-center gap-2 text-[#426CF5] font-semibold">
                 <Sparkles className="w-3.5 h-3.5" /> e-KYC UIDAI Aadhaar Verification (100% Authentic)
               </span>
-              <span className="text-slate-600">✦</span>
-              <span className="inline-flex items-center gap-2 text-emerald-400">
+              <span className="text-slate-300">✦</span>
+              <span className="inline-flex items-center gap-2 text-[#299C68] font-semibold">
                 <Zap className="w-3.5 h-3.5" /> 3D AI Biometric Face Liveness Camera Scan
               </span>
-              <span className="text-slate-600">✦</span>
-              <span className="inline-flex items-center gap-2 text-cyan-400">
+              <span className="text-slate-300">✦</span>
+              <span className="inline-flex items-center gap-2 text-[#8975E8] font-semibold">
                 <Mail className="w-3.5 h-3.5" /> Multi-Channel Magic Link Dispatcher (WhatsApp / SMS / Email)
               </span>
-              <span className="text-slate-600">✦</span>
-              <span className="inline-flex items-center gap-2 text-purple-400">
+              <span className="text-slate-300">✦</span>
+              <span className="inline-flex items-center gap-2 text-[#E06A26] font-semibold">
                 <FileSpreadsheet className="w-3.5 h-3.5" /> Excel Bulk Import Engine (500+ Hires in 10s)
               </span>
-              <span className="text-slate-600">✦</span>
-              <span className="inline-flex items-center gap-2 text-emerald-400">
-                <CreditCard className="w-3.5 h-3.5" /> Razorpay GST Auto-Invoicing & Prepaid Metered Credits
+              <span className="text-slate-300">✦</span>
+              <span className="inline-flex items-center gap-2 text-[#299C68] font-semibold">
+                <CreditCard className="w-3.5 h-3.5" /> Razorpay GST Auto-Invoicing & 100% Postpaid Credits
               </span>
-              <span className="text-slate-600">✦</span>
-              <span className="inline-flex items-center gap-2 text-amber-400">
+              <span className="text-slate-300">✦</span>
+              <span className="inline-flex items-center gap-2 text-[#426CF5] font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" /> DPDP Act 2023 Statutory Compliance & Encrypted Vault
               </span>
-              <span className="text-slate-600">✦</span>
+              <span className="text-slate-300">✦</span>
             </React.Fragment>
           ))}
         </div>
       </div>
 
-      {/* 4. Ultra-Thin Glassmorphic Cyber Header */}
-      <header className="sticky top-0 z-50 w-full bg-[#050811]/90 backdrop-blur-2xl border-b border-slate-800/80 shadow-2xl transition-all">
+      {/* 4. Premium Light Navbar */}
+      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-[#E5EAF0] shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo */}
@@ -469,42 +470,42 @@ export const LandingPageView = () => {
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="JOY TRUE PROFILE Logo" 
-                className="w-11 h-11 object-contain drop-shadow-[0_0_20px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform" 
+                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" 
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#050811] animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#299C68] border-2 border-white animate-pulse" />
             </div>
             <div className="flex flex-col text-left justify-center">
-              <div className="flex items-center gap-2 whitespace-nowrap leading-none">
-                <span className="text-xl sm:text-2xl font-black text-white font-outfit tracking-tighter">JOY</span>
-                <span className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 font-outfit tracking-tighter">TRUE PROFILE</span>
+              <div className="flex items-center gap-1.5 whitespace-nowrap leading-none">
+                <span className="text-xl font-bold text-[#182230] font-outfit tracking-tight">JOY</span>
+                <span className="text-xl font-bold text-[#426CF5] font-outfit tracking-tight">TRUE PROFILE</span>
               </div>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold whitespace-nowrap mt-1">
-                Zero-Trust Verification Engine
+              <span className="text-[10px] uppercase font-mono tracking-widest text-[#5C6878] font-bold whitespace-nowrap mt-1">
+                Human-Centered Digital Trust
               </span>
             </div>
           </button>
 
-          {/* Center Navigation: Segmented Cyber Pill Switcher */}
-          <nav className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-slate-900/90 border border-slate-800 shadow-inner backdrop-blur-xl">
+          {/* Center Navigation: Segmented Soft Pill Switcher */}
+          <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FCFCFA] border border-[#E5EAF0]">
             {[
-              { id: 'overview', label: 'Overview' },
-              { id: 'features', label: 'Capabilities' },
+              { id: 'overview', label: 'Home' },
+              { id: 'features', label: 'Features' },
               { id: 'moonlighting', label: 'Moonlighting Radar' },
               { id: 'turnstile', label: 'Turnstile Gate' },
               { id: 'comparison', label: 'Speed Matrix' },
-              { id: 'roi', label: 'ROI Engine' },
-              { id: 'solutions', label: 'Architecture' },
-              { id: 'resources', label: 'Specs & FAQ' }
+              { id: 'roi', label: 'ROI Calculator' },
+              { id: 'solutions', label: 'Solutions' },
+              { id: 'resources', label: 'Resources' }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 scale-[1.03]'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      ? 'bg-[#426CF5] text-white shadow-xs font-bold scale-[1.02]'
+                      : 'text-[#5C6878] hover:text-[#182230] hover:bg-white'
                   }`}
                 >
                   {tab.label}
@@ -518,22 +519,30 @@ export const LandingPageView = () => {
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
-              className="p-2.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
+              className="p-2.5 rounded-full bg-[#FCFCFA] border border-[#E5EAF0] text-[#5C6878] hover:text-[#182230] hover:bg-white transition-all cursor-pointer shadow-xs"
               title={soundMuted ? "Unmute Audio Effects" : "Mute Audio Effects"}
             >
-              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-500" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+              {soundMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#426CF5]" />}
             </button>
 
-            {/* Tour Guide Modal Trigger */}
+            {/* Tour Guide Trigger */}
             <button
               onClick={() => {
                 soundEngine.playClick();
                 window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
               }}
-              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-mono font-bold text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
-              <Compass className="w-3.5 h-3.5 text-cyan-400 animate-spin-slow" />
-              <span>TOUR 🧭</span>
+              <Compass className="w-3.5 h-3.5 text-[#426CF5] animate-spin-slow" />
+              <span>Tour 🧭</span>
+            </button>
+
+            {/* Login Link */}
+            <button
+              onClick={() => navigate('/login')}
+              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#182230] hover:text-[#426CF5] transition-colors cursor-pointer"
+            >
+              Login
             </button>
 
             {/* Book Live Demo Primary Button */}
@@ -542,49 +551,49 @@ export const LandingPageView = () => {
                 soundEngine.playClick();
                 setShowDemoModal(true);
               }}
-              className="whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-mono font-black text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 hover:opacity-90 shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer border border-amber-300/40"
+              className="whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span>BOOK DEMO</span>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
+              <span>Get Started</span>
+              <ArrowRight className="w-3.5 h-3.5 text-white" />
             </button>
           </div>
 
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 shadow-xs cursor-pointer"
+            className="lg:hidden p-2 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] hover:bg-white shadow-xs cursor-pointer"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-800 px-4 py-5 bg-[#070A14] shadow-2xl flex flex-col gap-2 font-mono text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">01. Overview</button>
-            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">02. Capabilities</button>
-            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">03. Moonlighting Radar</button>
-            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">04. Turnstile Simulator</button>
-            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">05. Speed Matrix</button>
-            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">06. ROI Engine</button>
-            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">07. Architecture</button>
-            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 font-bold text-left">08. Specs & FAQ</button>
+          <div className="lg:hidden border-t border-[#E5EAF0] px-4 py-4 bg-white shadow-xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+            <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Home</button>
+            <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Features</button>
+            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Moonlighting Radar</button>
+            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Turnstile Simulator</button>
+            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Speed Matrix</button>
+            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">ROI Calculator</button>
+            <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Solutions</button>
+            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Resources & FAQ</button>
             
-            <div className="pt-4 mt-2 border-t border-slate-800 flex flex-col gap-2.5">
+            <div className="pt-3 mt-1 border-t border-[#E5EAF0] flex flex-col gap-2">
               <button
                 onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
-                className="w-full py-3 rounded-xl font-bold text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 text-center cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl font-semibold text-xs text-[#426CF5] bg-[#EAF5FF] border border-[#E5EAF0] text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <Compass className="w-4 h-4 text-cyan-400" />
-                <span>LAUNCH INTERACTIVE TOUR 🧭</span>
+                <Compass className="w-3.5 h-3.5 text-[#426CF5]" />
+                <span>Interactive Tour Guide 🧭</span>
               </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true); }}
-                className="w-full py-3 rounded-xl font-black text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 text-center shadow-lg cursor-pointer"
+                className="w-full py-2.5 rounded-xl font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] text-center shadow-sm cursor-pointer"
               >
-                <span>BOOK ENTERPRISE DEMO 🚀</span>
+                <span>Get Started / Book Demo</span>
               </button>
             </div>
           </div>
@@ -592,58 +601,53 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * TAB VIEW ROUTING
+       * TAB VIEW CONTENT ROUTING
        * ============================================================================== */}
 
       {/* VIEW 1: MASTER OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <>
-          {/* CINEMATIC BRUTALIST HERO SECTION */}
-          <section className="relative z-10 pt-12 pb-20 lg:pt-24 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {/* Chromatic background mesh glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-amber-500/15 via-emerald-500/10 to-transparent blur-[160px] pointer-events-none rounded-full" />
+          {/* 5. LIGHT 3D CREATIVE HERO SECTION */}
+          <section className="relative z-10 pt-12 pb-20 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            {/* Soft Ambient Pastel Mesh Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-r from-[#F1EEFF]/80 via-[#EAF5FF]/80 to-[#EAF8F0]/80 blur-[120px] pointer-events-none rounded-full" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 xl:gap-14 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 xl:gap-16 items-center">
               
-              {/* Left Column: Monumental Kinetic Typography & Narrative */}
+              {/* Left Column: Editorial Headline & Actions */}
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
                 {/* Dynamic Eyebrow Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/40 bg-amber-500/10 backdrop-blur-xl text-xs font-mono font-bold text-amber-300 shadow-lg shadow-amber-500/10">
-                  <Crown className="w-4 h-4 text-amber-400 animate-bounce" />
-                  <span className="uppercase tracking-widest text-[11px] font-black">
-                    {content.heroBadge || 'ZERO-TRUST WORKFORCE BACKGROUND SCREENING'}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-500/40">
-                    TAT &lt;45s
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] text-xs font-semibold text-[#426CF5] shadow-2xs">
+                  <Sparkles className="w-3.5 h-3.5 text-[#426CF5]" />
+                  <span>{content.heroBadge || 'SMARTER WORKFORCE VERIFICATION'}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#EAF8F0] text-[#299C68] text-[10px] font-bold">
+                    TAT &lt; 45s
                   </span>
                 </div>
 
-                {/* Monumental Heavy Headline */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tighter leading-[0.95] font-outfit uppercase">
-                  VERIFY EVERY <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400">
-                    PROFILE.
-                  </span> <br />
-                  ELIMINATE RISK.
+                {/* Main Hero Headline */}
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#182230] font-outfit tracking-tight leading-[1.08]">
+                  Every person. <br />
+                  <span className="text-[#426CF5]">One trusted profile.</span>
                 </h1>
 
-                {/* High-Impact Subtitle */}
-                <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-xl leading-relaxed font-normal">
-                  {content.heroSubtitle || 'Verify identity, PAN, past employment, bank details, and criminal records in under 45 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.'}
+                {/* Supporting Copy */}
+                <p className="text-base sm:text-lg text-[#5C6878] max-w-xl leading-relaxed font-normal">
+                  {content.heroSubtitle || 'Joy True Profile helps companies, HR teams, and workers connect through a smarter workforce verification experience—bringing profiles, documents, and verification workflows together.'}
                 </p>
 
-                {/* Hero Primary Action Buttons */}
-                <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                {/* Action Buttons */}
+                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto">
                   <button
                     onClick={() => {
                       soundEngine.playClick();
                       setShowDemoModal(true);
                     }}
-                    className="px-8 py-4 rounded-2xl font-mono font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 hover:opacity-90 shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-amber-300/40"
+                    className="px-8 py-4 rounded-full font-semibold text-sm text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>{content.ctaPrimaryText || 'BOOK LIVE DEMO 🚀'}</span>
-                    <ArrowRight className="w-4 h-4 text-slate-950" />
+                    <span>{content.ctaPrimaryText || 'Explore Joy True Profile 🚀'}</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </button>
 
                   <button
@@ -651,218 +655,84 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
                     }}
-                    className="bg-slate-900/90 hover:bg-slate-800 border border-slate-700 px-7 py-4 rounded-2xl font-mono font-bold text-xs sm:text-sm text-slate-200 shadow-xs hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border border-[#E5EAF0] px-7 py-4 rounded-full font-semibold text-sm text-[#182230] shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-cyan-400 animate-spin-slow" />
-                    <span>{content.ctaSecondaryText || 'EXPLORE TOUR 🧭'}</span>
+                    <Compass className="w-4 h-4 text-[#426CF5] animate-spin-slow" />
+                    <span>{content.ctaSecondaryText || 'How It Works 🧭'}</span>
                   </button>
                 </div>
 
-                {/* Telemetry Counter Bars */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-800 w-full max-w-2xl font-mono">
-                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-black text-amber-400 font-outfit">{content.statSpeed || '<45s'}</div>
-                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statSpeedLabel || 'Verification Speed'}</div>
+                {/* Clean Metrics Bar */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-[#E5EAF0] w-full max-w-2xl">
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#426CF5] font-outfit">{content.statSpeed || '<45s'}</div>
+                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statSpeedLabel || 'Speed'}</div>
                   </div>
-                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-black text-emerald-400 font-outfit">{content.statAccuracy || '99.98%'}</div>
-                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statAccuracyLabel || 'Precision Rate'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#182230] font-outfit">{content.statAccuracy || '99.98%'}</div>
+                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statAccuracyLabel || 'Match Accuracy'}</div>
                   </div>
-                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-black text-cyan-400 font-outfit">{content.statClients || '150+'}</div>
-                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statClientsLabel || 'Enterprise Clients'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#299C68] font-outfit">{content.statClients || '150+'}</div>
+                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statClientsLabel || 'Enterprises'}</div>
                   </div>
-                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-black text-purple-400 font-outfit">{content.statProfiles || '500k+'}</div>
-                    <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{content.statProfilesLabel || 'Profiles Checked'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#8975E8] font-outfit">{content.statProfiles || '500k+'}</div>
+                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
                   </div>
                 </div>
 
               </div>
 
-              {/* Right Column: Bespoke Workforce Identity Holographic Console */}
+              {/* Right Column: Original 3D Workforce Character Scene */}
               <div className="lg:col-span-5 flex justify-center">
-                <BespokeWorkforceMatrixHero />
+                <Hero3DCharacter />
               </div>
 
             </div>
           </section>
 
-          {/* SECTION 5: CINEMATIC VERIFICATION STORYBOARD */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <CinematicVerificationStoryboard />
-          </section>
+          {/* 6. THE HUMAN SIDE OF VERIFICATION */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <HumanIdentitySection onOpenDemo={() => setShowDemoModal(true)} />
+          </div>
 
-          {/* SECTION 6: QUANTUM WORKFORCE MESH */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <QuantumWorkforceMesh />
-          </section>
+          {/* 7. HOW IT WORKS TIMELINE */}
+          <VerificationTimeline />
 
-          {/* SECTION 7: 4 SPECIALIZED ENTERPRISE PORTALS */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-            <div className="text-center space-y-4 max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>ROLE-TAILORED PLATFORM ARCHITECTURE</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight">
-                Four Specialized Portals. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 font-black">
-                  One Unified Verification Engine.
-                </span>
-              </h2>
-              <p className="text-sm sm:text-base text-slate-400 font-normal">
-                Designed specifically for every stakeholder in your hiring ecosystem — from platform admins to corporate HRs, recruiters, and onboarding candidates.
-              </p>
-            </div>
+          {/* 8. 3D WORKFORCE CONNECTION */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <WorkforceConnectionSection />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              
-              {/* Card 1: Super Admin */}
-              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-amber-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-                    <Crown className="w-6 h-6" />
-                  </div>
-                  <span className="font-mono text-[10px] text-amber-400 uppercase tracking-widest font-black block">01. GOVERNANCE</span>
-                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-amber-300 transition-colors">
-                    Super Admin Console
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Master control panel to manage enterprise client tenants, dual API gateways, database telemetry, and Razorpay metered ledger.
-                  </p>
+          {/* 9. FEATURES ASYMMETRIC BENTO SHOWCASE */}
+          <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
 
-                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
-                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Multi-Tenant Registry</li>
-                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Dual Server Gateways</li>
-                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Database Telemetry Logs</li>
-                  </ul>
-                </div>
+          {/* 10. TRUST AND VERIFICATION */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <TrustSection 
+              onOpenLegalHandbook={() => setShowLegalHandbook(true)}
+              onOpenDemo={() => setShowDemoModal(true)}
+            />
+          </div>
 
-                <button
-                  onClick={() => setShowDemoModal(true)}
-                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/30 cursor-pointer transition-all"
-                >
-                  Request Master Demo →
-                </button>
-              </div>
+          {/* 11. WHY JOY TRUE PROFILE (3 VALUE PILLARS) */}
+          <WhyJoyTrueProfile onOpenDemo={() => setShowDemoModal(true)} />
 
-              {/* Card 2: Company Admin */}
-              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-cyan-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
-                    <Building2 className="w-6 h-6" />
-                  </div>
-                  <span className="font-mono text-[10px] text-cyan-400 uppercase tracking-widest font-black block">02. ENTERPRISE</span>
-                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-cyan-300 transition-colors">
-                    Company Admin Portal
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Monitor monthly verification check credit quotas, assign recruiter seats (COMP001HR001), top-up wallet via Razorpay, and download invoices.
-                  </p>
-
-                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
-                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Quota Consumption HUD</li>
-                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Provision HR Recruiter Seats</li>
-                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Automated Razorpay Invoicing</li>
-                  </ul>
-                </div>
-
-                <button
-                  onClick={() => setShowDemoModal(true)}
-                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 cursor-pointer transition-all"
-                >
-                  Explore Company Portal →
-                </button>
-              </div>
-
-              {/* Card 3: HR Executive */}
-              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-emerald-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                    <UserPlus className="w-6 h-6" />
-                  </div>
-                  <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest font-black block">03. RECRUITMENT</span>
-                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-emerald-300 transition-colors">
-                    HR Recruiter Cockpit
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Dispatch instant magic links via WhatsApp, SMS & Email. Import 500+ candidates via Excel spreadsheet and inspect 360° verification dossiers.
-                  </p>
-
-                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
-                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> WhatsApp & SMS Dispatcher</li>
-                    <li className="flex items-center gap-2 text-amber-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Excel Bulk Import Engine</li>
-                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 360° Candidate BGV Dossiers</li>
-                  </ul>
-                </div>
-
-                <button
-                  onClick={() => setShowDemoModal(true)}
-                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 cursor-pointer transition-all"
-                >
-                  Explore Recruiter Cockpit →
-                </button>
-              </div>
-
-              {/* Card 4: Candidate Mobile */}
-              <div className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-gradient-to-b from-[#090D18] via-[#070A14] to-[#04060E] hover:border-purple-400/60 transition-all hover:scale-[1.02] shadow-2xl flex flex-col justify-between space-y-6 group">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
-                    <Smartphone className="w-6 h-6" />
-                  </div>
-                  <span className="font-mono text-[10px] text-purple-400 uppercase tracking-widest font-black block">04. ONBOARDING</span>
-                  <h3 className="text-xl font-black text-white font-outfit uppercase group-hover:text-purple-300 transition-colors">
-                    Candidate Mobile Portal
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Mobile-first self-verification flow with 4-digit PIN access, Aadhaar e-KYC UIDAI OTP, contact validation, and 3D WebCam biometric liveness scan.
-                  </p>
-
-                  <ul className="space-y-2 text-xs text-slate-300 font-mono">
-                    <li className="flex items-center gap-2 text-purple-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 4-Digit Security PIN Gate</li>
-                    <li className="flex items-center gap-2 text-emerald-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> Aadhaar UIDAI OTP Check</li>
-                    <li className="flex items-center gap-2 text-cyan-400 font-bold"><CheckCircle2 className="w-3.5 h-3.5" /> 3D AI Biometric Face Camera</li>
-                  </ul>
-                </div>
-
-                <button
-                  onClick={() => setShowDemoModal(true)}
-                  className="w-full font-mono text-xs font-bold py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-purple-400 border border-purple-500/30 cursor-pointer transition-all"
-                >
-                  View Candidate Mobile →
-                </button>
-              </div>
-
-            </div>
-          </section>
-
-          {/* SECTION 8: ASYMMETRIC BENTO ARCHITECTURE */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <EditorialBentoArchitecture onOpenDemo={() => setShowDemoModal(true)} />
-          </section>
-
-          {/* SECTION 9: 60 FPS MOTION REEL */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <LiveVideoSimulationShowcase />
-          </section>
-
-          {/* SECTION 10: REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800">
+          {/* 12. REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
+          <section className="py-16 sm:py-20 bg-[#FCFCFA] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#E5EAF0]">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
-              <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-                <Radio className="w-3.5 h-3.5 animate-pulse text-amber-400" />
-                <span>REAL-TIME INDUSTRIAL TELEMETRY</span>
+              <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0]">
+                Live Regional Verification Telemetry
               </span>
-              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight">Pan-India Regional Mesh</h2>
+              <h2 className="text-3xl font-bold text-[#182230] font-outfit">Pan-India Industrial Activity</h2>
             </div>
             
-            {/* Telemetry Hub */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-              <div className="lg:col-span-5 flex flex-col gap-3 font-mono">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between font-bold">
-                  <span className="text-slate-300">ACTIVE REGIONAL CORRIDORS</span>
-                  <span className="text-emerald-400 font-bold">● 6 HUBS ONLINE</span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="lg:col-span-5 flex flex-col gap-2.5">
+                <div className="text-xs uppercase tracking-wider text-[#5C6878] mb-1 flex items-center justify-between font-semibold">
+                  <span>Active Regional Hubs</span>
+                  <span className="text-[#299C68] font-bold">● 6 Hubs Online</span>
                 </div>
                 {Object.keys(radarCities).map((key) => {
                   const hub = radarCities[key];
@@ -874,21 +744,21 @@ export const LandingPageView = () => {
                         soundEngine.playClick();
                         setActiveRadarCity(key);
                       }}
-                      className={`text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                      className={`text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-slate-900 border-amber-400 text-white shadow-lg shadow-amber-500/10'
-                          : 'bg-slate-950/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                          ? 'bg-[#EAF5FF] border-[#426CF5] text-[#182230] shadow-xs'
+                          : 'bg-[#FCFCFA] border-[#E5EAF0] text-[#5C6878] hover:bg-white hover:text-[#182230]'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-amber-400 animate-ping' : 'bg-slate-600'}`}></span>
-                          <h4 className={`text-xs uppercase tracking-wider font-black ${isSelected ? 'text-white' : 'text-slate-300'}`}>{hub.name}</h4>
+                          <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-[#426CF5] animate-ping' : 'bg-slate-300'}`}></span>
+                          <h4 className="text-xs font-bold text-[#182230] font-outfit">{hub.name}</h4>
                         </div>
-                        <p className={`text-[11px] mt-1 ${isSelected ? 'text-amber-300' : 'text-slate-500'}`}>{hub.state} • {hub.tag}</p>
+                        <p className="text-[11px] text-[#5C6878] mt-0.5">{hub.state} • {hub.tag}</p>
                       </div>
-                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded border ${
-                        isSelected ? 'text-slate-950 bg-amber-400 border-amber-400' : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                        isSelected ? 'bg-white text-[#426CF5] border-[#426CF5]/30' : 'bg-white text-[#5C6878] border-[#E5EAF0]'
                       }`}>
                         {hub.avgTat}
                       </span>
@@ -897,73 +767,51 @@ export const LandingPageView = () => {
                 })}
               </div>
 
-              <div className="lg:col-span-7 bg-[#050711] border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col gap-6 text-white shadow-xl">
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div className="lg:col-span-7 bg-[#FCFCFA] border border-[#E5EAF0] rounded-2xl p-6 flex flex-col gap-5 text-[#182230]">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5EAF0] pb-3">
                   <div>
-                    <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">{radarCities[activeRadarCity].state}</span>
-                    <h3 className="text-xl sm:text-2xl font-black text-white mt-1 font-outfit uppercase">{radarCities[activeRadarCity].name}</h3>
+                    <span className="text-[11px] text-[#426CF5] font-semibold">{radarCities[activeRadarCity].state}</span>
+                    <h3 className="text-xl font-bold text-[#182230] font-outfit">{radarCities[activeRadarCity].name}</h3>
                   </div>
-                  <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-400 font-mono text-[10px] uppercase tracking-wider font-bold">
-                    <Activity className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-                    <span>TELEMETRY STREAM ACTIVE</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 font-mono">
-                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Active Passes</span>
-                    <div className="text-lg font-black text-white mt-1 font-outfit">{radarCities[activeRadarCity].activePasses.split(' ')[0]}</div>
-                  </div>
-                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Average Latency</span>
-                    <div className="text-lg font-black text-amber-400 mt-1 font-outfit">{radarCities[activeRadarCity].avgTat}</div>
-                  </div>
-                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl">
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Accuracy Score</span>
-                    <div className="text-lg font-black text-emerald-400 mt-1 font-outfit">{radarCities[activeRadarCity].accuracy}</div>
+                  <div className="flex items-center gap-1.5 bg-[#EAF8F0] px-3 py-1 rounded-full border border-[#299C68]/20 text-[#299C68] text-xs font-semibold">
+                    <Activity className="w-3.5 h-3.5 animate-pulse" />
+                    <span>Telemetry Active</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 font-mono text-xs">
-                  <span className="text-slate-400 text-[10px] uppercase tracking-wider block mb-2 font-bold">// LATEST TELEMETRY EVENT STREAM</span>
-                  <p className="text-slate-300 leading-relaxed font-mono">
-                    <span className="text-emerald-400 font-bold">[14:15:45 PASS]</span> {radarCities[activeRadarCity].recentEvent}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-white border border-[#E5EAF0] p-3.5 rounded-xl shadow-2xs">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Daily Active Passes</span>
+                    <div className="text-base font-bold text-[#182230] mt-0.5 font-outfit">{radarCities[activeRadarCity].activePasses.split(' ')[0]}</div>
+                  </div>
+                  <div className="bg-white border border-[#E5EAF0] p-3.5 rounded-xl shadow-2xs">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Average TAT</span>
+                    <div className="text-base font-bold text-[#426CF5] mt-0.5 font-outfit">{radarCities[activeRadarCity].avgTat}</div>
+                  </div>
+                  <div className="bg-white border border-[#E5EAF0] p-3.5 rounded-xl shadow-2xs">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Accuracy Score</span>
+                    <div className="text-base font-bold text-[#299C68] mt-0.5 font-outfit">{radarCities[activeRadarCity].accuracy}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white border border-[#E5EAF0] rounded-xl p-3.5 text-xs">
+                  <span className="text-[#5C6878] text-[10px] font-semibold block mb-1">Latest Regional Activity</span>
+                  <p className="text-[#182230] leading-relaxed">
+                    <span className="text-[#299C68] font-bold">[Live Update]</span> {radarCities[activeRadarCity].recentEvent}
                   </p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* SECTION 11: CRYPTOGRAPHIC TRUST & DPDP VAULT PILLARS */}
-          <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <CryptographicVaultPillars 
-              onOpenLegalHandbook={() => setShowLegalHandbook(true)}
-              onOpenDemo={() => setShowDemoModal(true)}
-            />
-          </section>
-
-          {/* SECTION 12: HIGH IMPACT CONVERSION BANNER */}
-          <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto border-t border-slate-800">
-            <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/60 via-slate-900 to-[#070A12] p-8 sm:p-14 text-center flex flex-col items-center text-white shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-              
-              <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4 relative z-10">
-                Transform Your Workforce Verification Today
-              </h2>
-              <p className="text-slate-300 max-w-xl mb-8 text-sm sm:text-base font-normal relative z-10">
-                Schedule a 15-minute live walkthrough with our enterprise security team and experience sub-second screening.
-              </p>
-              <button
-                onClick={() => {
-                  soundEngine.playClick();
-                  setShowDemoModal(true);
-                }}
-                className="px-9 py-4 rounded-2xl font-mono font-black text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-xl shadow-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative z-10 border border-amber-300/40"
-              >
-                BOOK ENTERPRISE DEMO 🚀
-              </button>
-            </div>
-          </section>
+          {/* 13. FINAL CLOSING CTA SECTION */}
+          <CTASection 
+            onOpenDemo={() => setShowDemoModal(true)} 
+            onOpenContact={() => {
+              const el = document.getElementById('contact-footer');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
         </>
       )}
 
@@ -971,21 +819,21 @@ export const LandingPageView = () => {
       {activeTab === 'features' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
-              CAPABILITY ARCHITECTURE
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              PLATFORM CAPABILITIES
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Complete Workforce Verification Rail</h2>
-            <p className="text-slate-400 text-base">Explore all core screening modules designed for fast, error-free workforce onboarding.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Complete Workforce Verification Rail</h2>
+            <p className="text-[#5C6878] text-base">Explore all core screening modules designed for fast, error-free workforce onboarding.</p>
           </div>
 
           <VerificationCommandOrbit />
-          <EditorialBentoArchitecture onOpenDemo={() => setShowDemoModal(true)} />
+          <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
 
           {/* Interactive Simulation Lab */}
           <div className="space-y-8">
             <div className="text-center max-w-3xl mx-auto">
-              <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-2 inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full">LIVE DEMO LAB</span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit uppercase">Run Live Verification Simulation</h3>
+              <span className="text-xs font-semibold text-[#299C68] mb-2 inline-block px-3.5 py-1 bg-[#EAF8F0] border border-[#299C68]/20 rounded-full">LIVE DEMO LAB</span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Run Live Verification Simulation</h3>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -997,37 +845,37 @@ export const LandingPageView = () => {
                   <button
                     key={key}
                     onClick={() => handleRunSimulation(key)}
-                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer font-mono ${
+                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col gap-2 cursor-pointer ${
                       isSelected
-                        ? 'bg-slate-900 border-amber-400 text-white shadow-lg'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                        ? 'bg-[#EAF5FF] border-[#426CF5] text-[#182230] shadow-sm'
+                        : 'bg-white border-[#E5EAF0] text-[#5C6878] hover:text-[#182230] hover:bg-[#FCFCFA]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-900 text-slate-400'}`}>
+                      <div className={`p-2 rounded-xl ${isSelected ? 'bg-white text-[#426CF5]' : 'bg-[#FCFCFA] text-[#5C6878]'}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      <span className={`text-[10px] uppercase font-bold ${isSelected ? 'text-amber-400' : 'text-slate-500'}`}>
+                      <span className={`text-[10px] font-bold ${isSelected ? 'text-[#426CF5]' : 'text-[#5C6878]'}`}>
                         {isSelected ? 'SELECTED' : 'TEST'}
                       </span>
                     </div>
                     <div>
-                      <h4 className={`font-bold text-sm font-outfit uppercase ${isSelected ? 'text-white' : 'text-slate-300'}`}>{item.title}</h4>
-                      <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-amber-300' : 'text-slate-500'}`}>{item.category}</p>
+                      <h4 className="font-bold text-sm font-outfit text-[#182230]">{item.title}</h4>
+                      <p className="text-[11px] text-[#5C6878] mt-0.5">{item.category}</p>
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            <div className="bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+            <div className="bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 shadow-xs text-[#182230]">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5EAF0] pb-5 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#299C68] animate-ping"></div>
                   <div>
-                    <span className="font-mono text-xs uppercase tracking-wider text-slate-400 font-bold block">CANDIDATE DOSSIER</span>
-                    <h3 className="text-lg sm:text-xl font-bold text-white font-outfit uppercase">
-                      {simModes[selectedSimMode].candidate.name} — <span className="text-emerald-400">{simModes[selectedSimMode].candidate.role}</span>
+                    <span className="text-xs text-[#5C6878] font-medium block">CANDIDATE PROFILE</span>
+                    <h3 className="text-lg font-bold text-[#182230] font-outfit">
+                      {simModes[selectedSimMode].candidate.name} — <span className="text-[#426CF5]">{simModes[selectedSimMode].candidate.role}</span>
                     </h3>
                   </div>
                 </div>
@@ -1035,38 +883,38 @@ export const LandingPageView = () => {
                 <button
                   onClick={() => handleRunSimulation(selectedSimMode)}
                   disabled={simulating}
-                  className="px-4 py-2 rounded-xl font-mono font-bold text-xs bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-full font-semibold text-xs bg-[#426CF5] hover:bg-[#3459D8] text-white flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
-                  <span>{simulating ? 'Verifying...' : 'Re-Run Verification Check'}</span>
+                  <span>{simulating ? 'Verifying...' : 'Re-Run Check'}</span>
                 </button>
               </div>
 
               {simulating && (
-                <div className="mb-6 font-mono text-xs">
-                  <div className="flex items-center justify-between text-emerald-400 font-bold mb-1.5">
-                    <span>Executing automated background queries...</span>
+                <div className="mb-6 text-xs font-semibold">
+                  <div className="flex items-center justify-between text-[#426CF5] mb-1.5">
+                    <span>Executing automated queries...</span>
                     <span>{simProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                    <div className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-[#E5EAF0]">
+                    <div className="h-full bg-gradient-to-r from-[#426CF5] to-[#299C68] transition-all duration-100" style={{ width: `${simProgress}%` }}></div>
                   </div>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {simModes[selectedSimMode].checks.map((check, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-between gap-4">
+                  <div key={idx} className="p-4 rounded-xl border border-[#E5EAF0] bg-[#FCFCFA] flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#EAF8F0] border border-[#299C68]/20 flex items-center justify-center text-[#299C68] shrink-0">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <div>
-                        <h5 className="font-bold text-sm text-white">{check.title}</h5>
-                        <span className="text-xs text-emerald-400 font-bold block mt-0.5">{check.status}</span>
+                        <h5 className="font-bold text-sm text-[#182230]">{check.title}</h5>
+                        <span className="text-xs text-[#299C68] font-semibold block mt-0.5">{check.status}</span>
                       </div>
                     </div>
-                    <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 shrink-0 font-bold">{check.time}</span>
+                    <span className="text-xs text-[#5C6878] bg-white px-2.5 py-1 rounded border border-[#E5EAF0] shrink-0 font-semibold">{check.time}</span>
                   </div>
                 ))}
               </div>
@@ -1079,11 +927,11 @@ export const LandingPageView = () => {
       {activeTab === 'moonlighting' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               EPFO UAN INTEGRATED
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Dual-Employment Detection</h2>
-            <p className="text-slate-400 text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Dual-Employment & Moonlighting Radar</h2>
+            <p className="text-[#5C6878] text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
           </div>
 
           <DualEmploymentRadarVisualizer />
@@ -1094,11 +942,11 @@ export const LandingPageView = () => {
       {activeTab === 'turnstile' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10">
+            <span className="text-xs font-semibold text-[#299C68] mb-2 px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 inline-block">
               PLANT & FACILITY ACCESS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Workforce Turnstile Simulator</h2>
-            <p className="text-slate-400 text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
+            <p className="text-[#5C6878] text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
           </div>
 
           <TurnstileGateSimulator />
@@ -1109,33 +957,33 @@ export const LandingPageView = () => {
       {activeTab === 'comparison' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               PERFORMANCE BENCHMARK
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
-            <p className="text-slate-400 text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
+            <p className="text-[#5C6878] text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
           </div>
 
           <InteractiveSpeedComparison />
-          <CinematicVerificationStoryboard />
+          <VerificationTimeline />
         </div>
       )}
 
-      {/* VIEW 6: ROI ENGINE TAB */}
+      {/* VIEW 6: ROI CALCULATOR TAB */}
       {activeTab === 'roi' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               FINANCIAL IMPACT ESTIMATOR
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Enterprise ROI & Savings Engine</h2>
-            <p className="text-slate-400 text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
+            <p className="text-[#5C6878] text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-[#070A14] border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
-            <div className="lg:col-span-6 flex flex-col justify-between gap-6 font-mono">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-10 shadow-xs">
+            <div className="lg:col-span-6 flex flex-col justify-between gap-6">
               <div>
-                <label className="text-xs uppercase tracking-wider text-slate-300 font-bold block mb-3">1. Select Workforce Structure</label>
+                <label className="text-xs font-semibold text-[#182230] block mb-2">1. Select Workforce Structure</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'labor', label: 'Factory / Labor' },
@@ -1148,10 +996,10 @@ export const LandingPageView = () => {
                         soundEngine.playClick();
                         setWorkforceType(item.id);
                       }}
-                      className={`p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                      className={`p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
                         workforceType === item.id
-                          ? 'bg-amber-500 text-slate-950 font-black border-amber-400 shadow-md'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                          ? 'bg-[#426CF5] text-white border-[#426CF5] shadow-xs'
+                          : 'bg-[#FCFCFA] border-[#E5EAF0] text-[#5C6878] hover:text-[#182230]'
                       }`}
                     >
                       {item.label}
@@ -1162,8 +1010,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-300 font-bold">2. Monthly Candidate Volume</label>
-                  <span className="text-base font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
+                  <label className="text-xs font-semibold text-[#182230]">2. Monthly Candidate Volume</label>
+                  <span className="text-sm font-bold text-[#426CF5] bg-[#EAF5FF] px-3 py-1 rounded-full border border-[#E5EAF0]">
                     {monthlyHires.toLocaleString()} workers / mo
                   </span>
                 </div>
@@ -1174,10 +1022,10 @@ export const LandingPageView = () => {
                   step="50"
                   value={monthlyHires}
                   onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-700"
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#426CF5]"
                 />
                 <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                  <span className="text-[10px] text-slate-500 font-bold mr-1">PRESETS:</span>
+                  <span className="text-[10px] text-[#5C6878] font-medium mr-1">PRESETS:</span>
                   {[250, 500, 1000, 2500, 5000].map((preset) => (
                     <button
                       key={preset}
@@ -1185,8 +1033,8 @@ export const LandingPageView = () => {
                         soundEngine.playClick();
                         setMonthlyHires(preset);
                       }}
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold border transition-colors cursor-pointer ${
-                        monthlyHires === preset ? 'bg-amber-500 text-slate-950 font-black border-amber-400' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-colors cursor-pointer ${
+                        monthlyHires === preset ? 'bg-[#426CF5] text-white border-[#426CF5]' : 'bg-[#FCFCFA] text-[#5C6878] border-[#E5EAF0]'
                       }`}
                     >
                       {preset.toLocaleString()}
@@ -1197,8 +1045,8 @@ export const LandingPageView = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs uppercase tracking-wider text-slate-300 font-bold">3. Annual Contractor Churn</label>
-                  <span className="text-base font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30">
+                  <label className="text-xs font-semibold text-[#182230]">3. Annual Contractor Churn</label>
+                  <span className="text-sm font-bold text-[#E06A26] bg-[#FFF1E8] px-3 py-1 rounded-full border border-[#E5EAF0]">
                     {contractorTurnover}% / year
                   </span>
                 </div>
@@ -1209,45 +1057,45 @@ export const LandingPageView = () => {
                   step="5"
                   value={contractorTurnover}
                   onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                  className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-700"
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#E06A26]"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 flex items-start gap-2.5">
-                <HelpCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 text-xs text-[#299C68] flex items-start gap-2.5">
+                <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-gradient-to-br from-[#090D18] via-[#050811] to-[#04060E] text-white border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl font-mono">
+            <div className="lg:col-span-6 bg-[#F1EEFF] text-[#182230] border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xs">
               <div>
-                <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
-                <div className="text-3xl sm:text-5xl font-black text-white font-outfit tracking-tight">
+                <span className="text-xs uppercase tracking-wider text-[#8975E8] font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
+                <div className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
                   ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
-                  <span className="text-xs sm:text-sm font-normal text-slate-400 ml-2">/ year</span>
+                  <span className="text-xs sm:text-sm font-normal text-[#5C6878] ml-2">/ year</span>
                 </div>
-                <div className="text-xs text-emerald-400 mt-2 font-bold flex items-center gap-1.5">
+                <div className="text-xs text-[#299C68] mt-2 font-semibold flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Estimated Payback Period: Under 12 Business Days</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 border-t border-slate-800 pt-4">
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Direct Verification Savings</span>
-                  <div className="text-lg font-black text-amber-400 font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ yr</span></div>
+              <div className="grid grid-cols-2 gap-3 border-t border-[#8975E8]/20 pt-4">
+                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                  <span className="text-[10px] text-[#5C6878] font-medium block">Direct Verification Savings</span>
+                  <div className="text-base font-bold text-[#426CF5] font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] font-normal text-[#5C6878]">/ yr</span></div>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Ghost Payroll Blocked</span>
-                  <div className="text-lg font-black text-rose-400 font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
+                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                  <span className="text-[10px] text-[#5C6878] font-medium block">Ghost Payroll Blocked</span>
+                  <div className="text-base font-bold text-[#E06A26] font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">HR TAT Hours Saved</span>
-                  <div className="text-lg font-black text-emerald-400 font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
+                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                  <span className="text-[10px] text-[#5C6878] font-medium block">HR TAT Hours Saved</span>
+                  <div className="text-base font-bold text-[#299C68] font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Compliance Assurance</span>
-                  <div className="text-lg font-black text-cyan-400 font-outfit mt-0.5">100% Protected</div>
+                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                  <span className="text-[10px] text-[#5C6878] font-medium block">Compliance Assurance</span>
+                  <div className="text-base font-bold text-[#8975E8] font-outfit mt-0.5">100% Protected</div>
                 </div>
               </div>
 
@@ -1256,28 +1104,28 @@ export const LandingPageView = () => {
                   soundEngine.playClick();
                   setShowDemoModal(true);
                 }}
-                className="w-full py-4 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-lg cursor-pointer text-center"
+                className="w-full py-3.5 rounded-full font-semibold text-sm text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md cursor-pointer text-center transition-all"
               >
-                UNLOCK SAVINGS NOW 🚀
+                Unlock These Savings Now 🚀
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* VIEW 7: ARCHITECTURE TAB */}
+      {/* VIEW 7: SOLUTIONS TAB */}
       {activeTab === 'solutions' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10">
-              ENTERPRISE ARCHITECTURE
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              ENTERPRISE SOLUTIONS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Enterprise Verification Infrastructure</h2>
-            <p className="text-slate-400 text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Enterprise Verification Infrastructure</h2>
+            <p className="text-[#5C6878] text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
           </div>
 
-          <QuantumWorkforceMesh />
-          <CryptographicVaultPillars 
+          <WorkforceConnectionSection />
+          <TrustSection 
             onOpenLegalHandbook={() => setShowLegalHandbook(true)}
             onOpenDemo={() => setShowDemoModal(true)}
           />
@@ -1286,18 +1134,18 @@ export const LandingPageView = () => {
 
       {/* VIEW 8: SPECS & FAQ TAB */}
       {activeTab === 'resources' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-20">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-bold mb-3 inline-block px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10">
+            <span className="text-xs font-semibold text-[#8975E8] mb-2 px-3.5 py-1 rounded-full bg-[#F1EEFF] border border-[#E5EAF0] inline-block">
               SPECIFICATIONS & REVIEWS
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white font-outfit uppercase tracking-tight mb-4">Specifications, Client Reviews & FAQ</h2>
-            <p className="text-slate-400 text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Specifications, Client Reviews & FAQ</h2>
+            <p className="text-[#5C6878] text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
           </div>
 
           {/* Specs Control */}
           <div className="flex justify-center">
-            <div className="inline-flex p-1.5 rounded-2xl bg-slate-900 border border-slate-800 font-mono text-xs uppercase tracking-wider">
+            <div className="inline-flex p-1 rounded-full bg-white border border-[#E5EAF0]">
               {[
                 { id: 'performance', label: 'Performance' },
                 { id: 'security', label: 'Security & DPDP' },
@@ -1310,10 +1158,10 @@ export const LandingPageView = () => {
                     soundEngine.playClick();
                     setActiveSpecCategory(cat.id);
                   }}
-                  className={`px-5 py-2.5 rounded-xl transition-all font-bold cursor-pointer ${
+                  className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeSpecCategory === cat.id
-                      ? 'bg-amber-500 text-slate-950 font-black shadow-md'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-[#426CF5] text-white shadow-xs font-bold'
+                      : 'text-[#5C6878] hover:text-[#182230]'
                   }`}
                 >
                   {cat.label}
@@ -1323,16 +1171,16 @@ export const LandingPageView = () => {
           </div>
 
           {/* Specs Table */}
-          <div className="max-w-4xl mx-auto divide-y divide-slate-800 bg-[#070A14] rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-2xl text-white font-mono">
+          <div className="max-w-4xl mx-auto divide-y divide-[#E5EAF0] bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-xs">
             {technicalSpecs[activeSpecCategory].map((spec, idx) => (
-              <div key={idx} className="py-4.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
-                <dt className="text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              <div key={idx} className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
+                <dt className="text-xs uppercase font-semibold text-[#5C6878] flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#426CF5]"></span>
                   <span>{spec.label}</span>
                 </dt>
                 <dd className="text-left sm:text-right">
-                  <span className="text-base sm:text-lg font-black text-white font-outfit uppercase">{spec.value}</span>
-                  <span className="block text-[11px] text-emerald-400 mt-0.5">{spec.detail}</span>
+                  <span className="text-base font-bold text-[#182230] font-outfit">{spec.value}</span>
+                  <span className="block text-[11px] text-[#426CF5] mt-0.5">{spec.detail}</span>
                 </dd>
               </div>
             ))}
@@ -1340,22 +1188,22 @@ export const LandingPageView = () => {
 
           {/* Client Reviews */}
           <div>
-            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8 font-mono">
+            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
               <div>
-                <h3 className="text-2xl font-black text-white font-outfit uppercase">Client Feedback</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Verified executive feedback from enterprise plants and workforce teams.</p>
+                <h3 className="text-2xl font-bold text-[#182230] font-outfit">What Leaders Say</h3>
+                <p className="text-xs text-[#5C6878] mt-0.5">Verified feedback from enterprise plants and workforce teams.</p>
               </div>
               <button
                 onClick={() => setShowReviewModal(true)}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-amber-400 hover:bg-slate-800 border border-amber-500/30 text-xs font-bold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#EAF5FF] text-[#426CF5] hover:bg-[#E0EFFE] border border-[#E5EAF0] text-xs font-semibold cursor-pointer"
               >
-                + POST REVIEW
+                + Post Review
               </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {clientReviews.map((rev, idx) => (
-                <div key={idx} className="rounded-2xl border border-slate-800 bg-[#070A14] p-6 flex flex-col justify-between gap-6 shadow-xl">
+                <div key={idx} className="rounded-3xl border border-[#E5EAF0] bg-white p-6 flex flex-col justify-between gap-6 shadow-xs">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-1">
@@ -1363,13 +1211,13 @@ export const LandingPageView = () => {
                           <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="font-mono text-[10px] uppercase text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30 font-bold">{rev.badge}</span>
+                      <span className="text-[10px] font-semibold text-[#8975E8] bg-[#F1EEFF] px-2.5 py-0.5 rounded-full border border-[#E5EAF0]">{rev.badge}</span>
                     </div>
-                    <p className="text-slate-300 text-sm italic font-sans">"{rev.quote}"</p>
+                    <p className="text-[#5C6878] text-sm italic font-normal">"{rev.quote}"</p>
                   </div>
-                  <div className="border-t border-slate-800 pt-4">
-                    <h5 className="font-bold text-sm text-white font-outfit uppercase">{rev.name}</h5>
-                    <p className="text-xs text-slate-400 mt-0.5">{rev.role} — <span className="text-amber-400 font-semibold">{rev.company}</span></p>
+                  <div className="border-t border-[#E5EAF0] pt-4">
+                    <h5 className="font-bold text-sm text-[#182230] font-outfit">{rev.name}</h5>
+                    <p className="text-xs text-[#5C6878] mt-0.5">{rev.role} — <span className="text-[#426CF5] font-semibold">{rev.company}</span></p>
                   </div>
                 </div>
               ))}
@@ -1378,24 +1226,24 @@ export const LandingPageView = () => {
 
           {/* FAQ Accordion */}
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-black text-white font-outfit uppercase text-center mb-8">Frequently Asked Questions</h3>
+            <h3 className="text-2xl font-bold text-[#182230] font-outfit text-center mb-8">Frequently Asked Questions</h3>
             <div className="flex flex-col gap-3">
               {faqData.map((faq, idx) => {
                 const isOpen = openFaq === idx;
                 return (
-                  <div key={idx} className={`rounded-2xl border transition-all shadow-xs bg-[#070A14] ${isOpen ? 'border-amber-400 bg-amber-500/5' : 'border-slate-800'}`}>
+                  <div key={idx} className={`rounded-2xl border transition-all bg-white ${isOpen ? 'border-[#426CF5] shadow-xs' : 'border-[#E5EAF0]'}`}>
                     <button
                       onClick={() => {
                         soundEngine.playClick();
                         setOpenFaq(isOpen ? -1 : idx);
                       }}
-                      className="w-full p-5 text-left font-bold text-sm sm:text-base text-white flex items-center justify-between gap-4 cursor-pointer"
+                      className="w-full p-5 text-left font-semibold text-sm sm:text-base text-[#182230] flex items-center justify-between gap-4 cursor-pointer"
                     >
                       <span>{faq.q}</span>
-                      <ChevronDown className={`w-4 h-4 text-amber-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-[#426CF5] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800 pt-3 font-sans font-normal">
+                      <div className="px-5 pb-5 text-[#5C6878] text-xs sm:text-sm leading-relaxed border-t border-[#E5EAF0] pt-3 font-normal">
                         {faq.a}
                       </div>
                     )}
@@ -1408,65 +1256,66 @@ export const LandingPageView = () => {
       )}
 
       {/* ==============================================================================
-       * CINEMATIC SOVEREIGN ENTERPRISE FOOTER
+       * CLEAN LIGHT FOOTER
        * ============================================================================== */}
-      <footer className="relative z-10 py-16 bg-[#02040A] border-t border-slate-800 px-4 sm:px-8 font-mono text-xs text-slate-400 backdrop-blur-xl mt-20">
+      <footer id="contact-footer" className="py-16 bg-white border-t border-[#E5EAF0] px-4 sm:px-8 text-xs text-[#5C6878] mt-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#E5EAF0]">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <img 
                   src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                   alt="JOY TRUE PROFILE Logo" 
-                  className="w-10 h-10 object-contain drop-shadow-[0_4px_12px_rgba(245,158,11,0.25)]" 
+                  className="w-9 h-9 object-contain" 
                 />
                 <div>
-                  <span className="font-black text-white font-outfit text-base tracking-tight uppercase">JOY <span className="text-amber-400 font-black">TRUE PROFILE</span></span>
-                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Zero-Trust Verification</p>
+                  <span className="font-bold text-[#182230] font-outfit text-base tracking-tight">JOY <span className="text-[#426CF5] font-bold">TRUE PROFILE</span></span>
+                  <p className="text-[10px] text-[#299C68] font-semibold uppercase tracking-wider">Human-Centered Digital Trust</p>
                 </div>
               </div>
-              <p className="text-slate-400 text-xs leading-relaxed font-sans font-normal">
-                Autonomous employee background verification platform built for modern enterprises, high-growth teams, and secure workplaces across India.
+              <p className="text-[#5C6878] text-xs leading-relaxed font-normal">
+                Workforce identity and verification platform built to connect companies, HR teams, and workers with trust, simplicity, and statutory compliance.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Navigation</h4>
-              <ul className="flex flex-col gap-2 text-xs text-slate-400 font-mono">
-                <li><button onClick={() => handleTabChange('overview')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🚀 01. Overview</button></li>
-                <li><button onClick={() => handleTabChange('features')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🛡️ 02. Capabilities</button></li>
-                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">📡 03. Moonlighting Radar</button></li>
-                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🚧 04. Turnstile Simulator</button></li>
-                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">⚡ 05. Speed Matrix</button></li>
+            <div className="flex flex-col gap-3">
+              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Navigation</h4>
+              <ul className="flex flex-col gap-2 text-xs text-[#5C6878]">
+                <li><button onClick={() => handleTabChange('overview')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Home</button></li>
+                <li><button onClick={() => handleTabChange('features')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Features</button></li>
+                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Moonlighting Radar</button></li>
+                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Turnstile Gate Pass</button></li>
+                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Speed Matrix</button></li>
               </ul>
             </div>
 
-            <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Resources</h4>
-              <ul className="flex flex-col gap-2 text-xs text-slate-400 font-mono">
-                <li><button onClick={() => handleTabChange('roi')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">💰 06. ROI Engine</button></li>
-                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">🏢 07. Architecture</button></li>
-                <li><button onClick={() => handleTabChange('resources')} className="hover:text-amber-400 transition-colors cursor-pointer text-left">📚 08. Specs & FAQ</button></li>
+            <div className="flex flex-col gap-3">
+              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Resources</h4>
+              <ul className="flex flex-col gap-2 text-xs text-[#5C6878]">
+                <li><button onClick={() => handleTabChange('roi')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">ROI Calculator</button></li>
+                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Enterprise Solutions</button></li>
+                <li><button onClick={() => handleTabChange('resources')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Technical Specs & FAQ</button></li>
+                <li><button onClick={() => navigate('/login')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Portal Login</button></li>
               </ul>
             </div>
 
-            <div className="flex flex-col gap-3 font-sans">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-1">Corporate</h4>
-              <div className="flex flex-col gap-1.5 text-xs text-slate-300 font-sans">
-                <span className="text-white font-bold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
-                <span className="text-slate-400">📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-amber-400 hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
-                <span className="text-slate-400">📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-amber-400 hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
-                <span className="text-slate-400">💬 WhatsApp: <span className="text-emerald-400 font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
-                <span className="text-slate-400">🕒 Hours: <span className="text-slate-300">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
-                <span className="text-[11px] text-slate-400 mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
+            <div className="flex flex-col gap-3">
+              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Corporate & Contact</h4>
+              <div className="flex flex-col gap-1.5 text-xs text-[#5C6878]">
+                <span className="text-[#182230] font-semibold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
+                <span>📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
+                <span>📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-[#426CF5] hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
+                <span>💬 WhatsApp: <span className="text-[#299C68] font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
+                <span>🕒 Hours: <span className="text-[#182230]">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
+                <span className="text-[11px] text-[#5C6878] mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400 font-mono">
+          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-[#5C6878]">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-slate-300 font-bold">All Verification Nodes Operational (99.99% SLA)</span>
+              <span className="w-2 h-2 rounded-full bg-[#299C68] animate-pulse"></span>
+              <span className="text-[#182230] font-semibold">All Verification Nodes Operational (99.99% SLA)</span>
             </div>
             <div className="flex flex-wrap items-center gap-6">
               <button 
@@ -1474,7 +1323,7 @@ export const LandingPageView = () => {
                   soundEngine.playClick();
                   setShowLegalHandbook(true);
                 }} 
-                className="hover:text-amber-400 transition-colors cursor-pointer text-slate-400 font-bold"
+                className="hover:text-[#426CF5] transition-colors cursor-pointer text-[#5C6878] font-semibold"
               >
                 Statutory Compliance Handbook
               </button>
@@ -1489,50 +1338,50 @@ export const LandingPageView = () => {
 
       {/* DEMO MODAL */}
       {showDemoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-[#090D18] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto font-mono">
-            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 shadow-2xl text-[#182230] max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowDemoModal(false)} className="absolute top-4 right-4 p-2 rounded-full bg-[#FCFCFA] text-[#5C6878] hover:text-[#182230] transition-colors cursor-pointer border border-[#E5EAF0]">
               <X className="w-5 h-5" />
             </button>
 
             {demoSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 flex items-center justify-center text-[#299C68] mb-4">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Demo Request Received!</h3>
-                <p className="text-slate-300 text-sm max-w-sm mb-6 font-sans">Our enterprise solutions team will contact you within 15 minutes to schedule your walkthrough.</p>
-                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 cursor-pointer shadow-md">Close Window</button>
+                <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Demo Request Received!</h3>
+                <p className="text-[#5C6878] text-sm max-w-sm mb-6">Our enterprise solutions team will contact you within 15 minutes to schedule your live walkthrough.</p>
+                <button onClick={() => { setDemoSubmitted(false); setShowDemoModal(false); }} className="px-6 py-2.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] cursor-pointer shadow-sm">Close Window</button>
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-2 text-xs text-amber-400 font-bold mb-2">
+                <div className="flex items-center gap-2 text-xs text-[#426CF5] font-semibold mb-2">
                   <Sparkles className="w-4 h-4" />
-                  <span>ENTERPRISE WALKTHROUGH</span>
+                  <span>CUSTOM ENTERPRISE WALKTHROUGH</span>
                 </div>
-                <h3 className="text-2xl font-black text-white font-outfit uppercase mb-2">Schedule a Custom Live Demo</h3>
-                <p className="text-slate-400 text-xs mb-6 font-sans">Experience sub-second employee profile verification configured for your workflow.</p>
+                <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Schedule a Live Demo</h3>
+                <p className="text-[#5C6878] text-xs mb-6">Experience sub-45-second workforce profile verification configured for your organization.</p>
 
                 <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs">
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Full Name *</label>
-                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
+                    <label className="text-[#182230] font-semibold block mb-1">Full Name *</label>
+                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Work Email *</label>
-                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
+                      <label className="text-[#182230] font-semibold block mb-1">Work Email *</label>
+                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
                     </div>
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Phone Number *</label>
-                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
+                      <label className="text-[#182230] font-semibold block mb-1">Phone Number *</label>
+                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Company / Organization *</label>
-                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:border-amber-400" />
+                    <label className="text-[#182230] font-semibold block mb-1">Company / Organization *</label>
+                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
                   </div>
-                  <button type="submit" disabled={demoLoading} className="w-full mt-3 py-3.5 rounded-xl font-bold text-xs uppercase text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-md cursor-pointer">
+                  <button type="submit" disabled={demoLoading} className="w-full mt-2 py-3.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm cursor-pointer transition-all">
                     {demoLoading ? 'Submitting...' : 'Confirm Demo Booking 🚀'}
                   </button>
                 </form>
@@ -1544,37 +1393,37 @@ export const LandingPageView = () => {
 
       {/* REVIEW MODAL */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="relative w-full max-w-lg bg-[#090D18] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-white max-h-[90vh] overflow-y-auto font-mono">
-            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 shadow-2xl text-[#182230] max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowReviewModal(false)} className="absolute top-4 right-4 p-2 rounded-full bg-[#FCFCFA] text-[#5C6878] hover:text-[#182230] transition-colors cursor-pointer border border-[#E5EAF0]">
               <X className="w-5 h-5" />
             </button>
 
             {reviewSubmitted ? (
               <div className="py-8 text-center flex flex-col items-center">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mb-4" />
-                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Review Submitted!</h3>
-                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-gradient-to-r from-amber-400 to-emerald-400 cursor-pointer shadow-md">Close Window</button>
+                <CheckCircle2 className="w-12 h-12 text-[#299C68] mb-4" />
+                <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Review Submitted!</h3>
+                <button onClick={() => { setReviewSubmitted(false); setShowReviewModal(false); }} className="px-6 py-2.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] cursor-pointer shadow-sm">Close Window</button>
               </div>
             ) : (
               <div>
-                <h3 className="text-2xl font-bold text-white font-outfit uppercase mb-2">Submit Client Review</h3>
+                <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Submit Client Review</h3>
                 <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Your Name *</label>
-                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
+                      <label className="text-[#182230] font-semibold block mb-1">Your Name *</label>
+                      <input type="text" required value={reviewForm.name} onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230]" />
                     </div>
                     <div>
-                      <label className="text-slate-300 font-bold block mb-1">Role *</label>
-                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white" />
+                      <label className="text-[#182230] font-semibold block mb-1">Role *</label>
+                      <input type="text" required value={reviewForm.role} onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230]" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-slate-300 font-bold block mb-1">Review *</label>
-                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white resize-none" />
+                    <label className="text-[#182230] font-semibold block mb-1">Review *</label>
+                    <textarea required rows={4} value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] resize-none" />
                   </div>
-                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-xl font-bold text-xs uppercase text-slate-950 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 shadow-md cursor-pointer">
+                  <button type="submit" disabled={reviewLoading} className="w-full py-3.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm cursor-pointer transition-all">
                     {reviewLoading ? 'Submitting...' : 'Post Client Review'}
                   </button>
                 </form>
@@ -1584,7 +1433,7 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* LEGAL HANDBOOK MODAL */}
+      {/* LEGAL COMPLIANCE HANDBOOK MODAL */}
       {showLegalHandbook && (
         <LegalComplianceHandbookModal isOpen={showLegalHandbook} onClose={() => setShowLegalHandbook(false)} />
       )}
