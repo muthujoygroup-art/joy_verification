@@ -1242,11 +1242,21 @@ export const LandingPageView = () => {
               <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Corporate & Contact</h4>
               <div className="flex flex-col gap-1.5 text-xs text-[#5C6878]">
                 <span className="text-[#182230] font-semibold text-xs">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</span>
-                <span>📧 Support: <a href={`mailto:${content.supportEmail || 'support@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline">{content.supportEmail || 'support@joycorporatesolutions.com'}</a></span>
-                <span>📞 Phone: <a href={`tel:${content.contactPhone || '+91 98450 11223'}`} className="text-[#426CF5] hover:underline">{content.contactPhone || '+91 98450 11223'}</a></span>
-                <span>💬 WhatsApp: <span className="text-[#299C68] font-semibold">{content.whatsappNumber || '+91 98450 11223'}</span></span>
+                <span>📧 Support: <a href={`mailto:${content.supportEmail || 'info@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline">{content.supportEmail || 'info@joycorporatesolutions.com'}</a></span>
+                <span>📞 Phone: <a href={`tel:${content.contactPhone || '+91 99946 99044'}`} className="text-[#426CF5] hover:underline">{content.contactPhone || '+91 99946 99044'}</a></span>
+                <span>💬 WhatsApp: <a href="https://wa.me/919994699044" target="_blank" rel="noopener noreferrer" className="text-[#299C68] hover:underline font-semibold">{content.whatsappNumber || '+91 99946 99044'}</a></span>
                 <span>🕒 Hours: <span className="text-[#182230]">{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span></span>
-                <span className="text-[11px] text-[#5C6878] mt-1 leading-relaxed">📍 {content.officeAddress || 'Ground Floor, Technology Corridor, Chennai, Tamil Nadu 600032'}</span>
+                <span className="mt-1">
+                  <a 
+                    href={content.googleMapsUrl || 'https://maps.app.goo.gl/xK2B3J4VvC73oQwd8'} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-[#426CF5] hover:underline inline-flex items-center gap-1 font-medium text-[11px]"
+                  >
+                    <span>📍 {content.officeAddress || 'Coimbatore, Tamilnadu'}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">(Google Maps ↗)</span>
+                  </a>
+                </span>
               </div>
             </div>
           </div>

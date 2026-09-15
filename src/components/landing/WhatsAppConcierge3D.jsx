@@ -18,7 +18,7 @@ export const WhatsAppConcierge3D = () => {
   const inputRef = useRef(null);
 
   // Corporate Joy TrueProfile WhatsApp Line
-  const defaultPhone = '919845011223';
+  const defaultPhone = '919994699044';
 
   const quickPrompts = [
     { 

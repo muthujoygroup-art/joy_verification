@@ -134,11 +134,12 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
 
   // Communication & Contact Details
   companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-  supportEmail: 'support@joycorporatesolutions.com',
-  salesEmail: 'sales@joycorporatesolutions.com',
-  contactPhone: '+91 98450 11223',
-  whatsappNumber: '+91 98450 11223',
-  officeAddress: 'Ground Floor, Technology Corridor, Sriperumbudur & Guindy Industrial Estate, Chennai, Tamil Nadu 600032',
+  supportEmail: 'info@joycorporatesolutions.com',
+  salesEmail: 'info@joycorporatesolutions.com',
+  contactPhone: '+91 99946 99044',
+  whatsappNumber: '+91 99946 99044',
+  officeAddress: 'Coimbatore, Tamilnadu',
+  googleMapsUrl: 'https://maps.app.goo.gl/xK2B3J4VvC73oQwd8',
   workingHours: 'Monday - Saturday: 9:00 AM - 7:00 PM IST',
 
   // Announcement Bar

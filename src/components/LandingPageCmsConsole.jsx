@@ -376,7 +376,25 @@ export const LandingPageCmsConsole = () => {
                     rows="2"
                     value={formData.officeAddress || ''}
                     onChange={handleChange}
+                    placeholder="e.g. Coimbatore, Tamilnadu"
                     className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Google Maps Location Link (URL)
+                </label>
+                <div className="relative">
+                  <Globe className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
+                  <input
+                    type="url"
+                    name="googleMapsUrl"
+                    value={formData.googleMapsUrl || ''}
+                    onChange={handleChange}
+                    placeholder="https://maps.app.goo.gl/xK2B3J4VvC73oQwd8"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono text-xs"
                   />
                 </div>
               </div>
