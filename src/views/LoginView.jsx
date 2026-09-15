@@ -372,590 +372,594 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-6 sm:py-10 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
       
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="w-full max-w-xl space-y-5 relative z-10">
+      <div className="max-w-4xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
         
         {/* Top Header Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 glass-panel p-3.5 sm:px-5 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
-          <Link to="/" className="flex items-center gap-3 no-underline">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
+          <Link to="/" className="flex items-center gap-3.5 no-underline">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY TRUE PROFILE Logo" 
-              className="w-9 h-9 object-contain" 
+              className="w-10 h-10 object-contain" 
             />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-black text-sm sm:text-base text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
-                <span className="badge badge-purple text-[8px] py-0.5 px-1.5 font-black">PVT LTD</span>
+                <h2 className="font-black text-base sm:text-lg text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
+                <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">PVT LTD</span>
               </div>
-              <p className="text-[10px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification</p>
+              <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2 text-xs flex-wrap justify-center">
-            <span className="badge badge-emerald flex items-center gap-1 font-bold text-[10px] py-0.5 px-2">
+          <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
+            <span className="badge badge-emerald flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
               Gateway Online
             </span>
-            <span className="badge badge-indigo text-[10px] py-0.5 px-2">ISO 27001 & DPDP</span>
+            <span className="badge badge-indigo">ISO 27001 & DPDP Act</span>
           </div>
         </div>
 
-        {/* Optional Role Switcher Tabs (Only if unlocked general /login route) */}
-        {!isLocked && (
-          <div className="grid grid-cols-4 gap-1 p-1 bg-slate-200/80 rounded-xl">
-            {[
-              { id: 'superadmin', label: 'Super Admin' },
-              { id: 'company', label: 'Company' },
-              { id: 'hrexecutive', label: 'HR Portal' },
-              { id: 'employee_link', label: 'Candidate' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  setSelectedRoleTab(tab.id);
-                  closeForgotMode();
-                  setLoginError('');
-                }}
-                className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer text-center ${
-                  selectedRoleTab === tab.id
-                    ? 'bg-white text-slate-900 shadow-xs font-extrabold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+        {/* Hero Section */}
+        <div className="text-center space-y-2 max-w-2xl mx-auto px-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-bold shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <span>{currentDetail.roleTag}</span>
           </div>
-        )}
 
-        {/* Main Authentication Card */}
-        <div className="bg-white border border-slate-200/90 shadow-xl rounded-3xl overflow-hidden relative animate-tab-switch">
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+            {currentDetail.title} Sign In
+          </h1>
           
-          {/* Accent Color Header Line */}
-          <div className="h-1.5 w-full" style={{ background: currentDetail.headerGradient }} />
+          <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
+            {currentDetail.subtitle}
+          </p>
+        </div>
 
-          <div className="p-6 sm:p-8 space-y-6">
+        {/* Selected Portal Login Card Form (Isolated strictly to this role) */}
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl animate-tab-switch">
+          
+          <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: currentDetail.headerGradient }} />
 
-            {/* Unified Card Header */}
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold">
-                <span className={`w-2 h-2 rounded-full ${currentDetail.iconBgClass}`} />
-                <span>{currentDetail.badge}</span>
-                <span className="text-slate-400">•</span>
-                <span className="text-slate-600">{currentDetail.roleTag}</span>
+          {/* Header Row of the Login Card */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`badge ${currentDetail.badgeClass}`}>{currentDetail.badge}</span>
+                <span className="text-xs font-bold text-slate-500">• {currentDetail.roleTag}</span>
               </div>
-
-              <div className="flex items-center justify-center gap-2.5 pt-1">
-                <div className={`p-2.5 rounded-2xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5 flex items-center gap-2.5">
+                <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {currentDetail.title} Sign In
-                </h1>
-              </div>
-
-              <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">
-                {currentDetail.subtitle}
-              </p>
+                <span>{currentDetail.title}</span>
+              </h2>
+              <p className="text-xs text-slate-600 font-medium mt-1">{currentDetail.subtitle}</p>
             </div>
 
-            {/* Error Feedback */}
-            {loginError && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                <span>{loginError}</span>
-              </div>
-            )}
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm text-[11px] text-slate-600 font-medium flex items-start gap-2">
+              <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+              <span>{currentDetail.provisionNotice}</span>
+            </div>
+          </div>
 
-            {/* ========================================================================= */}
-            {/* 🔄 FORGOT PASSWORD / PASSWORD RECOVERY WORKFLOW */}
-            {/* ========================================================================= */}
-            {isForgotMode ? (
-              <div className="space-y-4 animate-fadeIn">
-                
-                {/* Top Bar for Forgot Mode */}
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-black">
-                      <KeyRound className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-black text-slate-900 text-sm">
-                        {forgotStep === 1 ? 'Recover Portal Password' : 'Set New Secure Password'}
-                      </h3>
-                      <p className="text-[11px] text-slate-500 font-medium">
-                        {forgotStep === 1 ? 'Step 1 of 2: Request 6-digit reset passcode' : 'Step 2 of 2: Verify passcode and choose new password'}
-                      </p>
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            
+            {/* Left Col: Portal Capabilities List */}
+            <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Portal Capabilities</span>
+              </h4>
 
-                  <button
-                    type="button"
-                    onClick={closeForgotMode}
-                    className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Back</span>
-                  </button>
-                </div>
-
-                {/* Feedback Alerts */}
-                {forgotError && (
-                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
-                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                    <span>{forgotError}</span>
-                  </div>
-                )}
-
-                {forgotSuccess && (
-                  <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{forgotSuccess}</span>
-                  </div>
-                )}
-
-                {/* STEP 1: REQUEST 6-DIGIT PASSCODE */}
-                {forgotStep === 1 && (
-                  <form onSubmit={handleForgotRequestSubmit} className="space-y-4 text-xs">
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-[11px] leading-relaxed space-y-1">
-                      <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
-                        <Info className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Official Dispatch Target:</span>
-                      </div>
-                      {selectedRoleTab === 'superadmin' && (
-                        <p>Passcode will be dispatched to Super Admin email: <strong>admin@joycorporatesolutions.com</strong>.</p>
-                      )}
-                      {selectedRoleTab === 'company' && (
-                        <p>Passcode will be dispatched to your company's registered email ID.</p>
-                      )}
-                      {selectedRoleTab === 'hrexecutive' && (
-                        <p>Passcode will be dispatched to your assigned HR work email ID.</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">
-                        {selectedRoleTab === 'superadmin' ? 'Super Admin Official Email *' : selectedRoleTab === 'company' ? 'Company Admin Registered Email *' : 'HR Work Email *'}
-                      </label>
-                      <div className="input-wrapper">
-                        <Mail className="input-icon-left" />
-                        <input 
-                          type="email" 
-                          required
-                          placeholder={
-                            selectedRoleTab === 'superadmin' 
-                              ? 'admin@joycorporatesolutions.com' 
-                              : selectedRoleTab === 'company' 
-                              ? 'e.g. contact@enterprise.com' 
-                              : 'e.g. hr@enterprise.com'
-                          }
-                          value={forgotEmail}
-                          onChange={(e) => setForgotEmail(e.target.value)}
-                          className="input-field-styled font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-2">
-                      <button
-                        type="submit"
-                        disabled={isForgotLoading}
-                        className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
-                      >
-                        <Send className="w-4 h-4" />
-                        <span>{isForgotLoading ? 'Dispatching Passcode...' : 'Send 6-Digit Passcode 🚀'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={closeForgotMode}
-                        className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {/* STEP 2: VERIFY PASSCODE AND SET NEW PASSWORD */}
-                {forgotStep === 2 && (
-                  <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
-                    <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-[11px] font-medium flex items-center justify-between">
-                      <div>
-                        <span>Passcode sent to: <strong>{forgotEmail}</strong></span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setForgotStep(1)}
-                        className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline cursor-pointer"
-                      >
-                        Change Email
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">
-                        6-Digit Passcode (from Email) *
-                      </label>
-                      <div className="input-wrapper">
-                        <KeyRound className="input-icon-left text-indigo-600" />
-                        <input 
-                          type="text" 
-                          required
-                          maxLength={6}
-                          placeholder="e.g. 583921"
-                          value={forgotOtp}
-                          onChange={(e) => setForgotOtp(e.target.value)}
-                          className="input-field-styled font-mono font-bold tracking-widest text-center text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">New Password *</label>
-                      <div className="input-wrapper">
-                        <Lock className="input-icon-left" />
-                        <input 
-                          type={showForgotPw ? 'text' : 'password'} 
-                          required
-                          minLength={4}
-                          placeholder="Enter new password"
-                          value={forgotNewPassword}
-                          onChange={(e) => setForgotNewPassword(e.target.value)}
-                          className="input-field-styled pr-10 font-medium"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowForgotPw(!showForgotPw)}
-                          className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                        >
-                          {showForgotPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Confirm New Password *</label>
-                      <div className="input-wrapper">
-                        <Lock className="input-icon-left" />
-                        <input 
-                          type={showForgotPw ? 'text' : 'password'} 
-                          required
-                          minLength={4}
-                          placeholder="Re-enter new password"
-                          value={forgotConfirmPassword}
-                          onChange={(e) => setForgotConfirmPassword(e.target.value)}
-                          className="input-field-styled font-medium"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-2">
-                      <button
-                        type="submit"
-                        disabled={isForgotLoading}
-                        className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
-                      >
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>{isForgotLoading ? 'Updating Password...' : 'Save New Password & Sign In 🔑'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleForgotRequestSubmit}
-                        disabled={isForgotLoading}
-                        className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Resend Passcode to Email"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Resend</span>
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-              </div>
-            ) : (
-              /* ========================================================================= */
-              /* 🔐 STANDARD SIGN-IN FORM (CLEAN FULL-WIDTH VERTICAL STACK) */
-              /* ========================================================================= */
-              <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
-                
-                {/* 👑 SUPER ADMIN SPECIFIC LOGIN FORM */}
-                {selectedRoleTab === 'superadmin' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1.5">Super Admin Official Email *</label>
-                      <div className="input-wrapper">
-                        <Mail className="input-icon-left" />
-                        <input 
-                          type="email" 
-                          required
-                          placeholder="admin@joycorporatesolutions.com"
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          className="input-field-styled"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-slate-700 font-bold">Master Password *</label>
-                        <button
-                          type="button"
-                          onClick={() => openForgotMode(emailInput || 'admin@joycorporatesolutions.com')}
-                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <div className="input-wrapper">
-                        <KeyRound className="input-icon-left" />
-                        <input 
-                          type={showPassword ? 'text' : 'password'} 
-                          required
-                          placeholder="Enter master password"
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          className="input-field-styled pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-indigo-50/90 border border-indigo-200 text-indigo-900 text-[11px] font-medium flex items-center gap-2">
-                      <Crown className="w-4 h-4 text-indigo-600 shrink-0" />
-                      <span>{currentDetail.provisionNotice}</span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Signing In...' : 'Sign In as Super Admin'}</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 🏢 COMPANY ADMIN SPECIFIC LOGIN FORM */}
-                {selectedRoleTab === 'company' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1.5">Company Admin Email *</label>
-                      <div className="input-wrapper">
-                        <Mail className="input-icon-left" />
-                        <input 
-                          type="email" 
-                          required
-                          placeholder="muthukumar@joyglobalcorp.com"
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          className="input-field-styled"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-slate-700 font-bold">Company Password *</label>
-                        <button
-                          type="button"
-                          onClick={() => openForgotMode(emailInput)}
-                          className="text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <div className="input-wrapper">
-                        <KeyRound className="input-icon-left" />
-                        <input 
-                          type={showPassword ? 'text' : 'password'} 
-                          required
-                          placeholder="Enter company password"
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          className="input-field-styled pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-sky-50/90 border border-sky-200 text-sky-900 text-[11px] font-medium flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-sky-600 shrink-0" />
-                      <span>{currentDetail.provisionNotice}</span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Signing In...' : 'Sign In as Company Admin'}</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 👥 HR EXECUTIVE SPECIFIC LOGIN FORM */}
-                {selectedRoleTab === 'hrexecutive' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1.5">HR Work Email *</label>
-                      <div className="input-wrapper">
-                        <Mail className="input-icon-left" />
-                        <input 
-                          type="email" 
-                          required
-                          placeholder="muthujoygroup@gmail.com"
-                          value={emailInput}
-                          onChange={(e) => setEmailInput(e.target.value)}
-                          className="input-field-styled"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-slate-700 font-bold">HR Password *</label>
-                        <button
-                          type="button"
-                          onClick={() => openForgotMode(emailInput)}
-                          className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <div className="input-wrapper">
-                        <KeyRound className="input-icon-left" />
-                        <input 
-                          type={showPassword ? 'text' : 'password'} 
-                          required
-                          placeholder="Enter HR password"
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          className="input-field-styled pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
-                      <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>{currentDetail.provisionNotice}</span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>{isLoading ? 'Signing In...' : 'Sign In as HR Executive'}</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 📱 CANDIDATE / EMPLOYEE MAGIC LINK ACCESS */}
-                {selectedRoleTab === 'employee_link' && (
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2">
-                      <div className="flex items-center gap-2 font-black text-xs">
-                        <Smartphone className="w-4 h-4 text-amber-600" />
-                        <span>Direct Access with Verification Link</span>
-                      </div>
-                      <p className="text-xs text-amber-900 font-medium leading-relaxed">
-                        Candidates do not need a username or password. You can open your verification page directly using the link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong> by your HR team.
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1.5">
-                        Candidate Verification Token *
-                      </label>
-                      <div className="input-wrapper">
-                        <KeyRound className="input-icon-left text-amber-600" />
-                        <input 
-                          type="text" 
-                          placeholder="e.g. tok_sunita_412"
-                          value={candidateTokenInput}
-                          onChange={(e) => setCandidateTokenInput(e.target.value)}
-                          className="input-field-styled font-mono font-bold"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1.5">
-                        4-Digit PIN (from HR) *
-                      </label>
-                      <div className="input-wrapper">
-                        <Lock className="input-icon-left text-amber-600" />
-                        <input 
-                          type="password" 
-                          placeholder="Enter 4-digit PIN set by HR (e.g. 1234)"
-                          value={candidatePinInput}
-                          onChange={(e) => setCandidatePinInput(e.target.value)}
-                          className="input-field-styled font-mono font-bold"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="btn btn-employee w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                      <span>{isLoading ? 'Opening...' : 'Start Verification 🚀'}</span>
-                    </button>
-                  </div>
-                )}
-
-              </form>
-            )}
-
-            {/* Portal Features / Capabilities Checklist */}
-            <div className="pt-4 border-t border-slate-100 space-y-2.5">
-              <div className="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  Portal Features
-                </span>
-                <span className="text-[10px] font-semibold text-slate-400">256-bit AES Encrypted</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-slate-600">
+              <div className="space-y-2 text-xs font-semibold text-slate-700">
                 {currentDetail.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
-                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
-                    <span className="truncate">{feat}</span>
+                  <div key={idx} className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>{feat}</span>
                   </div>
                 ))}
               </div>
+
+              <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 font-medium">
+                🔒 Safe and secure with bank-grade 256-bit encryption.
+              </div>
+            </div>
+
+            {/* Right Col: Credential Authentication Form OR Password Recovery Form */}
+            <div className="lg:col-span-2 space-y-4">
+              
+              {/* ========================================================================= */}
+              {/* 🔄 FORGOT PASSWORD / PASSWORD RECOVERY WORKFLOW */}
+              {/* ========================================================================= */}
+              {isForgotMode ? (
+                <div className="space-y-4 animate-fadeIn">
+                  
+                  {/* Top Bar for Forgot Mode */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-black">
+                        <KeyRound className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-slate-900 text-sm">
+                          {forgotStep === 1 ? 'Recover Portal Password' : 'Set New Secure Password'}
+                        </h3>
+                        <p className="text-[11px] text-slate-500 font-medium">
+                          {forgotStep === 1 ? 'Step 1 of 2: Request 6-digit reset passcode' : 'Step 2 of 2: Verify passcode and choose new password'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={closeForgotMode}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back to Login</span>
+                    </button>
+                  </div>
+
+                  {/* Feedback Alerts */}
+                  {forgotError && (
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>{forgotError}</span>
+                    </div>
+                  )}
+
+                  {forgotSuccess && (
+                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{forgotSuccess}</span>
+                    </div>
+                  )}
+
+                  {/* STEP 1: REQUEST 6-DIGIT PASSCODE */}
+                  {forgotStep === 1 && (
+                    <form onSubmit={handleForgotRequestSubmit} className="space-y-4 text-xs">
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-[11px] leading-relaxed space-y-1">
+                        <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
+                          <Info className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Official Dispatch Target:</span>
+                        </div>
+                        {selectedRoleTab === 'superadmin' && (
+                          <p>Instructions & 6-digit passcode will be dispatched to the Master Super Admin mail ID: <strong>admin@joycorporatesolutions.com</strong>.</p>
+                        )}
+                        {selectedRoleTab === 'company' && (
+                          <p>Instructions & 6-digit passcode will be dispatched to your company's registered email ID.</p>
+                        )}
+                        {selectedRoleTab === 'hrexecutive' && (
+                          <p>Instructions & 6-digit passcode will be dispatched to your assigned HR work email ID.</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">
+                          {selectedRoleTab === 'superadmin' ? 'Super Admin Official Email *' : selectedRoleTab === 'company' ? 'Company Admin Registered Email *' : 'HR Work Email *'}
+                        </label>
+                        <div className="input-wrapper">
+                          <Mail className="input-icon-left" />
+                          <input 
+                            type="email" 
+                            required
+                            placeholder={
+                              selectedRoleTab === 'superadmin' 
+                                ? 'admin@joycorporatesolutions.com' 
+                                : selectedRoleTab === 'company' 
+                                ? 'e.g. contact@enterprise.com' 
+                                : 'e.g. hr@enterprise.com'
+                            }
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            className="input-field-styled font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          type="submit"
+                          disabled={isForgotLoading}
+                          className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <Send className="w-4 h-4" />
+                          <span>{isForgotLoading ? 'Dispatching Passcode...' : 'Send 6-Digit Passcode 🚀'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={closeForgotMode}
+                          className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* STEP 2: VERIFY PASSCODE AND SET NEW PASSWORD */}
+                  {forgotStep === 2 && (
+                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
+                      <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-[11px] font-medium flex items-center justify-between">
+                        <div>
+                          <span>Passcode sent to: <strong>{forgotEmail}</strong></span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setForgotStep(1)}
+                          className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline cursor-pointer"
+                        >
+                          Change Email
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">
+                          6-Digit Passcode (from Email) *
+                        </label>
+                        <div className="input-wrapper">
+                          <KeyRound className="input-icon-left text-indigo-600" />
+                          <input 
+                            type="text" 
+                            required
+                            maxLength={6}
+                            placeholder="e.g. 583921"
+                            value={forgotOtp}
+                            onChange={(e) => setForgotOtp(e.target.value)}
+                            className="input-field-styled font-mono font-bold tracking-widest text-center text-sm"
+                          />
+                        </div>
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">
+                          Check spam/junk folder if not in primary inbox. (Demo fallback: 123456)
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">New Password *</label>
+                          <div className="input-wrapper">
+                            <Lock className="input-icon-left" />
+                            <input 
+                              type={showForgotPw ? 'text' : 'password'} 
+                              required
+                              minLength={4}
+                              placeholder="Enter new password"
+                              value={forgotNewPassword}
+                              onChange={(e) => setForgotNewPassword(e.target.value)}
+                              className="input-field-styled pr-10 font-medium"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowForgotPw(!showForgotPw)}
+                              className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                            >
+                              {showForgotPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">Confirm New Password *</label>
+                          <div className="input-wrapper">
+                            <Lock className="input-icon-left" />
+                            <input 
+                              type={showForgotPw ? 'text' : 'password'} 
+                              required
+                              minLength={4}
+                              placeholder="Re-enter new password"
+                              value={forgotConfirmPassword}
+                              onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                              className="input-field-styled font-medium"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          type="submit"
+                          disabled={isForgotLoading}
+                          className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          <span>{isForgotLoading ? 'Updating Password...' : 'Save New Password & Sign In 🔑'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleForgotRequestSubmit}
+                          disabled={isForgotLoading}
+                          className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Resend Passcode to Email"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Resend</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                </div>
+              ) : (
+                /* ========================================================================= */
+                /* 🔐 STANDARD SIGN-IN FORM */
+                /* ========================================================================= */
+                <>
+                  {loginError && (
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>{loginError}</span>
+                    </div>
+                  )}
+
+                  <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
+                    
+                    {/* 👑 SUPER ADMIN SPECIFIC LOGIN FORM */}
+                    {selectedRoleTab === 'superadmin' && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">Super Admin Email *</label>
+                            <div className="input-wrapper">
+                              <Mail className="input-icon-left" />
+                              <input 
+                                type="email" 
+                                required
+                                placeholder="admin@joycorporatesolutions.com"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                className="input-field-styled"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-slate-700 font-bold">Super Admin Password *</label>
+                              <button
+                                type="button"
+                                onClick={() => openForgotMode(emailInput || 'admin@joycorporatesolutions.com')}
+                                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
+                              >
+                                Forgot Password?
+                              </button>
+                            </div>
+                            <div className="input-wrapper">
+                              <KeyRound className="input-icon-left" />
+                              <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                required
+                                placeholder="Enter master password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                className="input-field-styled pr-10"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-200 text-indigo-900 text-[11px] font-medium flex items-center gap-2">
+                          <Crown className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <span>Full access to manage companies, plans, database, and system settings.</span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <Lock className="w-4 h-4" />
+                          <span>{isLoading ? 'Signing In...' : 'Sign In as Super Admin'}</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 🏢 COMPANY ADMIN SPECIFIC LOGIN FORM */}
+                    {selectedRoleTab === 'company' && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">Company Admin Email *</label>
+                            <div className="input-wrapper">
+                              <Mail className="input-icon-left" />
+                              <input 
+                                type="email" 
+                                required
+                                placeholder="muthukumar@joyglobalcorp.com"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                className="input-field-styled"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-slate-700 font-bold">Company Password *</label>
+                              <button
+                                type="button"
+                                onClick={() => openForgotMode(emailInput)}
+                                className="text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
+                              >
+                                Forgot Password?
+                              </button>
+                            </div>
+                            <div className="input-wrapper">
+                              <KeyRound className="input-icon-left" />
+                              <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                required
+                                placeholder="Enter company password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                className="input-field-styled pr-10"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-sky-50/80 border border-sky-200 text-sky-900 text-[11px] font-medium flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-sky-600 shrink-0" />
+                          <span>Company accounts are created by Super Admin. Need access? Contact Super Admin.</span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <Lock className="w-4 h-4" />
+                          <span>{isLoading ? 'Signing In...' : 'Sign In as Company Admin'}</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 👥 HR EXECUTIVE SPECIFIC LOGIN FORM */}
+                    {selectedRoleTab === 'hrexecutive' && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">HR Email *</label>
+                            <div className="input-wrapper">
+                              <Mail className="input-icon-left" />
+                              <input 
+                                type="email" 
+                                required
+                                placeholder="muthujoygroup@gmail.com"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                className="input-field-styled"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-slate-700 font-bold">HR Password *</label>
+                              <button
+                                type="button"
+                                onClick={() => openForgotMode(emailInput)}
+                                className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
+                              >
+                                Forgot Password?
+                              </button>
+                            </div>
+                            <div className="input-wrapper">
+                              <KeyRound className="input-icon-left" />
+                              <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                required
+                                placeholder="Enter HR password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                className="input-field-styled pr-10"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
+                          <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>HR accounts are created by your Company Admin in the HR Team section.</span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <Lock className="w-4 h-4" />
+                          <span>{isLoading ? 'Signing In...' : 'Sign In as HR Executive'}</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 📱 CANDIDATE / EMPLOYEE MAGIC LINK ACCESS */}
+                    {selectedRoleTab === 'employee_link' && (
+                      <div className="space-y-4">
+                        <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2">
+                          <div className="flex items-center gap-2 font-black text-xs">
+                            <Smartphone className="w-4 h-4 text-amber-600" />
+                            <span>Direct Access with Verification Link</span>
+                          </div>
+                          <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                            Candidates do not need a username or password. You can open your verification page directly using the link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong> by your HR team.
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">
+                            Candidate Verification Token *
+                          </label>
+                          <div className="input-wrapper">
+                            <KeyRound className="input-icon-left text-amber-600" />
+                            <input 
+                              type="text" 
+                              placeholder="e.g. tok_sunita_412"
+                              value={candidateTokenInput}
+                              onChange={(e) => setCandidateTokenInput(e.target.value)}
+                              className="input-field-styled font-mono font-bold"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">
+                            4-Digit PIN (from HR) *
+                          </label>
+                          <div className="input-wrapper">
+                            <Lock className="input-icon-left text-amber-600" />
+                            <input 
+                              type="password" 
+                              placeholder="Enter 4-digit PIN set by HR (e.g. 1234)"
+                              value={candidatePinInput}
+                              onChange={(e) => setCandidatePinInput(e.target.value)}
+                              className="input-field-styled font-mono font-bold"
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className="btn btn-employee w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                          <span>{isLoading ? 'Opening...' : 'Start Verification 🚀'}</span>
+                        </button>
+                      </div>
+                    )}
+
+                  </form>
+                </>
+              )}
+
             </div>
 
           </div>

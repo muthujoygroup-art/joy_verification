@@ -1,20 +1,5 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --font-outfit: 'Outfit', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  
-  --color-brand-dark: #0f223d;
-  --color-brand-orange: #f58220;
-  --color-brand-cyan: #00a3c4;
-  --color-brand-card: rgba(255, 255, 255, 0.95);
-  --color-brand-indigo: #4f46e5;
-  --color-brand-emerald: #059669;
-  --color-brand-amber: #d97706;
-  --color-brand-rose: #e11d48;
-}
-
 :root {
   --bg-light: #f8fafc;
   --bg-card: rgba(255, 255, 255, 0.95);
