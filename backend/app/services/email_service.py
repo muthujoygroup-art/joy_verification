@@ -911,3 +911,86 @@ def send_company_discrepancy_alert(
 
     subject = f"🚨 [Compliance Alert] Discrepancy Flagged for {candidate_name} ({candidate_code})"
     return send_smtp_email(admin_email, subject, html, company_id=company_id, db=db)
+
+
+# =============================================================================
+# 🔐 PASSWORD RESET & PASSCODE EMAIL (Super Admin, Company Admin, HR Recruiter)
+# =============================================================================
+def send_password_reset_email(
+    to_email: str,
+    user_name: str,
+    role_label: str,
+    reset_code_or_otp: str,
+    reset_url: Optional[str] = None,
+    expiry_minutes: int = 30,
+    company_id: Optional[str] = None,
+    db = None
+) -> Dict[str, Any]:
+    """
+    Dispatches a secure password reset email containing a 6-digit OTP code
+    and direct reset authorization URL to the verified user's registered inbox.
+    """
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    action_url = reset_url or f"{app_url}/login"
+
+    content = f"""
+    <div style="margin-bottom: 22px;">
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Password Reset Request
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            Hello <strong>{user_name}</strong>, we received a request to reset your password for your <strong>{role_label}</strong> account on the <strong>JOY True Profile Verification Platform</strong>.
+        </p>
+    </div>
+
+    <!-- 6-Digit OTP / Passcode Highlight Box -->
+    <div style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 8px; letter-spacing: 1px;">
+            🔐 Your 6-Digit Password Reset Passcode
+        </div>
+        <div style="font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #312e81; font-family: 'Courier New', Courier, monospace; background: #ffffff; display: inline-block; padding: 8px 24px; border-radius: 12px; border: 1px dashed #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);">
+            {reset_code_or_otp}
+        </div>
+        <div style="font-size: 11.5px; color: #4f46e5; margin-top: 10px; font-weight: 600;">
+            ⏱️ This passcode is valid for the next <strong>{expiry_minutes} minutes</strong>.
+        </div>
+    </div>
+
+    <!-- Account Details Table -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #0f172a; margin-bottom: 10px; letter-spacing: 0.5px;">
+            📋 Request Summary:
+        </div>
+        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
+            <tr>
+                <td width="38%" style="color: #64748b; font-weight: 600;">Account Role:</td>
+                <td style="color: #0f172a; font-weight: 800;">{role_label}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Registered Email:</td>
+                <td style="color: #4338ca; font-weight: 800; font-family: monospace;">{to_email}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Requested At:</td>
+                <td style="color: #334155; font-weight: 600;">{datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Security Advisory -->
+    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; font-size: 11.5px; color: #92400e; line-height: 1.5;">
+        ⚠️ <strong>Did not request this?</strong> If you did not initiate this password reset, please disregard this email. Your existing password remains secure. If you suspect unauthorized access, please notify <strong>admin@joycorporatesolutions.com</strong> immediately.
+    </div>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Reset Password — {role_label}",
+        badge_text="SECURITY & ACCESS RECOVERY",
+        content_html=content,
+        action_url=action_url,
+        action_text="Reset Password in Portal 🔑"
+    )
+
+    subject = f"🔐 Password Reset Request — JOY True Profile ({role_label})"
+    return send_smtp_email(to_email, subject, html, company_id=company_id, db=db)
+

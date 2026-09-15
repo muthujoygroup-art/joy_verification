@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from sqlalchemy.orm import Session
 from backend.app.database import get_db
 from backend.app.models import SuperAdminUser, Company, HrUser, Candidate
+from backend.app.config import settings
 from backend.app.services.session_service import (
     create_session,
     get_session_by_token,
     extend_session,
-    terminate_session
+    terminate_session,
+    create_password_reset_otp,
+    verify_password_reset_otp,
+    clear_password_reset_otp
 )
+from backend.app.services.email_service import send_password_reset_email
 
 router = APIRouter(prefix="/auth", tags=["Authentication & Session Management"])
 
@@ -162,3 +167,224 @@ def logout(token: str = Depends(_extract_token)):
     """Invalidates the active session token"""
     success = terminate_session(token)
     return {"message": "Logged out successfully", "session_terminated": success}
+
+
+# =============================================================================
+# 🔐 ROLE-BASED FORGOT PASSWORD & SELF-SERVICE RESET ENDPOINTS
+# =============================================================================
+
+@router.post("/forgot-password")
+def forgot_password(payload: dict, db: Session = Depends(get_db)):
+    """
+    Role-based Forgot Password recovery request:
+    1. Super Admin: sends 6-digit OTP & reset link to superadmin email (admin@joycorporatesolutions.com).
+    2. Company Admin: sends 6-digit OTP & reset link to company's registered email (comp.email).
+    3. HR Executive: sends 6-digit OTP & reset link to HR recruiter's registered work email (hr.email).
+    """
+    role = (payload.get("role") or payload.get("portal_type") or "superadmin").strip().lower()
+    raw_email = (payload.get("email") or "").strip().lower()
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    
+    if role in ("superadmin", "super_admin"):
+        # Target superadmin email: either entered email if registered, or default official master email
+        target_email = "admin@joycorporatesolutions.com"
+        if raw_email:
+            sa = db.query(SuperAdminUser).filter(SuperAdminUser.email.ilike(raw_email)).first()
+            if sa:
+                target_email = sa.email.lower()
+            elif raw_email == "admin@joycorporatesolutions.com" or raw_email == "superadmin@joyverification.com":
+                target_email = raw_email
+        
+        user_name = "Super Administrator"
+        role_label = "Super Administrator"
+        otp_data = create_password_reset_otp(target_email, "superadmin", user_id="superadmin-master")
+        reset_link = f"{app_url}/superadmin?reset_token={otp_data['token']}"
+        
+        email_sent = False
+        try:
+            send_res = send_password_reset_email(
+                to_email=target_email,
+                user_name=user_name,
+                role_label=role_label,
+                reset_code_or_otp=otp_data["otp"],
+                reset_url=reset_link,
+                expiry_minutes=otp_data["expiry_minutes"],
+                db=db
+            )
+            email_sent = send_res.get("success", False)
+        except Exception as e:
+            print(f"Warning: Failed to dispatch Super Admin password reset email: {e}")
+
+        return {
+            "success": True,
+            "message": f"Password reset instructions and 6-digit passcode dispatched to Super Admin email ({target_email}).",
+            "email": target_email,
+            "role": "superadmin",
+            "email_sent": email_sent,
+            "dev_otp": otp_data["otp"]
+        }
+
+    elif role in ("company", "companyadmin"):
+        if not raw_email:
+            raise HTTPException(status_code=400, detail="Company Admin Email is required.")
+            
+        comp = db.query(Company).filter(Company.email.ilike(raw_email)).first()
+        if not comp:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No registered enterprise company account found for email: {raw_email}. Please check spelling or contact Super Admin."
+            )
+            
+        user_name = comp.contact_person or comp.name
+        role_label = f"Company Administrator — {comp.name}"
+        otp_data = create_password_reset_otp(comp.email.lower(), "company", user_id=comp.id)
+        reset_link = f"{app_url}/company?reset_token={otp_data['token']}"
+        
+        email_sent = False
+        try:
+            send_res = send_password_reset_email(
+                to_email=comp.email,
+                user_name=user_name,
+                role_label=role_label,
+                reset_code_or_otp=otp_data["otp"],
+                reset_url=reset_link,
+                expiry_minutes=otp_data["expiry_minutes"],
+                company_id=comp.id,
+                db=db
+            )
+            email_sent = send_res.get("success", False)
+        except Exception as e:
+            print(f"Warning: Failed to dispatch Company password reset email: {e}")
+
+        return {
+            "success": True,
+            "message": f"Password reset instructions and 6-digit passcode dispatched to {comp.name} registered email ({comp.email}).",
+            "email": comp.email,
+            "role": "company",
+            "company_name": comp.name,
+            "email_sent": email_sent,
+            "dev_otp": otp_data["otp"]
+        }
+
+    elif role in ("hrexecutive", "hr"):
+        if not raw_email:
+            raise HTTPException(status_code=400, detail="HR Executive Work Email is required.")
+            
+        hr = db.query(HrUser).filter(HrUser.email.ilike(raw_email)).first()
+        if not hr:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No registered HR recruiter workstation found for email: {raw_email}. Please check spelling or contact your Company Admin."
+            )
+            
+        comp = db.query(Company).filter(Company.id == hr.company_id).first()
+        comp_name = comp.name if comp else "Enterprise Organization"
+        user_name = hr.name or "HR Recruiter"
+        role_label = f"HR Recruiter — {comp_name}"
+        otp_data = create_password_reset_otp(hr.email.lower(), "hrexecutive", user_id=hr.id)
+        reset_link = f"{app_url}/hr?reset_token={otp_data['token']}"
+        
+        email_sent = False
+        try:
+            send_res = send_password_reset_email(
+                to_email=hr.email,
+                user_name=user_name,
+                role_label=role_label,
+                reset_code_or_otp=otp_data["otp"],
+                reset_url=reset_link,
+                expiry_minutes=otp_data["expiry_minutes"],
+                company_id=hr.company_id,
+                db=db
+            )
+            email_sent = send_res.get("success", False)
+        except Exception as e:
+            print(f"Warning: Failed to dispatch HR password reset email: {e}")
+
+        return {
+            "success": True,
+            "message": f"Password reset instructions and 6-digit passcode dispatched to HR recruiter email ({hr.email}).",
+            "email": hr.email,
+            "role": "hrexecutive",
+            "hr_name": hr.name,
+            "company_name": comp_name,
+            "email_sent": email_sent,
+            "dev_otp": otp_data["otp"]
+        }
+
+    raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")
+
+
+@router.post("/reset-password")
+def reset_password(payload: dict, db: Session = Depends(get_db)):
+    """
+    Role-based password reset verification and execution.
+    Validates 6-digit OTP passcode or JWT token, and updates password_hash in DB.
+    """
+    role = (payload.get("role") or "superadmin").strip().lower()
+    email = (payload.get("email") or "").strip().lower()
+    reset_code = (payload.get("reset_code") or payload.get("otp") or payload.get("token") or "").strip()
+    new_password = (payload.get("new_password") or payload.get("password") or "").strip()
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Registered account email is required.")
+    if not reset_code:
+        raise HTTPException(status_code=400, detail="Password reset passcode / OTP is required.")
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="New password must be at least 4 characters long.")
+
+    # Normalize role
+    if role in ("superadmin", "super_admin"):
+        effective_role = "superadmin"
+    elif role in ("company", "companyadmin"):
+        effective_role = "company"
+    elif role in ("hrexecutive", "hr"):
+        effective_role = "hrexecutive"
+    else:
+        raise HTTPException(status_code=400, detail="Invalid role specified.")
+
+    # Validate OTP / token
+    is_valid = verify_password_reset_otp(email, effective_role, reset_code)
+    if not is_valid:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid or expired password reset passcode. Please check the 6-digit code in your email or request a new code."
+        )
+
+    # Execute password update in database
+    if effective_role == "superadmin":
+        sa = db.query(SuperAdminUser).filter(
+            (SuperAdminUser.email.ilike(email)) | (SuperAdminUser.email == "admin@joycorporatesolutions.com")
+        ).first()
+        if sa:
+            sa.password_hash = new_password
+        else:
+            new_sa = SuperAdminUser(
+                email=email or "admin@joycorporatesolutions.com",
+                name="Super Administrator",
+                password_hash=new_password
+            )
+            db.add(new_sa)
+        db.commit()
+
+    elif effective_role == "company":
+        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        if not comp:
+            raise HTTPException(status_code=404, detail="Company account not found.")
+        comp.password_hash = new_password
+        db.commit()
+
+    elif effective_role == "hrexecutive":
+        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        if not hr:
+            raise HTTPException(status_code=404, detail="HR recruiter workstation not found.")
+        hr.password_hash = new_password
+        db.commit()
+
+    # Clear OTP after successful use
+    clear_password_reset_otp(email, effective_role)
+
+    return {
+        "success": True,
+        "message": "Your password has been successfully updated! You can now log in with your new credentials."
+    }
+

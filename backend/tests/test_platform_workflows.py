@@ -91,5 +91,41 @@ class TestPlatformWorkflows(unittest.TestCase):
         self.assertTrue(len(pdf_bytes) > 500)
         self.assertTrue(pdf_bytes.startswith(b"%PDF"))
 
+    def test_forgot_password_and_reset_workflow(self):
+        """Verify Forgot Password OTP generation, validation, and role-based password reset."""
+        from backend.app.services.session_service import (
+            create_password_reset_otp,
+            verify_password_reset_otp,
+            clear_password_reset_otp
+        )
+        # 1. Super Admin OTP lifecycle
+        sa_otp = create_password_reset_otp("admin@joycorporatesolutions.com", "superadmin")
+        self.assertIn("otp", sa_otp)
+        self.assertEqual(len(sa_otp["otp"]), 6)
+        self.assertTrue(verify_password_reset_otp("admin@joycorporatesolutions.com", "superadmin", sa_otp["otp"]))
+        self.assertFalse(verify_password_reset_otp("admin@joycorporatesolutions.com", "superadmin", "000000"))
+        clear_password_reset_otp("admin@joycorporatesolutions.com", "superadmin")
+
+        # 2. Company Admin OTP lifecycle
+        comp_otp = create_password_reset_otp("testcompany@joybgv.com", "company")
+        self.assertIn("otp", comp_otp)
+        self.assertTrue(verify_password_reset_otp("testcompany@joybgv.com", "company", comp_otp["otp"]))
+        clear_password_reset_otp("testcompany@joybgv.com", "company")
+
+        # 3. HR Recruiter OTP lifecycle
+        hr_otp = create_password_reset_otp("hr.recruiter@joybgv.com", "hrexecutive")
+        self.assertIn("otp", hr_otp)
+        self.assertTrue(verify_password_reset_otp("hr.recruiter@joybgv.com", "hrexecutive", hr_otp["otp"]))
+        clear_password_reset_otp("hr.recruiter@joybgv.com", "hrexecutive")
+
+    def test_superadmin_and_company_endpoints_exist(self):
+        """Verify auth router has forgot-password and reset-password routes registered."""
+        from backend.app.routers.auth import router as auth_router
+        routes = [route.path for route in auth_router.routes]
+        self.assertIn("/auth/forgot-password", routes)
+        self.assertIn("/auth/reset-password", routes)
+        self.assertIn("/auth/login", routes)
+
 if __name__ == '__main__':
     unittest.main()
+

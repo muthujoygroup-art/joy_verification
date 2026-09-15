@@ -177,6 +177,11 @@ export const CompanyAdminView = () => {
   // 👔 HR Recruiter Governance & Activation States
   const [governanceHr, setGovernanceHr] = useState(null);
   const [activatingHr, setActivatingHr] = useState(null);
+  const [passwordModalHr, setPasswordModalHr] = useState(null);
+  const [hrNewPassword, setHrNewPassword] = useState('');
+  const [showHrPassword, setShowHrPassword] = useState(false);
+  const [sendHrPasswordEmail, setSendHrPasswordEmail] = useState(true);
+  const [isSavingHrPassword, setIsSavingHrPassword] = useState(false);
   const [dbHrUsers, setDbHrUsers] = useState([]);
   const [isLoadingHr, setIsLoadingHr] = useState(false);
 
@@ -1631,6 +1636,20 @@ export const CompanyAdminView = () => {
 
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPasswordModalHr(hr);
+                                setHrNewPassword('');
+                                setShowHrPassword(false);
+                                setSendHrPasswordEmail(true);
+                              }}
+                              className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 shadow-2xs cursor-pointer"
+                              title="Directly Change / Reset HR Recruiter Password"
+                            >
+                              <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Password 🔑</span>
+                            </button>
                             <button
                               type="button"
                               onClick={() => setGovernanceHr(hr)}
@@ -4835,6 +4854,132 @@ export const CompanyAdminView = () => {
           vendor={selectedCertVendor}
           onClose={() => setSelectedCertVendor(null)}
         />
+      )}
+
+      {/* 🔑 DIRECT HR RECRUITER PASSWORD CHANGE MODAL */}
+      {passwordModalHr && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="glass-panel w-full max-w-md bg-white border-slate-200 rounded-2xl shadow-2xl p-6 space-y-5 animate-scaleUp">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 font-bold">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-sm">Change HR Workstation Password</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">#{passwordModalHr.id} • {passwordModalHr.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPasswordModalHr(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!hrNewPassword || hrNewPassword.length < 4) {
+                  showToast('❌ Password must be at least 4 characters long.', 'error');
+                  return;
+                }
+                setIsSavingHrPassword(true);
+                try {
+                  const res = await api.updateHrPassword(
+                    company.id,
+                    passwordModalHr.id,
+                    hrNewPassword,
+                    sendHrPasswordEmail
+                  );
+                  showToast(res.message || `🎉 Workstation password updated for ${passwordModalHr.name}!`);
+                  setPasswordModalHr(null);
+                  setHrNewPassword('');
+                } catch (err) {
+                  showToast(`❌ Failed to update password: ${err.message}`, 'error');
+                } finally {
+                  setIsSavingHrPassword(false);
+                }
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-[11px]">
+                <div className="text-slate-500 font-semibold">Assigned HR Recruiter Email:</div>
+                <div className="font-mono font-bold text-slate-900">{passwordModalHr.email}</div>
+                <div className="text-slate-500 text-[10px]">Department: <strong>{passwordModalHr.dept || 'Human Resources'}</strong></div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-slate-700 font-bold">New Workstation Password *</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const gen = `Hr${Math.floor(1000 + Math.random() * 9000)}@${(company.name || 'Joy').substring(0, 4)}`;
+                      setHrNewPassword(gen);
+                      setShowHrPassword(true);
+                    }}
+                    className="text-[10px] text-sky-600 hover:text-sky-800 font-bold underline cursor-pointer"
+                  >
+                    🎲 Generate Password
+                  </button>
+                </div>
+                <div className="input-wrapper">
+                  <Lock className="input-icon-left" />
+                  <input
+                    type={showHrPassword ? 'text' : 'password'}
+                    required
+                    minLength={4}
+                    placeholder="Enter new password for HR user"
+                    value={hrNewPassword}
+                    onChange={(e) => setHrNewPassword(e.target.value)}
+                    className="input-field-styled pr-10 font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowHrPassword(!showHrPassword)}
+                    className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                  >
+                    {showHrPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-sky-50/70 border border-sky-100">
+                <input
+                  type="checkbox"
+                  id="sendHrPasswordEmailCheck"
+                  checked={sendHrPasswordEmail}
+                  onChange={(e) => setSendHrPasswordEmail(e.target.checked)}
+                  className="rounded text-sky-600 focus:ring-sky-500 cursor-pointer"
+                />
+                <label htmlFor="sendHrPasswordEmailCheck" className="text-[11px] font-bold text-sky-950 cursor-pointer">
+                  📧 Email updated credentials directly to {passwordModalHr.email}
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setPasswordModalHr(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingHrPassword}
+                  className="btn btn-company py-2 px-4 text-xs font-black shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSavingHrPassword ? 'Updating Password...' : 'Save New Password 💾'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
     </div>

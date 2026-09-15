@@ -1563,6 +1563,29 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Password Recovery Handlers
+  const requestForgotPassword = async (email, role) => {
+    try {
+      const resp = await api.forgotPassword(email, role);
+      showToast(resp.message || 'Password reset passcode dispatched to official email!', 'success');
+      return resp;
+    } catch (err) {
+      showToast(err.message || 'Failed to dispatch password recovery email', 'error');
+      throw err;
+    }
+  };
+
+  const completePasswordReset = async (payload) => {
+    try {
+      const resp = await api.resetPassword(payload);
+      showToast(resp.message || 'Password successfully updated! Please log in.', 'success');
+      return resp;
+    } catch (err) {
+      showToast(err.message || 'Failed to reset password', 'error');
+      throw err;
+    }
+  };
+
   const refreshUserSession = async () => {
     try {
       const resp = await api.refreshSession();
@@ -3693,6 +3716,8 @@ export const AppProvider = ({ children }) => {
       currentUser,
       currentRole,
       loginUser,
+      requestForgotPassword,
+      completePasswordReset,
       setRoleView,
       logoutUser,
       companies,

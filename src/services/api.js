@@ -149,6 +149,14 @@ export const api = {
     }
     return data;
   },
+  forgotPassword: (email, role) => request('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email, role })
+  }),
+  resetPassword: (payload) => request('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
   checkSession: () => request('/auth/session'),
   refreshSession: async () => {
     const data = await request('/auth/refresh', { method: 'POST' });
