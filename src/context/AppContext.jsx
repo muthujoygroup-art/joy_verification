@@ -563,11 +563,11 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // SESSION MANAGEMENT & INACTIVITY TRACKING
+  // SESSION MANAGEMENT & INACTIVITY TRACKING (10 Minutes Session = 600s)
   const [sessionData, setSessionData] = useState(null);
-  const [sessionTtlSeconds, setSessionTtlSeconds] = useState(0);
+  const [sessionTtlSeconds, setSessionTtlSeconds] = useState(600);
   const [showInactivityWarning, setShowInactivityWarning] = useState(false);
-  const [inactivityCountdown, setInactivityCountdown] = useState(300); // 5 mins warning
+  const [inactivityCountdown, setInactivityCountdown] = useState(60); // 1 min (60s) warning
   const [lastActivityTimestamp, setLastActivityTimestamp] = useState(Date.now());
 
   // Listen to window interactions for activity tracking
@@ -591,37 +591,36 @@ export const AppProvider = ({ children }) => {
     };
   }, []);
 
-  // 1-Second Session Heartbeat & Inactivity Countdown Ticker
+  // 1-Second Session Heartbeat & Inactivity Countdown Ticker (10 Minutes Session)
   useEffect(() => {
     if (!currentUser || !currentRole) return;
 
     const interval = setInterval(() => {
-      const idleSeconds = Math.floor((Date.now() - lastActivityTimestamp) / 1000);
-      
       setSessionTtlSeconds(prev => {
-        const next = prev - 1;
+        const currentTtl = (typeof prev === 'number' && prev > 0) ? prev : 600;
+        const next = currentTtl - 1;
+
+        // When reaching 60s (1.00 minute) or less, show warning modal
+        if (next <= 60 && next > 0) {
+          setShowInactivityWarning(true);
+          setInactivityCountdown(next);
+        } else if (next > 60) {
+          setShowInactivityWarning(false);
+        }
+
+        // When reaching 0s, auto-logout
         if (next <= 0) {
+          setShowInactivityWarning(false);
           logoutUser();
           return 0;
         }
+
         return next;
       });
-
-      // If idle for > 25 minutes (1500s), show warning modal with countdown
-      if (idleSeconds >= 1500) {
-        const countdown = Math.max(0, 1800 - idleSeconds);
-        setInactivityCountdown(countdown);
-        setShowInactivityWarning(true);
-        if (countdown <= 0) {
-          logoutUser();
-        }
-      } else {
-        setShowInactivityWarning(false);
-      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentUser, currentRole, lastActivityTimestamp]);
+  }, [currentUser, currentRole]);
 
   // SUPER ADMIN & HR MASTER DROPDOWN OPTIONS STATE (12 ENTERPRISE MASTER CATEGORIES)
   const [masterDropdownOptions, setMasterDropdownOptions] = useState({
@@ -1551,12 +1550,13 @@ export const AppProvider = ({ children }) => {
         sessionId: resp.session_id,
         token: resp.access_token,
         role: resp.role,
-        expiresIn: resp.expires_in
+        expiresIn: 600
       });
-      setSessionTtlSeconds(resp.expires_in || 1800);
+      setSessionTtlSeconds(600);
+      setInactivityCountdown(60);
       setLastActivityTimestamp(Date.now());
       setShowInactivityWarning(false);
-      showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 30 Mins)!`);
+      showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 10 Mins)!`);
     } catch (err) {
       console.error('Login failed:', err);
       throw err;
@@ -1588,18 +1588,13 @@ export const AppProvider = ({ children }) => {
 
   const refreshUserSession = async () => {
     try {
-      const resp = await api.refreshSession();
-      if (resp && resp.expires_in) {
-        setSessionTtlSeconds(resp.expires_in);
-      } else {
-        setSessionTtlSeconds(1800);
-      }
-    } catch (err) {
-      setSessionTtlSeconds(1800);
-    }
+      await api.refreshSession().catch(() => {});
+    } catch (err) {}
+    setSessionTtlSeconds(600);
+    setInactivityCountdown(60);
     setLastActivityTimestamp(Date.now());
     setShowInactivityWarning(false);
-    showToast('⚡ Active Session extended by +30 Minutes!');
+    showToast('⚡ Active Session extended by +10 Minutes!');
   };
 
   const setRoleView = (role, candidateToken = null) => {

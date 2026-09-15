@@ -9,12 +9,12 @@ import {
 import { useApp } from '../context/AppContext';
 
 export const ActiveSessionBadge = () => {
-  const { sessionData, sessionTtlSeconds = 1800, refreshUserSession, logoutUser, activeRole = 'superadmin' } = useApp() || {};
+  const { sessionData, sessionTtlSeconds = 600, refreshUserSession, logoutUser, activeRole = 'superadmin' } = useApp() || {};
   const [showPopover, setShowPopover] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const formatTtl = (seconds) => {
-    const s = typeof seconds === 'number' && !isNaN(seconds) ? Math.max(0, seconds) : 1800;
+    const s = typeof seconds === 'number' && !isNaN(seconds) && seconds >= 0 ? seconds : 600;
     const mins = Math.floor(s / 60);
     const secs = s % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -28,7 +28,7 @@ export const ActiveSessionBadge = () => {
     setTimeout(() => setIsRefreshing(false), 600);
   };
 
-  const isLowTtl = (sessionTtlSeconds || 1800) < 300; // < 5 mins
+  const isLowTtl = (sessionTtlSeconds || 600) <= 60; // <= 1 min (60s) warning
 
   return (
     <div className="relative inline-block text-left">
@@ -40,7 +40,7 @@ export const ActiveSessionBadge = () => {
             ? 'bg-rose-50 text-rose-800 border-rose-300 animate-pulse' 
             : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
         }`}
-        title="Active Session Status & Telemetry"
+        title="Active Session Status & Telemetry (10 Mins Max Session)"
       >
         <span className={`w-2 h-2 rounded-full ${isLowTtl ? 'bg-rose-500' : 'bg-emerald-500 animate-ping'}`} />
         <Clock className="w-3.5 h-3.5" />
@@ -84,7 +84,7 @@ export const ActiveSessionBadge = () => {
               className="btn btn-secondary text-xs flex-1 py-1.5 flex items-center justify-center gap-1 font-bold"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>+30 Mins</span>
+              <span>+10 Mins</span>
             </button>
 
             <button
