@@ -31,15 +31,16 @@ export const UniversalDocumentExportModal = ({
   initialRole = 'hrexecutive',
   scopedCompanyId = null 
 }) => {
-  const { candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem } = useApp();
+  const { candidates, companies, hrUsers, showToast, platformLogo, platformLogoEmblem, currentRole } = useApp();
 
-  // Role Tab State
-  const [activeRole, setActiveRole] = useState(initialRole);
+  // Role Tab State - Strictly locked to current authenticated portal role context
+  const effectiveRole = currentRole || initialRole || 'hrexecutive';
+  const [activeRole, setActiveRole] = useState(effectiveRole);
 
   // Division Tab State per Role
   const [activeDivision, setActiveDivision] = useState(() => {
-    if (initialRole === 'superadmin') return 'billing';
-    if (initialRole === 'company') return 'candidate_dir';
+    if (effectiveRole === 'superadmin') return 'billing';
+    if (effectiveRole === 'company') return 'candidate_dir';
     return 'pipeline';
   });
 
@@ -62,11 +63,37 @@ export const UniversalDocumentExportModal = ({
   const [exportingFormat, setExportingFormat] = useState(null);
 
   useEffect(() => {
-    setActiveRole(initialRole);
-    if (initialRole === 'superadmin') setActiveDivision('billing');
-    else if (initialRole === 'company') setActiveDivision('candidate_dir');
+    const roleToUse = currentRole || initialRole || 'hrexecutive';
+    setActiveRole(roleToUse);
+    if (roleToUse === 'superadmin') setActiveDivision('billing');
+    else if (roleToUse === 'company') setActiveDivision('candidate_dir');
     else setActiveDivision('pipeline');
-  }, [initialRole]);
+  }, [initialRole, currentRole]);
+
+  // Role Specific Styling & Descriptions
+  const roleConfig = useMemo(() => ({
+    superadmin: {
+      badge: '👑 Super Admin Platform Reports Hub',
+      badgeClass: 'bg-indigo-50 text-indigo-900 border-indigo-200',
+      activeTabClass: 'bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-400/40',
+      activeDescClass: 'text-indigo-100',
+      subtitle: 'Master Platform Governance, Revenue Ledgers, API Telemetry & Legal Audit Trail'
+    },
+    company: {
+      badge: '🏢 Company Admin Reports Hub',
+      badgeClass: 'bg-sky-50 text-sky-900 border-sky-200',
+      activeTabClass: 'bg-sky-600 text-white border-sky-600 shadow-md ring-2 ring-sky-400/40',
+      activeDescClass: 'text-sky-100',
+      subtitle: 'Workforce Verification Records, Corporate Credentials & HR Recruiter Metrics'
+    },
+    hrexecutive: {
+      badge: '👔 HR Executive Reports Hub',
+      badgeClass: 'bg-emerald-50 text-emerald-900 border-emerald-200',
+      activeTabClass: 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-400/40',
+      activeDescClass: 'text-emerald-100',
+      subtitle: 'Candidate Verification Pipeline & Recruiter Onboarding Reports'
+    }
+  }), []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -532,60 +559,53 @@ export const UniversalDocumentExportModal = ({
         <div className="p-4 sm:p-8 overflow-y-auto space-y-6 text-xs">
           
           {/* 🏷️ Role & Report Division Selection Bar */}
-          <div className="glass-panel p-4 bg-slate-900 text-white rounded-2xl space-y-3 shadow-md border border-slate-800">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+          <div className="p-4 sm:p-5 bg-white border border-slate-200 rounded-2xl space-y-3 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-amber-400" />
-                <span className="font-extrabold text-xs text-slate-200">Portal Console Context:</span>
+                <Layers className="w-4 h-4 text-slate-700 shrink-0" />
+                <span className="font-extrabold text-xs text-slate-800">Portal Console Context:</span>
+                <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black border ${roleConfig[activeRole]?.badgeClass || roleConfig.hrexecutive.badgeClass}`}>
+                  {roleConfig[activeRole]?.badge || roleConfig.hrexecutive.badge}
+                </span>
               </div>
-
-              {/* Role Context Selector Pills */}
-              <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                {[
-                  { id: 'superadmin', label: '👑 Super Admin', bg: 'bg-indigo-600' },
-                  { id: 'company', label: '🏢 Company Admin', bg: 'bg-sky-600' },
-                  { id: 'hrexecutive', label: '👔 HR Executive', bg: 'bg-emerald-600' }
-                ].map(role => (
-                  <button
-                    key={role.id}
-                    onClick={() => {
-                      setActiveRole(role.id);
-                      const firstDiv = roleDivisions[role.id]?.[0]?.id || 'pipeline';
-                      setActiveDivision(firstDiv);
-                    }}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
-                      activeRole === role.id 
-                        ? `${role.bg} text-white shadow-xs` 
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                    }`}
-                  >
-                    {role.label}
-                  </button>
-                ))}
-              </div>
+              <span className="text-[11px] font-semibold text-slate-500">
+                {roleConfig[activeRole]?.subtitle || roleConfig.hrexecutive.subtitle}
+              </span>
             </div>
 
-            {/* Division Sub-Tabs */}
-            <div className="flex flex-wrap gap-2 pt-1">
-              {(roleDivisions[activeRole] || roleDivisions.hrexecutive).map((div) => {
-                const isSelected = activeDivision === div.id;
-                return (
-                  <button
-                    key={div.id}
-                    onClick={() => setActiveDivision(div.id)}
-                    className={`px-3 py-2 rounded-xl text-left transition-all cursor-pointer border flex flex-col gap-0.5 ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 border-amber-400 shadow-md font-black'
-                        : 'bg-slate-950/70 hover:bg-slate-800 text-slate-300 border-slate-800 font-semibold'
-                    }`}
-                  >
-                    <span className="text-xs font-bold">{div.label}</span>
-                    <span className={`text-[10px] ${isSelected ? 'text-slate-900 font-medium' : 'text-slate-400'}`}>
-                      {div.desc}
-                    </span>
-                  </button>
-                );
-              })}
+            {/* Division Sub-Tabs Grid */}
+            <div className="space-y-1.5">
+              <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                Select Report Category / Dossier Type:
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+                {(roleDivisions[activeRole] || roleDivisions.hrexecutive).map((div) => {
+                  const isSelected = activeDivision === div.id;
+                  const cfg = roleConfig[activeRole] || roleConfig.hrexecutive;
+                  return (
+                    <button
+                      key={div.id}
+                      type="button"
+                      onClick={() => setActiveDivision(div.id)}
+                      className={`p-3 rounded-xl text-left transition-all cursor-pointer border flex flex-col justify-between gap-1.5 min-h-[72px] ${
+                        isSelected
+                          ? `${cfg.activeTabClass}`
+                          : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200 shadow-2xs'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 w-full">
+                        <span className={`text-xs font-bold leading-tight ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                          {div.label}
+                        </span>
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />}
+                      </div>
+                      <span className={`text-[10px] leading-tight font-medium ${isSelected ? cfg.activeDescClass : 'text-slate-500'}`}>
+                        {div.desc}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
