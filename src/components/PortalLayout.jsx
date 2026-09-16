@@ -27,11 +27,12 @@ import {
   ChevronDown,
   Bell,
   Zap,
+  ShieldCheck,
   Sliders,
   ChevronRight
 } from 'lucide-react';
 
-export const PortalLayout = ({ children }) => {
+export const PortalLayout = ({ children, isCandidatePortal = false }) => {
   const {
     currentRole,
     candidates,
@@ -54,7 +55,8 @@ export const PortalLayout = ({ children }) => {
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
 
   const locationPath = typeof window !== 'undefined' ? window.location.pathname : '';
-  const isCandidateRoute = (
+  const isCandidateRoute = Boolean(
+    isCandidatePortal ||
     currentRole === 'employee_link' ||
     locationPath.includes('/verify') || 
     locationPath.includes('/employee') || 
@@ -131,19 +133,21 @@ export const PortalLayout = ({ children }) => {
       {/* ========================================================================= */}
       {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (FIXED ON >= lg SCREENS)           */}
       {/* ========================================================================= */}
-      <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
-        sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
-      }`}>
-        <PortalSidebarNav 
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={toggleSidebarCollapse}
-        />
-      </aside>
+      {!isCandidateRoute && (
+        <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
+          sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
+        }`}>
+          <PortalSidebarNav 
+            isCollapsed={sidebarCollapsed}
+            onToggleCollapse={toggleSidebarCollapse}
+          />
+        </aside>
+      )}
 
       {/* ========================================================================= */}
       {/* 📱 MOBILE / TABLET SLIDE-OVER DRAWER SHEET (< lg SCREENS)                 */}
       {/* ========================================================================= */}
-      {mobileDrawerOpen && (
+      {!isCandidateRoute && mobileDrawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex animate-fadeIn">
           {/* Backdrop Blur */}
           <div 
@@ -164,16 +168,73 @@ export const PortalLayout = ({ children }) => {
       {/* 🏛️ RIGHT-HAND MAIN WORKSPACE & CONTENT COLUMN                              */}
       {/* ========================================================================= */}
       <div className={`flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72 xl:ml-80'
+        isCandidateRoute ? 'w-full ml-0' : (sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72 xl:ml-80')
       }`}>
         
         {/* TOP SLIM PORTAL WORKSPACE HEADER BAR */}
-        <header className="sticky top-0 z-20 backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-3 sm:px-6 py-2 transition-all shadow-2xs select-none">
+        <header className="sticky top-0 z-20 backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-3 sm:px-6 py-2.5 transition-all shadow-2xs select-none">
           
           {/* Top Role Accent Strip */}
           <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${currentTheme.accentGradient}`} />
 
-          <div className="w-full flex items-center justify-between gap-2.5">
+          {isCandidateRoute ? (
+            /* Dedicated, Clean Candidate Header */
+            <div className="w-full flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <img 
+                  src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
+                  alt="JOY Logo" 
+                  className="w-8 h-8 object-contain shrink-0" 
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-black text-sm text-slate-900 leading-tight">
+                      JOY <span className="text-amber-500">TRUE PROFILE</span>
+                    </span>
+                    <span className="badge badge-amber text-[9px] py-0.5 px-2 font-black tracking-wide uppercase">
+                      CANDIDATE SELF-VERIFICATION
+                    </span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-500 font-semibold truncate hidden sm:block mt-0.5">
+                    Statutory Compliance & Digital Trust Verification Gateway
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 text-xs">
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[11px] shadow-2xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>256-Bit SSL Encrypted</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEngine.playClick?.();
+                    setShowLegalHandbook(true);
+                  }}
+                  className="flex h-8 px-2.5 rounded-xl items-center gap-1 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                  title="DPDP Act 2023 Statutory Privacy & Data Rights"
+                >
+                  <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
+                  <span>DPDP Shield 🛡️</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEngine.playClick?.();
+                    setShowSupportModal(true);
+                  }}
+                  className="flex h-8 px-2.5 rounded-xl items-center gap-1 text-purple-900 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                  title="Need Help? Contact Support"
+                >
+                  <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span>Help 🛟</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Admin & HR Workspace Header */
+            <div className="w-full flex items-center justify-between gap-2.5">
             
             {/* Left: Mobile Drawer Trigger + Breadcrumb */}
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -216,8 +277,7 @@ export const PortalLayout = ({ children }) => {
             </div>
 
             {/* Right: Quick Action Controls Toolbar (Only shown for SuperAdmin, Company & HR Consoles) */}
-            {effectiveRole !== 'employee_link' && (
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
               
 
 
@@ -303,16 +363,16 @@ export const PortalLayout = ({ children }) => {
               </div>
 
             </div>
-            )}
 
           </div>
-
-
+          )}
 
         </header>
 
         {/* WORKSPACE VIEW CONTENT */}
-        <main className="flex-1 max-w-[1600px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-x-hidden pb-32 sm:pb-12">
+        <main className={`flex-1 w-full mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-x-hidden ${
+          isCandidateRoute ? 'max-w-5xl pb-16' : 'max-w-[1600px] pb-32 sm:pb-12'
+        }`}>
           {children}
         </main>
 
@@ -321,7 +381,7 @@ export const PortalLayout = ({ children }) => {
       {/* ========================================================================= */}
       {/* 📱 MOBILE FLOATING ACTION ISLAND DOCK (< lg SCREENS)                      */}
       {/* ========================================================================= */}
-      {(() => {
+      {!isCandidateRoute && (() => {
         const isCandidate = isCandidateRoute || effectiveRole === 'employee_link';
         return (
           <div className="lg:hidden fixed bottom-3 left-3 right-3 max-w-lg mx-auto z-30 select-none animate-fadeIn">

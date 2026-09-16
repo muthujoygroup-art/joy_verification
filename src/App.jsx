@@ -160,29 +160,28 @@ const HrRoute = () => {
   return <LoginView initialRole="hrexecutive" lockRole={true} />;
 };
 
-// Wrapper for Candidate Verification Route (/verify or /candidate)
+// Wrapper for Candidate Verification Route (/verify, /employee, or /candidate)
 const CandidateRoute = () => {
-  const { currentRole, currentUser, loginUser, setSelectedCandidateToken } = useApp();
+  const { setSelectedCandidateToken } = useApp();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   
   // Extract token from route param, query param, or path split
   const pathParts = location.pathname.split('/').filter(Boolean);
-  const pathToken = pathParts[pathParts.length - 1];
-  const token = (pathToken && pathToken.startsWith('tok_')) ? pathToken : (searchParams.get('token') || 'tok_karan_903');
+  const lastPart = pathParts[pathParts.length - 1];
+  const reservedWords = ['verify', 'candidate', 'employee', 'onboarding', 'verification'];
+  const isPathToken = lastPart && !reservedWords.includes(lastPart.toLowerCase());
+  const token = searchParams.get('token') || searchParams.get('t') || searchParams.get('id') || (isPathToken ? lastPart : null) || '';
 
   useEffect(() => {
     if (token) {
       setSelectedCandidateToken(token);
     }
-    if (token && (!currentUser || currentRole !== 'employee_link')) {
-      loginUser('employee_link', { token });
-    }
-  }, [token, currentUser, currentRole, loginUser, setSelectedCandidateToken]);
+  }, [token, setSelectedCandidateToken]);
 
   return (
-    <PortalLayout>
-      <EmployeePortalView />
+    <PortalLayout isCandidatePortal={true}>
+      <EmployeePortalView directToken={token} />
     </PortalLayout>
   );
 };
@@ -230,10 +229,15 @@ export const App = () => {
                 <Route path="/hr/:companySlug/*" element={<HrRoute />} />
                 <Route path="/hr/*" element={<HrRoute />} />
 
-                {/* 4. Candidate Verification Magic Links */}
+                {/* 4. Candidate & Employee Verification Magic Links */}
                 <Route path="/:companySlug/verify/:token" element={<CandidateRoute />} />
                 <Route path="/verify/:token" element={<CandidateRoute />} />
                 <Route path="/verify" element={<CandidateRoute />} />
+                <Route path="/:companySlug/employee/:token" element={<CandidateRoute />} />
+                <Route path="/employee/:token" element={<CandidateRoute />} />
+                <Route path="/employee" element={<CandidateRoute />} />
+                <Route path="/:companySlug/candidate/:token" element={<CandidateRoute />} />
+                <Route path="/candidate/:token" element={<CandidateRoute />} />
                 <Route path="/candidate" element={<CandidateRoute />} />
 
                 {/* 5. Onboarding & Activation Flows */}

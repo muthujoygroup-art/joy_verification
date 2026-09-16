@@ -14,7 +14,6 @@ import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { AiFaceMatchModal } from '../components/AiFaceMatchModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { PreVerificationAdvisoryModal } from '../components/PreVerificationAdvisoryModal';
-import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -53,7 +52,7 @@ import {
 } from 'lucide-react';
 import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
 
-export const EmployeePortalView = () => {
+export const EmployeePortalView = ({ directToken = null }) => {
   const { 
     currentUser,
     currentRole,
@@ -70,6 +69,7 @@ export const EmployeePortalView = () => {
   } = useApp();
   
   const [directCandidate, setDirectCandidate] = useState(null);
+  const [isLoadingCandidate, setIsLoadingCandidate] = useState(false);
   const [showAadhaarOtpModal, setShowAadhaarOtpModal] = useState(false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
@@ -85,7 +85,6 @@ export const EmployeePortalView = () => {
   const [showPreVerificationAdvisory, setShowPreVerificationAdvisory] = useState(true);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
-  const [activePersonalTab, setActivePersonalTab] = useState(null);
 
   // Aadhaar Live Data Fetching & e-KYC telemetry states
   const [isFetchingAadhaarData, setIsFetchingAadhaarData] = useState(false);
@@ -120,7 +119,40 @@ export const EmployeePortalView = () => {
     return null;
   });
 
-  const candidate = directCandidate || getActiveCandidate();
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
+  const lastPart = pathParts[pathParts.length - 1];
+  const reservedWords = ['verify', 'candidate', 'employee', 'onboarding', 'verification'];
+  const isPathToken = lastPart && !reservedWords.includes(lastPart.toLowerCase());
+  const tokenToFetch = directToken || urlParams.get('token') || urlParams.get('t') || urlParams.get('id') || (isPathToken ? lastPart : null) || selectedCandidateToken || '';
+
+  // Authoritative candidate matching: match ONLY against requested token if provided
+  const candidate = useMemo(() => {
+    if (directCandidate) return directCandidate;
+    if (tokenToFetch && candidates && candidates.length > 0) {
+      const cleanToken = tokenToFetch.trim();
+      const matched = candidates.find(c => 
+        c.token === cleanToken || 
+        c.id === cleanToken || 
+        c.verificationToken === cleanToken || 
+        c.empId === cleanToken ||
+        c.employeeNumber === cleanToken
+      );
+      if (matched) return matched;
+
+      const nameInTokenMatch = cleanToken.match(/tok_([^_]+)_/);
+      if (nameInTokenMatch) {
+        const extractedTokenName = nameInTokenMatch[1].toLowerCase();
+        const foundByName = candidates.find(c => c.name && c.name.toLowerCase().includes(extractedTokenName));
+        if (foundByName) return foundByName;
+      }
+    }
+    // Only fall back to getActiveCandidate if no specific token requested
+    if (!tokenToFetch) {
+      return getActiveCandidate();
+    }
+    return null;
+  }, [directCandidate, tokenToFetch, candidates, getActiveCandidate]);
   const isAllComplete = candidate?.status === 'Verified';
 
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate || {};
@@ -222,15 +254,10 @@ export const EmployeePortalView = () => {
     showFullJoiningModal, showSignatureModal, showLegalHandbook
   ]);
 
-  // Listen to navigation triggers dispatched from Candidate Portal Sidebar
+  // Listen to navigation triggers dispatched from Candidate Portal
   useEffect(() => {
     const handlePortalNav = (e) => {
       const { tab, modal } = e.detail || {};
-      if (['profile', 'security', 'identity', 'sessions', 'audit_log', 'session_ping', 'active_session', 'login_history', 'exports', 'tickets'].includes(tab)) {
-        setActivePersonalTab(tab);
-      } else if (tab) {
-        setActivePersonalTab(null);
-      }
       if (tab === 'aadhaar' || tab === 'aadhaar_step') setShowAadhaarOtpModal(true);
       else if (tab === 'otp' || tab === 'otp_step') setShowMobileOtpModal(true);
       else if (tab === 'face' || tab === 'face_step') setShowAiFaceMatchModal(true);
@@ -285,28 +312,31 @@ export const EmployeePortalView = () => {
 
   // Fetch freshest candidate profile & password from PostgreSQL database on load
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pathParts = window.location.pathname.split('/').filter(Boolean);
-    const lastPart = pathParts[pathParts.length - 1];
-    const pathToken = (lastPart && !['verify', 'employee', 'candidate', 'portal', 'verification'].includes(lastPart.toLowerCase())) ? lastPart : null;
-    const tokenToFetch = urlParams.get('token') || urlParams.get('t') || urlParams.get('id') || pathToken || selectedCandidateToken;
     if (tokenToFetch) {
       const cleanToken = tokenToFetch.trim();
 
-      // 1. Check local candidates list first (token, id, verificationToken, empId)
-      const localCand = candidates && candidates.find(c => 
+      // 1. Check local candidates list first (token, id, verificationToken, empId, or embedded name)
+      const localCand = (candidates && candidates.find(c => 
         c.token === cleanToken || 
         c.id === cleanToken || 
         c.verificationToken === cleanToken || 
         c.empId === cleanToken ||
         c.employeeNumber === cleanToken
-      );
+      )) || (() => {
+        const nameMatch = cleanToken.match(/tok_([^_]+)_/);
+        if (nameMatch) {
+          const tName = nameMatch[1].toLowerCase();
+          return candidates && candidates.find(c => c.name && c.name.toLowerCase().includes(tName));
+        }
+        return null;
+      })();
 
       if (localCand) {
         setDirectCandidate(localCand);
         setLoadedDbPassword(localCand.portalPassword || localCand.portal_password || '1234');
       }
 
+      setIsLoadingCandidate(true);
       // 2. Fetch authoritative DB record from PostgreSQL
       api.getCandidateByToken(cleanToken)
         .then(data => {
@@ -368,9 +398,12 @@ export const EmployeePortalView = () => {
             setDirectCandidate(fallbackCand);
             setLoadedDbPassword('1234');
           }
+        })
+        .finally(() => {
+          setIsLoadingCandidate(false);
         });
     }
-  }, [selectedCandidateToken, candidates]);
+  }, [tokenToFetch, candidates]);
 
   // 15-Minute Active Countdown Timer
   useEffect(() => {
@@ -787,47 +820,15 @@ export const EmployeePortalView = () => {
         </div>
       )}
       
-      {/* 🔄 INTERACTIVE DEMO CANDIDATE SELECTOR BAR (ONLY VISIBLE FOR ADMIN/HR TESTERS) */}
-      {(currentRole === 'superadmin' || currentRole === 'hrexecutive') && (
-        <div className="p-3.5 bg-amber-50/90 text-slate-900 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs border border-amber-200">
-          <div className="flex items-center gap-2">
-            <span className="text-amber-800 font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <span>Switch Candidate Scenario:</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {candidates.map(c => {
-              const isSelected = candidate?.token === c.token;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setSelectedCandidateToken(c.token)}
-                  className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 cursor-pointer ${
-                    isSelected 
-                      ? 'bg-amber-600 text-white ring-2 ring-amber-400 shadow-sm scale-102'
-                      : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200 shadow-2xs'
-                  }`}
-                >
-                  <span>{c.name}</span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
-                    c.status === 'Submitted - Pending HR Review' ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse' :
-                    c.status === 'Corrections Requested' ? 'bg-rose-100 text-rose-900 border border-rose-300' :
-                    c.status === 'Verified' ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                  }`}>
-                    {c.status === 'Submitted - Pending HR Review' ? 'Pending HR Review' : c.status}
-                  </span>
-                </button>
-              );
-            })}
+      {/* Loading Skeleton while authoritative candidate record is fetching */}
+      {isLoadingCandidate && !candidate && (
+        <div className="p-8 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-3 text-center animate-pulse">
+          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+          <div className="space-y-1">
+            <h4 className="font-black text-sm text-slate-900">Loading Candidate Verification Profile...</h4>
+            <p className="text-xs text-slate-500 font-medium">Authorizing digital onboarding link credentials...</p>
           </div>
         </div>
-      )}
-
-      {/* MY WORKSPACE PERSONAL VIEW */}
-      {activePersonalTab && (
-        <MyWorkspacePersonalView activeTab={activePersonalTab} userRole="employee_link" />
       )}
 
       {/* 🏢 SECTION 1: EMPLOYER VERIFICATION INVITATION HEADER */}

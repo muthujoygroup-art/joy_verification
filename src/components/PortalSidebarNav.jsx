@@ -286,7 +286,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   // 🏛️ 5 PILLARS NAVIGATION: Exactly Matching User Screenshot 2
   // =========================================================================
   const pillarsConfig = useMemo(() => {
-    if (workspaceMode === 'personal') {
+    if (workspaceMode === 'personal' && effectiveRole !== 'employee_link') {
       return [
         {
           id: 'my_workspace',
@@ -623,7 +623,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         ]
       }
     ];
-  }, [workspaceMode, currentRole, candidates.length, hrUsers, unreadCount, currentUser?.uniqueProfileId, currentTheme.codePrefix]);
+  }, [workspaceMode, effectiveRole, candidates.length, hrUsers, unreadCount, currentUser?.uniqueProfileId, currentTheme.codePrefix]);
 
   // Real-Time Quick Search Filter across Pillars and Divisions
   const filteredPillars = useMemo(() => {
@@ -714,7 +714,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           hrexecutive: { mode1: 'HR WORKSTATION', mode2: 'MY WORKSPACE' },
           employee_link: { mode1: 'VERIFICATION FORM', mode2: 'MY DOCUMENTS' }
         };
-        const currentModeLabels = segmentedTabLabels[currentRole] || { mode1: 'OPERATIONS', mode2: 'MY WORKSPACE' };
+        const currentModeLabels = segmentedTabLabels[effectiveRole] || { mode1: 'OPERATIONS', mode2: 'MY WORKSPACE' };
 
         return (
           <div className="px-3 pt-3 pb-1 shrink-0 bg-white animate-fadeIn">

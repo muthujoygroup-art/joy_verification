@@ -2536,7 +2536,26 @@ export const AppProvider = ({ children }) => {
   // Get active candidate by token or default
   const getActiveCandidate = (token) => {
     const searchToken = token || selectedCandidateToken;
-    return candidates.find(c => c.token === searchToken) || candidates[0] || null;
+    if (searchToken && Array.isArray(candidates) && candidates.length > 0) {
+      const clean = searchToken.trim();
+      const found = candidates.find(c => 
+        c.token === clean || 
+        c.id === clean || 
+        c.verificationToken === clean || 
+        c.empId === clean || 
+        c.employeeNumber === clean
+      );
+      if (found) return found;
+
+      const nameMatch = clean.match(/tok_([^_]+)_/);
+      if (nameMatch) {
+        const tName = nameMatch[1].toLowerCase();
+        const foundByName = candidates.find(c => c.name && c.name.toLowerCase().includes(tName));
+        if (foundByName) return foundByName;
+      }
+      return null;
+    }
+    return (Array.isArray(candidates) && candidates[0]) || null;
   };
 
   // 🏛️ Execute live government / institutional verification & data fetching for selected documents
