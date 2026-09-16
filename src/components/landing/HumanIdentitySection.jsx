@@ -22,37 +22,37 @@ export const HumanIdentitySection = ({ onOpenDemo }) => {
         {/* Left Column: Human Story Headline & Supporting Narrative */}
         <div className="lg:col-span-6 space-y-6 text-left">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#8975E8] text-xs font-semibold shadow-xs border border-[#E5EAF0]">
-            <Heart className="w-3.5 h-3.5 text-[#8975E8] fill-[#8975E8]/20" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#6D28D9] text-xs font-bold shadow-xs border border-purple-200">
+            <Heart className="w-3.5 h-3.5 text-[#6D28D9] fill-[#6D28D9]/20" />
             <span>The Human Side of Verification</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[#182230] font-outfit tracking-tight leading-[1.1]">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 font-outfit tracking-tight leading-[1.1]">
             Behind every profile, <br />
-            <span className="text-[#426CF5]">there's a person.</span>
+            <span className="text-[#1D4ED8]">there's a person.</span>
           </h2>
 
-          <p className="text-base sm:text-lg text-[#5C6878] leading-relaxed font-normal max-w-xl">
+          <p className="text-base sm:text-lg text-slate-900 leading-relaxed font-medium max-w-xl">
             From companies and HR teams to the people who power every organization, Joy True Profile brings workforce information into one connected, respectful, and reliable experience.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="p-4 rounded-2xl bg-white/90 border border-[#E5EAF0] shadow-xs">
-              <div className="w-8 h-8 rounded-xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center mb-2 font-bold">
+            <div className="p-4 rounded-2xl bg-white/95 border border-slate-200 shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-blue-100 text-[#1D4ED8] flex items-center justify-center mb-2 font-black">
                 01
               </div>
-              <h3 className="text-sm font-bold text-[#182230]">Dignified Onboarding</h3>
-              <p className="text-xs text-[#5C6878] mt-1 leading-relaxed">
+              <h3 className="text-sm font-bold text-slate-950">Dignified Onboarding</h3>
+              <p className="text-xs text-slate-700 mt-1 leading-relaxed font-medium">
                 Zero app downloads. Candidates self-verify in under 2 minutes with explicit consent.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/90 border border-[#E5EAF0] shadow-xs">
-              <div className="w-8 h-8 rounded-xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center mb-2 font-bold">
+            <div className="p-4 rounded-2xl bg-white/95 border border-slate-200 shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center mb-2 font-black">
                 02
               </div>
-              <h3 className="text-sm font-bold text-[#182230]">Connected Teams</h3>
-              <p className="text-xs text-[#5C6878] mt-1 leading-relaxed">
+              <h3 className="text-sm font-bold text-slate-950">Connected Teams</h3>
+              <p className="text-xs text-slate-700 mt-1 leading-relaxed font-medium">
                 Clear workflows linking corporate HRs, recruiters, and workers with total transparency.
               </p>
             </div>
@@ -61,7 +61,7 @@ export const HumanIdentitySection = ({ onOpenDemo }) => {
           <div className="pt-2">
             <button
               onClick={onOpenDemo}
-              className="px-6 py-3 rounded-full bg-[#426CF5] hover:bg-[#3459D8] text-white text-sm font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer"
+              className="px-6 py-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
             >
               <span>Explore The Human Experience</span>
               <ArrowRight className="w-4 h-4 text-white" />
