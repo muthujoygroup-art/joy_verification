@@ -25,10 +25,7 @@ class PureAsyncWsgiAdapter:
 
     def __call__(self, environ, start_response):
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_closed():
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+            loop = asyncio.get_running_loop()
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -78,9 +75,10 @@ class PureAsyncWsgiAdapter:
                 body_bytes = body_input.read(content_length)
 
         body_sent = False
+        eof_sent = False
 
         async def receive():
-            nonlocal body_sent
+            nonlocal body_sent, eof_sent
             if not body_sent:
                 body_sent = True
                 return {
@@ -88,11 +86,14 @@ class PureAsyncWsgiAdapter:
                     "body": body_bytes,
                     "more_body": False
                 }
-            return {
-                "type": "http.request",
-                "body": b"",
-                "more_body": False
-            }
+            if not eof_sent:
+                eof_sent = True
+                return {
+                    "type": "http.request",
+                    "body": b"",
+                    "more_body": False
+                }
+            return {"type": "http.disconnect"}
 
         response_status = 200
         response_headers = []

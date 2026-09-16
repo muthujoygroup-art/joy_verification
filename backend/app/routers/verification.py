@@ -7,12 +7,15 @@ from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from backend.app.config import settings
+from backend.app.database import get_db
+from backend.app.models import Candidate, Company, VerificationRecord, HrUser, CandidateDocument
 from backend.app.services.email_service import (
     send_candidate_onboarding_email,
     send_candidate_thank_you_email,
     send_candidate_verification_completed_email,
     send_candidate_correction_email
 )
+from backend.app.schemas import (
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,
     FaceCapturePayload, FaceCaptureResponse, CompleteVerificationPayload,
     CandidateResponse
@@ -576,6 +579,7 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
 
 
 @router.post("/submit-joining")
+@router.post("/submit-joining-form")
 def submit_joining_form(payload: CompleteVerificationPayload, db: Session = Depends(get_db)):
     """
     Candidate submits comprehensive joining form particulars, uploaded documents (PDF / Image),

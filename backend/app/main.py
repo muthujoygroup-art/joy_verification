@@ -55,145 +55,28 @@ async def add_performance_headers(request: Request, call_next):
     response.headers["X-Active-Cluster-Region"] = "ap-south-1"
     return response
 
-# Initialize database tables, column extensions, and initial seed data immediately
+_startup_executed = False
+
 def on_startup():
+    global _startup_executed
+    if _startup_executed:
+        return
+    _startup_executed = True
     try:
         Base.metadata.create_all(bind=engine)
     except Exception as e:
         print(f"Base.metadata.create_all error: {e}")
-    
-    # Auto-execute PostgreSQL column migrations if needed
-    try:
-        from sqlalchemy import text
-        migration_statements = [
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS phone VARCHAR(50);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) DEFAULT 'Company@Admin2026';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS activation_status VARCHAR(50) DEFAULT 'Active';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS activation_token VARCHAR(100);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS activation_password VARCHAR(100) DEFAULT '1234';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS activation_expires_at TIMESTAMP;",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS cin_number VARCHAR(100);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS gstin_number VARCHAR(100);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS company_pan VARCHAR(50);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS registered_address TEXT;",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS industry_sector VARCHAR(100) DEFAULT 'Information Technology (IT/ITeS)';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS website VARCHAR(200);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS documents JSON DEFAULT '{}';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS features JSON DEFAULT '{}';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted VARCHAR(50) DEFAULT 'true';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_accepted_by VARCHAR(100);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS terms_version VARCHAR(50) DEFAULT 'v2.4-2026';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS custom_tariffs JSON DEFAULT '{}';",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS location VARCHAR(255);",
-            "ALTER TABLE companies ADD COLUMN IF NOT EXISTS logo_url TEXT;",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255) DEFAULT 'Hr@Recruiter2026';",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS active_links INTEGER DEFAULT 0;",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS verified_this_month INTEGER DEFAULT 0;",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS permissions JSON DEFAULT '{\"aadhaar\": true, \"pan\": true, \"epfo\": true, \"bank\": true, \"dl\": true, \"face\": true}';",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-            "ALTER TABLE hr_users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS secret_key VARCHAR(255);",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS webhook_url VARCHAR(255);",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS sandbox_mode BOOLEAN DEFAULT FALSE;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS rate_limit_per_min INTEGER DEFAULT 120;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'CONNECTED';",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS supported_services JSON DEFAULT '[\"aadhaar\", \"pan\", \"bank\", \"dl\", \"passport\", \"uan\", \"face\"]'::json;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS provider_type VARCHAR(100) DEFAULT 'Institutional Gateway';",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS description TEXT;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS ping_latency_ms INTEGER DEFAULT 62;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_quota INTEGER DEFAULT 10000;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS monthly_used INTEGER DEFAULT 0;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-            "ALTER TABLE api_configurations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-            "CREATE TABLE IF NOT EXISTS api_call_logs (id VARCHAR(50) PRIMARY KEY, endpoint_slug VARCHAR(150) NOT NULL, category VARCHAR(100) NOT NULL, initiator_role VARCHAR(50) DEFAULT 'superadmin', initiator_id VARCHAR(100), company_id VARCHAR(50), provider_key VARCHAR(50) DEFAULT 'server2_coincircle', status VARCHAR(50) DEFAULT 'SUCCESS', http_status INTEGER DEFAULT 200, latency_ms INTEGER DEFAULT 50, cost_incurred FLOAT DEFAULT 4.0, input_identifier VARCHAR(100), request_payload JSON DEFAULT '{}'::json, response_summary JSON DEFAULT '{}'::json, error_message TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200;",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50;",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100);",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}'::json;",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}'::json;",
-            "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_calls_count INTEGER DEFAULT 1;",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 62;",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS endpoint_path VARCHAR(150);",
-            "ALTER TABLE verification_records ADD COLUMN IF NOT EXISTS api_id VARCHAR(100);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_number VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS designation VARCHAR(100);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dept VARCHAR(100);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pan_no VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS uan_no VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dob VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS doj VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS age INTEGER;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS gender VARCHAR(20);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS marital_status VARCHAR(30);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_tongue VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS languages_known VARCHAR(200);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pf_number VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS esi_number VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS religion VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS caste VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS category VARCHAR(50);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_config JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verifications_completed JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS face_images JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS specimen_signature TEXT;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS statutory_details JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS consent_given BOOLEAN DEFAULT TRUE;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS consent_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS consent_ip VARCHAR(50);",
-            "CREATE TABLE IF NOT EXISTS candidate_documents (id VARCHAR(50) PRIMARY KEY, candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE CASCADE, title VARCHAR(200) NOT NULL, doc_type VARCHAR(50), file_format VARCHAR(20), file_path TEXT, file_size_kb FLOAT DEFAULT 0.0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
-            "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_path TEXT;",
-            "ALTER TABLE candidate_documents ADD COLUMN IF NOT EXISTS file_size_kb FLOAT DEFAULT 0.0;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS custom_fields JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS aadhaar_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pan_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bank_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dl_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS epfo_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS passport_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS face_match_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS court_record_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verified_attributes JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS manual_checks JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS joining_form_data JSON DEFAULT '{}';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS risk_score FLOAT DEFAULT 0.0;",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bgv_verdict VARCHAR(50) DEFAULT 'Pending';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS discrepancies_detected JSON DEFAULT '[]';",
-            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_date TIMESTAMP;",
-            "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);",
-            "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';",
-            "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;",
-            "ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS settings_data JSON DEFAULT '{}';",
-            "ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"
-        ]
-        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
-            for stmt in migration_statements:
-                try:
-                    conn.execute(text(stmt))
-                except Exception:
-                    pass
-    except Exception:
-        pass
-
     seed_database()
 
-# Run immediately upon module load for Passenger / ASGI servers
+@app.on_event("startup")
+def startup_event():
+    on_startup()
+
+# Run once safely upon module initialization
 try:
     on_startup()
 except Exception as e:
-    print(f"Startup execution warning: {e}")
+    print(f"Startup execution notice: {e}")
 
 
 from fastapi.responses import JSONResponse

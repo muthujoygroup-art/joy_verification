@@ -1,3 +1,4 @@
+import threading
 from backend.app.services.logger_service import record_system_error_log
 import os
 import smtplib
@@ -68,25 +69,24 @@ def get_smtp_config(db=None, company_id: Optional[str] = None) -> Dict[str, Any]
             comp_obj = db.query(Company).filter(Company.id == company_id).first()
             dummy_passwords = {"password", "1234", "123456", "admin", "test", "Company@123", "dummy"}
             if comp_obj and comp_obj.features and comp_obj.features.get("smtp_settings"):
-                sd = comp_obj.features["smtp_settings"]
-                # Only use custom if explicitly enabled AND has a real non-placeholder password
-                custom_pass = (sd.get("password") or "").strip()
-                if sd.get("use_custom_smtp") and custom_pass and custom_pass not in dummy_passwords and sd.get("host"):
+                cs = comp_obj.features.get("smtp_settings")
+                custom_pass = (cs.get("password") or "").strip()
+                if custom_pass and custom_pass not in dummy_passwords and cs.get("host"):
                     return {
-                        "host": sd.get("host") or master_config["host"],
-                        "port": int(sd.get("port") or master_config["port"]),
-                        "user": sd.get("user") or sd.get("username") or master_config["user"],
+                        "host": cs.get("host") or master_config["host"],
+                        "port": int(cs.get("port") or master_config["port"]),
+                        "user": cs.get("user") or master_config["user"],
                         "password": custom_pass,
-                        "from_email": sd.get("from_email") or master_config["from_email"],
-                        "from_name": sd.get("from_name") or f"{comp_obj.name} - Verification Portal",
-                        "use_ssl": bool(sd.get("use_ssl", int(sd.get("port", 465)) == 465)),
-                        "use_tls": bool(sd.get("use_tls", int(sd.get("port", 465)) == 587)),
+                        "from_email": cs.get("from_email") or master_config["from_email"],
+                        "from_name": cs.get("from_name") or master_config["from_name"],
+                        "use_ssl": bool(cs.get("use_ssl", int(cs.get("port", 465)) == 465)),
+                        "use_tls": bool(cs.get("use_tls", int(cs.get("port", 465)) == 587)),
                         "mode": "custom_company",
                         "company_id": company_id
                     }
 
+            # Step 2: Check CommunicationGateway table for this company
             comp_gw = db.query(CommunicationGateway).filter(
-                CommunicationGateway.gateway_type == "email_smtp",
                 CommunicationGateway.company_id == company_id,
                 CommunicationGateway.is_active == True
             ).first()
@@ -119,120 +119,96 @@ def send_smtp_email(
     company_id: Optional[str] = None,
     custom_config: Optional[Dict[str, Any]] = None,
     reply_to: Optional[str] = None,
-    db=None
+    db=None,
+    async_mode: bool = True
 ) -> Dict[str, Any]:
     """
     Core function to send an email via resolved SMTP gateway with automatic fallback to Master cPanel SMTP.
+    Supports async background thread dispatch for non-blocking API performance.
     """
     if not to_email or "@" not in to_email:
         logger.warning(f"Skipping email dispatch: invalid recipient address '{to_email}'")
         return {"success": False, "error": "Invalid recipient email"}
 
-    if custom_config and isinstance(custom_config, dict) and custom_config.get("user") and custom_config.get("password"):
-        cfg = {
-            "host": custom_config.get("host") or "mail.joycorporatesolutions.com",
-            "port": int(custom_config.get("port") or 465),
-            "user": custom_config.get("user") or "admin@joycorporatesolutions.com",
-            "password": custom_config.get("password") or "",
-            "use_ssl": bool(custom_config.get("use_ssl", int(custom_config.get("port") or 465) == 465)),
-            "use_tls": bool(custom_config.get("use_tls", int(custom_config.get("port") or 465) == 587)),
-            "from_email": custom_config.get("from_email") or custom_config.get("user") or "admin@joycorporatesolutions.com",
-            "from_name": custom_config.get("from_name") or "JOY Corporate Solutions BGV",
-            "mode": "runtime_override"
-        }
+    def _execute_send():
+        if custom_config and isinstance(custom_config, dict) and custom_config.get("user") and custom_config.get("password"):
+            cfg = {
+                "host": custom_config.get("host") or "mail.joycorporatesolutions.com",
+                "port": int(custom_config.get("port") or 465),
+                "user": custom_config.get("user") or "admin@joycorporatesolutions.com",
+                "password": custom_config.get("password") or "",
+                "use_ssl": bool(custom_config.get("use_ssl", int(custom_config.get("port") or 465) == 465)),
+                "use_tls": bool(custom_config.get("use_tls", int(custom_config.get("port") or 465) == 587)),
+                "from_email": custom_config.get("from_email") or custom_config.get("user") or "admin@joycorporatesolutions.com",
+                "from_name": custom_config.get("from_name") or "JOY Corporate Solutions BGV",
+                "mode": "runtime_override"
+            }
+        else:
+            cfg = get_smtp_config(db, company_id=company_id)
+        
+        # If no SMTP password configured, log simulation mode
+        if not cfg["password"]:
+            logger.info(f"📧 [SMTP SIMULATION - Mode: {cfg['mode']}] To: {to_email} | Subject: {subject}")
+            return {
+                "success": True,
+                "simulated": True,
+                "mode": cfg["mode"],
+                "message": "Email logged in simulation mode",
+                "to": to_email,
+                "subject": subject
+            }
+
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = f"{cfg['from_name']} <{cfg['from_email']}>"
+            msg["To"] = to_email
+            if reply_to:
+                msg["Reply-To"] = reply_to
+            msg["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
+
+            # Plaintext fallback
+            if text_content:
+                msg.attach(MIMEText(text_content, "plain", "utf-8"))
+            else:
+                msg.attach(MIMEText("Please enable HTML view to read this official notification.", "plain", "utf-8"))
+
+            # HTML body
+            msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+            # Connection handling based on Port / SSL / TLS with cPanel SSL compatibility
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+
+            if cfg["use_ssl"] or cfg["port"] == 465:
+                with smtplib.SMTP_SSL(cfg["host"], cfg["port"], context=context, timeout=5) as server:
+                    server.login(cfg["user"], cfg["password"])
+                    server.sendmail(cfg["from_email"], [to_email], msg.as_string())
+            else:
+                with smtplib.SMTP(cfg["host"], cfg["port"], timeout=5) as server:
+                    if cfg["use_tls"] or cfg["port"] == 587:
+                        server.starttls(context=context)
+                    server.login(cfg["user"], cfg["password"])
+                    server.sendmail(cfg["from_email"], [to_email], msg.as_string())
+
+            logger.info(f"✅ [SMTP SENT - Mode: {cfg['mode']}] Dispatched to {to_email} ({subject})")
+            return {"success": True, "to": to_email, "subject": subject, "mode": cfg["mode"]}
+
+        except smtplib.SMTPAuthenticationError as auth_err:
+            err_str = f"Authentication Rejected (535): Incorrect password for {cfg['user']}."
+            logger.warning(f"⚠️ [SMTP AUTH ERROR - Mode: {cfg['mode']}] {err_str}")
+            return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
+        except Exception as e:
+            logger.warning(f"⚠️ [SMTP NOTICE - Mode: {cfg['mode']}] Email delivery to {to_email}: {e}")
+            return {"success": False, "error": str(e), "to": to_email, "mode": cfg["mode"]}
+
+    if async_mode:
+        t = threading.Thread(target=_execute_send, daemon=True)
+        t.start()
+        return {"success": True, "dispatched_async": True, "to": to_email, "subject": subject}
     else:
-        cfg = get_smtp_config(db, company_id=company_id)
-    
-    # If no SMTP password configured, log simulation mode
-    if not cfg["password"]:
-        logger.info(f"📧 [SMTP SIMULATION - Mode: {cfg['mode']}] To: {to_email} | Subject: {subject}")
-        return {
-            "success": True,
-            "simulated": True,
-            "mode": cfg["mode"],
-            "message": "Email logged in simulation mode (Configure SMTP password in Settings to dispatch live)",
-            "to": to_email,
-            "subject": subject
-        }
-
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = f"{cfg['from_name']} <{cfg['from_email']}>"
-        msg["To"] = to_email
-        if reply_to:
-            msg["Reply-To"] = reply_to
-        msg["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-
-        # Plaintext fallback
-        if text_content:
-            msg.attach(MIMEText(text_content, "plain", "utf-8"))
-        else:
-            msg.attach(MIMEText("Please enable HTML view to read this official notification.", "plain", "utf-8"))
-
-        # HTML body
-        msg.attach(MIMEText(html_content, "html", "utf-8"))
-
-        # Connection handling based on Port / SSL / TLS with cPanel SSL compatibility
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-
-        if cfg["use_ssl"] or cfg["port"] == 465:
-            with smtplib.SMTP_SSL(cfg["host"], cfg["port"], context=context, timeout=20) as server:
-                server.login(cfg["user"], cfg["password"])
-                server.sendmail(cfg["from_email"], [to_email], msg.as_string())
-        else:
-            with smtplib.SMTP(cfg["host"], cfg["port"], timeout=20) as server:
-                if cfg["use_tls"] or cfg["port"] == 587:
-                    server.starttls(context=context)
-                server.login(cfg["user"], cfg["password"])
-                server.sendmail(cfg["from_email"], [to_email], msg.as_string())
-
-        logger.info(f"✅ [SMTP SENT - Mode: {cfg['mode']}] Dispatched to {to_email} ({subject})")
-        return {"success": True, "to": to_email, "subject": subject, "mode": cfg["mode"]}
-
-    except smtplib.SMTPAuthenticationError as auth_err:
-        err_str = f"Authentication Rejected (535): Incorrect password for {cfg['user']}."
-        logger.warning(f"⚠️ [SMTP AUTH ERROR - Mode: {cfg['mode']}] {err_str} Attempting Master cPanel fallback...")
-        if cfg.get("mode") != "master_cpanel":
-            master_cfg = get_master_smtp_config(db)
-            if master_cfg.get("password") and master_cfg.get("user") != cfg.get("user"):
-                return send_smtp_email(
-                    to_email=to_email,
-                    subject=subject,
-                    html_content=html_content,
-                    text_content=text_content,
-                    company_id=None,
-                    custom_config=master_cfg,
-                    reply_to=reply_to or cfg.get("from_email"),
-                    db=db
-                )
-        return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
-    except Exception as e:
-        logger.error(f"❌ [SMTP ERROR - Mode: {cfg['mode']}] Failed to send email to {to_email}: {e}")
-        if cfg.get("mode") != "master_cpanel":
-            master_cfg = get_master_smtp_config(db)
-            if master_cfg.get("password") and master_cfg.get("user") != cfg.get("user"):
-                logger.warning(f"⚠️ Retrying dispatch via Master cPanel SMTP...")
-                return send_smtp_email(
-                    to_email=to_email,
-                    subject=subject,
-                    html_content=html_content,
-                    text_content=text_content,
-                    company_id=None,
-                    custom_config=master_cfg,
-                    reply_to=reply_to or cfg.get("from_email"),
-                    db=db
-                )
-        record_system_error_log(
-            section="Email Gateway",
-            error_code="ERR_SMTP_DISPATCH",
-            message=f"Failed to send email to {to_email} via {cfg.get('host')}:{cfg.get('port')}: {str(e)}",
-            severity="Warning",
-            db=db
-        )
-        return {"success": False, "error": str(e), "to": to_email, "mode": cfg["mode"]}
+        return _execute_send()
 
 
 # =============================================================================
