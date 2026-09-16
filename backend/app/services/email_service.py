@@ -236,16 +236,45 @@ def send_smtp_email(
 
 
 # =============================================================================
-# 🎨 BASE HTML TEMPLATE GENERATOR
+# 🎨 LOGO RESOLUTION & BASE HTML TEMPLATE GENERATOR
 # =============================================================================
+PROJECT_LOGO_URL = f"{settings.APP_BASE_URL.rstrip('/')}/assets/logos/joy_true_profile_shield_emblem.png"
+
+def get_company_logo_or_fallback(company_id: Optional[str] = None, db=None) -> str:
+    """
+    Resolves official Company Logo if configured in company profile/documents/features;
+    otherwise falls back to the Master Platform Shield Emblem.
+    """
+    if db and company_id:
+        try:
+            from backend.app.models.company import Company
+            comp = db.query(Company).filter(Company.id == company_id).first()
+            if comp and comp.logo_url:
+                logo = str(comp.logo_url).strip()
+                if logo:
+                    app_url = settings.APP_BASE_URL.rstrip('/')
+                    if not logo.startswith("http://") and not logo.startswith("https://") and not logo.startswith("data:"):
+                        logo = f"{app_url}{'/' if not logo.startswith('/') else ''}{logo}"
+                    return logo
+        except Exception as e:
+            logger.warning(f"Could not resolve company logo for '{company_id}': {e}")
+    return PROJECT_LOGO_URL
+
+
 def _build_email_shell(
     header_title: str, 
     badge_text: str, 
     content_html: str, 
-    action_url: str = None, 
-    action_text: str = None,
-    sender_brand: str = "JOY CORPORATE SOLUTIONS"
+    action_url: Optional[str] = None, 
+    action_text: Optional[str] = None,
+    sender_brand: str = "JOY CORPORATE SOLUTIONS",
+    logo_url: Optional[str] = None
 ) -> str:
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    resolved_logo = logo_url or PROJECT_LOGO_URL
+    if resolved_logo and not resolved_logo.startswith("http://") and not resolved_logo.startswith("https://") and not resolved_logo.startswith("data:"):
+        resolved_logo = f"{app_url}{'/' if not resolved_logo.startswith('/') else ''}{resolved_logo}"
+
     action_button_html = ""
     if action_url and action_text:
         action_button_html = f"""
@@ -269,6 +298,18 @@ def _build_email_shell(
         </div>
         """
 
+    logo_header_td = f"""
+    <td width="52" valign="middle" style="padding-right: 14px;">
+        <table border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+            <tr>
+                <td align="center" valign="middle" style="padding: 4px; width: 44px; height: 44px;">
+                    <img src="{resolved_logo}" alt="{sender_brand}" style="max-height: 40px; max-width: 44px; object-fit: contain; display: block; border-radius: 6px;" />
+                </td>
+            </tr>
+        </table>
+    </td>
+    """ if resolved_logo else ""
+
     return f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -285,22 +326,23 @@ def _build_email_shell(
                         
                         <!-- Top Header Strip -->
                         <tr>
-                            <td style="background-color: #0f172a; padding: 24px 30px; border-bottom: 3px solid #4338ca;">
+                            <td style="background-color: #0f172a; padding: 22px 28px; border-bottom: 3px solid #4338ca;">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
-                                        <td>
-                                            <div style="color: #a5b4fc; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">
+                                        {logo_header_td}
+                                        <td valign="middle">
+                                            <div style="color: #a5b4fc; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">
                                                 {badge_text}
                                             </div>
-                                            <h1 style="color: #ffffff; font-size: 18px; font-weight: 900; margin: 0; letter-spacing: -0.5px;">
+                                            <h1 style="color: #ffffff; font-size: 17px; font-weight: 900; margin: 0; letter-spacing: -0.3px; line-height: 1.3;">
                                                 {sender_brand.upper()}
                                             </h1>
                                             <div style="color: #94a3b8; font-size: 11px; margin-top: 2px;">
                                                 Enterprise Background Verification & Statutory Compliance
                                             </div>
                                         </td>
-                                        <td align="right">
-                                            <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px 12px; color: #34d399; font-size: 11px; font-weight: 800; font-family: monospace;">
+                                        <td align="right" valign="middle" width="85">
+                                            <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 5px 10px; color: #34d399; font-size: 10.5px; font-weight: 800; font-family: monospace; text-align: center; white-space: nowrap;">
                                                 ISO 27001 ✓
                                             </div>
                                         </td>
@@ -343,6 +385,7 @@ def _build_email_shell(
 
 # =============================================================================
 # 1. 🏢 COMPANY CREATION WELCOME EMAIL (Super Admin -> Company Admin)
+# Dispatched with Master Project Logo
 # =============================================================================
 def send_company_welcome_email(
     company_name: str,
@@ -435,15 +478,18 @@ def send_company_welcome_email(
         badge_text="ORGANIZATION ONBOARDING & ACTIVATION",
         content_html=content,
         action_url=activation_url,
-        action_text="Complete Company Portal Activation 🚀"
+        action_text="Complete Company Portal Activation 🚀",
+        sender_brand="JOY CORPORATE SOLUTIONS",
+        logo_url=PROJECT_LOGO_URL
     )
 
-    subject = f"🏢 Welcome to JOY - Activate Your Organization Account ({company_name} - #{company_code})"
+    subject = f"🏢 Welcome to JOY — Activate Your Organization Account ({company_name} - #{company_code})"
     return send_smtp_email(admin_email, subject, html, db=db)
 
 
 # =============================================================================
-# 2. 👔 HR EXECUTIVE APPOINTMENT EMAIL (Company Admin -> HR Recruiter)
+# 2. 👔 HR EXECUTIVE CREDENTIALS EMAIL (Company Admin -> HR Recruiter)
+# Dispatched with Company Logo
 # =============================================================================
 def send_hr_welcome_email(
     hr_name: str,
@@ -456,13 +502,14 @@ def send_hr_welcome_email(
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     login_url = f"{app_url}/login"
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
         Hello {hr_name}, your HR Workstation is Ready!
     </h2>
     <p>
-        You have been appointed as an authorized HR Recruitment Executive for <strong>{company_name}</strong> on the JOY Background Verification Platform.
+        You have been appointed as an authorized HR Recruitment Executive for <strong>{company_name}</strong> on the Background Verification Platform.
     </p>
 
     <!-- Credentials Box -->
@@ -501,18 +548,17 @@ def send_hr_welcome_email(
         content_html=content,
         action_url=login_url,
         action_text="Open HR Workstation",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
-    subject = f"👔 HR Recruiter Credentials - {company_name} ({hr_code})"
+    subject = f"👔 HR Recruiter Credentials — {company_name} ({hr_code})"
     return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
 
 
 # =============================================================================
-# 3. 📱 CANDIDATE ONBOARDING INVITATION (HR Recruiter -> Candidate)
-# =============================================================================
-# =============================================================================
-# 2. 👔 HR RECRUITER SELF-ONBOARDING & ACTIVATION EMAILS
+# 3. 👔 HR RECRUITER SELF-ONBOARDING & INVITATION EMAIL
+# Dispatched with Company Logo
 # =============================================================================
 def send_hr_invitation_email(
     hr_name: str,
@@ -527,10 +573,11 @@ def send_hr_invitation_email(
     db = None
 ) -> Dict[str, Any]:
     """
-    Dispatches self-activation invitation email to newly invited HR Recruiter with security PIN.
+    Dispatches self-activation invitation email to newly invited HR Recruiter with security PIN and Company Logo.
     """
     app_url = settings.APP_BASE_URL.rstrip('/')
     activation_url = f"{app_url}/hr-activation?token={activation_token}"
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 17px; font-weight: 800; margin-top: 0; line-height: 1.4;">
@@ -575,10 +622,11 @@ def send_hr_invitation_email(
         content_html=content,
         action_url=activation_url,
         action_text="Complete HR Self-Activation →",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
-    subject = f"👔 Complete Your HR Profile - {company_name} (#{hr_code})"
+    subject = f"👔 Complete Your HR Profile — {company_name} (#{hr_code})"
     return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
 
 
@@ -593,10 +641,11 @@ def send_hr_approval_email(
 ) -> Dict[str, Any]:
     """
     Dispatches confirmation email to HR Recruiter once approved by Company Admin,
-    including login credentials and a comprehensive Quick Start Software Guide.
+    including login credentials and Company Logo.
     """
     app_url = settings.APP_BASE_URL.rstrip('/')
     login_url = f"{app_url}/login"
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 10px 0; line-height: 1.4;">
@@ -655,13 +704,18 @@ def send_hr_approval_email(
         content_html=content,
         action_url=login_url,
         action_text="Open HR Recruiter Portal →",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
-    subject = f"🎉 HR Account Approved & Active - {company_name} (#{hr_code})"
+    subject = f"🎉 HR Account Approved & Active — {company_name} (#{hr_code})"
     return send_smtp_email(hr_email, subject, html, company_id=company_id, db=db)
 
 
+# =============================================================================
+# 4. 📱 CANDIDATE ONBOARDING VERIFICATION EMAIL (Email 1 of 2)
+# Sent by Company/HR to Candidate with Company Logo & Clean Compliance Copy
+# =============================================================================
 def send_candidate_onboarding_email(
     candidate_name: str,
     candidate_code: str,
@@ -678,6 +732,7 @@ def send_candidate_onboarding_email(
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     hr_badge_html = ""
     if sender_hr_name or sender_hr_email:
@@ -685,22 +740,22 @@ def send_candidate_onboarding_email(
         if sender_hr_email:
             hr_info += f" (<a href='mailto:{sender_hr_email}' style='color: #4f46e5; text-decoration: underline;'>{sender_hr_email}</a>)"
         hr_badge_html = f"""
-        <div style="background-color: #f1f5f9; border-left: 4px solid #4f46e5; border-radius: 8px; padding: 10px 14px; font-size: 11px; color: #334155; margin-bottom: 16px;">
+        <div style="background-color: #f1f5f9; border-left: 4px solid #4f46e5; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #334155; margin-bottom: 16px;">
             👤 <strong>Issued & Dispatched by HR:</strong> {hr_info}<br>
             🏢 <strong>Organization:</strong> {company_name}
         </div>
         """
 
     content = f"""
-    <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
+    <h2 style="color: #0f172a; font-size: 17px; font-weight: 800; margin-top: 0; line-height: 1.4;">
         Dear {candidate_name},
     </h2>
-    <p>
-        Congratulations on your selection for the role of <strong>{designation}</strong> at <strong>{company_name}</strong>!
+    <p style="font-size: 13.5px; color: #334155; line-height: 1.6;">
+        <strong>{company_name}</strong> has initiated your official employee background verification process for the position of <strong>{designation}</strong>.
     </p>
     {hr_badge_html}
-    <p>
-        As part of the statutory onboarding protocol, please complete your digital identity verification and statutory form disclosures (EPFO / ESIC) through the secure link below.
+    <p style="font-size: 13px; color: #475569; line-height: 1.6;">
+        As part of our standard onboarding and statutory compliance protocol, please verify your digital identity and complete statutory form disclosures (EPFO Form 11 / ESIC) through the secure link below.
     </p>
 
     <!-- Onboarding Credentials Box -->
@@ -708,7 +763,7 @@ def send_candidate_onboarding_email(
         <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #5b21b6; margin-bottom: 10px;">
             🔐 Secure Verification Access Code:
         </div>
-        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12px;">
+        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
             <tr>
                 <td width="40%" style="color: #64748b; font-weight: 600;">Employee ID / Code:</td>
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace; font-size: 13px;">{candidate_code}</td>
@@ -724,7 +779,7 @@ def send_candidate_onboarding_email(
         </table>
     </div>
 
-    <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 12px; font-size: 11px; color: #92400e; margin-bottom: 15px;">
+    <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 12px; font-size: 11.5px; color: #92400e; margin-bottom: 15px;">
         💡 <strong>Please keep ready:</strong> Aadhaar Registered Mobile (for OTP), PAN Card, Bank Account Details, and Previous PF/UAN Number.
     </div>
     """
@@ -733,14 +788,15 @@ def send_candidate_onboarding_email(
 
     html = _build_email_shell(
         header_title=f"Onboarding Verification - {company_name}",
-        badge_text="EMPLOYEE ONBOARDING INVITATION",
+        badge_text="EMPLOYEE BACKGROUND VERIFICATION",
         content_html=content,
         action_url=verify_url,
         action_text="Start Verification & Complete Forms",
-        sender_brand=sender_brand
+        sender_brand=sender_brand,
+        logo_url=comp_logo
     )
 
-    subject = f"📱 Onboarding Verification Link - {company_name} ({candidate_name})"
+    subject = f"📱 Background Verification Link — {company_name} ({candidate_name})"
     return send_smtp_email(
         to_email=candidate_email,
         subject=subject,
@@ -753,19 +809,129 @@ def send_candidate_onboarding_email(
 
 
 # =============================================================================
-# 4. ✅ BGV VERIFICATION CERTIFIED NOTICE (To Candidate, HR & Company)
+# 5. 📨 CANDIDATE SUBMISSION CONFIRMATION & THANK YOU EMAIL (Email 2 of 2)
+# Dispatched automatically when candidate completes/submits joining form or verification
+# =============================================================================
+def send_candidate_thank_you_email(
+    candidate_name: str,
+    candidate_code: str,
+    candidate_email: str,
+    company_name: str,
+    company_id: Optional[str] = None,
+    designation: Optional[str] = "Associate",
+    hr_email: Optional[str] = None,
+    custom_smtp: Optional[Dict[str, Any]] = None,
+    db=None
+) -> Dict[str, Any]:
+    """
+    Dispatches a professional Thank You & Receipt Confirmation email to candidate upon
+    successful submission of their onboarding form & verification proofs.
+    """
+    comp_logo = get_company_logo_or_fallback(company_id, db)
+
+    content = f"""
+    <div style="margin-bottom: 22px;">
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Thank You, {candidate_name}!
+        </h2>
+        <p style="font-size: 13.5px; color: #334155; margin: 0; line-height: 1.6;">
+            Your digital background verification details, statutory disclosures (EPFO / ESIC), and uploaded proofs for <strong>{company_name}</strong> have been <strong>successfully received</strong> and recorded.
+        </p>
+    </div>
+
+    <!-- Submission Receipt Box -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid #86efac; border-radius: 16px; padding: 20px; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #15803d; margin-bottom: 12px; letter-spacing: 0.5px;">
+            🧾 Verification Submission Receipt:
+        </div>
+        <table width="100%" border="0" cellspacing="5" cellpadding="0" style="font-size: 12.5px;">
+            <tr>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Candidate Name:</td>
+                <td style="color: #0f172a; font-weight: 800;">{candidate_name}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Employee / Reference ID:</td>
+                <td style="color: #0f172a; font-weight: 800; font-family: monospace;">#{candidate_code}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Position / Designation:</td>
+                <td style="color: #0f172a; font-weight: 700;">{designation}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Employer Organization:</td>
+                <td style="color: #4338ca; font-weight: 800;">{company_name}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Submission Timestamp:</td>
+                <td style="color: #334155; font-weight: 600;">{datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Status:</td>
+                <td style="color: #047857; font-weight: 800;">Submitted &bull; Under Compliance Review</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- What Happens Next -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px; letter-spacing: 0.5px;">
+            📌 What Happens Next?
+        </div>
+        <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.8;">
+            <li>Our compliance operations and HR recruitment team are reviewing your submitted documents and digital identity checks.</li>
+            <li>If any additional information or document clarity is required, the HR team will reach out to you directly.</li>
+            <li>No further action is required from your side at this stage.</li>
+        </ul>
+    </div>
+
+    <p style="font-size: 11.5px; color: #64748b; line-height: 1.5; margin: 0;">
+        🛡️ <em>Your personal data is encrypted with AES-256 and protected strictly under the Digital Personal Data Protection (DPDP) Act 2023.</em>
+    </p>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Verification Details Received — {company_name}",
+        badge_text="SUBMISSION CONFIRMED — THANK YOU",
+        content_html=content,
+        sender_brand=company_name,
+        logo_url=comp_logo
+    )
+
+    subject = f"✅ Verification Details Received — Thank You ({candidate_name} - {company_name})"
+    res = send_smtp_email(
+        to_email=candidate_email,
+        subject=subject,
+        html_content=html,
+        company_id=company_id,
+        custom_config=custom_smtp,
+        db=db
+    )
+
+    if hr_email and hr_email != candidate_email:
+        hr_alert_subject = f"📋 [Candidate Submission] {candidate_name} (#{candidate_code}) submitted onboarding data"
+        try:
+            send_smtp_email(hr_email, hr_alert_subject, html, company_id=company_id, custom_config=custom_smtp, db=db)
+        except Exception:
+            pass
+
+    return res
+
+
+# =============================================================================
+# 6. ✅ BGV VERIFICATION CERTIFIED NOTICE (To Candidate, HR & Company)
 # =============================================================================
 def send_candidate_verification_completed_email(
     candidate_name: str,
     candidate_code: str,
     candidate_email: str,
-    hr_email: str,
-    company_name: str,
+    hr_email: Optional[str] = None,
+    company_name: str = "Company",
     company_id: Optional[str] = None,
     score: str = "99.6",
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
@@ -799,10 +965,11 @@ def send_candidate_verification_completed_email(
         content_html=content,
         action_url=f"{app_url}/hr",
         action_text="View Certified Profile Dossier",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
-    subject = f"✅ BGV Certified (Score: {score}/100) - {candidate_name} ({candidate_code})"
+    subject = f"✅ BGV Certified (Score: {score}/100) — {candidate_name} ({candidate_code})"
     res1 = send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
     
     if hr_email and hr_email != candidate_email:
@@ -812,7 +979,7 @@ def send_candidate_verification_completed_email(
 
 
 # =============================================================================
-# 5. 🔄 HR CORRECTION REQUEST (HR -> Candidate)
+# 7. 🔄 HR CORRECTION REQUEST (HR -> Candidate)
 # =============================================================================
 def send_candidate_correction_email(
     candidate_name: str,
@@ -825,6 +992,7 @@ def send_candidate_correction_email(
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #0f172a; font-size: 16px; font-weight: 800; margin-top: 0;">
@@ -855,15 +1023,16 @@ def send_candidate_correction_email(
         content_html=content,
         action_url=verify_url,
         action_text="Update & Resubmit Verification",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
-    subject = f"🔄 Action Required: Information Correction Request - {company_name}"
+    subject = f"🔄 Action Required: Information Correction Request — {company_name}"
     return send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
 
 
 # =============================================================================
-# 6. 🚨 COMPANY RED-FLAG / DISCREPANCY ALERT (System -> Company Admin / HR)
+# 8. 🚨 COMPANY RED-FLAG / DISCREPANCY ALERT (System -> Company Admin / HR)
 # =============================================================================
 def send_company_discrepancy_alert(
     company_name: str,
@@ -876,6 +1045,7 @@ def send_company_discrepancy_alert(
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
+    comp_logo = get_company_logo_or_fallback(company_id, db)
 
     content = f"""
     <h2 style="color: #991b1b; font-size: 16px; font-weight: 800; margin-top: 0;">
@@ -906,7 +1076,8 @@ def send_company_discrepancy_alert(
         content_html=content,
         action_url=f"{app_url}/company",
         action_text="Review Candidate Profile",
-        sender_brand=company_name
+        sender_brand=company_name,
+        logo_url=comp_logo
     )
 
     subject = f"🚨 [Compliance Alert] Discrepancy Flagged for {candidate_name} ({candidate_code})"
@@ -914,7 +1085,8 @@ def send_company_discrepancy_alert(
 
 
 # =============================================================================
-# 🔐 PASSWORD RESET & PASSCODE EMAIL (Super Admin, Company Admin, HR Recruiter)
+# 9. 🔐 PASSWORD RESET & PASSCODE EMAIL (Super Admin, Company Admin, HR Recruiter)
+# Dispatched with Project Logo
 # =============================================================================
 def send_password_reset_email(
     to_email: str,
@@ -928,7 +1100,7 @@ def send_password_reset_email(
 ) -> Dict[str, Any]:
     """
     Dispatches a secure password reset email containing a 6-digit OTP code
-    and direct reset authorization URL to the verified user's registered inbox.
+    and direct reset authorization URL with the Master Platform Logo.
     """
     app_url = settings.APP_BASE_URL.rstrip('/')
     action_url = reset_url or f"{app_url}/login"
@@ -988,7 +1160,9 @@ def send_password_reset_email(
         badge_text="SECURITY & ACCESS RECOVERY",
         content_html=content,
         action_url=action_url,
-        action_text="Reset Password in Portal 🔑"
+        action_text="Reset Password in Portal 🔑",
+        sender_brand="JOY CORPORATE SOLUTIONS",
+        logo_url=PROJECT_LOGO_URL
     )
 
     subject = f"🔐 Password Reset Request — JOY True Profile ({role_label})"

@@ -7,10 +7,12 @@ from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from backend.app.config import settings
-from backend.app.database import get_db
-from backend.app.models import Candidate, Company, VerificationRecord, HrUser, CandidateDocument
-from backend.app.services.email_service import send_candidate_onboarding_email, send_candidate_verification_completed_email, send_candidate_correction_email
-from backend.app.schemas import (
+from backend.app.services.email_service import (
+    send_candidate_onboarding_email,
+    send_candidate_thank_you_email,
+    send_candidate_verification_completed_email,
+    send_candidate_correction_email
+)
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,
     FaceCapturePayload, FaceCaptureResponse, CompleteVerificationPayload,
     CandidateResponse
@@ -559,11 +561,12 @@ def complete_verification(payload: CompleteVerificationPayload, db: Session = De
                 candidate_email=candidate.email,
                 hr_email=hr_user.email if hr_user else None,
                 company_name=comp_name,
+                company_id=candidate.company_id,
                 score="99.6",
                 db=db
             )
     except Exception as e:
-        print(f"Warning: Failed to dispatch verification completion email: {e}")
+        logger.warning(f"Failed to dispatch verification completion email: {e}")
     
     return {
         "success": True,
@@ -685,6 +688,25 @@ def submit_joining_form(payload: CompleteVerificationPayload, db: Session = Depe
 
     db.commit()
     db.refresh(candidate)
+
+    # 📧 Automated Candidate Thank You & Submission Confirmation Email (Email 2 of 2)
+    try:
+        if candidate.email:
+            comp_obj = db.query(Company).filter(Company.id == candidate.company_id).first() if candidate.company_id else None
+            comp_name = comp_obj.name if comp_obj else "Company"
+            hr_user = db.query(HrUser).filter(HrUser.id == candidate.hr_id).first() if candidate.hr_id else None
+            send_candidate_thank_you_email(
+                candidate_name=candidate.name,
+                candidate_code=candidate.emp_id or candidate.employee_number or "EMP",
+                candidate_email=candidate.email,
+                company_name=comp_name,
+                company_id=candidate.company_id,
+                designation=candidate.designation or "Associate",
+                hr_email=hr_user.email if hr_user else None,
+                db=db
+            )
+    except Exception as mail_err:
+        logger.warning(f"Failed to dispatch candidate thank-you email: {mail_err}")
 
     return {
         "success": True,
