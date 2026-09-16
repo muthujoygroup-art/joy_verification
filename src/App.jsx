@@ -60,15 +60,42 @@ const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').
 const RouteLoadingSpinner = () => (
   <GlobalPlatformPreloader 
     isFullScreen={true}
-    autoDismissMs={1200}
+    autoDismissMs={1800}
     subtitleText="AUTHENTICATING SECURE SESSION"
   />
 );
 
-// Global Explicit Action Preloader (Triggers only when explicit long-running processes request it)
+// Global Route & Action Cinematic Preloader (Matches main landing page branding across all pages)
 const GlobalPageReloadPreloader = () => {
+  const location = useLocation();
   const [showPreloader, setShowPreloader] = useState(false);
   const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
+
+  const getSubtitleForPath = (pathname) => {
+    if (pathname.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
+    if (pathname.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
+    if (pathname.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
+    if (pathname.startsWith('/verify') || pathname.startsWith('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
+    if (pathname.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
+    if (pathname.startsWith('/activate')) return 'VERIFYING ONBOARDING ACTIVATION';
+    if (pathname.startsWith('/features')) return 'EXPLORING PLATFORM CAPABILITIES';
+    if (pathname.startsWith('/solutions')) return 'ENTERPRISE VERIFICATION SOLUTIONS';
+    if (pathname.startsWith('/how-it-works')) return 'INSTANT VERIFICATION WORKFLOWS';
+    if (pathname.startsWith('/pricing')) return 'TRANSPARENT POSTPAID BILLING';
+    if (pathname.startsWith('/contact')) return 'CONNECT WITH JOY VERIFICATION';
+    if (pathname.startsWith('/about')) return 'ABOUT JOY CORPORATE SOLUTIONS';
+    return 'INSTANT WORKFORCE VERIFICATION';
+  };
+
+  // Trigger full loading animation on route change or initial load (except landing page "/" which has its own preloader)
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setShowPreloader(false);
+      return;
+    }
+    setSubtitle(getSubtitleForPath(location.pathname));
+    setShowPreloader(true);
+  }, [location.pathname]);
 
   // Listen to custom window events for long-running processes / manual triggers
   useEffect(() => {
@@ -89,7 +116,7 @@ const GlobalPageReloadPreloader = () => {
       onFinish={() => setShowPreloader(false)}
       subtitleText={subtitle}
       isFullScreen={true}
-      autoDismissMs={1200}
+      autoDismissMs={1800}
     />
   );
 };
