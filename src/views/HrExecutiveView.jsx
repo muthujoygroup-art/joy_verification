@@ -380,9 +380,11 @@ export const HrExecutiveView = () => {
               ? c.status?.toLowerCase() === 'inactive' 
               : statusFilter === 'Verified'
                 ? c.status === 'Verified'
-                : (statusFilter === 'Pending Verification' || statusFilter === 'Pending Verifications' || statusFilter === 'Pending' || statusFilter === 'In Verification')
-                  ? c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive'
-                  : c.status === statusFilter;
+                : statusFilter === 'Link Sent'
+                  ? (c.status === 'Link Sent' || c.status?.toLowerCase()?.includes('link'))
+                  : (statusFilter === 'Pending Verification' || statusFilter === 'Pending Verifications' || statusFilter === 'Pending' || statusFilter === 'In Verification')
+                    ? c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive'
+                    : c.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -1730,11 +1732,12 @@ export const HrExecutiveView = () => {
                 className="form-select text-xs py-1.5 px-3 bg-white font-bold rounded-xl border-slate-200"
               >
                 <option value="All">All Statuses ({candidates.length})</option>
+                <option value="Link Sent">📧 Link Sent ({candidates.filter(c => c.status === 'Link Sent' || c.status?.toLowerCase()?.includes('link')).length})</option>
                 <option value="Pending Verification">⏳ Pending Verifications ({candidates.filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})</option>
+                <option value="Submitted - Pending HR Review">⚡ Pending HR Review ({candidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
                 <option value="Verified">✅ Verified Candidates ({candidates.filter(c => c.status === 'Verified').length})</option>
                 <option value="Active">🟢 Active ({candidates.filter(c => c.status?.toLowerCase() !== 'inactive').length})</option>
                 <option value="Inactive">⚪ Inactive ({candidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
-                <option value="Submitted - Pending HR Review">Pending HR Review ({candidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
                 <option value="Draft">Draft ({candidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
               </select>
             </div>
@@ -1766,12 +1769,17 @@ export const HrExecutiveView = () => {
                       </div>
 
                       <span className={`badge font-black text-[10px] shrink-0 ${
-                        cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
+                        cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : 
+                        cand.status === 'Verified' ? 'badge-emerald' : 
                         cand.status === 'Submitted - Pending HR Review' ? 'badge-amber ring-2 ring-amber-400 animate-pulse' :
                         cand.status === 'Corrections Requested' ? 'badge-rose' :
-                        cand.status === 'In Verification' ? 'badge-cyan' : 'badge-slate'
+                        cand.status === 'In Verification' ? 'badge-cyan' : 
+                        (cand.status === 'Link Sent' || cand.status?.toLowerCase()?.includes('link')) ? 'bg-sky-100 text-sky-800 border border-sky-300' :
+                        'badge-slate'
                       }`}>
-                        {cand.status === 'Submitted - Pending HR Review' ? '⚡ Review' : cand.status}
+                        {cand.status === 'Submitted - Pending HR Review' ? '⚡ Review' : 
+                         (cand.status === 'Link Sent' || cand.status?.toLowerCase()?.includes('link')) ? '📧 Link Sent' : 
+                         cand.status}
                       </span>
                     </div>
 
@@ -2052,12 +2060,17 @@ export const HrExecutiveView = () => {
                       </td>
                       <td className="py-4 px-4 text-center">
                         <span className={`badge font-bold ${
-                          cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : cand.status === 'Verified' ? 'badge-emerald' : 
+                          cand.status?.toLowerCase() === 'inactive' ? 'badge-slate bg-slate-300 text-slate-800 font-bold' : 
+                          cand.status === 'Verified' ? 'badge-emerald' : 
                           cand.status === 'Submitted - Pending HR Review' ? 'badge-amber ring-2 ring-amber-400 animate-pulse' :
                           cand.status === 'Corrections Requested' ? 'badge-rose' :
-                          cand.status === 'In Verification' ? 'badge-cyan' : 'badge-slate'
+                          cand.status === 'In Verification' ? 'badge-cyan' : 
+                          (cand.status === 'Link Sent' || cand.status?.toLowerCase()?.includes('link')) ? 'bg-sky-100 text-sky-800 border border-sky-300' :
+                          'badge-slate'
                         }`}>
-                          {cand.status === 'Submitted - Pending HR Review' ? '⚡ Pending HR Review' : cand.status}
+                          {cand.status === 'Submitted - Pending HR Review' ? '⚡ Pending HR Review' : 
+                           (cand.status === 'Link Sent' || cand.status?.toLowerCase()?.includes('link')) ? '📧 Link Sent' : 
+                           cand.status}
                         </span>
                       </td>
 
