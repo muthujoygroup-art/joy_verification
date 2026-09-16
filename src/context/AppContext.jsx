@@ -126,9 +126,9 @@ export const POSTPAID_PLANS = {
 
 export const DEFAULT_LANDING_PAGE_CONTENT = {
   // Hero Section
-  heroBadge: 'AI-Powered Workforce Verification',
+  heroBadge: 'Direct Registry Rails',
   heroTitle: 'Instant & Accurate Employee Background Verification',
-  heroSubtitle: 'Verify identity, PAN, past employment, bank details, and criminal records in under 60 seconds. 100% compliant with Indian statutory labor laws and DPDP Act 2023.',
+  heroSubtitle: 'Verify identity, PAN, past employment, bank details, and criminal records with automated direct registry checks. 100% compliant with Indian statutory labor laws and DPDP Act 2023.',
   ctaPrimaryText: 'Request a Free Demo 🚀',
   ctaSecondaryText: 'Explore Features',
 
@@ -147,8 +147,8 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
   announcementText: '🚀 New: Automated Postpaid Billing with 18% GST Invoices & Never-Block Overage Policy is now live!',
 
   // Stats & Performance Metrics
-  statSpeed: 'Under 60s',
-  statSpeedLabel: 'Average Verification Speed',
+  statSpeed: 'Real-Time',
+  statSpeedLabel: 'Direct Registry Lookups',
   statAccuracy: '99.98%',
   statAccuracyLabel: 'Data Matching Accuracy',
   statClients: '150+',

@@ -59,13 +59,13 @@ export const Hero3DCharacter = () => {
           </div>
 
           {/* Floating Micro-Badge 2: Instant TAT */}
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#E5EAF0] shadow-md flex items-center gap-2 animate-float">
-            <div className="w-5 h-5 rounded-full bg-[#426CF5]/10 text-[#426CF5] flex items-center justify-center">
+          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-md flex items-center gap-2 animate-float">
+            <div className="w-5 h-5 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center">
               <Zap className="w-3.5 h-3.5" />
             </div>
             <div className="text-left">
-              <p className="text-[10px] text-[#5C6878] font-medium leading-none">Speed</p>
-              <p className="text-xs text-[#182230] font-bold leading-tight">&lt; 45 Seconds</p>
+              <p className="text-[10px] text-slate-500 font-semibold leading-none">Speed</p>
+              <p className="text-xs text-[#0F172A] font-black leading-tight">Direct API Rails</p>
             </div>
           </div>
         </div>

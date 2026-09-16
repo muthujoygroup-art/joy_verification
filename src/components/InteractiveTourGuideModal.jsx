@@ -1039,18 +1039,18 @@ export const InteractiveTourGuideModal = ({
               </div>
 
               {/* Tactical Coachmark Banner (High Contrast HUD Banner) */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-[#101b2b] to-indigo-950 text-white flex items-start gap-4 shadow-md border border-indigo-500/30">
-                <div className="w-12 h-12 rounded-2xl bg-[#426CF5] text-white flex items-center justify-center shrink-0 font-bold text-xl shadow-[0_0_15px_rgba(66,108,245,0.6)] animate-bounce">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#0F172A] text-white flex items-start gap-4 shadow-xl border-2 border-[#38BDF8]/40">
+                <div className="w-12 h-12 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center shrink-0 font-bold text-xl shadow-[0_0_20px_rgba(37,99,235,0.7)] animate-bounce">
                   🎯
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[11px] font-mono text-indigo-200 font-black uppercase tracking-wider">
+                  <div className="text-[11px] font-mono text-[#38BDF8] font-black uppercase tracking-wider">
                     {activeStep.title}
                   </div>
                   <h4 className="text-base sm:text-lg font-black text-white font-outfit tracking-tight">
                     {activeStep.hudPrompt}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
                     {activeStep.instruction}
                   </p>
                 </div>

@@ -262,11 +262,12 @@ export const LandingPageView = () => {
   };
 
   // Technical Specs Data
+  // Technical Specs Data
   const technicalSpecs = {
     performance: [
-      { label: 'Verification Speed', value: 'Under 45 Seconds', detail: 'Parallel automated checks across official registries' },
+      { label: 'Verification Speed', value: 'Sub-Second Rails', detail: 'Parallel automated checks across official registries' },
       { label: 'Photo & ID Match', value: '99.98% Accuracy', detail: '3D facial liveness scan eliminates duplicate profiles' },
-      { label: 'Candidate Experience', value: 'Under 2 Minutes', detail: 'Mobile-friendly link with zero app downloads' },
+      { label: 'Candidate Experience', value: 'Zero-App Web Flow', detail: 'Mobile-friendly link with zero app downloads' },
       { label: 'Platform Capacity', value: '50,000+ Checks / Day', detail: 'Built to effortlessly handle enterprise hiring spikes' },
       { label: 'Service Reliability', value: '99.99% Uptime SLA', detail: 'Always-available cloud platform with round-the-clock monitoring' }
     ],
@@ -334,7 +335,7 @@ export const LandingPageView = () => {
       role: 'VP – Human Resources & Industrial Relations',
       company: 'Premier Auto Components Ltd (Sriperumbudur Hub)',
       stars: 5,
-      quote: 'JOY TrueProfile completely eradicated ghost worker invoicing across our 12 contractor agencies. We now onboard and verify 350+ factory workers daily in under 45 seconds per person with automated Form XVI gate passes.',
+      quote: 'JOY TrueProfile completely eradicated ghost worker invoicing across our 12 contractor agencies. We now onboard and verify 350+ factory workers daily with automated Form XVI gate passes.',
       badge: 'Automotive Manufacturing'
     },
     {
@@ -367,7 +368,7 @@ export const LandingPageView = () => {
   const faqData = [
     {
       q: 'How does JOY TRUE PROFILE achieve fast employee background verification?',
-      a: 'JOY TRUE PROFILE connects directly to official registries including UIDAI for Aadhaar, NSDL for PAN, NPCI for Bank Penny Drops, and EPFO for employment history. All checks execute in parallel, delivering certified results in under 45 seconds.'
+      a: 'JOY TRUE PROFILE connects directly to official registries including UIDAI for Aadhaar, NSDL for PAN, NPCI for Bank Penny Drops, and EPFO for employment history. All checks execute in parallel with direct API rails.'
     },
     {
       q: 'How does the platform detect moonlighting and dual employment?',
@@ -543,23 +544,23 @@ export const LandingPageView = () => {
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
                 {/* Dynamic Eyebrow Badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] text-xs font-semibold text-[#426CF5] shadow-2xs">
-                  <Sparkles className="w-3.5 h-3.5 text-[#426CF5]" />
-                  <span>{content.heroBadge || 'SMARTER WORKFORCE VERIFICATION'}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#EAF8F0] text-[#299C68] text-[10px] font-bold">
-                    TAT &lt; 45s
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EEF2FF] border border-[#C7D2FE] text-xs font-bold text-[#1E40AF] shadow-xs">
+                  <Sparkles className="w-4 h-4 text-[#2563EB]" />
+                  <span className="tracking-wide">{content.heroBadge || 'DIRECT REGISTRY RAILS'}</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DCFCE7] border border-[#86EFAC] text-[#166534] text-[10px] font-black uppercase tracking-wider">
+                    Real-Time KYC
                   </span>
                 </div>
 
                 {/* Main Hero Headline */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#182230] font-outfit tracking-tight leading-[1.08]">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#0F172A] font-outfit tracking-tight leading-[1.08]">
                   Every person. <br />
-                  <span className="text-[#426CF5]">One trusted profile.</span>
+                  <span className="text-[#2563EB]">One trusted profile.</span>
                 </h1>
 
                 {/* Supporting Copy */}
-                <p className="text-base sm:text-lg text-[#5C6878] max-w-xl leading-relaxed font-normal">
-                  {content.heroSubtitle || 'Joy True Profile helps companies, HR teams, and workers connect through a smarter workforce verification experience—bringing profiles, documents, and verification workflows together.'}
+                <p className="text-base sm:text-lg text-[#334155] max-w-xl leading-relaxed font-normal">
+                  {content.heroSubtitle || 'Joy True Profile helps enterprises, HR teams, and contractors connect through instant direct-rail workforce verification—unifying identity, statutory compliance, and digital gate credentials in one seamless workflow.'}
                 </p>
 
                 {/* Action Buttons */}
@@ -569,7 +570,7 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       setShowDemoModal(true);
                     }}
-                    className="px-8 py-4 rounded-full font-semibold text-sm text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="px-8 py-4 rounded-full font-bold text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>{content.ctaPrimaryText || 'Explore Joy True Profile 🚀'}</span>
                     <ArrowRight className="w-4 h-4 text-white" />
@@ -581,30 +582,30 @@ export const LandingPageView = () => {
                       setShowTourGuideModal(true);
                       window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
                     }}
-                    className="bg-white hover:bg-slate-50 border border-[#E5EAF0] px-7 py-4 rounded-full font-semibold text-sm text-[#182230] shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border border-slate-300 px-7 py-4 rounded-full font-bold text-sm text-[#0F172A] shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-[#426CF5] animate-spin-slow" />
+                    <Compass className="w-4 h-4 text-[#2563EB] animate-spin-slow" />
                     <span>{content.ctaSecondaryText || 'How It Works 🧭'}</span>
                   </button>
                 </div>
 
                 {/* Clean Metrics Bar */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-[#E5EAF0] w-full max-w-2xl">
-                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-bold text-[#426CF5] font-outfit">{content.statSpeed || '<45s'}</div>
-                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statSpeedLabel || 'Speed'}</div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-200 w-full max-w-2xl">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left hover:border-blue-200 transition-colors">
+                    <div className="text-xl sm:text-2xl font-black text-[#2563EB] font-outfit">{content.statSpeed || 'Real-Time'}</div>
+                    <div className="text-xs text-[#475569] font-bold mt-0.5">{content.statSpeedLabel || 'Instant Rails'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-bold text-[#182230] font-outfit">{content.statAccuracy || '99.98%'}</div>
-                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statAccuracyLabel || 'Match Accuracy'}</div>
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left hover:border-slate-300 transition-colors">
+                    <div className="text-xl sm:text-2xl font-black text-[#0F172A] font-outfit">{content.statAccuracy || '99.98%'}</div>
+                    <div className="text-xs text-[#475569] font-bold mt-0.5">{content.statAccuracyLabel || 'Match Accuracy'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-bold text-[#299C68] font-outfit">{content.statClients || '150+'}</div>
-                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statClientsLabel || 'Enterprises'}</div>
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left hover:border-emerald-200 transition-colors">
+                    <div className="text-xl sm:text-2xl font-black text-[#166534] font-outfit">{content.statClients || '150+'}</div>
+                    <div className="text-xs text-[#475569] font-bold mt-0.5">{content.statClientsLabel || 'Enterprises'}</div>
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
-                    <div className="text-xl sm:text-2xl font-bold text-[#8975E8] font-outfit">{content.statProfiles || '500k+'}</div>
-                    <div className="text-xs text-[#5C6878] font-medium mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center sm:text-left hover:border-purple-200 transition-colors">
+                    <div className="text-xl sm:text-2xl font-black text-[#6D28D9] font-outfit">{content.statProfiles || '500k+'}</div>
+                    <div className="text-xs text-[#475569] font-bold mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
                   </div>
                 </div>
 
@@ -1157,7 +1158,7 @@ export const LandingPageView = () => {
               SEAMLESS VERIFICATION RAIL
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">How JOY True Profile Works</h2>
-            <p className="text-[#5C6878] text-base">A 4-step frictionless verification rail taking candidates from invite to certified compliance in under 45 seconds.</p>
+            <p className="text-slate-600 text-base">A frictionless 4-step direct-registry verification rail taking candidates from invite to certified compliance in real-time.</p>
           </div>
 
           <VerificationTimeline />
