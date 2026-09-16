@@ -39,10 +39,15 @@ import {
   FileSpreadsheet, 
   Mail, 
   UserPlus, 
-  Share2
+  Share2,
+  MapPin,
+  Phone,
+  Clock,
+  Award
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
 import Hero3DCharacter from '../components/landing/Hero3DCharacter';
 import HumanIdentitySection from '../components/landing/HumanIdentitySection';
 import VerificationTimeline from '../components/landing/VerificationTimeline';
@@ -57,6 +62,7 @@ import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedCo
 import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
+import { LiveVideoSimulationShowcase } from '../components/landing/LiveVideoSimulationShowcase';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -74,7 +80,7 @@ export const LandingPageView = () => {
   // Innovative Logo Preloader (Preserved strictly untouched)
   const [showPreloader, setShowPreloader] = useState(true);
 
-  // Active View Tab State
+  // Active View Tab State (7 Standard Clean Navbar Titles)
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tabId) => {
@@ -86,11 +92,19 @@ export const LandingPageView = () => {
   // Navigation & Interactive Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
+
+  // Listen for open_tour_guide_modal event
+  useEffect(() => {
+    const handleOpenTour = () => setShowTourGuideModal(true);
+    window.addEventListener('open_tour_guide_modal', handleOpenTour);
+    return () => window.removeEventListener('open_tour_guide_modal', handleOpenTour);
+  }, []);
 
   const handleToggleSound = () => {
     const nextMute = soundEngine.toggleMute();
@@ -128,6 +142,69 @@ export const LandingPageView = () => {
   const [selectedSimMode, setSelectedSimMode] = useState('labor_pass');
   const [simulating, setSimulating] = useState(false);
   const [simProgress, setSimProgress] = useState(100);
+
+  // Dynamic Financial Calculations
+  const costPerManualCheck = workforceType === 'labor' ? 1200 : workforceType === 'corporate' ? 2400 : 1800;
+  const costPerJoyCheck = 180;
+  const directCheckSavings = (costPerManualCheck - costPerJoyCheck) * monthlyHires;
+  const ghostWorkerRate = workforceType === 'labor' ? 0.04 : 0.015;
+  const ghostWorkerPrevented = Math.round(monthlyHires * ghostWorkerRate * (contractorTurnover / 25));
+  const avgMonthlySalary = workforceType === 'labor' ? 19500 : workforceType === 'corporate' ? 65000 : 35000;
+  const ghostPayrollSavings = ghostWorkerPrevented * avgMonthlySalary;
+  const hoursSavedPerMonth = Math.round(monthlyHires * 1.5);
+  const totalMonthlySavings = directCheckSavings + ghostPayrollSavings;
+
+  // Simulator Modes Data
+  const simModes = {
+    labor_pass: {
+      title: 'Automotive Factory Contractor',
+      category: 'Contract Labor • Sriperumbudur Hub',
+      icon: HardHat,
+      candidate: { name: 'Muthukumar P.', role: 'Assembly Line Technician', agency: 'Apex Staffing Solutions' },
+      checks: [
+        { title: 'Aadhaar e-KYC (Masked)', status: 'Demographic Validated', time: '0.42s' },
+        { title: '3D Biometric Liveness Scan', status: '99.98% Confidence', time: '0.65s' },
+        { title: 'Bank Account Penny Drop', status: 'Beneficiary Matched', time: '0.38s' },
+        { title: 'CLRA Form XVI Gate Pass', status: 'QR Token Generated', time: '0.21s' }
+      ]
+    },
+    it_moonlighting: {
+      title: 'Senior Software Engineer',
+      category: 'Corporate IT • Bengaluru Zone',
+      icon: Search,
+      candidate: { name: 'Ananya Sharma', role: 'Full Stack Architect', agency: 'Direct Hire' },
+      checks: [
+        { title: 'EPFO UAN Dual Employment Radar', status: '0 Active Overlaps (Clean)', time: '0.78s' },
+        { title: 'PAN 2.0 Identity Match', status: 'NSDL Validated', time: '0.35s' },
+        { title: 'Court Records & Criminal Check', status: 'No Adverse Record', time: '1.12s' },
+        { title: '360° Certified Audit Dossier', status: 'PDF Issued', time: '0.45s' }
+      ]
+    },
+    logistics_driver: {
+      title: '3PL Commercial Fleet Driver',
+      category: 'Supply Chain • Bhiwandi Cluster',
+      icon: Smartphone,
+      candidate: { name: 'Sanjay Deshmukh', role: 'Heavy Vehicle Commercial Driver', agency: 'Express Logistics 3PL' },
+      checks: [
+        { title: 'Commercial Driving License Check', status: 'Parivahan Validated (Heavy)', time: '0.52s' },
+        { title: 'Aadhaar OTP Mobile Authentication', status: 'Verified via WhatsApp Link', time: '0.41s' },
+        { title: 'Police / Traffic Litigation Records', status: 'Zero Active Challans', time: '0.89s' },
+        { title: 'Digital Fleet Authorization Pass', status: 'Active Badge Issued', time: '0.25s' }
+      ]
+    },
+    plant_security: {
+      title: 'Facility Security Guard',
+      category: 'Plant Security • Sanand Mega Zone',
+      icon: ShieldCheck,
+      candidate: { name: 'Vikram Singh', role: 'Security & HSE Marshal', agency: 'Black Belt Security Agency' },
+      checks: [
+        { title: 'Aadhaar Demographic Verification', status: 'Direct UIDAI Rail Match', time: '0.39s' },
+        { title: 'State Court Criminal Background', status: 'Pan-India Tribunals Checked', time: '0.94s' },
+        { title: 'Previous Employer Tenures', status: 'Service Record Confirmed', time: '0.62s' },
+        { title: 'Facility Gate Turnstile Pass', status: 'CLRA Access Granted', time: '0.19s' }
+      ]
+    }
+  };
 
   // Trigger Live Simulation
   const handleRunSimulation = (modeKey) => {
@@ -247,104 +324,10 @@ export const LandingPageView = () => {
       accuracy: '99.94%',
       recentEvent: '500 delivery drivers verified via mobile verification link in 35 minutes.',
       topCheck: 'Driving License & ID Check'
-    },
-    manesar: {
-      name: 'Gurugram / Manesar Belt',
-      state: 'Haryana',
-      tag: 'Manufacturing & Component Plants',
-      activePasses: '22,700 Active Badges',
-      avgTat: '0.7 Seconds',
-      accuracy: '99.99%',
-      recentEvent: 'Duplicate profile check passed with zero duplicate records.',
-      topCheck: 'Duplicate Profile Check'
-    },
-    hosur: {
-      name: 'Hosur / Bengaluru Tech Belt',
-      state: 'Karnataka / TN',
-      tag: 'EV & Tech Hardware Hub',
-      activePasses: '16,300 Shift Passes',
-      avgTat: '0.85 Seconds',
-      accuracy: '99.97%',
-      recentEvent: 'Contractor worker records checked against past employment history.',
-      topCheck: 'Past Job & Employment Check'
-    },
-    chakan: {
-      name: 'Pune / Chakan Hub',
-      state: 'Maharashtra',
-      tag: 'Engineering & Industrial Zone',
-      activePasses: '24,600 Active Badges',
-      avgTat: '0.75 Seconds',
-      accuracy: '99.98%',
-      recentEvent: 'Major auto plant completed worker verification across 850 workers.',
-      topCheck: 'ID & Document Checks'
     }
   };
 
-  // Simulator Data
-  const simModes = {
-    labor_pass: {
-      id: 'labor_pass',
-      title: 'Factory & Plant Worker Check',
-      category: 'Manufacturing & Industrial',
-      icon: HardHat,
-      candidate: { name: 'Karan Sharma', role: 'Assembly Line Specialist', contractor: 'Apex Manpower Services' },
-      checks: [
-        { title: 'Digital ID & Address Check', status: 'Verified ✓', time: '0.7s' },
-        { title: 'Photo & Duplicate Profile Check', status: '0 Duplicates ✓', time: '0.4s' },
-        { title: 'Digital Gate Pass Issued', status: 'Pass #7821 Ready ✓', time: '0.6s' },
-        { title: 'Bank Account Name Match', status: 'Bank Match 100% ✓', time: '1.1s' }
-      ]
-    },
-    dual_employment: {
-      id: 'dual_employment',
-      title: 'Past Job & Moonlighting Check',
-      category: 'Corporate & Tech Roles',
-      icon: Search,
-      candidate: { name: 'Pooja Narang', role: 'Senior Software Engineer', contractor: 'Direct Enterprise Hire' },
-      checks: [
-        { title: 'Past Company Records Check', status: '4 Company Records Found ✓', time: '1.2s' },
-        { title: 'Job Overlap Check (Moonlighting)', status: '0 Overlaps (Clean) ✓', time: '0.8s' },
-        { title: 'Relieving Date Confirmation', status: 'Clean Exit Verified ✓', time: '0.9s' },
-        { title: 'Income & Salary Stream Check', status: 'Single Salary Stream ✓', time: '1.4s' }
-      ]
-    },
-    court_bgv: {
-      id: 'court_bgv',
-      title: 'Background & Court Check',
-      category: 'High-Trust Roles',
-      icon: Scale,
-      candidate: { name: 'Vikramaditya Sengupta', role: 'VP Operations & Supply Chain', contractor: 'Leadership Executive' },
-      checks: [
-        { title: 'Court Record Check (Civil & Criminal)', status: '0 Cases Found (Clean) ✓', time: '1.8s' },
-        { title: 'Financial & Default Check', status: 'Clean Record (No Defaults) ✓', time: '1.5s' },
-        { title: 'College Degree Verification', status: 'IIT Delhi Verified ✓', time: '1.9s' },
-        { title: 'Company Directorship Check', status: 'Active Clean Status ✓', time: '1.1s' }
-      ]
-    },
-    whatsapp_kyc: {
-      id: 'whatsapp_kyc',
-      title: 'Mobile Verification Link',
-      category: 'Quick Onboarding',
-      icon: Smartphone,
-      candidate: { name: 'Rahul Deshmukh', role: 'Logistics Fleet Driver', contractor: 'Direct Mobile Flow' },
-      checks: [
-        { title: 'Link Sent via WhatsApp / SMS', status: 'Link Delivered ✓', time: '0.3s' },
-        { title: 'Candidate Aadhaar OTP Check', status: 'Verified in 22s ✓', time: '0.6s' },
-        { title: 'Live Selfie Photo Match', status: 'Photo Matched 99.4% ✓', time: '1.2s' },
-        { title: 'Verification Report Created', status: 'Report Ready (PDF) ✓', time: '0.8s' }
-      ]
-    }
-  };
-
-  // ROI Calculations
-  const costPerManualVerification = 1800;
-  const costPerJoyVerification = 250;
-  const savingsPerWorker = costPerManualVerification - costPerJoyVerification;
-  const totalMonthlySavings = monthlyHires * savingsPerWorker;
-  const hoursSavedPerMonth = Math.round(monthlyHires * 1.6);
-  const ghostWorkerPrevented = Math.max(1, Math.round(monthlyHires * 0.04));
-
-  // Client Testimonials
+  // Client Reviews Data
   const clientReviews = [
     {
       name: 'Rajesh K. Singhania',
@@ -416,7 +399,7 @@ export const LandingPageView = () => {
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
-      {/* 2. Premium Light Navbar */}
+      {/* 2. Premium Light Navbar with 7 Standard Clean Titles */}
       <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-[#E5EAF0] shadow-xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
@@ -441,24 +424,23 @@ export const LandingPageView = () => {
             </div>
           </button>
 
-          {/* Center Navigation: Segmented Soft Pill Switcher */}
+          {/* Center Navigation: Standard Clean 7 Titles */}
           <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FCFCFA] border border-[#E5EAF0]">
             {[
               { id: 'overview', label: 'Home' },
               { id: 'features', label: 'Features' },
-              { id: 'moonlighting', label: 'Dual Employment Check' },
-              { id: 'turnstile', label: 'Gate Pass Simulator' },
-              { id: 'comparison', label: 'Speed & Reliability' },
-              { id: 'roi', label: 'Savings Calculator' },
               { id: 'solutions', label: 'Solutions' },
-              { id: 'resources', label: 'Resources & FAQ' }
+              { id: 'what_we', label: 'What We Do' },
+              { id: 'how_it_works', label: 'How It Works' },
+              { id: 'services', label: 'Services' },
+              { id: 'contact', label: 'Contact Us' }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-3.5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'bg-[#426CF5] text-white shadow-xs font-bold scale-[1.02]'
                       : 'text-[#5C6878] hover:text-[#182230] hover:bg-white'
@@ -476,6 +458,7 @@ export const LandingPageView = () => {
             <button
               onClick={() => {
                 soundEngine.playClick();
+                setShowTourGuideModal(true);
                 window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
               }}
               className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -512,16 +495,19 @@ export const LandingPageView = () => {
           <div className="lg:hidden border-t border-[#E5EAF0] px-4 py-4 bg-white shadow-xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
             <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Home</button>
             <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Features</button>
-            <button onClick={() => { handleTabChange('moonlighting'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Dual Employment Check</button>
-            <button onClick={() => { handleTabChange('turnstile'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Gate Pass Simulator</button>
-            <button onClick={() => { handleTabChange('comparison'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Speed & Reliability</button>
-            <button onClick={() => { handleTabChange('roi'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Savings Calculator</button>
             <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Solutions</button>
-            <button onClick={() => { handleTabChange('resources'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Resources & FAQ</button>
+            <button onClick={() => { handleTabChange('what_we'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">What We Do</button>
+            <button onClick={() => { handleTabChange('how_it_works'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">How It Works</button>
+            <button onClick={() => { handleTabChange('services'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Services</button>
+            <button onClick={() => { handleTabChange('contact'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Contact Us</button>
             
             <div className="pt-3 mt-1 border-t border-[#E5EAF0] flex flex-col gap-2">
               <button
-                onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }}
+                onClick={() => { 
+                  setMobileMenuOpen(false); 
+                  setShowTourGuideModal(true);
+                  window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); 
+                }}
                 className="w-full py-2.5 rounded-xl font-semibold text-xs text-[#426CF5] bg-[#EAF5FF] border border-[#E5EAF0] text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Compass className="w-3.5 h-3.5 text-[#426CF5]" />
@@ -540,13 +526,13 @@ export const LandingPageView = () => {
       </header>
 
       {/* ==============================================================================
-       * TAB VIEW CONTENT ROUTING
+       * TAB VIEW CONTENT ROUTING (7 CLEAN VIEWS)
        * ============================================================================== */}
 
-      {/* VIEW 1: MASTER OVERVIEW TAB */}
+      {/* VIEW 1: HOME (OVERVIEW) */}
       {activeTab === 'overview' && (
         <>
-          {/* 5. LIGHT 3D CREATIVE HERO SECTION */}
+          {/* 3D HERO SECTION */}
           <section className="relative z-10 pt-12 pb-20 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             {/* Soft Ambient Pastel Mesh Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-r from-[#F1EEFF]/80 via-[#EAF5FF]/80 to-[#EAF8F0]/80 blur-[120px] pointer-events-none rounded-full" />
@@ -592,6 +578,7 @@ export const LandingPageView = () => {
                   <button
                     onClick={() => {
                       soundEngine.playClick();
+                      setShowTourGuideModal(true);
                       window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
                     }}
                     className="bg-white hover:bg-slate-50 border border-[#E5EAF0] px-7 py-4 rounded-full font-semibold text-sm text-[#182230] shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -623,7 +610,7 @@ export const LandingPageView = () => {
 
               </div>
 
-              {/* Right Column: Original 3D Workforce Character Scene */}
+              {/* Right Column: 3D Workforce Character Scene */}
               <div className="lg:col-span-5 flex justify-center">
                 <Hero3DCharacter />
               </div>
@@ -631,23 +618,23 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* 6. THE HUMAN SIDE OF VERIFICATION */}
+          {/* HUMAN SIDE OF VERIFICATION */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
             <HumanIdentitySection onOpenDemo={() => setShowDemoModal(true)} />
           </div>
 
-          {/* 7. HOW IT WORKS TIMELINE */}
+          {/* HOW IT WORKS TIMELINE */}
           <VerificationTimeline />
 
-          {/* 8. 3D WORKFORCE CONNECTION */}
+          {/* 3D WORKFORCE CONNECTION */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
             <WorkforceConnectionSection />
           </div>
 
-          {/* 9. FEATURES ASYMMETRIC BENTO SHOWCASE */}
+          {/* FEATURES ASYMMETRIC BENTO SHOWCASE */}
           <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
 
-          {/* 10. TRUST AND VERIFICATION */}
+          {/* TRUST AND VERIFICATION */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
             <TrustSection 
               onOpenLegalHandbook={() => setShowLegalHandbook(true)}
@@ -655,10 +642,10 @@ export const LandingPageView = () => {
             />
           </div>
 
-          {/* 11. WHY JOY TRUE PROFILE (3 VALUE PILLARS) */}
+          {/* WHY JOY TRUE PROFILE */}
           <WhyJoyTrueProfile onOpenDemo={() => setShowDemoModal(true)} />
 
-          {/* 12. REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
+          {/* REAL-TIME INDIA INDUSTRIAL TELEMETRY */}
           <section className="py-16 sm:py-20 bg-[#FCFCFA] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#E5EAF0]">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
               <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0]">
@@ -743,20 +730,17 @@ export const LandingPageView = () => {
             </div>
           </section>
 
-          {/* 13. FINAL CLOSING CTA SECTION */}
+          {/* FINAL CLOSING CTA SECTION */}
           <CTASection 
             onOpenDemo={() => setShowDemoModal(true)} 
-            onOpenContact={() => {
-              const el = document.getElementById('contact-footer');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onOpenContact={() => handleTabChange('contact')}
           />
         </>
       )}
 
-      {/* VIEW 2: CAPABILITIES TAB */}
+      {/* VIEW 2: FEATURES */}
       {activeTab === 'features' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               PLATFORM CAPABILITIES
@@ -768,7 +752,40 @@ export const LandingPageView = () => {
           <VerificationCommandOrbit />
           <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
 
-          {/* Interactive Simulation Lab */}
+          {/* Dual Employment Moonlighting Radar */}
+          <div className="space-y-6">
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+                EPFO UAN INTEGRATED
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Dual-Employment & Moonlighting Radar</h3>
+            </div>
+            <DualEmploymentRadarVisualizer />
+          </div>
+
+          {/* Turnstile Gate Pass Simulator */}
+          <div className="space-y-6">
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-xs font-semibold text-[#299C68] mb-2 px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 inline-block">
+                PLANT ACCESS & SECURITY
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Workforce Turnstile Gate Simulator</h3>
+            </div>
+            <TurnstileGateSimulator />
+          </div>
+
+          {/* Speed Matrix Benchmark */}
+          <div className="space-y-6">
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-xs font-semibold text-[#8975E8] mb-2 px-3.5 py-1 rounded-full bg-[#F1EEFF] border border-[#E5EAF0] inline-block">
+                PERFORMANCE COMPARISON
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">15-Day Agency vs JOY 45-Second Engine</h3>
+            </div>
+            <InteractiveSpeedComparison />
+          </div>
+
+          {/* Live Interactive Simulation Lab */}
           <div className="space-y-8">
             <div className="text-center max-w-3xl mx-auto">
               <span className="text-xs font-semibold text-[#299C68] mb-2 inline-block px-3.5 py-1 bg-[#EAF8F0] border border-[#299C68]/20 rounded-full">LIVE DEMO LAB</span>
@@ -862,199 +879,9 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* VIEW 3: MOONLIGHTING RADAR TAB */}
-      {activeTab === 'moonlighting' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
-              EPFO UAN INTEGRATED
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Dual-Employment & Moonlighting Radar</h2>
-            <p className="text-[#5C6878] text-base">Cross-reference active provident fund contributions and service history to block unauthorized secondary employment.</p>
-          </div>
-
-          <DualEmploymentRadarVisualizer />
-        </div>
-      )}
-
-      {/* VIEW 4: TURNSTILE GATE TAB */}
-      {activeTab === 'turnstile' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-semibold text-[#299C68] mb-2 px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 inline-block">
-              PLANT & FACILITY ACCESS
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Workforce Turnstile Gate Simulator</h2>
-            <p className="text-[#5C6878] text-base">Automated QR gate pass issuance and contractor labor verification for manufacturing plants and project sites.</p>
-          </div>
-
-          <TurnstileGateSimulator />
-        </div>
-      )}
-
-      {/* VIEW 5: SPEED MATRIX TAB */}
-      {activeTab === 'comparison' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
-              PERFORMANCE BENCHMARK
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">15-Day Agency vs JOY 45-Second Engine</h2>
-            <p className="text-[#5C6878] text-base">See how automated digital verification outperforms traditional manual background screening agencies.</p>
-          </div>
-
-          <InteractiveSpeedComparison />
-          <VerificationTimeline />
-        </div>
-      )}
-
-      {/* VIEW 6: ROI CALCULATOR TAB */}
-      {activeTab === 'roi' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
-              FINANCIAL IMPACT ESTIMATOR
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Enterprise ROI & Savings Calculator</h2>
-            <p className="text-[#5C6878] text-base">Quantify your annual savings, HR hour reductions, and ghost worker prevention metrics.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-10 shadow-xs">
-            <div className="lg:col-span-6 flex flex-col justify-between gap-6">
-              <div>
-                <label className="text-xs font-semibold text-[#182230] block mb-2">1. Select Workforce Structure</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: 'labor', label: 'Factory / Labor' },
-                    { id: 'corporate', label: 'Corporate / IT' },
-                    { id: 'mixed', label: 'Mixed Workforce' }
-                  ].map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => {
-                        soundEngine.playClick();
-                        setWorkforceType(item.id);
-                      }}
-                      className={`p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
-                        workforceType === item.id
-                          ? 'bg-[#426CF5] text-white border-[#426CF5] shadow-xs'
-                          : 'bg-[#FCFCFA] border-[#E5EAF0] text-[#5C6878] hover:text-[#182230]'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-[#182230]">2. Monthly Candidate Volume</label>
-                  <span className="text-sm font-bold text-[#426CF5] bg-[#EAF5FF] px-3 py-1 rounded-full border border-[#E5EAF0]">
-                    {monthlyHires.toLocaleString()} workers / mo
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="50"
-                  max="5000"
-                  step="50"
-                  value={monthlyHires}
-                  onChange={(e) => setMonthlyHires(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#426CF5]"
-                />
-                <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                  <span className="text-[10px] text-[#5C6878] font-medium mr-1">PRESETS:</span>
-                  {[250, 500, 1000, 2500, 5000].map((preset) => (
-                    <button
-                      key={preset}
-                      onClick={() => {
-                        soundEngine.playClick();
-                        setMonthlyHires(preset);
-                      }}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-colors cursor-pointer ${
-                        monthlyHires === preset ? 'bg-[#426CF5] text-white border-[#426CF5]' : 'bg-[#FCFCFA] text-[#5C6878] border-[#E5EAF0]'
-                      }`}
-                    >
-                      {preset.toLocaleString()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-[#182230]">3. Annual Contractor Churn</label>
-                  <span className="text-sm font-bold text-[#E06A26] bg-[#FFF1E8] px-3 py-1 rounded-full border border-[#E5EAF0]">
-                    {contractorTurnover}% / year
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="5"
-                  max="60"
-                  step="5"
-                  value={contractorTurnover}
-                  onChange={(e) => setContractorTurnover(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#E06A26]"
-                />
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 text-xs text-[#299C68] flex items-start gap-2.5">
-                <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6 bg-[#F1EEFF] text-[#182230] border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xs">
-              <div>
-                <span className="text-xs uppercase tracking-wider text-[#8975E8] font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
-                <div className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-                  ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
-                  <span className="text-xs sm:text-sm font-normal text-[#5C6878] ml-2">/ year</span>
-                </div>
-                <div className="text-xs text-[#299C68] mt-2 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Estimated Payback Period: Under 12 Business Days</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 border-t border-[#8975E8]/20 pt-4">
-                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
-                  <span className="text-[10px] text-[#5C6878] font-medium block">Direct Verification Savings</span>
-                  <div className="text-base font-bold text-[#426CF5] font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] font-normal text-[#5C6878]">/ yr</span></div>
-                </div>
-                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
-                  <span className="text-[10px] text-[#5C6878] font-medium block">Ghost Payroll Blocked</span>
-                  <div className="text-base font-bold text-[#E06A26] font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
-                </div>
-                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
-                  <span className="text-[10px] text-[#5C6878] font-medium block">HR TAT Hours Saved</span>
-                  <div className="text-base font-bold text-[#299C68] font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
-                </div>
-                <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
-                  <span className="text-[10px] text-[#5C6878] font-medium block">Compliance Assurance</span>
-                  <div className="text-base font-bold text-[#8975E8] font-outfit mt-0.5">100% Protected</div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  soundEngine.playClick();
-                  setShowDemoModal(true);
-                }}
-                className="w-full py-3.5 rounded-full font-semibold text-sm text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md cursor-pointer text-center transition-all"
-              >
-                Unlock These Savings Now 🚀
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW 7: SOLUTIONS TAB */}
+      {/* VIEW 3: SOLUTIONS */}
       {activeTab === 'solutions' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               ENTERPRISE SOLUTIONS
@@ -1063,7 +890,200 @@ export const LandingPageView = () => {
             <p className="text-[#5C6878] text-base">Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.</p>
           </div>
 
+          {/* Industry Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-3xl border border-[#E5EAF0] shadow-xs flex flex-col justify-between gap-6">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center">
+                  <HardHat className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-[#182230] font-outfit">Manufacturing & Plant Labor</h3>
+                <p className="text-xs text-[#5C6878] leading-relaxed">
+                  Sub-second turnstile gate passes, CLRA Form XVI statutory muster rolls, and anti-ghost worker agency reconciliation for factory hubs.
+                </p>
+              </div>
+              <ul className="text-xs text-[#5C6878] space-y-2 border-t border-[#E5EAF0] pt-4">
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> 100% CLRA Form XVI Audit-Ready</li>
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> QR Gate Pass Validated in 0.34s</li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-6 rounded-3xl border border-[#E5EAF0] shadow-xs flex flex-col justify-between gap-6">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center">
+                  <Smartphone className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-[#182230] font-outfit">Logistics & 3PL Fleet Drivers</h3>
+                <p className="text-xs text-[#5C6878] leading-relaxed">
+                  Real-time Parivahan commercial driving license checks, court litigation records, and zero-app candidate WhatsApp magic links.
+                </p>
+              </div>
+              <ul className="text-xs text-[#5C6878] space-y-2 border-t border-[#E5EAF0] pt-4">
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> Commercial License Class Verification</li>
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> e-Courts Pan-India Criminal Check</li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-6 rounded-3xl border border-[#E5EAF0] shadow-xs flex flex-col justify-between gap-6">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#F1EEFF] text-[#8975E8] flex items-center justify-center">
+                  <Search className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-[#182230] font-outfit">Enterprise IT & Professional Staff</h3>
+                <p className="text-xs text-[#5C6878] leading-relaxed">
+                  Comprehensive EPFO UAN moonlighting radar, Aadhaar e-KYC, Bank account Penny Drops, and 50+ column Master Excel sheets.
+                </p>
+              </div>
+              <ul className="text-xs text-[#5C6878] space-y-2 border-t border-[#E5EAF0] pt-4">
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> Dual Employment Overlap Detection</li>
+                <li className="flex items-center gap-2 text-[#299C68] font-semibold"><Check className="w-4 h-4" /> Instant 5-Tab Excel & PDF Dossiers</li>
+              </ul>
+            </div>
+          </div>
+
           <WorkforceConnectionSection />
+
+          {/* ROI Calculator Section */}
+          <div className="space-y-6">
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+                FINANCIAL IMPACT ESTIMATOR
+              </span>
+              <h3 className="text-2xl sm:text-4xl font-bold text-[#182230] font-outfit">Enterprise ROI & Savings Calculator</h3>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-10 shadow-xs">
+              <div className="lg:col-span-6 flex flex-col justify-between gap-6">
+                <div>
+                  <label className="text-xs font-semibold text-[#182230] block mb-2">1. Select Workforce Structure</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: 'labor', label: 'Factory / Labor' },
+                      { id: 'corporate', label: 'Corporate / IT' },
+                      { id: 'mixed', label: 'Mixed Workforce' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setWorkforceType(item.id);
+                        }}
+                        className={`p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
+                          workforceType === item.id
+                            ? 'bg-[#426CF5] text-white border-[#426CF5] shadow-xs'
+                            : 'bg-[#FCFCFA] border-[#E5EAF0] text-[#5C6878] hover:text-[#182230]'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-[#182230]">2. Monthly Candidate Volume</label>
+                    <span className="text-sm font-bold text-[#426CF5] bg-[#EAF5FF] px-3 py-1 rounded-full border border-[#E5EAF0]">
+                      {monthlyHires.toLocaleString()} workers / mo
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="50"
+                    max="5000"
+                    step="50"
+                    value={monthlyHires}
+                    onChange={(e) => setMonthlyHires(Number(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#426CF5]"
+                  />
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                    <span className="text-[10px] text-[#5C6878] font-medium mr-1">PRESETS:</span>
+                    {[250, 500, 1000, 2500, 5000].map((preset) => (
+                      <button
+                        key={preset}
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setMonthlyHires(preset);
+                        }}
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-colors cursor-pointer ${
+                          monthlyHires === preset ? 'bg-[#426CF5] text-white border-[#426CF5]' : 'bg-[#FCFCFA] text-[#5C6878] border-[#E5EAF0]'
+                        }`}
+                      >
+                        {preset.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-[#182230]">3. Annual Contractor Churn</label>
+                    <span className="text-sm font-bold text-[#E06A26] bg-[#FFF1E8] px-3 py-1 rounded-full border border-[#E5EAF0]">
+                      {contractorTurnover}% / year
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="60"
+                    step="5"
+                    value={contractorTurnover}
+                    onChange={(e) => setContractorTurnover(Number(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#E06A26]"
+                  />
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 text-xs text-[#299C68] flex items-start gap-2.5">
+                  <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>Benchmark: Traditional manual verification averages ₹1,800/profile vs JOY TrueProfile automated check at a fraction of cost.</span>
+                </div>
+              </div>
+
+              <div className="lg:col-span-6 bg-[#F1EEFF] text-[#182230] border border-[#E5EAF0] rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xs">
+                <div>
+                  <span className="text-xs uppercase tracking-wider text-[#8975E8] font-bold block mb-1">TOTAL ESTIMATED ANNUAL VALUE CREATED</span>
+                  <div className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
+                    ₹{((totalMonthlySavings * 12) + Math.round(monthlyHires * 12 * 4500 * 0.04)).toLocaleString('en-IN')}
+                    <span className="text-xs sm:text-sm font-normal text-[#5C6878] ml-2">/ year</span>
+                  </div>
+                  <div className="text-xs text-[#299C68] mt-2 font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Estimated Payback Period: Under 12 Business Days</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 border-t border-[#8975E8]/20 pt-4">
+                  <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Direct Verification Savings</span>
+                    <div className="text-base font-bold text-[#426CF5] font-outfit mt-0.5">₹{(totalMonthlySavings * 12).toLocaleString('en-IN')} <span className="text-[10px] font-normal text-[#5C6878]">/ yr</span></div>
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Ghost Payroll Blocked</span>
+                    <div className="text-base font-bold text-[#E06A26] font-outfit mt-0.5">~{ghostWorkerPrevented * 12} profiles</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">HR TAT Hours Saved</span>
+                    <div className="text-base font-bold text-[#299C68] font-outfit mt-0.5">{(hoursSavedPerMonth * 12).toLocaleString()} hrs / yr</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl border border-[#E5EAF0]">
+                    <span className="text-[10px] text-[#5C6878] font-medium block">Compliance Assurance</span>
+                    <div className="text-base font-bold text-[#8975E8] font-outfit mt-0.5">100% Protected</div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setShowDemoModal(true);
+                  }}
+                  className="w-full py-3.5 rounded-full font-semibold text-sm text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md cursor-pointer text-center transition-all"
+                >
+                  Unlock These Savings Now 🚀
+                </button>
+              </div>
+            </div>
+          </div>
+
           <TrustSection 
             onOpenLegalHandbook={() => setShowLegalHandbook(true)}
             onOpenDemo={() => setShowDemoModal(true)}
@@ -1071,95 +1091,296 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* VIEW 8: SPECS & FAQ TAB */}
-      {activeTab === 'resources' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16">
+      {/* VIEW 4: WHAT WE DO */}
+      {activeTab === 'what_we' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-semibold text-[#8975E8] mb-2 px-3.5 py-1 rounded-full bg-[#F1EEFF] border border-[#E5EAF0] inline-block">
-              SPECIFICATIONS & REVIEWS
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              WHAT WE DO
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Specifications, Client Reviews & FAQ</h2>
-            <p className="text-[#5C6878] text-base">System reliability specifications, client testimonials, statutory compliance guides, and answers to common questions.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Human-Centered Digital Trust</h2>
+            <p className="text-[#5C6878] text-base">We bridge companies, HR teams, and workers with frictionless background screening, automated statutory compliance, and digital trust.</p>
           </div>
 
-          {/* Specs Control */}
-          <div className="flex justify-center">
-            <div className="inline-flex p-1 rounded-full bg-white border border-[#E5EAF0]">
-              {[
-                { id: 'performance', label: 'Performance' },
-                { id: 'security', label: 'Security & DPDP' },
-                { id: 'statutory', label: 'Statutory Law' },
-                { id: 'infrastructure', label: 'Infrastructure' }
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    soundEngine.playClick();
-                    setActiveSpecCategory(cat.id);
-                  }}
-                  className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    activeSpecCategory === cat.id
-                      ? 'bg-[#426CF5] text-white shadow-xs font-bold'
-                      : 'text-[#5C6878] hover:text-[#182230]'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+          <HumanIdentitySection onOpenDemo={() => setShowDemoModal(true)} />
+
+          {/* 4 Pillars of What We Do */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold">1</div>
+              <h4 className="font-bold text-base text-[#182230] font-outfit">Consent-Driven Identity</h4>
+              <p className="text-xs text-[#5C6878] leading-relaxed">
+                Direct UIDAI Aadhaar e-KYC and PAN 2.0 validation with explicit OTP consent and automatic data redaction.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold">2</div>
+              <h4 className="font-bold text-base text-[#182230] font-outfit">3D AI Biometric Liveness</h4>
+              <p className="text-xs text-[#5C6878] leading-relaxed">
+                68-point facial mesh analysis and anti-spoofing engine with 99.98% match confidence against official ID photos.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF1E8] text-[#E06A26] flex items-center justify-center font-bold">3</div>
+              <h4 className="font-bold text-base text-[#182230] font-outfit">Statutory & Moonlighting Audit</h4>
+              <p className="text-xs text-[#5C6878] leading-relaxed">
+                Real-time EPFO UAN scan to detect active secondary jobs, overlapping provident fund contributions, and payroll risks.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#F1EEFF] text-[#8975E8] flex items-center justify-center font-bold">4</div>
+              <h4 className="font-bold text-base text-[#182230] font-outfit">Multi-Sheet Excel & PDF Output</h4>
+              <p className="text-xs text-[#5C6878] leading-relaxed">
+                Instant generation of 5-tab individual employee workbooks, 50+ column master rosters, and cryptographic PDF dossiers.
+              </p>
             </div>
           </div>
 
-          {/* Specs Table */}
-          <div className="max-w-4xl mx-auto divide-y divide-[#E5EAF0] bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-xs">
-            {technicalSpecs[activeSpecCategory].map((spec, idx) => (
-              <div key={idx} className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
-                <dt className="text-xs uppercase font-semibold text-[#5C6878] flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#426CF5]"></span>
-                  <span>{spec.label}</span>
-                </dt>
-                <dd className="text-left sm:text-right">
-                  <span className="text-base font-bold text-[#182230] font-outfit">{spec.value}</span>
-                  <span className="block text-[11px] text-[#426CF5] mt-0.5">{spec.detail}</span>
-                </dd>
-              </div>
-            ))}
+          <WorkforceConnectionSection />
+          <WhyJoyTrueProfile onOpenDemo={() => setShowDemoModal(true)} />
+          
+          <CTASection 
+            onOpenDemo={() => setShowDemoModal(true)} 
+            onOpenContact={() => handleTabChange('contact')}
+          />
+        </div>
+      )}
+
+      {/* VIEW 5: HOW IT WORKS */}
+      {activeTab === 'how_it_works' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              SEAMLESS VERIFICATION RAIL
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">How JOY True Profile Works</h2>
+            <p className="text-[#5C6878] text-base">A 4-step frictionless verification rail taking candidates from invite to certified compliance in under 45 seconds.</p>
           </div>
 
-          {/* Client Reviews */}
-          <div>
-            <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
-              <div>
-                <h3 className="text-2xl font-bold text-[#182230] font-outfit">What Leaders Say</h3>
-                <p className="text-xs text-[#5C6878] mt-0.5">Verified feedback from enterprise plants and workforce teams.</p>
-              </div>
-              <button
-                onClick={() => setShowReviewModal(true)}
-                className="px-4 py-2 rounded-full bg-[#EAF5FF] text-[#426CF5] hover:bg-[#E0EFFE] border border-[#E5EAF0] text-xs font-semibold cursor-pointer"
-              >
-                + Post Review
-              </button>
+          <VerificationTimeline />
+          <LiveVideoSimulationShowcase />
+          
+          <div className="space-y-6">
+            <div className="text-center max-w-3xl mx-auto">
+              <span className="text-xs font-semibold text-[#299C68] mb-2 px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 inline-block">
+                PLANT ACCESS & SECURITY
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Turnstile QR Pass Clearance</h3>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {clientReviews.map((rev, idx) => (
-                <div key={idx} className="rounded-3xl border border-[#E5EAF0] bg-white p-6 flex flex-col justify-between gap-6 shadow-xs">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-1">
-                        {[...Array(rev.stars)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        ))}
+            <TurnstileGateSimulator />
+          </div>
+
+          <InteractiveSpeedComparison />
+        </div>
+      )}
+
+      {/* VIEW 6: SERVICES */}
+      {activeTab === 'services' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              ENTERPRISE SERVICES CATALOG
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Full Suite of Verification Services</h2>
+            <p className="text-[#5C6878] text-base">Direct official rails connectors and specialized screening modules for Indian enterprises.</p>
+          </div>
+
+          {/* Complete Services Catalog Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { title: 'Aadhaar UIDAI e-KYC', desc: 'Direct UIDAI OTP authentication with automatic data redaction and address verification.', speed: '0.42s', icon: ShieldCheck, color: 'text-indigo-600 bg-indigo-50' },
+              { title: 'PAN 2.0 ID Verification', desc: 'Real-time Income Tax & NSDL direct check validating full candidate legal name and status.', speed: '0.35s', icon: CreditCard, color: 'text-emerald-600 bg-emerald-50' },
+              { title: 'EPFO Moonlighting Radar', desc: 'Queries active UAN contributions to flag undisclosed secondary jobs and overlap periods.', speed: '0.78s', icon: Search, color: 'text-amber-600 bg-amber-50' },
+              { title: 'Bank Account Penny Drop', desc: 'Instant ₹1 IMPS transfer validating bank account number and beneficiary name with 100% accuracy.', speed: '0.38s', icon: CheckCircle2, color: 'text-blue-600 bg-blue-50' },
+              { title: 'Driving License (DL) Check', desc: 'Parivahan Sarathi check verifying license validity, transport classes, and active badges.', speed: '0.52s', icon: Smartphone, color: 'text-purple-600 bg-purple-50' },
+              { title: 'Pan-India Court & Litigation', desc: 'e-Courts civil and criminal tribunal search across District, High, and Supreme courts.', speed: '1.12s', icon: Scale, color: 'text-rose-600 bg-rose-50' },
+              { title: 'Factory Turnstile Gate Pass', desc: 'Instant scannable QR badge for plant turnstiles and statutory CLRA Form XVI muster records.', speed: '0.21s', icon: HardHat, color: 'text-teal-600 bg-teal-50' },
+              { title: '5-Tab Excel & PDF Export', desc: 'Instant generation of 5-tab individual workbooks and 50+ column master workforce spreadsheets.', speed: 'Instant', icon: FileSpreadsheet, color: 'text-cyan-600 bg-cyan-50' }
+            ].map((srv, idx) => {
+              const Icon = srv.icon;
+              return (
+                <div key={idx} className="bg-white p-5 rounded-3xl border border-[#E5EAF0] shadow-2xs flex flex-col justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-2.5 rounded-2xl ${srv.color}`}>
+                        <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-[10px] font-semibold text-[#8975E8] bg-[#F1EEFF] px-2.5 py-0.5 rounded-full border border-[#E5EAF0]">{rev.badge}</span>
+                      <span className="text-[10px] font-mono font-bold text-[#426CF5] bg-[#EAF5FF] px-2 py-0.5 rounded">
+                        TAT {srv.speed}
+                      </span>
                     </div>
-                    <p className="text-[#5C6878] text-sm italic font-normal">"{rev.quote}"</p>
-                  </div>
-                  <div className="border-t border-[#E5EAF0] pt-4">
-                    <h5 className="font-bold text-sm text-[#182230] font-outfit">{rev.name}</h5>
-                    <p className="text-xs text-[#5C6878] mt-0.5">{rev.role} — <span className="text-[#426CF5] font-semibold">{rev.company}</span></p>
+                    <h4 className="font-bold text-sm text-[#182230] font-outfit">{srv.title}</h4>
+                    <p className="text-xs text-[#5C6878] leading-relaxed">{srv.desc}</p>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Technical Specs Accordion Table */}
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <div className="inline-flex p-1 rounded-full bg-white border border-[#E5EAF0]">
+                {[
+                  { id: 'performance', label: 'Performance' },
+                  { id: 'security', label: 'Security & DPDP' },
+                  { id: 'statutory', label: 'Statutory Law' },
+                  { id: 'infrastructure', label: 'Infrastructure' }
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setActiveSpecCategory(cat.id);
+                    }}
+                    className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      activeSpecCategory === cat.id
+                        ? 'bg-[#426CF5] text-white shadow-xs font-bold'
+                        : 'text-[#5C6878] hover:text-[#182230]'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto divide-y divide-[#E5EAF0] bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-xs">
+              {technicalSpecs[activeSpecCategory].map((spec, idx) => (
+                <div key={idx} className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 first:pt-0 last:pb-0">
+                  <dt className="text-xs uppercase font-semibold text-[#5C6878] flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#426CF5]"></span>
+                    <span>{spec.label}</span>
+                  </dt>
+                  <dd className="text-left sm:text-right">
+                    <span className="text-base font-bold text-[#182230] font-outfit">{spec.value}</span>
+                    <span className="block text-[11px] text-[#426CF5] mt-0.5">{spec.detail}</span>
+                  </dd>
+                </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 7: CONTACT US */}
+      {activeTab === 'contact' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
+              CONNECT WITH US
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Get in Touch with Our Team</h2>
+            <p className="text-[#5C6878] text-base">Schedule a live demonstration or contact our enterprise solutions team across India.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Contact Form */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#E5EAF0] shadow-xs">
+              <div className="flex items-center gap-2 text-xs text-[#426CF5] font-semibold mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span>BOOK ENTERPRISE WALKTHROUGH</span>
+              </div>
+              <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Schedule a Custom Live Demo</h3>
+              <p className="text-[#5C6878] text-xs mb-6">Experience sub-45-second workforce verification tailored for your workforce size.</p>
+
+              {demoSubmitted ? (
+                <div className="py-8 text-center flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 flex items-center justify-center text-[#299C68] mb-4">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Demo Request Received!</h3>
+                  <p className="text-[#5C6878] text-sm max-w-sm mb-6">Our enterprise solutions engineers will contact you within 15 minutes.</p>
+                  <button onClick={() => setDemoSubmitted(false)} className="px-6 py-2.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] cursor-pointer shadow-sm">Submit Another Request</button>
+                </div>
+              ) : (
+                <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs">
+                  <div>
+                    <label className="text-[#182230] font-semibold block mb-1">Full Name *</label>
+                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[#182230] font-semibold block mb-1">Work Email *</label>
+                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-[#182230] font-semibold block mb-1">Phone Number *</label>
+                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[#182230] font-semibold block mb-1">Company / Organization *</label>
+                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                  </div>
+                  <button type="submit" disabled={demoLoading} className="w-full mt-2 py-3.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm cursor-pointer transition-all">
+                    {demoLoading ? 'Submitting...' : 'Confirm Demo Booking 🚀'}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Right Information & Office Locations */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="bg-white p-6 rounded-3xl border border-[#E5EAF0] shadow-xs space-y-4">
+                <h4 className="font-bold text-base text-[#182230] font-outfit">Corporate Headquarters</h4>
+                <div className="space-y-3 text-xs text-[#5C6878]">
+                  <div className="flex items-start gap-3">
+                    <Building2 className="w-4 h-4 text-[#426CF5] shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-[#182230] block">{content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>
+                      <span>{content.officeAddress || 'Coimbatore, Tamilnadu, India'}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-[#426CF5] shrink-0" />
+                    <a href={`mailto:${content.supportEmail || 'info@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline font-medium">
+                      {content.supportEmail || 'info@joycorporatesolutions.com'}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-[#426CF5] shrink-0" />
+                    <a href={`tel:${content.contactPhone || '+91 99946 99044'}`} className="text-[#426CF5] hover:underline font-medium">
+                      {content.contactPhone || '+91 99946 99044'}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-4 h-4 text-[#299C68] shrink-0" />
+                    <span>{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Regional Support Hubs */}
+              <div className="bg-[#FCFCFA] p-6 rounded-3xl border border-[#E5EAF0] shadow-xs space-y-3">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-[#182230]">Regional Operations Hubs</h4>
+                <div className="space-y-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
+                    <div>
+                      <strong className="text-slate-800 block">Chennai / Sriperumbudur Hub</strong>
+                      <span className="text-[11px] text-slate-500">Automotive & Electronics Cluster</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
+                    <div>
+                      <strong className="text-slate-800 block">Gujarat / Sanand Mega Zone</strong>
+                      <span className="text-[11px] text-slate-500">EV & Heavy Engineering</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
+                    <div>
+                      <strong className="text-slate-800 block">Mumbai / Bhiwandi Cluster</strong>
+                      <span className="text-[11px] text-slate-500">3PL & Logistics Mega Center</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1222,18 +1443,18 @@ export const LandingPageView = () => {
               <ul className="flex flex-col gap-2 text-xs text-[#5C6878]">
                 <li><button onClick={() => handleTabChange('overview')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Home</button></li>
                 <li><button onClick={() => handleTabChange('features')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Features</button></li>
-                <li><button onClick={() => handleTabChange('moonlighting')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Moonlighting Radar</button></li>
-                <li><button onClick={() => handleTabChange('turnstile')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Turnstile Gate Pass</button></li>
-                <li><button onClick={() => handleTabChange('comparison')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Speed Matrix</button></li>
+                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Solutions</button></li>
+                <li><button onClick={() => handleTabChange('what_we')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">What We Do</button></li>
+                <li><button onClick={() => handleTabChange('how_it_works')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">How It Works</button></li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-3">
-              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Resources</h4>
+              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Services & Portal</h4>
               <ul className="flex flex-col gap-2 text-xs text-[#5C6878]">
-                <li><button onClick={() => handleTabChange('roi')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">ROI Calculator</button></li>
-                <li><button onClick={() => handleTabChange('solutions')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Enterprise Solutions</button></li>
-                <li><button onClick={() => handleTabChange('resources')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Technical Specs & FAQ</button></li>
+                <li><button onClick={() => handleTabChange('services')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Verification Services</button></li>
+                <li><button onClick={() => handleTabChange('contact')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Contact & Demo</button></li>
+                <li><button onClick={() => { setShowTourGuideModal(true); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Tour & Knowledge Hub 🧭</button></li>
                 <li><button onClick={() => navigate('/login')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Portal Login</button></li>
               </ul>
             </div>
@@ -1284,6 +1505,12 @@ export const LandingPageView = () => {
 
       {/* FLOATING WHATSAPP CONCIERGE */}
       <WhatsAppConcierge3D />
+
+      {/* INTERACTIVE TOUR GUIDE MODAL */}
+      <InteractiveTourGuideModal 
+        isOpen={showTourGuideModal} 
+        onClose={() => setShowTourGuideModal(false)} 
+      />
 
       {/* DEMO MODAL */}
       {showDemoModal && (

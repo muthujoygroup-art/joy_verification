@@ -910,6 +910,8 @@ export const INDIA_STATES_AND_DISTRICTS = {
 };
 
 export const ALL_INDIAN_STATES = Object.keys(INDIA_STATES_AND_DISTRICTS);
+export const INDIA_STATES_DISTRICTS = INDIA_STATES_AND_DISTRICTS;
+export const ALL_INDIA_STATES = ALL_INDIAN_STATES;
 
 /**
  * Get sorted list of all 28 States, 8 UTs + 'Other State / Union Territory'
