@@ -25,6 +25,7 @@ import {
 export const CompanyActivationModal = ({ company, onClose }) => {
   const { showToast } = useApp();
   const [passcodeText, setPasscodeText] = useState('1234');
+  const [recipientEmail, setRecipientEmail] = useState('');
 
   const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -43,10 +44,10 @@ export const CompanyActivationModal = ({ company, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-
   useEffect(() => {
     if (company) {
       setPasscodeText(company.activation_password || company.activationPassword || '1234');
+      setRecipientEmail(company.email || '');
     }
   }, [company]);
 
@@ -73,14 +74,15 @@ export const CompanyActivationModal = ({ company, onClose }) => {
     if (e) e.preventDefault();
     const clean = passcodeText.trim() || '1234';
     try {
-      await api.setCompanyActivationPassword(company.id, clean);
+      const targetId = company.id || company.code;
+      await api.setCompanyActivationPassword(targetId, clean);
       company.activation_password = clean;
       company.activationPassword = clean;
       setIsPasscodeSaved(true);
       if (showToast) showToast(`🔐 Activation password set to "${clean}" for ${company.name}!`);
       setTimeout(() => setIsPasscodeSaved(false), 2000);
     } catch (err) {
-      if (showToast) showToast('❌ Failed to update password');
+      if (showToast) showToast(`❌ Failed to update password: ${err.message || 'Error'}`);
     }
   };
 
@@ -92,19 +94,25 @@ export const CompanyActivationModal = ({ company, onClose }) => {
 
   // Send activation email via cPanel SMTP
   const handleSendEmail = async () => {
-    if (!company.email) {
+    const targetEmail = recipientEmail.trim() || company.email;
+    if (!targetEmail || !targetEmail.includes('@')) {
       if (showToast) showToast('⚠️ Company has no registered admin email address');
       return;
     }
     setIsSendingEmail(true);
     try {
-      await api.resendCompanyActivation(company.id, 'email');
+      const cleanPin = passcodeText.trim() || '1234';
+      const targetId = company.id || company.code;
+      const res = await api.resendCompanyActivation(targetId, 'email', {
+        email: targetEmail,
+        password: cleanPin
+      });
       setEmailSentSuccess(true);
-      if (showToast) showToast(`📧 Activation email & password sent to ${company.email}!`);
-      setTimeout(() => setEmailSentSuccess(false), 3000);
+      if (showToast) showToast(res?.message || `📧 Activation email & password sent to ${targetEmail}!`);
+      setTimeout(() => setEmailSentSuccess(false), 3500);
     } catch (err) {
       console.warn('Email dispatch warning:', err);
-      if (showToast) showToast(`📧 Activation email queued for ${company.email}`);
+      if (showToast) showToast(`📧 Activation email queued for ${targetEmail}`);
     } finally {
       setIsSendingEmail(false);
     }
@@ -118,7 +126,8 @@ export const CompanyActivationModal = ({ company, onClose }) => {
     }
     setIsSendingSms(true);
     try {
-      await api.resendCompanyActivation(company.id, 'sms');
+      const targetId = company.id || company.code;
+      await api.resendCompanyActivation(targetId, 'sms');
       setSmsSentSuccess(true);
       if (showToast) showToast(`📱 Activation SMS dispatched to ${company.phone}!`);
       setTimeout(() => setSmsSentSuccess(false), 3000);
@@ -131,12 +140,12 @@ export const CompanyActivationModal = ({ company, onClose }) => {
 
   return createPortal((
     <div 
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn"
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-center animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-6 space-y-4 animate-modal-spring text-slate-900">
+      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-6 space-y-4 animate-modal-spring text-slate-900 max-h-[92vh] overflow-y-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -146,7 +155,7 @@ export const CompanyActivationModal = ({ company, onClose }) => {
             </div>
             <div>
               <h3 className="text-base font-black text-slate-900">Company Portal Activation Link</h3>
-              <p className="text-xs text-slate-500 font-medium">Multi-channel self-activation dispatcher</p>
+              <p className="text-xs text-slate-500 font-medium">Multi-channel self-activation & credentials dispatcher</p>
             </div>
           </div>
           <button 
@@ -158,7 +167,7 @@ export const CompanyActivationModal = ({ company, onClose }) => {
         </div>
 
         {/* Company Summary Card */}
-        <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl flex items-center justify-between text-xs">
+        <div className="p-3.5 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl flex items-center justify-between text-xs">
           <div>
             <div className="text-sm font-black text-slate-900 flex items-center gap-1.5">
               <span>{company.name}</span>
@@ -173,9 +182,9 @@ export const CompanyActivationModal = ({ company, onClose }) => {
               ✉️ {company.email} {company.phone ? `• 📞 ${company.phone}` : ''}
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0">
             <span className="text-[10px] font-bold text-slate-400 block uppercase">PLAN</span>
-            <span className="text-xs font-black text-indigo-700">{company.plan}</span>
+            <span className="text-xs font-black text-indigo-700">{company.plan || 'Standard Tier'}</span>
           </div>
         </div>
 
@@ -222,118 +231,149 @@ export const CompanyActivationModal = ({ company, onClose }) => {
           </div>
 
           <p className="text-[10px] text-indigo-800/80 font-medium">
-            The company admin will enter this exact passcode to unlock their portal activation page.
+            The company admin enters this passcode to unlock their activation portal and review statutory documents.
           </p>
         </div>
 
-        {/* Live Scannable QR Code */}
-        <div className="text-center space-y-1.5 py-1">
-          <div className="w-44 h-44 mx-auto bg-white p-2.5 border-2 border-purple-400/80 rounded-3xl shadow-md flex flex-col items-center justify-center relative hover:scale-102 transition-transform">
-            <QRCodeSVG 
-              value={activationUrl}
-              size={150}
-              level="H"
-              includeMargin={false}
-              className="rounded-lg"
-            />
-            <div className="absolute -bottom-2.5 bg-purple-700 text-white text-[9px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-md border border-purple-400">
-              Scannable Activation QR
-            </div>
+        {/* 🚀 PROMINENT DIRECT DISPATCH CHANNELS (Email & WhatsApp) */}
+        <div className="p-3.5 bg-slate-50 border-2 border-indigo-200/80 rounded-2xl space-y-2.5 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="font-black text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <Send className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Send Activation Email & Invite</span>
+            </span>
+            <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
+              cPanel SMTP Gateway
+            </span>
           </div>
-          <p className="text-[10px] text-slate-500 font-bold pt-1">
-            Scan to open company self-activation portal on mobile / desktop
-          </p>
+
+          {/* Target Email Input & Main Send Button */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <input 
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                placeholder="Admin Email Address..."
+                className="w-full bg-white border border-slate-300 focus:border-indigo-500 rounded-xl text-xs py-2 pl-8 pr-2 font-mono font-bold text-slate-800 outline-none"
+              />
+              <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+            </div>
+
+            {/* Main Send Email Button */}
+            <button
+              type="button"
+              onClick={handleSendEmail}
+              disabled={isSendingEmail}
+              className={`py-2 px-4 rounded-xl border flex items-center justify-center gap-2 font-black text-xs transition-all cursor-pointer shadow-md shrink-0 ${
+                emailSentSuccess 
+                  ? 'bg-emerald-600 border-emerald-600 text-white' 
+                  : 'bg-indigo-600 hover:bg-indigo-700 border-indigo-600 text-white active:scale-95'
+              }`}
+              title="Send Activation Email with PIN to Admin via SMTP"
+            >
+              {isSendingEmail ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
+                  <span>Sending...</span>
+                </>
+              ) : emailSentSuccess ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span>Sent Successfully ✓</span>
+                </>
+              ) : (
+                <>
+                  <Mail className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Send Mail 📧</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Quick WhatsApp Dispatch */}
+          <div className="flex items-center justify-between pt-1 border-t border-slate-200/70 text-[11px]">
+            <span className="text-slate-500 font-medium">Alternative channel:</span>
+            <button
+              type="button"
+              onClick={() => {
+                const phoneClean = (company.phone || '').replace(/[^0-9]/g, '');
+                const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ONBOARDING*\n\nDear ${company.contact_person || company.name},\n\nYour organization account for *${company.name}* (Code: #${company.code}) has been provisioned.\n\n🔗 *Activation Link*: ${activationUrl}\n🔑 *Security Unlock PIN*: ${passcodeText}\n\nPlease click to unlock the activation portal and execute the Master Services Agreement.`;
+                const waUrl = `https://api.whatsapp.com/send?${phoneClean ? `phone=${phoneClean}&` : ''}text=${encodeURIComponent(fullMsg)}`;
+                window.open(waUrl, '_blank');
+              }}
+              className="py-1 px-2.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center gap-1.5 font-bold cursor-pointer transition-all shadow-2xs"
+            >
+              <Smartphone className="w-3 h-3 text-emerald-600" />
+              <span>Dispatch via WhatsApp 💬</span>
+            </button>
+          </div>
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <button
             type="button"
             onClick={handleOpenDirectly}
-            className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2.5 px-4 flex items-center justify-center gap-2 rounded-2xl shadow-md transition-all cursor-pointer text-xs"
+            className="btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-xs transition-all cursor-pointer text-xs"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-3.5 h-3.5" />
             <span>Open Activation Portal 🚀</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyLink}
-            className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-2xl border transition-all cursor-pointer ${
+            className={`btn py-2.5 px-3 flex items-center justify-center gap-1.5 font-black text-xs rounded-xl border transition-all cursor-pointer ${
               copiedLink 
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
-                : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
+                : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-2xs'
             }`}
           >
             {copiedLink ? (
               <>
-                <Check className="w-4 h-4 text-emerald-600" />
-                <span>Activation Link Copied! ✓</span>
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Link Copied! ✓</span>
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4 text-slate-600" />
+                <Copy className="w-3.5 h-3.5 text-slate-600" />
                 <span>Copy Activation Link 📋</span>
               </>
             )}
           </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ONBOARDING INVITATION*\n\nDear ${company.contact_person || company.name},\n\nYour enterprise verification account for *${company.name}* (Code: #${company.code}) has been provisioned.\n\n🔗 *Activation Portal*: ${activationUrl}\n🔑 *Security Unlock PIN*: ${passcodeText}\n💳 *Plan*: ${company.plan}\n\nPlease unlock the link to upload corporate details and execute the Master Services Agreement.\n\n_JOY Direct Verification Gateway_`;
-              navigator.clipboard.writeText(fullMsg);
-              if (showToast) showToast('📋 Full Invitation Dossier copied to clipboard!');
-            }}
-            className="w-full btn py-2 px-3 flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-100/70 text-indigo-900 transition-all cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Copy Full Invitation Dossier (WhatsApp / Email) 📄</span>
-          </button>
         </div>
 
-        {/* Multi-Channel Dispatch Buttons */}
-        <div className="pt-2 border-t border-slate-100 space-y-2">
-          <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block">
-            Direct Dispatch Channels
-          </span>
+        {/* Copy Full Invitation Dossier */}
+        <button
+          type="button"
+          onClick={() => {
+            const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ONBOARDING INVITATION*\n\nDear ${company.contact_person || company.name},\n\nYour enterprise verification account for *${company.name}* (Code: #${company.code}) has been provisioned.\n\n🔗 *Activation Portal*: ${activationUrl}\n🔑 *Security Unlock PIN*: ${passcodeText}\n💳 *Plan*: ${company.plan || 'Standard Tier'}\n\nPlease unlock the link to upload corporate details and execute the Master Services Agreement.\n\n_JOY Direct Verification Gateway_`;
+            navigator.clipboard.writeText(fullMsg);
+            if (showToast) showToast('📋 Full Invitation Dossier copied to clipboard!');
+          }}
+          className="w-full btn py-2 px-3 flex items-center justify-center gap-1.5 font-bold text-xs rounded-xl border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100 text-indigo-900 transition-all cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Copy Full Invitation Dossier (WhatsApp / Email) 📄</span>
+        </button>
 
-          <div className="grid grid-cols-2 gap-2">
-            {/* Email Dispatch */}
-            <button
-              type="button"
-              onClick={handleSendEmail}
-              disabled={isSendingEmail}
-              className={`p-2 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all cursor-pointer shadow-xs ${
-                emailSentSuccess 
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
-                  : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
-              }`}
-            >
-              {isSendingEmail ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : emailSentSuccess ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-              ) : (
-                <Mail className="w-3.5 h-3.5 text-indigo-600" />
-              )}
-              <span>{isSendingEmail ? 'Sending...' : emailSentSuccess ? 'Sent ✓' : 'Send Email 📧'}</span>
-            </button>
-
-            {/* WhatsApp Web Dispatch */}
-            <button
-              type="button"
-              onClick={() => {
-                const phoneClean = (company.phone || '').replace(/[^0-9]/g, '');
-                const fullMsg = `🏢 *JOY CORPORATE SOLUTIONS - ENTERPRISE ACTIVATION*\n\nDear ${company.contact_person || company.name},\n\nYour account for *${company.name}* is ready.\n\n🔗 Activation Link: ${activationUrl}\n🔑 Security PIN: ${passcodeText}\n\nPlease click the link to activate your portal.`;
-                const waUrl = `https://api.whatsapp.com/send?${phoneClean ? `phone=${phoneClean}&` : ''}text=${encodeURIComponent(fullMsg)}`;
-                window.open(waUrl, '_blank');
-              }}
-              className="p-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center justify-center gap-2 font-bold text-xs transition-all cursor-pointer shadow-xs"
-            >
-              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
-              <span>WhatsApp 💬</span>
-            </button>
+        {/* Compact Scannable QR Code Footer */}
+        <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-4">
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-black text-slate-800 block">Scannable Mobile QR</span>
+            <p className="text-[10px] text-slate-500 leading-tight">
+              Scan with mobile camera to open self-activation page on phone
+            </p>
+          </div>
+          <div className="w-18 h-18 bg-white p-1.5 border border-purple-300 rounded-xl shadow-sm shrink-0 flex items-center justify-center">
+            <QRCodeSVG 
+              value={activationUrl}
+              size={60}
+              level="M"
+              includeMargin={false}
+              className="rounded"
+            />
           </div>
         </div>
 

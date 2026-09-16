@@ -210,6 +210,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             code=comp_code,
             contact_person=clean_contact,
             email=clean_email,
+            phone=clean_phone,
             password_hash=login_password_set,
             plan=plan_name,
             price_per_verification=price_per_check,
@@ -218,6 +219,13 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             features=combined_features,
             verified_count_this_month=0,
             status="Pending Activation",
+            activation_status="Pending Activation",
+            activation_token=activation_token,
+            activation_password=activation_pin_set,
+            activation_expires_at=expires_at,
+            location=location_data,
+            registered_address=location_data,
+            logo_url=logo_data,
             terms_accepted="true",
             terms_accepted_at=datetime.utcnow(),
             terms_version="v2.4-2026",
@@ -239,19 +247,20 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         # 📧 Automated Email Notification with Activation Link & Password
         try:
             if new_comp.email:
-                send_company_welcome_email(
+                send_res = send_company_welcome_email(
                     company_name=new_comp.name,
                     company_code=new_comp.code,
                     admin_email=new_comp.email,
                     contact_person=new_comp.contact_person or new_comp.name,
                     temporary_password=login_password_set,
-                    activation_pin=new_comp.activation_password or "1234",
+                    activation_pin=activation_pin_set,
                     activation_token=activation_token,
                     expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
                     plan_name=new_comp.plan,
                     credits=new_comp.max_limit or 500,
                     db=db
                 )
+                print(f"✅ Automated company welcome email dispatched to {new_comp.email}: {send_res}")
         except Exception as e:
             print(f"Warning: Failed to dispatch company welcome email: {e}")
 
@@ -2001,25 +2010,53 @@ def update_company_tariffs(company_id: str, payload: dict, db: Session = Depends
 
 
 @router.post("/companies/{company_id}/resend-activation")
-def resend_company_activation_email_endpoint(company_id: str, db: Session = Depends(get_db)):
+def resend_company_activation_email_endpoint(company_id: str, payload: Optional[dict] = None, db: Session = Depends(get_db)):
     """Resend activation link, security PIN, and credentials to company admin via SMTP"""
-    comp = db.query(Company).filter(Company.id == company_id).first()
+    comp = db.query(Company).filter(
+        (Company.id == company_id) | (Company.code == company_id) | (Company.email.ilike(company_id))
+    ).first()
     if not comp:
         raise HTTPException(status_code=404, detail="Company not found")
+
+    from sqlalchemy.orm.attributes import flag_modified
+
+    target_email = comp.email
+    if payload and payload.get("email") and "@" in str(payload.get("email")):
+        cand_email = str(payload.get("email")).strip()
+        if cand_email.lower() != (comp.email or "").lower():
+            # Only update if no other company has this email
+            dup = db.query(Company).filter(Company.email.ilike(cand_email), Company.id != comp.id).first()
+            if not dup:
+                comp.email = cand_email
+        target_email = cand_email
+
+    if payload and payload.get("password"):
+        clean_pw = str(payload.get("password")).strip()
+        comp.activation_password = clean_pw
+        comp.password_hash = clean_pw
 
     if not comp.activation_token:
         comp.activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
         comp.activation_password = comp.activation_password or "1234"
         comp.activation_expires_at = datetime.utcnow() + timedelta(days=15)
+
+    flag_modified(comp, "features")
+
+    try:
         db.commit()
+        db.refresh(comp)
+    except Exception as commit_err:
+        db.rollback()
+        logger.warning(f"Error persisting company activation details: {commit_err}")
 
     email_sent = False
+    error_msg = None
     try:
-        if comp.email:
-            send_company_welcome_email(
+        if target_email:
+            res = send_company_welcome_email(
                 company_name=comp.name,
                 company_code=comp.code,
-                admin_email=comp.email,
+                admin_email=target_email,
                 contact_person=comp.contact_person or comp.name,
                 temporary_password=comp.password_hash or "Company@Admin2026",
                 activation_pin=comp.activation_password or "1234",
@@ -2029,18 +2066,22 @@ def resend_company_activation_email_endpoint(company_id: str, db: Session = Depe
                 credits=comp.max_limit or 500,
                 db=db
             )
-            email_sent = True
+            email_sent = res.get("success", True) if isinstance(res, dict) else True
+            if isinstance(res, dict) and not res.get("success"):
+                error_msg = res.get("error")
     except Exception as e:
+        error_msg = str(e)
         print(f"Warning on resend email: {e}")
 
     return {
         "success": True,
-        "message": f"Activation credentials and invitation link dispatched to {comp.email}!",
+        "message": f"Activation credentials and invitation link dispatched to {target_email}!" if email_sent else f"Activation link generated for {target_email}. Note: {error_msg or 'Email queued'}",
         "email_dispatched": email_sent,
         "activation_token": comp.activation_token,
         "activation_pin": comp.activation_password or "1234",
         "company_code": comp.code,
-        "company_email": comp.email
+        "company_email": target_email,
+        "error": error_msg
     }
 
 

@@ -6998,8 +6998,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
               </div>
 
+              {/* Automated Email Notification Box */}
+              <div className="p-3 rounded-2xl border-2 border-indigo-200 bg-indigo-50/70 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-indigo-600 shrink-0">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-black text-indigo-950 block">Instant Email Invitation</span>
+                    <span className="text-[10px] text-indigo-800 font-medium">
+                      Automatically sends activation link & PIN to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
+                    </span>
+                  </div>
+                </div>
+                <span className="badge badge-emerald text-[9px] font-black px-2 py-0.5 shrink-0 shadow-2xs">
+                  AUTO-SEND ON 📨
+                </span>
+              </div>
+
               {/* Terms Acceptance */}
-              <div className="p-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2">
+              <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
                     <Scale className="w-4 h-4 text-indigo-700" />
@@ -7009,7 +7027,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
 
                 <p className="text-[11px] text-slate-600 leading-relaxed">
-                  Upon creation, an official activation link will be generated. The company admin can complete the remaining steps (CIN, GSTIN, Company PAN, and COI uploads) by unlocking the link with the security password set above.
+                  Upon creation, an official activation link and 4-digit unlock PIN are generated. The company admin unlocks the portal to upload CIN, GSTIN, Company PAN, and execute the DPDP Master Services Agreement.
                 </p>
               </div>
 
@@ -7025,7 +7043,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   type="submit" 
                   className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Onboard & Generate Activation Link 🚀</span>
+                  <span>Onboard & Send Activation Link 🚀</span>
                 </button>
               </div>
             </form>

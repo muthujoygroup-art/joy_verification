@@ -163,7 +163,7 @@ def test_company_smtp_dispatch(company_id: str, payload: dict, db: Session = Dep
 
     return {
         "success": True,
-        "message": f"🎉 Test email successfully delivered to {to_email} via {res.get('mode')} mode!",
+        "message": f"🎉 Test email successfully delivered to {to_email} via {res.get('mode') or 'SMTP Gateway'}!",
         "details": res
     }
 

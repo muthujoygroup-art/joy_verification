@@ -184,7 +184,26 @@ export const api = {
   rejectCompanyRequest: (requestId, payload = {}) => request(`/superadmin/company-requests/${requestId}/reject`, { method: 'PUT', body: JSON.stringify(payload) }),
   topupCompanyCredits: (companyId, payload) => request(`/superadmin/companies/${companyId}/topup-credits`, { method: 'POST', body: JSON.stringify(payload) }),
   updateCompanyTariffs: (companyId, tariffs) => request(`/superadmin/companies/${companyId}/tariffs`, { method: 'PUT', body: JSON.stringify({ tariffs }) }),
-  resendCompanyActivationEmail: (companyId) => request(`/superadmin/companies/${companyId}/resend-activation`, { method: 'POST' }),
+  resendCompanyActivationEmail: (companyId, payload = {}) => request(`/superadmin/companies/${companyId}/resend-activation`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  resendCompanyActivation: (companyId, channel = 'email', payload = {}) => request(`/superadmin/companies/${companyId}/resend-activation`, {
+    method: 'POST',
+    body: JSON.stringify({ channel, ...payload }),
+  }),
+  setCompanyActivationPassword: (companyId, password) => request(`/superadmin/companies/${companyId}/set-activation-password`, {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  }),
+  testSuperAdminSmtpDispatch: (toEmail, smtpConfig = null) => request('/settings/test-email', {
+    method: 'POST',
+    body: JSON.stringify({ to_email: toEmail, smtp_config: smtpConfig }),
+  }),
+  dispatchOnboardingLink: (payload) => request('/hr/dispatch-link', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
   approveCompanyLogin: (companyId) => {
     requestCache.clear();
     return request(`/superadmin/companies/${companyId}/approve-login`, { method: 'PUT' });
