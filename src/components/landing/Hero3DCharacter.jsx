@@ -19,9 +19,6 @@ export const Hero3DCharacter = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Soft Pastel Background Ambient Glow */}
-      <div className="absolute -inset-4 bg-gradient-to-tr from-[#EAF5FF] via-[#F1EEFF] to-[#EAF8F0] rounded-[40px] blur-2xl opacity-80 pointer-events-none" />
-
       {/* Main 3D Card Container */}
       <div className="relative w-full rounded-3xl bg-white border border-[#E5EAF0] p-4 sm:p-6 shadow-[0_20px_50px_rgba(24,34,48,0.06)] transition-all duration-300 hover:shadow-[0_25px_60px_rgba(66,108,245,0.12)]">
         

@@ -535,9 +535,6 @@ export const LandingPageView = () => {
         <>
           {/* 3D HERO SECTION */}
           <section className="relative z-10 pt-12 pb-20 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            {/* Soft Ambient Pastel Mesh Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-r from-[#F1EEFF]/80 via-[#EAF5FF]/80 to-[#EAF8F0]/80 blur-[120px] pointer-events-none rounded-full" />
-
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 xl:gap-16 items-center">
               
               {/* Left Column: Editorial Headline & Actions */}
