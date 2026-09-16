@@ -543,23 +543,23 @@ export const LandingPageView = () => {
               {/* Left Column: Editorial Headline & Actions */}
               <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
                 
-                {/* Dynamic Eyebrow Badge - High Contrast Slate & Emerald */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-900 border border-slate-700 text-white shadow-md">
-                  <Sparkles className="w-4 h-4 text-[#38BDF8] animate-pulse" />
-                  <span className="tracking-wider text-xs font-black uppercase text-white">{content.heroBadge || 'DIRECT REGISTRY RAILS'}</span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#10B981] text-white text-[11px] font-black uppercase tracking-wider shadow-xs">
+                {/* Dynamic Eyebrow Badge - Perfectly Balanced Modern Pill */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/80 border border-blue-200 text-blue-800 shadow-2xs">
+                  <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
+                  <span className="font-bold text-xs text-blue-900 tracking-wide uppercase">{content.heroBadge || 'DIRECT REGISTRY RAILS'}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[10px] font-extrabold uppercase">
                     Real-Time KYC
                   </span>
                 </div>
 
-                {/* Main Hero Headline - Maximum Dark Slate & Authoritative Royal Blue */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-950 font-outfit tracking-tight leading-[1.05]">
+                {/* Main Hero Headline - Harmonious Deep Slate & Electric Sapphire */}
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#182230] font-outfit tracking-tight leading-[1.08]">
                   Every person. <br />
-                  <span className="text-[#1D4ED8]">One trusted profile.</span>
+                  <span className="text-[#2563EB]">One trusted profile.</span>
                 </h1>
 
-                {/* Supporting Copy - Ultra Crisp & Dark Font */}
-                <p className="text-base sm:text-lg text-slate-900 font-semibold max-w-xl leading-relaxed">
+                {/* Supporting Copy - Balanced, Natural, Crystal Clear Body Text */}
+                <p className="text-base sm:text-lg text-[#475467] max-w-xl leading-relaxed font-normal">
                   {content.heroSubtitle || 'Joy True Profile helps enterprises, HR teams, and contractors connect through instant direct-rail workforce verification—unifying identity, statutory compliance, and digital gate credentials in one seamless workflow.'}
                 </p>
 
@@ -570,7 +570,7 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       setShowDemoModal(true);
                     }}
-                    className="px-8 py-4 rounded-full font-black text-sm sm:text-base text-white bg-[#1D4ED8] hover:bg-[#1E40AF] shadow-lg hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border-2 border-[#1D4ED8]"
+                    className="px-8 py-4 rounded-full font-bold text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>{content.ctaPrimaryText || 'Explore Joy True Profile 🚀'}</span>
                     <ArrowRight className="w-4 h-4 text-white" />
@@ -582,30 +582,30 @@ export const LandingPageView = () => {
                       setShowTourGuideModal(true);
                       window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
                     }}
-                    className="bg-white hover:bg-slate-100 border-2 border-slate-950 px-7 py-4 rounded-full font-black text-sm sm:text-base text-slate-950 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border border-[#E5EAF0] px-7 py-4 rounded-full font-bold text-sm text-[#182230] shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-[#1D4ED8] animate-spin-slow" />
+                    <Compass className="w-4 h-4 text-[#2563EB] animate-spin-slow" />
                     <span>{content.ctaSecondaryText || 'How It Works 🧭'}</span>
                   </button>
                 </div>
 
-                {/* Clean High-Contrast Metrics Bar */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-6 border-t-2 border-slate-200 w-full max-w-2xl">
-                  <div className="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm text-center sm:text-left hover:border-blue-400 transition-colors">
-                    <div className="text-2xl sm:text-3xl font-black text-[#1D4ED8] font-outfit">{content.statSpeed || 'Real-Time'}</div>
-                    <div className="text-xs text-slate-900 font-bold mt-1 block">{content.statSpeedLabel || 'Instant Rails'}</div>
+                {/* Clean Balanced Metrics Bar */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-[#E5EAF0] w-full max-w-2xl">
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#2563EB] font-outfit">{content.statSpeed || 'Real-Time'}</div>
+                    <div className="text-xs text-[#475467] font-medium mt-0.5">{content.statSpeedLabel || 'Instant Rails'}</div>
                   </div>
-                  <div className="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm text-center sm:text-left hover:border-slate-500 transition-colors">
-                    <div className="text-2xl sm:text-3xl font-black text-slate-950 font-outfit">{content.statAccuracy || '99.98%'}</div>
-                    <div className="text-xs text-slate-900 font-bold mt-1 block">{content.statAccuracyLabel || 'Match Accuracy'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#182230] font-outfit">{content.statAccuracy || '99.98%'}</div>
+                    <div className="text-xs text-[#475467] font-medium mt-0.5">{content.statAccuracyLabel || 'Match Accuracy'}</div>
                   </div>
-                  <div className="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm text-center sm:text-left hover:border-emerald-400 transition-colors">
-                    <div className="text-2xl sm:text-3xl font-black text-[#047857] font-outfit">{content.statClients || '150+'}</div>
-                    <div className="text-xs text-slate-900 font-bold mt-1 block">{content.statClientsLabel || 'Enterprises'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#059669] font-outfit">{content.statClients || '150+'}</div>
+                    <div className="text-xs text-[#475467] font-medium mt-0.5">{content.statClientsLabel || 'Enterprises'}</div>
                   </div>
-                  <div className="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm text-center sm:text-left hover:border-purple-400 transition-colors">
-                    <div className="text-2xl sm:text-3xl font-black text-[#6D28D9] font-outfit">{content.statProfiles || '500k+'}</div>
-                    <div className="text-xs text-slate-900 font-bold mt-1 block">{content.statProfilesLabel || 'Profiles Verified'}</div>
+                  <div className="bg-white p-3.5 rounded-2xl border border-[#E5EAF0] shadow-2xs text-center sm:text-left">
+                    <div className="text-xl sm:text-2xl font-bold text-[#7C3AED] font-outfit">{content.statProfiles || '500k+'}</div>
+                    <div className="text-xs text-[#475467] font-medium mt-0.5">{content.statProfilesLabel || 'Profiles Verified'}</div>
                   </div>
                 </div>
 
