@@ -52,8 +52,13 @@ def get_engine():
         connect_args={"check_same_thread": False}
     )
 
-def apply_runtime_migrations(target_engine):
-    """Executes safe IF NOT EXISTS column and table migrations on PostgreSQL/SQLite"""
+_MIGRATIONS_APPLIED = False
+
+def apply_runtime_migrations(target_engine, force: bool = False):
+    """Executes safe IF NOT EXISTS column and table migrations on PostgreSQL/SQLite once at startup"""
+    global _MIGRATIONS_APPLIED
+    if _MIGRATIONS_APPLIED and not force:
+        return
     from sqlalchemy import text
     migrations = [
         "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_number VARCHAR(50);",
@@ -195,6 +200,7 @@ def apply_runtime_migrations(target_engine):
                 conn.execute(text(stmt))
         except Exception:
             pass
+    _MIGRATIONS_APPLIED = True
 
 engine = get_engine()
 try:

@@ -1342,6 +1342,7 @@ def verify_esic_live(
     if not candidate:
         return False, "Candidate not found", None
 
+    provider_info = get_active_provider_info(db)
     target_mobile = candidate.mobile or "9942817491"
     clean_esi = "".join(filter(str.isdigit, str(esic_number or "")))
     

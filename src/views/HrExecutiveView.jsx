@@ -80,6 +80,7 @@ import {
   Layers,
   ListFilter,
   Lock,
+  Loader2,
   Mail,
   MapPin,
   MessageSquare,
@@ -288,6 +289,7 @@ export const HrExecutiveView = () => {
     toggleCandidateStatus,
     clearAllCandidates,
     verifyCandidateLiveDocument,
+    verifyAllCandidateDocuments,
     setRoleView, 
     showToast, 
     hrUsers, 
@@ -311,6 +313,8 @@ export const HrExecutiveView = () => {
   const [showFullJoiningModal, setShowFullJoiningModal] = useState(false);
   const [showBulkImportModal, setShowBulkImportModal] = useState(false);
   const [managingDocVerifCandidate, setManagingDocVerifCandidate] = useState(null);
+  const [isVerifyingDocuments, setIsVerifyingDocuments] = useState(false);
+  const [verifyingDocKey, setVerifyingDocKey] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
   const [showHrLivePhotoModal, setShowHrLivePhotoModal] = useState(false);
   
@@ -2166,11 +2170,26 @@ export const HrExecutiveView = () => {
                           <button
                             type="button"
                             onClick={() => setManagingDocVerifCandidate(cand)}
-                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
-                            title="Manage, check, and trigger live document verification for this employee"
+                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs cursor-pointer ${
+                              cand.status === 'Verified' || Object.values(cand.verificationsCompleted || {}).filter(Boolean).length >= 3
+                                ? 'text-emerald-950 bg-emerald-50/90 border-emerald-300 hover:bg-emerald-100'
+                                : 'text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100'
+                            }`}
+                            title="Manage, check, and trigger live document verification for this employee via CoinCircleTrust API"
                           >
-                            <CheckSquare className="w-3.5 h-3.5 text-indigo-600" />
-                            <span>Verify Docs ⚡</span>
+                            <CheckSquare className={`w-3.5 h-3.5 ${
+                              cand.status === 'Verified' || Object.values(cand.verificationsCompleted || {}).filter(Boolean).length >= 3
+                                ? 'text-emerald-600'
+                                : 'text-indigo-600'
+                            }`} />
+                            <span>
+                              Verify Docs ⚡
+                              {cand.verificationsCompleted && Object.values(cand.verificationsCompleted).filter(Boolean).length > 0 && (
+                                <span className="ml-1 px-1.5 py-0.2 bg-emerald-200 text-emerald-900 rounded-full text-[9px] font-extrabold border border-emerald-300">
+                                  {Object.values(cand.verificationsCompleted).filter(Boolean).length}✓
+                                </span>
+                              )}
+                            </span>
                           </button>
 
                           {/* 4.8 Edit Employee Profile Button */}
@@ -5908,29 +5927,43 @@ export const HrExecutiveView = () => {
 
             {/* Modal Body */}
             <div className="overflow-y-auto flex-1 space-y-4 pr-1 text-xs">
-              <div className="p-3 bg-indigo-50/80 border border-indigo-200 rounded-2xl text-indigo-950 space-y-1">
-                <span className="font-bold block text-xs">💡 Document Verification Checks:</span>
-                <p className="text-[11px] text-indigo-900 leading-relaxed font-medium">
-                  Select which document checks to run now or send to the candidate via verification link.
+              <div className="p-3.5 bg-gradient-to-r from-indigo-50 via-purple-50 to-emerald-50 border border-indigo-200 rounded-2xl text-indigo-950 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-xs text-indigo-950 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>CoinCircleTrust Live Verification Engine (Neev 81 APIs)</span>
+                  </span>
+                  <span className="text-[10px] font-mono bg-indigo-100/80 text-indigo-900 px-2 py-0.5 rounded-full font-bold">
+                    Primary Gateway: Server 2 (Live)
+                  </span>
+                </div>
+                <p className="text-[11px] text-indigo-900/80 leading-relaxed font-medium">
+                  Select checks below to run in real-time or click &quot;Verify Now&quot; to fetch government &amp; institutional records and seal them directly into the <strong>360° BGV PDF Dossier</strong>.
                 </p>
               </div>
 
               {/* 10-Document Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
-                  { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'UIDAI Gateway' },
-                  { key: 'pan', name: '2. PAN Card', icon: '💳', provider: 'Income Tax Gateway' },
-                  { key: 'bankCheck', name: '3. Bank Account Check', icon: '🏦', provider: 'Bank IMPS Match' },
-                  { key: 'uan', name: '4. Past PF / UAN Service', icon: '🏛️', provider: 'EPFO Service Check' },
-                  { key: 'drivingLicense', name: '5. Driving License', icon: '🚗', provider: 'Sarathi Gateway' },
-                  { key: 'passport', name: '6. Passport', icon: '✈️', provider: 'Passport Gateway' },
-                  { key: 'voterId', name: '7. Voter ID', icon: '🗳️', provider: 'Election Commission' },
-                  { key: 'faceCapture', name: '8. Live Photo & Face Match', icon: '👤', provider: 'Live Selfie Check' },
-                  { key: 'education', name: '9. Degree / Marksheet', icon: '🎓', provider: 'Education Check' },
-                  { key: 'criminalCheck', name: '10. Experience Letter', icon: '💼', provider: 'Work Experience Check' }
+                  { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'CoinCircleTrust / UIDAI Official' },
+                  { key: 'pan', name: '2. PAN Card Verification', icon: '💳', provider: 'CoinCircleTrust / Income Tax NSDL' },
+                  { key: 'bankCheck', name: '3. Bank Account Penny Drop', icon: '🏦', provider: 'CoinCircleTrust / NPCI IMPS Switch' },
+                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'CoinCircleTrust / EPFO Unified Portal' },
+                  { key: 'drivingLicense', name: '5. MoRTH Driving License', icon: '🚗', provider: 'CoinCircleTrust / Sarathi Gateway' },
+                  { key: 'passport', name: '6. MEA Passport Seva', icon: '✈️', provider: 'CoinCircleTrust / Passport Seva' },
+                  { key: 'voterId', name: '7. Election Commission Voter ID', icon: '🗳️', provider: 'CoinCircleTrust / ECI EPIC Registry' },
+                  { key: 'courtRecords', name: '8. National e-Courts Search', icon: '⚖️', provider: 'CoinCircleTrust / e-Courts Judiciary' },
+                  { key: 'esic', name: '9. ESIC Insurance Record', icon: '🏥', provider: 'CoinCircleTrust / Ministry of Labour' },
+                  { key: 'faceCapture', name: '10. 3D Facial Liveness & Match', icon: '👤', provider: 'JOY AI Craniofacial Biometrics' }
                 ].map((doc) => {
                   const isChecked = !!managingDocVerifCandidate.verificationConfig?.[doc.key];
-                  const isVerified = managingDocVerifCandidate.verificationsCompleted?.[doc.key];
+                  const isVerified = managingDocVerifCandidate.verificationsCompleted?.[doc.key] || 
+                                     (doc.key === 'bankCheck' && managingDocVerifCandidate.verificationsCompleted?.bank) ||
+                                     (doc.key === 'uan' && managingDocVerifCandidate.verificationsCompleted?.epfoUan) ||
+                                     (doc.key === 'drivingLicense' && managingDocVerifCandidate.verificationsCompleted?.driving_license) ||
+                                     (doc.key === 'voterId' && managingDocVerifCandidate.verificationsCompleted?.voter_id);
+                  const isVerifyingThis = verifyingDocKey === doc.key;
+
                   return (
                     <div
                       key={doc.key}
@@ -5943,33 +5976,83 @@ export const HrExecutiveView = () => {
                           }
                         };
                         setManagingDocVerifCandidate(updated);
-                        setCandidates(prev => prev.map(c => c.id === updated.id ? updated : c));
+                        setCandidates(prev => prev.map(c => (c.id === updated.id || c.token === updated.token) ? updated : c));
                       }}
                       className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-2.5 select-none ${
                         isVerified
-                          ? 'bg-emerald-50/90 border-emerald-400'
+                          ? 'bg-emerald-50/90 border-emerald-400 shadow-2xs'
                           : isChecked
                             ? 'bg-indigo-50/90 border-indigo-400 shadow-2xs'
                             : 'bg-slate-50 border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-base shrink-0">{doc.icon}</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-xl shrink-0">{doc.icon}</span>
                         <div className="min-w-0">
                           <strong className="text-slate-900 font-extrabold text-xs block truncate">{doc.name}</strong>
-                          <span className="text-[9px] text-slate-500 font-mono block truncate">{doc.provider}</span>
+                          <span className="text-[9.5px] text-slate-500 font-mono block truncate">{doc.provider}</span>
                         </div>
                       </div>
 
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                        isVerified
-                          ? 'bg-emerald-200 text-emerald-900 border border-emerald-300'
-                          : isChecked
-                            ? 'bg-indigo-200 text-indigo-900'
-                            : 'bg-slate-200 text-slate-600'
-                      }`}>
-                        {isVerified ? 'Verified ✓' : isChecked ? 'Selected' : 'Verify Later'}
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isVerified ? (
+                          <span className="text-[9px] font-bold px-2.5 py-1 rounded-full bg-emerald-200 text-emerald-950 border border-emerald-300 flex items-center gap-1">
+                            <Check className="w-3 h-3 text-emerald-700" />
+                            <span>Verified ✓</span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={isVerifyingThis || isVerifyingDocuments}
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              const cand = managingDocVerifCandidate;
+                              if (!cand) return;
+                              setVerifyingDocKey(doc.key);
+                              try {
+                                const jfd = cand.joiningFormData || cand.joining_form_data || {};
+                                const res = await verifyCandidateLiveDocument(cand.token || cand.id, doc.key, jfd);
+                                if (res && res.success) {
+                                  const updatedCandidate = {
+                                    ...cand,
+                                    verificationsCompleted: {
+                                      ...(cand.verificationsCompleted || {}),
+                                      [doc.key]: true
+                                    },
+                                    verifiedAttributes: {
+                                      ...(cand.verifiedAttributes || {}),
+                                      [doc.key]: res.data?.fetched_data || {}
+                                    }
+                                  };
+                                  setManagingDocVerifCandidate(updatedCandidate);
+                                }
+                              } catch (err) {
+                                console.error(`Error verifying ${doc.key}:`, err);
+                              } finally {
+                                setVerifyingDocKey(null);
+                              }
+                            }}
+                            className={`text-[9.5px] font-bold px-2 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                              isChecked
+                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-2xs'
+                                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+                            }`}
+                            title={`Verify ${doc.name} via CoinCircleTrust API now`}
+                          >
+                            {isVerifyingThis ? (
+                              <>
+                                <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                                <span>Checking...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
+                                <span>Verify</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -5977,14 +6060,33 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* Footer Actions */}
-            <div className="flex items-center justify-between border-t border-slate-100 pt-3 shrink-0 text-xs">
-              <button
-                type="button"
-                onClick={() => setManagingDocVerifCandidate(null)}
-                className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
-              >
-                Close
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 shrink-0 text-xs">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setManagingDocVerifCandidate(null)}
+                  className="btn btn-secondary text-xs py-2 px-3.5 font-bold cursor-pointer"
+                >
+                  Close
+                </button>
+
+                {/* Direct link to 360 BGV PDF dossier if any verification exists */}
+                {managingDocVerifCandidate && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cand = managingDocVerifCandidate;
+                      setManagingDocVerifCandidate(null);
+                      openBgvReport(cand);
+                    }}
+                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 cursor-pointer shadow-2xs"
+                    title="Open 360° Background Verification Report Dossier"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                    <span>360° BGV PDF Dossier 📄</span>
+                  </button>
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 <button
@@ -5994,7 +6096,7 @@ export const HrExecutiveView = () => {
                     setManagingDocVerifCandidate(null);
                     setDispatchingCandidate(cand);
                   }}
-                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
                 >
                   <QrCode className="w-3.5 h-3.5 text-indigo-600" />
                   <span>Send Link 📲</span>
@@ -6002,18 +6104,46 @@ export const HrExecutiveView = () => {
 
                 <button
                   type="button"
-                  onClick={() => {
+                  disabled={isVerifyingDocuments}
+                  onClick={async () => {
                     const cand = managingDocVerifCandidate;
-                    showToast(`⚡ Running verification checks for ${cand.name}...`);
-                    setTimeout(() => {
-                      showToast(`✅ Document verifications complete for ${cand.name}!`);
-                      setManagingDocVerifCandidate(null);
-                    }, 1200);
+                    if (!cand) return;
+                    setIsVerifyingDocuments(true);
+                    try {
+                      const cfg = cand.verificationConfig || {};
+                      const activeKeys = Object.keys(cfg).filter(k => cfg[k]);
+                      const keysToVerify = activeKeys.length > 0 ? activeKeys : ['aadhaar', 'pan', 'bankCheck', 'uan', 'drivingLicense', 'passport', 'voterId', 'courtRecords', 'esic'];
+                      
+                      const res = await verifyAllCandidateDocuments(cand.token || cand.id, keysToVerify);
+                      if (res && res.candidate) {
+                        const updated = {
+                          ...cand,
+                          ...res.candidate,
+                          verificationsCompleted: res.candidate.verifications_completed || res.candidate.verificationsCompleted || cand.verificationsCompleted,
+                          verifiedAttributes: res.candidate.verified_attributes || res.candidate.verifiedAttributes || cand.verifiedAttributes,
+                          status: res.candidate.status || 'Verified'
+                        };
+                        setManagingDocVerifCandidate(updated);
+                      }
+                    } catch (e) {
+                      console.error("Batch verification error:", e);
+                    } finally {
+                      setIsVerifyingDocuments(false);
+                    }
                   }}
-                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-50"
                 >
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>Verify Now ⚡</span>
+                  {isVerifyingDocuments ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                      <span>Verifying with CoinCircleTrust...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                      <span>Verify Now (CoinCircleTrust) ⚡</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
