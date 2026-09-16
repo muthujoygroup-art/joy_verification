@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { soundEngine } from '../utils/uiSoundEffects';
 
 /**
  * Master Innovative Platform Brand Preloader & Loading Animation
- * Features:
- * - 3D Golden Shield Emblem with luminous emerald checkmark & ambient backdrop glow
- * - Holographic laser flare sweep across shield
- * - Kinetic 3D typography reveal for "JOY TRUE PROFILE"
- * - Tagline tracking reveal: "INSTANT WORKFORCE VERIFICATION"
- * - ZERO green circular rings
- * - Smooth 2.2s cinematic choreography while background contents load
- * - Interactive skip controls (Click / Space / Esc)
  */
 export const GlobalPlatformPreloader = ({ 
   onFinish, 
   subtitleText = "INSTANT WORKFORCE VERIFICATION",
   isFullScreen = true,
-  autoDismissMs = 2200 
+  autoDismissMs = 1200 
 }) => {
   const { platformLogoEmblem } = useApp() || {};
   const [stage, setStage] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const onFinishRef = useRef(onFinish);
+  onFinishRef.current = onFinish;
 
   // Split "TRUE PROFILE" for individual 3D letter flip choreography
   const trueProfileLetters = [
     { char: 'T', delay: 0 },
-    { char: 'R', delay: 40 },
-    { char: 'U', delay: 80 },
-    { char: 'E', delay: 120 },
-    { char: ' ', delay: 160, isSpace: true },
-    { char: 'P', delay: 200 },
-    { char: 'R', delay: 240 },
-    { char: 'O', delay: 280 },
-    { char: 'F', delay: 320 },
-    { char: 'I', delay: 360 },
-    { char: 'L', delay: 400 },
-    { char: 'E', delay: 440 }
+    { char: 'R', delay: 30 },
+    { char: 'U', delay: 60 },
+    { char: 'E', delay: 90 },
+    { char: ' ', delay: 120, isSpace: true },
+    { char: 'P', delay: 150 },
+    { char: 'R', delay: 180 },
+    { char: 'O', delay: 210 },
+    { char: 'F', delay: 240 },
+    { char: 'I', delay: 270 },
+    { char: 'L', delay: 300 },
+    { char: 'E', delay: 330 }
   ];
 
   const taglineWords = (subtitleText || 'INSTANT WORKFORCE VERIFICATION').split(' ');
@@ -48,32 +42,29 @@ export const GlobalPlatformPreloader = ({
       staticPreloader.style.display = 'none';
     }
 
-    const t0 = setTimeout(() => setStage(1), 100);   // Shield appearance & laser sweep
+    const t0 = setTimeout(() => setStage(1), 50);   // Shield appearance
     const t1 = setTimeout(() => {
       setStage(2);                                  // 3D checkmark bloom
       try { soundEngine.playBeep && soundEngine.playBeep(); } catch (e) {}
-    }, 500);
-    const t2 = setTimeout(() => setStage(3), 900);   // Kinetic typography reveal
+    }, 250);
+    const t2 = setTimeout(() => setStage(3), 450);   // Kinetic typography reveal
     const t3 = setTimeout(() => {
-      setStage(4);                                  // Tagline & full statutory verification lock
+      setStage(4);                                  // Tagline lock
       try { soundEngine.playSuccess && soundEngine.playSuccess(); } catch (e) {}
-    }, 1500);
+    }, 700);
 
-    let t4;
-    if (autoDismissMs > 0) {
-      t4 = setTimeout(() => {
-        setIsExiting(true);
-        setTimeout(() => {
-          if (typeof onFinish === 'function') onFinish();
-        }, 300);
-      }, autoDismissMs);
-    }
+    const t4 = setTimeout(() => {
+      setIsExiting(true);
+      setTimeout(() => {
+        if (typeof onFinishRef.current === 'function') onFinishRef.current();
+      }, 200);
+    }, autoDismissMs || 1200);
 
     const handleDismiss = () => {
       setIsExiting(true);
       setTimeout(() => {
-        if (typeof onFinish === 'function') onFinish();
-      }, 200);
+        if (typeof onFinishRef.current === 'function') onFinishRef.current();
+      }, 100);
     };
 
     const handleKeyDown = (e) => {
@@ -89,16 +80,16 @@ export const GlobalPlatformPreloader = ({
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
-      if (t4) clearTimeout(t4);
+      clearTimeout(t4);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onFinish, autoDismissMs]);
+  }, [autoDismissMs]);
 
   const handleManualClick = () => {
     setIsExiting(true);
     setTimeout(() => {
-      if (typeof onFinish === 'function') onFinish();
-    }, 200);
+      if (typeof onFinishRef.current === 'function') onFinishRef.current();
+    }, 100);
   };
 
   return (

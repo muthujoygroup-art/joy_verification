@@ -58,29 +58,20 @@ const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').
 
 // Seamless Innovative Brand Loading Component for Suspense Fallback
 const RouteLoadingSpinner = () => (
-  <GlobalPlatformPreloader isFullScreen={true} autoDismissMs={2200} subtitleText="AUTHENTICATING SECURE PORTAL SESSION" />
+  <div className="fixed inset-0 z-[99999] bg-[#070B14] flex flex-col items-center justify-center p-4">
+    <div className="w-16 h-16 rounded-3xl bg-[#426CF5]/20 border border-[#426CF5]/40 flex items-center justify-center text-[#426CF5] animate-pulse">
+      <img src="/assets/logos/joy_true_profile_shield_emblem.png" alt="Loading" className="w-10 h-10 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
+    </div>
+    <div className="mt-4 text-xs font-mono font-bold text-slate-300 tracking-wider animate-pulse">
+      AUTHENTICATING SECURE SESSION...
+    </div>
+  </div>
 );
 
-// Global Route & Reload Cinematic Preloader Component (Triggers on initial load, page refresh F5, and long processes)
+// Global Explicit Action Preloader (Triggers only when explicit long-running processes request it)
 const GlobalPageReloadPreloader = () => {
-  const location = useLocation();
-  const [showPreloader, setShowPreloader] = useState(true);
+  const [showPreloader, setShowPreloader] = useState(false);
   const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
-
-  const getSubtitleForPath = (pathname) => {
-    if (pathname.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
-    if (pathname.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
-    if (pathname.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
-    if (pathname.startsWith('/verify') || pathname.startsWith('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
-    if (pathname.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
-    return 'INSTANT WORKFORCE VERIFICATION';
-  };
-
-  // Trigger full loading animation on route change, page refresh, or initial load
-  useEffect(() => {
-    setSubtitle(getSubtitleForPath(location.pathname));
-    setShowPreloader(true);
-  }, [location.pathname]);
 
   // Listen to custom window events for long-running processes / manual triggers
   useEffect(() => {
@@ -101,7 +92,7 @@ const GlobalPageReloadPreloader = () => {
       onFinish={() => setShowPreloader(false)}
       subtitleText={subtitle}
       isFullScreen={true}
-      autoDismissMs={2200}
+      autoDismissMs={1200}
     />
   );
 };
