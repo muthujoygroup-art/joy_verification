@@ -976,16 +976,21 @@ export const CompanyAdminView = () => {
               <span>Verify Vendors & PDF 🤝</span>
             </button>
 
-            {/* ⚡ 1-Click Verification Wallet Recharge via Razorpay */}
-            <button
-              onClick={() => setShowRazorpayModal(true)}
+            {/* 🏢 Company Employee Plan & Headcount Quota Badge */}
+            <div 
               data-tour-step="company-topup-wallet-btn"
-              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black shadow-md cursor-pointer"
-              title="Recharge Verification Credits via Razorpay UPI / Cards / NetBanking / Payment Link"
+              onClick={() => {
+                setActiveMainSection('billing_wallet');
+                setActiveTab('billing_wallet');
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 text-indigo-900 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-2xs hover:border-indigo-300 hover:shadow-xs transition-all"
+              title="Click to view subscribed employee plan, usage, and invoices"
             >
-              <Zap className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
-              <span>Recharge Wallet ⚡</span>
-            </button>
+              <Users className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="font-extrabold text-indigo-950">{currentPlan.name}</span>
+              <span className="text-slate-300">•</span>
+              <span className="font-mono text-slate-700 font-semibold">{companyCandidates.length} / {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles} Employees</span>
+            </div>
 
             <button
               onClick={() => setShowPaymentModal(true)}
@@ -1049,12 +1054,15 @@ export const CompanyAdminView = () => {
 
             <button
               type="button"
-              onClick={() => setShowRazorpayModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
-              title="Instant Wallet Top-Up via Razorpay"
+              onClick={() => {
+                setActiveMainSection('billing_wallet');
+                setActiveTab('billing_wallet');
+              }}
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
+              title="View or upgrade company employee headcount plan"
             >
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Recharge Credits ⚡</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Manage Plan 📋</span>
             </button>
           </div>
         </div>
@@ -1448,22 +1456,22 @@ export const CompanyAdminView = () => {
       {activeTab === 'telemetry' && (
         <div className="space-y-6 animate-fadeIn">
           
-          {/* API Credit Ledger & Verification Results Cards */}
+          {/* Employee Quota Ledger & Verification Results Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
-            {/* Card 1: API Credit Balance */}
+            {/* Card 1: Employee Verification Quota */}
             <div className="p-5 rounded-xl border border-sky-200 bg-white space-y-2 shadow-sm">
               <div className="flex items-center justify-between text-xs font-bold text-sky-700">
                 <span className="flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-sky-600" />
-                  <span>API Credit Quota Balance</span>
+                  <Users className="w-4 h-4 text-sky-600" />
+                  <span>Employee Verification Quota</span>
                 </span>
-                <span className="badge badge-cyan text-[10px]">{company.plan}</span>
+                <span className="badge badge-cyan text-[10px]">{currentPlan.name}</span>
               </div>
               <div className="text-2xl font-black text-slate-900">
                 {postpaidBill.overageProfilesCount > 0 
-                  ? `+${postpaidBill.overageProfilesCount} Overage Active` 
-                  : `${(postpaidBill.baseQuota - postpaidBill.baseProfilesCount).toLocaleString()} Base Quota Left`}
+                  ? `+${postpaidBill.overageProfilesCount} Exceeding Tier Limit` 
+                  : `${Math.max(0, postpaidBill.baseQuota - postpaidBill.baseProfilesCount).toLocaleString()} Available Capacity`}
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200 mt-1">
                 <div 
@@ -1472,7 +1480,7 @@ export const CompanyAdminView = () => {
                 />
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
-                Verified <strong>{postpaidBill.totalVerifiedProfiles}</strong> profiles (Base Tier: {postpaidBill.baseProfilesCount}/{postpaidBill.baseQuota} @ ₹{postpaidBill.baseRate}{postpaidBill.isOverage ? `, +${postpaidBill.overageProfilesCount} overage @ ₹${postpaidBill.overageRate}` : ''}).
+                Verified <strong>{postpaidBill.totalVerifiedProfiles}</strong> / {postpaidBill.baseQuota === 999999 ? '∞' : postpaidBill.baseQuota} employees (Plan: {currentPlan.name}{postpaidBill.isOverage ? `, +${postpaidBill.overageProfilesCount} overage @ ₹${postpaidBill.overageRate}` : ''}).
               </p>
             </div>
 
@@ -2295,25 +2303,27 @@ export const CompanyAdminView = () => {
                 </div>
               </div>
 
-              {/* Wallet Credits & Recharge CTA */}
-              <div className="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-indigo-50 border border-amber-200/80 p-3.5 rounded-2xl shadow-2xs">
+              {/* Employee & Vendor Plan Capacity CTA */}
+              <div className="flex items-center gap-3 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200/80 p-3.5 rounded-2xl shadow-2xs">
                 <div className="text-right">
-                  <div className="text-[10px] uppercase font-black tracking-wider text-slate-500">Corporate Verification Credits</div>
+                  <div className="text-[10px] uppercase font-black tracking-wider text-slate-500">Subscribed Tier Plan</div>
                   <div className="text-base font-black text-slate-900 flex items-center justify-end gap-1">
-                    <span className="text-amber-600">₹</span>
-                    <span>{(company.walletBalance || 0).toLocaleString()}</span>
+                    <span className="text-indigo-700">{currentPlan.name}</span>
                   </div>
                   <div className="text-[9.5px] font-bold text-slate-500">
-                    ~{Math.floor((company.walletBalance || 0) / 60)} checks (@ ₹60/check)
+                    {postpaidBill.totalVerifiedProfiles} / {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles} Allocated
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowRazorpayModal(true)}
-                  className="btn bg-amber-500 hover:bg-amber-600 text-white text-xs py-2 px-3.5 font-black rounded-xl shadow-2xs flex items-center gap-1.5 cursor-pointer shrink-0"
+                  onClick={() => {
+                    setActiveMainSection('billing_wallet');
+                    setActiveTab('billing_wallet');
+                  }}
+                  className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3.5 font-black rounded-xl shadow-2xs flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
-                  <Zap className="w-3.5 h-3.5 fill-current" />
-                  <span>Recharge ⚡</span>
+                  <Sparkles className="w-3.5 h-3.5 fill-current" />
+                  <span>Manage Plan 📋</span>
                 </button>
               </div>
             </div>
@@ -2794,18 +2804,18 @@ export const CompanyAdminView = () => {
                     </div>
                   )}
 
-                  {/* Wallet Credit Deduction & Statutory Audit Notice */}
-                  <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-amber-950 space-y-1.5">
+                  {/* Plan Quota Allocation & Statutory Audit Notice */}
+                  <div className="p-3.5 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 text-indigo-950 space-y-1.5">
                     <div className="flex items-center justify-between font-bold text-xs">
-                      <span className="flex items-center gap-1.5 text-amber-900">
-                        <CreditCard className="w-3.5 h-3.5 text-amber-700" />
-                        Verification Charge:
+                      <span className="flex items-center gap-1.5 text-indigo-900">
+                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-700" />
+                        Plan Allocation:
                       </span>
-                      <span className="font-mono font-black text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-md">
-                        ₹60.00 debited from Wallet
+                      <span className="font-mono font-black text-indigo-800 bg-indigo-100/90 px-2 py-0.5 rounded-md">
+                        Covered under {currentPlan.name} Quota
                       </span>
                     </div>
-                    <p className="text-[10.5px] leading-relaxed opacity-90 text-amber-900">
+                    <p className="text-[10.5px] leading-relaxed opacity-90 text-indigo-900">
                       ⚡ Live Query Execution: This query authenticates data directly via government statutory API gateways. A formal <strong>Point-in-Time Temporal Audit Certificate</strong> will be minted for this exact moment.
                     </p>
                   </div>
@@ -3573,22 +3583,22 @@ export const CompanyAdminView = () => {
                 </div>
               </div>
 
-              {/* Card 2: API Quota Alerts & HR Team Governance */}
+              {/* Card 2: Employee Quota Alerts & HR Team Governance */}
               <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-4">
                 <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
-                  <CreditCard className="w-4 h-4 text-indigo-600" />
-                  <span>Credit Quota Alerts & HR Seats</span>
+                  <Users className="w-4 h-4 text-indigo-600" />
+                  <span>Employee Quota Alerts & HR Seats</span>
                 </h4>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Low API Credit Alert Trigger Limit</label>
+                  <label className="block text-slate-700 font-bold mb-1">Low Employee Quota Alert Limit</label>
                   <input 
                     type="number" 
                     value={systemSettings.company?.lowCreditAlertThreshold || 50}
                     onChange={(e) => updateRoleSettings('company', { lowCreditAlertThreshold: parseInt(e.target.value) || 50 })}
                     className="form-input text-xs font-mono font-bold"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">Triggers warning toast when remaining credits drop below this value.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Triggers warning notification when remaining employee quota drops below this value.</p>
                 </div>
 
                 <div>
@@ -3862,8 +3872,8 @@ export const CompanyAdminView = () => {
 
                   <label className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100/70">
                     <div>
-                      <strong className="text-slate-900 block font-bold">💳 Low Wallet Balance / Billing Invoice</strong>
-                      <span className="text-[11px] text-slate-500">Receive alerts when verification credits fall below safety threshold</span>
+                      <strong className="text-slate-900 block font-bold">💳 Low Employee Quota / Billing Invoice</strong>
+                      <span className="text-[11px] text-slate-500">Receive alerts when available employee verification quota falls below safe threshold</span>
                     </div>
                     <input 
                       type="checkbox"
@@ -4262,7 +4272,7 @@ export const CompanyAdminView = () => {
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3 px-3 font-mono font-bold text-slate-900">{tx.id || tx.invoiceNumber || `INV-2026-${idx+101}`}</td>
                       <td className="py-3 px-3 text-slate-500">{tx.date || tx.timestamp}</td>
-                      <td className="py-3 px-3 font-bold text-slate-900">{tx.creditsAdded || tx.baseProfiles || 50}</td>
+                      <td className="py-3 px-3 font-bold text-slate-900">{tx.baseProfiles || tx.employeesCount || tx.creditsAdded || 50}</td>
                       <td className="py-3 px-3 text-slate-500">{tx.overageProfiles || 0}</td>
                       <td className="py-3 px-3 font-mono font-bold text-slate-900">₹{(tx.baseAmount || 0).toLocaleString('en-IN')}</td>
                       <td className="py-3 px-3 font-mono text-slate-600">₹{(tx.gstAmount || Math.round((tx.baseAmount || 0)*0.18)).toLocaleString('en-IN')}</td>

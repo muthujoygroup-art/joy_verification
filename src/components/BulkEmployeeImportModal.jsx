@@ -785,15 +785,71 @@ export const BulkEmployeeImportModal = ({
           const maritalStatus = findVal(['maritalstatus', 'marital', 'married']) || 'Single';
           const motherTongue = findVal(['mothertongue', 'language']);
 
-          // 2. Contact Fields
-          const email = findVal(['officialemail', 'emailaddress', 'email', 'candidateemail', 'mail']);
-          let mobile = findVal(['mobilenumber', 'mobile', 'phonenumber', 'phone', 'contact']);
-          mobile = mobile.replace(/[^0-9]/g, '');
-          if (mobile.length > 10 && mobile.startsWith('91')) mobile = mobile.substring(2);
+          // 2. Contact Fields - Smart Multi-Stage Resolver
+          let email = '';
+          // Stage 1: Prioritized exact/fuzzy matching on candidate email keys that contain '@'
+          const candidateEmailKeyTerms = ['officialemail', 'workemail', 'candidateemail', 'employeeemail', 'emailaddress', 'emailid', 'email', 'mailid', 'mail'];
+          for (const term of candidateEmailKeyTerms) {
+            const matchedKey = keys.find(k => {
+              const clean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return clean.includes(term) && !clean.includes('emergency') && !clean.includes('company') && !clean.includes('employer');
+            });
+            if (matchedKey && row[matchedKey] && String(row[matchedKey]).trim().includes('@')) {
+              email = String(row[matchedKey]).trim().toLowerCase();
+              break;
+            }
+          }
+          // Stage 2: Any column containing 'email' or 'mail' (excluding emergency) with a non-empty '@'
+          if (!email) {
+            const anyEmailKey = keys.find(k => {
+              const clean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return (clean.includes('email') || clean.includes('mail')) && !clean.includes('emergency');
+            });
+            if (anyEmailKey && row[anyEmailKey] && String(row[anyEmailKey]).trim().includes('@')) {
+              email = String(row[anyEmailKey]).trim().toLowerCase();
+            }
+          }
+          // Stage 3: Fallback scan across ALL cells in the row for any text containing '@' and '.'
+          if (!email) {
+            for (const k of keys) {
+              const val = String(row[k] || '').trim();
+              if (val.includes('@') && val.includes('.') && !k.toLowerCase().includes('emergency')) {
+                email = val.toLowerCase();
+                break;
+              }
+            }
+          }
 
-          let alternateMobile = findVal(['alternatemobile', 'alternatenumber', 'altmobile', 'whatsappnumber', 'whatsapp']);
-          alternateMobile = alternateMobile.replace(/[^0-9]/g, '');
-          if (alternateMobile.length > 10 && alternateMobile.startsWith('91')) alternateMobile = alternateMobile.substring(2);
+          // Smart Mobile Extraction & Normalization
+          let mobile = '';
+          const candidateMobileTerms = ['mobilenumber', 'mobile', 'phonenumber', 'phone', 'contactnumber', 'contact', 'cell'];
+          for (const term of candidateMobileTerms) {
+            const matchedKey = keys.find(k => {
+              const clean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return clean.includes(term) && !clean.includes('emergency') && !clean.includes('alternate') && !clean.includes('alt');
+            });
+            if (matchedKey && row[matchedKey]) {
+              const digits = String(row[matchedKey]).replace(/[^0-9]/g, '');
+              if (digits.length >= 10) {
+                mobile = digits.slice(-10);
+                break;
+              }
+            }
+          }
+          if (!mobile) {
+            let rawMobile = findVal(['mobilenumber', 'mobile', 'phonenumber', 'phone', 'contact']);
+            let digits = rawMobile.replace(/[^0-9]/g, '');
+            if (digits.length >= 10) {
+              mobile = digits.slice(-10);
+            } else {
+              mobile = digits;
+            }
+          }
+
+          let alternateMobile = '';
+          let rawAlt = findVal(['alternatemobile', 'alternatenumber', 'altmobile', 'whatsappnumber', 'whatsapp']);
+          let altDigits = rawAlt.replace(/[^0-9]/g, '');
+          if (altDigits.length >= 10) alternateMobile = altDigits.slice(-10);
 
           const emergencyContactName = findVal(['emergencycontactname', 'emergencyname', 'emergencycontact']);
           const emergencyContactMobile = findVal(['emergencycontactmobile', 'emergencyphone', 'emergencynumber', 'emergencymobile']);
@@ -1215,18 +1271,32 @@ export const BulkEmployeeImportModal = ({
 
       // 📧 Automatically trigger email link dispatch to all candidates with email addresses
       if (autoSendLinks) {
-        for (const item of createdResults) {
-          if (item.email && item.email.includes('@')) {
-            api.dispatchCandidateEmail({
-              candidate_id: item.token || item.empId,
-              token: item.token,
-              email: item.email,
-              name: item.name,
-              company_id: targetCompanyId,
-              company_name: targetCompanyName,
-              portal_password: item.portalPassword || '1234',
-              designation: item.designation || 'Associate'
-            }).catch(e => console.warn(`Automatic email dispatch for ${item.email}:`, e));
+        const emailCandidates = createdResults.filter(item => item.email && item.email.includes('@'));
+        if (emailCandidates.length > 0) {
+          showToast(`📧 Dispatching onboarding invitations to ${emailCandidates.length} employee emails...`);
+          let sentCount = 0;
+          const dispatches = emailCandidates.map(async (item) => {
+            try {
+              const res = await api.dispatchCandidateEmail({
+                candidate_id: item.token || item.empId,
+                token: item.token,
+                email: item.email,
+                name: item.name,
+                company_id: targetCompanyId,
+                company_name: targetCompanyName,
+                portal_password: item.portalPassword || '1234',
+                designation: item.designation || 'Associate'
+              });
+              if (res && (res.email_sent || res.success)) sentCount++;
+            } catch (e) {
+              console.warn(`Automatic email dispatch for ${item.email}:`, e);
+            }
+          });
+          await Promise.allSettled(dispatches);
+          if (sentCount > 0) {
+            showToast(`✅ Successfully dispatched onboarding invitation emails to ${sentCount} employees!`);
+          } else {
+            showToast(`📧 Onboarding emails queued for ${emailCandidates.length} candidates.`);
           }
         }
       }

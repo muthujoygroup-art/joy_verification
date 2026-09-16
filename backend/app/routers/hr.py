@@ -31,23 +31,39 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     Internal helper to create or update a candidate record in the database.
     Returns (candidate_instance, is_new_record: bool).
     """
-    # 🛡️ Strict Duplicate Prevention: Check if candidate already exists by email, mobile, or aadhaar
+    # 🛡️ Resolve company and clean identifiers
+    comp = None
+    if payload.company_id:
+        comp = db.query(Company).filter((Company.id == payload.company_id) | (Company.code == payload.company_id)).first()
+    if not comp:
+        comp = db.query(Company).first()
+    resolved_comp_id = comp.id if comp else (payload.company_id or "comp-joy")
+
+    clean_email = (payload.email or "").strip().lower() or None
+    clean_mobile = None
+    if payload.mobile:
+        digits = "".join(filter(str.isdigit, str(payload.mobile)))
+        clean_mobile = digits[-10:] if len(digits) >= 10 else digits
+
+    # 🛡️ Strict Duplicate Resolution: Check if candidate already exists by email, mobile, or aadhaar
     existing_cand = None
-    if payload.email:
+    if clean_email:
         existing_cand = db.query(Candidate).filter(
-            Candidate.company_id == payload.company_id,
-            Candidate.email.ilike(payload.email.strip())
+            (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
+            Candidate.email.ilike(clean_email)
         ).first()
-    if not existing_cand and payload.mobile:
+    if not existing_cand and clean_mobile and len(clean_mobile) == 10:
         existing_cand = db.query(Candidate).filter(
-            Candidate.company_id == payload.company_id,
-            Candidate.mobile == payload.mobile.strip()
+            (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
+            Candidate.mobile.endswith(clean_mobile)
         ).first()
     if not existing_cand and payload.aadhaar_no:
-        existing_cand = db.query(Candidate).filter(
-            Candidate.company_id == payload.company_id,
-            Candidate.aadhaar_no == payload.aadhaar_no.strip()
-        ).first()
+        clean_aadhaar = "".join(filter(str.isdigit, str(payload.aadhaar_no)))
+        if clean_aadhaar:
+            existing_cand = db.query(Candidate).filter(
+                (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
+                Candidate.aadhaar_no == clean_aadhaar
+            ).first()
 
     if existing_cand:
         # Update existing candidate record rather than creating a duplicate
@@ -55,6 +71,9 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         existing_cand.designation = payload.designation or existing_cand.designation
         existing_cand.dept = payload.dept or existing_cand.dept
         existing_cand.employee_type = payload.employee_type or existing_cand.employee_type
+        if clean_email: existing_cand.email = clean_email
+        if clean_mobile: existing_cand.mobile = clean_mobile
+        existing_cand.company_id = resolved_comp_id
         if payload.emp_id: existing_cand.emp_id = payload.emp_id
         if payload.employee_number: existing_cand.employee_number = payload.employee_number
         if payload.dob: existing_cand.dob = payload.dob
@@ -101,7 +120,10 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.github_url: existing_cand.github_url = payload.github_url
         if payload.portfolio_url: existing_cand.portfolio_url = payload.portfolio_url
         if payload.twitter_url: existing_cand.twitter_url = payload.twitter_url
-        if payload.portal_password: existing_cand.portal_password = payload.portal_password
+        if not existing_cand.token:
+            clean_n = (existing_cand.name or "cand").lower().replace(" ", "_")[:10]
+            existing_cand.token = f"tok_{clean_n}_{uuid.uuid4().hex[:4]}"
+        existing_cand.portal_password = payload.portal_password or existing_cand.portal_password or "1234"
         if payload.verification_config: existing_cand.verification_config = payload.verification_config
         if payload.joining_form_data: existing_cand.joining_form_data = payload.joining_form_data
         if payload.custom_fields: existing_cand.custom_fields = payload.custom_fields
@@ -116,9 +138,8 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     token = f"tok_{clean_name}_{uuid.uuid4().hex[:4]}"
     
     # Compute hierarchical employee profile code (e.g. COMP001EMP001)
-    comp = db.query(Company).filter(Company.id == payload.company_id).first() if payload.company_id else None
     comp_code = comp.code if comp and comp.code else "COMP001"
-    emp_count = db.query(Candidate).filter(Candidate.company_id == payload.company_id).count() + 1
+    emp_count = db.query(Candidate).filter(Candidate.company_id == resolved_comp_id).count() + 1
     hierarchical_emp_code = f"{comp_code}EMP{emp_count:03d}"
     
     # Default verifications completed status
@@ -150,8 +171,8 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         name=payload.name,
         emp_id=payload.emp_id or hierarchical_emp_code,
         employee_number=payload.employee_number or hierarchical_emp_code,
-        email=payload.email,
-        mobile=payload.mobile or "",
+        email=clean_email,
+        mobile=clean_mobile or "",
         aadhaar_no=payload.aadhaar_no,
         designation=payload.designation or "Associate",
         dept=payload.dept or "General",
@@ -200,7 +221,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         github_url=payload.github_url,
         portfolio_url=payload.portfolio_url,
         twitter_url=payload.twitter_url,
-        company_id=payload.company_id or "comp-joy",
+        company_id=resolved_comp_id,
         hr_id=payload.hr_id,
         portal_password=payload.portal_password or "1234",
         status="Link Sent",
@@ -333,6 +354,15 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
             # Dispatch email if email is present
             if cand.email:
                 try:
+                    import uuid
+                    if not cand.token:
+                        clean_n = (cand.name or "cand").lower().replace(" ", "_")[:10]
+                        cand.token = f"tok_{clean_n}_{uuid.uuid4().hex[:4]}"
+                    if not cand.portal_password:
+                        cand.portal_password = "1234"
+                    db.commit()
+                    db.refresh(cand)
+
                     comp_obj = db.query(Company).filter(Company.id == cand.company_id).first() if cand.company_id else None
                     comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
                     send_candidate_onboarding_email(

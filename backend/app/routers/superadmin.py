@@ -150,15 +150,38 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         activation_token = f"comp_act_{uuid.uuid4().hex[:14]}"
 
         # Pricing according to Plan Tier
-        plan_name = payload.plan or "Standard Tier"
-        if "Basic" in plan_name:
-            price_per_check = 80.0
-        elif "Standard" in plan_name:
-            price_per_check = 120.0
-        else:
+        plan_name = payload.plan or "150 Employees Plan"
+        if "50" in plan_name and "150" not in plan_name and "500" not in plan_name:
+            plan_name = "50 Employees Plan"
             price_per_check = 180.0
+            quota_limit = 50
+        elif "150" in plan_name:
+            plan_name = "150 Employees Plan"
+            price_per_check = 150.0
+            quota_limit = 150
+        elif "300" in plan_name:
+            plan_name = "300 Employees Plan"
+            price_per_check = 120.0
+            quota_limit = 300
+        elif "500+" in plan_name or "Custom" in plan_name:
+            plan_name = "500+ Enterprise Plan"
+            price_per_check = 85.0
+            quota_limit = 999999
+        elif "500" in plan_name:
+            plan_name = "500 Employees Plan"
+            price_per_check = 100.0
+            quota_limit = 500
+        elif "Basic" in plan_name:
+            price_per_check = 180.0
+            quota_limit = 50
+        elif "Standard" in plan_name:
+            price_per_check = 150.0
+            quota_limit = 150
+        else:
+            price_per_check = 150.0
+            quota_limit = 150
 
-        credits_bought = payload.credits_purchased or payload.max_limit or 500
+        credits_bought = payload.credits_purchased or payload.max_limit or quota_limit
         login_password_set = payload.password or "Company@Admin2026"
         activation_pin_set = payload.activation_password or "1234"
 

@@ -624,9 +624,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     location: '',
     password: 'Company@Admin2026',
     activation_password: '1234',
-    plan: 'Standard Tier',
-    credits_purchased: 500,
-    maxLimit: 500,
+    plan: '150 Employees Plan',
+    credits_purchased: 150,
+    maxLimit: 150,
     expiry_days: 15,
     expiry_date: '',
     termsAccepted: true
@@ -939,8 +939,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       location: '',
       password: 'Company@Admin2026',
       activation_password: '1234',
-      plan: 'Standard Tier',
-      credits_purchased: 500,
+      plan: '150 Employees Plan',
+      credits_purchased: 150,
+      maxLimit: 150,
       expiry_days: 15,
       expiry_date: '',
       termsAccepted: true
@@ -6967,34 +6968,44 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
               </div>
 
-              {/* Field 8 & 9: Plan Bought & Credits Purchased */}
+              {/* Field 8 & 9: Subscribed Plan & Employee Headcount Quota */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Plan Bought *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
                   <select 
                     value={newCompany.plan}
-                    onChange={(e) => setNewCompany({ ...newCompany, plan: e.target.value })}
+                    onChange={(e) => {
+                      const selectedPlan = e.target.value;
+                      let quota = 150;
+                      if (selectedPlan.includes('50') && !selectedPlan.includes('150')) quota = 50;
+                      else if (selectedPlan.includes('150')) quota = 150;
+                      else if (selectedPlan.includes('300')) quota = 300;
+                      else if (selectedPlan.includes('500')) quota = 500;
+                      setNewCompany({ ...newCompany, plan: selectedPlan, credits_purchased: quota, maxLimit: quota });
+                    }}
                     className="form-select text-xs font-bold"
                   >
-                    <option value="Enterprise Premier">Enterprise Premier (₹180 / check)</option>
-                    <option value="Standard Tier">Standard Tier (₹120 / check)</option>
-                    <option value="Basic Tier">Basic Tier (₹80 / check)</option>
+                    <option value="50 Employees Plan">50 Employees Plan (₹180 / check)</option>
+                    <option value="150 Employees Plan">150 Employees Plan (₹150 / check)</option>
+                    <option value="300 Employees Plan">300 Employees Plan (₹120 / check)</option>
+                    <option value="500 Employees Plan">500 Employees Plan (₹100 / check)</option>
+                    <option value="500+ Enterprise Plan">500+ Enterprise Plan (₹85 / check)</option>
                   </select>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Commercial pricing tier</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Employee verification volume plan</span>
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Credits Purchased *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Employee Headcount Quota *</label>
                   <input 
                     type="number" 
                     min="10"
-                    max="10000"
-                    placeholder="500"
+                    max="100000"
+                    placeholder="150"
                     value={newCompany.credits_purchased}
-                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: e.target.value })}
+                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 150, maxLimit: parseInt(e.target.value) || 150 })}
                     className="form-input font-mono font-bold"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Verification credit balance</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity</span>
                 </div>
               </div>
 

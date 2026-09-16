@@ -24,17 +24,17 @@ const INITIAL_FEATURE_LIST = [
 export const POSTPAID_PLANS = {
   tier1: {
     id: 'tier1',
-    name: 'Tier 1 (Starter)',
-    shortName: 'Tier 1',
+    name: '50 Employees Plan',
+    shortName: '50 Employees',
     tierNumber: 1,
     maxProfiles: 50,
     ratePerProfile: 180,
     overageRate: 200,
     badgeColor: 'badge-purple',
-    employeeThreshold: '< 50 Employees',
+    employeeThreshold: '50 Employees Quota',
     description: 'For companies with up to 50 employees/vendors',
     features: [
-      'Up to 50 Verified Profiles',
+      '50 Verified Employee Quota',
       '₹180 / Base Verified Profile',
       '₹200 / Exceeding Profile (Never Blocked)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
@@ -44,17 +44,17 @@ export const POSTPAID_PLANS = {
   },
   tier2: {
     id: 'tier2',
-    name: 'Tier 2 (Growth)',
-    shortName: 'Tier 2',
+    name: '150 Employees Plan',
+    shortName: '150 Employees',
     tierNumber: 2,
-    maxProfiles: 100,
+    maxProfiles: 150,
     ratePerProfile: 150,
     overageRate: 180,
     badgeColor: 'badge-indigo',
-    employeeThreshold: '< 100 Employees',
-    description: 'For growing teams with up to 100 employees/vendors',
+    employeeThreshold: '150 Employees Quota',
+    description: 'For growing teams with up to 150 employees/vendors',
     features: [
-      'Up to 100 Verified Profiles',
+      '150 Verified Employee Quota',
       '₹150 / Base Verified Profile',
       '₹180 / Exceeding Profile (Never Blocked)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
@@ -64,17 +64,17 @@ export const POSTPAID_PLANS = {
   },
   tier3: {
     id: 'tier3',
-    name: 'Tier 3 (Scale / Pro)',
-    shortName: 'Tier 3',
+    name: '300 Employees Plan',
+    shortName: '300 Employees',
     tierNumber: 3,
     maxProfiles: 300,
     ratePerProfile: 120,
     overageRate: 150,
     badgeColor: 'badge-cyan',
-    employeeThreshold: '< 300 Employees',
+    employeeThreshold: '300 Employees Quota',
     description: 'For mid-size companies with up to 300 employees/vendors',
     features: [
-      'Up to 300 Verified Profiles',
+      '300 Verified Employee Quota',
       '₹120 / Base Verified Profile',
       '₹150 / Exceeding Profile (Never Blocked)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
@@ -84,17 +84,17 @@ export const POSTPAID_PLANS = {
   },
   tier4: {
     id: 'tier4',
-    name: 'Tier 4 (Enterprise)',
-    shortName: 'Tier 4',
+    name: '500 Employees Plan',
+    shortName: '500 Employees',
     tierNumber: 4,
     maxProfiles: 500,
     ratePerProfile: 100,
     overageRate: 120,
     badgeColor: 'badge-emerald',
-    employeeThreshold: '< 500 Employees',
+    employeeThreshold: '500 Employees Quota',
     description: 'For large enterprises with up to 500 employees/vendors',
     features: [
-      'Up to 500 Verified Profiles',
+      '500 Verified Employee Quota',
       '₹100 / Base Verified Profile',
       '₹120 / Exceeding Profile (Never Blocked)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
@@ -104,17 +104,17 @@ export const POSTPAID_PLANS = {
   },
   tier5: {
     id: 'tier5',
-    name: 'Tier 5 (Custom Enterprise)',
-    shortName: 'Tier 5',
+    name: '500+ Enterprise Plan',
+    shortName: '500+ Enterprise',
     tierNumber: 5,
     maxProfiles: 999999,
     ratePerProfile: 85,
     overageRate: 95,
     badgeColor: 'badge-amber',
-    employeeThreshold: '500+ Employees (Custom)',
+    employeeThreshold: '500+ Custom Quota',
     description: 'For large corporate organizations with 500+ employees/vendors',
     features: [
-      '500+ Verified Profiles (Custom)',
+      '500+ Verified Profiles (Custom Quota)',
       '₹85 / Base Verified Profile (Volume Discount)',
       '₹95 / Exceeding Profile',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
@@ -163,13 +163,17 @@ export const getCompanyPostpaidPlan = (companyOrPlan) => {
     ? companyOrPlan.toLowerCase()
     : ((companyOrPlan.planTier || companyOrPlan.plan || '').toLowerCase());
 
-  if (planKey.includes('tier 1') || planKey.includes('tier1') || planKey.includes('starter')) return POSTPAID_PLANS.tier1;
-  if (planKey.includes('tier 2') || planKey.includes('tier2') || planKey.includes('growth')) return POSTPAID_PLANS.tier2;
+  if (planKey.includes('50') && !planKey.includes('150') && !planKey.includes('500')) return POSTPAID_PLANS.tier1;
+  if (planKey.includes('150')) return POSTPAID_PLANS.tier2;
+  if (planKey.includes('300')) return POSTPAID_PLANS.tier3;
+  if (planKey.includes('500+') || planKey.includes('custom') || planKey.includes('tier 5') || planKey.includes('tier5') || planKey.includes('platinum')) return POSTPAID_PLANS.tier5;
+  if (planKey.includes('500')) return POSTPAID_PLANS.tier4;
+  if (planKey.includes('tier 1') || planKey.includes('tier1') || planKey.includes('starter') || planKey.includes('basic')) return POSTPAID_PLANS.tier1;
+  if (planKey.includes('tier 2') || planKey.includes('tier2') || planKey.includes('growth') || planKey.includes('standard')) return POSTPAID_PLANS.tier2;
   if (planKey.includes('tier 3') || planKey.includes('tier3') || planKey.includes('scale') || planKey.includes('pro')) return POSTPAID_PLANS.tier3;
-  if (planKey.includes('tier 4') || planKey.includes('tier4') || (planKey.includes('enterprise') && !planKey.includes('custom') && !planKey.includes('platinum'))) return POSTPAID_PLANS.tier4;
-  if (planKey.includes('tier 5') || planKey.includes('tier5') || planKey.includes('custom') || planKey.includes('platinum')) return POSTPAID_PLANS.tier5;
+  if (planKey.includes('tier 4') || planKey.includes('tier4') || planKey.includes('enterprise')) return POSTPAID_PLANS.tier4;
 
-  return POSTPAID_PLANS.tier1;
+  return POSTPAID_PLANS.tier2;
 };
 
 export const calculateCompanyPostpaidBill = (company, candidates = [], vendors = []) => {
@@ -1988,42 +1992,34 @@ export const AppProvider = ({ children }) => {
   const bulkAddCandidates = async (candidatesList) => {
     if (!candidatesList || candidatesList.length === 0) return [];
     
-    // 🚫 Filter out exact duplicate candidates
-    const existingEmails = new Set(candidates.map(c => (c.email || '').trim().toLowerCase()).filter(Boolean));
-    const existingMobiles = new Set(candidates.map(c => (c.mobile || '').replace(/\s+/g, '')).filter(Boolean));
-    const existingEmpIds = new Set(candidates.map(c => (c.empId || c.employeeNumber || '').trim().toUpperCase()).filter(Boolean));
-
+    // Deduplicate within this uploaded batch only to avoid sending duplicate payloads in one transaction
+    const batchEmails = new Set();
+    const batchMobiles = new Set();
+    const batchEmpIds = new Set();
     const uniqueCandidatesList = [];
-    let skippedCount = 0;
+    let internalBatchDups = 0;
 
     for (const cand of candidatesList) {
       const candEmail = (cand.email || '').trim().toLowerCase();
-      const candMobile = (cand.mobile || '').replace(/\s+/g, '');
+      const candMobile = (cand.mobile || '').replace(/[^0-9]/g, '');
       const candEmpId = (cand.empId || cand.employeeNumber || '').trim().toUpperCase();
 
-      if ((candEmail && existingEmails.has(candEmail)) || 
-          (candMobile && existingMobiles.has(candMobile)) || 
-          (candEmpId && existingEmpIds.has(candEmpId))) {
-        skippedCount++;
+      const isBatchDup = (candEmail && batchEmails.has(candEmail)) || 
+                         (candMobile && candMobile.length === 10 && batchMobiles.has(candMobile)) || 
+                         (candEmpId && batchEmpIds.has(candEmpId));
+
+      if (isBatchDup) {
+        internalBatchDups++;
       } else {
         uniqueCandidatesList.push(cand);
-        if (candEmail) existingEmails.add(candEmail);
-        if (candMobile) existingMobiles.add(candMobile);
-        if (candEmpId) existingEmpIds.add(candEmpId);
+        if (candEmail) batchEmails.add(candEmail);
+        if (candMobile && candMobile.length === 10) batchMobiles.add(candMobile);
+        if (candEmpId) batchEmpIds.add(candEmpId);
       }
     }
 
-    if (skippedCount > 0) {
-      showToast(`ℹ️ Skipped ${skippedCount} duplicate candidate records.`);
-    }
-
-    if (uniqueCandidatesList.length === 0) {
-      showToast('ℹ️ Candidates already exist in directory. Displaying records.');
-      const existingMatches = candidates.filter(c => {
-        const cEmail = (c.email || '').trim().toLowerCase();
-        return candidatesList.some(item => (item.email || '').trim().toLowerCase() === cEmail);
-      });
-      return existingMatches.length > 0 ? existingMatches : candidatesList;
+    if (internalBatchDups > 0) {
+      showToast(`ℹ️ Deduplicated ${internalBatchDups} identical records inside uploaded file.`);
     }
 
     try {
