@@ -65,7 +65,8 @@ import {
   Award,
   Plus,
   Scale,
-  Trash2
+  Trash2,
+  Download
 } from 'lucide-react';
 
 const FORM_SECTIONS = [
@@ -597,10 +598,25 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     setFormData({ ...formData, experienceList: list });
   };
 
+  const delegatedMap = candidate?.delegatedFieldsMap || jfd.delegatedFieldsMap || candidate?.joiningFormData?.delegatedFieldsMap || {};
+  const isFieldOmitted = (fieldKey) => delegatedMap[fieldKey] === 'omit';
+
   const handleFinalFormSubmit = (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
     if (!aadhaarVerified || !mobileVerified) {
       alert('Mandatory OTP Verification Required: Please complete both Aadhaar OTP and Mobile OTP verification before submitting.');
+      return;
+    }
+
+    const hasSignature = !!(
+      formData.specimenSignature || 
+      formData.signature || 
+      formData.uploadedDocuments?.docSpecimenSignature?.dataUrl || 
+      formData.uploadedDocuments?.docSpecimenSignature?.file_path
+    );
+    if (!hasSignature) {
+      alert('Mandatory Specimen Signature Required: Please draw or upload the employee specimen signature in Section 11 before submitting.');
+      setActiveSection('documents');
       return;
     }
 
@@ -626,16 +642,21 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   }, [formData]);
 
   const renderCandidateFieldLabel = (label, fieldKey, isRequired = false) => {
+    const isOmitted = isFieldOmitted(fieldKey);
     const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
     const currentVal = formData[fieldKey];
     const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
 
     return (
       <div className="flex items-center justify-between gap-1 mb-1">
-        <span className="text-slate-700 font-bold leading-tight">
-          {label} {isRequired && <span className="text-rose-500">*</span>}
+        <span className={`text-slate-700 font-bold leading-tight ${isOmitted ? 'line-through text-slate-400 opacity-60' : ''}`}>
+          {label} {isRequired && !isOmitted && <span className="text-rose-500">*</span>}
         </span>
-        {hasPreFilledVal ? (
+        {isOmitted ? (
+          <span className="text-[8px] font-black px-1.5 py-0.2 rounded border bg-rose-50 text-rose-800 border-rose-300">
+            Omitted by HR 🚫
+          </span>
+        ) : hasPreFilledVal ? (
           <span className="text-[8px] font-black px-1.5 py-0.2 rounded border bg-emerald-50 text-emerald-800 border-emerald-300">
             Pre-filled by HR 🏢 ✓
           </span>
@@ -653,6 +674,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   };
 
   const getCandidateFieldInputClass = (fieldKey, baseClass = 'form-input') => {
+    const isOmitted = isFieldOmitted(fieldKey);
+    if (isOmitted) {
+      return `${baseClass} border-rose-200 bg-rose-50/20 text-slate-400 opacity-60`;
+    }
     const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
     const currentVal = formData[fieldKey];
     const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
@@ -716,8 +741,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             ) : (
               <button 
                 type="button"
+                disabled={!(formData.aadhaarNo && formData.aadhaarNo.replace(/\s+/g, '').length === 12)}
                 onClick={() => setShowAadhaarOtpModal(true)}
-                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive"
+                className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive disabled:opacity-40 disabled:cursor-not-allowed"
+                title={formData.aadhaarNo?.replace(/\s+/g, '').length === 12 ? 'Verify Aadhaar via UIDAI OTP' : 'Enter 12-digit Aadhaar number to enable verification'}
               >
                 <KeyRound className="w-3.5 h-3.5" />
                 <span>Verify Aadhaar OTP & Fetch Data *</span>
@@ -733,8 +760,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             ) : (
               <button 
                 type="button"
+                disabled={!(formData.mobile && formData.mobile.replace(/\D/g, '').length >= 10)}
                 onClick={() => setShowMobileOtpModal(true)}
-                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive"
+                className="btn btn-company text-[11px] py-1 px-3 flex items-center gap-1 cursor-pointer btn-interactive disabled:opacity-40 disabled:cursor-not-allowed"
+                title={formData.mobile?.replace(/\D/g, '').length >= 10 ? 'Verify Mobile SMS OTP' : 'Enter 10-digit mobile number to enable verification'}
               >
                 <Smartphone className="w-3.5 h-3.5" />
                 <span>Verify Mobile SMS OTP *</span>
@@ -750,8 +779,10 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
             ) : (
               <button 
                 type="button"
+                disabled={!(formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))}
                 onClick={() => setShowEmailOtpModal(true)}
-                className="btn btn-secondary text-[11px] py-1 px-3 flex items-center gap-1 bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer btn-interactive"
+                className="btn btn-secondary text-[11px] py-1 px-3 flex items-center gap-1 bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer btn-interactive disabled:opacity-40 disabled:cursor-not-allowed"
+                title={formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'Verify Email OTP' : 'Enter valid email address to enable verification'}
               >
                 <Mail className="w-3.5 h-3.5 text-purple-700" />
                 <span>Verify Email OTP</span>
@@ -3139,39 +3170,71 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
         {/* 👁️ CANDIDATE DOCUMENT PREVIEW MODAL */}
         {previewDoc && (
-          <div className="fixed inset-0 z-60 flex items-start justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-            <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn">
-              <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
-                <div>
-                  <h4 className="font-extrabold text-sm text-white">{previewDoc.name}</h4>
-                  <p className="text-[10px] text-slate-400">{previewDoc.type} • {previewDoc.size}</p>
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 overflow-hidden bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+            <div className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-4rem)] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0">
+              <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-5 h-5 text-indigo-400" />
+                  <div>
+                    <h4 className="font-extrabold text-sm text-white">{previewDoc.name || previewDoc.title}</h4>
+                    <p className="text-[10px] text-slate-400 font-mono">{previewDoc.type || 'Document'} • {previewDoc.size || `${previewDoc.file_size_kb || 250} KB`}</p>
+                  </div>
                 </div>
-                <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 bg-slate-100 space-y-4 text-xs font-mono">
-                <div className="p-4 bg-white rounded-xl border border-slate-300 shadow-sm space-y-2">
-                  <div className="flex justify-between border-b pb-2 font-sans font-bold">
-                    <span>Uploaded Proof Record</span>
-                    <span className="badge badge-emerald">Verified ✓</span>
+              <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-100 space-y-3">
+                {previewDoc.file_path && previewDoc.file_path.startsWith('data:image') ? (
+                  <img 
+                    src={previewDoc.file_path} 
+                    alt={previewDoc.name || previewDoc.title} 
+                    className="max-h-[60vh] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain"
+                  />
+                ) : (previewDoc.file_path && (previewDoc.file_path.includes('application/pdf') || previewDoc.file_path.endsWith('.pdf') || previewDoc.file_path.startsWith('data:application/pdf') || previewDoc.type?.includes('pdf') || previewDoc.file_format === 'pdf')) ? (
+                  <div className="w-full h-full min-h-[480px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-lg flex flex-col">
+                    <iframe 
+                      src={previewDoc.file_path || previewDoc.dataUrl || previewDoc.data} 
+                      title={previewDoc.name || 'Document PDF Preview'}
+                      className="w-full flex-1 min-h-[480px] border-0 bg-white"
+                    />
                   </div>
-                  <div className="flex justify-between"><span>Subject Name:</span><strong className="text-slate-900">{formData.fullName}</strong></div>
-                  <div className="flex justify-between"><span>Proof Value:</span><strong>{previewDoc.masked}</strong></div>
-                  <div className="flex justify-between"><span>Storage Vault:</span><strong className="text-emerald-700">AES-256 Encrypted</strong></div>
-                </div>
-
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 text-[11px] font-sans flex items-start gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>Document securely verified against government database.</span>
-                </div>
+                ) : (
+                  <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-md border-2 border-dashed border-indigo-300 text-center space-y-3">
+                    <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center mx-auto shadow-xs">
+                      <FileText className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-slate-900 text-sm">{previewDoc.name || previewDoc.title}</h4>
+                      <p className="text-xs text-slate-500 font-mono mt-0.5">Proof: {previewDoc.masked || 'Verified ID Exhibit'}</p>
+                      <span className="badge badge-emerald text-[10px] mt-2">Verified & Encrypted in JOY Storage Vault ✓</span>
+                    </div>
+                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px] font-medium flex items-center justify-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Original document validated against live government registry.</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="p-3 bg-white border-t border-slate-200 flex justify-end">
-                <button onClick={() => setPreviewDoc(null)} className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer">
-                  Close
-                </button>
+              <div className="p-3 bg-white border-t border-slate-200 flex items-center justify-between shrink-0 text-xs">
+                <span className="text-slate-500 font-mono text-[10px]">Candidate: {formData.fullName}</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setPreviewDoc(null)} className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer">
+                    Close Preview
+                  </button>
+                  {previewDoc.file_path && (
+                    <a
+                      href={previewDoc.file_path}
+                      download={previewDoc.name || 'document.pdf'}
+                      className="btn btn-primary text-xs py-1.5 px-3.5 font-bold flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>

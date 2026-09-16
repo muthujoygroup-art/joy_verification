@@ -1331,7 +1331,9 @@ export const EmployeePortalView = () => {
               ) : (
                 <button 
                   onClick={handleSendAadhaarOtp}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  disabled={!(candidate.aadhaarNo && candidate.aadhaarNo.replace(/\s+/g, '').length === 12)}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.aadhaarNo?.replace(/\s+/g, '').length === 12 ? 'Verify Aadhaar OTP' : 'Enter 12-digit Aadhaar number to enable verification'}
                 >
                   <KeyRound className="w-4 h-4" />
                   <span>Verify Aadhaar OTP & Fetch Data</span>
@@ -1417,7 +1419,9 @@ export const EmployeePortalView = () => {
               ) : (
                 <button 
                   onClick={handleSendMobileOtp}
-                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  disabled={!(candidate.mobile && candidate.mobile.replace(/\D/g, '').length >= 10)}
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.mobile?.replace(/\D/g, '').length >= 10 ? 'Send Mobile OTP' : 'Enter 10-digit mobile number to enable verification'}
                 >
                   <Smartphone className="w-4 h-4" />
                   <span>Send Mobile OTP</span>
@@ -1455,15 +1459,17 @@ export const EmployeePortalView = () => {
               {(verificationsCompleted.email || isEmailVerified) ? (
                 <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-300">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Email OTP Verified ✓</span>
+                  <span>Email Address OTP Verified ✓</span>
                 </div>
               ) : (
                 <button 
                   onClick={handleSendEmailOtp}
-                  className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold shadow-md bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 cursor-pointer"
+                  disabled={!(candidate.email && candidate.email.includes('@'))}
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.email && candidate.email.includes('@') ? 'Send Email OTP' : 'Enter valid email address to enable verification'}
                 >
-                  <Mail className="w-4 h-4 text-purple-700" />
-                  <span>Verify Email OTP</span>
+                  <Mail className="w-4 h-4" />
+                  <span>Send Email OTP</span>
                 </button>
               )}
             </div>
@@ -1591,7 +1597,9 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'pan', true);
                     showToast('💳 PAN Card Verified via NSDL Database & Linked with Aadhaar!');
                   }}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  disabled={!(candidate.panNo && /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(candidate.panNo))}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.panNo && /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(candidate.panNo) ? 'Verify PAN Identity' : 'Enter valid 10-character PAN (e.g. ABCDE1234F) to enable verification'}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify PAN Identity</span>
@@ -1663,7 +1671,9 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'bankCheck', true);
                     showToast('🏦 Bank Account Verified via IMPS Penny Drop (Account Holder Matched)!');
                   }}
-                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  disabled={!(candidate.bankAccountNo && candidate.bankAccountNo.length >= 6)}
+                  className="btn btn-company text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.bankAccountNo && candidate.bankAccountNo.length >= 6 ? 'Verify Bank Account' : 'Enter valid Bank Account Number to enable verification'}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify Bank Account</span>
@@ -1735,7 +1745,9 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'passport', true);
                     showToast('🛂 Passport Number Authenticated via MEA Direct Database (Server 2)!');
                   }}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  disabled={!(candidate.passportNo && candidate.passportNo.length >= 6)}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.passportNo && candidate.passportNo.length >= 6 ? 'Verify Passport' : 'Enter valid Passport number to enable verification'}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify Passport (Server 2)</span>
@@ -1779,7 +1791,9 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'uan', true);
                     showToast('🏢 EPFO Employment Service History & Moonlighting Audit Completed (Server 2)!');
                   }}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md"
+                  disabled={!(candidate.uanEpf && candidate.uanEpf.length >= 10)}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={candidate.uanEpf && candidate.uanEpf.length >= 10 ? 'Verify EPFO History' : 'Enter 12-digit UAN to enable verification'}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify EPFO History (Server 2)</span>
@@ -1823,7 +1837,9 @@ export const EmployeePortalView = () => {
                     updateCandidateVerification(candidate.token, 'drivingLicense', true);
                     showToast('🚗 Driving License Verified via MoRTH Sarathi Registry!');
                   }}
-                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                  disabled={!((candidate.dlNo || candidate.drivingLicense) && (candidate.dlNo || candidate.drivingLicense).length >= 8)}
+                  className="btn btn-superadmin text-xs flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={(candidate.dlNo || candidate.drivingLicense)?.length >= 8 ? 'Verify Driving License' : 'Enter valid DL Number to enable verification'}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Verify Driving License</span>

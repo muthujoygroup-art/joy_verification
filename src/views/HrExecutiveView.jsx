@@ -25,9 +25,7 @@ import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvRepor
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
-import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
-import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus } from '../utils/verificationRequirements';
-import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
+import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
   GENDER_OPTIONS, 
   MARITAL_STATUS_OPTIONS, 
@@ -498,23 +496,6 @@ export const HrExecutiveView = () => {
     });
   }, [formData]);
 
-  const toggleFieldDelegation = (fieldName) => {
-    setDelegatedFieldsMap(prev => {
-      const currentOwnership = getFieldOwnershipStatus(fieldName, formData[fieldName], prev);
-      const nextIsLink = currentOwnership.status === 'hr';
-      const nextMap = {
-        ...prev,
-        [fieldName]: nextIsLink
-      };
-      showToast(
-        nextIsLink 
-          ? `📱 Delegated "${fieldName}" to Candidate via Link` 
-          : `🖥️ Switched "${fieldName}" to HR Typed Entry`
-      );
-      return nextMap;
-    });
-  };
-
   // ⚡ Auto-Save Draft to LocalStorage across typing, reloads & disconnects
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -740,6 +721,21 @@ export const HrExecutiveView = () => {
     }
   };
 
+  const toggleFieldDelegation = (fieldKey) => {
+    const currentOwnership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
+    const nextMode = getNextFieldOwnershipMode(currentOwnership.status);
+    setDelegatedFieldsMap(prev => ({
+      ...prev,
+      [fieldKey]: nextMode
+    }));
+    const modeLabels = {
+      hr: 'HR Typed 🖥️',
+      link: 'Candidate Link 📱',
+      omit: 'Omitted from Form 🚫'
+    };
+    showToast(`Field '${fieldKey}' set to: ${modeLabels[nextMode] || nextMode}`);
+  };
+
   const setAllFieldsMode = (mode) => {
     if (mode === 'reset') {
       setDelegatedFieldsMap({});
@@ -758,13 +754,23 @@ export const HrExecutiveView = () => {
       'nomineeRelation', 'insuranceDependents'
     ];
 
-    const isLink = mode === 'link';
     const newMap = {};
+    if (mode === 'omit_optional') {
+      const optionalKeys = ['spouseName', 'languagesKnown', 'selfInterests', 'alternateMobile', 'nativeDistrict', 'area', 'linkedInUrl', 'githubUrl', 'portfolioUrl', 'twitterUrl', 'religion', 'caste', 'category', 'identificationMarks'];
+      allFieldKeys.forEach(k => {
+        newMap[k] = optionalKeys.includes(k) ? 'omit' : 'link';
+      });
+      setDelegatedFieldsMap(newMap);
+      showToast('🚫 Optional personal & social fields omitted for this profile!');
+      return;
+    }
+
     allFieldKeys.forEach(k => {
-      newMap[k] = isLink;
+      newMap[k] = mode;
     });
     setDelegatedFieldsMap(newMap);
-    showToast(isLink ? '📱 All form fields switched to Candidate Link mode!' : '🖥️ All form fields switched to HR Typed mode!');
+    const modeLabels = { link: 'Candidate Link 📱', hr: 'HR Typed 🖥️', omit: 'Omitted from Form 🚫' };
+    showToast(`All form fields switched to ${modeLabels[mode] || mode} mode!`);
   };
 
   const applyEmployeeCategory = (categoryKey) => {
@@ -781,9 +787,12 @@ export const HrExecutiveView = () => {
   const renderFieldLabel = (label, fieldKey, isRequired = false) => {
     const ownership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
     const isHr = ownership.status === 'hr';
+    const isLink = ownership.status === 'employee' || ownership.status === 'link';
+    const isOmit = ownership.status === 'omit';
+
     return (
       <div className="flex items-center justify-between gap-1 mb-1">
-        <label className="text-slate-700 font-bold leading-tight flex items-center gap-1 cursor-pointer">
+        <label className={`font-bold leading-tight flex items-center gap-1 cursor-pointer select-none ${isOmit ? 'text-slate-400 line-through decoration-rose-400' : 'text-slate-700'}`}>
           <span>{label}</span>
           {isRequired && isHr && <span className="text-rose-500 font-black">*</span>}
         </label>
@@ -794,15 +803,26 @@ export const HrExecutiveView = () => {
             e.stopPropagation();
             toggleFieldDelegation(fieldKey);
           }}
-          title={isHr ? "Currently: Filled by HR. Click to switch to Candidate Link 📱" : "Currently: Delegated to Link. Click to switch to HR Typed 🖥️"}
+          title={
+            isHr 
+              ? "Status: Filled by HR 🖥️. Click to switch to Candidate Link 📱" 
+              : isLink 
+              ? "Status: Delegated to Link 📱. Click to switch to Omit 🚫"
+              : "Status: Omitted from Form 🚫. Click to switch to Filled by HR 🖥️"
+          }
           className={`text-[9px] font-black px-2 py-0.5 rounded-full border cursor-pointer select-none transition-all flex items-center gap-1 shadow-2xs hover:scale-105 active:scale-95 ${
             isHr
               ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 ring-1 ring-emerald-400/30'
-              : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 ring-1 ring-amber-400/30'
+              : isLink
+              ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 ring-1 ring-amber-400/30'
+              : 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100 ring-1 ring-rose-400/30'
           }`}
         >
-          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: isHr ? '#059669' : '#d97706' }} />
-          <span>{isHr ? 'HR 🖥️' : 'Link 📱'}</span>
+          <span 
+            className="w-1.5 h-1.5 rounded-full shrink-0" 
+            style={{ backgroundColor: isHr ? '#059669' : isLink ? '#d97706' : '#e11d48' }} 
+          />
+          <span>{isHr ? 'HR 🖥️' : isLink ? 'Link 📱' : 'Omit 🚫'}</span>
         </button>
       </div>
     );
@@ -810,7 +830,10 @@ export const HrExecutiveView = () => {
 
   const getFieldInputClass = (fieldKey, baseClass = 'form-input') => {
     const ownership = getFieldOwnershipStatus(fieldKey, formData[fieldKey], delegatedFieldsMap);
-    if (ownership.status === 'employee') {
+    if (ownership.status === 'omit') {
+      return `${baseClass} border-rose-200 bg-rose-50/20 text-slate-400 opacity-60`;
+    }
+    if (ownership.status === 'employee' || ownership.status === 'link') {
       return `${baseClass} border-amber-300 bg-amber-50/20 focus:border-amber-500 focus:bg-white`;
     }
     return `${baseClass} border-slate-300 bg-white focus:border-indigo-500`;
@@ -2714,7 +2737,7 @@ export const HrExecutiveView = () => {
                 <div>
                   <span className="text-indigo-950 font-black block leading-tight">Field Entry & Link Delegation Control</span>
                   <span className="text-[11px] text-slate-500 font-medium">
-                    Click any <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300 text-[10px]">HR 🖥️</span> or <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold border border-amber-300 text-[10px]">Link 📱</span> badge to toggle individual fields, or use 1-click batch controls:
+                    Click any <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300 text-[10px]">HR 🖥️</span>, <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold border border-amber-300 text-[10px]">Link 📱</span>, or <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-900 font-bold border border-rose-300 text-[10px]">Omit 🚫</span> badge to cycle individual field modes, or use 1-click batch controls:
                   </span>
                 </div>
               </div>
@@ -2734,6 +2757,14 @@ export const HrExecutiveView = () => {
                   title="Delegate all form fields to Candidate Link"
                 >
                   <span>📱 All Candidate Link</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAllFieldsMode('omit_optional')}
+                  className="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold border border-rose-300 cursor-pointer text-[11px] flex items-center gap-1 shadow-2xs transition-all hover:scale-105 active:scale-95"
+                  title="Omit all non-mandatory optional fields from the candidate onboarding form"
+                >
+                  <span>🚫 Omit Optional</span>
                 </button>
                 <button
                   type="button"

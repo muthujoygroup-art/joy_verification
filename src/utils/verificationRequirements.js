@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Verification & Data-Fetching Requirements Engine
  * Defines mandatory field prerequisites for all 47+ identity & background verification checks.
  */
@@ -181,14 +181,24 @@ export const evaluateVerificationReadiness = (formData = {}) => {
 };
 
 /**
- * Returns field ownership status
- * If field has value -> 'filled_by_hr'
- * If field is explicitly delegated or empty -> 'delegated_to_employee'
+ * Returns field ownership status supporting 3 modes:
+ * - 'hr': Filled by HR 🖥️
+ * - 'employee' (or 'link'): To be filled by Candidate via Link 📱
+ * - 'omit': Omitted & Hidden from Onboarding Form 🚫
  */
 export const getFieldOwnershipStatus = (fieldName, fieldValue, delegatedFieldsMap = {}) => {
   // If explicitly overridden in delegatedFieldsMap:
   if (delegatedFieldsMap && delegatedFieldsMap[fieldName] !== undefined) {
-    const isLinkDelegated = Boolean(delegatedFieldsMap[fieldName]);
+    const rawVal = delegatedFieldsMap[fieldName];
+    if (rawVal === 'omit' || rawVal === 'omitted' || rawVal === -1) {
+      return {
+        status: 'omit',
+        label: 'Omitted from Form 🚫',
+        badgeClass: 'bg-rose-100 text-rose-900 border-rose-300 hover:bg-rose-200',
+        borderClass: 'border-rose-300 bg-rose-50/25 opacity-60'
+      };
+    }
+    const isLinkDelegated = rawVal === 'link' || rawVal === 'employee' || rawVal === true;
     if (isLinkDelegated) {
       return {
         status: 'employee',
@@ -224,3 +234,13 @@ export const getFieldOwnershipStatus = (fieldName, fieldValue, delegatedFieldsMa
     borderClass: 'border-slate-300 bg-white'
   };
 };
+
+/**
+ * Cycles field ownership status: HR 🖥️ -> Link 📱 -> Omit 🚫 -> HR 🖥️
+ */
+export const getNextFieldOwnershipMode = (currentStatus) => {
+  if (currentStatus === 'hr') return 'link';
+  if (currentStatus === 'employee' || currentStatus === 'link') return 'omit';
+  return 'hr';
+};
+

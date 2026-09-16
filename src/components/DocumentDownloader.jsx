@@ -575,13 +575,21 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-100 space-y-4">
+            <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-100 space-y-3">
               {selectedDocPreview.file_path && selectedDocPreview.file_path.startsWith('data:image') ? (
                 <img 
                   src={selectedDocPreview.file_path} 
                   alt={selectedDocPreview.title} 
                   className="max-h-[60vh] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain"
                 />
+              ) : (selectedDocPreview.file_path && (selectedDocPreview.file_path.includes('application/pdf') || selectedDocPreview.file_path.endsWith('.pdf') || selectedDocPreview.file_path.startsWith('data:application/pdf') || selectedDocPreview.file_format === 'pdf')) ? (
+                <div className="w-full h-full min-h-[480px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-lg flex flex-col">
+                  <iframe 
+                    src={selectedDocPreview.file_path} 
+                    title={selectedDocPreview.title || 'Document PDF Preview'}
+                    className="w-full flex-1 min-h-[480px] border-0 bg-white"
+                  />
+                </div>
               ) : (
                 <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-md border-2 border-dashed border-sky-300 text-center space-y-3">
                   <div className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center mx-auto shadow-xs">
