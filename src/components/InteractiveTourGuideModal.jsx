@@ -454,7 +454,7 @@ export const InteractiveTourGuideModal = ({
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   
-  // 5 Primary Modes: 'missions' | 'sandbox' | 'video_theater' | 'downloads' | 'guides'
+  // 4 Primary Modes: 'missions' | 'video_theater' | 'downloads' | 'guides'
   const [activeTourMode, setActiveTourMode] = useState('missions');
   
   // Mission Walkthrough State (Game-Style Split Screen)
@@ -502,12 +502,6 @@ export const InteractiveTourGuideModal = ({
   const [turnstileScanned, setTurnstileScanned] = useState(false);
   const [vendorMcaVerified, setVendorMcaVerified] = useState(false);
   const [pennyDropDone, setPennyDropDone] = useState(false);
-
-  // Sandbox State
-  const [sandboxCheckType, setSandboxCheckType] = useState('aadhaar');
-  const [sandboxInputValue, setSandboxInputValue] = useState('5489 1204 8921');
-  const [sandboxExecuting, setSandboxExecuting] = useState(false);
-  const [sandboxResult, setSandboxResult] = useState(null);
 
   // Video Theater State
   const [activeVideoChannel, setActiveVideoChannel] = useState('biometric');
@@ -827,123 +821,6 @@ export const InteractiveTourGuideModal = ({
     }
   };
 
-  // Sandbox Runner
-  const handleExecuteSandboxCheck = () => {
-    soundEngine.playScan();
-    setSandboxExecuting(true);
-    setSandboxResult(null);
-
-    setTimeout(() => {
-      setSandboxExecuting(false);
-      soundEngine.playSuccess();
-      
-      if (sandboxCheckType === 'aadhaar') {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.34s',
-          rail: 'UIDAI e-KYC Fast Rail',
-          data: {
-            aadhaar_masked: 'XXXX-XXXX-8921',
-            demographics_match: '100% MATCHED',
-            name: 'Kavitha Ramanathan',
-            dob: '14-05-1992',
-            gender: 'FEMALE',
-            state: 'Tamil Nadu',
-            district: 'Chennai',
-            pincode: '600028',
-            signature_verified: true,
-            sha256: '9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b'
-          }
-        });
-      } else if (sandboxCheckType === 'pan') {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.28s',
-          rail: 'NSDL Income Tax PAN 2.0',
-          data: {
-            pan_number: sandboxInputValue.toUpperCase(),
-            pan_status: 'EXISTING & VALID',
-            holder_name: 'KAVITHA RAMANATHAN',
-            aadhaar_seeding_status: 'LINKED (ACTIVE)',
-            category: 'INDIVIDUAL',
-            last_updated: new Date().toLocaleDateString('en-IN')
-          }
-        });
-      } else if (sandboxCheckType === 'gstin') {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.41s',
-          rail: 'GSTN 2B Direct Tax Rail',
-          data: {
-            gstin: sandboxInputValue.toUpperCase(),
-            legal_name: 'APEX INDUSTRIAL LABOR SOLUTIONS PRIVATE LIMITED',
-            trade_name: 'Apex Industrial Labor Solutions',
-            status: 'ACTIVE',
-            taxpayer_type: 'Regular',
-            filing_status_gstr3b: 'FILLED UP TO DATE (100% COMPLIANT)',
-            state_jurisdiction: 'Tamil Nadu (Chennai South)'
-          }
-        });
-      } else if (sandboxCheckType === 'cin') {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.38s',
-          rail: 'Ministry of Corporate Affairs (MCA)',
-          data: {
-            cin: sandboxInputValue.toUpperCase(),
-            company_name: 'APEX INDUSTRIAL LABOR SOLUTIONS PVT LTD',
-            roc_code: 'ROC-CHENNAI',
-            registration_no: '145892',
-            company_category: 'Company limited by Shares',
-            company_status: 'ACTIVE',
-            incorporation_date: '12-Aug-2021',
-            authorized_capital: '₹ 50,00,000'
-          }
-        });
-      } else if (sandboxCheckType === 'epfo') {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.52s',
-          rail: 'EPFO Unified Member Portal',
-          data: {
-            uan: sandboxInputValue,
-            member_name: 'KAVITHA RAMANATHAN',
-            service_tenures_count: 3,
-            concurrent_overlaps_detected: 0,
-            moonlighting_risk: 'ZERO RISK (CLEAN)',
-            last_pf_contribution: 'JOY CORP SOLUTIONS (Active)'
-          }
-        });
-      } else {
-        setSandboxResult({
-          status: 'SUCCESS',
-          latency: '0.45s',
-          rail: 'Parivahan Sarathi Transport Rail',
-          data: {
-            dl_number: sandboxInputValue.toUpperCase(),
-            holder_name: 'MUTHU KUMAR P',
-            authorized_class: 'HMV / TRANS / HAZARDOUS',
-            badge_number: 'TN-38-TR-2022-9812',
-            dl_validity: '04-Oct-2032 (ACTIVE)',
-            challans_pending: 0
-          }
-        });
-      }
-      confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
-    }, 600);
-  };
-
-  const setSampleSandboxValue = (type) => {
-    soundEngine.playClick();
-    setSandboxCheckType(type);
-    if (type === 'aadhaar') setSandboxInputValue('5489 1204 8921');
-    else if (type === 'pan') setSandboxInputValue('ABCDE1234F');
-    else if (type === 'gstin') setSandboxInputValue('33AAACA1234A1Z5');
-    else if (type === 'cin') setSandboxInputValue('U74999TN2021PTC145892');
-    else if (type === 'epfo') setSandboxInputValue('100982347891');
-    else if (type === 'dl') setSandboxInputValue('TN3820220098214');
-  };
-
   const filteredGuides = GUIDE_LIBRARY.filter(g => {
     const matchesCat = guideCategory === 'all' || g.category === guideCategory;
     const matchesSearch = guideSearchQuery === '' ||
@@ -1035,13 +912,12 @@ export const InteractiveTourGuideModal = ({
         </div>
 
         {/* ==============================================================================
-         * 5-PILLAR PRIMARY MODE SWITCHER (High Contrast Pill Bar)
+         * 4-PILLAR PRIMARY MODE SWITCHER (High Contrast Pill Bar)
          * ============================================================================== */}
         <div className="p-3 bg-[#F8FAFC] border-b border-slate-200 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar shrink-0">
           <div className="flex items-center gap-2 min-w-max">
             {[
               { id: 'missions', label: '🎮 Game-Style Missions', badge: 'Interactive HUD' },
-              { id: 'sandbox', label: '⚡ Real-Time API Sandbox', badge: 'Live Rails' },
               { id: 'video_theater', label: '🎬 4K Simulation Theater', badge: '6 Channels' },
               { id: 'downloads', label: '📥 Sample PDF & Excel Hub', badge: 'Instant Export' },
               { id: 'guides', label: '📚 Complete Knowledge Library', badge: 'Searchable' }
@@ -1836,102 +1712,7 @@ export const InteractiveTourGuideModal = ({
         )}
 
         {/* ==============================================================================
-         * MODE 2: REAL-TIME API RAILS SANDBOX (Interactive Playground)
-         * ============================================================================== */}
-        {activeTourMode === 'sandbox' && (
-          <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FAFC]">
-            
-            <div className="bg-white border-2 border-[#426CF5] rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-[11px] font-mono font-bold text-indigo-700 uppercase tracking-wider">
-                      LIVE DIRECT REGISTRY RAIL CONSOLE
-                    </span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-outfit mt-0.5 tracking-tight">
-                    Real-Time Verification API Rails Sandbox ⚡
-                  </h3>
-                </div>
-                <span className="text-xs font-mono text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                  Average Latency: ~0.35s
-                </span>
-              </div>
-
-              {/* Check Type Selector Buttons */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {[
-                  { id: 'aadhaar', label: 'UIDAI Aadhaar e-KYC', code: 'Aadhaar' },
-                  { id: 'pan', label: 'NSDL PAN 2.0 Check', code: 'PAN' },
-                  { id: 'gstin', label: 'GSTIN 2B Tax Status', code: 'GSTIN' },
-                  { id: 'cin', label: 'MCA Company CIN', code: 'CIN' },
-                  { id: 'epfo', label: 'EPFO Moonlighting', code: 'UAN' },
-                  { id: 'dl', label: 'Parivahan Sarathi DL', code: 'DL' }
-                ].map(item => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSampleSandboxValue(item.id)}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                      sandboxCheckType === item.id
-                        ? 'bg-[#426CF5] text-white border-[#3459D8] shadow-md'
-                        : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
-                    }`}
-                  >
-                    <div className="text-[10px] font-mono font-bold opacity-80">{item.code}</div>
-                    <div className="text-xs font-bold font-outfit mt-0.5">{item.label}</div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Input Control & Trigger */}
-              <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3">
-                <label className="font-bold text-slate-900 text-xs block">
-                  Enter Input Value to Test Real-Time Rail Simulation:
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    value={sandboxInputValue}
-                    onChange={(e) => setSandboxInputValue(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-900 text-sm shadow-inner focus:outline-none focus:border-[#426CF5]"
-                  />
-                  <button
-                    onClick={handleExecuteSandboxCheck}
-                    disabled={sandboxExecuting}
-                    className="px-6 py-3 rounded-xl bg-[#426CF5] hover:bg-[#3459D8] text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all active:scale-95 disabled:opacity-50"
-                  >
-                    {sandboxExecuting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                    <span>{sandboxExecuting ? 'Querying Rails...' : 'Execute Real-Time Check ⚡'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Results Console */}
-              {sandboxResult && (
-                <div className="bg-slate-950 text-white rounded-2xl p-5 border border-slate-800 space-y-3 font-mono text-xs shadow-xl animate-fadeIn">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-                      <span className="text-emerald-400 font-bold">{sandboxResult.rail}</span>
-                    </div>
-                    <span className="text-slate-400">Execution Latency: <strong className="text-white">{sandboxResult.latency}</strong></span>
-                  </div>
-
-                  <pre className="text-emerald-300 bg-slate-900/80 p-4 rounded-xl overflow-x-auto text-[11px] leading-relaxed border border-slate-800">
-                    {JSON.stringify(sandboxResult.data, null, 2)}
-                  </pre>
-                </div>
-              )}
-
-            </div>
-
-          </div>
-        )}
-
-        {/* ==============================================================================
-         * MODE 3: AI ANIMATED VIDEO SIMULATION THEATER
+         * MODE 2: AI ANIMATED VIDEO SIMULATION THEATER
          * ============================================================================== */}
         {activeTourMode === 'video_theater' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-slate-950 text-white">
@@ -2127,7 +1908,7 @@ export const InteractiveTourGuideModal = ({
         )}
 
         {/* ==============================================================================
-         * MODE 4: INSTANT SAMPLE DOWNLOADS & ARTIFACT HUB
+         * MODE 3: INSTANT SAMPLE DOWNLOADS & ARTIFACT HUB
          * ============================================================================== */}
         {activeTourMode === 'downloads' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FAFC]">
@@ -2221,7 +2002,7 @@ export const InteractiveTourGuideModal = ({
         )}
 
         {/* ==============================================================================
-         * MODE 5: COMPLETE KNOWLEDGE LIBRARY & SEARCHABLE GUIDES
+         * MODE 4: COMPLETE KNOWLEDGE LIBRARY & SEARCHABLE GUIDES
          * ============================================================================== */}
         {activeTourMode === 'guides' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 bg-[#F8FAFC]">
