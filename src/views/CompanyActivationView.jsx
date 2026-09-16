@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { GlobalPlatformPreloader } from '../components/GlobalPlatformPreloader';
 import { 
   Building2, 
   ShieldCheck, 
@@ -227,13 +228,11 @@ export const CompanyActivationView = () => {
   // Loading Screen
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div className="text-center space-y-4 text-white">
-          <RefreshCw className="w-10 h-10 animate-spin text-indigo-500 mx-auto" />
-          <h2 className="text-base font-bold">Verifying Company Activation Token...</h2>
-          <p className="text-xs text-slate-400">Connecting to JOY Direct Verification Gateway</p>
-        </div>
-      </div>
+      <GlobalPlatformPreloader 
+        isFullScreen={true}
+        autoDismissMs={1800}
+        subtitleText="VERIFYING COMPANY ACTIVATION TOKEN"
+      />
     );
   }
 

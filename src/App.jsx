@@ -58,14 +58,11 @@ const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').
 
 // Seamless Innovative Brand Loading Component for Suspense Fallback
 const RouteLoadingSpinner = () => (
-  <div className="fixed inset-0 z-[99999] bg-[#070B14] flex flex-col items-center justify-center p-4">
-    <div className="w-16 h-16 rounded-3xl bg-[#426CF5]/20 border border-[#426CF5]/40 flex items-center justify-center text-[#426CF5] animate-pulse">
-      <img src="/assets/logos/joy_true_profile_shield_emblem.png" alt="Loading" className="w-10 h-10 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
-    </div>
-    <div className="mt-4 text-xs font-mono font-bold text-slate-300 tracking-wider animate-pulse">
-      AUTHENTICATING SECURE SESSION...
-    </div>
-  </div>
+  <GlobalPlatformPreloader 
+    isFullScreen={true}
+    autoDismissMs={1200}
+    subtitleText="AUTHENTICATING SECURE SESSION"
+  />
 );
 
 // Global Explicit Action Preloader (Triggers only when explicit long-running processes request it)

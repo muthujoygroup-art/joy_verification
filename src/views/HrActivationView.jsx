@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { GlobalPlatformPreloader } from '../components/GlobalPlatformPreloader';
 import { 
   Building2, 
   ShieldCheck, 
@@ -227,10 +228,11 @@ export const HrActivationView = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-white">
-        <RefreshCw className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
-        <p className="text-sm font-bold text-slate-300">Validating HR Invitation Token...</p>
-      </div>
+      <GlobalPlatformPreloader 
+        isFullScreen={true}
+        autoDismissMs={1800}
+        subtitleText="VALIDATING HR INVITATION TOKEN"
+      />
     );
   }
 
