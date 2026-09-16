@@ -25,6 +25,8 @@ import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvRepor
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
+import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
+import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
   GENDER_OPTIONS, 
