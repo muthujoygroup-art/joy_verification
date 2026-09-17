@@ -77,7 +77,7 @@ const GlobalPageReloadPreloader = () => {
     if (pathname.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
     if (pathname.startsWith('/verify') || pathname.startsWith('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
     if (pathname.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
-    if (pathname.startsWith('/activate')) return 'VERIFYING ONBOARDING ACTIVATION';
+    if (pathname.includes('activate')) return 'VERIFYING ONBOARDING ACTIVATION';
     if (pathname.startsWith('/features')) return 'EXPLORING PLATFORM CAPABILITIES';
     if (pathname.startsWith('/solutions')) return 'ENTERPRISE VERIFICATION SOLUTIONS';
     if (pathname.startsWith('/how-it-works')) return 'INSTANT VERIFICATION WORKFLOWS';
@@ -248,7 +248,12 @@ export const App = () => {
                 {/* 5. Onboarding & Activation Flows */}
                 <Route path="/activate" element={<CompanyActivationView />} />
                 <Route path="/activate-company" element={<CompanyActivationView />} />
+                <Route path="/company-activation" element={<CompanyActivationView />} />
+                <Route path="/company-activation/*" element={<CompanyActivationView />} />
+                <Route path="/company/activate" element={<CompanyActivationView />} />
                 <Route path="/activate-hr" element={<HrActivationView />} />
+                <Route path="/hr-activation" element={<HrActivationView />} />
+                <Route path="/hr-activation/*" element={<HrActivationView />} />
 
                 {/* 6. Fallback Wildcard Redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
