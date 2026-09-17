@@ -843,7 +843,7 @@ export const InteractiveTourGuideModal = ({
             {[
               { id: 'missions', label: '📋 Guided Walkthroughs', badge: 'Step-by-Step' },
               { id: 'video_theater', label: '🎥 Video Tutorials', badge: 'Video URLs' },
-              { id: 'downloads', label: '📥 Sample Downloads', badge: 'PDF & Excel' },
+              { id: 'downloads', label: '📥 Document Downloads', badge: 'PDF & Excel' },
               { id: 'guides', label: '📚 Knowledge Base', badge: 'Documentation' }
             ].map((m) => {
               const isActive = activeTourMode === m.id;
@@ -1134,7 +1134,7 @@ export const InteractiveTourGuideModal = ({
                             className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md transition-colors"
                           >
                             <Download className="w-4 h-4" />
-                            <span>Download Sample GST Invoice (PDF) 📥</span>
+                            <span>Download Official GST Invoice (PDF) 📥</span>
                           </button>
                         </div>
                       )}
@@ -1700,7 +1700,7 @@ export const InteractiveTourGuideModal = ({
                 <h4 className="font-bold text-base text-slate-900 font-outfit">360° Candidate PDF Dossier</h4>
                 <p className="text-xs text-slate-600 leading-relaxed">Cryptographic SHA-256 certificate with complete identity & background checks.</p>
                 <button onClick={handleDownloadSamplePdfDossier} className="w-full py-2.5 rounded-xl bg-red-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                  <Download className="w-4 h-4" /> Download Sample PDF Dossier
+                  <Download className="w-4 h-4" /> Download Official PDF Dossier
                 </button>
               </div>
 

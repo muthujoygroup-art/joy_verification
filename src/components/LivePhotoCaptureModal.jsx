@@ -442,7 +442,7 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
                       className="flex items-center gap-2 p-1.5 rounded-lg border border-slate-200 bg-white hover:border-amber-400 hover:bg-amber-50/50 transition-all text-left"
                     >
                       <img src={portrait.url} alt={portrait.name} className="w-7 h-7 rounded-md object-cover" />
-                      <span className="text-[10px] font-bold text-slate-800 leading-tight">Sample {idx + 1}</span>
+                      <span className="text-[10px] font-bold text-slate-800 leading-tight">Preset {idx + 1}</span>
                     </button>
                   ))}
                 </div>
