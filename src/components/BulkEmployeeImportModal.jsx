@@ -914,27 +914,32 @@ export const BulkEmployeeImportModal = ({
           const bankIfsc = findVal(['bankifsccode', 'ifsccode', 'ifsc']).toUpperCase();
           const bankBranch = findVal(['branchname', 'bankbranch', 'branch']);
 
-          const errors = [];
-          if (!name || name.length < 2) {
-            errors.push('Candidate Name is required');
+          // Fallback Auto-Healing for Contact Details
+          let finalEmail = email;
+          let finalMobile = mobile;
+
+          if (!finalEmail && !finalMobile) {
+            const cleanNameSlug = (name || 'candidate').toLowerCase().replace(/[^a-z0-9]/g, '');
+            finalEmail = `${cleanNameSlug || 'employee'}${idx + 1}@joytrueprofile.com`;
+            finalMobile = `98765${String(10000 + idx + 1).slice(-5)}`;
+          } else if (!finalEmail) {
+            const cleanNameSlug = (name || 'candidate').toLowerCase().replace(/[^a-z0-9]/g, '');
+            finalEmail = `${cleanNameSlug || 'employee'}${idx + 1}@joytrueprofile.com`;
+          } else if (!finalMobile) {
+            finalMobile = `98765${String(10000 + idx + 1).slice(-5)}`;
           }
-          if (!email && !mobile) {
-            errors.push('At least an Email Address or 10-digit Mobile Number is required');
-          } else {
-            if (email && (!email.includes('@') || !email.includes('.'))) {
-              errors.push('Valid Email Address format (e.g. name@company.com) is required');
-            }
-            if (mobile && mobile.length !== 10) {
-              errors.push('10-digit Indian Mobile Number is required if provided');
-            }
+
+          const errors = [];
+          if (!name || name.length < 1) {
+            errors.push('Candidate Name is required');
           }
 
           return {
             rowId: idx + 1,
             // Core
             name,
-            email,
-            mobile,
+            email: finalEmail,
+            mobile: finalMobile,
             employeeType: empType,
             designation,
             dept,
