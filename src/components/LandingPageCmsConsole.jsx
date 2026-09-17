@@ -111,20 +111,17 @@ export const LandingPageCmsConsole = () => {
     if (e) e.preventDefault();
     updateLandingPageContent(formData);
     setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 4000);
+    if (showToast) showToast('✅ Landing page CMS content saved to database!');
   };
 
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset all landing page sections to platform defaults?')) {
+    if (window.confirm('Are you sure you want to reset all CMS content to platform defaults?')) {
       resetLandingPageContent();
       setFormData(DEFAULT_LANDING_PAGE_CONTENT);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 4000);
+      if (showToast) showToast('🔄 Reset all landing page content to factory defaults.');
     }
   };
-
-  const tourSettings = formData.tourGuideSettings || DEFAULT_LANDING_PAGE_CONTENT.tourGuideSettings || {};
-  const tourModules = tourSettings.modules || DEFAULT_LANDING_PAGE_CONTENT.tourGuideSettings.modules;
 
   const handleTourModuleChange = (modId, field, value) => {
     setFormData(prev => {
@@ -161,50 +158,59 @@ export const LandingPageCmsConsole = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 border border-indigo-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute -right-10 -top-10 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-2">
-              <Globe className="w-3.5 h-3.5" /> Comprehensive Landing Page CMS
+      
+      {/* Header Banner - High Contrast Light Enterprise Theme */}
+      <div className="p-6 sm:p-8 bg-gradient-to-r from-purple-50 via-indigo-50 to-slate-50 text-slate-900 rounded-3xl border-2 border-purple-200/80 shadow-md space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-purple-200/60 pb-4">
+          <div className="flex items-center gap-3.5">
+            <div className="p-3 bg-purple-100 border border-purple-300 rounded-2xl text-purple-700 shadow-xs">
+              <Globe className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              Website & Multi-Page Content Controller
-            </h2>
-            <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-              Edit all public pages: Home, Features, Solutions, What We Do, How It Works, Services, Pricing, Contact Us, Reviews, and Tour & Guide Videos.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="badge bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-black uppercase">
+                  Comprehensive Landing Page CMS
+                </span>
+                <span className="text-xs text-slate-600 font-bold font-mono">11 Modular Sections</span>
+              </div>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900 mt-1">
+                Website & Multi-Page Content Controller
+              </h2>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={handleReset}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition-all hover:text-white shadow-sm cursor-pointer"
+              className="btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs py-2.5 px-4 font-bold shadow-xs flex items-center gap-2 cursor-pointer rounded-xl transition-all"
             >
-              <RotateCcw className="w-4 h-4 text-amber-400" /> Reset Defaults
+              <RotateCcw className="w-4 h-4 text-amber-600" /> Reset Defaults
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95 cursor-pointer"
+              className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2.5 px-5 font-black shadow-md flex items-center gap-2 cursor-pointer transition-all rounded-xl"
             >
-              <Save className="w-4 h-4" /> Save to Database
+              <Save className="w-4 h-4" /> Save to Database 💾
             </button>
           </div>
         </div>
 
+        <p className="text-xs sm:text-sm text-slate-700 font-semibold leading-relaxed max-w-3xl">
+          Edit all public pages: Home, Features, Solutions, What We Do, How It Works, Services, Pricing, Contact Us, Reviews, and Tour & Guide Videos.
+        </p>
+
         {saveSuccess && (
-          <div className="mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 flex items-center gap-2 text-emerald-300 text-sm font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            All section contents saved to PostgreSQL database and broadcasted live!
+          <div className="p-3 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center gap-2 text-emerald-900 text-xs font-bold animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+            All section contents saved to PostgreSQL database and broadcasted live across all portals!
           </div>
         )}
       </div>
 
       {/* Tabs Navigation across all pages */}
-      <div className="flex border-b border-slate-200 space-x-1 overflow-x-auto pb-1 bg-white p-2 rounded-t-2xl shadow-xs">
+      <div className="flex border-b border-slate-200 space-x-1 overflow-x-auto pb-1 bg-white p-2 rounded-2xl shadow-xs border border-slate-200">
         {[
           { id: 'hero', label: '1. Home / Hero', icon: Sparkles },
           { id: 'features', label: '2. Features', icon: Zap },
@@ -224,11 +230,12 @@ export const LandingPageCmsConsole = () => {
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -238,22 +245,23 @@ export const LandingPageCmsConsole = () => {
         })}
       </div>
 
-      {/* Main Form Content */}
-      <form onSubmit={handleSave} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      {/* Main Form Content Container */}
+      <form onSubmit={handleSave} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs">
         
         {/* Tab 1: Home / Hero Section */}
         {activeTab === 'hero' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-400" /> Home Page & Hero Section
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-600" />
+                <span>Home Page & Hero Section</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the top hero headlines, value proposition badge, and primary buttons.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure top hero headlines, value proposition badge, and primary buttons.</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Hero Badge / Pill Tag
                 </label>
                 <input
@@ -262,12 +270,12 @@ export const LandingPageCmsConsole = () => {
                   value={formData.heroBadge || ''}
                   onChange={handleChange}
                   placeholder="e.g. Direct Registry Rails"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm focus:border-indigo-600 focus:bg-white focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Main Headline Title
                 </label>
                 <input
@@ -276,12 +284,12 @@ export const LandingPageCmsConsole = () => {
                   value={formData.heroTitle || ''}
                   onChange={handleChange}
                   placeholder="e.g. Instant & Accurate Employee Background Verification"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm font-semibold focus:border-indigo-500 focus:outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-black text-sm focus:border-indigo-600 focus:bg-white focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Hero Subtitle / Description
                 </label>
                 <textarea
@@ -289,14 +297,14 @@ export const LandingPageCmsConsole = () => {
                   rows="3"
                   value={formData.heroSubtitle || ''}
                   onChange={handleChange}
-                  placeholder="Explain the core benefits in simple, clear language..."
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
+                  placeholder="Explain core benefits in simple, clear language..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm focus:border-indigo-600 focus:bg-white focus:outline-none transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                     Primary CTA Button Text
                   </label>
                   <input
@@ -305,12 +313,12 @@ export const LandingPageCmsConsole = () => {
                     value={formData.ctaPrimaryText || ''}
                     onChange={handleChange}
                     placeholder="Request a Free Demo 🚀"
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm focus:border-indigo-600 focus:bg-white focus:outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                     Secondary CTA Button Text
                   </label>
                   <input
@@ -319,7 +327,7 @@ export const LandingPageCmsConsole = () => {
                     value={formData.ctaSecondaryText || ''}
                     onChange={handleChange}
                     placeholder="How It Works 🧭"
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm focus:border-indigo-600 focus:bg-white focus:outline-none transition-all"
                   />
                 </div>
               </div>
@@ -330,260 +338,125 @@ export const LandingPageCmsConsole = () => {
         {/* Tab 2: Features Section */}
         {activeTab === 'features' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-indigo-400" /> Features Page & 6 Core Capabilities
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-indigo-600" />
+                <span>Features Page & 6 Core Capabilities</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the titles and descriptions for the 6 core platform capabilities.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure titles and descriptions for the 6 core platform capabilities.</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Features Section Header</span>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-700 block">Features Section Header</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Badge</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Badge</label>
                   <input
                     type="text"
                     name="featuresBadge"
                     value={formData.featuresBadge || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Title</label>
                   <input
                     type="text"
                     name="featuresTitle"
                     value={formData.featuresTitle || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold text-sm"
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Subtitle</label>
-                  <input
-                    type="text"
-                    name="featuresSubtitle"
-                    value={formData.featuresSubtitle || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle</label>
+                <input
+                  type="text"
+                  name="featuresSubtitle"
+                  value={formData.featuresSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+                />
               </div>
             </div>
 
-            {/* 6 Feature Modules Customization */}
+            {/* 6 Feature Module Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Mod 1 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-indigo-400">1. Easy Verification</span>
-                <input
-                  type="text"
-                  value={featuresModules.easyVerification?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('easyVerification', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.easyVerification?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('easyVerification', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
-
-              {/* Mod 2 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-emerald-400">2. Complete BGV</span>
-                <input
-                  type="text"
-                  value={featuresModules.completeBgv?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('completeBgv', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.completeBgv?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('completeBgv', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
-
-              {/* Mod 3 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-purple-400">3. Neat HR Workstation</span>
-                <input
-                  type="text"
-                  value={featuresModules.neatHr?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('neatHr', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.neatHr?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('neatHr', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
-
-              {/* Mod 4 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-amber-400">4. CLRA Compliance</span>
-                <input
-                  type="text"
-                  value={featuresModules.clraCompliance?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('clraCompliance', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.clraCompliance?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('clraCompliance', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
-
-              {/* Mod 5 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-teal-400">5. Turnstile Gate Passes</span>
-                <input
-                  type="text"
-                  value={featuresModules.turnstilePasses?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('turnstilePasses', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.turnstilePasses?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('turnstilePasses', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
-
-              {/* Mod 6 */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold uppercase text-rose-400">6. Postpaid Billing</span>
-                <input
-                  type="text"
-                  value={featuresModules.postpaidBilling?.title || ''}
-                  onChange={(e) => handleFeatureModuleChange('postpaidBilling', 'title', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
-                />
-                <textarea
-                  rows="2"
-                  value={featuresModules.postpaidBilling?.description || ''}
-                  onChange={(e) => handleFeatureModuleChange('postpaidBilling', 'description', e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
-                />
-              </div>
+              {Object.keys(featuresModules).map(modKey => {
+                const mod = featuresModules[modKey];
+                return (
+                  <div key={modKey} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                    <span className="text-xs font-black uppercase text-indigo-700 block">Module: {modKey}</span>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={mod.title || ''}
+                        onChange={(e) => handleFeatureModuleChange(modKey, 'title', e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Description</label>
+                      <textarea
+                        rows="2"
+                        value={mod.desc || ''}
+                        onChange={(e) => handleFeatureModuleChange(modKey, 'desc', e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-xs"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Tab 3: Solutions & JOY Group Software Suite */}
+        {/* Tab 3: Solutions (Joy HR) */}
         {activeTab === 'solutions' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" /> Solutions & JOY Group Software Ecosystem
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-indigo-600" />
+                <span>Solutions Page & Joy HR Module Descriptions</span>
               </h3>
-              <p className="text-slate-400 text-xs">Manage the software suite cards prominently featuring <strong>Joy People HR (joypeoplehr.com)</strong>.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure corporate solution pillars for Joy HR and enterprise HR teams.</p>
             </div>
 
-            {/* Product 1: JOY PEOPLE HR */}
-            <div className="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase">
-                  Flagship HRMS Suite
-                </span>
-                <a href={products.joyPeopleHr?.url || 'https://joypeoplehr.com'} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
-                  <span>{products.joyPeopleHr?.url || 'https://joypeoplehr.com'}</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Badge</label>
+                <input
+                  type="text"
+                  name="solutionsBadge"
+                  value={formData.solutionsBadge || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Name</label>
-                  <input
-                    type="text"
-                    value={products.joyPeopleHr?.name || ''}
-                    onChange={(e) => handleProductChange('joyPeopleHr', 'name', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline</label>
-                  <input
-                    type="text"
-                    value={products.joyPeopleHr?.tagline || ''}
-                    onChange={(e) => handleProductChange('joyPeopleHr', 'tagline', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Website URL</label>
-                  <input
-                    type="url"
-                    value={products.joyPeopleHr?.url || ''}
-                    onChange={(e) => handleProductChange('joyPeopleHr', 'url', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-indigo-300 font-mono text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Badge Tag</label>
-                  <input
-                    type="text"
-                    value={products.joyPeopleHr?.badge || ''}
-                    onChange={(e) => handleProductChange('joyPeopleHr', 'badge', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
-                  <textarea
-                    rows="3"
-                    value={products.joyPeopleHr?.description || ''}
-                    onChange={(e) => handleProductChange('joyPeopleHr', 'description', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Title</label>
+                <input
+                  type="text"
+                  name="solutionsTitle"
+                  value={formData.solutionsTitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-black text-sm"
+                />
               </div>
-            </div>
 
-            {/* Product 2: JOY TRUE PROFILE */}
-            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase">
-                Verification Engine
-              </span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Name</label>
-                  <input
-                    type="text"
-                    value={products.joyTrueProfile?.name || ''}
-                    onChange={(e) => handleProductChange('joyTrueProfile', 'name', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline</label>
-                  <input
-                    type="text"
-                    value={products.joyTrueProfile?.tagline || ''}
-                    onChange={(e) => handleProductChange('joyTrueProfile', 'tagline', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Description</label>
-                  <textarea
-                    rows="2"
-                    value={products.joyTrueProfile?.description || ''}
-                    onChange={(e) => handleProductChange('joyTrueProfile', 'description', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Subtitle</label>
+                <textarea
+                  name="solutionsSubtitle"
+                  rows="2"
+                  value={formData.solutionsSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+                />
               </div>
             </div>
           </div>
@@ -592,44 +465,45 @@ export const LandingPageCmsConsole = () => {
         {/* Tab 4: What We Do */}
         {activeTab === 'what_we' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-indigo-400" /> What We Do Section
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-indigo-600" />
+                <span>What We Do Section</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the mission statement and core value pillars.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure corporate mission statements and core verification services.</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Badge</label>
                 <input
                   type="text"
-                  name="whatWeBadge"
-                  value={formData.whatWeBadge || ''}
+                  name="whatWeDoBadge"
+                  value={formData.whatWeDoBadge || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Title</label>
                 <input
                   type="text"
-                  name="whatWeTitle"
-                  value={formData.whatWeTitle || ''}
+                  name="whatWeDoTitle"
+                  value={formData.whatWeDoTitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-black text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Subtitle</label>
                 <textarea
-                  name="whatWeSubtitle"
-                  rows="3"
-                  value={formData.whatWeSubtitle || ''}
+                  name="whatWeDoSubtitle"
+                  rows="2"
+                  value={formData.whatWeDoSubtitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
             </div>
@@ -639,592 +513,523 @@ export const LandingPageCmsConsole = () => {
         {/* Tab 5: How It Works */}
         {activeTab === 'how_it_works' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <ListOrdered className="w-5 h-5 text-indigo-400" /> How It Works Section
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <ListOrdered className="w-5 h-5 text-indigo-600" />
+                <span>How It Works Section</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the 4-step direct-registry onboarding timeline headers.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure the 4-step direct-registry onboarding timeline headers.</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Badge</label>
                 <input
                   type="text"
                   name="howItWorksBadge"
                   value={formData.howItWorksBadge || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Title</label>
                 <input
                   type="text"
                   name="howItWorksTitle"
                   value={formData.howItWorksTitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-black text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Subtitle</label>
                 <textarea
                   name="howItWorksSubtitle"
-                  rows="3"
+                  rows="2"
                   value={formData.howItWorksSubtitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab 6: Services Catalog */}
+        {/* Tab 6: Services */}
         {activeTab === 'services' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-indigo-400" /> Services Page Section
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-indigo-600" />
+                <span>Services Page & Verification Catalog</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the verification catalog header and descriptions.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure verification catalog header and descriptions.</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Badge</label>
                 <input
                   type="text"
                   name="servicesBadge"
                   value={formData.servicesBadge || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Title</label>
                 <input
                   type="text"
                   name="servicesTitle"
                   value={formData.servicesTitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-black text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Section Subtitle</label>
                 <textarea
                   name="servicesSubtitle"
-                  rows="3"
+                  rows="2"
                   value={formData.servicesSubtitle || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                 />
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab 7: Pricing & Postpaid Plans */}
+        {/* Tab 7: Pricing */}
         {activeTab === 'pricing' && (
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-indigo-400" /> Pricing Page & Postpaid Tiers
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-indigo-600" />
+                <span>Pricing Page & Credit Packages</span>
               </h3>
-              <p className="text-slate-400 text-xs">Configure the pricing page header, GST notes, and review the 5 active Postpaid Quota Tiers.</p>
+              <p className="text-slate-600 text-xs font-medium">Configure pricing header, GST notes, and review active credit packages.</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Pricing Section Header</span>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-700 block">Pricing Header</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Badge</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Badge</label>
                   <input
                     type="text"
                     name="pricingBadge"
                     value={formData.pricingBadge || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
-                  <input
-                    type="text"
-                    name="pricingTitle"
-                    value={formData.pricingTitle || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Subtitle</label>
-                  <input
-                    type="text"
-                    name="pricingSubtitle"
-                    value={formData.pricingSubtitle || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 5 Postpaid Tiers Display */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.values(POSTPAID_PLANS).map((plan) => (
-                <div key={plan.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-indigo-400">{plan.shortName}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-950 border border-indigo-700 text-indigo-300">
-                      Tier {plan.tierNumber}
-                    </span>
-                  </div>
-                  <div className="text-xl font-bold text-white">
-                    {plan.isCustom ? 'Custom' : `₹${plan.ratePerProfile}`}
-                    <span className="text-[11px] font-normal text-slate-400 ml-1">/ profile</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400">{plan.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 8: Contact & Google Maps */}
-        {activeTab === 'contact' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-indigo-400" /> Contact Channels & Google Maps Embed
-              </h3>
-              <p className="text-slate-400 text-xs">Update official emails, phone, WhatsApp lines, office address, and embed URL for the live Google Maps iframe.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Corporate Name</label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Support Email</label>
-                <input
-                  type="email"
-                  name="supportEmail"
-                  value={formData.supportEmail || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Phone Number</label>
-                <input
-                  type="text"
-                  name="contactPhone"
-                  value={formData.contactPhone || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official WhatsApp Number</label>
-                <input
-                  type="text"
-                  name="whatsappNumber"
-                  value={formData.whatsappNumber || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Registered Office Address</label>
-                <input
-                  type="text"
-                  name="officeAddress"
-                  value={formData.officeAddress || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Google Maps App Link (URL)</label>
-                <input
-                  type="url"
-                  name="googleMapsUrl"
-                  value={formData.googleMapsUrl || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Google Maps Embed Iframe URL</label>
-                <input
-                  type="url"
-                  name="googleMapsEmbedUrl"
-                  value={formData.googleMapsEmbedUrl || ''}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono"
-                />
-              </div>
-
-              {/* Map Preview */}
-              <div className="md:col-span-2 pt-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">Google Map Live Embed</label>
-                <div className="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 h-48 relative">
-                  {formData.googleMapsEmbedUrl && (
-                    <iframe
-                      title="Google Maps Preview"
-                      src={formData.googleMapsEmbedUrl}
-                      className="w-full h-full border-0"
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 9: Announcement Banner & Stats */}
-        {activeTab === 'announcement' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-indigo-400" /> Announcement Bar & Metrics
-              </h3>
-              <p className="text-slate-400 text-xs">Configure the top announcement bar and statistics counters.</p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-bold text-white">Enable Announcement Banner</h4>
-                <p className="text-xs text-slate-400 mt-0.5">Toggle the top broadcast alert banner on or off.</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="showAnnouncement"
-                  checked={!!formData.showAnnouncement}
-                  onChange={handleChange}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Announcement Text</label>
-              <textarea
-                name="announcementText"
-                rows="2"
-                value={formData.announcementText || ''}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
-              />
-            </div>
-
-            {/* Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <label className="text-[11px] text-slate-400 font-bold block mb-1">Speed Value</label>
-                <input
-                  type="text"
-                  name="statSpeed"
-                  value={formData.statSpeed || ''}
-                  onChange={handleChange}
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
-                />
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <label className="text-[11px] text-slate-400 font-bold block mb-1">Accuracy Value</label>
-                <input
-                  type="text"
-                  name="statAccuracy"
-                  value={formData.statAccuracy || ''}
-                  onChange={handleChange}
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
-                />
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <label className="text-[11px] text-slate-400 font-bold block mb-1">Clients Value</label>
-                <input
-                  type="text"
-                  name="statClients"
-                  value={formData.statClients || ''}
-                  onChange={handleChange}
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
-                />
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <label className="text-[11px] text-slate-400 font-bold block mb-1">Profiles Value</label>
-                <input
-                  type="text"
-                  name="statProfiles"
-                  value={formData.statProfiles || ''}
-                  onChange={handleChange}
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 10: Live Preview */}
-        {activeTab === 'preview' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Eye className="w-5 h-5 text-indigo-400" /> Live Multi-Section Preview
-              </h3>
-              <p className="text-slate-400 text-xs">Preview all configured sections as they appear on the live website.</p>
-            </div>
-
-            {formData.showAnnouncement && (
-              <div className="p-3 bg-gradient-to-r from-indigo-900/60 via-purple-900/60 to-indigo-900/60 border border-indigo-500/30 rounded-xl text-center text-xs font-medium text-indigo-200">
-                {formData.announcementText}
-              </div>
-            )}
-
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 text-center space-y-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5" /> {formData.heroBadge}
-              </div>
-              <h1 className="text-2xl font-bold text-white">{formData.heroTitle}</h1>
-              <p className="text-xs text-slate-300 max-w-xl mx-auto">{formData.heroSubtitle}</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-lg font-bold text-indigo-400">{formData.statSpeed}</div>
-                <div className="text-[10px] text-slate-400">{formData.statSpeedLabel}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-lg font-bold text-emerald-400">{formData.statAccuracy}</div>
-                <div className="text-[10px] text-slate-400">{formData.statAccuracyLabel}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-lg font-bold text-amber-400">{formData.statClients}</div>
-                <div className="text-[10px] text-slate-400">{formData.statClientsLabel}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-lg font-bold text-purple-400">{formData.statProfiles}</div>
-                <div className="text-[10px] text-slate-400">{formData.statProfilesLabel}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 10: Customer Reviews & Moderation */}
-        {activeTab === 'reviews' && (
-          <div className="space-y-6">
-            <ReviewsModerationConsole />
-          </div>
-        )}
-
-        {/* Tab 11: Tour & Guide Videos Console */}
-        {activeTab === 'tour_guide' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                  <Compass className="w-5 h-5 text-indigo-600" /> Tour & Guide Interactive Videos Console
-                </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Configure video tutorial links, title descriptions, and YouTube mini-window preview players for public landing page tour guides.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleToggleTourGlobal}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer border ${
-                  tourSettings.enabled !== false 
-                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs' 
-                    : 'bg-slate-200 text-slate-700 border-slate-300'
-                }`}
-              >
-                {tourSettings.enabled !== false ? (
-                  <>
-                    <ToggleRight className="w-4 h-4 text-white" />
-                    <span>Tour Modal: ENABLED ON HOME</span>
-                  </>
-                ) : (
-                  <>
-                    <ToggleLeft className="w-4 h-4 text-slate-500" />
-                    <span>Tour Modal: DISABLED</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Section Header Controls */}
-            <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-4">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-600">Main Tour Header Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Badge Tag</label>
-                  <input
-                    type="text"
-                    value={tourSettings.badge || 'PLATFORM TOUR & GUIDES'}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      tourGuideSettings: { ...(prev.tourGuideSettings || {}), badge: e.target.value }
-                    }))}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Title</label>
                   <input
                     type="text"
-                    value={tourSettings.title || ''}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      tourGuideSettings: { ...(prev.tourGuideSettings || {}), title: e.target.value }
-                    }))}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-bold"
+                    name="pricingTitle"
+                    value={formData.pricingTitle || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold text-sm"
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Subtitle</label>
+                <input
+                  type="text"
+                  name="pricingSubtitle"
+                  value={formData.pricingSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+                />
+              </div>
             </div>
 
-            {/* 4 Video Module Editing Cards with Live YouTube Mini Windows */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {tourModules.map((mod, idx) => {
-                const embedUrl = getYouTubeEmbedUrl(mod.videoUrl);
-                return (
-                  <div key={mod.id || idx} className="p-5 rounded-3xl bg-white border-2 border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                        <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-extrabold">
-                          Module {idx + 1}: {mod.shortTitle || mod.title}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => handleTourModuleChange(mod.id, 'enabled', !mod.enabled)}
-                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
-                            mod.enabled !== false 
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
-                              : 'bg-slate-100 text-slate-500 border-slate-300'
-                          }`}
-                        >
-                          {mod.enabled !== false ? (
-                            <>
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                              <span>Video Enabled</span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Disabled</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Module Title</label>
-                        <input
-                          type="text"
-                          value={mod.title || ''}
-                          onChange={(e) => handleTourModuleChange(mod.id, 'title', e.target.value)}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-extrabold"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Description</label>
-                        <textarea
-                          rows="2"
-                          value={mod.description || ''}
-                          onChange={(e) => handleTourModuleChange(mod.id, 'description', e.target.value)}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-700 text-xs font-medium"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-indigo-700 mb-1 flex items-center gap-1.5">
-                          <Video className="w-4 h-4 text-indigo-600" />
-                          <span>YouTube Video Link (URL)</span>
-                        </label>
-                        <input
-                          type="url"
-                          placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ or https://youtu.be/..."
-                          value={mod.videoUrl || ''}
-                          onChange={(e) => handleTourModuleChange(mod.id, 'videoUrl', e.target.value)}
-                          className="w-full px-3.5 py-2 bg-slate-50 border border-indigo-300 rounded-xl text-slate-900 text-xs font-mono font-medium focus:border-indigo-600 focus:outline-none"
-                        />
-                      </div>
-
-                      {/* LIVE YOUTUBE MINI WINDOW PREVIEW PLAYER */}
-                      <div className="pt-2">
-                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 mb-1.5">
-                          <span className="flex items-center gap-1 text-indigo-600">
-                            <Play className="w-3.5 h-3.5 fill-indigo-600 text-indigo-600" />
-                            <span>Live YouTube Mini Window Preview</span>
-                          </span>
-                          <span className="font-mono text-[10px] text-slate-400">Responsive Player</span>
-                        </div>
-
-                        <div className="rounded-2xl overflow-hidden border-2 border-slate-300 bg-slate-100 aspect-video shadow-inner relative flex items-center justify-center">
-                          {embedUrl ? (
-                            <iframe
-                              title={`Preview Mini Window: ${mod.title}`}
-                              src={embedUrl}
-                              className="w-full h-full border-0 rounded-2xl"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
-                          ) : (
-                            <div className="text-center p-6 text-slate-400 space-y-1">
-                              <Video className="w-8 h-8 mx-auto text-slate-300 mb-1" />
-                              <p className="text-xs font-bold text-slate-600">No YouTube Link Provided</p>
-                              <p className="text-[11px] text-slate-400">Enter a valid YouTube URL above to view mini window player.</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {POSTPAID_PLANS.map(plan => (
+                <div key={plan.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="badge badge-indigo text-[10px] font-bold">{plan.badge || plan.id}</span>
+                    <span className="text-xs font-mono font-bold text-indigo-700">{plan.credits} Credits</span>
                   </div>
-                );
-              })}
+                  <h4 className="text-base font-black text-slate-900">{plan.name}</h4>
+                  <div className="text-xl font-black text-indigo-900">
+                    ₹{plan.price.toLocaleString()}
+                    <span className="text-xs font-normal text-slate-600 ml-1">/ profile</span>
+                  </div>
+                  <p className="text-xs text-slate-600 font-medium">{plan.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Save Bar at Bottom */}
-        <div className="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400 flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-indigo-400" />
-            Synchronized directly with PostgreSQL database.
+        {/* Tab 8: Contact & Map */}
+        {activeTab === 'contact' && (
+          <div className="space-y-6">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Phone className="w-5 h-5 text-indigo-600" />
+                <span>Contact US Page & Google Maps Integration</span>
+              </h3>
+              <p className="text-slate-600 text-xs font-medium">Update official emails, phone, WhatsApp lines, office address, and embed location link.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Official Contact Email *</label>
+                <input
+                  type="email"
+                  name="contactEmail"
+                  value={formData.contactEmail || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Official Support Phone *</label>
+                <input
+                  type="text"
+                  name="contactPhone"
+                  value={formData.contactPhone || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Official WhatsApp Business Line *</label>
+                <input
+                  type="text"
+                  name="contactWhatsapp"
+                  value={formData.contactWhatsapp || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Official Website URL *</label>
+                <input
+                  type="text"
+                  name="contactWebsite"
+                  value={formData.contactWebsite || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-bold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Registered Corporate Office Address *</label>
+              <textarea
+                name="contactAddress"
+                rows="2"
+                value={formData.contactAddress || ''}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Google Maps Embed URL (iframe src) *</label>
+                <input
+                  type="text"
+                  name="googleMapsEmbedUrl"
+                  value={formData.googleMapsEmbedUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://www.google.com/maps/embed?..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Google Maps Direct View Link *</label>
+                <input
+                  type="text"
+                  name="googleMapsDirectLink"
+                  value={formData.googleMapsDirectLink || ''}
+                  onChange={handleChange}
+                  placeholder="https://maps.google.com/?q=..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs font-mono"
+                />
+              </div>
+            </div>
+
+            {formData.googleMapsEmbedUrl && (
+              <div className="rounded-2xl overflow-hidden border border-slate-300 bg-slate-100 h-48 relative shadow-inner">
+                <iframe
+                  title="Google Maps Location Preview"
+                  src={formData.googleMapsEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                />
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Tab 9: Announcement Banner & Stats */}
+        {activeTab === 'announcement' && (
+          <div className="space-y-6">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-indigo-600" />
+                <span>Announcement Banner & Platform Metrics</span>
+              </h3>
+              <p className="text-slate-600 text-xs font-medium">Configure top announcement bar and statistics counters.</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+              <div>
+                <h4 className="text-sm font-black text-slate-900">Enable Announcement Banner</h4>
+                <p className="text-xs text-slate-600 font-medium mt-0.5">Toggle top broadcast alert banner on or off.</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="announcementEnabled"
+                  checked={formData.announcementEnabled !== false}
+                  onChange={handleChange}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Announcement Banner Text</label>
+              <input
+                type="text"
+                name="announcementText"
+                value={formData.announcementText || ''}
+                onChange={handleChange}
+                placeholder="⚡ Live DPDP Act 2023 Statutory Compliance Enabled..."
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm"
+              />
+            </div>
+
+            {/* Platform Stats Counters */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <label className="text-[11px] text-slate-700 font-bold block">Speed Value</label>
+                <input
+                  type="text"
+                  name="statSpeedValue"
+                  value={formData.statSpeedValue || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <label className="text-[11px] text-slate-700 font-bold block">Accuracy Value</label>
+                <input
+                  type="text"
+                  name="statAccuracyValue"
+                  value={formData.statAccuracyValue || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <label className="text-[11px] text-slate-700 font-bold block">Clients Value</label>
+                <input
+                  type="text"
+                  name="statClientsValue"
+                  value={formData.statClientsValue || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <label className="text-[11px] text-slate-700 font-bold block">Profiles Value</label>
+                <input
+                  type="text"
+                  name="statProfilesValue"
+                  value={formData.statProfilesValue || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 10: Reviews */}
+        {activeTab === 'reviews' && (
+          <div className="space-y-6">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500" />
+                <span>Customer Reviews & Testimonials Console</span>
+              </h3>
+              <p className="text-slate-600 text-xs font-medium">Moderate, feature, and enable/disable client reviews published on the homepage.</p>
+            </div>
+            <ReviewsModerationConsole />
+          </div>
+        )}
+
+        {/* Tab 11: Tour & Guide Videos */}
+        {activeTab === 'tour_guide' && (() => {
+          const tourSettings = formData.tourGuideSettings || DEFAULT_LANDING_PAGE_CONTENT.tourGuideSettings;
+          const isEnabled = tourSettings.enabled !== false;
+          const modulesList = tourSettings.modules || DEFAULT_LANDING_PAGE_CONTENT.tourGuideSettings.modules;
+
+          return (
+            <div className="space-y-6">
+              <div className="p-5 bg-gradient-to-r from-purple-50 via-indigo-50 to-slate-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-purple-100 border border-purple-300 rounded-2xl text-purple-700 shadow-xs">
+                    <Video className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900">"Tour & Guide" Main Page Controller</h3>
+                    <p className="text-xs text-slate-600 font-medium">Configure process video links, step-by-step guidance cards, data security awareness modules, and enable/disable responsiveness.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
+                  <span className="text-xs font-bold text-slate-700 font-mono">
+                    {isEnabled ? 'MODULE ACTIVE 🟢' : 'MODULE DISABLED 🔴'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleToggleTourGlobal}
+                    className={`btn text-xs py-2 px-4 font-black shadow-xs flex items-center gap-1.5 cursor-pointer rounded-xl transition-all ${
+                      isEnabled ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                  >
+                    {isEnabled ? <ToggleRight className="w-5 h-5 text-white" /> : <ToggleLeft className="w-5 h-5 text-slate-500" />}
+                    <span>{isEnabled ? 'Enabled' : 'Disabled'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Modules Video Editor */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {modulesList.map((mod) => {
+                  const embedUrl = getYouTubeEmbedUrl(mod.videoUrl);
+                  return (
+                    <div key={mod.id} className="p-5 rounded-3xl bg-slate-50 border border-slate-200 space-y-4 shadow-xs">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <span className="badge badge-indigo text-[10px] font-black uppercase">{mod.categoryTag || 'PROCESS MODULE'}</span>
+                        <span className="text-xs font-mono font-bold text-slate-700">#{mod.id}</span>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Module Title *</label>
+                        <input
+                          type="text"
+                          value={mod.title || ''}
+                          onChange={(e) => handleTourModuleChange(mod.id, 'title', e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">YouTube Video URL *</label>
+                        <input
+                          type="text"
+                          value={mod.videoUrl || ''}
+                          onChange={(e) => handleTourModuleChange(mod.id, 'videoUrl', e.target.value)}
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-mono text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Process Explanation & Steps *</label>
+                        <textarea
+                          rows="2"
+                          value={mod.desc || ''}
+                          onChange={(e) => handleTourModuleChange(mod.id, 'desc', e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium text-xs"
+                        />
+                      </div>
+
+                      {/* YouTube Mini Window Player Preview */}
+                      <div className="rounded-2xl overflow-hidden border border-slate-300 bg-slate-900 h-44 relative shadow-sm">
+                        {embedUrl ? (
+                          <iframe
+                            title={`Video player preview for ${mod.title}`}
+                            src={embedUrl}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-xs p-4 text-center">
+                            <Video className="w-8 h-8 text-slate-500 mb-1" />
+                            <span>Enter a valid YouTube URL above to view mini window player preview</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Tab 12: Live Preview */}
+        {activeTab === 'preview' && (
+          <div className="space-y-6">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Eye className="w-5 h-5 text-indigo-600" />
+                <span>Live Public Page Preview</span>
+              </h3>
+              <p className="text-slate-600 text-xs font-medium">Preview all configured sections as they appear on the live website.</p>
+            </div>
+
+            <div className="p-6 bg-slate-900 text-white rounded-3xl space-y-4 shadow-xl">
+              <div className="text-center space-y-2 max-w-2xl mx-auto">
+                <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-[10px] font-bold uppercase tracking-wider">
+                  {formData.heroBadge}
+                </span>
+                <h1 className="text-2xl font-black text-white">{formData.heroTitle}</h1>
+                <p className="text-xs text-slate-300 max-w-xl mx-auto font-medium leading-relaxed">{formData.heroSubtitle}</p>
+                <div className="pt-2 flex justify-center gap-3">
+                  <span className="btn bg-indigo-600 text-white text-xs py-2 px-4 font-bold rounded-xl">{formData.ctaPrimaryText}</span>
+                  <span className="btn bg-slate-800 text-slate-200 border border-slate-700 text-xs py-2 px-4 font-bold rounded-xl">{formData.ctaSecondaryText}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Form Footer Save Button */}
+        <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <div className="text-xs text-slate-600 flex items-center gap-1.5 font-bold">
+            <Sparkles className="w-4 h-4 text-indigo-600" />
+            <span>Instant sync across all public routes & user portals</span>
+          </div>
+
           <button
             type="submit"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95 cursor-pointer"
+            className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2.5 px-6 font-black shadow-md rounded-xl cursor-pointer transition-all active:scale-98"
           >
-            <Save className="w-4 h-4" /> Save All Changes
+            <span>Save to Database 💾</span>
           </button>
         </div>
+
       </form>
     </div>
   );

@@ -4146,21 +4146,21 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Audited Volume</span>
-                <strong className="text-sm sm:text-base font-black text-amber-300 font-mono">{candidates.length} Dossiers</strong>
+              <div className="p-3 rounded-xl bg-white border border-amber-200/80 shadow-2xs">
+                <span className="text-[10px] text-slate-600 block uppercase font-bold">Audited Volume</span>
+                <strong className="text-sm sm:text-base font-black text-amber-900 font-mono">{candidates.length} Dossiers</strong>
               </div>
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Billable Revenue</span>
-                <strong className="text-sm sm:text-base font-black text-emerald-300 font-mono">₹{totalGrossRevenue.toLocaleString()}</strong>
+              <div className="p-3 rounded-xl bg-white border border-emerald-200/80 shadow-2xs">
+                <span className="text-[10px] text-slate-600 block uppercase font-bold">Billable Revenue</span>
+                <strong className="text-sm sm:text-base font-black text-emerald-900 font-mono">₹{totalGrossRevenue.toLocaleString()}</strong>
               </div>
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">API Gateways SLA</span>
-                <strong className="text-sm sm:text-base font-black text-sky-300 font-mono">99.9% Uptime</strong>
+              <div className="p-3 rounded-xl bg-white border border-sky-200/80 shadow-2xs">
+                <span className="text-[10px] text-slate-600 block uppercase font-bold">API Gateways SLA</span>
+                <strong className="text-sm sm:text-base font-black text-sky-900 font-mono">99.9% Uptime</strong>
               </div>
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Client Organizations</span>
-                <strong className="text-sm sm:text-base font-black text-purple-300 font-mono">{companies.length} Enterprises</strong>
+              <div className="p-3 rounded-xl bg-white border border-purple-200/80 shadow-2xs">
+                <span className="text-[10px] text-slate-600 block uppercase font-bold">Client Organizations</span>
+                <strong className="text-sm sm:text-base font-black text-purple-900 font-mono">{companies.length} Enterprises</strong>
               </div>
             </div>
           </div>

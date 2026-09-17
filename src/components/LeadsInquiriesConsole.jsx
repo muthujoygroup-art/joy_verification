@@ -268,7 +268,7 @@ export const LeadsInquiriesConsole = ({ showToast }) => {
       {/* KPI Cards for the 3 Types */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="glass-panel p-4 bg-white border border-slate-200 rounded-2xl space-y-1">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Received</span>
+          <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Total Received</span>
           <div className="text-2xl font-black text-slate-900 font-mono">{stats.total}</div>
           <span className="text-[10px] text-slate-500">Across all channels</span>
         </div>
