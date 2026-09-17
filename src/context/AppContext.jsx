@@ -2239,7 +2239,11 @@ export const AppProvider = ({ children }) => {
         verificationDate: created.verification_date || new Date().toLocaleDateString('en-GB')
       };
 
-      setCandidates(prev => [formatted, ...prev]);
+      setCandidates(prev => {
+        const nextList = [formatted, ...(Array.isArray(prev) ? prev : [])];
+        try { localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList)); } catch (e) {}
+        return nextList;
+      });
       setSelectedCandidateToken(formatted.token);
       showToast(`Verification token created for ${candidateData.name}! Saved in DB.`);
       return formatted.token;
@@ -2258,7 +2262,11 @@ export const AppProvider = ({ children }) => {
         company_id: candidateData.companyId || 'comp-joy',
         status: candidateData.status || 'Link Dispatched 🟢'
       };
-      setCandidates(prev => [newCand, ...prev]);
+      setCandidates(prev => {
+        const nextList = [newCand, ...(Array.isArray(prev) ? prev : [])];
+        try { localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList)); } catch (e) {}
+        return nextList;
+      });
       setSelectedCandidateToken(newToken);
       showToast(`Verification link generated for ${candidateData.name}!`);
       return newToken;
