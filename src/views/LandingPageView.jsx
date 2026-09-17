@@ -57,13 +57,11 @@ import FeatureShowcase from '../components/landing/FeatureShowcase';
 import TrustSection from '../components/landing/TrustSection';
 import WhyJoyTrueProfile from '../components/landing/WhyJoyTrueProfile';
 import CTASection from '../components/landing/CTASection';
-import DualEmploymentRadarVisualizer from '../components/landing/DualEmploymentRadarVisualizer';
 import TurnstileGateSimulator from '../components/landing/TurnstileGateSimulator';
 import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedComparison';
 import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
-import { LiveVideoSimulationShowcase } from '../components/landing/LiveVideoSimulationShowcase';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -879,33 +877,117 @@ export const LandingPageView = () => {
               PLATFORM CAPABILITIES
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Complete Workforce Verification Rail</h2>
-            <p className="text-[#5C6878] text-base">Explore all core screening modules designed for fast, error-free workforce onboarding.</p>
+            <p className="text-[#5C6878] text-base">Explore our unified suite of verification tools, clean recruiter workstations, and statutory compliance controls designed for modern enterprise reliability.</p>
           </div>
 
-          <VerificationCommandOrbit />
+          {/* 6 Core Feature Capability Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            {/* Module 1: Easy Verification Process */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold">
+                <Zap className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">Easy & Frictionless Verification</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Zero app installations needed. Workers receive a PIN-secured magic link via WhatsApp, SMS, or Email and complete onboarding in under 2 minutes.
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Automated WhatsApp, SMS & Email dispatch</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Secure candidate PIN gate authentication</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Fast 2-minute mobile-first interface</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Multi-lingual UI for pan-India workforces</li>
+              </ul>
+            </div>
+
+            {/* Module 2: Complete Employee Verification */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">Complete 360° Candidate BGV</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Direct government and banking registry rails validating national ID, past employer tenures, active bank accounts, and criminal records in parallel.
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> UIDAI Aadhaar OTP verification & e-KYC</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> NSDL PAN 2.0 active status validation</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> EPFO past service history & tenure audits</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> NPCI IMPS ₹1 penny drop account match</li>
+              </ul>
+            </div>
+
+            {/* Module 3: Neat HR Management */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#F1EEFF] text-[#8975E8] flex items-center justify-center font-bold">
+                <UserCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">Neat HR Recruiter Workstation</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Equip talent acquisition teams with bulk Excel ingestion, recruiter role access, candidate dossier reviews, and live tracking status filters.
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> 500+ record bulk Excel roster import</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> 1-click status filtering & export</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Comprehensive 360° candidate dossiers</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Company Admin & Recruiter role scoping</li>
+              </ul>
+            </div>
+
+            {/* Module 4: Statutory CLRA Form XVI */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#FFF6E9] text-[#D97706] flex items-center justify-center font-bold">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">Statutory CLRA Compliance</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Maintain statutory contractor muster registers, manage third-party staffing agency quotas, and prevent ghost worker payroll leaks.
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Statutory CLRA Form XVI contractor muster</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Third-party agency quota management</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Anti-ghost worker audit ledger</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Labor inspector audit-ready downloads</li>
+              </ul>
+            </div>
+
+            {/* Module 5: Turnstile Gate Passes */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold">
+                <Fingerprint className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">Digital Turnstile Gate Passes</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Generate sub-second cryptographic QR gate passes with biometric facial selfie matching to secure plant and factory perimeters.
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Scannable turnstile entry QR passes</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> 3D facial liveness & selfie match</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Sub-second turnstile gate validation</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Digital workforce access logs</li>
+              </ul>
+            </div>
+
+            {/* Module 6: 100% Postpaid Billing */}
+            <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#FCFCFA] text-[#475569] flex items-center justify-center font-bold border border-[#E5EAF0]">
+                <Scale className="w-6 h-6 text-[#426CF5]" />
+              </div>
+              <h3 className="text-xl font-bold text-[#182230] font-outfit">100% Postpaid Metered Billing</h3>
+              <p className="text-sm text-[#5C6878] leading-relaxed">
+                Zero upfront lock-in. Verify on demand and settle monthly based on actual verified employee profiles with official GST tax invoices (SAC 998311).
+              </p>
+              <ul className="space-y-2 text-xs text-[#5C6878]">
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> 5 Transparent postpaid tier brackets</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Never-block overage hiring surges</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Official 18% GST tax invoices</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> Itemized monthly verification ledgers</li>
+              </ul>
+            </div>
+
+          </div>
+
           <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
-
-          {/* Dual Employment Moonlighting Radar */}
-          <div className="space-y-6">
-            <div className="text-center max-w-3xl mx-auto">
-              <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
-                EPFO UAN INTEGRATED
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Dual-Employment & Moonlighting Radar</h3>
-            </div>
-            <DualEmploymentRadarVisualizer />
-          </div>
-
-          {/* Turnstile Gate Pass Simulator */}
-          <div className="space-y-6">
-            <div className="text-center max-w-3xl mx-auto">
-              <span className="text-xs font-semibold text-[#299C68] mb-2 px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 inline-block">
-                PLANT ACCESS & SECURITY
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#182230] font-outfit">Workforce Turnstile Gate Simulator</h3>
-            </div>
-            <TurnstileGateSimulator />
-          </div>
 
           {/* Speed Matrix Benchmark */}
           <div className="space-y-6">
@@ -1218,7 +1300,6 @@ export const LandingPageView = () => {
           </div>
 
           <VerificationTimeline />
-          <LiveVideoSimulationShowcase />
           
           <div className="space-y-6">
             <div className="text-center max-w-3xl mx-auto">
@@ -1382,6 +1463,44 @@ export const LandingPageView = () => {
 
             {/* Right Information & Office Locations */}
             <div className="lg:col-span-5 space-y-6">
+              
+              {/* Mini Google Map Layout */}
+              <div className="p-4 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#182230] flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-[#426CF5]" /> Coimbatore Office Location
+                  </span>
+                  <span className="text-[10px] text-[#299C68] font-bold bg-[#EAF8F0] px-2 py-0.5 rounded">
+                    ● Active
+                  </span>
+                </div>
+                
+                <div className="overflow-hidden rounded-2xl border border-[#E5EAF0] shadow-xs bg-slate-100">
+                  <iframe
+                    title="Joy Corporate Solutions Coimbatore Office Location"
+                    src={content.googleMapsEmbedUrl || "https://maps.google.com/maps?q=Coimbatore,%20Tamil%20Nadu&t=&z=13&ie=UTF8&iwloc=&output=embed"}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full"
+                  />
+                </div>
+
+                <a 
+                  href={content.googleMapsUrl || "https://maps.app.goo.gl/xK2B3J4VvC73oQwd8"} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 rounded-xl bg-[#EAF5FF] hover:bg-[#426CF5] text-[#426CF5] hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 no-underline cursor-pointer"
+                >
+                  <span>Open in Google Maps App</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              {/* Corporate Headquarters */}
               <div className="bg-white p-6 rounded-3xl border border-[#E5EAF0] shadow-xs space-y-4">
                 <h4 className="font-bold text-base text-[#182230] font-outfit">Corporate Headquarters</h4>
                 <div className="space-y-3 text-xs text-[#5C6878]">
@@ -1402,6 +1521,18 @@ export const LandingPageView = () => {
                     <Phone className="w-4 h-4 text-[#426CF5] shrink-0" />
                     <a href={`tel:${content.contactPhone || '+91 99946 99044'}`} className="text-[#426CF5] hover:underline font-medium">
                       {content.contactPhone || '+91 99946 99044'}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MessageSquare className="w-4 h-4 text-[#299C68] shrink-0" />
+                    <a 
+                      href={`https://wa.me/${(content.whatsappNumber || '919994699044').replace(/[^0-9]/g, '')}?text=Hi%20JOY%20Corporate%20Solutions,%20I%20would%20like%20to%20know%20more%20about%20workforce%20verification`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#299C68] hover:underline font-medium flex items-center gap-1"
+                    >
+                      <span>WhatsApp: {content.whatsappNumber || '+91 99946 99044'}</span>
+                      <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
                   <div className="flex items-center gap-3">
