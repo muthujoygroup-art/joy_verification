@@ -24,6 +24,8 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
         query = query.filter(Candidate.hr_id == hr_id)
     elif company_id:
         comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+        if not comp:
+            comp = db.query(Company).first()
         target_id = comp.id if comp else company_id
         query = query.filter((Candidate.company_id == target_id) | (Candidate.company_id == company_id))
     candidates = query.order_by(Candidate.created_at.desc()).all()
@@ -57,7 +59,24 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
             comp = db.query(Company).filter(Company.code == payload.company_id).first()
     if not comp:
         comp = db.query(Company).first()
-    resolved_comp_id = payload.company_id or (comp.id if comp else "comp-joy")
+    if not comp:
+        cid = payload.company_id or "COMP001"
+        comp = Company(
+            id=cid,
+            code="JOY001",
+            name="Joy Corporate Solutions Private Limited",
+            email="admin@joycorporatesolutions.com",
+            status="Active"
+        )
+        db.add(comp)
+        try:
+            db.commit()
+            db.refresh(comp)
+        except Exception:
+            db.rollback()
+            comp = db.query(Company).first()
+
+    resolved_comp_id = comp.id if comp else "COMP001"
 
     clean_email = (payload.email or "").strip().lower() or None
     clean_mobile = None
@@ -275,14 +294,32 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     if payload.documents:
         for doc in payload.documents:
             doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+            if isinstance(doc, str):
+                doc_title = f"{doc.capitalize()} Document"
+                doc_type = doc
+                file_fmt = "pdf"
+                file_p = ""
+                file_sz = 0.0
+            elif isinstance(doc, dict):
+                doc_title = doc.get("title") or doc.get("name") or "Candidate Verification Document"
+                doc_type = doc.get("doc_type") or doc.get("type") or "aadhaar"
+                file_fmt = doc.get("file_format") or doc.get("format") or "pdf"
+                file_p = doc.get("file_path") or doc.get("data") or doc.get("url") or ""
+                try:
+                    file_sz = float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0)
+                except (ValueError, TypeError):
+                    file_sz = 0.0
+            else:
+                continue
+
             cand_doc = CandidateDocument(
                 id=doc_id,
                 candidate_id=candidate_id,
-                title=doc.get("title") or doc.get("name") or "Candidate Verification Document",
-                doc_type=doc.get("doc_type") or doc.get("type") or "aadhaar",
-                file_format=doc.get("file_format") or doc.get("format") or "pdf",
-                file_path=doc.get("file_path") or doc.get("data") or doc.get("url") or "",
-                file_size_kb=float(doc.get("file_size_kb") or doc.get("size_kb") or 0.0),
+                title=doc_title,
+                doc_type=doc_type,
+                file_format=file_fmt,
+                file_path=file_p,
+                file_size_kb=file_sz,
                 created_at=datetime.utcnow()
             )
             db.add(cand_doc)
