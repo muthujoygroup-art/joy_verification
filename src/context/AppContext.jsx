@@ -127,14 +127,48 @@ export const POSTPAID_PLANS = {
 };
 
 export const DEFAULT_LANDING_PAGE_CONTENT = {
-  // Hero Section
+  // 1. Home / Hero Section
   heroBadge: 'Direct Registry Rails',
   heroTitle: 'Instant & Accurate Employee Background Verification',
   heroSubtitle: 'Verify identity, PAN, past employment, bank details, and criminal records with automated direct registry checks. 100% compliant with Indian statutory labor laws and DPDP Act 2023.',
   ctaPrimaryText: 'Request a Free Demo 🚀',
-  ctaSecondaryText: 'Explore Features',
+  ctaSecondaryText: 'How It Works 🧭',
 
-  // JOY Group Software Ecosystem & Products
+  // 2. Features Section
+  featuresBadge: 'PLATFORM CAPABILITIES',
+  featuresTitle: 'Complete Workforce Verification Rail',
+  featuresSubtitle: 'Explore our unified suite of verification tools, clean recruiter workstations, and statutory compliance controls designed for modern enterprise reliability.',
+  featuresModules: {
+    easyVerification: {
+      title: 'Easy & Frictionless Verification',
+      description: 'Zero app installations needed. Workers receive a PIN-secured magic link via WhatsApp, SMS, or Email and complete onboarding in under 2 minutes.'
+    },
+    completeBgv: {
+      title: 'Complete 360° Candidate BGV',
+      description: 'Direct government and banking registry rails validating national ID, past employer tenures, active bank accounts, and criminal records in parallel.'
+    },
+    neatHr: {
+      title: 'Neat HR Recruiter Workstation',
+      description: 'Equip talent acquisition teams with bulk Excel ingestion, recruiter role access, candidate dossier reviews, and live tracking status filters.'
+    },
+    clraCompliance: {
+      title: 'Statutory CLRA Compliance',
+      description: 'Maintain statutory contractor muster registers, manage third-party staffing agency quotas, and prevent ghost worker payroll leaks.'
+    },
+    turnstilePasses: {
+      title: 'Digital Turnstile Gate Passes',
+      description: 'Generate sub-second cryptographic QR gate passes with biometric facial selfie matching to secure plant and factory perimeters.'
+    },
+    postpaidBilling: {
+      title: '100% Postpaid Metered Billing',
+      description: 'Zero upfront lock-in. Verify on demand and settle monthly based on actual verified employee profiles with official GST tax invoices (SAC 998311).'
+    }
+  },
+
+  // 3. Solutions Section & JOY Group Software Suite
+  solutionsBadge: 'ENTERPRISE SOLUTIONS',
+  solutionsTitle: 'Enterprise Verification Infrastructure',
+  solutionsSubtitle: 'Custom tailored verification pipelines for automotive manufacturing, supply chain, corporate IT, and EPC construction.',
   productsSectionBadge: 'JOY GROUP SOFTWARE ECOSYSTEM',
   productsSectionTitle: 'Complete HR Management & Enterprise Verification Platform',
   productsSectionSubtitle: 'JOY Corporate Solutions delivers an end-to-end cloud software suite — from biometric attendance and automated payroll to direct registry workforce background verification.',
@@ -197,7 +231,30 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
     }
   },
 
-  // Communication & Contact Details
+  // 4. What We Do Section
+  whatWeBadge: 'WHAT WE DO',
+  whatWeTitle: 'Transforming Workforce Trust with Direct Registry Rails',
+  whatWeSubtitle: 'JOY True Profile eliminates slow agency screening cycles, ghost workers, and manual paperwork with real-time direct government and banking API lookups.',
+
+  // 5. How It Works Section
+  howItWorksBadge: 'SEAMLESS VERIFICATION RAIL',
+  howItWorksTitle: 'How JOY True Profile Works',
+  howItWorksSubtitle: 'A frictionless 4-step direct-registry verification rail taking candidates from invite to certified compliance in real-time.',
+
+  // 6. Services Section
+  servicesBadge: 'SERVICES CATALOG',
+  servicesTitle: 'Comprehensive Workforce Verification & Compliance Catalog',
+  servicesSubtitle: 'Explore our complete array of automated statutory, identity, employment, and financial checks.',
+
+  // 7. Pricing Section
+  pricingBadge: 'POSTPAID PRICING',
+  pricingTitle: 'Simple, Transparent Postpaid Metered Plans',
+  pricingSubtitle: 'Pay only for verified employee profiles. Zero upfront lock-in, vendor parity, and automated month-end 18% GST tax invoices.',
+
+  // 8. Communication & Contact Details
+  contactBadge: 'CONNECT WITH US',
+  contactTitle: 'Get in Touch with Our Team',
+  contactSubtitle: 'Schedule a live demonstration or contact our enterprise solutions team across India.',
   companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
   supportEmail: 'info@joycorporatesolutions.com',
   salesEmail: 'info@joycorporatesolutions.com',
@@ -208,11 +265,11 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
   googleMapsEmbedUrl: 'https://maps.google.com/maps?q=Coimbatore,%20Tamil%20Nadu&t=&z=13&ie=UTF8&iwloc=&output=embed',
   workingHours: 'Monday - Saturday: 9:00 AM - 7:00 PM IST',
 
-  // Announcement Bar
+  // 9. Announcement Bar
   showAnnouncement: true,
   announcementText: '🚀 New: Automated Postpaid Billing with 18% GST Invoices & Never-Block Overage Policy is now live!',
 
-  // Stats & Performance Metrics
+  // 10. Stats & Performance Metrics
   statSpeed: 'Real-Time',
   statSpeedLabel: 'Direct Registry Lookups',
   statAccuracy: '99.98%',

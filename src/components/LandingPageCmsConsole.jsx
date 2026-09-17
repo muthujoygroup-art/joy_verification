@@ -25,7 +25,12 @@ import {
   Lock,
   HardHat,
   Users,
-  Check
+  Check,
+  FileCheck,
+  Scale,
+  ListOrdered,
+  HelpCircle,
+  Briefcase
 } from 'lucide-react';
 import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
 
@@ -48,6 +53,10 @@ export const LandingPageCmsConsole = () => {
         products: {
           ...DEFAULT_LANDING_PAGE_CONTENT.products,
           ...(landingPageContent.products || {})
+        },
+        featuresModules: {
+          ...DEFAULT_LANDING_PAGE_CONTENT.featuresModules,
+          ...(landingPageContent.featuresModules || {})
         }
       }));
     }
@@ -76,6 +85,20 @@ export const LandingPageCmsConsole = () => {
     setSaveSuccess(false);
   };
 
+  const handleFeatureModuleChange = (modKey, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      featuresModules: {
+        ...prev.featuresModules,
+        [modKey]: {
+          ...(prev.featuresModules?.[modKey] || DEFAULT_LANDING_PAGE_CONTENT.featuresModules?.[modKey] || {}),
+          [field]: value
+        }
+      }
+    }));
+    setSaveSuccess(false);
+  };
+
   const handleSave = (e) => {
     if (e) e.preventDefault();
     updateLandingPageContent(formData);
@@ -84,7 +107,7 @@ export const LandingPageCmsConsole = () => {
   };
 
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset the landing page content to platform defaults?')) {
+    if (window.confirm('Are you sure you want to reset all landing page sections to platform defaults?')) {
       resetLandingPageContent();
       setFormData(DEFAULT_LANDING_PAGE_CONTENT);
       setSaveSuccess(true);
@@ -93,6 +116,7 @@ export const LandingPageCmsConsole = () => {
   };
 
   const products = formData.products || DEFAULT_LANDING_PAGE_CONTENT.products;
+  const featuresModules = formData.featuresModules || DEFAULT_LANDING_PAGE_CONTENT.featuresModules;
 
   return (
     <div className="space-y-6">
@@ -102,13 +126,13 @@ export const LandingPageCmsConsole = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-2">
-              <Globe className="w-3.5 h-3.5" /> Super Admin CMS Console
+              <Globe className="w-3.5 h-3.5" /> Comprehensive Landing Page CMS
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              Landing Page & Product Ecosystem CMS
+              Website & Multi-Page Content Controller
             </h2>
             <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-              Control hero messaging, JOY Group software products (including Joy People HR at joypeoplehr.com), contact channels, Google Maps embed, announcement alert, and postpaid pricing information. Synchronized directly with PostgreSQL.
+              Edit all public pages: Home, Features, Solutions, What We Do, How It Works, Services, Pricing, and Contact Us. Every update synchronizes instantly with the PostgreSQL database.
             </p>
           </div>
 
@@ -133,102 +157,55 @@ export const LandingPageCmsConsole = () => {
         {saveSuccess && (
           <div className="mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 flex items-center gap-2 text-emerald-300 text-sm font-medium">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            Homepage and ecosystem content saved to PostgreSQL database & broadcasted live!
+            All section contents saved to PostgreSQL database and broadcasted live!
           </div>
         )}
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex border-b border-slate-700/80 space-x-2 overflow-x-auto pb-1">
-        <button
-          onClick={() => setActiveTab('hero')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'hero'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" /> Hero & Headlines
-        </button>
-
-        <button
-          onClick={() => setActiveTab('products')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'products'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <Layers className="w-4 h-4" /> Products Suite (Joy People HR)
-        </button>
-
-        <button
-          onClick={() => setActiveTab('contact')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'contact'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <Phone className="w-4 h-4" /> Contact & Google Map
-        </button>
-
-        <button
-          onClick={() => setActiveTab('pricing')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'pricing'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <CreditCard className="w-4 h-4" /> Postpaid Tiers (5 Plans)
-        </button>
-
-        <button
-          onClick={() => setActiveTab('announcement')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'announcement'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <Megaphone className="w-4 h-4" /> Announcement Banner
-        </button>
-
-        <button
-          onClick={() => setActiveTab('stats')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'stats'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <BarChart3 className="w-4 h-4" /> Statistics & Proof
-        </button>
-
-        <button
-          onClick={() => setActiveTab('preview')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-all shrink-0 cursor-pointer ${
-            activeTab === 'preview'
-              ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-          }`}
-        >
-          <Eye className="w-4 h-4" /> Live Preview
-        </button>
+      {/* Tabs Navigation across all pages */}
+      <div className="flex border-b border-slate-700/80 space-x-1 overflow-x-auto pb-1">
+        {[
+          { id: 'hero', label: '1. Home / Hero', icon: Sparkles },
+          { id: 'features', label: '2. Features', icon: Zap },
+          { id: 'solutions', label: '3. Solutions (Joy HR)', icon: Layers },
+          { id: 'what_we', label: '4. What We Do', icon: Briefcase },
+          { id: 'how_it_works', label: '5. How It Works', icon: ListOrdered },
+          { id: 'services', label: '6. Services', icon: ShieldCheck },
+          { id: 'pricing', label: '7. Pricing', icon: CreditCard },
+          { id: 'contact', label: '8. Contact & Map', icon: Phone },
+          { id: 'announcement', label: '9. Banner & Stats', icon: Megaphone },
+          { id: 'preview', label: 'Live Preview', icon: Eye }
+        ].map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-t-xl text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+                isActive
+                  ? 'bg-slate-800 text-indigo-400 border-t-2 border-x border-slate-700 border-t-indigo-500 shadow font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Form Content */}
       <form onSubmit={handleSave} className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl">
         
-        {/* Tab 1: Hero Section */}
+        {/* Tab 1: Home / Hero Section */}
         {activeTab === 'hero' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-400" /> Hero Header & Taglines
+                <Sparkles className="w-5 h-5 text-indigo-400" /> Home Page & Hero Section
               </h3>
-              <p className="text-slate-400 text-xs">Configure the primary headline, value proposition badge, and call-to-action buttons shown on first load.</p>
+              <p className="text-slate-400 text-xs">Configure the top hero headlines, value proposition badge, and primary buttons.</p>
             </div>
 
             <div className="space-y-4">
@@ -242,7 +219,7 @@ export const LandingPageCmsConsole = () => {
                   value={formData.heroBadge || ''}
                   onChange={handleChange}
                   placeholder="e.g. Direct Registry Rails"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
                 />
               </div>
 
@@ -256,7 +233,7 @@ export const LandingPageCmsConsole = () => {
                   value={formData.heroTitle || ''}
                   onChange={handleChange}
                   placeholder="e.g. Instant & Accurate Employee Background Verification"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm font-semibold focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm font-semibold focus:border-indigo-500 focus:outline-none"
                 />
               </div>
 
@@ -270,7 +247,7 @@ export const LandingPageCmsConsole = () => {
                   value={formData.heroSubtitle || ''}
                   onChange={handleChange}
                   placeholder="Explain the core benefits in simple, clear language..."
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
                 />
               </div>
 
@@ -285,7 +262,7 @@ export const LandingPageCmsConsole = () => {
                     value={formData.ctaPrimaryText || ''}
                     onChange={handleChange}
                     placeholder="Request a Free Demo 🚀"
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
 
@@ -298,8 +275,8 @@ export const LandingPageCmsConsole = () => {
                     name="ctaSecondaryText"
                     value={formData.ctaSecondaryText || ''}
                     onChange={handleChange}
-                    placeholder="Explore Features"
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                    placeholder="How It Works 🧭"
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -307,48 +284,45 @@ export const LandingPageCmsConsole = () => {
           </div>
         )}
 
-        {/* Tab 2: Software Products Suite */}
-        {activeTab === 'products' && (
+        {/* Tab 2: Features Section */}
+        {activeTab === 'features' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" /> JOY Group Software Products Ecosystem
+                <Zap className="w-5 h-5 text-indigo-400" /> Features Page & 6 Core Capabilities
               </h3>
-              <p className="text-slate-400 text-xs">
-                Manage the ecosystem showcase section that replaced industrial activity. Prominently features <strong>Joy People HR (joypeoplehr.com)</strong> for complete HRMS, biometric attendance, and payroll processing.
-              </p>
+              <p className="text-slate-400 text-xs">Configure the titles and descriptions for the 6 core platform capabilities.</p>
             </div>
 
-            {/* Section Heading Controls */}
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Section Header Settings</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Features Section Header</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Section Badge</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Badge</label>
                   <input
                     type="text"
-                    name="productsSectionBadge"
-                    value={formData.productsSectionBadge || ''}
+                    name="featuresBadge"
+                    value={formData.featuresBadge || ''}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Section Title</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
                   <input
                     type="text"
-                    name="productsSectionTitle"
-                    value={formData.productsSectionTitle || ''}
+                    name="featuresTitle"
+                    value={formData.featuresTitle || ''}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Section Subtitle</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Subtitle</label>
                   <input
                     type="text"
-                    name="productsSectionSubtitle"
-                    value={formData.productsSectionSubtitle || ''}
+                    name="featuresSubtitle"
+                    value={formData.featuresSubtitle || ''}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
                   />
@@ -356,21 +330,130 @@ export const LandingPageCmsConsole = () => {
               </div>
             </div>
 
+            {/* 6 Feature Modules Customization */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Mod 1 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-indigo-400">1. Easy Verification</span>
+                <input
+                  type="text"
+                  value={featuresModules.easyVerification?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('easyVerification', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.easyVerification?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('easyVerification', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+
+              {/* Mod 2 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-emerald-400">2. Complete BGV</span>
+                <input
+                  type="text"
+                  value={featuresModules.completeBgv?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('completeBgv', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.completeBgv?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('completeBgv', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+
+              {/* Mod 3 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-purple-400">3. Neat HR Workstation</span>
+                <input
+                  type="text"
+                  value={featuresModules.neatHr?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('neatHr', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.neatHr?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('neatHr', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+
+              {/* Mod 4 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-amber-400">4. CLRA Compliance</span>
+                <input
+                  type="text"
+                  value={featuresModules.clraCompliance?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('clraCompliance', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.clraCompliance?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('clraCompliance', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+
+              {/* Mod 5 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-teal-400">5. Turnstile Gate Passes</span>
+                <input
+                  type="text"
+                  value={featuresModules.turnstilePasses?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('turnstilePasses', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.turnstilePasses?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('turnstilePasses', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+
+              {/* Mod 6 */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs font-bold uppercase text-rose-400">6. Postpaid Billing</span>
+                <input
+                  type="text"
+                  value={featuresModules.postpaidBilling?.title || ''}
+                  onChange={(e) => handleFeatureModuleChange('postpaidBilling', 'title', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs font-bold"
+                />
+                <textarea
+                  rows="2"
+                  value={featuresModules.postpaidBilling?.description || ''}
+                  onChange={(e) => handleFeatureModuleChange('postpaidBilling', 'description', e.target.value)}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Solutions & JOY Group Software Suite */}
+        {activeTab === 'solutions' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-indigo-400" /> Solutions & JOY Group Software Ecosystem
+              </h3>
+              <p className="text-slate-400 text-xs">Manage the software suite cards prominently featuring <strong>Joy People HR (joypeoplehr.com)</strong>.</p>
+            </div>
+
             {/* Product 1: JOY PEOPLE HR */}
             <div className="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase">
-                    Flagship HRMS Suite
-                  </span>
-                  <span className="text-sm font-bold text-white">JOY PEOPLE HR</span>
-                </div>
-                <a
-                  href={products.joyPeopleHr?.url || 'https://joypeoplehr.com'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold"
-                >
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase">
+                  Flagship HRMS Suite
+                </span>
+                <a href={products.joyPeopleHr?.url || 'https://joypeoplehr.com'} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
                   <span>{products.joyPeopleHr?.url || 'https://joypeoplehr.com'}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
@@ -387,7 +470,7 @@ export const LandingPageCmsConsole = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline / Short Title</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline</label>
                   <input
                     type="text"
                     value={products.joyPeopleHr?.tagline || ''}
@@ -396,12 +479,11 @@ export const LandingPageCmsConsole = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Redirect / Website URL</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Website URL</label>
                   <input
                     type="url"
                     value={products.joyPeopleHr?.url || ''}
                     onChange={(e) => handleProductChange('joyPeopleHr', 'url', e.target.value)}
-                    placeholder="https://joypeoplehr.com"
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-indigo-300 font-mono text-xs"
                   />
                 </div>
@@ -428,13 +510,9 @@ export const LandingPageCmsConsole = () => {
 
             {/* Product 2: JOY TRUE PROFILE */}
             <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase">
-                  Verification Engine
-                </span>
-                <span className="text-sm font-bold text-white">JOY TRUE PROFILE</span>
-              </div>
-
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase">
+                Verification Engine
+              </span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1">Product Name</label>
@@ -455,9 +533,9 @@ export const LandingPageCmsConsole = () => {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Description</label>
                   <textarea
-                    rows="3"
+                    rows="2"
                     value={products.joyTrueProfile?.description || ''}
                     onChange={(e) => handleProductChange('joyTrueProfile', 'description', e.target.value)}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
@@ -465,265 +543,316 @@ export const LandingPageCmsConsole = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Product 3: JOY CONTRACTOR & CLRA */}
-            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase">
-                  Compliance Suite
-                </span>
-                <span className="text-sm font-bold text-white">JOY CONTRACTOR & CLRA</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Name</label>
-                  <input
-                    type="text"
-                    value={products.joyContractorClra?.name || ''}
-                    onChange={(e) => handleProductChange('joyContractorClra', 'name', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline</label>
-                  <input
-                    type="text"
-                    value={products.joyContractorClra?.tagline || ''}
-                    onChange={(e) => handleProductChange('joyContractorClra', 'tagline', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
-                  <textarea
-                    rows="2"
-                    value={products.joyContractorClra?.description || ''}
-                    onChange={(e) => handleProductChange('joyContractorClra', 'description', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-              </div>
+        {/* Tab 4: What We Do */}
+        {activeTab === 'what_we' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-indigo-400" /> What We Do Section
+              </h3>
+              <p className="text-slate-400 text-xs">Configure the mission statement and core value pillars.</p>
             </div>
 
-            {/* Product 4: JOY DIGITAL VAULT */}
-            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold uppercase">
-                  DPDP Act 2023 Shield
-                </span>
-                <span className="text-sm font-bold text-white">JOY DIGITAL VAULT</span>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <input
+                  type="text"
+                  name="whatWeBadge"
+                  value={formData.whatWeBadge || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Name</label>
-                  <input
-                    type="text"
-                    value={products.joyDigitalVault?.name || ''}
-                    onChange={(e) => handleProductChange('joyDigitalVault', 'name', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Tagline</label>
-                  <input
-                    type="text"
-                    value={products.joyDigitalVault?.tagline || ''}
-                    onChange={(e) => handleProductChange('joyDigitalVault', 'tagline', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
-                  <textarea
-                    rows="2"
-                    value={products.joyDigitalVault?.description || ''}
-                    onChange={(e) => handleProductChange('joyDigitalVault', 'description', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <input
+                  type="text"
+                  name="whatWeTitle"
+                  value={formData.whatWeTitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <textarea
+                  name="whatWeSubtitle"
+                  rows="3"
+                  value={formData.whatWeSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab 3: Contact & Google Maps */}
+        {/* Tab 5: How It Works */}
+        {activeTab === 'how_it_works' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <ListOrdered className="w-5 h-5 text-indigo-400" /> How It Works Section
+              </h3>
+              <p className="text-slate-400 text-xs">Configure the 4-step direct-registry onboarding timeline headers.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <input
+                  type="text"
+                  name="howItWorksBadge"
+                  value={formData.howItWorksBadge || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <input
+                  type="text"
+                  name="howItWorksTitle"
+                  value={formData.howItWorksTitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <textarea
+                  name="howItWorksSubtitle"
+                  rows="3"
+                  value={formData.howItWorksSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 6: Services Catalog */}
+        {activeTab === 'services' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-indigo-400" /> Services Page Section
+              </h3>
+              <p className="text-slate-400 text-xs">Configure the verification catalog header and descriptions.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Badge</label>
+                <input
+                  type="text"
+                  name="servicesBadge"
+                  value={formData.servicesBadge || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Title</label>
+                <input
+                  type="text"
+                  name="servicesTitle"
+                  value={formData.servicesTitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Section Subtitle</label>
+                <textarea
+                  name="servicesSubtitle"
+                  rows="3"
+                  value={formData.servicesSubtitle || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 7: Pricing & Postpaid Plans */}
+        {activeTab === 'pricing' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-indigo-400" /> Pricing Page & Postpaid Tiers
+              </h3>
+              <p className="text-slate-400 text-xs">Configure the pricing page header, GST notes, and review the 5 active Postpaid Quota Tiers.</p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Pricing Section Header</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Badge</label>
+                  <input
+                    type="text"
+                    name="pricingBadge"
+                    value={formData.pricingBadge || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
+                  <input
+                    type="text"
+                    name="pricingTitle"
+                    value={formData.pricingTitle || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Subtitle</label>
+                  <input
+                    type="text"
+                    name="pricingSubtitle"
+                    value={formData.pricingSubtitle || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 5 Postpaid Tiers Display */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.values(POSTPAID_PLANS).map((plan) => (
+                <div key={plan.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-400">{plan.shortName}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-950 border border-indigo-700 text-indigo-300">
+                      Tier {plan.tierNumber}
+                    </span>
+                  </div>
+                  <div className="text-xl font-bold text-white">
+                    {plan.isCustom ? 'Custom' : `₹${plan.ratePerProfile}`}
+                    <span className="text-[11px] font-normal text-slate-400 ml-1">/ profile</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">{plan.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 8: Contact & Google Maps */}
         {activeTab === 'contact' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-indigo-400" /> Communication Channels & Google Maps Mini Layout
+                <Building2 className="w-5 h-5 text-indigo-400" /> Contact Channels & Google Maps Embed
               </h3>
-              <p className="text-slate-400 text-xs">Update official emails, phone, WhatsApp lines, office address, and embed URL for the live interactive Google Maps widget.</p>
+              <p className="text-slate-400 text-xs">Update official emails, phone, WhatsApp lines, office address, and embed URL for the live Google Maps iframe.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Official Corporate Name
-                </label>
-                <div className="relative">
-                  <Building2 className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Corporate Name</label>
+                <input
+                  type="text"
+                  name="companyName"
+                  value={formData.companyName || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Official Support Email
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="email"
-                    name="supportEmail"
-                    value={formData.supportEmail || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Support Email</label>
+                <input
+                  type="email"
+                  name="supportEmail"
+                  value={formData.supportEmail || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Sales / Demo Request Email
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="email"
-                    name="salesEmail"
-                    value={formData.salesEmail || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Phone Number</label>
+                <input
+                  type="text"
+                  name="contactPhone"
+                  value={formData.contactPhone || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Official Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="text"
-                    name="contactPhone"
-                    value={formData.contactPhone || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Official WhatsApp Contact Number
-                </label>
-                <div className="relative">
-                  <MessageSquare className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="text"
-                    name="whatsappNumber"
-                    value={formData.whatsappNumber || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Working Hours / Support Schedule
-                </label>
-                <div className="relative">
-                  <Clock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="text"
-                    name="workingHours"
-                    value={formData.workingHours || ''}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official WhatsApp Number</label>
+                <input
+                  type="text"
+                  name="whatsappNumber"
+                  value={formData.whatsappNumber || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Registered Office Address
-                </label>
-                <div className="relative">
-                  <MapPin className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <textarea
-                    name="officeAddress"
-                    rows="2"
-                    value={formData.officeAddress || ''}
-                    onChange={handleChange}
-                    placeholder="e.g. Coimbatore, Tamilnadu, India"
-                    className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Registered Office Address</label>
+                <input
+                  type="text"
+                  name="officeAddress"
+                  value={formData.officeAddress || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Google Maps Location Link (External URL)
-                </label>
-                <div className="relative">
-                  <Globe className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="url"
-                    name="googleMapsUrl"
-                    value={formData.googleMapsUrl || ''}
-                    onChange={handleChange}
-                    placeholder="https://maps.app.goo.gl/xK2B3J4VvC73oQwd8"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono text-xs"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Google Maps App Link (URL)</label>
+                <input
+                  type="url"
+                  name="googleMapsUrl"
+                  value={formData.googleMapsUrl || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Google Maps Embed Iframe URL (Mini Layout)
-                </label>
-                <div className="relative">
-                  <MapPin className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
-                  <input
-                    type="url"
-                    name="googleMapsEmbedUrl"
-                    value={formData.googleMapsEmbedUrl || ''}
-                    onChange={handleChange}
-                    placeholder="https://maps.google.com/maps?q=Coimbatore,%20Tamil%20Nadu&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono text-xs"
-                  />
-                </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Google Maps Embed Iframe URL</label>
+                <input
+                  type="url"
+                  name="googleMapsEmbedUrl"
+                  value={formData.googleMapsEmbedUrl || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono"
+                />
               </div>
 
-              {/* Interactive Google Map Preview */}
+              {/* Map Preview */}
               <div className="md:col-span-2 pt-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">
-                  🗺️ Google Map Mini Layout Preview
-                </label>
-                <div className="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 h-56 relative shadow-inner">
-                  {formData.googleMapsEmbedUrl ? (
+                <label className="block text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">Google Map Live Embed</label>
+                <div className="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 h-48 relative">
+                  {formData.googleMapsEmbedUrl && (
                     <iframe
-                      title="Google Map Mini Layout Preview"
+                      title="Google Maps Preview"
                       src={formData.googleMapsEmbedUrl}
                       className="w-full h-full border-0"
-                      allowFullScreen=""
                       loading="lazy"
                     />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-slate-500 text-xs">
-                      No Google Maps Embed URL provided
-                    </div>
                   )}
                 </div>
               </div>
@@ -731,69 +860,14 @@ export const LandingPageCmsConsole = () => {
           </div>
         )}
 
-        {/* Tab 4: Postpaid Pricing Tiers */}
-        {activeTab === 'pricing' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-indigo-400" /> Postpaid Pay-As-You-Verify Tier Architecture
-              </h3>
-              <p className="text-slate-400 text-xs">
-                Review the 5 active Postpaid Quota Tiers with zero advance lock-in and automated month-end 18% GST billing.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.values(POSTPAID_PLANS).map((plan) => (
-                <div key={plan.id} className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-4 hover:border-indigo-500/50 transition-all">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-black uppercase text-indigo-400">{plan.shortName}</span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-700 text-indigo-300">
-                        Tier {plan.tierNumber}
-                      </span>
-                    </div>
-
-                    <div className="text-2xl font-black text-white">
-                      {plan.isCustom ? 'Custom' : `₹${plan.ratePerProfile}`}
-                      <span className="text-xs font-normal text-slate-400 ml-1">/ verified profile</span>
-                    </div>
-
-                    <p className="text-xs text-slate-400 mt-2">{plan.description}</p>
-
-                    <div className="mt-4 pt-3 border-t border-slate-800 space-y-2">
-                      <div className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-indigo-400" /> Quota: {plan.employeeThreshold}
-                      </div>
-                      <div className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                        <Check className="w-3.5 h-3.5 text-emerald-400" /> 100% Postpaid (Pay on-demand)
-                      </div>
-                      <div className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                        <Check className="w-3.5 h-3.5 text-emerald-400" /> Vendor Profile Parity (1:1)
-                      </div>
-                      <div className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
-                        <Check className="w-3.5 h-3.5 text-emerald-400" /> Automated GST Invoices
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 text-[11px] text-slate-500">
-                    Overage Rate: {plan.isCustom ? 'Custom SLA' : `₹${plan.overageRate}/profile (Never blocked)`}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Announcement Banner */}
+        {/* Tab 9: Announcement Banner & Stats */}
         {activeTab === 'announcement' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-indigo-400" /> Announcement Bar & Alerts
+                <Megaphone className="w-5 h-5 text-indigo-400" /> Announcement Bar & Metrics
               </h3>
-              <p className="text-slate-400 text-xs">Configure the top ticker notification banner displayed at the very top of the landing page.</p>
+              <p className="text-slate-400 text-xs">Configure the top announcement bar and statistics counters.</p>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
@@ -814,242 +888,102 @@ export const LandingPageCmsConsole = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Announcement Message Text
-              </label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Announcement Text</label>
               <textarea
                 name="announcementText"
-                rows="3"
+                rows="2"
                 value={formData.announcementText || ''}
                 onChange={handleChange}
-                placeholder="e.g. 🚀 New: Automated Postpaid Billing with 18% GST Invoices is now live!"
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm"
               />
             </div>
-          </div>
-        )}
 
-        {/* Tab 6: Statistics */}
-        {activeTab === 'stats' && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-indigo-400" /> Performance Metrics & Proof Counters
-              </h3>
-              <p className="text-slate-400 text-xs">Configure the statistics displayed in the trust and social proof sections of the website.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <span className="text-xs font-bold uppercase text-indigo-400">Metric 1: Speed</span>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Value</label>
-                  <input
-                    type="text"
-                    name="statSpeed"
-                    value={formData.statSpeed || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Label</label>
-                  <input
-                    type="text"
-                    name="statSpeedLabel"
-                    value={formData.statSpeedLabel || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+            {/* Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <label className="text-[11px] text-slate-400 font-bold block mb-1">Speed Value</label>
+                <input
+                  type="text"
+                  name="statSpeed"
+                  value={formData.statSpeed || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
+                />
               </div>
-
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <span className="text-xs font-bold uppercase text-emerald-400">Metric 2: Accuracy</span>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Value</label>
-                  <input
-                    type="text"
-                    name="statAccuracy"
-                    value={formData.statAccuracy || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Label</label>
-                  <input
-                    type="text"
-                    name="statAccuracyLabel"
-                    value={formData.statAccuracyLabel || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <label className="text-[11px] text-slate-400 font-bold block mb-1">Accuracy Value</label>
+                <input
+                  type="text"
+                  name="statAccuracy"
+                  value={formData.statAccuracy || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
+                />
               </div>
-
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <span className="text-xs font-bold uppercase text-amber-400">Metric 3: Clients</span>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Value</label>
-                  <input
-                    type="text"
-                    name="statClients"
-                    value={formData.statClients || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Label</label>
-                  <input
-                    type="text"
-                    name="statClientsLabel"
-                    value={formData.statClientsLabel || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <label className="text-[11px] text-slate-400 font-bold block mb-1">Clients Value</label>
+                <input
+                  type="text"
+                  name="statClients"
+                  value={formData.statClients || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
+                />
               </div>
-
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <span className="text-xs font-bold uppercase text-purple-400">Metric 4: Volume</span>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Value</label>
-                  <input
-                    type="text"
-                    name="statProfiles"
-                    value={formData.statProfiles || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Label</label>
-                  <input
-                    type="text"
-                    name="statProfilesLabel"
-                    value={formData.statProfilesLabel || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                  />
-                </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <label className="text-[11px] text-slate-400 font-bold block mb-1">Profiles Value</label>
+                <input
+                  type="text"
+                  name="statProfiles"
+                  value={formData.statProfiles || ''}
+                  onChange={handleChange}
+                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white"
+                />
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab 7: Live Preview */}
+        {/* Tab 10: Live Preview */}
         {activeTab === 'preview' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <Eye className="w-5 h-5 text-indigo-400" /> Live Landing Page Component Preview
+                <Eye className="w-5 h-5 text-indigo-400" /> Live Multi-Section Preview
               </h3>
-              <p className="text-slate-400 text-xs">Preview how your configured content renders on the live home page.</p>
+              <p className="text-slate-400 text-xs">Preview all configured sections as they appear on the live website.</p>
             </div>
 
-            {/* Announcement Bar Preview */}
             {formData.showAnnouncement && (
               <div className="p-3 bg-gradient-to-r from-indigo-900/60 via-purple-900/60 to-indigo-900/60 border border-indigo-500/30 rounded-xl text-center text-xs font-medium text-indigo-200">
                 {formData.announcementText}
               </div>
             )}
 
-            {/* Hero Mockup */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 text-center space-y-4">
+            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-800 text-center space-y-3">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5" /> {formData.heroBadge}
               </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight max-w-2xl mx-auto leading-tight">
-                {formData.heroTitle}
-              </h1>
-              <p className="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-                {formData.heroSubtitle}
-              </p>
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <div className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-lg shadow-indigo-600/30">
-                  {formData.ctaPrimaryText}
-                </div>
-                <div className="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs border border-slate-700">
-                  {formData.ctaSecondaryText}
-                </div>
-              </div>
+              <h1 className="text-2xl font-bold text-white">{formData.heroTitle}</h1>
+              <p className="text-xs text-slate-300 max-w-xl mx-auto">{formData.heroSubtitle}</p>
             </div>
 
-            {/* Software Products Preview */}
-            <div className="space-y-3">
-              <div className="text-xs font-bold uppercase text-indigo-400 tracking-wider">Product Ecosystem Preview</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-sm">{products.joyPeopleHr?.name || 'JOY PEOPLE HR'}</span>
-                    <a href={products.joyPeopleHr?.url || 'https://joypeoplehr.com'} target="_blank" rel="noopener noreferrer" className="text-[11px] text-indigo-300 hover:underline flex items-center gap-1 font-semibold">
-                      <span>joypeoplehr.com</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                  <p className="text-xs text-indigo-200/80">{products.joyPeopleHr?.tagline}</p>
-                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">{products.joyPeopleHr?.description}</p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-sm">{products.joyTrueProfile?.name || 'JOY TRUE PROFILE'}</span>
-                    <span className="text-[11px] text-emerald-400 font-semibold">Verification Engine</span>
-                  </div>
-                  <p className="text-xs text-emerald-200/80">{products.joyTrueProfile?.tagline}</p>
-                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">{products.joyTrueProfile?.description}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Mockup */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-xl font-extrabold text-indigo-400">{formData.statSpeed}</div>
-                <div className="text-[11px] text-slate-400 mt-1">{formData.statSpeedLabel}</div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+                <div className="text-lg font-bold text-indigo-400">{formData.statSpeed}</div>
+                <div className="text-[10px] text-slate-400">{formData.statSpeedLabel}</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-xl font-extrabold text-emerald-400">{formData.statAccuracy}</div>
-                <div className="text-[11px] text-slate-400 mt-1">{formData.statAccuracyLabel}</div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+                <div className="text-lg font-bold text-emerald-400">{formData.statAccuracy}</div>
+                <div className="text-[10px] text-slate-400">{formData.statAccuracyLabel}</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-xl font-extrabold text-amber-400">{formData.statClients}</div>
-                <div className="text-[11px] text-slate-400 mt-1">{formData.statClientsLabel}</div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+                <div className="text-lg font-bold text-amber-400">{formData.statClients}</div>
+                <div className="text-[10px] text-slate-400">{formData.statClientsLabel}</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                <div className="text-xl font-extrabold text-purple-400">{formData.statProfiles}</div>
-                <div className="text-[11px] text-slate-400 mt-1">{formData.statProfilesLabel}</div>
-              </div>
-            </div>
-
-            {/* Communication Info & Mini Map Preview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
-                <div className="font-bold text-white text-sm">{formData.companyName}</div>
-                <div className="grid grid-cols-1 gap-1.5 text-slate-400">
-                  <div>📧 Support: <span className="text-indigo-300">{formData.supportEmail}</span></div>
-                  <div>📞 Phone: <span className="text-indigo-300">{formData.contactPhone}</span></div>
-                  <div>💬 WhatsApp: <span className="text-emerald-300">{formData.whatsappNumber}</span></div>
-                  <div>🕒 Hours: <span className="text-slate-300">{formData.workingHours}</span></div>
-                  <div>📍 Address: <span className="text-slate-300">{formData.officeAddress}</span></div>
-                </div>
-              </div>
-
-              <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 h-44 relative">
-                {formData.googleMapsEmbedUrl ? (
-                  <iframe
-                    title="Google Map Mini Layout Preview"
-                    src={formData.googleMapsEmbedUrl}
-                    className="w-full h-full border-0"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-slate-500 text-xs">
-                    No Google Maps Embed URL provided
-                  </div>
-                )}
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+                <div className="text-lg font-bold text-purple-400">{formData.statProfiles}</div>
+                <div className="text-[10px] text-slate-400">{formData.statProfilesLabel}</div>
               </div>
             </div>
           </div>
@@ -1059,7 +993,7 @@ export const LandingPageCmsConsole = () => {
         <div className="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between">
           <div className="text-xs text-slate-400 flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-indigo-400" />
-            Changes are saved to PostgreSQL database & displayed live across the website.
+            Synchronized directly with PostgreSQL database.
           </div>
           <button
             type="submit"

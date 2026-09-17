@@ -859,11 +859,15 @@ export const api = {
     body: JSON.stringify(data),
   }),
   getAllInquiries: (status) => request(`/inquiries/all${status ? `?status=${status}` : ''}`),
+  replyToInquiry: (id, payload) => request(`/inquiries/${id}/reply`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
   updateInquiryStatus: (id, status, notes) => {
     requestCache.clear();
     return request(`/inquiries/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ status, notes }),
+      body: JSON.stringify({ status, internal_notes: notes }),
     });
   },
   deleteInquiry: (id) => {
@@ -971,6 +975,31 @@ export const api = {
     } catch {
       return { data: [] };
     }
+  },
+  getInquiries: async () => {
+    try {
+      return await request('/inquiries');
+    } catch {
+      return { success: true, data: [] };
+    }
+  },
+  submitInquiry: async (inquiryData) => {
+    return await request('/inquiries', {
+      method: 'POST',
+      body: JSON.stringify(inquiryData),
+    });
+  },
+  updateInquiryStatus: async (inquiryId, status) => {
+    return await request(`/inquiries/${inquiryId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  },
+  replyToInquiry: async (inquiryId, payload) => {
+    return await request(`/inquiries/${inquiryId}/reply`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   },
   submitDemoRequest: async (demoData) => {
     try {

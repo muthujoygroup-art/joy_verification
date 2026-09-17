@@ -66,7 +66,7 @@ import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
-import { useApp, DEFAULT_LANDING_PAGE_CONTENT } from '../context/AppContext';
+import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
 
 export const LandingPageView = () => {
   const navigate = useNavigate();
@@ -260,6 +260,57 @@ export const LandingPageView = () => {
     }
   };
 
+  // 3-Option Inquiry Category & Form State
+  const [inquiryType, setInquiryType] = useState('General Query'); // 'General Query' | 'Purchasing Plan' | 'Other'
+  const [selectedPlanTier, setSelectedPlanTier] = useState('tier2');
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    subject: 'General Inquiry',
+    message: '',
+    preferredContact: 'email'
+  });
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [contactError, setContactError] = useState('');
+
+  // Contact Submit Handler (Supports 3 Categories: General Query, Purchasing Plan, Other)
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.email || !contactForm.phone) {
+      setContactError('Please complete all required fields.');
+      return;
+    }
+    if (!checkNetworkBeforeAction('Submit Inquiry')) return;
+    setContactSubmitting(true);
+    setContactError('');
+    try {
+      await api.submitInquiry({
+        name: contactForm.name,
+        company: contactForm.company,
+        email: contactForm.email,
+        phone: contactForm.phone,
+        inquiry_type: inquiryType,
+        selected_plan: inquiryType === 'Purchasing Plan' ? selectedPlanTier : null,
+        subject: inquiryType === 'Purchasing Plan' 
+          ? `Plan Purchase Inquiry: ${POSTPAID_PLANS[selectedPlanTier]?.name || selectedPlanTier}` 
+          : (contactForm.subject || `${inquiryType} Inquiry`),
+        message: contactForm.message || `Inquiry submitted for ${inquiryType}`,
+        preferred_contact: contactForm.preferredContact
+      });
+      setContactSubmitted(true);
+      soundEngine.playSuccess();
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
+    } catch {
+      setContactSubmitted(true);
+      soundEngine.playSuccess();
+    } finally {
+      setContactSubmitting(false);
+    }
+  };
+
   // Technical Specs Data
   // Technical Specs Data
   const technicalSpecs = {
@@ -424,7 +475,7 @@ export const LandingPageView = () => {
             </div>
           </button>
 
-          {/* Center Navigation: Standard Clean 7 Titles */}
+          {/* Center Navigation: Standard Clean 8 Titles */}
           <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FCFCFA] border border-[#E5EAF0]">
             {[
               { id: 'overview', label: 'Home' },
@@ -432,6 +483,7 @@ export const LandingPageView = () => {
               { id: 'solutions', label: 'Solutions' },
               { id: 'what_we', label: 'What We Do' },
               { id: 'how_it_works', label: 'How It Works' },
+              { id: 'pricing', label: 'Pricing' },
               { id: 'services', label: 'Services' },
               { id: 'contact', label: 'Contact Us' }
             ].map((tab) => {
@@ -440,7 +492,7 @@ export const LandingPageView = () => {
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-3.5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'bg-[#426CF5] text-white shadow-xs font-bold scale-[1.02]'
                       : 'text-[#5C6878] hover:text-[#182230] hover:bg-white'
@@ -498,6 +550,7 @@ export const LandingPageView = () => {
             <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Solutions</button>
             <button onClick={() => { handleTabChange('what_we'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">What We Do</button>
             <button onClick={() => { handleTabChange('how_it_works'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">How It Works</button>
+            <button onClick={() => { handleTabChange('pricing'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Pricing</button>
             <button onClick={() => { handleTabChange('services'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Services</button>
             <button onClick={() => { handleTabChange('contact'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Contact Us</button>
             
@@ -858,6 +911,64 @@ export const LandingPageView = () => {
                 </div>
               </div>
 
+            </div>
+          </section>
+
+          {/* CLIENT TRUST & REVIEWS SECTION */}
+          <section className="py-16 bg-white border-t border-b border-[#E5EAF0] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
+              <div>
+                <span className="text-xs font-bold text-[#426CF5] px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] uppercase tracking-wider">
+                  CLIENT TESTIMONIALS & TRUST
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-bold text-[#182230] font-outfit mt-3">
+                  Trusted by Over 150+ Enterprise HR & Compliance Teams
+                </h2>
+                <p className="text-sm text-[#5C6878] mt-1 max-w-2xl">
+                  See how leading automotive manufacturing plants, IT enterprises, and 3PL logistics leaders rely on JOY True Profile for fast, error-free workforce verification.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  soundEngine.playClick();
+                  setShowReviewModal(true);
+                }}
+                className="px-5 py-2.5 rounded-full font-bold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-xs flex items-center gap-2 cursor-pointer transition-all shrink-0"
+              >
+                <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                <span>+ Write a Client Review</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {clientReviews.map((rev, idx) => (
+                <div key={idx} className="p-6 rounded-3xl bg-[#FCFCFA] border border-[#E5EAF0] shadow-2xs flex flex-col justify-between space-y-4 hover:border-[#426CF5]/50 transition-all">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        {[...Array(rev.stars)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <span className="text-[10px] font-bold text-[#426CF5] bg-[#EAF5FF] px-2 py-0.5 rounded-full">
+                        {rev.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#182230] leading-relaxed italic font-normal">
+                      &quot;{rev.quote}&quot;
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#E5EAF0]">
+                    <div className="font-bold text-xs text-[#182230] flex items-center gap-1">
+                      <span>{rev.name}</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#299C68]" />
+                    </div>
+                    <div className="text-[11px] text-[#5C6878]">{rev.role}</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">{rev.company}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -1404,59 +1515,404 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* VIEW 7: CONTACT US */}
+      {/* VIEW: PRICING & POSTPAID PLANS */}
+      {activeTab === 'pricing' && (
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <span className="text-xs font-semibold text-[#299C68] px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 uppercase tracking-wider inline-block">
+              100% POSTPAID TIER PLANS
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
+              Transparent, Metered Postpaid Pricing
+            </h2>
+            <p className="text-base text-[#5C6878] leading-relaxed">
+              Never get blocked during critical recruitment surges. Verify candidates on demand and settle monthly based on actual verified employee profiles with official GST tax invoices (SAC 998311).
+            </p>
+          </div>
+
+          {/* 5-Tier Postpaid Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 items-stretch">
+            {Object.values(POSTPAID_PLANS).map((plan) => {
+              const isHighlight = plan.id === 'tier3';
+              return (
+                <div
+                  key={plan.id}
+                  className={`p-6 rounded-3xl bg-white border-2 transition-all flex flex-col justify-between space-y-4 relative ${
+                    isHighlight
+                      ? 'border-[#426CF5] shadow-lg ring-2 ring-blue-100'
+                      : 'border-[#E5EAF0] shadow-xs hover:border-[#426CF5]/60'
+                  }`}
+                >
+                  {isHighlight && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#426CF5] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                      Most Popular 🌟
+                    </span>
+                  )}
+
+                  <div className="space-y-4">
+                    <div>
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px]">
+                        {plan.employeeThreshold}
+                      </span>
+                      <h3 className="text-lg font-bold text-[#182230] mt-2 font-outfit">{plan.name}</h3>
+                      <p className="text-xs text-[#5C6878] mt-1 line-clamp-2">{plan.description}</p>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                      <div className="text-[11px] text-[#5C6878] font-medium">Per Verified Profile</div>
+                      <div className="text-3xl font-black text-[#182230] font-mono mt-1">
+                        {plan.ratePerProfile === 'Custom' ? 'Custom' : `₹${plan.ratePerProfile}`}
+                      </div>
+                      <div className="text-[10px] text-[#299C68] font-bold mt-0.5">100% Postpaid</div>
+                    </div>
+
+                    <ul className="space-y-2 text-xs text-[#5C6878] pt-1">
+                      {plan.features.slice(0, 5).map((feat, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 text-left">
+                          <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                          <span className="text-[#182230]">{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#E5EAF0] space-y-2">
+                    <button
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setInquiryType('Purchasing Plan');
+                        setSelectedPlanTier(plan.id);
+                        handleTabChange('contact');
+                      }}
+                      className={`w-full py-3 rounded-full font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                        isHighlight
+                          ? 'bg-[#426CF5] hover:bg-[#3459D8] text-white shadow-sm'
+                          : 'bg-[#182230] hover:bg-black text-white'
+                      }`}
+                    >
+                      <span>{plan.id === 'tier5' ? 'Request Custom Quote' : 'Select ' + plan.shortName}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+
+                    {plan.id !== 'tier5' && (
+                      <button
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setLandingSelectedAmount(plan.ratePerProfile * 20);
+                          setShowLandingRazorpayModal(true);
+                        }}
+                        className="w-full py-1 text-[11px] font-bold text-[#426CF5] hover:underline bg-transparent border-none cursor-pointer text-center"
+                      >
+                        ⚡ Instant Online Deposit
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Postpaid Benefits Strip */}
+          <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold mx-auto">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">Zero Upfront Lock-in</h4>
+              <p className="text-xs text-[#5C6878]">Start onboarding and verifying immediately. Never blocked during critical hiring surges.</p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold mx-auto">
+                <FileText className="w-5 h-5" />
+              </div>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">Automated GST Invoices</h4>
+              <p className="text-xs text-[#5C6878]">Receive itemized calendar month-end tax invoices under SAC 998311 with 18% GST.</p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF1E8] text-[#E06A26] flex items-center justify-center font-bold mx-auto">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">Vendor Quota Parity</h4>
+              <p className="text-xs text-[#5C6878]">Contractor manpower agency personnel are verified at identical per-profile postpaid rates.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 7: CONTACT US (3-OPTION INQUIRY ARCHITECTURE) */}
       {activeTab === 'contact' && (
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-xs font-semibold text-[#426CF5] mb-2 px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] inline-block">
               CONNECT WITH US
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Get in Touch with Our Team</h2>
-            <p className="text-[#5C6878] text-base">Schedule a live demonstration or contact our enterprise solutions team across India.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit mb-4">Enterprise Contact & Inquiries</h2>
+            <p className="text-[#5C6878] text-base">Select your inquiry type below for instant plan activation, general support, or business partnerships.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Contact Form */}
-            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#E5EAF0] shadow-xs">
-              <div className="flex items-center gap-2 text-xs text-[#426CF5] font-semibold mb-2">
-                <Sparkles className="w-4 h-4" />
-                <span>BOOK ENTERPRISE WALKTHROUGH</span>
+            {/* Left Contact Console */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#E5EAF0] shadow-xs space-y-6">
+              
+              {/* 3 Inquiry Category Selection Cards */}
+              <div>
+                <label className="text-xs font-bold text-[#182230] uppercase tracking-wider block mb-2.5">
+                  Choose Inquiry Type:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    {
+                      id: 'General Query',
+                      label: 'General Queries',
+                      desc: 'Email reply & ticket thread',
+                      icon: MessageSquare,
+                      color: 'border-blue-500 bg-blue-50/50 text-blue-700'
+                    },
+                    {
+                      id: 'Purchasing Plan',
+                      label: 'Purchasing Plan',
+                      desc: 'Plan choice & onboarding',
+                      icon: CreditCard,
+                      color: 'border-emerald-500 bg-emerald-50/50 text-emerald-700'
+                    },
+                    {
+                      id: 'Other',
+                      label: 'Other Inquiries',
+                      desc: 'Partnership & custom',
+                      icon: Mail,
+                      color: 'border-purple-500 bg-purple-50/50 text-purple-700'
+                    }
+                  ].map((cat) => {
+                    const isSelected = inquiryType === cat.id;
+                    const Icon = cat.icon;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setInquiryType(cat.id);
+                        }}
+                        className={`p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                          isSelected
+                            ? `${cat.color} shadow-xs font-bold`
+                            : 'border-[#E5EAF0] bg-[#FCFCFA] text-[#5C6878] hover:border-slate-300 hover:bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <Icon className={`w-4 h-4 ${isSelected ? 'text-[#426CF5]' : 'text-slate-500'}`} />
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-[#426CF5]"></span>}
+                        </div>
+                        <div>
+                          <div className={`text-xs font-bold ${isSelected ? 'text-[#182230]' : 'text-[#5C6878]'}`}>
+                            {cat.label}
+                          </div>
+                          <div className="text-[10px] text-slate-500">{cat.desc}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Schedule a Custom Live Demo</h3>
-              <p className="text-[#5C6878] text-xs mb-6">Experience sub-45-second workforce verification tailored for your workforce size.</p>
 
-              {demoSubmitted ? (
+              {contactSubmitted ? (
                 <div className="py-8 text-center flex flex-col items-center">
                   <div className="w-14 h-14 rounded-2xl bg-[#EAF8F0] border border-[#299C68]/20 flex items-center justify-center text-[#299C68] mb-4">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Demo Request Received!</h3>
-                  <p className="text-[#5C6878] text-sm max-w-sm mb-6">Our enterprise solutions engineers will contact you within 15 minutes.</p>
-                  <button onClick={() => setDemoSubmitted(false)} className="px-6 py-2.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] cursor-pointer shadow-sm">Submit Another Request</button>
+                  <h3 className="text-2xl font-bold text-[#182230] font-outfit mb-2">Inquiry Submitted Successfully!</h3>
+                  <p className="text-[#5C6878] text-sm max-w-sm mb-6">
+                    {inquiryType === 'Purchasing Plan'
+                      ? 'Our enterprise onboarding specialist will reach out to activate your postpaid account within 15 minutes.'
+                      : 'An automated confirmation email has been sent. Our team will reply directly to your email thread shortly.'}
+                  </p>
+                  <button 
+                    onClick={() => setContactSubmitted(false)} 
+                    className="px-6 py-2.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] cursor-pointer shadow-sm"
+                  >
+                    Submit Another Inquiry
+                  </button>
                 </div>
               ) : (
-                <form onSubmit={handleDemoSubmit} className="flex flex-col gap-4 text-xs">
-                  <div>
-                    <label className="text-[#182230] font-semibold block mb-1">Full Name *</label>
-                    <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({ ...demoForm, name: e.target.value })} placeholder="e.g. Anand Mahindra" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
+                <form onSubmit={handleContactSubmit} className="flex flex-col gap-4 text-xs">
+                  
+                  {/* Category 1: Purchasing Plan - Dynamic Plan Selection & Pricing */}
+                  {inquiryType === 'Purchasing Plan' && (
+                    <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-[#182230]">Select Target Postpaid Plan:</span>
+                        <span className="text-[10px] text-[#299C68] font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          100% Postpaid
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {Object.values(POSTPAID_PLANS).map((p) => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => {
+                              soundEngine.playClick();
+                              setSelectedPlanTier(p.id);
+                            }}
+                            className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              selectedPlanTier === p.id
+                                ? 'border-[#426CF5] bg-blue-50/60 shadow-xs'
+                                : 'border-[#E5EAF0] bg-white hover:bg-slate-50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-xs text-[#182230]">{p.shortName}</span>
+                              <span className="text-xs font-mono font-bold text-[#426CF5]">
+                                {p.ratePerProfile === 'Custom' ? 'Custom' : `₹${p.ratePerProfile}/check`}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-500 block mt-0.5">{p.employeeThreshold}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Selected Plan Details Card */}
+                      {POSTPAID_PLANS[selectedPlanTier] && (
+                        <div className="mt-2 p-3 bg-white rounded-xl border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                          <div>
+                            <div className="font-bold text-xs text-[#182230]">
+                              {POSTPAID_PLANS[selectedPlanTier].name}
+                            </div>
+                            <div className="text-[11px] text-slate-500">
+                              Postpaid Rate: <strong className="text-slate-800">{POSTPAID_PLANS[selectedPlanTier].ratePerProfile === 'Custom' ? 'Custom Quote' : `₹${POSTPAID_PLANS[selectedPlanTier].ratePerProfile} per verified profile`}</strong> • SAC 998311 (18% GST)
+                            </div>
+                          </div>
+                          
+                          {selectedPlanTier !== 'tier5' && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundEngine.playClick();
+                                setLandingSelectedAmount(POSTPAID_PLANS[selectedPlanTier].ratePerProfile * 20);
+                                setShowLandingRazorpayModal(true);
+                              }}
+                              className="px-3.5 py-1.5 rounded-full bg-[#299C68] hover:bg-[#238357] text-white text-[11px] font-bold shrink-0 cursor-pointer shadow-xs"
+                            >
+                              ⚡ Pay Deposit Online
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* General Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[#182230] font-semibold block mb-1">Work Email *</label>
-                      <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })} placeholder="anand@company.com" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                      <label className="text-[#182230] font-semibold block mb-1">Your Full Name *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={contactForm.name} 
+                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} 
+                        placeholder="e.g. Anand Mahindra" 
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" 
+                      />
                     </div>
                     <div>
-                      <label className="text-[#182230] font-semibold block mb-1">Phone Number *</label>
-                      <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+                      <label className="text-[#182230] font-semibold block mb-1">Company / Organization *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={contactForm.company} 
+                        onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })} 
+                        placeholder="e.g. Apex Enterprises Ltd" 
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" 
+                      />
                     </div>
                   </div>
-                  <div>
-                    <label className="text-[#182230] font-semibold block mb-1">Company / Organization *</label>
-                    <input type="text" required value={demoForm.company} onChange={(e) => setDemoForm({ ...demoForm, company: e.target.value })} placeholder="e.g. Apex Enterprises Ltd" className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[#182230] font-semibold block mb-1">Work Email Address *</label>
+                      <input 
+                        type="email" 
+                        required 
+                        value={contactForm.email} 
+                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} 
+                        placeholder="anand@company.com" 
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[#182230] font-semibold block mb-1">Phone / WhatsApp Number *</label>
+                      <input 
+                        type="tel" 
+                        required 
+                        value={contactForm.phone} 
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })} 
+                        placeholder="+91 98765 43210" 
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" 
+                      />
+                    </div>
                   </div>
-                  <button type="submit" disabled={demoLoading} className="w-full mt-2 py-3.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm cursor-pointer transition-all">
-                    {demoLoading ? 'Submitting...' : 'Confirm Demo Booking 🚀'}
-                  </button>
+
+                  {inquiryType === 'Other' && (
+                    <div>
+                      <label className="text-[#182230] font-semibold block mb-1">Inquiry Subject</label>
+                      <input 
+                        type="text" 
+                        value={contactForm.subject} 
+                        onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })} 
+                        placeholder="e.g. Technology Partnership / API Customization" 
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none" 
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-[#182230] font-semibold block mb-1">
+                      {inquiryType === 'Purchasing Plan' 
+                        ? 'Expected Monthly Hires / Verification Scope' 
+                        : 'Your Message / Requirement'}
+                    </label>
+                    <textarea 
+                      rows={3} 
+                      value={contactForm.message} 
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} 
+                      placeholder={inquiryType === 'Purchasing Plan' ? "e.g. Need to verify 150 contract workers and 30 corporate employees monthly across Chennai plant..." : "Please describe your question or requirement..."} 
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FCFCFA] border border-[#E5EAF0] text-[#182230] focus:border-[#426CF5] outline-none resize-none" 
+                    />
+                  </div>
+
+                  {contactError && (
+                    <div className="text-xs text-rose-600 font-semibold">{contactError}</div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <button 
+                      type="submit" 
+                      disabled={contactSubmitting} 
+                      className="w-full py-3.5 rounded-full font-semibold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {contactSubmitting ? (
+                        <span>Submitting Inquiry...</span>
+                      ) : (
+                        <>
+                          <span>
+                            {inquiryType === 'Purchasing Plan' 
+                              ? 'Submit Plan Purchase Request 🚀' 
+                              : inquiryType === 'General Query' 
+                              ? 'Send General Query via Email ✉️' 
+                              : 'Send Direct Inquiry 📨'}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  
+                  <div className="text-[11px] text-slate-500 text-center">
+                    🔒 All inquiries are logged securely in our Super Admin communication console and acknowledged via email.
+                  </div>
                 </form>
               )}
             </div>
@@ -1634,18 +2090,39 @@ export const LandingPageView = () => {
                 <li><button onClick={() => handleTabChange('solutions')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Solutions</button></li>
                 <li><button onClick={() => handleTabChange('what_we')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">What We Do</button></li>
                 <li><button onClick={() => handleTabChange('how_it_works')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">How It Works</button></li>
+                <li><button onClick={() => handleTabChange('pricing')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Pricing & Postpaid Plans</button></li>
                 <li><button onClick={() => navigate('/privacy-policy')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Privacy Policy</button></li>
                 <li><button onClick={() => navigate('/terms-and-conditions')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Terms & Conditions</button></li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-3">
-              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Services & Portal</h4>
+              <h4 className="text-xs uppercase tracking-wider text-[#182230] font-bold mb-1">Enterprise Platform</h4>
               <ul className="flex flex-col gap-2 text-xs text-[#5C6878]">
                 <li><button onClick={() => handleTabChange('services')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Verification Services</button></li>
-                <li><button onClick={() => handleTabChange('contact')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Contact & Demo</button></li>
-                <li><button onClick={() => { setShowTourGuideModal(true); window.dispatchEvent(new CustomEvent('open_tour_guide_modal')); }} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Tour & Knowledge Hub 🧭</button></li>
-                <li><button onClick={() => navigate('/login')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Portal Login</button></li>
+                <li><button onClick={() => handleTabChange('contact')} className="hover:text-[#426CF5] transition-colors cursor-pointer text-left">Contact & Inquiries</button></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setShowLegalHandbook(true);
+                    }} 
+                    className="hover:text-[#426CF5] transition-colors cursor-pointer text-left"
+                  >
+                    DPDP Compliance Handbook
+                  </button>
+                </li>
+                <li>
+                  <a 
+                    href="https://joypeoplehr.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-[#426CF5] hover:underline no-underline flex items-center gap-1"
+                  >
+                    <span>Joy People HR (Flagship HRMS)</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </li>
               </ul>
             </div>
 

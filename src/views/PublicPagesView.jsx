@@ -54,13 +54,15 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
   const [activePage, setActivePage] = useState(initialPage);
   const [openFaq, setOpenFaq] = useState(0);
 
-  // Contact Form State
+  // 3-Option Inquiry Category & Contact Form State
+  const [inquiryType, setInquiryType] = useState('General Query'); // 'General Query' | 'Purchasing Plan' | 'Other'
+  const [selectedPlan, setSelectedPlan] = useState('tier2');
   const [contactForm, setContactForm] = useState({
     fullName: '',
     companyName: '',
     workEmail: '',
     mobileNumber: '',
-    subject: 'Enterprise Verification Inquiry',
+    subject: 'General Inquiry',
     message: '',
     preferredContact: 'email',
     consent: true
@@ -85,8 +87,12 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         company: contactForm.companyName,
         email: contactForm.workEmail,
         phone: contactForm.mobileNumber,
-        subject: contactForm.subject,
-        message: contactForm.message,
+        inquiry_type: inquiryType,
+        selected_plan: inquiryType === 'Purchasing Plan' ? selectedPlan : null,
+        subject: inquiryType === 'Purchasing Plan'
+          ? `Plan Purchase Request: ${POSTPAID_PLANS[selectedPlan]?.name || selectedPlan}`
+          : (contactForm.subject || `${inquiryType} Inquiry`),
+        message: contactForm.message || `Inquiry submitted for ${inquiryType}`,
         preferred_contact: contactForm.preferredContact
       });
       setContactSubmitted(true);
@@ -923,11 +929,121 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
+                    <form onSubmit={handleContactSubmit} className="space-y-5 text-left">
                       <div>
                         <h2 className="text-lg font-bold text-[#182230]">Direct Enterprise Inquiry Form</h2>
-                        <p className="text-xs text-[#5C6878] mt-0.5">Fill out your details to get a postpaid proposal or custom platform trial.</p>
+                        <p className="text-xs text-[#5C6878] mt-0.5">Select your inquiry type below for instant plan activation, general support, or business partnerships.</p>
                       </div>
+
+                      {/* 3 Inquiry Category Selection Cards */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#182230] uppercase tracking-wider mb-2">
+                          Choose Inquiry Type:
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                          {[
+                            {
+                              id: 'General Query',
+                              label: 'General Queries',
+                              desc: 'Direct email reply thread',
+                              icon: Mail,
+                              color: 'border-blue-500 bg-blue-50/50 text-blue-700'
+                            },
+                            {
+                              id: 'Purchasing Plan',
+                              label: 'Purchasing Plan',
+                              desc: 'Postpaid plan selection',
+                              icon: ShieldCheck,
+                              color: 'border-emerald-500 bg-emerald-50/50 text-emerald-700'
+                            },
+                            {
+                              id: 'Other',
+                              label: 'Other Inquiries',
+                              desc: 'Partnerships & custom',
+                              icon: Globe,
+                              color: 'border-purple-500 bg-purple-50/50 text-purple-700'
+                            }
+                          ].map((cat) => {
+                            const isSelected = inquiryType === cat.id;
+                            const Icon = cat.icon;
+                            return (
+                              <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => {
+                                  soundEngine.playClick();
+                                  setInquiryType(cat.id);
+                                }}
+                                className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                                  isSelected
+                                    ? `${cat.color} shadow-xs font-bold`
+                                    : 'border-[#E5EAF0] bg-[#FCFCFA] text-[#5C6878] hover:border-slate-300 hover:bg-white'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <Icon className={`w-4 h-4 ${isSelected ? 'text-[#426CF5]' : 'text-slate-500'}`} />
+                                  {isSelected && <span className="w-2 h-2 rounded-full bg-[#426CF5]"></span>}
+                                </div>
+                                <div>
+                                  <div className={`text-xs font-bold ${isSelected ? 'text-[#182230]' : 'text-[#5C6878]'}`}>
+                                    {cat.label}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500">{cat.desc}</div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Purchasing Plan Dynamic Tier Selector */}
+                      {inquiryType === 'Purchasing Plan' && (
+                        <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs text-[#182230]">Select Target Postpaid Plan:</span>
+                            <span className="text-[10px] text-[#299C68] font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                              100% Postpaid
+                            </span>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {Object.values(POSTPAID_PLANS).map((p) => (
+                              <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => {
+                                  soundEngine.playClick();
+                                  setSelectedPlan(p.id);
+                                }}
+                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                  selectedPlan === p.id
+                                    ? 'border-[#426CF5] bg-blue-50/60 shadow-xs'
+                                    : 'border-[#E5EAF0] bg-white hover:bg-slate-50'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="font-bold text-xs text-[#182230]">{p.shortName}</span>
+                                  <span className="text-xs font-mono font-bold text-[#426CF5]">
+                                    {p.ratePerProfile === 'Custom' ? 'Custom' : `₹${p.ratePerProfile}/check`}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] text-slate-500 block mt-0.5">{p.employeeThreshold}</span>
+                              </button>
+                            ))}
+                          </div>
+
+                          {POSTPAID_PLANS[selectedPlan] && (
+                            <div className="mt-2 p-3 bg-white rounded-xl border border-blue-200 text-xs">
+                              <div className="font-bold text-[#182230]">
+                                Selected: {POSTPAID_PLANS[selectedPlan].name}
+                              </div>
+                              <div className="text-[11px] text-slate-500 mt-0.5">
+                                Rate: <strong className="text-slate-800">{POSTPAID_PLANS[selectedPlan].ratePerProfile === 'Custom' ? 'Custom Negotiated' : `₹${POSTPAID_PLANS[selectedPlan].ratePerProfile} per verified profile`}</strong> • Automated Monthly GST Tax Invoice (SAC 998311)
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {contactError && (
                         <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
@@ -986,43 +1102,30 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {inquiryType === 'Other' && (
                         <div>
                           <label className="block text-xs font-bold text-[#182230] mb-1">Subject</label>
-                          <select
+                          <input
+                            type="text"
                             value={contactForm.subject}
                             onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                            placeholder="e.g. Technology Partnership / Custom Integration"
                             className="w-full px-4 py-2.5 rounded-xl border border-[#E5EAF0] bg-[#FCFCFA] text-sm text-[#182230] focus:border-[#426CF5] focus:outline-none"
-                          >
-                            <option value="Enterprise Verification Inquiry">Enterprise Verification Inquiry</option>
-                            <option value="Joy People HR Platform Demo">Joy People HR Platform Demo</option>
-                            <option value="Schedule a Verification Platform Demo">Schedule a Verification Platform Demo</option>
-                            <option value="Postpaid Pricing & Tariff Quote">Postpaid Pricing & Tariff Quote</option>
-                            <option value="Custom API Integration">Custom API Integration</option>
-                            <option value="Statutory CLRA Form XVI Compliance">Statutory CLRA Form XVI Compliance</option>
-                          </select>
+                          />
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold text-[#182230] mb-1">Preferred Response Mode</label>
-                          <select
-                            value={contactForm.preferredContact}
-                            onChange={(e) => setContactForm({ ...contactForm, preferredContact: e.target.value })}
-                            className="w-full px-4 py-2.5 rounded-xl border border-[#E5EAF0] bg-[#FCFCFA] text-sm text-[#182230] focus:border-[#426CF5] focus:outline-none"
-                          >
-                            <option value="email">Work Email</option>
-                            <option value="whatsapp">WhatsApp Message</option>
-                            <option value="phone">Direct Phone Call</option>
-                          </select>
-                        </div>
-                      </div>
+                      )}
 
                       <div>
-                        <label className="block text-xs font-bold text-[#182230] mb-1">Your Requirements / Message</label>
+                        <label className="block text-xs font-bold text-[#182230] mb-1">
+                          {inquiryType === 'Purchasing Plan' 
+                            ? 'Expected Monthly Hires / Verification Scope' 
+                            : 'Your Message / Requirement'}
+                        </label>
                         <textarea
                           rows="3"
                           value={contactForm.message}
                           onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                          placeholder="Please share your expected monthly verification volume, workforce category (factory labor, corporate, logistics), or specific checks needed..."
+                          placeholder={inquiryType === 'Purchasing Plan' ? "e.g. Monthly requirement of 200 factory workers and 40 staff across Sriperumbudur..." : "Please describe your question or requirement..."}
                           className="w-full px-4 py-2.5 rounded-xl border border-[#E5EAF0] bg-[#FCFCFA] text-sm text-[#182230] focus:border-[#426CF5] focus:outline-none"
                         />
                       </div>
@@ -1050,7 +1153,13 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                         ) : (
                           <>
                             <Send className="w-4 h-4" />
-                            <span>Submit Enterprise Inquiry</span>
+                            <span>
+                              {inquiryType === 'Purchasing Plan' 
+                                ? 'Submit Plan Purchase Request 🚀' 
+                                : inquiryType === 'General Query' 
+                                ? 'Submit General Query via Email ✉️' 
+                                : 'Submit Direct Inquiry 📨'}
+                            </span>
                           </>
                         )}
                       </button>
@@ -1477,7 +1586,6 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               </a>
               <button onClick={() => { setActivePage('how-it-works'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">How It Works</button>
               <button onClick={() => { setActivePage('pricing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Pricing & Plans</button>
-              <Link to="/login" className="text-left hover:text-[#426CF5] no-underline text-[#5C6878]">Portal Login</Link>
             </div>
           </div>
 
