@@ -2047,9 +2047,6 @@ export const AppProvider = ({ children }) => {
 
   // Add Candidate (Persists to PostgreSQL with Duplicate Validation)
   const addCandidate = async (candidateData) => {
-    const candidatePin = candidateData.portalPassword || candidateData.securityPin || '1234';
-    
-    // 🚫 Duplicate Prevention Check
     const cleanEmail = (candidateData.email || '').trim().toLowerCase();
     const cleanMobile = (candidateData.mobile || '').replace(/\s+/g, '');
     const cleanEmpId = (candidateData.empId || candidateData.employeeNumber || '').trim().toUpperCase();
@@ -2064,8 +2061,9 @@ export const AppProvider = ({ children }) => {
              (cleanEmpId && cEmpId === cleanEmpId);
     });
 
-    if (existingDuplicate) {
-      showToast(`⚠️ Duplicate candidate skipped: ${existingDuplicate.name} (${existingDuplicate.email || existingDuplicate.mobile}) already exists.`);
+    // If duplicate exists and not explicitly marked for bulk creation, return existing
+    if (existingDuplicate && !candidateData.isBulkImported) {
+      showToast(`ℹ️ Candidate record matched: ${existingDuplicate.name} (${existingDuplicate.email || existingDuplicate.mobile})`);
       return existingDuplicate.token || existingDuplicate.id;
     }
 

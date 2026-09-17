@@ -158,20 +158,20 @@ export const BulkEmployeeImportModal = ({
 
   // Documents Verification Checklist States
   const [checklist, setChecklist] = useState({
-    aadhaar: { enabled: true, title: 'Aadhaar Card (UIDAI OTP e-KYC)', category: 'Identity' },
-    pan: { enabled: true, title: 'PAN Card Verification (NSDL/ITD)', category: 'Tax / Identity' },
-    bankCheck: { enabled: true, title: 'Bank Account & IFSC (Penny Drop)', category: 'Financial' },
-    uan: { enabled: true, title: 'EPFO UAN Service History', category: 'Employment' },
-    education: { enabled: true, title: 'Academic Degree & Marksheets', category: 'Education' },
-    experience: { enabled: true, title: 'Previous Employer Relieving Letter', category: 'Employment' },
-    salarySlips: { enabled: true, title: 'Last 3 Months Salary Payslips', category: 'Financial' },
-    addressProof: { enabled: false, title: 'Permanent Address Proof', category: 'Address' },
-    criminalCheck: { enabled: true, title: 'Police Criminal Record Check', category: 'Legal / Police' },
-    courtLitigation: { enabled: true, title: 'Court Litigation / e-Courts Check', category: 'Legal' },
-    drivingLicense: { enabled: false, title: 'Driving License (MoRTH)', category: 'Identity' },
-    passport: { enabled: false, title: 'Passport Verification', category: 'Identity' },
-    specimenSignature: { enabled: true, title: 'Digital Specimen Signature', category: 'Compliance' },
-    dpdpConsent: { enabled: true, title: 'DPDP Act 2023 Statutory Consent Gate', category: 'Compliance' }
+    aadhaar: { enabled: true, required: true, title: 'Aadhaar Card (UIDAI OTP e-KYC)', category: 'Identity' },
+    pan: { enabled: true, required: true, title: 'PAN Card Verification (NSDL/ITD)', category: 'Tax / Identity' },
+    bankCheck: { enabled: true, required: true, title: 'Bank Account & IFSC (Penny Drop)', category: 'Financial' },
+    uan: { enabled: true, required: false, title: 'EPFO UAN Service History', category: 'Employment' },
+    education: { enabled: true, required: true, title: 'Academic Degree & Marksheets', category: 'Education' },
+    experience: { enabled: true, required: false, title: 'Previous Employer Relieving Letter', category: 'Employment' },
+    salarySlips: { enabled: true, required: false, title: 'Last 3 Months Salary Payslips', category: 'Financial' },
+    addressProof: { enabled: false, required: false, title: 'Permanent Address Proof', category: 'Address' },
+    criminalCheck: { enabled: true, required: false, title: 'Police Criminal Record Check', category: 'Legal / Police' },
+    courtLitigation: { enabled: true, required: false, title: 'Court Litigation / e-Courts Check', category: 'Legal' },
+    drivingLicense: { enabled: false, required: false, title: 'Driving License (MoRTH)', category: 'Identity' },
+    passport: { enabled: false, required: false, title: 'Passport Verification', category: 'Identity' },
+    specimenSignature: { enabled: true, required: true, title: 'Digital Specimen Signature', category: 'Compliance' },
+    dpdpConsent: { enabled: true, required: true, title: 'DPDP Act 2023 Statutory Consent Gate', category: 'Compliance' }
   });
 
   // Processing & Results
@@ -1928,35 +1928,56 @@ export const BulkEmployeeImportModal = ({
               </div>
             </div>
 
-            {/* 2. CHECKLIST ITEMS GRID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {Object.entries(checklist).map(([key, item]) => (
-                <label 
+                <div 
                   key={key}
-                  className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 select-none ${
+                  className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2.5 ${
                     item.enabled 
                       ? 'border-emerald-500 bg-emerald-50/40 shadow-xs' 
                       : 'border-slate-200 bg-white hover:bg-slate-50'
                   }`}
                 >
-                  <input
-                    type="checkbox"
-                    checked={item.enabled}
-                    onChange={(e) => {
-                      setChecklist(prev => ({
-                        ...prev,
-                        [key]: { ...prev[key], enabled: e.target.checked }
-                      }));
-                    }}
-                    className="accent-emerald-600 w-4 h-4 rounded mt-0.5 shrink-0 cursor-pointer"
-                  />
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-extrabold text-slate-900 text-xs">{item.title}</span>
+                  <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={item.enabled}
+                      onChange={(e) => {
+                        setChecklist(prev => ({
+                          ...prev,
+                          [key]: { ...prev[key], enabled: e.target.checked }
+                        }));
+                      }}
+                      className="accent-emerald-600 w-4 h-4 rounded mt-0.5 shrink-0 cursor-pointer"
+                    />
+                    <div className="space-y-0.5 flex-1">
+                      <span className="font-extrabold text-slate-900 text-xs block leading-tight">{item.title}</span>
+                      <span className="text-[10px] font-bold text-slate-400 block">{item.category}</span>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-400 block">{item.category}</span>
-                  </div>
-                </label>
+                  </label>
+
+                  {item.enabled && (
+                    <div className="pt-2 border-t border-emerald-200/60 flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-slate-500">Document Policy:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChecklist(prev => ({
+                            ...prev,
+                            [key]: { ...prev[key], required: !prev[key].required }
+                          }));
+                        }}
+                        className={`text-[10px] font-black px-2 py-0.5 rounded-md border cursor-pointer transition-all ${
+                          item.required 
+                            ? 'bg-rose-100 text-rose-800 border-rose-300 hover:bg-rose-200' 
+                            : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
+                        }`}
+                      >
+                        {item.required ? '🔴 Mandatory Document' : '🟡 Optional Document'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
