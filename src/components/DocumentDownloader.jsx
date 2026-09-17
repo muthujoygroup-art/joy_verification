@@ -171,11 +171,11 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
     ];
     const row = [
       candidate.name || 'Candidate',
-      candidate.empId || 'EMP-2026-88',
+      candidate.empId || candidate.employeeNumber || '—',
       candidate.designation || 'Associate',
       candidate.dept || 'Operations',
-      candidate.mobile || '',
-      candidate.aadhaarNo || '5489 1234 9876',
+      candidate.mobile || '—',
+      candidate.aadhaarNo || 'Pending',
       'Passed',
       'Passed',
       'Passed (99.4%)',
@@ -238,18 +238,18 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
           <h1>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</h1>
           <div class="sub">Executive Background Verification Summary • ISO 27001 Certified • DPDP Act 2023 Compliant</div>
         </div>
-        <p><strong>Candidate Name:</strong> ${candidate.name}</p>
-        <p><strong>Employee ID:</strong> ${candidate.empId || 'EMP-2026-88'} | <strong>Status:</strong> ${candidate.status || 'VERIFIED'}</p>
+        <p><strong>Candidate Name:</strong> ${candidate.name || 'Candidate'}</p>
+        <p><strong>Employee ID:</strong> ${candidate.empId || candidate.employeeNumber || '—'} | <strong>Status:</strong> ${candidate.status || 'VERIFIED'}</p>
         <table>
           <thead>
             <tr><th>Attribute</th><th>Verified Value</th><th>Status</th></tr>
           </thead>
           <tbody>
-            <tr><td>Identity (Aadhaar)</td><td>${candidate.aadhaarNo || '5489 1234 9876'}</td><td>Passed</td></tr>
-            <tr><td>Mobile OTP Auth</td><td>${candidate.mobile || '+91 98765 43210'}</td><td>Passed</td></tr>
+            <tr><td>Identity (Aadhaar)</td><td>${candidate.aadhaarNo || 'Pending'}</td><td>Passed</td></tr>
+            <tr><td>Mobile OTP Auth</td><td>${candidate.mobile || '—'}</td><td>Passed</td></tr>
             <tr><td>Biometric Face Match</td><td>99.4% AI Match Score</td><td>Passed</td></tr>
             <tr><td>Department & Role</td><td>${candidate.dept || 'Operations'} - ${candidate.designation || 'Associate'}</td><td>Verified</td></tr>
-            <tr><td>Verification Date</td><td>${candidate.verificationDate || '2026-08-24 10:30'}</td><td>Completed</td></tr>
+            <tr><td>Verification Date</td><td>${candidate.verificationDate || 'Completed'}</td><td>Completed</td></tr>
           </tbody>
         </table>
       </body>

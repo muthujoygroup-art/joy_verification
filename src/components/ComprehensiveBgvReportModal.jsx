@@ -131,13 +131,13 @@ export const ComprehensiveBgvReportModal = ({
       status: "Verified",
       isLinkedToMobile: true,
       isLinkedToPan: true,
-      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : "5489 1234 9876"),
-      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "XXXXXXXX9876"),
+      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : (c.aadhaarNo || "Pending")),
+      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "Pending"),
       nameOnAadhaar: aadhData.full_name || aadhData.name || c.name || "Candidate",
-      dob: aadhData.dob || c.dob || jf.dob || "1994-06-15",
-      gender: aadhData.gender || c.gender || "Male",
+      dob: aadhData.dob || c.dob || jf.dob || "—",
+      gender: aadhData.gender || c.gender || "—",
       address: aadhAddressFormatted,
-      timestamp: aadhData.verified_at || c.verificationDate || "2026-08-19 14:32:00",
+      timestamp: aadhData.verified_at || c.verificationDate || new Date().toISOString(),
       confidenceScore: aadhData.cct_trust_score || "99.9% (UIDAI Biometrically Authenticated)"
     },
     pan: {

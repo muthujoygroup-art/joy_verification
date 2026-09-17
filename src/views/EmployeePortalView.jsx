@@ -1309,7 +1309,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
                     <span className="badge badge-indigo text-[10px]">Requires 6-Digit UIDAI OTP</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                    Aadhaar Number: <code className="text-slate-900 font-mono font-bold">{candidate.aadhaarNo || '5489 1234 9876'}</code> • Fetches Official Govt Demographic Profile
+                    Aadhaar Number: <code className="text-slate-900 font-mono font-bold">{candidate.aadhaarNo || candidate.aadhaar_no || 'Pending / Link OTP Verification'}</code> • Fetches Official Govt Demographic Profile
                   </p>
                 </div>
               </div>

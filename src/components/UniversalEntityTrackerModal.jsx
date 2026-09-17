@@ -277,11 +277,11 @@ export const UniversalEntityTrackerModal = ({
               {/* Demographics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                 <div><span className="text-slate-400 block text-[10px]">Full Name:</span><strong className="text-slate-900 font-bold">{entity.name}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900">{entity.designation || 'Specialist'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900">{entity.dept || 'Engineering'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Mobile:</span><strong className="text-slate-900 font-mono">{entity.mobile}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Aadhaar No:</span><strong className="font-mono text-slate-800">{entity.aadhaarNo || '5489 1234 9876'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">PAN No:</span><strong className="font-mono text-slate-800">{entity.panNo || 'ABCDE1234F'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900">{entity.designation || 'Associate'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900">{entity.dept || 'Operations'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Mobile:</span><strong className="text-slate-900 font-mono">{entity.mobile || '—'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Aadhaar No:</span><strong className="font-mono text-slate-800">{entity.aadhaarNo ? `Aadhaar: ${entity.aadhaarNo}` : 'Aadhaar: Pending'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">PAN No:</span><strong className="font-mono text-slate-800">{entity.panNo || '—'}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Passcode (PIN):</span><strong className="font-mono text-emerald-700 font-bold">{entity.portalPassword || '1234'}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Sector:</span><span className="badge badge-indigo text-[9px] uppercase font-bold">{entity.employee_type || entity.employeeCategory || 'IT & Tech'}</span></div>
               </div>

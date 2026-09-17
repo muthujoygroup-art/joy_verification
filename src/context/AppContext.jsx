@@ -427,9 +427,19 @@ export const AppProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const defaultCompId = 'comp-joy';
+          const defaultCompId = 'COMP001';
           const clean = parsed
-            .filter(c => c && c.empId !== 'JOY-2026-001' && c.token !== 'cand-token-001' && !c.name?.toUpperCase().includes('MUTHUKUMAR'))
+            .filter(c => {
+              if (!c) return false;
+              const n = (c.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+              const id = (c.id || '').toLowerCase();
+              const tok = (c.token || '').toLowerCase();
+              // Purge legacy mock and test records
+              if (n.includes('muthukumar') || n.includes('karansharma') || n.includes('testbulk') || n.includes('realprofile') || n.includes('exceltestemployee')) return false;
+              if (id === 'cand-muthu-01' || id === 'cand-karan-903' || id === 'cand-1' || tok === 'tok-muthu-99') return false;
+              if (c.empId === 'JOY-2026-001' || c.empId === 'EMP-2026-88' || c.token === 'cand-token-001') return false;
+              return true;
+            })
             .map(c => {
               const verifs = c.verificationsCompleted || c.verifications_completed || {};
               const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
@@ -2375,6 +2385,62 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Live Candidate Roster Synchronizer from PostgreSQL DB
+  const refreshCandidates = async (companyId = null) => {
+    try {
+      const params = companyId ? { company_id: companyId } : {};
+      const cands = await api.getCandidates(params);
+      if (cands && Array.isArray(cands)) {
+        const mapCandidateObj = (c) => ({
+          id: c.id,
+          token: c.token,
+          name: c.name,
+          empId: c.emp_id || c.empId,
+          emp_id: c.emp_id || c.empId,
+          employeeNumber: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
+          employee_number: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
+          email: c.email,
+          mobile: c.mobile,
+          aadhaarNo: c.aadhaar_no || c.aadhaarNo,
+          aadhaar_no: c.aadhaar_no || c.aadhaarNo,
+          designation: c.designation,
+          dept: c.dept,
+          companyId: c.company_id || c.companyId,
+          company_id: c.company_id || c.companyId,
+          companyName: c.company_name || c.companyName || 'Joy Corporate Solutions Private Limited',
+          hrId: c.hr_id || c.hrId,
+          hr_id: c.hr_id || c.hrId,
+          status: c.status || 'Link Sent',
+          portalPassword: c.portal_password || c.portalPassword || '1234',
+          portal_password: c.portal_password || c.portalPassword || '1234',
+          employeeType: c.employee_type || c.employeeType || 'it_tech',
+          employee_type: c.employee_type || c.employeeType || 'it_tech',
+          dob: c.dob,
+          doj: c.doj,
+          age: c.age,
+          gender: c.gender,
+          maritalStatus: c.marital_status || c.maritalStatus,
+          verificationConfig: c.verification_config || c.verificationConfig || {},
+          verificationsCompleted: c.verifications_completed || c.verificationsCompleted || {},
+          faceImages: c.face_images || c.faceImages || { straight: null, left: null, right: null },
+          joiningFormData: c.joining_form_data || c.joiningFormData || {},
+          customFields: c.custom_fields || c.customFields || {},
+          documents: c.documents || [],
+          verificationDate: c.verification_date || c.verificationDate
+        });
+        const cleanList = cands.map(mapCandidateObj);
+        setCandidates(cleanList);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanList));
+        } catch (e) {}
+        return cleanList;
+      }
+    } catch (err) {
+      console.warn('Candidate refresh error:', err);
+    }
+    return candidates;
+  };
+
   // Update candidate verification state (Aadhaar, Mobile, Face, Complete)
   const updateCandidateVerification = async (token, stepName, stepData = true) => {
     setCandidates(prev => prev.map(cand => {
@@ -3848,6 +3914,7 @@ export const AppProvider = ({ children }) => {
       addHrUser,
       candidates,
       setCandidates,
+      refreshCandidates,
       addCandidate,
       bulkAddCandidates,
       updateCandidate,

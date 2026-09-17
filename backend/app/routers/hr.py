@@ -23,21 +23,41 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
     if hr_id:
         query = query.filter(Candidate.hr_id == hr_id)
     elif company_id:
-        query = query.filter(Candidate.company_id == company_id)
-    return query.order_by(Candidate.created_at.desc()).all()
+        comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+        target_id = comp.id if comp else company_id
+        query = query.filter((Candidate.company_id == target_id) | (Candidate.company_id == company_id))
+    candidates = query.order_by(Candidate.created_at.desc()).all()
+    for c in candidates:
+        if c.verifications_completed is None:
+            c.verifications_completed = {}
+        if c.face_images is None:
+            c.face_images = {"straight": None, "left": None, "right": None}
+        if c.verification_config is None:
+            c.verification_config = {}
+        if c.joining_form_data is None:
+            c.joining_form_data = {}
+        if c.custom_fields is None:
+            c.custom_fields = {}
+        if c.manual_checks is None:
+            c.manual_checks = {}
+        if not c.status:
+            c.status = "Link Sent"
+    return candidates
 
 def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, commit: bool = True):
     """
     Internal helper to create or update a candidate record in the database.
     Returns (candidate_instance, is_new_record: bool).
     """
-    # 🛡️ Resolve company and clean identifiers
+    # 🛡️ Resolve company and clean identifiers (Prioritize exact Company ID)
     comp = None
     if payload.company_id:
-        comp = db.query(Company).filter((Company.id == payload.company_id) | (Company.code == payload.company_id)).first()
+        comp = db.query(Company).filter(Company.id == payload.company_id).first()
+        if not comp:
+            comp = db.query(Company).filter(Company.code == payload.company_id).first()
     if not comp:
         comp = db.query(Company).first()
-    resolved_comp_id = comp.id if comp else (payload.company_id or "comp-joy")
+    resolved_comp_id = comp.id if comp else (payload.company_id or "COMP001")
 
     clean_email = (payload.email or "").strip().lower() or None
     clean_mobile = None
@@ -46,20 +66,22 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         clean_mobile = digits[-10:] if len(digits) >= 10 else digits
 
     # 🛡️ Strict Duplicate Resolution: Check if candidate already exists by email, mobile, or aadhaar
+    # Sample mobile numbers like 9876543210 should NOT cause duplicate collisions across different employees
+    is_sample_mobile = clean_mobile in ("9876543210", "1234567890", "0000000000")
     existing_cand = None
     if clean_email:
         existing_cand = db.query(Candidate).filter(
             (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
             Candidate.email.ilike(clean_email)
         ).first()
-    if not existing_cand and clean_mobile and len(clean_mobile) == 10:
+    if not existing_cand and clean_mobile and len(clean_mobile) == 10 and not is_sample_mobile:
         existing_cand = db.query(Candidate).filter(
             (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
             Candidate.mobile.endswith(clean_mobile)
         ).first()
     if not existing_cand and payload.aadhaar_no:
         clean_aadhaar = "".join(filter(str.isdigit, str(payload.aadhaar_no)))
-        if clean_aadhaar:
+        if clean_aadhaar and len(clean_aadhaar) == 12:
             existing_cand = db.query(Candidate).filter(
                 (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == payload.company_id),
                 Candidate.aadhaar_no == clean_aadhaar
@@ -119,7 +141,9 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.linked_in_url: existing_cand.linked_in_url = payload.linked_in_url
         if payload.github_url: existing_cand.github_url = payload.github_url
         if payload.portfolio_url: existing_cand.portfolio_url = payload.portfolio_url
-        if payload.twitter_url: existing_cand.twitter_url = payload.twitter_url
+        if payload.hr_id: existing_cand.hr_id = payload.hr_id
+        if existing_cand.status != "Verified":
+            existing_cand.status = "Link Sent"
         if not existing_cand.token:
             clean_n = (existing_cand.name or "cand").lower().replace(" ", "_")[:10]
             existing_cand.token = f"tok_{clean_n}_{uuid.uuid4().hex[:4]}"

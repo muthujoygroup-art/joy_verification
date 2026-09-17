@@ -2177,7 +2177,10 @@ export const BulkEmployeeImportModal = ({
             <div className="flex justify-end pt-2">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  if (onImportComplete) onImportComplete(importedCandidates);
+                  onClose();
+                }}
                 className="btn bg-slate-900 hover:bg-slate-800 text-white font-black text-xs py-2.5 px-6 rounded-xl cursor-pointer"
               >
                 Close & Return to Workstation ✓

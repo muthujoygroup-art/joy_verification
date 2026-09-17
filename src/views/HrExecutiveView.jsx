@@ -283,6 +283,7 @@ export const HrExecutiveView = () => {
     currentUser,
     candidates, 
     setCandidates,
+    refreshCandidates,
     addCandidate, 
     updateCandidate,
     deleteCandidate,
@@ -1763,7 +1764,7 @@ export const HrExecutiveView = () => {
                         <div className="min-w-0">
                           <h4 className="font-black text-slate-900 text-sm truncate">{cand.name}</h4>
                           <p className="text-[11px] text-slate-500 font-medium truncate">
-                            {cand.designation || 'Specialist'} • #{cand.empId || 'EMP-2026-88'}
+                            {(cand.designation || 'Associate') + (cand.empId || cand.employeeNumber ? ` • #${cand.empId || cand.employeeNumber}` : '')}
                           </p>
                         </div>
                       </div>
@@ -2020,11 +2021,11 @@ export const HrExecutiveView = () => {
                     <tr key={cand.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-4 px-4">
                         <div className="font-extrabold text-slate-900 text-sm">{cand.name}</div>
-                        <div className="text-slate-500 text-[11px] font-medium">{cand.designation || 'Specialist'} • #{cand.empId || 'EMP-2026-88'}</div>
+                        <div className="text-slate-500 text-[11px] font-medium">{(cand.designation || 'Associate') + (cand.empId || cand.employeeNumber ? ` • #${cand.empId || cand.employeeNumber}` : '')}</div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="text-slate-900 font-bold font-mono">{cand.mobile}</div>
-                        <div className="text-slate-500 text-[11px] font-mono">Aadhaar: {cand.aadhaarNo || '5489 1234 9876'}</div>
+                        <div className="text-slate-900 font-bold font-mono">{cand.mobile || '—'}</div>
+                        <div className="text-slate-500 text-[11px] font-mono">{cand.aadhaarNo ? `Aadhaar: ${cand.aadhaarNo}` : 'Aadhaar: Pending'}</div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex flex-wrap gap-1 max-w-xs text-[10px]">
@@ -5392,12 +5393,21 @@ export const HrExecutiveView = () => {
       {showBulkImportModal && (
         <BulkEmployeeImportModal 
           isOpen={showBulkImportModal}
-          onClose={() => setShowBulkImportModal(false)}
+          onClose={() => {
+            setShowBulkImportModal(false);
+            if (typeof refreshCandidates === 'function') {
+              refreshCandidates(currentCompany?.id);
+            }
+          }}
           activeHr={activeHr}
           currentCompany={currentCompany}
           onImportComplete={(results) => {
             setActiveMainSection('pipeline_dossiers');
             setActiveTab('pipeline');
+            setStatusFilter('All');
+            if (typeof refreshCandidates === 'function') {
+              refreshCandidates(currentCompany?.id);
+            }
           }}
         />
       )}
@@ -5501,7 +5511,7 @@ export const HrExecutiveView = () => {
                     Candidate Uploaded Compliance Documents Registry
                   </h3>
                   <p className="text-xs text-slate-400">
-                    {viewingUploadedDocsCandidate.name} • #{viewingUploadedDocsCandidate.empId || 'EMP-2026-88'} • {currentCompany?.name}
+                    {viewingUploadedDocsCandidate.name} • {viewingUploadedDocsCandidate.empId || viewingUploadedDocsCandidate.employeeNumber ? `#${viewingUploadedDocsCandidate.empId || viewingUploadedDocsCandidate.employeeNumber} • ` : ''}{currentCompany?.name}
                   </p>
                 </div>
               </div>
@@ -5690,7 +5700,7 @@ export const HrExecutiveView = () => {
                     Review Onboarding Submission: {reviewingCandidate.name}
                   </h3>
                   <p className="text-xs text-slate-400">
-                    #{reviewingCandidate.empId || 'EMP-2026-88'} • {reviewingCandidate.designation} • {currentCompany?.name}
+                    {reviewingCandidate.empId || reviewingCandidate.employeeNumber ? `#${reviewingCandidate.empId || reviewingCandidate.employeeNumber} • ` : ''}{reviewingCandidate.designation || 'Associate'} • {currentCompany?.name}
                   </p>
                 </div>
               </div>
@@ -5733,31 +5743,31 @@ export const HrExecutiveView = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Full Legal Name</span>
-                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.fullName || reviewingCandidate.name}</strong>
+                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.fullName || reviewingCandidate.name || '—'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Father's Name</span>
-                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.fatherName || 'Suresh Kumar'}</strong>
+                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.fatherName || reviewingCandidate.fatherName || '—'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Date of Birth</span>
-                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.dob || '1996-05-15'}</strong>
+                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.dob || reviewingCandidate.dob || '—'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Mobile Number</span>
-                    <strong className="text-slate-900">{reviewingCandidate.mobile} ✓</strong>
+                    <strong className="text-slate-900">{reviewingCandidate.mobile || '—'} ✓</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Aadhaar Number</span>
-                    <strong className="text-slate-900 font-mono">{reviewingCandidate.aadhaarNo || '5489 1234 9876'} ✓</strong>
+                    <strong className="text-slate-900 font-mono">{reviewingCandidate.aadhaarNo ? `Aadhaar: ${reviewingCandidate.aadhaarNo}` : 'Aadhaar: Pending'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">PAN Card Number</span>
-                    <strong className="text-slate-900 font-mono">{reviewingCandidate.submittedFormData?.panNo || 'ABCDE1234F'} ✓</strong>
+                    <strong className="text-slate-900 font-mono">{reviewingCandidate.submittedFormData?.panNo || reviewingCandidate.panNo || '—'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Bank Name & A/c</span>
-                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.bankName || 'HDFC Bank'} • ...9845</strong>
+                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.bankName || reviewingCandidate.bankName || '—'}{reviewingCandidate.submittedFormData?.accountNumber ? ` • ...${reviewingCandidate.submittedFormData.accountNumber.slice(-4)}` : ''}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Gratuity Nominee</span>

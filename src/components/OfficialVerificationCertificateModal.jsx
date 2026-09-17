@@ -242,11 +242,11 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Employee Code / ID</span>
-              <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || candidate.employeeNumber || 'EMP-2026-88'}</strong>
+              <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || candidate.employeeNumber || '—'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Designation</span>
-              <strong className="text-slate-900 font-bold">{candidate.designation || 'Specialist'}</strong>
+              <strong className="text-slate-900 font-bold">{candidate.designation || 'Associate'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Employer Enterprise</span>
