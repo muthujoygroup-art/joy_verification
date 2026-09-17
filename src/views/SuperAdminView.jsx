@@ -1744,25 +1744,25 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <div className="space-y-6 animate-tab-switch">
           
           {/* 🌟 UNIVERSAL PROFILE ID & OMNISEARCH TRACKER HERO */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-slate-900 text-white border-2 border-indigo-500 shadow-xl space-y-4">
+          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 text-slate-900 border-2 border-indigo-200 shadow-md space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-md bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
+                  <span className="px-3 py-1 rounded-md bg-emerald-600 text-white font-black text-xs uppercase tracking-wider shadow-xs">
                     ⚡ Global Profile ID & User Tracker
                   </span>
-                  <span className="text-xs font-mono font-bold text-indigo-200">
+                  <span className="text-xs font-mono font-bold text-indigo-700">
                     COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-slate-700 font-semibold mt-1">
                   Enter any Unique ID, Company Name, HR Name, or Candidate Name to locate their 360° record instantly.
                 </p>
               </div>
 
               {/* Quick Filter Presets */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-slate-300 font-bold text-xs">Quick Presets:</span>
+                <span className="text-slate-700 font-bold text-xs">Quick Presets:</span>
                 <button
                   type="button"
                   onClick={() => setGlobalSearchQuery('COMP001')}
@@ -3634,29 +3634,29 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
 
             {/* LIVE ASYNCHRONOUS WEBHOOK & API CALLBACK URL MANAGER */}
-            <div className="glass-panel p-6 border-2 border-indigo-500/40 bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-950 text-white rounded-3xl shadow-xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-800/60 pb-3">
+            <div className="p-6 border-2 border-indigo-200/80 bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 text-slate-900 rounded-3xl shadow-md space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-200/60 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-400/30">
+                  <div className="p-2.5 bg-indigo-100 text-indigo-700 rounded-xl border border-indigo-300">
                     <Server className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="badge bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 text-[10px] font-black">
+                      <span className="badge bg-indigo-100 text-indigo-800 border border-indigo-300 text-[10px] font-black">
                         WEBHOOK & CALLBACK ROUTER
                       </span>
                       <span className="badge badge-emerald text-[10px] font-bold">Active & Listening 🟢</span>
                     </div>
-                    <h4 className="font-black text-white text-base mt-0.5">Government & Gateway Asynchronous Callback URL</h4>
+                    <h4 className="font-black text-slate-900 text-base mt-0.5">Government & Gateway Asynchronous Callback URL</h4>
                   </div>
                 </div>
 
-                <span className="text-[11px] font-mono text-indigo-200 bg-indigo-950/80 px-3 py-1.5 rounded-xl border border-indigo-800 self-start sm:self-auto">
+                <span className="text-[11px] font-mono text-indigo-800 bg-indigo-100 px-3 py-1.5 rounded-xl border border-indigo-300 self-start sm:self-auto font-bold">
                   POST /api/verification/webhook/callback
                 </span>
               </div>
 
-              <p className="text-xs text-slate-300 font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
                 External government registries (UIDAI, NSDL, NPCI), communication gateways (WhatsApp Meta API), and payment switches (Razorpay) dispatch real-time asynchronous verification payloads to this endpoint. You can dynamically modify, test, or copy this URL below.
               </p>
 
@@ -4114,20 +4114,20 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <div className="space-y-6 animate-fadeIn">
           
           {/* Executive Top Banner */}
-          <div className="glass-panel p-6 sm:p-8 bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 text-white rounded-3xl border-2 border-amber-500/40 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-amber-50 via-orange-50 to-slate-50 text-slate-900 rounded-3xl border-2 border-amber-200/80 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200/60 pb-4">
               <div className="flex items-center gap-3.5">
-                <div className="p-3 rounded-2xl bg-amber-500/30 border border-amber-400/40 text-amber-300">
+                <div className="p-3 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 shadow-xs">
                   <FileDown className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="badge badge-amber text-[10px] font-black uppercase">
+                    <span className="badge bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black uppercase">
                       Executive Intelligence
                     </span>
-                    <span className="text-xs text-slate-300 font-mono">PDF • Excel • Word • Automated Dispatch</span>
+                    <span className="text-xs text-slate-600 font-bold font-mono">PDF • Excel • Word • Automated Dispatch</span>
                   </div>
-                  <h3 className="text-lg sm:text-2xl font-black text-white mt-1">
+                  <h3 className="text-lg sm:text-2xl font-black text-slate-900 mt-1">
                     Platform Master Reports & Analytics Hub
                   </h3>
                 </div>
@@ -4137,7 +4137,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <button
                   type="button"
                   onClick={() => setShowUniversalExportModal(true)}
-                  className="btn bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all rounded-xl"
+                  className="btn bg-amber-600 hover:bg-amber-700 text-white text-xs py-2.5 px-4 font-black shadow-md flex items-center gap-2 cursor-pointer transition-all rounded-xl"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Batch Export Wizard 🚀</span>
@@ -4577,14 +4577,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
 
           {/* 📧 SECTION 3: AUTOMATED REPORT SUBSCRIPTION SETTINGS */}
-          <div className="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-50 to-slate-50 text-slate-900 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-600/40 text-indigo-300 border border-indigo-400/40">
+              <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 border border-indigo-300">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
-                <strong className="text-sm font-black text-white block">Automated Weekly Executive Report Email Digest</strong>
-                <p className="text-xs text-slate-300 font-medium">Automatically dispatches executive platform summaries to <code className="text-amber-300">admin@joycorporatesolutions.com</code> every Monday at 09:00 AM UTC.</p>
+                <strong className="text-sm font-black text-slate-900 block">Automated Weekly Executive Report Email Digest</strong>
+                <p className="text-xs text-slate-600 font-medium mt-0.5">Automatically dispatches executive platform summaries to <code className="text-indigo-800 bg-indigo-100 px-1.5 py-0.5 rounded font-bold font-mono">admin@joycorporatesolutions.com</code> every Monday at 09:00 AM UTC.</p>
               </div>
             </div>
 
@@ -4599,9 +4599,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   }}
                   className="sr-only peer" 
                 />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
               </label>
-              <span className="text-xs font-bold text-slate-300 font-mono">
+              <span className="text-xs font-bold text-slate-700 font-mono">
                 {reportAutoEmailEnabled ? 'ACTIVE (ENABLED)' : 'PAUSED'}
               </span>
             </div>
@@ -4768,61 +4768,61 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           <div className="space-y-6">
             {/* 1. TOP TELEMETRY KPI METRICS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+              <div className="p-5 rounded-2xl bg-white text-slate-900 border border-slate-200 shadow-xs relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total System Errors</span>
-                  <div className="p-2 rounded-xl bg-slate-800 text-slate-300">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Total System Errors</span>
+                  <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
                     <Activity className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white">{totalLogsCount}</span>
-                  <span className="text-xs text-slate-400">Recorded across platform</span>
+                  <span className="text-3xl font-black text-slate-900">{totalLogsCount}</span>
+                  <span className="text-xs text-slate-500 font-medium">Recorded across platform</span>
                 </div>
               </div>
 
-              <div className={`p-5 rounded-2xl border shadow-sm relative overflow-hidden ${
+              <div className={`p-5 rounded-2xl border shadow-xs relative overflow-hidden ${
                 criticalUnresolved > 0 
-                  ? 'bg-gradient-to-br from-rose-950 via-rose-900 to-slate-950 text-white border-rose-800' 
-                  : 'bg-gradient-to-br from-slate-900 to-slate-950 text-white border-slate-800'
+                  ? 'bg-rose-50/80 text-rose-950 border-rose-200' 
+                  : 'bg-white text-slate-900 border-slate-200'
               }`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
-                    {criticalUnresolved > 0 && <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>}
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-700 flex items-center gap-1.5">
+                    {criticalUnresolved > 0 && <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>}
                     Unresolved Critical Issues
                   </span>
-                  <div className="p-2 rounded-xl bg-rose-900/60 text-rose-300">
+                  <div className="p-2 rounded-xl bg-rose-100 text-rose-700">
                     <AlertTriangle className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-rose-200">{criticalUnresolved}</span>
-                  <span className="text-xs text-rose-300/80">Require Admin attention</span>
+                  <span className="text-3xl font-black text-rose-800">{criticalUnresolved}</span>
+                  <span className="text-xs text-rose-600 font-medium">Require Admin attention</span>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+              <div className="p-5 rounded-2xl bg-emerald-50/60 text-slate-900 border border-emerald-200 shadow-xs relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Resolution Rate</span>
-                  <div className="p-2 rounded-xl bg-emerald-950 text-emerald-300">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Resolution Rate</span>
+                  <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-emerald-300">{resolutionRate}%</span>
-                  <span className="text-xs text-slate-400">{solvedCount} of {totalLogsCount} solved</span>
+                  <span className="text-3xl font-black text-emerald-700">{resolutionRate}%</span>
+                  <span className="text-xs text-slate-600 font-medium">{solvedCount} of {totalLogsCount} solved</span>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+              <div className="p-5 rounded-2xl bg-sky-50/60 text-slate-900 border border-sky-200 shadow-xs relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-sky-400">Portal Coverage</span>
-                  <div className="p-2 rounded-xl bg-sky-950 text-sky-300">
+                  <span className="text-xs font-bold uppercase tracking-wider text-sky-800">Portal Coverage</span>
+                  <div className="p-2 rounded-xl bg-sky-100 text-sky-700">
                     <Layers className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-2xl font-black text-sky-200">7 Active Portals</span>
+                  <span className="text-2xl font-black text-sky-900">7 Active Portals</span>
                   <span className="text-[10px] text-slate-400">24/7 Monitored</span>
                 </div>
               </div>
@@ -5841,25 +5841,25 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <div className="space-y-6 animate-fadeIn">
           
           {/* Master Messaging Banner */}
-          <div className="glass-panel p-6 sm:p-8 bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white rounded-3xl border-2 border-emerald-500/40 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 text-slate-900 rounded-3xl border-2 border-emerald-200/80 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-200/60 pb-4">
               <div className="flex items-center gap-3.5">
-                <div className="p-3 rounded-2xl bg-emerald-600/40 border border-emerald-400/40 text-emerald-300">
+                <div className="p-3 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-700 shadow-xs">
                   <MessageSquare className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="badge badge-emerald text-[10px] font-black uppercase tracking-wider">
+                    <span className="badge bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-black uppercase tracking-wider">
                       Upstream Messaging Infrastructure
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30 text-[10px] font-mono font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-mono font-bold">
                       🔒 SuperAdmin Sovereign Control
                     </span>
                   </div>
-                  <h3 className="text-lg sm:text-2xl font-black text-white mt-1">
+                  <h3 className="text-lg sm:text-2xl font-black text-slate-900 mt-1">
                     Meta WhatsApp Cloud API & Carrier SMS Gateways
                   </h3>
-                  <p className="text-xs text-emerald-200/90 font-medium">
+                  <p className="text-xs sm:text-sm text-slate-700 font-semibold mt-1 max-w-3xl">
                     Configure official Meta Business Cloud API & Telecom Carrier SMS (Twilio/AWS SNS/DLT) for automated candidate magic onboarding links, Aadhaar OTPs, and BGV verification clearance.
                   </p>
                 </div>
@@ -5869,10 +5869,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <button
                   type="button"
                   onClick={() => setShowGatewaysModal(true)}
-                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold bg-white/10 hover:bg-white/20 text-white border-white/20 cursor-pointer"
+                  className="btn bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer rounded-xl transition-all"
                   title="Open Quick Popup Modal"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
+                  <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Open Popup Modal</span>
                 </button>
 
@@ -6419,30 +6419,30 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <div className="space-y-6 animate-fadeIn">
           
           {/* Master Banner */}
-          <div className="glass-panel p-6 sm:p-8 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white rounded-3xl border-2 border-purple-500/40 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-purple-50 via-indigo-50 to-slate-50 text-slate-900 rounded-3xl border-2 border-purple-200/80 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-200/60 pb-4">
               <div className="flex items-center gap-3.5">
-                <div className="p-3 rounded-2xl bg-purple-600/40 border border-purple-400/40 text-purple-300">
+                <div className="p-3 rounded-2xl bg-purple-100 border border-purple-300 text-purple-700 shadow-xs">
                   <Scale className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="badge badge-purple text-[10px] font-black uppercase">
+                    <span className="badge bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-black uppercase">
                       Master Regulatory Governance
                     </span>
-                    <span className="text-xs text-slate-300 font-mono">DPDP Act 2023 • ISO 27001:2022</span>
+                    <span className="text-xs text-slate-600 font-bold font-mono">DPDP Act 2023 • ISO 27001:2022</span>
                   </div>
-                  <h3 className="text-lg sm:text-2xl font-black text-white mt-1">
+                  <h3 className="text-lg sm:text-2xl font-black text-slate-900 mt-1">
                     Statutory Compliance & Legal Telemetry Hub
                   </h3>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <button
                   type="button"
                   onClick={() => handleOpenAddDocModal()}
-                  className="btn bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
+                  className="btn bg-purple-600 hover:bg-purple-700 text-white text-xs py-2.5 px-4 font-black shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Document / Act 📜</span>
@@ -6452,7 +6452,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   type="button"
                   onClick={handleSaveLegalGovernance}
                   disabled={isSavingLegal}
-                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
+                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 px-4 font-black shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-98 rounded-xl"
                 >
                   {isSavingLegal ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   <span>{isSavingLegal ? 'Saving...' : 'Save All Changes 💾'}</span>
@@ -6461,15 +6461,15 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <button
                   type="button"
                   onClick={() => setShowLegalHandbook(true)}
-                  className="btn btn-superadmin text-xs py-2.5 px-4 font-black shadow-lg flex items-center gap-2 cursor-pointer rounded-xl"
+                  className="btn bg-white hover:bg-purple-50 text-purple-700 border border-purple-300 text-xs py-2.5 px-4 font-black shadow-sm flex items-center gap-2 cursor-pointer rounded-xl transition-all"
                 >
-                  <BookOpen className="w-4 h-4" />
+                  <BookOpen className="w-4 h-4 text-purple-600" />
                   <span>Compliance Handbook 📖</span>
                 </button>
               </div>
             </div>
 
-            <p className="text-xs text-slate-200 font-medium leading-relaxed max-w-3xl">
+            <p className="text-xs sm:text-sm text-slate-700 font-semibold leading-relaxed max-w-3xl">
               Centralized legal compliance station governing statutory policies, custom compliance acts, and master regulatory certificates visible across all Companies and HR recruiter portals.
             </p>
           </div>

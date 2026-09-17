@@ -107,40 +107,38 @@ export const MyWorkspacePersonalView = ({ activeTab = 'profile', userRole = 'hre
     <div className="space-y-6 animate-fadeIn text-slate-900">
 
       {/* TOP WORKSPACE BANNER */}
-      <div className="glass-panel p-5 sm:p-6 border-indigo-200 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-2xl shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        
+      <div className="p-5 sm:p-6 border-2 border-indigo-200/80 bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 text-slate-900 rounded-2xl shadow-md relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-inner font-black text-xl">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md font-black text-xl">
               {userName.charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl sm:text-2xl font-black text-white">{userName}</h2>
-                <span className="badge bg-indigo-500/30 text-indigo-200 border border-indigo-400/40 text-[10px] font-black uppercase tracking-wider">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900">{userName}</h2>
+                <span className="badge bg-indigo-100 text-indigo-800 border border-indigo-300 text-[10px] font-black uppercase tracking-wider">
                   {roleTitleMap[currentRole] || roleTitleMap.hrexecutive}
                 </span>
               </div>
-              <p className="text-xs text-indigo-200/90 font-medium mt-1 flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <p className="text-xs text-slate-700 font-bold mt-1 flex items-center gap-2">
+                <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span>{companyName}</span>
               </p>
             </div>
           </div>
 
           {/* Quick Profile ID Badge */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-2xl flex items-center justify-between gap-3 shrink-0 sm:self-center">
+          <div className="bg-white border border-indigo-200 p-3 rounded-2xl flex items-center justify-between gap-3 shrink-0 sm:self-center shadow-xs">
             <div>
-              <span className="text-[9px] font-black uppercase text-indigo-300 tracking-wider block">Unique Profile ID</span>
-              <span className="text-xs font-mono font-bold text-amber-300">{uniqueId}</span>
+              <span className="text-[9px] font-black uppercase text-indigo-800 tracking-wider block">Unique Profile ID</span>
+              <span className="text-xs font-mono font-bold text-indigo-900">{uniqueId}</span>
             </div>
             <button
               onClick={handleCopyProfileId}
-              className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-all cursor-pointer"
               title="Copy Profile ID"
             >
-              {copiedId ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copiedId ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>

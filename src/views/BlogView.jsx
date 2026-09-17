@@ -324,22 +324,22 @@ By performing real-time authenticated service timeline audits against official E
           </article>
 
           {/* Bottom Enterprise CTA Banner */}
-          <div className="glass-panel p-6 sm:p-8 bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-3xl shadow-xl space-y-4">
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 text-slate-900 border-2 border-indigo-200/80 rounded-3xl shadow-md space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-indigo-300">Enterprise Compliance Solution</span>
+              <Sparkles className="w-5 h-5 text-indigo-600" />
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-800">Enterprise Compliance Solution</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900">
               Ready to Automate Labor Verification & Eliminate Ghost Workers?
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed font-medium">
+            <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed font-semibold">
               Start creating verified digital labor profiles with instant Aadhaar KYC, police checks, and CLRA statutory compliance in under 45 seconds.
             </p>
             <div className="pt-2 flex flex-wrap gap-3">
-              <Link to="/#pricing" className="btn btn-superadmin text-xs py-2.5 px-5 font-black">
+              <Link to="/#pricing" className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2.5 px-5 font-black shadow-md rounded-xl">
                 <span>View Prepaid Credit Plans ⚡</span>
               </Link>
-              <Link to="/" className="btn btn-secondary text-xs py-2.5 px-5 font-bold bg-white/10 hover:bg-white/20 text-white border-white/20">
+              <Link to="/" className="btn bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-300 text-xs py-2.5 px-5 font-bold shadow-xs rounded-xl">
                 <span>Explore Live Platform</span>
               </Link>
             </div>
