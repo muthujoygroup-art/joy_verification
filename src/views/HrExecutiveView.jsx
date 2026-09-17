@@ -409,18 +409,18 @@ export const HrExecutiveView = () => {
         name: currentUser.name || currentUser.userName || 'HR Recruiter',
         email: currentUser.email || '',
         dept: currentUser.dept || 'Human Resources',
-        companyId: currentUser.companyId || 'comp-joy',
+        companyId: currentUser.companyId || 'COMP001',
         companyName: currentUser.companyName || 'Joy Corporate Solutions Private Limited',
         hrCode: currentUser.hrCode || currentUser.code || currentUser.id || 'COMP001HR001'
       }
     : (Array.isArray(hrUsers) && hrUsers.length > 0)
     ? (hrUsers.find(h => h.email?.toLowerCase() === currentUser?.email?.toLowerCase()) || hrUsers[0])
-    : { id: 'hr-1', companyId: 'comp-joy', name: 'HR Recruiter', dept: 'Human Resources' };
+    : { id: 'hr-1', companyId: 'COMP001', name: 'HR Recruiter', dept: 'Human Resources' };
 
   const currentCompany = (Array.isArray(companies) && companies.length > 0)
     ? (companies.find(c => c.id === activeHr.companyId || c.email === activeHr.companyEmail || c.name === activeHr.companyName) || companies[0])
     : {
-        id: activeHr.companyId || 'comp-joy',
+        id: activeHr.companyId || 'COMP001',
         name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
         code: 'COMP001'
       };

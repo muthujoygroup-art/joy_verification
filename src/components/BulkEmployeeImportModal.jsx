@@ -122,10 +122,10 @@ export const BulkEmployeeImportModal = ({
   const targetCompany = currentCompany || (companies && (
     companies.find(c => c.id === currentUser?.companyId || c.code === currentUser?.companyCode || c.name === currentUser?.companyName) ||
     companies[0]
-  )) || { id: 'comp-joy', name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED' };
+  )) || { id: 'COMP001', name: 'Joy Corporate Solutions Private Limited' };
 
-  const targetCompanyId = targetCompany.id || currentUser?.companyId || 'comp-joy';
-  const targetCompanyName = targetCompany.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
+  const targetCompanyId = targetCompany.id || currentUser?.companyId || 'COMP001';
+  const targetCompanyName = targetCompany.name || 'Joy Corporate Solutions Private Limited';
   const targetHrId = activeHr?.id || currentUser?.id || (hrUsers && hrUsers[0]?.id) || 'HR001';
 
   // Step 1: Upload & Data | Step 2: Verification Checklist & Dispatch | Step 3: Success Summary
