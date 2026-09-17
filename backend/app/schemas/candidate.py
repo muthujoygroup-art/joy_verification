@@ -76,7 +76,7 @@ class CandidateBase(BaseModel):
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Any] = None
     specimen_signature: Optional[str] = None
-    documents: Optional[List[CandidateDocumentResponse]] = []
+    documents: Optional[List[Any]] = []
 
     model_config = ConfigDict(from_attributes=True)
 

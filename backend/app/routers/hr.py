@@ -57,7 +57,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
             comp = db.query(Company).filter(Company.code == payload.company_id).first()
     if not comp:
         comp = db.query(Company).first()
-    resolved_comp_id = comp.id if comp else (payload.company_id or "COMP001")
+    resolved_comp_id = payload.company_id or (comp.id if comp else "comp-joy")
 
     clean_email = (payload.email or "").strip().lower() or None
     clean_mobile = None
