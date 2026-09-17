@@ -199,12 +199,17 @@ export const App = () => {
                 <Route path="/" element={<LandingPageView />} />
                 <Route path="/features" element={<PublicPagesView initialPage="features" />} />
                 <Route path="/solutions" element={<PublicPagesView initialPage="solutions" />} />
+                <Route path="/services" element={<PublicPagesView initialPage="services" />} />
                 <Route path="/how-it-works" element={<PublicPagesView initialPage="how-it-works" />} />
                 <Route path="/about" element={<PublicPagesView initialPage="about" />} />
                 <Route path="/contact" element={<PublicPagesView initialPage="contact" />} />
                 <Route path="/resources" element={<PublicPagesView initialPage="resources" />} />
                 <Route path="/faq" element={<PublicPagesView initialPage="faq" />} />
                 <Route path="/pricing" element={<PublicPagesView initialPage="pricing" />} />
+                <Route path="/privacy-policy" element={<PublicPagesView initialPage="privacy-policy" />} />
+                <Route path="/privacy" element={<PublicPagesView initialPage="privacy-policy" />} />
+                <Route path="/terms-and-conditions" element={<PublicPagesView initialPage="terms-and-conditions" />} />
+                <Route path="/terms" element={<PublicPagesView initialPage="terms-and-conditions" />} />
 
                 {/* 2. Single-Role Dedicated Login Routes */}
                 <Route path="/login" element={<LoginView />} />

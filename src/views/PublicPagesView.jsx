@@ -104,12 +104,13 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
   const navLinks = [
     { id: 'features', label: 'Features', path: '/features' },
     { id: 'solutions', label: 'Solutions', path: '/solutions' },
+    { id: 'services', label: 'Services', path: '/services' },
     { id: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
+    { id: 'pricing', label: 'Pricing', path: '/pricing' },
     { id: 'about', label: 'About Us', path: '/about' },
     { id: 'resources', label: 'Resources', path: '/resources' },
     { id: 'faq', label: 'FAQ', path: '/faq' },
-    { id: 'contact', label: 'Contact Us', path: '/contact' },
-    { id: 'pricing', label: 'Pricing', path: '/pricing' }
+    { id: 'contact', label: 'Contact Us', path: '/contact' }
   ];
 
   return (
@@ -204,115 +205,115 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                 Comprehensive Capability Matrix
               </div>
               <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-                Platform Features Built for Every Workforce Need
+                Platform Features Built for Instant, Error-Free Verification
               </h1>
               <p className="text-base text-[#5C6878] leading-relaxed">
-                Explore our unified suite of verification tools, profile management modules, and statutory compliance controls designed for enterprise reliability.
+                Explore our unified suite of verification tools, clean recruiter workstations, and statutory compliance controls designed for modern enterprise reliability.
               </p>
             </div>
 
             {/* Feature Modules Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               
-              {/* Module 1: Workforce Profile Management */}
+              {/* Module 1: Easy Verification Process */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold">
-                  <UserCheck className="w-6 h-6" />
+                  <Zap className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">Workforce Profile Management</h2>
+                <h2 className="text-xl font-bold text-[#182230]">Easy & Frictionless Verification</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Centralize employee and contractor identity records with structured audit trails and live status tracking.
+                  Zero app installations needed. Workers receive a PIN-secured magic link via WhatsApp, SMS, or Email and complete onboarding in under 2 minutes.
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ Create & update workforce profiles</li>
-                  <li className="flex items-center gap-2">✓ Search, filter, and export authorized records</li>
-                  <li className="flex items-center gap-2">✓ Version history & lifecycle tracking</li>
-                  <li className="flex items-center gap-2">✓ Role-scoped profile access control</li>
+                  <li className="flex items-center gap-2">✓ Automated WhatsApp, SMS & Email dispatch</li>
+                  <li className="flex items-center gap-2">✓ Secure candidate PIN gate authentication</li>
+                  <li className="flex items-center gap-2">✓ Fast 2-minute mobile-first interface</li>
+                  <li className="flex items-center gap-2">✓ Multi-lingual UI for pan-India workforces</li>
                 </ul>
               </div>
 
-              {/* Module 2: Identity & Document Verification */}
+              {/* Module 2: Complete Employee Verification */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">Identity & Document Verification</h2>
+                <h2 className="text-xl font-bold text-[#182230]">Complete 360° Candidate BGV</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Direct rails integration for Aadhaar, PAN, DigiLocker, Bank Accounts, and Driving Licenses with automated data masking.
+                  Direct government and banking registry rails validating national ID, past employer tenures, active bank accounts, and criminal records in parallel.
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ Aadhaar OTP verification via authorized rails</li>
-                  <li className="flex items-center gap-2">✓ PAN identity validation via NSDL</li>
-                  <li className="flex items-center gap-2">✓ Bank account ₹1 IMPS penny drop match</li>
-                  <li className="flex items-center gap-2">✓ DigiLocker automated document retrieval</li>
+                  <li className="flex items-center gap-2">✓ UIDAI Aadhaar OTP verification & e-KYC</li>
+                  <li className="flex items-center gap-2">✓ NSDL PAN 2.0 active status validation</li>
+                  <li className="flex items-center gap-2">✓ EPFO UAN moonlighting tenure detection</li>
+                  <li className="flex items-center gap-2">✓ NPCI IMPS ₹1 penny drop account match</li>
                 </ul>
               </div>
 
-              {/* Module 3: HR Recruiter Management */}
+              {/* Module 3: Neat HR Management */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F6F0FE] text-[#795290] flex items-center justify-center font-bold">
                   <Users className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">HR Recruiter Workstation</h2>
+                <h2 className="text-xl font-bold text-[#182230]">Neat HR Recruiter Workstation</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Equip talent acquisition teams with bulk Excel imports, magic link dispatchers, and candidate dossier reviews.
+                  Equip talent acquisition teams with bulk Excel ingestion, recruiter role access, candidate dossier reviews, and live tracking status filters.
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ 500+ record bulk Excel ingestion</li>
-                  <li className="flex items-center gap-2">✓ WhatsApp & SMS magic invitation dispatch</li>
-                  <li className="flex items-center gap-2">✓ 360° candidate verification dossiers</li>
-                  <li className="flex items-center gap-2">✓ Configurable verification check selection</li>
+                  <li className="flex items-center gap-2">✓ 500+ record bulk Excel roster import</li>
+                  <li className="flex items-center gap-2">✓ 1-click status filtering & export</li>
+                  <li className="flex items-center gap-2">✓ Comprehensive 360° candidate dossiers</li>
+                  <li className="flex items-center gap-2">✓ Company Admin & Recruiter role scoping</li>
                 </ul>
               </div>
 
-              {/* Module 4: Company Governance & CLRA Form XVI */}
+              {/* Module 4: Statutory CLRA Form XVI */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#FFF6E9] text-[#D97706] flex items-center justify-center font-bold">
                   <Building2 className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">Company Governance & Compliance</h2>
+                <h2 className="text-xl font-bold text-[#182230]">Statutory CLRA Compliance</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Maintain statutory workforce registers, manage contractor agency allocations, and generate digital QR gate passes.
+                  Maintain statutory contractor muster registers, manage third-party staffing agency quotas, and prevent ghost worker payroll leaks.
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
                   <li className="flex items-center gap-2">✓ Statutory CLRA Form XVI contractor muster</li>
-                  <li className="flex items-center gap-2">✓ Contractor agency quota management</li>
-                  <li className="flex items-center gap-2">✓ Digital scannable turnstile gate passes</li>
-                  <li className="flex items-center gap-2">✓ Postpaid usage transaction ledgers</li>
+                  <li className="flex items-center gap-2">✓ Third-party agency quota management</li>
+                  <li className="flex items-center gap-2">✓ Anti-ghost worker audit ledger</li>
+                  <li className="flex items-center gap-2">✓ Labor inspector audit-ready downloads</li>
                 </ul>
               </div>
 
-              {/* Module 5: Reports & PDF Dossiers */}
+              {/* Module 5: Turnstile Gate Passes */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F0FDF4] text-[#15803D] flex items-center justify-center font-bold">
-                  <FileText className="w-6 h-6" />
+                  <FileCheck2 className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">Reports & Downloadable PDFs</h2>
+                <h2 className="text-xl font-bold text-[#182230]">Digital Turnstile Gate Passes</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Generate professional, tamper-evident ReportLab PDFs with dynamic page numbering, confidentiality notices, and QR hashes.
+                  Generate sub-second cryptographic QR gate passes with biometric facial selfie matching to secure plant and factory perimeters.
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ Comprehensive BGV Candidate Dossiers</li>
-                  <li className="flex items-center gap-2">✓ Official Verification Compliance Certificates</li>
-                  <li className="flex items-center gap-2">✓ CLRA Form XVI Statutory Muster Sheets</li>
-                  <li className="flex items-center gap-2">✓ Download access audit logging</li>
+                  <li className="flex items-center gap-2">✓ Scannable turnstile entry QR passes</li>
+                  <li className="flex items-center gap-2">✓ 3D facial liveness & selfie match</li>
+                  <li className="flex items-center gap-2">✓ Sub-second turnstile gate validation</li>
+                  <li className="flex items-center gap-2">✓ Digital workforce access logs</li>
                 </ul>
               </div>
 
-              {/* Module 6: Master Administration & API Routing */}
+              {/* Module 6: 100% Postpaid Billing */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs hover:shadow-md transition-all space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F8FAFC] text-[#475569] flex items-center justify-center font-bold">
-                  <Server className="w-6 h-6" />
+                  <Scale className="w-6 h-6" />
                 </div>
-                <h2 className="text-xl font-bold text-[#182230]">Administration & Gateway Controls</h2>
+                <h2 className="text-xl font-bold text-[#182230]">100% Postpaid Metered Billing</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Full control over provider routing, feature toggles, API rate limits, transparent cost margins, and CMS content.
+                  Zero upfront lock-in. Verify on demand and settle monthly based on actual verified employee profiles with official GST tax invoices (SAC 998311).
                 </p>
                 <ul className="space-y-2 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ Feature flag management with audit tracking</li>
-                  <li className="flex items-center gap-2">✓ Sandbox vs Production provider routing</li>
-                  <li className="flex items-center gap-2">✓ Transparent API call calculation & margin ledger</li>
-                  <li className="flex items-center gap-2">✓ Company onboarding & approval pipeline</li>
+                  <li className="flex items-center gap-2">✓ 5 Transparent postpaid tier brackets</li>
+                  <li className="flex items-center gap-2">✓ Never-block overage hiring surges</li>
+                  <li className="flex items-center gap-2">✓ Official 18% GST tax invoices</li>
+                  <li className="flex items-center gap-2">✓ Itemized monthly verification ledgers</li>
                 </ul>
               </div>
 
@@ -321,111 +322,272 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         )}
 
         {/* ========================================================================= */}
-        {/* PAGE 2: SOLUTIONS                                                         */}
+        {/* PAGE 2: SOLUTIONS (JOY GROUP SOFTWARE SUITE)                              */}
         {/* ========================================================================= */}
         {activePage === 'solutions' && (
           <div className="space-y-12 animate-in fade-in duration-300">
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF8F0] text-[#299C68] text-xs font-bold uppercase tracking-wider">
                 <Award className="w-3.5 h-3.5" />
-                Industry-Specific Solutions
+                JOY Group Software Products Suite
               </div>
               <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-                Tailored Solutions for Every Workforce Stakeholder
+                Enterprise Cloud Software Suite
               </h1>
               <p className="text-base text-[#5C6878] leading-relaxed">
-                Whether you manage factory labor, logistics delivery associates, or corporate technical talent, JOY TRUE PROFILE adapts to your exact operational workflow.
+                JOY Corporate Solutions engineers specialized enterprise platforms — spanning attendance, automated payroll, labor muster compliance, and direct verification rails.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
-              {/* Solution 1: Manufacturing & Industrial Plants */}
-              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-2xl bg-[#EAF5FF] text-[#426CF5]">
-                    <HardHat className="w-6 h-6" />
+              {/* Product 1: JOY PEOPLE HR (Flagship) */}
+              <div className="p-8 rounded-3xl bg-white border-2 border-[#426CF5]/30 hover:border-[#426CF5] shadow-xs flex flex-col justify-between space-y-6 transition-all">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-2xl bg-[#EAF5FF] text-[#426CF5]">
+                        <Users className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-[#182230]">JOY PEOPLE HR Platform</h2>
+                        <span className="text-xs text-[#426CF5] font-semibold">joypeoplehr.com • Flagship HRMS Suite</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-[#182230]">Manufacturing & Industrial Plants</h2>
-                    <span className="text-xs text-[#5C6878]">Automotive, Textiles, Engineering & EPC</span>
+
+                  <p className="text-sm text-[#5C6878] leading-relaxed">
+                    All-in-one cloud HRMS managing complete employee lifecycles, attendance, shift scheduling, and automated payroll with 100% statutory deductions.
+                  </p>
+
+                  <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
+                    <div className="font-bold text-[#182230]">Key Capabilities:</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Geo-fenced biometric mobile & face punch attendance</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Automated shift rostering, overtime tracking & leave hierarchy</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ 1-Click automated salary disbursement with instant pay slips</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ 100% PF, ESI, TDS & Professional Tax statutory compliance</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Employee Self-Service (ESS) mobile portal with expense claims</div>
                   </div>
                 </div>
-                <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Eliminate ghost worker billing and ensure 100% statutory labor muster compliance under CLRA Form XVI.
-                </p>
-                <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
-                  <div className="font-bold text-[#182230]">Key Capabilities:</div>
-                  <div>• Instant QR turnstile gate passes generated in &lt;45s</div>
-                  <div>• Daily contractor agency labor muster & audit logs</div>
-                  <div>• 3D facial selfie match eliminates badge swapping</div>
+
+                <div className="pt-4 border-t border-[#E5EAF0]">
+                  <a
+                    href="https://joypeoplehr.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-full bg-[#426CF5] hover:bg-[#3459D8] text-white font-bold text-xs transition-all flex items-center justify-center gap-2 no-underline"
+                  >
+                    <span>Launch Joy People HR Platform</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
                 </div>
               </div>
 
-              {/* Solution 2: Logistics, 3PL & Fleet Operations */}
-              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-2xl bg-[#EAF8F0] text-[#299C68]">
-                    <Globe className="w-6 h-6" />
+              {/* Product 2: JOY TRUE PROFILE */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] hover:border-[#426CF5]/60 shadow-xs flex flex-col justify-between space-y-6 transition-all">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-2xl bg-[#EAF8F0] text-[#299C68]">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-[#182230]">JOY TRUE PROFILE</h2>
+                      <span className="text-xs text-[#299C68] font-semibold">Direct Registry Verification Rails</span>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-[#182230]">Logistics & Fleet Operations</h2>
-                    <span className="text-xs text-[#5C6878]">Delivery Associates, Drivers, Warehouse Staff</span>
+
+                  <p className="text-sm text-[#5C6878] leading-relaxed">
+                    Sub-45-second direct API verification engine for identity, past employer tenures, bank accounts, and criminal records with 100% postpaid metered billing.
+                  </p>
+
+                  <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
+                    <div className="font-bold text-[#182230]">Key Capabilities:</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Direct UIDAI Aadhaar OTP & NSDL PAN validation</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ EPFO moonlighting detection & dual employment audits</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ 500+ record bulk Excel ingestion & WhatsApp magic links</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Cryptographic SHA-256 PDF candidate dossiers</div>
                   </div>
                 </div>
-                <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Verify pan-India drivers and delivery associates on the spot via zero-app WhatsApp magic links.
-                </p>
-                <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
-                  <div className="font-bold text-[#182230]">Key Capabilities:</div>
-                  <div>• Commercial Driving License validation via Sarathi API</div>
-                  <div>• Direct bank penny drop name match prevents payout errors</div>
-                  <div>• Fast 2-minute mobile self-onboarding in regional languages</div>
+
+                <div className="pt-4 border-t border-[#E5EAF0]">
+                  <button
+                    onClick={() => setActivePage('contact')}
+                    className="w-full py-3 rounded-full bg-[#182230] hover:bg-black text-white font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Request True Profile Demo</span>
+                    <Sparkles className="w-4 h-4 text-amber-300" />
+                  </button>
                 </div>
               </div>
 
-              {/* Solution 3: Enterprise IT & Corporate HR */}
-              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-2xl bg-[#F6F0FE] text-[#795290]">
-                    <Search className="w-6 h-6" />
+              {/* Product 3: JOY CONTRACTOR & CLRA COMPLIANCE */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] hover:border-[#426CF5]/60 shadow-xs flex flex-col justify-between space-y-6 transition-all">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-2xl bg-[#FFF6E9] text-[#D97706]">
+                      <HardHat className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-[#182230]">JOY Contractor & CLRA Compliance</h2>
+                      <span className="text-xs text-[#D97706] font-semibold">Statutory Labor Muster Automation</span>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-[#182230]">Enterprise IT & Professional Services</h2>
-                    <span className="text-xs text-[#5C6878]">Software Engineers, Managers, Remote Staff</span>
+
+                  <p className="text-sm text-[#5C6878] leading-relaxed">
+                    Statutory workforce muster registers, contractor agency allocations, and anti-ghost worker tracking for industrial manufacturing plants.
+                  </p>
+
+                  <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
+                    <div className="font-bold text-[#182230]">Key Capabilities:</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Statutory CLRA Form XVI & XII muster registers</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Third-party staffing agency quota governance</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Sub-second turnstile gate passes & muster logs</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Real-time labor inspector audit-ready export</div>
                   </div>
                 </div>
-                <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Detect overlapping employment tenures, verify past employer records, and safeguard intellectual property.
-                </p>
-                <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
-                  <div className="font-bold text-[#182230]">Key Capabilities:</div>
-                  <div>• Real-time EPFO employment tenure audit for moonlighting</div>
-                  <div>• PAN & Form 26AS income stream validation</div>
-                  <div>• Tamper-proof cryptographic PDF dossiers for audit compliance</div>
+
+                <div className="pt-4 border-t border-[#E5EAF0]">
+                  <a
+                    href="https://joypeoplehr.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all flex items-center justify-center gap-2 no-underline"
+                  >
+                    <span>Learn More on JoyPeopleHR ↗</span>
+                  </a>
                 </div>
               </div>
 
-              {/* Solution 4: Staffing & Manpower Agencies */}
+              {/* Product 4: JOY DIGITAL VAULT */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] hover:border-[#426CF5]/60 shadow-xs flex flex-col justify-between space-y-6 transition-all">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-2xl bg-[#F6F0FE] text-[#795290]">
+                      <Lock className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-[#182230]">JOY Cryptographic Digital Vault</h2>
+                      <span className="text-xs text-[#795290] font-semibold">DPDP Act 2023 Verifiable Engine</span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-[#5C6878] leading-relaxed">
+                    Cryptographically signed credential vault with tamper-evident SHA-256 signatures, candidate consent logging, and sovereign in-country storage.
+                  </p>
+
+                  <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
+                    <div className="font-bold text-[#182230]">Key Capabilities:</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ 256-bit AES encryption at rest & in transit</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Automatic Aadhaar & PAN masking (XXXX-XXXX-1234)</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Explicit candidate digital consent trail under DPDP Act</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Sovereign cloud server data residency in India</div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-[#E5EAF0]">
+                  <button
+                    onClick={() => setActivePage('about')}
+                    className="w-full py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Read Privacy & Security Policy</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* PAGE 2B: SERVICES                                                         */}
+        {/* ========================================================================= */}
+        {activePage === 'services' && (
+          <div className="space-y-12 animate-in fade-in duration-300">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF5FF] text-[#426CF5] text-xs font-bold uppercase tracking-wider">
+                <Layers className="w-3.5 h-3.5" />
+                Enterprise Verification & HR Services
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
+                Complete Verification & Workforce Services
+              </h1>
+              <p className="text-base text-[#5C6878] leading-relaxed">
+                From sub-45-second direct identity lookups to full HR & payroll automation, explore the comprehensive services delivered by JOY Corporate Solutions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              
+              {/* Service 1 */}
               <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-2xl bg-[#FFF6E9] text-[#D97706]">
-                    <Users className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-[#182230]">Staffing & Manpower Agencies</h2>
-                    <span className="text-xs text-[#5C6878]">Contract Recruiters, Outsource Providers</span>
-                  </div>
+                <div className="w-12 h-12 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold">
+                  <ShieldCheck className="w-6 h-6" />
                 </div>
+                <h2 className="text-xl font-bold text-[#182230]">Identity & KYC Verification</h2>
                 <p className="text-sm text-[#5C6878] leading-relaxed">
-                  Bulk onboard hundreds of workers in minutes with automated client-ready compliance certificates.
+                  Real-time direct registry checks for Aadhaar OTP, PAN 2.0 validation, Driving Licenses via Sarathi, and Passports.
                 </p>
-                <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
-                  <div className="font-bold text-[#182230]">Key Capabilities:</div>
-                  <div>• 500+ record bulk Excel roster processing</div>
-                  <div>• Official client verification certificate generation</div>
-                  <div>• 100% postpaid metered billing for recruitment surges</div>
+                <div className="text-xs text-[#426CF5] font-semibold">Turnaround Time: &lt; 45 Seconds</div>
+              </div>
+
+              {/* Service 2 */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold">
+                  <Search className="w-6 h-6" />
                 </div>
+                <h2 className="text-xl font-bold text-[#182230]">EPFO History & Moonlighting Audits</h2>
+                <p className="text-sm text-[#5C6878] leading-relaxed">
+                  Deep EPFO UAN service history analysis detecting overlapping employment tenures, concurrent provident fund deposits, and ghost employment.
+                </p>
+                <div className="text-xs text-[#299C68] font-semibold">Automated Tenure Overlap Radar</div>
+              </div>
+
+              {/* Service 3 */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F6F0FE] text-[#795290] flex items-center justify-center font-bold">
+                  <Users className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold text-[#182230]">Cloud HRMS & Payroll Automation</h2>
+                <p className="text-sm text-[#5C6878] leading-relaxed">
+                  Integrated via Joy People HR suite. Mobile face/fingerprint attendance, automated shift rosters, and 1-click salary disbursement with PF/ESI/TDS deductions.
+                </p>
+                <div className="text-xs text-[#795290] font-semibold">Powered by joypeoplehr.com</div>
+              </div>
+
+              {/* Service 4 */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#FFF6E9] text-[#D97706] flex items-center justify-center font-bold">
+                  <HardHat className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold text-[#182230]">Statutory Labor & CLRA Audits</h2>
+                <p className="text-sm text-[#5C6878] leading-relaxed">
+                  Statutory CLRA Form XVI contractor muster registers, staffing agency quota governance, and digital QR turnstile access logs.
+                </p>
+                <div className="text-xs text-[#D97706] font-semibold">100% Labor Inspector Audit-Ready</div>
+              </div>
+
+              {/* Service 5 */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F0FDF4] text-[#15803D] flex items-center justify-center font-bold">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold text-[#182230]">Bank Penny Drop & Financial Match</h2>
+                <p className="text-sm text-[#5C6878] leading-relaxed">
+                  NPCI IMPS ₹1 penny drop validation confirming beneficiary account ownership, IFSC bank branch details, and full name matching.
+                </p>
+                <div className="text-xs text-[#15803D] font-semibold">Prevents Salary Payout Errors</div>
+              </div>
+
+              {/* Service 6 */}
+              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F8FAFC] text-[#475569] flex items-center justify-center font-bold">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold text-[#182230]">Certified Candidate PDF Dossiers</h2>
+                <p className="text-sm text-[#5C6878] leading-relaxed">
+                  Cryptographically signed verification dossiers with tamper-evident SHA-256 hashes, confidentiality stamps, and downloadable compliance certificates.
+                </p>
+                <div className="text-xs text-[#475569] font-semibold">Tamper-Proof ReportLab Generation</div>
               </div>
 
             </div>
@@ -637,7 +799,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         {/* PAGE 5: CONTACT US                                                        */}
         {/* ========================================================================= */}
         {activePage === 'contact' && (
-          <div className="space-y-12 animate-in fade-in duration-300 max-w-4xl mx-auto">
+          <div className="space-y-12 animate-in fade-in duration-300 max-w-5xl mx-auto">
             <div className="text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF5FF] text-[#426CF5] text-xs font-bold uppercase tracking-wider">
                 <Mail className="w-3.5 h-3.5" />
@@ -646,24 +808,63 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
                 Contact Our Enterprise Solutions Team
               </h1>
-              <p className="text-base text-[#5C6878] leading-relaxed">
+              <p className="text-base text-[#5C6878] leading-relaxed max-w-2xl mx-auto">
                 Have questions about enterprise deployment, postpaid tariffs, custom API connectors, or statutory compliance? We’re here to help.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
               
-              {/* Contact Info Sidebar */}
+              {/* Contact Info & Google Maps Sidebar */}
               <div className="md:col-span-1 space-y-6">
-                <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
-                  <h2 className="text-base font-bold text-[#182230]">Contact Information</h2>
+                
+                {/* Mini Google Map Layout */}
+                <div className="p-4 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#182230] flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-[#426CF5]" /> Coimbatore Office
+                    </span>
+                    <span className="text-[10px] text-[#299C68] font-bold bg-[#EAF8F0] px-2 py-0.5 rounded">
+                      ● Active
+                    </span>
+                  </div>
                   
-                  <div className="space-y-3 text-xs text-[#5C6878]">
+                  <div className="overflow-hidden rounded-2xl border border-[#E5EAF0] shadow-xs bg-slate-100">
+                    <iframe
+                      title="Joy Corporate Solutions Coimbatore Office Location"
+                      src={content.googleMapsEmbedUrl || "https://maps.google.com/maps?q=Coimbatore,%20Tamil%20Nadu&t=&z=13&ie=UTF8&iwloc=&output=embed"}
+                      width="100%"
+                      height="200"
+                      style={{ border: 0 }}
+                      allowFullScreen=""
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <a 
+                    href={content.googleMapsUrl || "https://maps.app.goo.gl/xK2B3J4VvC73oQwd8"} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full py-2 rounded-xl bg-[#EAF5FF] hover:bg-[#426CF5] text-[#426CF5] hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 no-underline"
+                  >
+                    <span>Open in Google Maps App</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-4">
+                  <h2 className="text-base font-bold text-[#182230]">Corporate Communication</h2>
+                  
+                  <div className="space-y-3.5 text-xs text-[#5C6878]">
                     <div className="flex items-start gap-2.5">
                       <Phone className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
                       <div>
                         <div className="font-semibold text-[#182230]">Phone & WhatsApp</div>
-                        <a href="tel:+919994699044" className="text-[#426CF5] hover:underline">+91 99946 99044</a>
+                        <a href={`tel:${content.contactPhone || '+919994699044'}`} className="text-[#426CF5] hover:underline font-mono">
+                          {content.contactPhone || '+91 99946 99044'}
+                        </a>
                       </div>
                     </div>
 
@@ -671,15 +872,17 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                       <Mail className="w-4 h-4 text-[#426CF5] shrink-0 mt-0.5" />
                       <div>
                         <div className="font-semibold text-[#182230]">Email Support</div>
-                        <a href="mailto:info@joycorporatesolutions.com" className="text-[#426CF5] hover:underline">info@joycorporatesolutions.com</a>
+                        <a href={`mailto:${content.supportEmail || 'info@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline">
+                          {content.supportEmail || 'info@joycorporatesolutions.com'}
+                        </a>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-[#795290] shrink-0 mt-0.5" />
                       <div>
-                        <div className="font-semibold text-[#182230]">Office Location</div>
-                        <span>Coimbatore, Tamilnadu</span>
+                        <div className="font-semibold text-[#182230]">Registered Office</div>
+                        <span>{content.officeAddress || 'Coimbatore, Tamilnadu, India'}</span>
                       </div>
                     </div>
 
@@ -687,21 +890,9 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                       <Clock className="w-4 h-4 text-[#D97706] shrink-0 mt-0.5" />
                       <div>
                         <div className="font-semibold text-[#182230]">Business Hours</div>
-                        <span>Mon - Sat: 9:00 AM - 7:00 PM IST</span>
+                        <span>{content.workingHours || 'Mon - Sat: 9:00 AM - 7:00 PM IST'}</span>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-[#E5EAF0]">
-                    <a 
-                      href="https://maps.app.goo.gl/xK2B3J4VvC73oQwd8" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs text-[#426CF5] font-semibold hover:underline inline-flex items-center gap-1"
-                    >
-                      <span>Open Google Maps</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </a>
                   </div>
                 </div>
               </div>
@@ -716,7 +907,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                       </div>
                       <h2 className="text-2xl font-bold text-[#182230]">Thank You! Inquiry Received</h2>
                       <p className="text-sm text-[#5C6878] max-w-md mx-auto">
-                        Your message has been assigned reference ticket <strong>#INQ-{Math.floor(100000 + Math.random() * 900000)}</strong>. Our team in Coimbatore will respond within 4 business hours.
+                        Your inquiry has been assigned reference ticket <strong>#INQ-{Math.floor(100000 + Math.random() * 900000)}</strong>. Our team in Coimbatore will respond within 4 business hours.
                       </p>
                       <button
                         onClick={() => {
@@ -739,6 +930,11 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                     </div>
                   ) : (
                     <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
+                      <div>
+                        <h2 className="text-lg font-bold text-[#182230]">Direct Enterprise Inquiry Form</h2>
+                        <p className="text-xs text-[#5C6878] mt-0.5">Fill out your details to get a postpaid proposal or custom platform trial.</p>
+                      </div>
+
                       {contactError && (
                         <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                           <AlertCircle className="w-4 h-4 shrink-0" />
@@ -805,10 +1001,11 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                             className="w-full px-4 py-2.5 rounded-xl border border-[#E5EAF0] bg-[#FCFCFA] text-sm text-[#182230] focus:border-[#426CF5] focus:outline-none"
                           >
                             <option value="Enterprise Verification Inquiry">Enterprise Verification Inquiry</option>
-                            <option value="Schedule a Platform Demo">Schedule a Platform Demo</option>
+                            <option value="Joy People HR Platform Demo">Joy People HR Platform Demo</option>
+                            <option value="Schedule a Verification Platform Demo">Schedule a Verification Platform Demo</option>
                             <option value="Postpaid Pricing & Tariff Quote">Postpaid Pricing & Tariff Quote</option>
                             <option value="Custom API Integration">Custom API Integration</option>
-                            <option value="Partnership & Contractor Roster">Partnership & Contractor Roster</option>
+                            <option value="Statutory CLRA Form XVI Compliance">Statutory CLRA Form XVI Compliance</option>
                           </select>
                         </div>
                         <div>
@@ -972,6 +1169,10 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                   a: 'JOY TRUE PROFILE is an enterprise workforce identity and document verification platform connecting Super Admins, Companies, HR recruiters, and workers through a single digital system.'
                 },
                 {
+                  q: 'How does Joy People HR integrate with verification?',
+                  a: 'Joy People HR (joypeoplehr.com) is our sister cloud HRMS platform. Employee records created in Joy People HR can be seamlessly verified through JOY True Profile direct registry rails with one click.'
+                },
+                {
                   q: 'How does company registration work?',
                   a: 'Companies are registered by the Super Administrator or via authorized invitation. Once registered, Company Administrators can set quotas, manage HR recruiters, and track workforce rosters.'
                 },
@@ -988,12 +1189,8 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                   a: 'All data in transit and at rest is secured with 256-bit AES encryption. Sensitive identifiers like Aadhaar numbers are automatically masked (XXXX-XXXX-1234), and all processing is strictly consent-driven under the DPDP Act 2023.'
                 },
                 {
-                  q: 'What happens if a verification check fails or mismatches?',
-                  a: 'If a document fails or has a name discrepancy, the record is flagged for manual HR review. HR executives can inspect discrepancy notes and re-trigger an invitation if needed.'
-                },
-                {
                   q: 'How does postpaid billing work?',
-                  a: 'Enterprises verify candidates on demand without upfront prepayment blocks. At the end of the billing cycle, an official GST tax invoice is generated with an itemized transaction ledger.'
+                  a: 'Enterprises verify candidates on demand without upfront prepayment blocks. At the end of the billing cycle, an official GST tax invoice is generated with an itemized transaction ledger based on your chosen tier.'
                 }
               ].map((faq, idx) => (
                 <div key={idx} className="p-6 rounded-2xl bg-white border border-[#E5EAF0] shadow-xs">
@@ -1015,8 +1212,6 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* PAGE 8: PRICING & PLANS                                                   */}
         {/* ========================================================================= */}
         {/* PAGE 8: PRICING & PLANS                                                   */}
         {/* ========================================================================= */}
@@ -1114,6 +1309,143 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
           </div>
         )}
 
+        {/* ========================================================================= */}
+        {/* PAGE 9: PRIVACY POLICY                                                    */}
+        {/* ========================================================================= */}
+        {(activePage === 'privacy-policy' || activePage === 'privacy') && (
+          <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto text-left">
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF8F0] text-[#299C68] text-xs font-bold uppercase tracking-wider">
+                <Lock className="w-3.5 h-3.5" />
+                DPDP Act 2023 Compliance
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
+                Privacy Policy
+              </h1>
+              <p className="text-xs text-[#5C6878]">Last Updated: August 2026 • JOY CORPORATE SOLUTIONS PRIVATE LIMITED</p>
+            </div>
+
+            <div className="bg-white border border-[#E5EAF0] rounded-3xl p-8 sm:p-10 shadow-xs space-y-6 text-sm text-[#5C6878] leading-relaxed">
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">1. Overview and Scope</h2>
+                <p>
+                  JOY CORPORATE SOLUTIONS PRIVATE LIMITED (&quot;JOY&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting the privacy, confidentiality, and security of personal data processed through the <strong>JOY TRUE PROFILE</strong> workforce verification platform and affiliated platforms including <strong>JOY PEOPLE HR</strong>. This Privacy Policy details how we collect, verify, store, process, and protect Personal Identifiable Information (PII) in strict compliance with the <strong>Digital Personal Data Protection (DPDP) Act 2023</strong>, the <strong>Information Technology Act, 2000</strong>, and applicable UIDAI Aadhaar regulations.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">2. Explicit Candidate Consent</h2>
+                <p>
+                  We operate on a strict <strong>Consent-First Architecture</strong>. Verification of any worker or candidate is initiated only after explicit digital consent is obtained via OTP verification on a mobile browser. Candidates are presented with an itemized notice explaining precisely which verification checks (Aadhaar, PAN, Bank, EPFO, DL) will be performed, the purpose of such checks, and how the resulting data will be utilized for employment background verification.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">3. Data Collection and Verification Rails</h2>
+                <p>We process the following categories of data solely for authorized employment screening:</p>
+                <ul className="list-disc pl-5 space-y-1 mt-2">
+                  <li><strong>National Identity:</strong> Aadhaar OTP e-KYC (numbers automatically masked as <code className="bg-slate-100 px-1 py-0.5 rounded">XXXX-XXXX-1234</code>) and NSDL PAN 2.0 validation.</li>
+                  <li><strong>Employment Tenures:</strong> EPFO UAN service history to confirm tenures and detect unauthorized dual employment/moonlighting.</li>
+                  <li><strong>Financial Details:</strong> NPCI IMPS ₹1 penny drop to verify candidate bank account name match and prevent salary payout errors.</li>
+                  <li><strong>Biometrics:</strong> 3D live facial selfies compared against official identity document photos to prevent badge swapping and ghost worker identity theft.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">4. Data Redaction and Sovereign Encryption</h2>
+                <p>
+                  All data in transit is encrypted using TLS 1.3, and all records at rest are secured using 256-bit AES encryption. Unmasked Aadhaar numbers are never stored in plain text. All servers, verification records, and cryptographic PDF dossiers reside on sovereign cloud infrastructure physically located within the Republic of India.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">5. Data Retention and Candidate Rights</h2>
+                <p>
+                  In accordance with the DPDP Act 2023, data principals retain the right to:
+                </p>
+                <ul className="list-disc pl-5 space-y-1 mt-2">
+                  <li>Access and review summary logs of their verification dossiers.</li>
+                  <li>Request correction of inaccurate or outdated information.</li>
+                  <li>Withdraw consent and request data purging once employment verification cycles are concluded.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">6. Grievance Officer Contact</h2>
+                <p>
+                  For any privacy inquiries, consent withdrawal, or grievance redressal under the DPDP Act 2023, please contact our Data Protection & Grievance Officer:
+                </p>
+                <div className="mt-2 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1 text-[#182230]">
+                  <div className="font-bold">Data Protection Officer — JOY CORPORATE SOLUTIONS PRIVATE LIMITED</div>
+                  <div>📍 Office: Coimbatore, Tamilnadu, India</div>
+                  <div>📧 Email: <a href="mailto:info@joycorporatesolutions.com" className="text-[#426CF5] hover:underline">info@joycorporatesolutions.com</a></div>
+                  <div>📞 Phone: <a href="tel:+919994699044" className="text-[#426CF5] hover:underline">+91 99946 99044</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* PAGE 10: TERMS & CONDITIONS                                               */}
+        {/* ========================================================================= */}
+        {(activePage === 'terms-and-conditions' || activePage === 'terms') && (
+          <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto text-left">
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF5FF] text-[#426CF5] text-xs font-bold uppercase tracking-wider">
+                <Scale className="w-3.5 h-3.5" />
+                Enterprise Agreement
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
+                Terms & Conditions
+              </h1>
+              <p className="text-xs text-[#5C6878]">Last Updated: August 2026 • JOY CORPORATE SOLUTIONS PRIVATE LIMITED</p>
+            </div>
+
+            <div className="bg-white border border-[#E5EAF0] rounded-3xl p-8 sm:p-10 shadow-xs space-y-6 text-sm text-[#5C6878] leading-relaxed">
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">1. Agreement to Terms</h2>
+                <p>
+                  These Terms and Conditions constitute a legally binding agreement between your organization (&quot;Client&quot;, &quot;Company&quot;, or &quot;User&quot;) and <strong>JOY CORPORATE SOLUTIONS PRIVATE LIMITED</strong> governing access to and use of the <strong>JOY TRUE PROFILE</strong> verification platform, associated APIs, and companion platforms such as <strong>JOY PEOPLE HR</strong>.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">2. Authorized Business Purpose</h2>
+                <p>
+                  The platform may be used solely for legitimate employment screening, contractor labor muster compliance under CLRA Form XVI, vendor due diligence, and statutory HR governance. Any unauthorized attempt to probe, scrape, or misuse government API rails is strictly prohibited.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">3. Postpaid Metered Billing & Settlement</h2>
+                <p>
+                  Enterprises are billed under the selected <strong>Postpaid Tier</strong> (<span className="text-[#182230] font-semibold">Tier 1 &lt;50 @ ₹250, Tier 2 &lt;100 @ ₹230, Tier 3 &lt;300 @ ₹200, Tier 4 &lt;500 @ ₹180, or Tier 5 Custom</span>). Billing cycles run on a calendar month basis. At the close of each cycle:
+                </p>
+                <ul className="list-disc pl-5 space-y-1 mt-2">
+                  <li>An official GST Tax Invoice is generated under Service Accounting Code (SAC) <strong>998311</strong> with 18% GST.</li>
+                  <li>Invoices are payable within the agreed credit term (standard Net-15 or Net-30 days).</li>
+                  <li>Never-Block Policy: Overage verifications beyond base quotas are processed uninterruptedly at the agreed per-profile postpaid rate.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">4. Service Availability & SLA</h2>
+                <p>
+                  We target a 99.99% platform uptime SLA. While direct government registries (UIDAI, NSDL, EPFO, Sarathi) may undergo statutory maintenance windows, our multi-provider fallback routing ensures maximum continuous availability.
+                </p>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">5. Governing Law and Jurisdiction</h2>
+                <p>
+                  This agreement shall be governed by and construed in accordance with the laws of the Republic of India. Any disputes arising out of or in connection with this agreement shall be subject to the exclusive jurisdiction of the competent courts in <strong>Coimbatore, Tamil Nadu, India</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* 3. Universal Footer */}
@@ -1126,13 +1458,13 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               <span className="font-bold text-base text-[#182230] font-outfit">JOY TRUE PROFILE</span>
             </div>
             <p className="text-xs text-[#5C6878] max-w-md leading-relaxed">
-              JOY TRUE PROFILE is an enterprise workforce identity and document verification platform developed by JOY CORPORATE SOLUTIONS PRIVATE LIMITED.
+              JOY TRUE PROFILE is an enterprise workforce identity and verification platform developed by JOY CORPORATE SOLUTIONS PRIVATE LIMITED. Part of the JOY Group integrated HR and compliance software suite.
             </p>
             <div className="text-[11px] text-[#5C6878] space-y-1">
-              <div>📍 Coimbatore, Tamilnadu, India</div>
-              <div>📧 <a href="mailto:info@joycorporatesolutions.com" className="text-[#426CF5] hover:underline">info@joycorporatesolutions.com</a> • 📞 <a href="tel:+919994699044" className="text-[#426CF5] hover:underline">+91 99946 99044</a></div>
+              <div>📍 {content.officeAddress || 'Coimbatore, Tamilnadu, India'}</div>
+              <div>📧 <a href={`mailto:${content.supportEmail || 'info@joycorporatesolutions.com'}`} className="text-[#426CF5] hover:underline">{content.supportEmail || 'info@joycorporatesolutions.com'}</a> • 📞 <a href={`tel:${content.contactPhone || '+919994699044'}`} className="text-[#426CF5] hover:underline">{content.contactPhone || '+91 99946 99044'}</a></div>
               <div>
-                <a href="https://maps.app.goo.gl/xK2B3J4VvC73oQwd8" target="_blank" rel="noopener noreferrer" className="text-[#426CF5] hover:underline font-medium">
+                <a href={content.googleMapsUrl || "https://maps.app.goo.gl/xK2B3J4VvC73oQwd8"} target="_blank" rel="noopener noreferrer" className="text-[#426CF5] hover:underline font-medium">
                   View Office on Google Maps ↗
                 </a>
               </div>
@@ -1140,12 +1472,17 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
           </div>
 
           <div className="space-y-2 text-xs">
-            <h3 className="font-bold text-[#182230] uppercase tracking-wider text-[11px]">Platform</h3>
+            <h3 className="font-bold text-[#182230] uppercase tracking-wider text-[11px]">Platform Suite</h3>
             <div className="flex flex-col gap-1.5 text-[#5C6878]">
-              <button onClick={() => setActivePage('features')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Features</button>
-              <button onClick={() => setActivePage('solutions')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Solutions</button>
-              <button onClick={() => setActivePage('how-it-works')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">How It Works</button>
-              <button onClick={() => setActivePage('pricing')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Pricing & Plans</button>
+              <button onClick={() => { setActivePage('features'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Features</button>
+              <button onClick={() => { setActivePage('solutions'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Solutions</button>
+              <button onClick={() => { setActivePage('services'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Services</button>
+              <a href="https://joypeoplehr.com" target="_blank" rel="noopener noreferrer" className="text-left text-[#426CF5] hover:underline no-underline text-xs flex items-center gap-1">
+                <span>Joy People HR (joypeoplehr.com)</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+              <button onClick={() => { setActivePage('how-it-works'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">How It Works</button>
+              <button onClick={() => { setActivePage('pricing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Pricing & Plans</button>
               <Link to="/login" className="text-left hover:text-[#426CF5] no-underline text-[#5C6878]">Portal Login</Link>
             </div>
           </div>
@@ -1153,9 +1490,11 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
           <div className="space-y-2 text-xs">
             <h3 className="font-bold text-[#182230] uppercase tracking-wider text-[11px]">Legal & Trust</h3>
             <div className="flex flex-col gap-1.5 text-[#5C6878]">
-              <button onClick={() => setActivePage('faq')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">FAQ</button>
-              <button onClick={() => setActivePage('about')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">About Us</button>
-              <button onClick={() => setActivePage('contact')} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Contact Us</button>
+              <button onClick={() => { setActivePage('privacy-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Privacy Policy</button>
+              <button onClick={() => { setActivePage('terms-and-conditions'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Terms & Conditions</button>
+              <button onClick={() => { setActivePage('faq'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">FAQ</button>
+              <button onClick={() => { setActivePage('about'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">About Us</button>
+              <button onClick={() => { setActivePage('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left hover:text-[#426CF5] cursor-pointer bg-transparent border-none p-0 text-xs">Contact Us</button>
               <span className="text-[10px] text-slate-400">DPDP Act 2023 Compliant</span>
             </div>
           </div>
@@ -1163,10 +1502,10 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         </div>
 
         <div className="max-w-7xl mx-auto pt-8 mt-8 border-t border-[#E5EAF0] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-4">
-          <span>© 2026 JOY CORPORATE SOLUTIONS PRIVATE LIMITED. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} {content.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}. All rights reserved.</span>
           <div className="flex items-center gap-4">
-            <button onClick={() => setActivePage('faq')} className="hover:text-[#182230] bg-transparent border-none cursor-pointer p-0 text-[11px] text-slate-400">Security</button>
-            <button onClick={() => setActivePage('about')} className="hover:text-[#182230] bg-transparent border-none cursor-pointer p-0 text-[11px] text-slate-400">Privacy</button>
+            <button onClick={() => { setActivePage('privacy-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#182230] bg-transparent border-none cursor-pointer p-0 text-[11px] text-slate-400">Privacy Policy</button>
+            <button onClick={() => { setActivePage('terms-and-conditions'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#182230] bg-transparent border-none cursor-pointer p-0 text-[11px] text-slate-400">Terms of Service</button>
           </div>
         </div>
       </footer>

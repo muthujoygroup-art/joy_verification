@@ -134,14 +134,78 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
   ctaPrimaryText: 'Request a Free Demo 🚀',
   ctaSecondaryText: 'Explore Features',
 
+  // JOY Group Software Ecosystem & Products
+  productsSectionBadge: 'JOY GROUP SOFTWARE ECOSYSTEM',
+  productsSectionTitle: 'Complete HR Management & Enterprise Verification Platform',
+  productsSectionSubtitle: 'JOY Corporate Solutions delivers an end-to-end cloud software suite — from biometric attendance and automated payroll to direct registry workforce background verification.',
+  
+  products: {
+    joyPeopleHr: {
+      name: 'JOY PEOPLE HR',
+      tagline: 'Next-Gen Cloud HRMS, Biometric Attendance & Payroll Platform',
+      url: 'https://joypeoplehr.com',
+      badge: 'Flagship HRMS Suite',
+      description: 'All-in-one HR suite featuring geo-fenced biometric face & fingerprint attendance, shift roster management, multi-level leave approvals, automated 1-click salary disbursement with PF, ESI, TDS & PT statutory compliance deductions, and full Employee Self-Service (ESS) mobile portal.',
+      features: [
+        'Biometric & Mobile Face/Fingerprint Punch Attendance',
+        'Automated Shift Rostering, Overtime & Leave Management',
+        '1-Click Automated Salary Disbursement & Pay Slips',
+        '100% PF, ESI, TDS & Professional Tax Statutory Compliance',
+        'Employee Self-Service (ESS) Portal with Expense Claims',
+        'Seamless integration with JOY True Profile verification'
+      ]
+    },
+    joyTrueProfile: {
+      name: 'JOY TRUE PROFILE',
+      tagline: 'Direct Registry Instant Workforce Background Verification',
+      url: 'https://verification.joycorporatesolutions.com',
+      badge: 'Verification Engine',
+      description: 'Sub-45-second direct registry verification rail connecting Super Admins, Companies, HR recruiters, and candidates with UIDAI Aadhaar OTP, NSDL PAN, NPCI IMPS Penny Drop, EPFO moonlighting audits, and tamper-proof PDF dossiers.',
+      features: [
+        'Sub-45s direct API lookups (Aadhaar, PAN, Bank, DL, EPFO)',
+        'EPFO service history & dual-employment moonlighting radar',
+        'Bulk 500+ Excel candidate ingestion & WhatsApp magic links',
+        'Turnstile gate passes & CLRA Form XVI contractor muster',
+        '100% Postpaid pay-as-you-verify metered billing'
+      ]
+    },
+    joyContractorClra: {
+      name: 'JOY CONTRACTOR & CLRA',
+      tagline: 'Statutory Labor Compliance & Contractor Muster Automation',
+      url: 'https://joypeoplehr.com',
+      badge: 'Compliance Suite',
+      description: 'Automate CLRA Form XVI statutory registers, manage third-party manpower staffing agencies, track daily headcounts, and prevent ghost worker billing across manufacturing plants and construction sites.',
+      features: [
+        'Automated CLRA Form XVI & XII muster generation',
+        'Contractor manpower quota & daily shift allocations',
+        'Anti-ghost worker biometric turnstile badge matching',
+        'Real-time labor inspector audit-ready export'
+      ]
+    },
+    joyDigitalVault: {
+      name: 'JOY DIGITAL VAULT',
+      tagline: 'DPDP Act 2023 Verifiable Digital Credential Engine',
+      url: 'https://verification.joycorporatesolutions.com',
+      badge: 'Security & Privacy',
+      description: 'Cryptographically signed and tamper-evident digital credential storage. Ensures full DPDP Act 2023 compliance with granular candidate consent management and 256-bit AES encryption.',
+      features: [
+        'DPDP Act 2023 granular digital consent logs',
+        '256-bit AES encrypted credential storage at rest & transit',
+        'Automated Aadhaar & PAN PII masking (XXXX-XXXX-1234)',
+        'Cryptographic SHA-256 tamper-evident PDF dossiers'
+      ]
+    }
+  },
+
   // Communication & Contact Details
   companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
   supportEmail: 'info@joycorporatesolutions.com',
   salesEmail: 'info@joycorporatesolutions.com',
   contactPhone: '+91 99946 99044',
   whatsappNumber: '+91 99946 99044',
-  officeAddress: 'Coimbatore, Tamilnadu',
+  officeAddress: 'Coimbatore, Tamilnadu, India',
   googleMapsUrl: 'https://maps.app.goo.gl/xK2B3J4VvC73oQwd8',
+  googleMapsEmbedUrl: 'https://maps.google.com/maps?q=Coimbatore,%20Tamil%20Nadu&t=&z=13&ie=UTF8&iwloc=&output=embed',
   workingHours: 'Monday - Saturday: 9:00 AM - 7:00 PM IST',
 
   // Announcement Bar
@@ -554,28 +618,60 @@ export const AppProvider = ({ children }) => {
     return DEFAULT_LANDING_PAGE_CONTENT;
   });
 
-  const updateLandingPageContent = (newContent) => {
-    setLandingPageContent(prev => {
-      const updated = { ...prev, ...newContent };
+  // Initial Load from PostgreSQL Database
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLandingPageSettings = async () => {
       try {
-        localStorage.setItem('joy_landing_page_content', JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to persist landing page content:', e);
+        const res = await api.getRoleSettings('landing_page');
+        if (res && res.settings && Object.keys(res.settings).length > 0 && isMounted) {
+          setLandingPageContent(prev => {
+            const merged = { ...DEFAULT_LANDING_PAGE_CONTENT, ...prev, ...res.settings };
+            try {
+              localStorage.setItem('joy_landing_page_content', JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.warn('Could not load landing page settings from backend (using local cache):', err);
       }
-      return updated;
-    });
+    };
+    fetchLandingPageSettings();
+    return () => { isMounted = false; };
+  }, []);
+
+  const updateLandingPageContent = async (newContent) => {
+    const updated = { ...landingPageContent, ...newContent };
+    setLandingPageContent(updated);
+    try {
+      localStorage.setItem('joy_landing_page_content', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to persist landing page content locally:', e);
+    }
+
+    // Persist directly into PostgreSQL database
+    try {
+      await api.updateRoleSettings('landing_page', updated);
+    } catch (e) {
+      console.warn('Failed to persist landing page settings to backend PostgreSQL:', e);
+    }
+
     if (typeof showToast === 'function') {
-      showToast('✅ Landing page content updated in Database!');
+      showToast('✅ Landing page content updated in PostgreSQL Database!');
     }
   };
 
-  const resetLandingPageContent = () => {
+  const resetLandingPageContent = async () => {
     setLandingPageContent(DEFAULT_LANDING_PAGE_CONTENT);
     try {
       localStorage.setItem('joy_landing_page_content', JSON.stringify(DEFAULT_LANDING_PAGE_CONTENT));
     } catch (e) {}
+    try {
+      await api.updateRoleSettings('landing_page', DEFAULT_LANDING_PAGE_CONTENT);
+    } catch (e) {}
     if (typeof showToast === 'function') {
-      showToast('🔄 Landing page content reset to defaults!');
+      showToast('🔄 Landing page content reset to defaults in Database!');
     }
   };
 
