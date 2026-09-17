@@ -30,9 +30,11 @@ import {
   Scale,
   ListOrdered,
   HelpCircle,
-  Briefcase
+  Briefcase,
+  Star
 } from 'lucide-react';
 import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
+import { ReviewsModerationConsole } from './ReviewsModerationConsole';
 
 export const LandingPageCmsConsole = () => {
   const { landingPageContent, updateLandingPageContent, resetLandingPageContent, showToast } = useApp();
@@ -174,6 +176,7 @@ export const LandingPageCmsConsole = () => {
           { id: 'pricing', label: '7. Pricing', icon: CreditCard },
           { id: 'contact', label: '8. Contact & Map', icon: Phone },
           { id: 'announcement', label: '9. Banner & Stats', icon: Megaphone },
+          { id: 'reviews', label: '10. Customer Reviews', icon: Star },
           { id: 'preview', label: 'Live Preview', icon: Eye }
         ].map(tab => {
           const Icon = tab.icon;
@@ -986,6 +989,13 @@ export const LandingPageCmsConsole = () => {
                 <div className="text-[10px] text-slate-400">{formData.statProfilesLabel}</div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab 10: Customer Reviews & Moderation */}
+        {activeTab === 'reviews' && (
+          <div className="space-y-6">
+            <ReviewsModerationConsole />
           </div>
         )}
 

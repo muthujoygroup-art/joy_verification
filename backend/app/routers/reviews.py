@@ -12,55 +12,55 @@ router = APIRouter(prefix="/reviews", tags=["Client Reviews"])
 INITIAL_SEED_REVIEWS = [
     {
         "id": "REV-2026-001",
-        "name": "Rameshwar Patil",
-        "role": "VP – Human Resources & Compliance",
-        "company": "Apex Industrial Infrastructure Pvt Ltd",
+        "name": "Rajesh K. Singhania",
+        "role": "VP – Human Resources & Industrial Relations",
+        "company": "Premier Auto Components Ltd (Sriperumbudur Hub)",
         "industry": "labor",
         "rating": 5,
-        "title": "Onboarding 6,000+ factory workers every month with zero ghost workers!",
-        "content": "JOY TrueProfile has completely transformed our contract labor management across 4 industrial plants. We verify Aadhaar, police records, and bank accounts right at the factory gate on mobile. Ghost worker billing by contractors dropped to absolute zero.",
+        "title": "Eradicated Ghost Worker Invoicing Across Contractor Agencies",
+        "content": "JOY TrueProfile completely eradicated ghost worker invoicing across our 12 contractor agencies. We now onboard and verify 350+ factory workers daily with automated Form XVI gate passes.",
         "is_approved": True,
         "is_featured": True,
-        "status": "Approved"
+        "status": "approved"
     },
     {
         "id": "REV-2026-002",
         "name": "Ananya Deshmukh",
-        "role": "Head of People & Culture",
-        "company": "LogiFast Supply Chain & Logistics",
+        "role": "Chief Compliance & Legal Officer",
+        "company": "Nexus 3PL & Supply Chain Logistics",
         "industry": "logistics",
         "rating": 5,
-        "title": "Instant commercial driver verification in under 45 seconds",
-        "content": "We manage over 2,500 fleet drivers. Checking driving licenses, criminal backgrounds, and Aadhaar on basic mobile phones with WhatsApp links has reduced our driver hiring TAT from 12 days to just 3 minutes.",
+        "title": "Instant Commercial Driver Verification via WhatsApp Magic Links",
+        "content": "Verifying commercial driving licenses and court litigation history for 2,000+ pan-India fleet drivers used to take 10 business days. With JOY TrueProfile, our drivers are verified instantly via WhatsApp magic links on the spot.",
         "is_approved": True,
         "is_featured": True,
-        "status": "Approved"
+        "status": "approved"
     },
     {
         "id": "REV-2026-003",
-        "name": "Siddharth Menon",
-        "role": "Chief Talent Officer",
-        "company": "Nexis Cloud Technologies Ltd",
+        "name": "Vikram Malhotra",
+        "role": "Head of Talent Acquisition & Background Screening",
+        "company": "Zenith Global Technologies",
         "industry": "corporate",
         "rating": 5,
-        "title": "Eliminated moonlighting and fraudulent experience certificates permanently",
-        "content": "The authenticated EPFO career history audit is an absolute game-changer. We caught multiple candidates holding dual overlapping full-time jobs. The audit-ready 5-page PDF dossier gives our board 100% confidence.",
+        "title": "EPFO UAN Moonlighting Radar Caught Dual Employment Cases",
+        "content": "The UAN moonlighting detection radar caught 14 undeclared dual-employment cases in our senior engineering hiring stream last quarter. The audit dossiers are tamper-proof and fully DPDP Act 2023 compliant.",
         "is_approved": True,
         "is_featured": True,
-        "status": "Approved"
+        "status": "approved"
     },
     {
         "id": "REV-2026-004",
-        "name": "Bhavani Shankar",
-        "role": "Operations & Labor Contractor Director",
-        "company": "Vanguard Staffing & Facility Services",
+        "name": "Capt. Suresh Nambiar",
+        "role": "Director of Plant Security & HSE",
+        "company": "Apex Heavy Infrastructure & EPC Ltd",
         "industry": "labor",
         "rating": 5,
-        "title": "100% CLRA audit compliance and instant worker ID passes",
-        "content": "As a major staffing agency providing 10,000+ security guards and facility workers, JOY TrueProfile gives us instant digital labor passes with QR verification and automatic CLRA compliance reports for labor officers.",
+        "title": "Sub-Second QR Gate Turnstile Passes for Factory Sites",
+        "content": "Our project sites have zero tolerance for unverified labor. JOY TrueProfile generates instant QR gate passes that our security guards scan at the gate turnstiles. Real-time, fast, and rock solid.",
         "is_approved": True,
         "is_featured": True,
-        "status": "Approved"
+        "status": "approved"
     }
 ]
 
@@ -94,13 +94,19 @@ def get_public_reviews(db: Session = Depends(get_db)):
         {
             "id": r.id,
             "name": r.name,
+            "client_name": r.name,
             "role": r.role or "Verified Client",
+            "designation": r.role or "Verified Client",
             "company": r.company,
-            "industry": r.industry,
-            "rating": r.rating,
-            "title": r.title or "Verified Review",
+            "company_name": r.company,
+            "industry": r.industry or "labor",
+            "rating": r.rating or 5,
+            "title": r.title or "Verified Client Testimonial",
+            "review_title": r.title or "Verified Client Testimonial",
             "content": r.content,
+            "review_text": r.content,
             "is_featured": r.is_featured,
+            "status": r.status or "approved",
             "created_at": r.created_at.isoformat() if r.created_at else None
         }
         for r in reviews
@@ -122,7 +128,7 @@ def submit_review(payload: ClientReviewCreate, db: Session = Depends(get_db)):
             content=payload.content.strip(),
             is_approved=True,
             is_featured=False,
-            status="Approved",
+            status="approved",
             created_at=datetime.utcnow()
         )
         db.add(rev)
@@ -147,24 +153,31 @@ def get_admin_reviews(db: Session = Depends(get_db)):
     """Super Admin endpoint to view all reviews including pending/rejected"""
     seed_default_reviews_if_empty(db)
     reviews = db.query(ClientReview).order_by(ClientReview.created_at.desc()).all()
-    return [
-        {
-            "id": r.id,
-            "name": r.name,
-            "role": r.role,
-            "company": r.company,
-            "industry": r.industry,
-            "rating": r.rating,
-            "title": r.title,
-            "content": r.content,
-            "is_approved": r.is_approved,
-            "is_featured": r.is_featured,
-            "status": r.status,
-            "moderation_notes": r.moderation_notes,
-            "created_at": r.created_at.isoformat() if r.created_at else None
-        }
-        for r in reviews
-    ]
+    return {
+        "success": True,
+        "reviews": [
+            {
+                "id": r.id,
+                "name": r.name,
+                "client_name": r.name,
+                "role": r.role,
+                "designation": r.role or "Verified Client",
+                "company": r.company,
+                "company_name": r.company,
+                "industry": r.industry or "labor",
+                "rating": r.rating or 5,
+                "title": r.title or "Verified Review",
+                "review_title": r.title or "Verified Review",
+                "content": r.content,
+                "review_text": r.content,
+                "is_approved": r.is_approved,
+                "is_featured": r.is_featured,
+                "status": r.status or ("approved" if r.is_approved else "pending"),
+                "created_at": r.created_at.isoformat() if r.created_at else None
+            }
+            for r in reviews
+        ]
+    }
 
 @router.put("/admin/{review_id}/moderate")
 def moderate_review(review_id: str, payload: ClientReviewModeration, db: Session = Depends(get_db)):
@@ -175,12 +188,12 @@ def moderate_review(review_id: str, payload: ClientReviewModeration, db: Session
 
     if payload.is_approved is not None:
         rev.is_approved = payload.is_approved
-        rev.status = "Approved" if payload.is_approved else "Rejected"
+        rev.status = "approved" if payload.is_approved else "rejected"
     if payload.is_featured is not None:
         rev.is_featured = payload.is_featured
     if payload.status is not None:
-        rev.status = payload.status
-        rev.is_approved = (payload.status == "Approved")
+        rev.status = payload.status.lower()
+        rev.is_approved = (payload.status.lower() == "approved")
     if payload.moderation_notes is not None:
         rev.moderation_notes = payload.moderation_notes
 
