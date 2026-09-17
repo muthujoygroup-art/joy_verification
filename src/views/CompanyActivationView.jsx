@@ -590,6 +590,51 @@ export const CompanyActivationView = () => {
                       </div>
                     </div>
 
+                    {/* Bank Account Details for Penny Drop API Verification */}
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                      <span className="font-extrabold text-slate-800 text-xs block flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Corporate Bank Account Details (for SuperAdmin Penny Drop Verification)</span>
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Bank Account Number *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. 91802004812739"
+                            value={corporateData.bank_account || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_account: e.target.value })}
+                            className="form-input text-xs font-mono font-bold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">IFSC Code *</label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={11}
+                            placeholder="e.g. HDFC0001234"
+                            value={corporateData.ifsc_code || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, ifsc_code: e.target.value.toUpperCase() })}
+                            className="form-input text-xs font-mono font-bold uppercase"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Bank Name *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. HDFC Bank Ltd"
+                            value={corporateData.bank_name || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_name: e.target.value })}
+                            className="form-input text-xs font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Document Uploads Grid */}
                     <span className="font-extrabold text-slate-800 text-xs block pt-2">
                       Upload Statutory Verification Attachments (PDF / Images)
@@ -600,6 +645,7 @@ export const CompanyActivationView = () => {
                         { key: 'coi', label: 'Certificate of Incorporation (COI)', desc: 'MCA incorporation certificate' },
                         { key: 'pan', label: 'Company PAN Card Scan', desc: 'Copy of official PAN card' },
                         { key: 'gst', label: 'GST Registration Certificate', desc: 'Form GST REG-06' },
+                        { key: 'bank_cheque', label: 'Bank Cancelled Cheque / Statement', desc: 'Proof of Bank Account' },
                         { key: 'signatory_proof', label: 'Board Resolution / Signatory Letter', desc: 'Signatory authorization proof' },
                       ].map((doc) => (
                         <div key={doc.key} className="p-3 border border-slate-200 rounded-2xl bg-slate-50 flex items-center justify-between">

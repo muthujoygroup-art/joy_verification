@@ -25,14 +25,18 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
+import { CompanyOnboardingVerificationModal } from './CompanyOnboardingVerificationModal';
 
-export const LeadsInquiriesConsole = () => {
+export const LeadsInquiriesConsole = ({ showToast }) => {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   
+  // Onboarding & BGV Verification Modal State
+  const [onboardingModalInquiry, setOnboardingModalInquiry] = useState(null);
+
   // Notes Modal
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [notesDraft, setNotesDraft] = useState('');
@@ -423,6 +427,16 @@ export const LeadsInquiriesConsole = () => {
 
                       <td className="p-3.5 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* 6-Step Onboarding & BGV Verification Engine Trigger */}
+                          <button
+                            onClick={() => setOnboardingModalInquiry(inq)}
+                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-[10px] uppercase tracking-wider shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                            title="Open 6-Step Company Onboarding, BGV Verification & Telemetry Engine"
+                          >
+                            <Building2 className="w-3.5 h-3.5 text-amber-300" />
+                            <span>Onboarding & BGV 🚀</span>
+                          </button>
+
                           {/* Direct Email Reply Button */}
                           <button
                             onClick={() => {
@@ -586,6 +600,18 @@ export const LeadsInquiriesConsole = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 🚀 6-STEP COMPANY ONBOARDING, BGV VERIFICATION & TELEMETRY MODAL */}
+      {onboardingModalInquiry && (
+        <CompanyOnboardingVerificationModal
+          inquiry={onboardingModalInquiry}
+          onClose={() => setOnboardingModalInquiry(null)}
+          onUpdateInquiry={(inqId, newStatus, noteText) => {
+            fetchInquiries();
+          }}
+          showToast={showToast}
+        />
       )}
 
     </div>
