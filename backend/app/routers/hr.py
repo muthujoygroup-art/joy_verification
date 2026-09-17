@@ -389,6 +389,15 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
 
                     comp_obj = db.query(Company).filter(Company.id == cand.company_id).first() if cand.company_id else None
                     comp_name = comp_obj.name if comp_obj else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+
+                    hr_name = None
+                    hr_email = None
+                    if cand.hr_id:
+                        hr_user = db.query(HrUser).filter(HrUser.id == cand.hr_id).first()
+                        if hr_user:
+                            hr_name = hr_user.name
+                            hr_email = hr_user.email
+
                     send_candidate_onboarding_email(
                         candidate_name=cand.name,
                         candidate_code=cand.emp_id or cand.employee_number or "EMP",
@@ -398,7 +407,10 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
                         company_name=comp_name,
                         company_id=cand.company_id,
                         designation=cand.designation or "Associate",
-                        db=db
+                        sender_hr_name=hr_name,
+                        sender_hr_email=hr_email,
+                        db=db,
+                        async_mode=True
                     )
                     print(f"✅ Onboarding email dispatched successfully to {cand.email}")
                 except Exception as mail_err:

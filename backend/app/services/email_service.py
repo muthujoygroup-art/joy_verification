@@ -6,6 +6,8 @@ import logging
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import formataddr
 from datetime import datetime
 from typing import Optional, Dict, Any
 
@@ -162,8 +164,10 @@ def send_smtp_email(
 
     def _execute_send():
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = f"{cfg['from_name']} <{cfg['from_email']}>"
+        msg["Subject"] = Header(subject, "utf-8").encode()
+        from_name = cfg.get("from_name") or "JOY Corporate Solutions BGV"
+        from_email = cfg.get("from_email") or "admin@joycorporatesolutions.com"
+        msg["From"] = formataddr((str(Header(from_name, "utf-8")), from_email))
         msg["To"] = to_email
         if reply_to:
             msg["Reply-To"] = reply_to
@@ -209,7 +213,9 @@ def send_smtp_email(
                     pass
                 try:
                     # Re-stamp From header with master config
-                    msg.replace_header("From", f"{master_cfg['from_name']} <{master_cfg['from_email']}>")
+                    mf_name = master_cfg.get("from_name") or "JOY Corporate Solutions BGV"
+                    mf_email = master_cfg.get("from_email") or "admin@joycorporatesolutions.com"
+                    msg.replace_header("From", formataddr((str(Header(mf_name, "utf-8")), mf_email)))
                     _attempt_dispatch(master_cfg)
                     try:
                         logger.info(f"✅ [SMTP SENT - Mode: master_cpanel_fallback] Dispatched to {to_email}")
@@ -732,7 +738,8 @@ def send_candidate_onboarding_email(
     sender_hr_name: Optional[str] = None,
     sender_hr_email: Optional[str] = None,
     custom_smtp: Optional[Dict[str, Any]] = None,
-    db=None
+    db=None,
+    async_mode: bool = True
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     verify_url = f"{app_url}/verify?token={token}"
@@ -808,7 +815,8 @@ def send_candidate_onboarding_email(
         company_id=company_id,
         custom_config=custom_smtp,
         reply_to=sender_hr_email,
-        db=db
+        db=db,
+        async_mode=async_mode
     )
 
 
@@ -825,7 +833,8 @@ def send_candidate_thank_you_email(
     designation: Optional[str] = "Associate",
     hr_email: Optional[str] = None,
     custom_smtp: Optional[Dict[str, Any]] = None,
-    db=None
+    db=None,
+    async_mode: bool = True
 ) -> Dict[str, Any]:
     """
     Dispatches a professional Thank You & Receipt Confirmation email to candidate upon
@@ -854,23 +863,23 @@ def send_candidate_thank_you_email(
                 <td style="color: #0f172a; font-weight: 800;">{candidate_name}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Employee / Reference ID:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Employee / Reference ID:</td>
                 <td style="color: #0f172a; font-weight: 800; font-family: monospace;">#{candidate_code}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Position / Designation:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Position / Designation:</td>
                 <td style="color: #0f172a; font-weight: 700;">{designation}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Employer Organization:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Employer Organization:</td>
                 <td style="color: #4338ca; font-weight: 800;">{company_name}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Submission Timestamp:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Submission Timestamp:</td>
                 <td style="color: #334155; font-weight: 600;">{datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</td>
             </tr>
             <tr>
-                <td style="color: #64748b; font-weight: 600;">Status:</td>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Status:</td>
                 <td style="color: #047857; font-weight: 800;">Submitted &bull; Under Compliance Review</td>
             </tr>
         </table>
@@ -908,13 +917,14 @@ def send_candidate_thank_you_email(
         html_content=html,
         company_id=company_id,
         custom_config=custom_smtp,
-        db=db
+        db=db,
+        async_mode=async_mode
     )
 
     if hr_email and hr_email != candidate_email:
         hr_alert_subject = f"📋 [Candidate Submission] {candidate_name} (#{candidate_code}) submitted onboarding data"
         try:
-            send_smtp_email(hr_email, hr_alert_subject, html, company_id=company_id, custom_config=custom_smtp, db=db)
+            send_smtp_email(hr_email, hr_alert_subject, html, company_id=company_id, custom_config=custom_smtp, db=db, async_mode=async_mode)
         except Exception:
             pass
 
@@ -932,7 +942,8 @@ def send_candidate_verification_completed_email(
     company_name: str = "Company",
     company_id: Optional[str] = None,
     score: str = "99.6",
-    db=None
+    db=None,
+    async_mode: bool = True
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     comp_logo = get_company_logo_or_fallback(company_id, db)
@@ -974,10 +985,10 @@ def send_candidate_verification_completed_email(
     )
 
     subject = f"✅ BGV Certified (Score: {score}/100) — {candidate_name} ({candidate_code})"
-    res1 = send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db)
+    res1 = send_smtp_email(candidate_email, subject, html, company_id=company_id, db=db, async_mode=async_mode)
     
     if hr_email and hr_email != candidate_email:
-        send_smtp_email(hr_email, f"✅ [HR Alert] {candidate_name} Onboarding Verification Complete", html, company_id=company_id, db=db)
+        send_smtp_email(hr_email, f"✅ [HR Alert] {candidate_name} Onboarding Verification Complete", html, company_id=company_id, db=db, async_mode=async_mode)
 
     return res1
 
