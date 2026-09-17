@@ -37,6 +37,7 @@ import {
   BookOpen,
   Building2,
   Calculator,
+  Camera,
   Check,
   CheckCheck,
   CheckCircle2,
@@ -2231,68 +2232,153 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs bg-white">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
-                  <th className="py-3 px-4">Company Profile</th>
-                  <th className="py-3 px-4">Contact Info</th>
-                  <th className="py-3 px-4">Tariff & Quota</th>
-                  <th className="py-3 px-4 text-center">Active Features (out of 10)</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase font-extrabold text-[11px] tracking-wider">
+                  <th className="py-3.5 px-4 min-w-[260px]">Company Logo & Profile</th>
+                  <th className="py-3.5 px-4 min-w-[200px]">Contact Details</th>
+                  <th className="py-3.5 px-4 min-w-[170px]">Tariff & Quota</th>
+                  <th className="py-3.5 px-4 text-center min-w-[150px]">10 Feature Flags</th>
+                  <th className="py-3.5 px-4 text-center min-w-[170px]">Governance Status</th>
+                  <th className="py-3.5 px-4 text-right min-w-[340px]">Management Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
                 {companies.map((comp) => {
-                  const enabledCount = Object.values(comp.features || {}).filter(Boolean).length;
+                  const getCompanyInitials = (name) => {
+                    if (!name) return 'CO';
+                    const clean = name.replace(/private|limited|pvt|ltd|solutions|services|group|inc|corp/gi, '').trim();
+                    const words = clean.split(/\s+/).filter(Boolean);
+                    if (words.length >= 2) {
+                      return (words[0][0] + words[1][0]).toUpperCase();
+                    }
+                    return name.slice(0, 2).toUpperCase();
+                  };
+
+                  const activeFlagsCount = Math.min(
+                    10,
+                    comp.features && typeof comp.features === 'object'
+                      ? Object.keys(comp.features).filter(k => comp.features[k] === true).length
+                      : 10
+                  );
+
+                  const logoUrl = comp.logo || comp.logo_url || comp.brand_logo || comp.company_logo;
+
                   return (
-                    <tr key={comp.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900 text-sm">{comp.name}</div>
-                        <div className="text-slate-500 text-[11px] font-mono">Code: {comp.code} • Plan: <strong>{comp.plan}</strong></div>
+                    <tr key={comp.id} className="hover:bg-slate-50/80 transition-all">
+                      
+                      {/* 1. Company Logo & Profile (Neat 1-line title with Avatar) */}
+                      <td className="py-4 px-4 min-w-[260px]">
+                        <div className="flex items-center gap-3">
+                          {/* Logo Avatar & Upload Button */}
+                          <div className="relative group shrink-0">
+                            {logoUrl ? (
+                              <img
+                                src={logoUrl}
+                                alt={comp.name}
+                                className="w-12 h-12 rounded-xl object-contain bg-white border border-slate-200 p-1 shadow-2xs group-hover:border-indigo-400 transition-all"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white font-black text-sm flex items-center justify-center shadow-2xs uppercase font-outfit border border-indigo-400/30 group-hover:scale-105 transition-all">
+                                {getCompanyInitials(comp.name)}
+                              </div>
+                            )}
+                            <label 
+                              htmlFor={`logo-upload-${comp.id}`} 
+                              className="absolute -bottom-1 -right-1 p-1 rounded-full bg-slate-900 text-white shadow-md hover:bg-indigo-600 cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
+                              title="Upload / Change Company Logo"
+                            >
+                              <Camera className="w-3 h-3" />
+                            </label>
+                            <input
+                              id={`logo-upload-${comp.id}`}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = (evt) => {
+                                    const base64 = evt.target.result;
+                                    setCompanies(prev => prev.map(c => c.id === comp.id ? { ...c, logo: base64, logo_url: base64 } : c));
+                                    showToast(`📸 Logo updated for ${comp.name}!`);
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </div>
+
+                          {/* Company Name & Metadata */}
+                          <div className="min-w-0 flex-1">
+                            <div className="font-extrabold text-slate-900 text-sm leading-snug whitespace-nowrap overflow-hidden text-ellipsis max-w-[220px]" title={comp.name}>
+                              {comp.name}
+                            </div>
+                            <div className="text-slate-500 text-[11px] font-mono mt-0.5 flex items-center gap-1.5 flex-wrap">
+                              <span className="badge badge-purple font-bold text-[9px] px-1.5 py-0.5">{comp.code || comp.id}</span>
+                              <span className="text-slate-300">•</span>
+                              <span className="font-semibold text-slate-600">{comp.plan || 'Standard Tier'}</span>
+                            </div>
+                          </div>
+                        </div>
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="text-slate-900 font-medium">{comp.contactPerson}</div>
-                        <div className="text-slate-500 text-[11px]">{comp.email}</div>
+
+                      {/* 2. Contact Details */}
+                      <td className="py-4 px-4 min-w-[200px]">
+                        <div className="font-extrabold text-slate-900 text-xs">{comp.contactPerson || 'Enterprise Admin'}</div>
+                        <div className="text-slate-500 text-[11px] font-medium truncate max-w-[190px]" title={comp.email}>{comp.email}</div>
+                        {comp.phone && <div className="text-slate-400 text-[10px] font-mono">{comp.phone}</div>}
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900 font-mono">₹{comp.pricePerVerification} / check</div>
-                        <div className="text-slate-500 text-[11px]">Quota: {comp.verifiedCountThisMonth} / {comp.maxLimit} used</div>
+
+                      {/* 3. Tariff & Quota */}
+                      <td className="py-4 px-4 min-w-[170px]">
+                        <div className="font-black text-slate-900 font-mono text-xs">₹{comp.pricePerVerification || 120} / check</div>
+                        <div className="text-slate-500 text-[11px] font-medium mt-0.5">
+                          Quota: <strong className="text-slate-900">{comp.verifiedCountThisMonth || 0}</strong> / {comp.maxLimit || 500} used
+                        </div>
                       </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="badge badge-purple text-[10px] font-bold">
-                          {enabledCount} of 10 Enabled
+
+                      {/* 4. 10 Active Feature Flags */}
+                      <td className="py-4 px-4 text-center min-w-[150px]">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-black">
+                          <Sliders className="w-3 h-3 text-purple-600" />
+                          <span>{activeFlagsCount} of 10 Enabled</span>
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-center">
-                        <div className="flex flex-col items-center justify-center gap-1.5">
+
+                      {/* 5. Governance Status */}
+                      <td className="py-4 px-4 text-center min-w-[170px]">
+                        <div className="flex flex-col items-center justify-center gap-1">
                           {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
-                            <span className="badge badge-purple text-[10px] font-black py-1 px-2 border border-purple-300 animate-pulse">
-                              🔵 PENDING APPROVAL (Terms Signed)
+                            <span className="badge badge-purple text-[9.5px] font-black py-1 px-2.5 border border-purple-300 animate-pulse">
+                              🔵 PENDING APPROVAL
                             </span>
                           ) : comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
-                            <span className="badge badge-amber text-[10px] font-black py-1 px-2 border border-amber-300">
-                              🟡 PENDING ACTIVATION (Link Sent)
+                            <span className="badge badge-amber text-[9.5px] font-black py-1 px-2.5 border border-amber-300">
+                              🟡 PENDING ACTIVATION
                             </span>
                           ) : comp.status === 'Suspended' || comp.status === 'Inactive' ? (
-                            <span className="badge badge-rose text-[10px] font-black py-1 px-2 border border-rose-300">
+                            <span className="badge badge-rose text-[9.5px] font-black py-1 px-2.5 border border-rose-300">
                               🔴 SUSPENDED
                             </span>
                           ) : comp.verification_status === 'Verified' ? (
-                            <span className="badge badge-emerald text-[8.5px] font-black py-0.5 px-2 border border-emerald-300">
+                            <span className="badge badge-emerald text-[9px] font-black py-0.5 px-2.5 border border-emerald-300">
                               🏛️ STATUTORY VERIFIED ✓
                             </span>
                           ) : comp.verification_status === 'Action Required' ? (
-                            <span className="badge badge-amber text-[8.5px] font-black py-0.5 px-2 border border-amber-300">
-                              ⚠️ STATUTORY ACTION REQ
+                            <span className="badge badge-amber text-[9px] font-black py-0.5 px-2.5 border border-amber-300">
+                              ⚠️ ACTION REQUIRED
                             </span>
                           ) : (
-                            <span className="badge badge-purple text-[8.5px] font-bold py-0.5 px-2 border border-purple-200">
-                              📋 STATUTORY AUDIT PENDING
+                            <span className="badge badge-purple text-[9px] font-bold py-0.5 px-2.5 border border-purple-200">
+                              📋 AUDIT PENDING
                             </span>
                           )}
 
-                          <div className="flex items-center gap-1 mt-0.5">
+                          {/* Activation Buttons */}
+                          <div className="flex items-center gap-1 mt-1">
                             {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
                               <button
                                 type="button"
@@ -2306,9 +2392,8 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                                   }
                                 }}
                                 className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer transition-all active:scale-95"
-                                title="Approve & Grant Login Access"
                               >
-                                ✅ Approve Login Access
+                                ✅ Approve Login
                               </button>
                             ) : comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
                               <>
@@ -2316,7 +2401,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                                   type="button"
                                   onClick={() => setActivatingCompany(comp)}
                                   className="px-2 py-1 rounded-lg text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 cursor-pointer shadow-2xs"
-                                  title="View Activation Token & PIN"
                                 >
                                   🔗 Link & PIN
                                 </button>
@@ -2331,7 +2415,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                                     }
                                   }}
                                   className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 cursor-pointer"
-                                  title="Resend Activation Email to Admin"
                                 >
                                   📧 Resend
                                 </button>
@@ -2345,7 +2428,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
                                     : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
                                 }`}
-                                title={comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Click to Reactivate' : 'Click to Suspend / Inactive'}
                               >
                                 {comp.status === 'Suspended' || comp.status === 'Inactive' ? 'Reactivate 🟢' : 'Suspend ⏸️'}
                               </button>
@@ -2353,16 +2435,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+
+                      {/* 6. Management Actions Toolbar */}
+                      <td className="py-4 px-4 text-right min-w-[340px]">
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
                           <button
                             type="button"
                             onClick={() => setAuditingCompany(comp)}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-black bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-900 shadow-2xs cursor-pointer"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-900 shadow-2xs cursor-pointer"
                             title="Audit Statutory Profile Details (GST, PAN, CIN, Bank, Documents)"
                           >
                             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Audit Statutory Profile 🏛️</span>
+                            <span>Audit Profile</span>
                           </button>
                           <button
                             type="button"
@@ -2372,24 +2456,24 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                               setShowCompanyPassword(false);
                               setSendCompanyPasswordEmail(true);
                             }}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 shadow-2xs cursor-pointer"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 shadow-2xs cursor-pointer"
                             title="Directly Change / Reset Company Login Password"
                           >
                             <KeyRound className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Password 🔑</span>
+                            <span>Password</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => setGovernanceCompany(comp)}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
                             title="View & Edit Company Profile, Reset Password, Check Documents & DPDP Legal Status"
                           >
                             <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                            <span>Manage Profile ⚙️</span>
+                            <span>Manage</span>
                           </button>
                           <button
                             onClick={() => setEditingFeaturesCompany(comp)}
-                            className="btn btn-superadmin text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
+                            className="btn btn-superadmin text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
                             title="Configure 10 Verification Modules"
                           >
                             <Sliders className="w-3.5 h-3.5" />
@@ -2400,20 +2484,21 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                               setCustomTariffModalCompany(comp);
                               setCustomTariffValues(comp.custom_tariffs || {});
                             }}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-700"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-700"
                             title="Custom Price Tariffs per Check"
                           >
                             <span>Tariffs 💰</span>
                           </button>
                           <button
                             onClick={() => setTopupModalCompany(comp)}
-                            className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-800"
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-800"
                             title="Top Up Verification Credits"
                           >
                             <span>+ Credits ⚡</span>
                           </button>
                         </div>
                       </td>
+
                     </tr>
                   );
                 })}
