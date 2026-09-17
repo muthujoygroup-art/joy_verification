@@ -345,7 +345,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 👑 1. SUPER ADMIN: EXACT MATCH WITH USER SCREENSHOT 2
+    // 👑 1. SUPER ADMIN: MODULAR CATEGORIES
     // =========================================================================
     if (effectiveRole === 'superadmin') {
       return [
@@ -353,28 +353,38 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           id: 'core_ops',
           title: '1. Companies & Accounts',
           subtitle: 'Tenants & Candidates',
-          badgeText: '6 MODULES',
+          badgeText: '4 MODULES',
           icon: Building2,
           colorClass: 'from-indigo-600 to-purple-600',
           defaultTab: 'companies',
           divisions: [
             { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
             { id: 'onboard_company', label: '+ Add New Company', modal: 'add_company', icon: Plus },
-            { id: 'landing_cms', label: 'Homepage Content & CMS 🌐', tab: 'landing_cms', icon: Globe },
-            { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search },
             { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
+            { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck },
+            { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search }
+          ]
+        },
+        {
+          id: 'landing_public_cms',
+          title: '2. Landing Page & Website CMS',
+          subtitle: 'Homepage, Leads & Legal',
+          badgeText: '4 MODULES',
+          icon: Globe,
+          colorClass: 'from-blue-600 to-cyan-600',
+          defaultTab: 'landing_cms',
+          divisions: [
+            { id: 'landing_cms', label: 'Homepage Content & CMS 🌐', tab: 'landing_cms', icon: Globe },
             { id: 'leads_inquiries', label: 'Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
             { id: 'reviews_moderation', label: 'Customer Reviews', tab: 'reviews', icon: Star },
-            { id: 'blog_cms', label: 'Knowledge Base & Blog 📚', tab: 'blog', icon: BookOpen },
-            { id: 'terms_hub', label: 'Terms & Agreements', tab: 'terms_hub', icon: Scale },
-            { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck }
+            { id: 'terms_hub', label: 'Terms & Agreements', tab: 'terms_hub', icon: Scale }
           ]
         },
         {
           id: 'gateways_engine',
-          title: '2. Verification Gateways',
+          title: '3. Verification Gateways',
           subtitle: 'APIs & Live Studio',
-          badgeText: '4 MODULES',
+          badgeText: '5 MODULES',
           icon: Zap,
           colorClass: 'from-teal-600 to-emerald-600',
           defaultTab: 'apiconfig',
@@ -388,9 +398,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'billing_finance',
-          title: '3. Invoices & Billing',
+          title: '4. Invoices & Billing',
           subtitle: 'Postpaid Bills & Invoices',
-          badgeText: '2 MODULES',
+          badgeText: '3 MODULES',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-600',
           defaultTab: 'billing',
@@ -402,9 +412,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'db_security',
-          title: '4. Database & Logs',
+          title: '5. Database & Logs',
           subtitle: 'Database & System Activity',
-          badgeText: '4 MODULES',
+          badgeText: '5 MODULES',
           icon: Database,
           colorClass: 'from-rose-600 to-pink-700',
           defaultTab: 'dbms',
@@ -418,9 +428,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'gov_reports',
-          title: '5. Compliance & Settings',
+          title: '6. Compliance & Settings',
           subtitle: 'Reports, Rules & Settings',
-          badgeText: '4 MODULES',
+          badgeText: '5 MODULES',
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-800',
           defaultTab: 'reports',

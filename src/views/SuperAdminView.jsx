@@ -20,7 +20,6 @@ import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
 import { UniversalEntityTrackerModal } from '../components/UniversalEntityTrackerModal';
 import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
 import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
-import { BlogCmsConsole } from '../components/BlogCmsConsole';
 import { LandingPageCmsConsole } from '../components/LandingPageCmsConsole';
 import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginConsole';
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
@@ -2204,13 +2203,6 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       {(activeTab === 'reviews' || activeTab === 'reviews_moderation') && (
         <div className="animate-fadeIn">
           <ReviewsModerationConsole />
-        </div>
-      )}
-
-      {/* TAB: KNOWLEDGE BASE & BLOG CMS */}
-      {(activeTab === 'blog' || activeTab === 'blog_cms' || activeTab === 'articles') && (
-        <div className="animate-fadeIn">
-          <BlogCmsConsole />
         </div>
       )}
 
