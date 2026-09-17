@@ -170,12 +170,6 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
 
           {/* Action CTAs */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link
-              to="/login"
-              className="hidden sm:inline-flex px-4 py-2 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] no-underline transition-all"
-            >
-              Portal Login
-            </Link>
             <button
               onClick={() => {
                 soundEngine.playClick();
