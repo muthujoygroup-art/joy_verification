@@ -4103,16 +4103,19 @@ export const CompanyAdminView = () => {
 
                       <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1 text-xs">
                         <div className="flex justify-between items-center text-slate-600">
-                          <span>Base Rate:</span>
-                          <span className="font-black text-slate-900 font-mono">₹{plan.ratePerProfile} <span className="text-[10px] font-normal text-slate-500">/ profile</span></span>
+                          <span>Rate / Profile:</span>
+                          <span className="font-black text-slate-900 font-mono">
+                            {plan.ratePerProfile === 'Custom' ? 'Custom' : `₹${plan.ratePerProfile}`}
+                            <span className="text-[10px] font-normal text-slate-500"> / profile</span>
+                          </span>
                         </div>
                         <div className="flex justify-between items-center text-slate-600">
                           <span>Included Limit:</span>
-                          <span className="font-bold text-indigo-700">{plan.maxProfiles === 999999 ? '500+ (Custom)' : `${plan.maxProfiles} Profiles`}</span>
+                          <span className="font-bold text-indigo-700">{plan.maxProfiles === 999999 ? '> 500 (Custom)' : `< ${plan.maxProfiles} Profiles`}</span>
                         </div>
                         <div className="flex justify-between items-center text-slate-600 pt-1 border-t border-slate-200/60">
-                          <span className="text-amber-700 font-bold">Overage Rate:</span>
-                          <span className="font-extrabold text-amber-800 font-mono">₹{plan.overageRate} <span className="text-[10px] font-normal text-slate-500">/ profile</span></span>
+                          <span className="text-amber-700 font-bold">Billing Model:</span>
+                          <span className="font-extrabold text-indigo-800 font-mono text-[11px]">100% Postpaid</span>
                         </div>
                       </div>
 

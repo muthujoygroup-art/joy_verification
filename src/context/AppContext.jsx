@@ -24,39 +24,39 @@ const INITIAL_FEATURE_LIST = [
 export const POSTPAID_PLANS = {
   tier1: {
     id: 'tier1',
-    name: '50 Employees Plan',
-    shortName: '50 Employees',
+    name: 'Tier 1 (< 50 Employees)',
+    shortName: 'Tier 1 (<50)',
     tierNumber: 1,
     maxProfiles: 50,
-    ratePerProfile: 180,
-    overageRate: 200,
+    ratePerProfile: 250,
+    overageRate: 250,
     badgeColor: 'badge-purple',
-    employeeThreshold: '50 Employees Quota',
+    employeeThreshold: '< 50 Employees Quota',
     description: 'For companies with up to 50 employees/vendors',
     features: [
-      '50 Verified Employee Quota',
-      '₹180 / Base Verified Profile',
-      '₹200 / Exceeding Profile (Never Blocked)',
+      'Up to 50 Verified Employees',
+      '₹250 / Verified Profile',
+      '100% Postpaid (Pay on-demand)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
       'Automated Month-End GST Invoices',
-      'Full Statutory Verifications Suite'
+      'Full Statutory Verification Suite'
     ]
   },
   tier2: {
     id: 'tier2',
-    name: '150 Employees Plan',
-    shortName: '150 Employees',
+    name: 'Tier 2 (< 100 Employees)',
+    shortName: 'Tier 2 (<100)',
     tierNumber: 2,
-    maxProfiles: 150,
-    ratePerProfile: 150,
-    overageRate: 180,
+    maxProfiles: 100,
+    ratePerProfile: 230,
+    overageRate: 230,
     badgeColor: 'badge-indigo',
-    employeeThreshold: '150 Employees Quota',
-    description: 'For growing teams with up to 150 employees/vendors',
+    employeeThreshold: '< 100 Employees Quota',
+    description: 'For growing teams with up to 100 employees/vendors',
     features: [
-      '150 Verified Employee Quota',
-      '₹150 / Base Verified Profile',
-      '₹180 / Exceeding Profile (Never Blocked)',
+      'Up to 100 Verified Employees',
+      '₹230 / Verified Profile',
+      '100% Postpaid (Pay on-demand)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
       'Automated Month-End GST Invoices',
       'Dual-Server Fallback Engine'
@@ -64,19 +64,19 @@ export const POSTPAID_PLANS = {
   },
   tier3: {
     id: 'tier3',
-    name: '300 Employees Plan',
-    shortName: '300 Employees',
+    name: 'Tier 3 (< 300 Employees)',
+    shortName: 'Tier 3 (<300)',
     tierNumber: 3,
     maxProfiles: 300,
-    ratePerProfile: 120,
-    overageRate: 150,
+    ratePerProfile: 200,
+    overageRate: 200,
     badgeColor: 'badge-cyan',
-    employeeThreshold: '300 Employees Quota',
+    employeeThreshold: '< 300 Employees Quota',
     description: 'For mid-size companies with up to 300 employees/vendors',
     features: [
-      '300 Verified Employee Quota',
-      '₹120 / Base Verified Profile',
-      '₹150 / Exceeding Profile (Never Blocked)',
+      'Up to 300 Verified Employees',
+      '₹200 / Verified Profile',
+      '100% Postpaid (Pay on-demand)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
       'Priority Processing Queue',
       'Automated Month-End GST Invoices'
@@ -84,19 +84,19 @@ export const POSTPAID_PLANS = {
   },
   tier4: {
     id: 'tier4',
-    name: '500 Employees Plan',
-    shortName: '500 Employees',
+    name: 'Tier 4 (< 500 Employees)',
+    shortName: 'Tier 4 (<500)',
     tierNumber: 4,
     maxProfiles: 500,
-    ratePerProfile: 100,
-    overageRate: 120,
+    ratePerProfile: 180,
+    overageRate: 180,
     badgeColor: 'badge-emerald',
-    employeeThreshold: '500 Employees Quota',
+    employeeThreshold: '< 500 Employees Quota',
     description: 'For large enterprises with up to 500 employees/vendors',
     features: [
-      '500 Verified Employee Quota',
-      '₹100 / Base Verified Profile',
-      '₹120 / Exceeding Profile (Never Blocked)',
+      'Up to 500 Verified Employees',
+      '₹180 / Verified Profile',
+      '100% Postpaid (Pay on-demand)',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
       'Dedicated Account Support',
       'Automated Month-End GST Invoices'
@@ -104,21 +104,23 @@ export const POSTPAID_PLANS = {
   },
   tier5: {
     id: 'tier5',
-    name: '500+ Enterprise Plan',
-    shortName: '500+ Enterprise',
+    name: 'Tier 5 (Custom > 500 Employees)',
+    shortName: 'Tier 5 (Custom >500)',
     tierNumber: 5,
     maxProfiles: 999999,
-    ratePerProfile: 85,
-    overageRate: 95,
+    ratePerProfile: 'Custom',
+    numericRate: 150,
+    overageRate: 'Custom',
+    isCustom: true,
     badgeColor: 'badge-amber',
-    employeeThreshold: '500+ Custom Quota',
-    description: 'For large corporate organizations with 500+ employees/vendors',
+    employeeThreshold: '> 500 Employees (Custom)',
+    description: 'All things custom for organizations with more than 500 employees',
     features: [
-      '500+ Verified Profiles (Custom Quota)',
-      '₹85 / Base Verified Profile (Volume Discount)',
-      '₹95 / Exceeding Profile',
+      'More than 500 Employees (Custom Quota)',
+      'Custom Negotiated Per-Profile Rates',
+      'All Features & SLAs Fully Custom',
       'Vendor Profile Parity (1 Vendor = 1 Profile)',
-      'Custom SLA & Dedicated Account Manager',
+      'Dedicated Enterprise Account Manager',
       'Automated Month-End GST Invoices'
     ]
   }
@@ -163,17 +165,13 @@ export const getCompanyPostpaidPlan = (companyOrPlan) => {
     ? companyOrPlan.toLowerCase()
     : ((companyOrPlan.planTier || companyOrPlan.plan || '').toLowerCase());
 
-  if (planKey.includes('50') && !planKey.includes('150') && !planKey.includes('500')) return POSTPAID_PLANS.tier1;
-  if (planKey.includes('150')) return POSTPAID_PLANS.tier2;
-  if (planKey.includes('300')) return POSTPAID_PLANS.tier3;
-  if (planKey.includes('500+') || planKey.includes('custom') || planKey.includes('tier 5') || planKey.includes('tier5') || planKey.includes('platinum')) return POSTPAID_PLANS.tier5;
-  if (planKey.includes('500')) return POSTPAID_PLANS.tier4;
-  if (planKey.includes('tier 1') || planKey.includes('tier1') || planKey.includes('starter') || planKey.includes('basic')) return POSTPAID_PLANS.tier1;
-  if (planKey.includes('tier 2') || planKey.includes('tier2') || planKey.includes('growth') || planKey.includes('standard')) return POSTPAID_PLANS.tier2;
-  if (planKey.includes('tier 3') || planKey.includes('tier3') || planKey.includes('scale') || planKey.includes('pro')) return POSTPAID_PLANS.tier3;
-  if (planKey.includes('tier 4') || planKey.includes('tier4') || planKey.includes('enterprise')) return POSTPAID_PLANS.tier4;
+  if (planKey.includes('tier 1') || planKey.includes('tier1') || (planKey.includes('50') && !planKey.includes('150') && !planKey.includes('500') && !planKey.includes('300'))) return POSTPAID_PLANS.tier1;
+  if (planKey.includes('tier 2') || planKey.includes('tier2') || planKey.includes('100') || planKey.includes('150')) return POSTPAID_PLANS.tier2;
+  if (planKey.includes('tier 3') || planKey.includes('tier3') || planKey.includes('300')) return POSTPAID_PLANS.tier3;
+  if (planKey.includes('tier 5') || planKey.includes('tier5') || planKey.includes('custom') || planKey.includes('500+') || planKey.includes('enterprise custom')) return POSTPAID_PLANS.tier5;
+  if (planKey.includes('tier 4') || planKey.includes('tier4') || planKey.includes('500')) return POSTPAID_PLANS.tier4;
 
-  return POSTPAID_PLANS.tier2;
+  return POSTPAID_PLANS.tier1;
 };
 
 export const calculateCompanyPostpaidBill = (company, candidates = [], vendors = []) => {
@@ -192,11 +190,14 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
 
   const totalVerifiedProfiles = verifiedEmployeesCount + verifiedVendorsCount;
   const baseQuota = plan.maxProfiles;
+  const effectiveRate = typeof plan.ratePerProfile === 'number' ? plan.ratePerProfile : (company?.pricePerVerification || plan.numericRate || 150);
+  const effectiveOverageRate = typeof plan.overageRate === 'number' ? plan.overageRate : effectiveRate;
+
   const baseProfilesCount = Math.min(totalVerifiedProfiles, baseQuota);
   const overageProfilesCount = Math.max(0, totalVerifiedProfiles - baseQuota);
 
-  const baseCost = baseProfilesCount * plan.ratePerProfile;
-  const overageCost = overageProfilesCount * plan.overageRate;
+  const baseCost = baseProfilesCount * effectiveRate;
+  const overageCost = overageProfilesCount * effectiveOverageRate;
   const subtotal = baseCost + overageCost;
   const gstTaxPercent = 18;
   const gstAmount = Math.round(subtotal * (gstTaxPercent / 100));
@@ -210,15 +211,16 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
     baseQuota,
     baseProfilesCount,
     overageProfilesCount,
-    baseRate: plan.ratePerProfile,
-    overageRate: plan.overageRate,
+    baseRate: effectiveRate,
+    overageRate: effectiveOverageRate,
     baseCost,
     overageCost,
     subtotal,
     gstTaxPercent,
     gstAmount,
     totalAmountDue,
-    isOverage: overageProfilesCount > 0
+    isOverage: overageProfilesCount > 0,
+    isCustom: Boolean(plan.isCustom)
   };
 };
 
@@ -3488,8 +3490,10 @@ export const AppProvider = ({ children }) => {
   };
 
   // ⚡ Update Company Postpaid Plan Tier (Tier 1 through Tier 5)
-  const updateCompanyPostpaidPlan = (companyId, planId) => {
+  const updateCompanyPostpaidPlan = async (companyId, planId) => {
     const targetPlan = POSTPAID_PLANS[planId] || POSTPAID_PLANS.tier1;
+    const numericRate = typeof targetPlan.ratePerProfile === 'number' ? targetPlan.ratePerProfile : 150;
+
     setCompanies(prev => {
       const updated = prev.map(c => {
         if (c.id === companyId) {
@@ -3497,7 +3501,7 @@ export const AppProvider = ({ children }) => {
             ...c,
             plan: targetPlan.name,
             planTier: targetPlan.id,
-            pricePerVerification: targetPlan.ratePerProfile,
+            pricePerVerification: numericRate,
             maxLimit: targetPlan.maxProfiles
           };
         }
@@ -3506,7 +3510,22 @@ export const AppProvider = ({ children }) => {
       try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
-    showToast(`🎉 Subscription updated to ${targetPlan.name} (Quota: ${targetPlan.maxProfiles} Profiles @ ₹${targetPlan.ratePerProfile}/profile)`);
+
+    try {
+      if (api.updateCompanyProfile) {
+        await api.updateCompanyProfile(companyId, {
+          plan: targetPlan.name,
+          price_per_verification: numericRate,
+          max_limit: targetPlan.maxProfiles
+        });
+      }
+    } catch (err) {
+      console.warn('Backend plan sync notice:', err);
+    }
+
+    const rateDisplay = targetPlan.ratePerProfile === 'Custom' ? 'Custom Negotiated Pricing' : `₹${targetPlan.ratePerProfile}/profile`;
+    const quotaDisplay = targetPlan.maxProfiles === 999999 ? '500+ (Custom Quota)' : `${targetPlan.maxProfiles} Profiles Quota`;
+    showToast(`🎉 Subscription updated to ${targetPlan.name} (${quotaDisplay} @ ${rateDisplay})`);
   };
 
   // ⚡ Settle Postpaid Month-End Verification Invoice via Razorpay / Payment Link

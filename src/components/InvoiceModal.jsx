@@ -25,11 +25,11 @@ export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, trans
   // Calculate live or resolve from transaction
   const computedBill = initialPostpaidBill || (typeof calculateCompanyPostpaidBill === 'function' ? calculateCompanyPostpaidBill(company, candidates, vendors) : null);
   const plan = computedBill?.plan || (POSTPAID_PLANS && POSTPAID_PLANS.tier1) || {
-    name: 'Tier 1 (Starter)',
-    shortName: 'Tier 1',
+    name: 'Tier 1 (< 50 Employees)',
+    shortName: 'Tier 1 (<50)',
     maxProfiles: 50,
-    ratePerProfile: 180,
-    overageRate: 200
+    ratePerProfile: 250,
+    overageRate: 250
   };
 
   const [baseCount, setBaseCount] = useState(

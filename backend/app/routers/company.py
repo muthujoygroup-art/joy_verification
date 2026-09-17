@@ -469,6 +469,13 @@ def update_company_own_profile(company_id: str, payload: dict, db: Session = Dep
     if payload.get("company_logo") is not None: comp.logo_url = payload["company_logo"]
     if payload.get("industry_sector") is not None: comp.industry_sector = payload["industry_sector"].strip()
     if payload.get("website") is not None: comp.website = payload["website"].strip()
+    if payload.get("plan") is not None: comp.plan = str(payload["plan"]).strip()
+    if payload.get("price_per_verification") is not None: 
+        try: comp.price_per_verification = float(payload["price_per_verification"])
+        except Exception: pass
+    if payload.get("max_limit") is not None: 
+        try: comp.max_limit = int(payload["max_limit"])
+        except Exception: pass
     if payload.get("documents") is not None: comp.documents = {**(comp.documents or {}), **payload["documents"]}
 
     db.commit()

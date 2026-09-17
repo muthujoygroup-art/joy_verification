@@ -36,7 +36,7 @@ import {
   Layers,
   ArrowUpRight
 } from 'lucide-react';
-import { useApp, DEFAULT_LANDING_PAGE_CONTENT } from '../context/AppContext';
+import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -1018,8 +1018,10 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         {/* ========================================================================= */}
         {/* PAGE 8: PRICING & PLANS                                                   */}
         {/* ========================================================================= */}
+        {/* PAGE 8: PRICING & PLANS                                                   */}
+        {/* ========================================================================= */}
         {activePage === 'pricing' && (
-          <div className="space-y-12 animate-in fade-in duration-300 max-w-4xl mx-auto">
+          <div className="space-y-12 animate-in fade-in duration-300 max-w-6xl mx-auto">
             <div className="text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF8F0] text-[#299C68] text-xs font-bold uppercase tracking-wider">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -1028,68 +1030,86 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
                 100% Postpaid & Metered Billing
               </h1>
-              <p className="text-base text-[#5C6878] leading-relaxed">
-                Never get blocked during critical recruitment surges. Verify on demand and settle monthly based on actual checks consumed with official GST tax invoices.
+              <p className="text-base text-[#5C6878] leading-relaxed max-w-2xl mx-auto">
+                Never get blocked during critical recruitment surges. Verify on demand and settle monthly based on actual verified employee profiles consumed with official GST tax invoices.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              
-              {/* Enterprise Postpaid Model */}
-              <div className="p-8 rounded-3xl bg-white border-2 border-[#426CF5] shadow-md space-y-6 relative">
-                <span className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-[#426CF5] text-white text-[10px] font-bold uppercase tracking-wider">
-                  Recommended for Enterprises
-                </span>
-                
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-[#182230]">Enterprise Postpaid</h2>
-                  <p className="text-xs text-[#5C6878]">Pay only for successful and consumed verification checks</p>
-                </div>
+            {/* 5-Tier Postpaid Pricing Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {POSTPAID_PLANS && Object.values(POSTPAID_PLANS).map((plan) => {
+                const isHighlight = plan.id === 'tier3';
+                return (
+                  <div 
+                    key={plan.id}
+                    className={`p-5 rounded-3xl bg-white border-2 transition-all flex flex-col justify-between space-y-4 relative ${
+                      isHighlight 
+                        ? 'border-[#426CF5] shadow-lg ring-2 ring-blue-100' 
+                        : 'border-[#E5EAF0] shadow-xs hover:border-[#426CF5]/60'
+                    }`}
+                  >
+                    {isHighlight && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#426CF5] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                        Most Popular 🌟
+                      </span>
+                    )}
 
-                <div className="text-3xl font-black text-[#182230] font-mono">
-                  Custom Metered Tariff
-                </div>
+                    <div className="space-y-3">
+                      <div>
+                        <span className="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px]">
+                          {plan.employeeThreshold}
+                        </span>
+                        <h2 className="text-lg font-bold text-[#182230] mt-1.5">{plan.name}</h2>
+                        <p className="text-[11px] text-[#5C6878] line-clamp-2 mt-0.5">{plan.description}</p>
+                      </div>
 
-                <ul className="space-y-2.5 text-xs text-[#5C6878]">
-                  <li className="flex items-center gap-2">✓ Zero upfront credit lock-in</li>
-                  <li className="flex items-center gap-2">✓ Unlimited HR recruiter seats</li>
-                  <li className="flex items-center gap-2">✓ Automated GST tax invoices</li>
-                  <li className="flex items-center gap-2">✓ Itemized transaction ledger export</li>
-                  <li className="flex items-center gap-2">✓ Dedicated account manager in Coimbatore</li>
-                </ul>
+                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <div className="text-xs text-slate-500 font-medium">Per Verified Profile</div>
+                        <div className="text-2xl font-black text-[#182230] font-mono mt-0.5">
+                          {plan.ratePerProfile === 'Custom' ? 'Custom' : `₹${plan.ratePerProfile}`}
+                        </div>
+                        <div className="text-[10px] text-slate-500 mt-0.5 font-bold">100% Postpaid</div>
+                      </div>
 
-                <button
-                  onClick={() => setActivePage('contact')}
-                  className="w-full py-3 rounded-full bg-[#426CF5] hover:bg-[#3459D8] text-white font-semibold text-xs transition-all cursor-pointer"
-                >
-                  Request Enterprise Quote
-                </button>
+                      <ul className="space-y-2 text-[11px] text-[#5C6878] pt-1">
+                        {plan.features.slice(0, 4).map((feat, idx) => (
+                          <li key={idx} className="flex items-start gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <button
+                      onClick={() => setActivePage('contact')}
+                      className={`w-full py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer ${
+                        isHighlight
+                          ? 'bg-[#426CF5] hover:bg-[#3459D8] text-white shadow-sm'
+                          : 'bg-slate-100 hover:bg-[#426CF5] hover:text-white text-slate-800'
+                      }`}
+                    >
+                      {plan.id === 'tier5' ? 'Request Custom Quote' : 'Choose ' + plan.shortName}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Postpaid Guarantees Strip */}
+            <div className="p-6 rounded-3xl bg-[#FCFCFA] border border-[#E5EAF0] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-sm font-black text-[#182230]">⚡ Zero Upfront Lock-in</div>
+                <p className="text-xs text-[#5C6878] mt-1">Start verification immediately without credit recharge delays.</p>
               </div>
-
-              {/* Contact Us for Pricing Note */}
-              <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-6 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h2 className="text-xl font-bold text-[#182230]">Need High-Volume Custom Tariffs?</h2>
-                  <p className="text-xs text-[#5C6878] leading-relaxed">
-                    For staffing agencies and large manufacturing hubs processing over 2,000 checks per month, we offer custom tiered pricing and dedicated API sandbox environments.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
-                  <div className="font-bold text-[#182230]">What’s Included:</div>
-                  <div>• Custom verification check bundles</div>
-                  <div>• Dedicated SLA guarantee</div>
-                  <div>• On-premise webhook connectors</div>
-                </div>
-
-                <button
-                  onClick={() => setActivePage('contact')}
-                  className="w-full py-3 rounded-full bg-white border border-[#E5EAF0] text-[#182230] hover:bg-slate-50 font-semibold text-xs transition-all cursor-pointer"
-                >
-                  Contact Our Sales Team
-                </button>
+              <div>
+                <div className="text-sm font-black text-[#182230]">🧾 Automated GST Invoices</div>
+                <p className="text-xs text-[#5C6878] mt-1">Official month-end tax invoices with SAC 998311 & 18% GST.</p>
               </div>
-
+              <div>
+                <div className="text-sm font-black text-[#182230]">🛡️ DPDP Act 2023 Shield</div>
+                <p className="text-xs text-[#5C6878] mt-1">Statutory consent gate and 256-bit AES cryptographic encryption.</p>
+              </div>
             </div>
           </div>
         )}
