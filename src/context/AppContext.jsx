@@ -653,7 +653,7 @@ export const AppProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const defaultCompId = 'COMP001';
+          const defaultCompId = 'comp-joy';
           const clean = parsed
             .filter(c => {
               if (!c) return false;
@@ -669,11 +669,11 @@ export const AppProvider = ({ children }) => {
             .map(c => {
               const verifs = c.verificationsCompleted || c.verifications_completed || {};
               const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
-              const safeStatus = (c.status === 'Verified' && !isFullyVerified) ? 'Link Sent' : (c.status || 'Link Sent');
+              const safeStatus = (c.status === 'Verified' && !isFullyVerified) ? 'Link Sent' : (c.status || 'Link Dispatched 🟢');
               return {
                 ...c,
-                companyId: c.companyId === 'comp-1' ? defaultCompId : (c.companyId || defaultCompId),
-                company_id: c.company_id === 'comp-1' ? defaultCompId : (c.company_id || defaultCompId),
+                companyId: (c.companyId && c.companyId !== 'comp-1') ? c.companyId : defaultCompId,
+                company_id: (c.company_id && c.company_id !== 'comp-1') ? c.company_id : defaultCompId,
                 status: safeStatus
               };
             });
@@ -1664,7 +1664,16 @@ export const AppProvider = ({ children }) => {
             verifiedAttributes: c.verified_attributes || c.verifiedAttributes || {},
             verificationDate: c.verification_date || c.verificationDate
           });
-          setCandidates(cands.map(mapCandidateObj));
+          const cleanFetched = cands.map(mapCandidateObj);
+          setCandidates(prev => {
+            const fetchedIds = new Set(cleanFetched.map(f => f.id || f.token));
+            const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => p && !fetchedIds.has(p.id) && !fetchedIds.has(p.token));
+            const merged = [...cleanFetched, ...preservedLocal];
+            try {
+              localStorage.setItem('joy_candidates_v1', JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          });
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -2339,52 +2348,60 @@ export const AppProvider = ({ children }) => {
 
       const createdList = await api.bulkCreateCandidates(payloads);
       
-      const formattedList = createdList.map(created => ({
-        id: created.id,
-        token: created.token,
-        name: created.name,
-        empId: created.emp_id,
-        employeeNumber: created.employee_number || created.emp_id,
-        email: created.email,
-        mobile: created.mobile,
-        aadhaarNo: created.aadhaar_no,
-        designation: created.designation,
-        dept: created.dept,
-        employeeType: created.employee_type,
-        dob: created.dob,
-        doj: created.doj,
-        age: created.age,
-        gender: created.gender,
-        maritalStatus: created.marital_status,
-        motherTongue: created.mother_tongue,
-        languagesKnown: created.languages_known,
-        pfNumber: created.pf_number,
-        esiNumber: created.esi_number,
-        religion: created.religion,
-        caste: created.caste,
-        category: created.category,
-        nativeState: created.native_state,
-        nativeDistrict: created.native_district,
-        identificationMarks: created.identification_marks,
-        companyId: created.company_id,
-        hrId: created.hr_id,
-        status: created.status,
-        portalPassword: created.portal_password || '1234',
-        verificationConfig: created.verification_config || {},
-        verificationsCompleted: created.verifications_completed || {},
-        photo: created.face_images?.straight || null,
-        faceImages: created.face_images || { straight: null, left: null, right: null },
-        manualChecks: created.manual_checks || {},
-        joiningFormData: created.joining_form_data || {},
-        customFields: created.custom_fields || {},
-        documents: created.documents || [],
-        verificationDate: created.verification_date
-      }));
+      const formattedList = createdList.map((created, idx) => {
+        const orig = uniqueCandidatesList[idx] || {};
+        return {
+          id: created.id || orig.id || `emp-${Date.now()}-${idx}`,
+          token: created.token || orig.token || `tok_${(created.name || orig.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`,
+          name: created.name || orig.name,
+          empId: created.emp_id || created.empId || orig.empId,
+          employeeNumber: created.employee_number || created.employeeNumber || created.emp_id || created.empId || orig.empId,
+          email: created.email || orig.email,
+          mobile: created.mobile || orig.mobile,
+          aadhaarNo: created.aadhaar_no || created.aadhaarNo || orig.aadhaarNo,
+          designation: created.designation || orig.designation,
+          dept: created.dept || orig.dept,
+          employeeType: created.employee_type || created.employeeType || orig.employeeType || 'it_tech',
+          dob: created.dob || orig.dob,
+          doj: created.doj || orig.doj,
+          age: created.age || orig.age,
+          gender: created.gender || orig.gender,
+          maritalStatus: created.marital_status || created.maritalStatus || orig.maritalStatus,
+          motherTongue: created.mother_tongue || created.motherTongue || orig.motherTongue,
+          languagesKnown: created.languages_known || created.languagesKnown || orig.languagesKnown,
+          pfNumber: created.pf_number || created.pfNumber || orig.pfNumber,
+          esiNumber: created.esi_number || created.esiNumber || orig.esiNumber,
+          religion: created.religion || orig.religion,
+          caste: created.caste || orig.caste,
+          category: created.category || orig.category,
+          nativeState: created.native_state || created.nativeState || orig.nativeState,
+          nativeDistrict: created.native_district || created.nativeDistrict || orig.nativeDistrict,
+          identificationMarks: created.identification_marks || created.identificationMarks || orig.identificationMarks,
+          companyId: created.company_id || created.companyId || orig.companyId || 'comp-joy',
+          company_id: created.company_id || created.companyId || orig.companyId || 'comp-joy',
+          hrId: created.hr_id || created.hrId || orig.hrId || 'hr-1',
+          status: created.status || orig.status || 'Link Dispatched 🟢',
+          portalPassword: created.portal_password || created.portalPassword || orig.portalPassword || '1234',
+          verificationConfig: created.verification_config || created.verificationConfig || orig.verificationConfig || {},
+          verificationsCompleted: created.verifications_completed || created.verificationsCompleted || orig.verificationsCompleted || { aadhaar: false, mobile: false, face: false },
+          photo: created.face_images?.straight || orig.photo || null,
+          faceImages: created.face_images || orig.faceImages || { straight: null, left: null, right: null },
+          manualChecks: created.manual_checks || orig.manualChecks || {},
+          joiningFormData: created.joining_form_data || orig.joiningFormData || orig,
+          customFields: created.custom_fields || orig.customFields || {},
+          documents: created.documents || orig.documents || [],
+          verificationDate: created.verification_date || orig.verificationDate || new Date().toLocaleDateString('en-GB')
+        };
+      });
 
       setCandidates(prev => {
-        const existingIds = new Set(formattedList.map(f => f.id));
-        const filteredPrev = prev.filter(p => !existingIds.has(p.id));
-        return [...formattedList, ...filteredPrev];
+        const existingIds = new Set(formattedList.map(f => f.id || f.token));
+        const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => p && !existingIds.has(p.id) && !existingIds.has(p.token));
+        const nextList = [...formattedList, ...filteredPrev];
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
       });
 
       showToast(`Batch of ${formattedList.length} candidate profiles imported successfully!`);
@@ -2696,12 +2713,17 @@ export const AppProvider = ({ children }) => {
           documents: c.documents || [],
           verificationDate: c.verification_date || c.verificationDate
         });
-        const cleanList = cands.map(mapCandidateObj);
-        setCandidates(cleanList);
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanList));
-        } catch (e) {}
-        return cleanList;
+        const cleanFetched = cands.map(mapCandidateObj);
+        setCandidates(prev => {
+          const fetchedIds = new Set(cleanFetched.map(f => f.id || f.token));
+          const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => p && !fetchedIds.has(p.id) && !fetchedIds.has(p.token));
+          const merged = [...cleanFetched, ...preservedLocal];
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(merged));
+          } catch (e) {}
+          return merged;
+        });
+        return cleanFetched;
       }
     } catch (err) {
       console.warn('Candidate refresh error:', err);

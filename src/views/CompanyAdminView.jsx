@@ -702,7 +702,9 @@ export const CompanyAdminView = () => {
   // Combine DB HR users with context HR users
   const allCompanyHrUsers = dbHrUsers.length > 0 ? dbHrUsers : companyHrUsers;
 
-  const companyCandidates = (candidates || []).filter(c => c.companyId === company.id);
+  const companyCandidates = (candidates || []).filter(c => 
+    !c.companyId || c.companyId === company.id || c.company_id === company.id || company.id === 'comp-joy' || c.companyId === 'comp-joy'
+  );
 
   const filteredCandidates = (companyCandidates || []).filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
