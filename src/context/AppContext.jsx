@@ -277,7 +277,61 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
   statClients: '150+',
   statClientsLabel: 'Enterprise Clients',
   statProfiles: '500,000+',
-  statProfilesLabel: 'Profiles Verified'
+  statProfilesLabel: 'Profiles Verified',
+
+  // 11. Tour & Guide Video Settings (Managed in SuperAdmin CMS)
+  tourGuideSettings: {
+    enabled: true,
+    badge: 'PLATFORM TOUR & GUIDES',
+    title: 'Workforce & Vendor Verification Tour & Guide 🧭',
+    subtitle: 'Explore step-by-step interactive video walkthroughs and data handling awareness.',
+    modules: [
+      {
+        id: 'buy_plan',
+        title: 'How to Buy a Plan & Setup Credit Balance',
+        shortTitle: 'How to Buy a Plan',
+        category: 'billing',
+        badge: 'SUBSCRIPTION & BILLING',
+        enabled: true,
+        description: 'Step-by-step instructions for selecting postpaid credit tiers, instant Razorpay/UPI/Card deposits, setting low-balance alert guardrails, and downloading 18% GST tax invoices.',
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        videoTitle: 'Video Tutorial: How to Buy a Plan & Credit Balance Setup'
+      },
+      {
+        id: 'verification_process',
+        title: 'How the Employee Profile Verification Process Works',
+        shortTitle: 'How the Process Works',
+        category: 'verification',
+        badge: 'WORKFORCE VERIFICATION',
+        enabled: true,
+        description: 'Complete end-to-end candidate background check: HR intake with 28 State & 8 UT dropdowns, WhatsApp magic link with PIN, UIDAI Aadhaar e-KYC, 3D face liveness scan, EPFO moonlighting radar, and instant certified PDF dossier export.',
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        videoTitle: 'Video Tutorial: Complete Employee Background Verification Flow'
+      },
+      {
+        id: 'data_handling',
+        title: 'Data Handling & Security Governance',
+        shortTitle: 'Data Handling & Security',
+        category: 'security',
+        badge: 'DPDP ACT & PRIVACY',
+        enabled: true,
+        description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and sovereign Indian data residency.',
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        videoTitle: 'Video Tutorial: Data Handling, PII Masking & DPDP Compliance'
+      },
+      {
+        id: 'company_onboarding',
+        title: 'How Company Onboarding Process Works',
+        shortTitle: 'Company Onboarding Process',
+        category: 'onboarding',
+        badge: 'ENTERPRISE ONBOARDING',
+        enabled: true,
+        description: 'Corporate client activation walkthrough: SuperAdmin activation link & 4-digit PIN dispatch, company profile & custom corporate SMTP integration, and recruiter seat allocation with Role-Based Access Control (RBAC).',
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        videoTitle: 'Video Tutorial: Corporate Company Account Onboarding & Setup'
+      }
+    ]
+  }
 };
 
 export const getCompanyPostpaidPlan = (companyOrPlan) => {
