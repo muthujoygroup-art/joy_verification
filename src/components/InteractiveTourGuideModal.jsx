@@ -49,7 +49,9 @@ import {
   DollarSign,
   MapPin,
   Shield,
-  CheckSquare
+  CheckSquare,
+  Video,
+  BookOpen
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { soundEngine } from '../utils/uiSoundEffects';
@@ -58,17 +60,19 @@ import { INDIA_STATES_DISTRICTS, ALL_INDIA_STATES } from '../data/indiaLocations
 import confetti from 'canvas-confetti';
 
 // ============================================================================
-// 1. TACTICAL MISSIONS DATA (4 Core Requested Guided Modules)
+// 1. FEATURE MODULES DATA (4 Clean Requested Processes)
 // ============================================================================
-const TACTICAL_MISSIONS = [
+const FEATURE_MODULES = [
   {
     id: 'buy_plan',
-    title: '💳 Module 1: How to Buy a Plan & Credit Balance Setup',
+    title: '💳 Module 1: How to Buy a Plan & Setup Credit Balance',
     shortTitle: 'How to Buy a Plan',
     category: 'billing',
     badge: 'SUBSCRIPTION & BILLING',
     badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
-    description: 'Step-by-step interactive walkthrough: Select postpaid credit tiers, instant Razorpay/UPI/Card deposit wallet recharge, set auto-refill guardrails, and download tax-compliant GST invoices.',
+    description: 'Step-by-step instructions for selecting postpaid credit tiers, instant Razorpay/UPI/Card deposits, setting low-balance alert guardrails, and downloading 18% GST tax invoices.',
+    videoUrl: 'https://www.youtube.com/watch?v=joy_buy_plan_guide',
+    videoTitle: 'Video Tutorial: How to Buy a Plan & Credit Balance Setup',
     steps: [
       {
         stepNumber: 1,
@@ -124,6 +128,8 @@ const TACTICAL_MISSIONS = [
     badge: 'WORKFORCE VERIFICATION',
     badgeColor: 'bg-indigo-100 text-indigo-900 border-indigo-300',
     description: 'Complete end-to-end candidate background check: HR intake with 28 State & 8 UT dropdowns, WhatsApp magic link with PIN, UIDAI Aadhaar e-KYC, 3D face liveness scan, EPFO moonlighting radar, and instant certified PDF dossier export.',
+    videoUrl: 'https://www.youtube.com/watch?v=joy_employee_bgv_guide',
+    videoTitle: 'Video Tutorial: Complete Employee Background Verification Flow',
     steps: [
       {
         stepNumber: 1,
@@ -201,6 +207,8 @@ const TACTICAL_MISSIONS = [
     badge: 'DPDP ACT & PRIVACY',
     badgeColor: 'bg-purple-100 text-purple-900 border-purple-300',
     description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and sovereign Indian data residency.',
+    videoUrl: 'https://www.youtube.com/watch?v=joy_dpdp_security_guide',
+    videoTitle: 'Video Tutorial: Data Handling, PII Masking & DPDP Compliance',
     steps: [
       {
         stepNumber: 1,
@@ -256,6 +264,8 @@ const TACTICAL_MISSIONS = [
     badge: 'ENTERPRISE ONBOARDING',
     badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
     description: 'Corporate client activation walkthrough: SuperAdmin activation link & 4-digit PIN dispatch, company profile & custom corporate SMTP integration, and recruiter seat allocation with Role-Based Access Control (RBAC).',
+    videoUrl: 'https://www.youtube.com/watch?v=joy_company_onboarding_guide',
+    videoTitle: 'Video Tutorial: Corporate Company Account Onboarding & Setup',
     steps: [
       {
         stepNumber: 1,
@@ -295,15 +305,16 @@ const TACTICAL_MISSIONS = [
 ];
 
 // ============================================================================
-// 2. VIDEO THEATER CHANNELS
+// 2. VIDEO TUTORIAL CHANNELS
 // ============================================================================
 const VIDEO_CHANNELS = [
   {
     id: 'buy_plan_video',
     title: 'How to Buy a Plan & Credit Balance',
     subtitle: 'Postpaid Tiers, Razorpay UPI/Card Deposit & Tax GST Invoices',
-    badge: 'PAYMENT STREAM',
+    badge: 'PAYMENT TUTORIAL',
     icon: CreditCard,
+    videoUrl: 'https://www.youtube.com/watch?v=joy_buy_plan_guide',
     color: 'from-emerald-600 via-teal-600 to-cyan-600',
     stats: [
       { label: 'Deposit Speed', value: 'Instant (<1s)' },
@@ -316,8 +327,9 @@ const VIDEO_CHANNELS = [
     id: 'proc_video',
     title: 'Candidate Verification Process',
     subtitle: 'Intake, WhatsApp Magic Link, Aadhaar OTP, 3D Face & EPFO Radar',
-    badge: 'WORKFLOW STREAM',
+    badge: 'WORKFLOW TUTORIAL',
     icon: Smartphone,
+    videoUrl: 'https://www.youtube.com/watch?v=joy_employee_bgv_guide',
     color: 'from-indigo-600 via-[#426CF5] to-cyan-500',
     stats: [
       { label: 'Completion TAT', value: '< 2 Minutes' },
@@ -330,8 +342,9 @@ const VIDEO_CHANNELS = [
     id: 'data_video',
     title: 'Data Security & DPDP Compliance',
     subtitle: 'Multi-Lingual Digital Consent, Automated PII Masking & AES-256',
-    badge: 'SECURITY STREAM',
+    badge: 'SECURITY TUTORIAL',
     icon: ShieldCheck,
+    videoUrl: 'https://www.youtube.com/watch?v=joy_dpdp_security_guide',
     color: 'from-purple-600 via-indigo-600 to-[#426CF5]',
     stats: [
       { label: 'Consent Scope', value: 'DPDP Act Sec 6' },
@@ -344,8 +357,9 @@ const VIDEO_CHANNELS = [
     id: 'onb_video',
     title: 'Company Onboarding & SMTP Setup',
     subtitle: 'SuperAdmin Activation Link, PIN, Corporate SMTP & HR RBAC Seats',
-    badge: 'ONBOARDING STREAM',
+    badge: 'ONBOARDING TUTORIAL',
     icon: Building2,
+    videoUrl: 'https://www.youtube.com/watch?v=joy_company_onboarding_guide',
     color: 'from-amber-500 via-orange-600 to-rose-600',
     stats: [
       { label: 'Activation Link', value: 'PIN Protected' },
@@ -436,10 +450,11 @@ export const InteractiveTourGuideModal = ({
   // 4 Primary Modes: 'missions' | 'video_theater' | 'downloads' | 'guides'
   const [activeTourMode, setActiveTourMode] = useState('missions');
   
-  // Mission Walkthrough State (Game-Style Split Screen)
+  // Walkthrough State
   const [activeMissionIdx, setActiveMissionIdx] = useState(0);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [voiceGuideEnabled, setVoiceGuideEnabled] = useState(false);
+  const [activeVideoModal, setActiveVideoModal] = useState(null);
 
   // Live Interactive Flow Test Data
   const [selectedPlanTierState, setSelectedPlanTierState] = useState('pro');
@@ -525,11 +540,11 @@ export const InteractiveTourGuideModal = ({
     }
   };
 
-  const selectedMission = TACTICAL_MISSIONS[activeMissionIdx] || TACTICAL_MISSIONS[0];
+  const selectedMission = FEATURE_MODULES[activeMissionIdx] || FEATURE_MODULES[0];
   const activeStep = selectedMission.steps[currentStepIdx] || selectedMission.steps[0];
   const activeVideo = VIDEO_CHANNELS.find(c => c.id === activeVideoChannel) || VIDEO_CHANNELS[0];
 
-  // Voice Narration Trigger when step or mission changes
+  // Voice Narration Trigger when step or module changes
   useEffect(() => {
     if (activeTourMode === 'missions' && voiceGuideEnabled && activeStep) {
       speakVoiceInstruction(`${activeStep.title}. ${activeStep.instruction}`);
@@ -741,30 +756,30 @@ export const InteractiveTourGuideModal = ({
       <div className="w-full max-w-7xl bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 animate-modal-spring max-h-[96vh] flex flex-col overflow-hidden">
         
         {/* ==============================================================================
-         * MODAL HEADER: TACTICAL GAME HUD HEADER WITH VOICE AUDIO TOGGLE
+         * MODAL HEADER: CLEAN PROFESSIONAL PLATFORM HEADER
          * ============================================================================== */}
         <div className="p-4 sm:p-6 bg-gradient-to-r from-slate-950 via-[#0e1726] to-indigo-950 text-white rounded-t-3xl border-b border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 shadow-lg">
           <div className="flex items-center gap-3.5">
             <div className="p-3 rounded-2xl bg-[#426CF5] text-white shadow-[0_0_20px_rgba(66,108,245,0.6)] shrink-0">
-              <Compass className="w-7 h-7 animate-spin-slow text-white" />
+              <BookOpen className="w-7 h-7 text-white" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#426CF5] text-white text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1 shadow-xs">
-                  <Target className="w-3 h-3 text-white" />
-                  <span>TACTICAL TOUR & COMMAND STATION</span>
+                  <Sparkles className="w-3 h-3 text-white" />
+                  <span>PLATFORM TOUR & GUIDES</span>
                 </span>
                 <span className="text-xs text-indigo-200 font-mono font-bold bg-indigo-900/60 px-2 py-0.5 rounded-md border border-indigo-700/50">
                   JOY TRUE PROFILE 2.0
                 </span>
               </div>
               <h3 className="text-xl sm:text-2xl font-black text-white font-outfit mt-1 tracking-tight">
-                Workforce & Vendor Verification Interactive Tour & Guide 🧭
+                Workforce & Vendor Verification Tour & Guide 🧭
               </h3>
             </div>
           </div>
 
-          {/* Right Action Tools: Voice Narration, Launch Spotlight, Close */}
+          {/* Right Action Tools */}
           <div className="flex items-center gap-2.5 self-end sm:self-center">
             
             {/* Voice Audio Narration Button */}
@@ -779,7 +794,7 @@ export const InteractiveTourGuideModal = ({
                   window.speechSynthesis.cancel();
                 }
               }}
-              title={voiceGuideEnabled ? 'Mute AI Voice Narration' : 'Enable AI Voice Narration'}
+              title={voiceGuideEnabled ? 'Mute Voice Narration' : 'Enable Voice Narration'}
               className={`px-3 py-2 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer border ${
                 voiceGuideEnabled 
                   ? 'bg-emerald-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]' 
@@ -787,7 +802,7 @@ export const InteractiveTourGuideModal = ({
               }`}
             >
               {voiceGuideEnabled ? <Volume2 className="w-4 h-4 text-white animate-pulse" /> : <VolumeX className="w-4 h-4 text-slate-300" />}
-              <span className="hidden md:inline">{voiceGuideEnabled ? 'Voice HUD: ON' : 'Voice HUD: OFF'}</span>
+              <span className="hidden md:inline">{voiceGuideEnabled ? 'Voice Narration: ON' : 'Voice Narration: OFF'}</span>
             </button>
 
             {/* Launch On-Page Spotlight Tour */}
@@ -824,10 +839,10 @@ export const InteractiveTourGuideModal = ({
         <div className="p-3 bg-[#F8FAFC] border-b border-slate-200 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar shrink-0">
           <div className="flex items-center gap-2 min-w-max">
             {[
-              { id: 'missions', label: '🎮 Game-Style Guided Missions', badge: 'Interactive HUD' },
-              { id: 'video_theater', label: '🎬 4K Interactive Theater', badge: '4 Channels' },
-              { id: 'downloads', label: '📥 Sample PDF & Excel Hub', badge: 'Instant Export' },
-              { id: 'guides', label: '📚 Complete Knowledge Library', badge: 'Searchable' }
+              { id: 'missions', label: '📋 Guided Walkthroughs', badge: 'Step-by-Step' },
+              { id: 'video_theater', label: '🎥 Video Tutorials', badge: 'Video URLs' },
+              { id: 'downloads', label: '📥 Sample Downloads', badge: 'PDF & Excel' },
+              { id: 'guides', label: '📚 Knowledge Base', badge: 'Documentation' }
             ].map((m) => {
               const isActive = activeTourMode === m.id;
               return (
@@ -856,18 +871,18 @@ export const InteractiveTourGuideModal = ({
         </div>
 
         {/* ==============================================================================
-         * MODE 1: GAME-STYLE TACTICAL MISSIONS (4 Requested Guided Modules)
+         * MODE 1: GUIDED WALKTHROUGHS (4 Requested Core Processes)
          * ============================================================================== */}
         {activeTourMode === 'missions' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FAFC]">
             
-            {/* 4 Mission Cards Selector */}
+            {/* 4 Process Cards Selector */}
             <div className="space-y-2">
               <span className="text-[11px] uppercase font-black text-slate-800 font-mono tracking-wider block">
-                SELECT INTERACTIVE GUIDED WALKTHROUGH MODULE:
+                SELECT FEATURE PROCESS TO EXPLORE:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {TACTICAL_MISSIONS.map((m, idx) => {
+                {FEATURE_MODULES.map((m, idx) => {
                   const isSel = activeMissionIdx === idx;
                   return (
                     <button
@@ -905,16 +920,16 @@ export const InteractiveTourGuideModal = ({
               </div>
             </div>
 
-            {/* SPLIT-SCREEN TACTICAL COMMAND STATION */}
+            {/* SPLIT-SCREEN FEATURE STATION */}
             <div className="bg-white border-2 border-[#426CF5] rounded-3xl p-5 sm:p-7 shadow-xl space-y-6">
               
-              {/* Mission Header & Stepper */}
+              {/* Process Header, Stepper & Video Link */}
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                     <span className="text-[11px] font-mono uppercase font-black text-indigo-700 tracking-wider">
-                      LIVE MODULE OBJECTIVE • STEP {currentStepIdx + 1} OF {selectedMission.steps.length}
+                      FEATURE WALKTHROUGH • STEP {currentStepIdx + 1} OF {selectedMission.steps.length}
                     </span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-outfit mt-0.5 tracking-tight">
@@ -922,39 +937,62 @@ export const InteractiveTourGuideModal = ({
                   </h3>
                 </div>
 
-                {/* Step Navigation Buttons */}
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                  {selectedMission.steps.map((st, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        soundEngine.playClick();
-                        setCurrentStepIdx(i);
-                      }}
-                      className={`w-9 h-9 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center justify-center border ${
-                        i === currentStepIdx
-                          ? 'bg-[#426CF5] text-white border-[#3459D8] shadow-md scale-105'
-                          : i < currentStepIdx
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold'
-                          : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-                      }`}
-                    >
-                      {i < currentStepIdx ? '✓' : i + 1}
-                    </button>
-                  ))}
+                {/* Right Header Controls: Watch Video Button + Stepper */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setActiveVideoModal(selectedMission);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold font-sans transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border border-purple-400/40"
+                    title={`Watch Video Tutorial: ${selectedMission.videoTitle}`}
+                  >
+                    <Video className="w-3.5 h-3.5 text-white" />
+                    <span>Watch Process Video 🎥</span>
+                  </button>
+
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                    {selectedMission.steps.map((st, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setCurrentStepIdx(i);
+                        }}
+                        className={`w-9 h-9 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center justify-center border ${
+                          i === currentStepIdx
+                            ? 'bg-[#426CF5] text-white border-[#3459D8] shadow-md scale-105'
+                            : i < currentStepIdx
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold'
+                            : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                        }`}
+                      >
+                        {i < currentStepIdx ? '✓' : i + 1}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* GAME HUD CARD (What it does, Why it matters, Next step) */}
+              {/* STEP GUIDANCE CARD */}
               <div className="p-4 sm:p-5 rounded-2xl bg-[#0F172A] text-white space-y-3 shadow-xl border-2 border-[#38BDF8]/40">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
                   <span className="text-xs font-mono font-bold text-[#38BDF8] uppercase tracking-wider flex items-center gap-1.5">
-                    <Compass className="w-4 h-4 text-[#38BDF8] animate-spin-slow" />
-                    GAME GUIDANCE HUD • STEP {activeStep.stepNumber} OF {selectedMission.steps.length}
+                    <Compass className="w-4 h-4 text-[#38BDF8]" />
+                    STEP GUIDANCE & SUMMARY • STEP {activeStep.stepNumber} OF {selectedMission.steps.length}
                   </span>
-                  <span className="text-[11px] font-mono font-extrabold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800">
-                    CODE SIMULATION READY
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveVideoModal(selectedMission)}
+                      className="text-[10px] font-mono font-extrabold text-amber-300 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-800 hover:bg-amber-900 transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      <Video className="w-3 h-3 text-amber-300" />
+                      <span>Video Tutorial URL</span>
+                    </button>
+                    <span className="text-[11px] font-mono font-extrabold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800">
+                      INTERACTIVE DEMO
+                    </span>
+                  </div>
                 </div>
 
                 <h4 className="text-base sm:text-lg font-black text-white font-outfit tracking-tight">
@@ -996,7 +1034,7 @@ export const InteractiveTourGuideModal = ({
                     <div className="space-y-4 text-xs">
                       {currentStepIdx === 0 && (
                         <div className="space-y-3 animate-fadeIn">
-                          <span className="font-bold text-slate-900 block">Select Postpaid Tier:</span>
+                          <span className="font-bold text-slate-900 block">Select Postpaid Credit Tier:</span>
                           <div className="grid grid-cols-2 gap-2">
                             {[
                               { id: 'starter', name: 'Starter Tier', rate: '₹199 / check', desc: '10-50 checks/mo' },
@@ -1303,7 +1341,7 @@ export const InteractiveTourGuideModal = ({
                     </div>
                   )}
 
-                  {/* Step Action Button */}
+                  {/* Step Action Buttons */}
                   <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
                     <button
                       disabled={currentStepIdx === 0}
@@ -1331,7 +1369,7 @@ export const InteractiveTourGuideModal = ({
                         onClick={() => {
                           soundEngine.playSuccess();
                           confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-                          if (activeMissionIdx < TACTICAL_MISSIONS.length - 1) {
+                          if (activeMissionIdx < FEATURE_MODULES.length - 1) {
                             setActiveMissionIdx(prev => prev + 1);
                             setCurrentStepIdx(0);
                           } else {
@@ -1342,7 +1380,7 @@ export const InteractiveTourGuideModal = ({
                         className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md flex items-center gap-1.5 cursor-pointer"
                       >
                         <Award className="w-4 h-4" />
-                        <span>Complete Module 🎉</span>
+                        <span>Complete Walkthrough 🎉</span>
                       </button>
                     )}
                   </div>
@@ -1358,7 +1396,7 @@ export const InteractiveTourGuideModal = ({
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       <span className="text-[10px] font-mono text-slate-400 font-bold ml-1">
-                        SIMULATOR CANVAS
+                        LIVE SIMULATOR CANVAS
                       </span>
                     </div>
                     <span className="text-[10px] font-mono text-indigo-400 font-bold bg-indigo-950 px-2 py-0.5 rounded border border-indigo-800">
@@ -1372,7 +1410,7 @@ export const InteractiveTourGuideModal = ({
                     {activeStep.deviceView === 'tier_selection' && (
                       <div className="text-center space-y-3">
                         <CreditCard className="w-10 h-10 text-emerald-400 mx-auto" />
-                        <h4 className="font-bold text-lg text-white font-outfit">Postpaid Credit Tier Selected</h4>
+                        <h4 className="font-bold text-base text-white font-outfit">Postpaid Credit Tier Selected</h4>
                         <div className="p-3 bg-emerald-950/80 rounded-xl border border-emerald-700 text-emerald-300 font-mono text-xs font-bold">
                           Active Tier: {selectedPlanTierState.toUpperCase()}
                         </div>
@@ -1571,7 +1609,7 @@ export const InteractiveTourGuideModal = ({
         )}
 
         {/* ==============================================================================
-         * MODE 2: VIDEO SIMULATION THEATER
+         * MODE 2: VIDEO TUTORIALS (With Video URLs & Interactive Player)
          * ============================================================================== */}
         {activeTourMode === 'video_theater' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-[#0F172A] text-white">
@@ -1594,19 +1632,34 @@ export const InteractiveTourGuideModal = ({
                   </span>
                   <h4 className="font-bold text-sm font-outfit text-white">{ch.title}</h4>
                   <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{ch.subtitle}</p>
+                  <div className="mt-2 text-[10px] font-mono text-emerald-400 truncate">
+                    {ch.videoUrl}
+                  </div>
                 </button>
               ))}
             </div>
 
             <div className="bg-slate-950 rounded-3xl p-6 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <span className="text-xs font-mono text-emerald-400 font-bold">INTERACTIVE SIMULATION THEATER</span>
+                  <span className="text-xs font-mono text-emerald-400 font-bold">PROCESS VIDEO TUTORIAL PLAYER</span>
                   <h3 className="text-xl font-bold font-outfit text-white">{activeVideo.title}</h3>
+                  <a 
+                    href={activeVideo.videoUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-indigo-300 font-mono hover:underline inline-flex items-center gap-1 mt-1"
+                  >
+                    <span>Direct URL: {activeVideo.videoUrl}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
-                <button onClick={() => setVideoPlaying(!videoPlaying)} className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs cursor-pointer">
-                  {videoPlaying ? 'Pause Theater' : 'Play Theater'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setVideoPlaying(!videoPlaying)} className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs cursor-pointer flex items-center gap-1.5">
+                    {videoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    <span>{videoPlaying ? 'Pause Video' : 'Play Video'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Simulated Video Scrubber Bar */}
@@ -1663,7 +1716,7 @@ export const InteractiveTourGuideModal = ({
         )}
 
         {/* ==============================================================================
-         * MODE 4: COMPLETE KNOWLEDGE LIBRARY GUIDES
+         * MODE 4: COMPLETE KNOWLEDGE BASE GUIDES
          * ============================================================================== */}
         {activeTourMode === 'guides' && (
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FAFC]">
@@ -1695,10 +1748,59 @@ export const InteractiveTourGuideModal = ({
           </div>
         )}
 
+        {/* VIDEO TUTORIAL DIALOG MODAL */}
+        {activeVideoModal && (
+          <div className="fixed inset-0 z-[10000] bg-slate-950/80 backdrop-blur-sm p-4 flex items-center justify-center animate-fadeIn">
+            <div className="w-full max-w-2xl bg-slate-900 text-white rounded-3xl p-6 border border-slate-800 space-y-4 shadow-2xl relative">
+              <button 
+                onClick={() => setActiveVideoModal(null)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                <Video className="w-6 h-6 text-purple-400" />
+                <h4 className="font-bold text-lg text-white font-outfit">Video Tutorial URL</h4>
+              </div>
+
+              <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+                <div className="font-bold text-sm text-indigo-300">{activeVideoModal.videoTitle}</div>
+                <div className="flex items-center gap-2 bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-emerald-400">
+                  <span className="flex-1 truncate">{activeVideoModal.videoUrl}</span>
+                  <a
+                    href={activeVideoModal.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-sans font-bold rounded-lg shrink-0 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Open URL</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                <div className="font-bold text-white">Process Video Summary:</div>
+                <p>{activeVideoModal.description}</p>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setActiveVideoModal(null)}
+                  className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer"
+                >
+                  Close Video Dialog
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* MODAL FOOTER */}
         <div className="p-4 bg-slate-950 text-slate-400 text-xs border-t border-slate-800 flex items-center justify-between shrink-0">
           <div className="font-mono text-[11px] text-slate-300 font-bold">
-            JOY TRUE PROFILE 2.0 • TACTICAL TOUR & GUIDE SYSTEM
+            JOY TRUE PROFILE 2.0 • PLATFORM TOUR & GUIDES
           </div>
           <button onClick={handleModalClose} className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer">
             Close Modal
