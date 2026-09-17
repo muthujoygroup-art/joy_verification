@@ -430,10 +430,10 @@ export const LeadsInquiriesConsole = ({ showToast }) => {
                           {/* 6-Step Onboarding & BGV Verification Engine Trigger */}
                           <button
                             onClick={() => setOnboardingModalInquiry(inq)}
-                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-[10px] uppercase tracking-wider shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] shadow-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-98"
                             title="Open 6-Step Company Onboarding, BGV Verification & Telemetry Engine"
                           >
-                            <Building2 className="w-3.5 h-3.5 text-amber-300" />
+                            <Building2 className="w-3.5 h-3.5 text-white" />
                             <span>Onboarding & BGV 🚀</span>
                           </button>
 

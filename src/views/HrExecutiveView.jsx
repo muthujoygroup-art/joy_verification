@@ -1373,7 +1373,7 @@ export const HrExecutiveView = () => {
                 />
               </div>
             ) : (
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-xs border-2 border-white">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-xs border-2 border-white">
                 {(currentCompany?.name || 'JC').charAt(0).toUpperCase()}
               </div>
             )}
@@ -2105,7 +2105,7 @@ export const HrExecutiveView = () => {
                                 setShowCorrectionInput(false);
                                 setCorrectionNotes('');
                               }}
-                              className="btn btn-primary text-[11px] py-1.5 px-3 flex items-center gap-1 font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md animate-bounce"
+                              className="btn bg-amber-600 hover:bg-amber-700 text-white text-[11px] py-1.5 px-3 flex items-center gap-1 font-black shadow-xs rounded-xl cursor-pointer"
                               title="Review candidate-submitted form particulars & uploaded documents to Accept or Resend for corrections"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -2864,7 +2864,7 @@ export const HrExecutiveView = () => {
                   <button
                     type="button"
                     onClick={() => setShowHrLivePhotoModal(true)}
-                    className="btn btn-primary text-xs py-2 px-3 flex items-center gap-1.5 font-black bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-sm cursor-pointer transition-all hover:scale-105 active:scale-95"
+                    className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3 flex items-center gap-1.5 font-black shadow-xs cursor-pointer rounded-xl transition-all"
                   >
                     <Camera className="w-3.5 h-3.5" />
                     <span>{formData.photo ? '📸 Retake WebCam Photo' : '📸 Capture Live Photo (WebCam)'}</span>
@@ -4909,7 +4909,7 @@ export const HrExecutiveView = () => {
                 <div className="flex items-center gap-2">
                   <button 
                     type="submit" 
-                    className="btn btn-primary bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs flex items-center gap-2 font-black shadow-md cursor-pointer"
+                    className="btn bg-amber-600 hover:bg-amber-700 text-white text-xs flex items-center gap-2 font-black shadow-xs rounded-xl cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
                     <span>Update Employee Profile 💾</span>
@@ -5890,7 +5890,7 @@ export const HrExecutiveView = () => {
                     approveCandidateSubmission(reviewingCandidate.token);
                     setReviewingCandidate(null);
                   }}
-                  className="btn btn-primary text-xs py-2 px-5 flex items-center gap-1.5 font-black bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md cursor-pointer"
+                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 px-5 flex items-center gap-1.5 font-black shadow-xs rounded-xl cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-200" />
                   <span>✅ Accept & Approve Profile</span>
