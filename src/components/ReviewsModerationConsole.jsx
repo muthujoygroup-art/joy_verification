@@ -13,18 +13,29 @@ import {
   MessageSquare,
   ThumbsUp,
   AlertCircle,
-  Plus
+  Plus,
+  Eye,
+  EyeOff,
+  HelpCircle,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 import { api } from '../services/api';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
+import { useApp } from '../context/AppContext';
 
 export const ReviewsModerationConsole = () => {
+  const { landingPageContent, updateLandingPageContent } = useApp() || {};
+  const isGlobalReviewsEnabled = landingPageContent?.enableClientReviews !== false;
+
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showFeatureInfo, setShowFeatureInfo] = useState(false);
+
   const [addForm, setAddForm] = useState({
     client_name: '',
     company_name: '',
@@ -54,12 +65,23 @@ export const ReviewsModerationConsole = () => {
     fetchReviews();
   }, [statusFilter]);
 
+  const handleToggleGlobalReviews = () => {
+    if (updateLandingPageContent) {
+      const nextState = !isGlobalReviewsEnabled;
+      updateLandingPageContent({
+        ...(landingPageContent || {}),
+        enableClientReviews: nextState
+      });
+    }
+  };
+
   const handleModerate = async (reviewId, newStatus, isFeatured) => {
     if (!checkNetworkBeforeAction('moderating review')) return;
     try {
       setUpdatingId(reviewId);
+      const isApproved = newStatus === 'approved';
       await api.moderateReview(reviewId, newStatus, isFeatured);
-      setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: newStatus, is_featured: isFeatured ?? r.is_featured } : r));
+      setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: newStatus, is_approved: isApproved, is_featured: isFeatured ?? r.is_featured } : r));
     } catch (err) {
       alert(err.message || 'Failed to moderate review');
     } finally {
@@ -136,8 +158,9 @@ export const ReviewsModerationConsole = () => {
 
   const stats = {
     total: reviews.length,
-    pending: reviews.filter(r => r.status === 'pending').length,
-    approved: reviews.filter(r => r.status === 'approved').length,
+    pending: reviews.filter(r => (r.status || '').toLowerCase() === 'pending').length,
+    approved: reviews.filter(r => (r.status || '').toLowerCase() === 'approved' || r.is_approved === true).length,
+    disabled: reviews.filter(r => (r.status || '').toLowerCase() === 'disabled' || (r.status || '').toLowerCase() === 'rejected').length,
     featured: reviews.filter(r => r.is_featured).length
   };
 
@@ -145,18 +168,44 @@ export const ReviewsModerationConsole = () => {
     <div className="space-y-6 animate-fadeIn">
       
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-            <span>⭐ Client Reviews & Testimonials Moderation</span>
-            <span className="badge badge-amber text-xs font-mono">{reviews.length} Total</span>
-          </h2>
-          <p className="text-xs text-slate-500 font-medium">
-            Moderate, approve, and feature verified enterprise client testimonials on the JOY TrueProfile homepage.
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+              <span>⭐ Client Reviews & Testimonials Console</span>
+              <span className="badge badge-amber text-xs font-mono">{reviews.length} Total</span>
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500 font-medium mt-1">
+            Manage, approve, disable, and spotlight verified enterprise client testimonials across the public platform.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Global Toggle Button */}
+          <button
+            type="button"
+            onClick={handleToggleGlobalReviews}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer border ${
+              isGlobalReviewsEnabled 
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' 
+                : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
+            }`}
+            title="Enable or disable the entire Client Reviews section on the homepage"
+          >
+            {isGlobalReviewsEnabled ? (
+              <>
+                <ToggleRight className="w-4 h-4 text-emerald-600" />
+                <span>Homepage Reviews: ENABLED</span>
+              </>
+            ) : (
+              <>
+                <ToggleLeft className="w-4 h-4 text-slate-400" />
+                <span>Homepage Reviews: DISABLED</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={fetchReviews}
             disabled={loading}
@@ -165,6 +214,7 @@ export const ReviewsModerationConsole = () => {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
+
           <button
             onClick={() => setShowAddModal(true)}
             className="btn btn-superadmin text-xs py-2 px-3 flex items-center gap-1.5 cursor-pointer font-bold"
@@ -174,6 +224,40 @@ export const ReviewsModerationConsole = () => {
           </button>
         </div>
       </div>
+
+      {/* Feature Meaning Explanatory Callout Banner */}
+      <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-2.5">
+          <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+          <div>
+            <strong className="font-extrabold text-indigo-950">What is &quot;Featured&quot;?</strong>
+            <p className="text-[11px] text-indigo-800 font-medium mt-0.5">
+              Featuring a review pins it to the <strong>Spotlight Section</strong> on the homepage with a purple badge and top priority placement. Unfeatured reviews remain visible as standard client testimonials.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowFeatureInfo(!showFeatureInfo)}
+          className="text-[11px] font-bold text-indigo-700 hover:underline shrink-0 flex items-center gap-1"
+        >
+          <HelpCircle className="w-3.5 h-3.5" />
+          <span>{showFeatureInfo ? 'Hide Guide' : 'Learn More'}</span>
+        </button>
+      </div>
+
+      {showFeatureInfo && (
+        <div className="p-4 rounded-2xl bg-white border border-indigo-200 text-slate-700 text-xs space-y-2 animate-fadeIn">
+          <h4 className="font-extrabold text-slate-900 flex items-center gap-1.5">
+            <Award className="w-4 h-4 text-purple-600" /> Review Status & Control Guide
+          </h4>
+          <ul className="list-disc pl-5 space-y-1 text-slate-600 font-medium">
+            <li><strong className="text-emerald-700">Enable / Approved:</strong> Review is live and visible on the main landing page.</li>
+            <li><strong className="text-amber-700">Disable / Hidden:</strong> Review is hidden from the public API and landing page, but preserved safely in SuperAdmin DB.</li>
+            <li><strong className="text-purple-700">Feature (Spotlight):</strong> Highlighted with a special purple badge on the front page as a top-tier client case study.</li>
+            <li><strong className="text-rose-700">Delete:</strong> Permanently removes the review entry from the database.</li>
+          </ul>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -196,7 +280,7 @@ export const ReviewsModerationConsole = () => {
         </div>
 
         <div className="glass-panel p-4 bg-purple-50 border border-purple-200 rounded-2xl space-y-1">
-          <span className="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Featured on Home</span>
+          <span className="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Featured Spotlight</span>
           <div className="text-2xl font-black text-purple-700 font-mono">{stats.featured}</div>
           <span className="text-[10px] text-purple-600 font-medium">Homepage spotlight</span>
         </div>
@@ -222,9 +306,9 @@ export const ReviewsModerationConsole = () => {
             className="form-select py-2 text-xs font-bold bg-slate-50 border-slate-200"
           >
             <option value="all">All Moderation Statuses</option>
+            <option value="approved">Approved / Live</option>
             <option value="pending">Pending Only</option>
-            <option value="approved">Approved / Published</option>
-            <option value="rejected">Rejected</option>
+            <option value="disabled">Disabled / Hidden</option>
           </select>
         </div>
       </div>
@@ -242,117 +326,123 @@ export const ReviewsModerationConsole = () => {
             <span>No reviews match the selected filter.</span>
           </div>
         ) : (
-          filteredReviews.map((rev) => (
-            <div
-              key={rev.id}
-              className={`glass-panel p-5 bg-white border-2 rounded-3xl shadow-sm space-y-4 transition-all flex flex-col justify-between ${
-                rev.status === 'approved' ? 'border-emerald-200' :
-                rev.status === 'pending' ? 'border-amber-300 bg-amber-50/20' :
-                'border-rose-200 opacity-70'
-              }`}
-            >
-              <div className="space-y-3">
-                
-                {/* Header & Badges */}
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      {[...Array(rev.rating || 5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                      ))}
+          filteredReviews.map((rev) => {
+            const isApproved = (rev.status || '').toLowerCase() === 'approved' || rev.is_approved === true;
+            const isDisabled = (rev.status || '').toLowerCase() === 'disabled' || (rev.status || '').toLowerCase() === 'rejected';
+            
+            return (
+              <div
+                key={rev.id}
+                className={`glass-panel p-5 bg-white border-2 rounded-3xl shadow-sm space-y-4 transition-all flex flex-col justify-between ${
+                  isApproved ? 'border-emerald-200' :
+                  isDisabled ? 'border-slate-300 bg-slate-50/60 opacity-80' :
+                  'border-amber-300 bg-amber-50/20'
+                }`}
+              >
+                <div className="space-y-3">
+                  
+                  {/* Header & Badges */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-1 mb-1">
+                        {[...Array(rev.rating || 5)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        ))}
+                      </div>
+                      <h3 className="font-black text-sm text-slate-900 leading-snug">
+                        &quot;{rev.review_title || 'Client Testimonial'}&quot;
+                      </h3>
                     </div>
-                    <h3 className="font-black text-sm text-slate-900 leading-snug">
-                      "{rev.review_title || 'Client Testimonial'}"
-                    </h3>
-                  </div>
 
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`badge text-[10px] font-bold ${
-                      rev.status === 'approved' ? 'badge-emerald' :
-                      rev.status === 'pending' ? 'badge-amber' :
-                      'badge-rose'
-                    }`}>
-                      {rev.status.toUpperCase()}
-                    </span>
-                    {rev.is_featured && (
-                      <span className="badge badge-purple text-[9px] font-black flex items-center gap-1">
-                        <Sparkles className="w-2.5 h-2.5" />
-                        <span>FEATURED</span>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className={`badge text-[10px] font-bold ${
+                        isApproved ? 'badge-emerald' :
+                        isDisabled ? 'badge-slate' :
+                        'badge-amber'
+                      }`}>
+                        {isApproved ? 'APPROVED LIVE' : isDisabled ? 'DISABLED (HIDDEN)' : 'PENDING'}
                       </span>
+                      {rev.is_featured && (
+                        <span className="badge badge-purple text-[9px] font-black flex items-center gap-1">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          <span>FEATURED</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    {rev.review_text}
+                  </p>
+
+                  {/* Author Info */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <div>
+                      <span className="font-extrabold text-slate-900 block">{rev.client_name}</span>
+                      <span className="text-[11px] text-slate-500 font-medium">{rev.designation} • <strong>{rev.company_name}</strong></span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400">
+                      {rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* Moderation Action Buttons */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                  
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {!isApproved ? (
+                      <button
+                        onClick={() => handleModerate(rev.id, 'approved', rev.is_featured)}
+                        disabled={updatingId === rev.id}
+                        className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Enable and publish review live on homepage"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Enable / Publish</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleModerate(rev.id, 'disabled', false)}
+                        disabled={updatingId === rev.id}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Disable review to hide from public homepage"
+                      >
+                        <EyeOff className="w-3.5 h-3.5" />
+                        <span>Disable / Hide</span>
+                      </button>
                     )}
-                  </div>
-                </div>
 
-                {/* Review Text */}
-                <p className="text-xs text-slate-600 font-medium leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  {rev.review_text}
-                </p>
-
-                {/* Author Info */}
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <div>
-                    <span className="font-extrabold text-slate-900 block">{rev.client_name}</span>
-                    <span className="text-[11px] text-slate-500 font-medium">{rev.designation} • <strong>{rev.company_name}</strong></span>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    {rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}
-                  </span>
-                </div>
-
-              </div>
-
-              {/* Moderation Action Buttons */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
-                
-                <div className="flex items-center gap-1.5">
-                  {rev.status !== 'approved' && (
                     <button
-                      onClick={() => handleModerate(rev.id, 'approved', rev.is_featured)}
+                      onClick={() => handleToggleFeatured(rev)}
                       disabled={updatingId === rev.id}
-                      className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors flex items-center gap-1 cursor-pointer"
+                      className={`px-2.5 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1 cursor-pointer border ${
+                        rev.is_featured 
+                          ? 'bg-purple-100 text-purple-900 border-purple-300' 
+                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                      }`}
+                      title="Spotlight review as a featured case study"
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Approve</span>
+                      <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                      <span>{rev.is_featured ? 'Unfeature' : 'Feature'}</span>
                     </button>
-                  )}
-
-                  {rev.status !== 'rejected' && (
-                    <button
-                      onClick={() => handleModerate(rev.id, 'rejected', false)}
-                      disabled={updatingId === rev.id}
-                      className="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-bold text-xs hover:bg-rose-100 transition-colors flex items-center gap-1 cursor-pointer"
-                    >
-                      <XCircle className="w-3.5 h-3.5" />
-                      <span>Reject</span>
-                    </button>
-                  )}
+                  </div>
 
                   <button
-                    onClick={() => handleToggleFeatured(rev)}
+                    onClick={() => handleDelete(rev.id)}
                     disabled={updatingId === rev.id}
-                    className={`px-2.5 py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center gap-1 cursor-pointer border ${
-                      rev.is_featured 
-                        ? 'bg-purple-100 text-purple-900 border-purple-300' 
-                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                    }`}
+                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                    title="Delete Review"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                    <span>{rev.is_featured ? 'Unfeature' : 'Feature'}</span>
+                    <Trash2 className="w-4 h-4" />
                   </button>
+
                 </div>
-
-                <button
-                  onClick={() => handleDelete(rev.id)}
-                  disabled={updatingId === rev.id}
-                  className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
-                  title="Delete Review"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

@@ -149,10 +149,13 @@ def submit_review(payload: ClientReviewCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to submit review: {str(e)}")
 
 @router.get("/admin/all")
-def get_admin_reviews(db: Session = Depends(get_db)):
-    """Super Admin endpoint to view all reviews including pending/rejected"""
+def get_admin_reviews(status: Optional[str] = None, db: Session = Depends(get_db)):
+    """Super Admin endpoint to view all reviews including pending/rejected/disabled"""
     seed_default_reviews_if_empty(db)
-    reviews = db.query(ClientReview).order_by(ClientReview.created_at.desc()).all()
+    query = db.query(ClientReview)
+    if status and status.lower() != 'all':
+        query = query.filter(ClientReview.status.ilike(status))
+    reviews = query.order_by(ClientReview.created_at.desc()).all()
     return {
         "success": True,
         "reviews": [
@@ -172,7 +175,7 @@ def get_admin_reviews(db: Session = Depends(get_db)):
                 "review_text": r.content,
                 "is_approved": r.is_approved,
                 "is_featured": r.is_featured,
-                "status": r.status or ("approved" if r.is_approved else "pending"),
+                "status": (r.status or ("approved" if r.is_approved else "pending")).lower(),
                 "created_at": r.created_at.isoformat() if r.created_at else None
             }
             for r in reviews
@@ -181,25 +184,32 @@ def get_admin_reviews(db: Session = Depends(get_db)):
 
 @router.put("/admin/{review_id}/moderate")
 def moderate_review(review_id: str, payload: ClientReviewModeration, db: Session = Depends(get_db)):
-    """Super Admin endpoint to approve, reject, or feature a review"""
+    """Super Admin endpoint to approve, disable, reject, or feature a review"""
     rev = db.query(ClientReview).filter(ClientReview.id == review_id).first()
     if not rev:
         raise HTTPException(status_code=404, detail="Review not found")
 
     if payload.is_approved is not None:
         rev.is_approved = payload.is_approved
-        rev.status = "approved" if payload.is_approved else "rejected"
+        rev.status = "approved" if payload.is_approved else "disabled"
     if payload.is_featured is not None:
         rev.is_featured = payload.is_featured
     if payload.status is not None:
-        rev.status = payload.status.lower()
-        rev.is_approved = (payload.status.lower() == "approved")
+        new_status = payload.status.lower()
+        rev.status = new_status
+        rev.is_approved = (new_status == "approved")
     if payload.moderation_notes is not None:
         rev.moderation_notes = payload.moderation_notes
 
     db.commit()
     db.refresh(rev)
-    return {"success": True, "message": f"Review {review_id} updated", "status": rev.status, "is_approved": rev.is_approved}
+    return {
+        "success": True,
+        "message": f"Review {review_id} updated",
+        "status": (rev.status or "approved").lower(),
+        "is_approved": rev.is_approved,
+        "is_featured": rev.is_featured
+    }
 
 @router.delete("/admin/{review_id}")
 def delete_review(review_id: str, db: Session = Depends(get_db)):

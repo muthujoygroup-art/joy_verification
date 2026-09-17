@@ -950,62 +950,64 @@ export const LandingPageView = () => {
           </section>
 
           {/* CLIENT TRUST & REVIEWS SECTION */}
-          <section className="py-16 bg-white border-t border-b border-[#E5EAF0] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
-              <div>
-                <span className="text-xs font-bold text-[#426CF5] px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] uppercase tracking-wider">
-                  CLIENT TESTIMONIALS & TRUST
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-bold text-[#182230] font-outfit mt-3">
-                  Trusted by Over 150+ Enterprise HR & Compliance Teams
-                </h2>
-                <p className="text-sm text-[#5C6878] mt-1 max-w-2xl">
-                  See how leading automotive manufacturing plants, IT enterprises, and 3PL logistics leaders rely on JOY True Profile for fast, error-free workforce verification.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  soundEngine.playClick();
-                  setShowReviewModal(true);
-                }}
-                className="px-5 py-2.5 rounded-full font-bold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-xs flex items-center gap-2 cursor-pointer transition-all shrink-0"
-              >
-                <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
-                <span>+ Write a Client Review</span>
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {clientReviews.map((rev, idx) => (
-                <div key={idx} className="p-6 rounded-3xl bg-[#FCFCFA] border border-[#E5EAF0] shadow-2xs flex flex-col justify-between space-y-4 hover:border-[#426CF5]/50 transition-all">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        {[...Array(rev.stars)].map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                      <span className="text-[10px] font-bold text-[#426CF5] bg-[#EAF5FF] px-2 py-0.5 rounded-full">
-                        {rev.badge}
-                      </span>
-                    </div>
-                    <p className="text-xs text-[#182230] leading-relaxed italic font-normal">
-                      &quot;{rev.quote}&quot;
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-[#E5EAF0]">
-                    <div className="font-bold text-xs text-[#182230] flex items-center gap-1">
-                      <span>{rev.name}</span>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#299C68]" />
-                    </div>
-                    <div className="text-[11px] text-[#5C6878]">{rev.role}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">{rev.company}</div>
-                  </div>
+          {content.enableClientReviews !== false && (
+            <section className="py-16 bg-white border-t border-b border-[#E5EAF0] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
+                <div>
+                  <span className="text-xs font-bold text-[#426CF5] px-3.5 py-1 rounded-full bg-[#EAF5FF] border border-[#E5EAF0] uppercase tracking-wider">
+                    CLIENT TESTIMONIALS & TRUST
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-bold text-[#182230] font-outfit mt-3">
+                    {content.clientReviewsTitle || 'Trusted by Over 150+ Enterprise HR & Compliance Teams'}
+                  </h2>
+                  <p className="text-sm text-[#5C6878] mt-1 max-w-2xl">
+                    {content.clientReviewsSubtitle || 'See how leading automotive manufacturing plants, IT enterprises, and 3PL logistics leaders rely on JOY True Profile for fast, error-free workforce verification.'}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </section>
+                <button
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setShowReviewModal(true);
+                  }}
+                  className="px-5 py-2.5 rounded-full font-bold text-xs text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-xs flex items-center gap-2 cursor-pointer transition-all shrink-0"
+                >
+                  <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                  <span>+ Write a Client Review</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {clientReviews.map((rev, idx) => (
+                  <div key={idx} className="p-6 rounded-3xl bg-[#FCFCFA] border border-[#E5EAF0] shadow-2xs flex flex-col justify-between space-y-4 hover:border-[#426CF5]/50 transition-all">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          {[...Array(rev.stars)].map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold text-[#426CF5] bg-[#EAF5FF] px-2 py-0.5 rounded-full">
+                          {rev.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#182230] leading-relaxed italic font-normal">
+                        &quot;{rev.quote}&quot;
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-[#E5EAF0]">
+                      <div className="font-bold text-xs text-[#182230] flex items-center gap-1">
+                        <span>{rev.name}</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#299C68]" />
+                      </div>
+                      <div className="text-[11px] text-[#5C6878]">{rev.role}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">{rev.company}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* FINAL CLOSING CTA SECTION */}
           <CTASection 
