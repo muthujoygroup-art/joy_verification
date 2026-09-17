@@ -538,9 +538,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'pipeline',
           divisions: [
-            { id: 'pipeline', label: `All Candidates (${candidates.length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
-            { id: 'pipeline_active', label: `Pending Verification (${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
-            { id: 'pipeline_verified', label: `Verified Candidates (${candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
+            { id: 'pipeline', label: `All Candidates (${(candidates || []).length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
+            { id: 'pipeline_active', label: `Pending Verification (${(candidates || []).filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_verified', label: `Verified Candidates (${(candidates || []).filter(c => c.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
         {

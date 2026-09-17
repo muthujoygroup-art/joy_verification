@@ -403,7 +403,56 @@ const INITIAL_COMPANIES = [];
 
 const INITIAL_HR_USERS = [];
 
-const INITIAL_CANDIDATES = [];
+const INITIAL_CANDIDATES = [
+  {
+    id: 'cand-kavitha-101',
+    token: 'tok_kavitha_ramachandran_891',
+    empId: 'JOY-EMP-001',
+    employeeNumber: 'JOY-EMP-001',
+    name: 'Kavitha Ramachandran',
+    email: 'kavitha.r@joytrueprofile.com',
+    mobile: '9845011223',
+    aadhaarNo: 'XXXX-XXXX-8912',
+    panNo: 'AABCK8912R',
+    designation: 'Senior Software Engineer',
+    dept: 'Engineering & Tech',
+    employeeType: 'IT & Tech',
+    companyId: 'comp-joy',
+    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    hrId: 'hr-1',
+    status: 'Link Sent',
+    portalPassword: '1234',
+    doj: '2026-10-01',
+    dob: '1995-08-14',
+    verificationConfig: { aadhaar: true, email: true, mobileOtp: true, faceCapture: true, pan: true, bankCheck: true },
+    verificationsCompleted: { aadhaar: false, mobile: false, face: false },
+    joiningFormData: {}
+  },
+  {
+    id: 'cand-arun-102',
+    token: 'tok_arun_kumar_742',
+    empId: 'JOY-EMP-002',
+    employeeNumber: 'JOY-EMP-002',
+    name: 'Arun Kumar V',
+    email: 'arun.v@joytrueprofile.com',
+    mobile: '9740088991',
+    aadhaarNo: 'XXXX-XXXX-4531',
+    panNo: 'BPAAK4531M',
+    designation: 'Operations Specialist',
+    dept: 'General Operations',
+    employeeType: 'Full-Time',
+    companyId: 'comp-joy',
+    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    hrId: 'hr-1',
+    status: 'Verified',
+    portalPassword: '1234',
+    doj: '2026-09-15',
+    dob: '1993-04-22',
+    verificationConfig: { aadhaar: true, email: true, mobileOtp: true, faceCapture: true, pan: true, bankCheck: true },
+    verificationsCompleted: { aadhaar: true, mobile: true, face: true },
+    joiningFormData: {}
+  }
+];
 
 const INITIAL_DEFAULT_VENDORS = [
   {
@@ -635,6 +684,16 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
     return INITIAL_CANDIDATES;
   });
+
+  // Automatically sync candidates state to localStorage for persistence across reloads
+  useEffect(() => {
+    if (Array.isArray(candidates)) {
+      try {
+        localStorage.setItem('joy_candidates_v1', JSON.stringify(candidates));
+      } catch (e) {}
+    }
+  }, [candidates]);
+
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
   // 🛡️ Strict Enterprise Authentication: User must log in with valid credentials
   const [currentUser, setCurrentUser] = useState(() => {
