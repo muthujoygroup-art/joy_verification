@@ -2197,65 +2197,67 @@ export const AppProvider = ({ children }) => {
       });
 
       const formatted = {
-        id: created.id,
-        token: created.token,
-        name: created.name,
-        empId: created.emp_id,
-        employeeNumber: created.employee_number || created.emp_id,
-        email: created.email,
-        mobile: created.mobile,
-        aadhaarNo: created.aadhaar_no,
-        designation: created.designation,
-        dept: created.dept,
-        employeeType: created.employee_type,
-        dob: created.dob,
-        doj: created.doj,
-        age: created.age,
-        gender: created.gender,
-        maritalStatus: created.marital_status,
-        motherTongue: created.mother_tongue,
-        languagesKnown: created.languages_known,
-        pfNumber: created.pf_number,
-        esiNumber: created.esi_number,
-        religion: created.religion,
-        caste: created.caste,
-        category: created.category,
-        nativeState: created.native_state,
-        nativeDistrict: created.native_district,
-        identificationMarks: created.identification_marks,
-        companyId: created.company_id,
+        id: created.id || `emp-${Date.now()}`,
+        token: created.token || candidateData.token || `tok_${(candidateData.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`,
+        name: created.name || candidateData.name,
+        empId: created.emp_id || candidateData.empId,
+        employeeNumber: created.employee_number || candidateData.employeeNumber || candidateData.empId,
+        email: created.email || candidateData.email,
+        mobile: created.mobile || candidateData.mobile,
+        aadhaarNo: created.aadhaar_no || candidateData.aadhaarNo,
+        designation: created.designation || candidateData.designation,
+        dept: created.dept || candidateData.dept,
+        employeeType: created.employee_type || candidateData.employeeType,
+        dob: created.dob || candidateData.dob,
+        doj: created.doj || candidateData.doj,
+        age: created.age || candidateData.age,
+        gender: created.gender || candidateData.gender,
+        maritalStatus: created.marital_status || candidateData.maritalStatus,
+        motherTongue: created.mother_tongue || candidateData.motherTongue,
+        languagesKnown: created.languages_known || candidateData.languagesKnown,
+        pfNumber: created.pf_number || candidateData.pfNumber || candidateData.uanEpf,
+        esiNumber: created.esi_number || candidateData.esiNumber || candidateData.esicNo,
+        religion: created.religion || candidateData.religion,
+        caste: created.caste || candidateData.caste,
+        category: created.category || candidateData.category,
+        nativeState: created.native_state || candidateData.nativeState,
+        nativeDistrict: created.native_district || candidateData.nativeDistrict,
+        identificationMarks: created.identification_marks || candidateData.identificationMarks,
+        companyId: created.company_id || candidateData.companyId || 'comp-joy',
+        company_id: created.company_id || candidateData.companyId || 'comp-joy',
         companyLogo: resolvedCompanyLogo,
-        hrId: created.hr_id,
-        status: created.status,
+        hrId: created.hr_id || candidateData.hrId || 'hr-1',
+        status: created.status || candidateData.status || 'Link Dispatched 🟢',
         portalPassword: created.portal_password || candidatePin,
-        verificationConfig: created.verification_config || {},
-        verificationsCompleted: created.verifications_completed || {},
+        verificationConfig: created.verification_config || candidateData.verificationConfig || {},
+        verificationsCompleted: created.verifications_completed || { aadhaar: false, mobile: false, face: false },
         photo: created.face_images?.straight || candidateData.photo || null,
         faceImages: created.face_images || candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
-        manualChecks: created.manual_checks || {},
-        joiningFormData: created.joining_form_data || {},
+        manualChecks: created.manual_checks || candidateData.manualChecks || {},
+        joiningFormData: created.joining_form_data || candidateData.joiningFormData || candidateData,
         customFields: created.custom_fields || candidateData.customFields || {},
         documents: candidateData.documents || candidateData.uploadedDocumentsList || [],
-        verificationDate: created.verification_date
+        verificationDate: created.verification_date || new Date().toLocaleDateString('en-GB')
       };
 
       setCandidates(prev => [formatted, ...prev]);
-      setSelectedCandidateToken(created.token);
+      setSelectedCandidateToken(formatted.token);
       showToast(`Verification token created for ${candidateData.name}! Saved in DB.`);
-      return created.token;
+      return formatted.token;
     } catch (err) {
-      const newToken = `tok_${candidateData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
+      const newToken = candidateData.token || `tok_${(candidateData.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
       const newCand = {
         id: `emp-${Date.now()}`,
         token: newToken,
-        status: 'Link Sent',
-        portalPassword: candidatePin,
         companyLogo: resolvedCompanyLogo,
         verificationsCompleted: { aadhaar: false, mobile: false, face: false },
         photo: candidateData.photo || null,
         faceImages: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
-        verificationDate: null,
-        ...candidateData
+        verificationDate: new Date().toLocaleDateString('en-GB'),
+        ...candidateData,
+        companyId: candidateData.companyId || 'comp-joy',
+        company_id: candidateData.companyId || 'comp-joy',
+        status: candidateData.status || 'Link Dispatched 🟢'
       };
       setCandidates(prev => [newCand, ...prev]);
       setSelectedCandidateToken(newToken);
