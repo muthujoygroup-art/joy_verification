@@ -655,17 +655,7 @@ export const AppProvider = ({ children }) => {
         if (Array.isArray(parsed)) {
           const defaultCompId = 'comp-joy';
           const clean = parsed
-            .filter(c => {
-              if (!c) return false;
-              const n = (c.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-              const id = (c.id || '').toLowerCase();
-              const tok = (c.token || '').toLowerCase();
-              // Purge legacy mock and test records
-              if (n.includes('muthukumar') || n.includes('karansharma') || n.includes('testbulk') || n.includes('realprofile') || n.includes('exceltestemployee')) return false;
-              if (id === 'cand-muthu-01' || id === 'cand-karan-903' || id === 'cand-1' || tok === 'tok-muthu-99') return false;
-              if (c.empId === 'JOY-2026-001' || c.empId === 'EMP-2026-88' || c.token === 'cand-token-001') return false;
-              return true;
-            })
+            .filter(c => !!c && !!c.name)
             .map(c => {
               const verifs = c.verificationsCompleted || c.verifications_completed || {};
               const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
