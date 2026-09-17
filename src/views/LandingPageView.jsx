@@ -516,7 +516,7 @@ export const LandingPageView = () => {
               className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Compass className="w-3.5 h-3.5 text-[#426CF5] animate-spin-slow" />
-              <span>Tour 🧭</span>
+              <span>Tour & Guide 🧭</span>
             </button>
 
             {/* Book Live Demo Primary Button */}
@@ -564,7 +564,7 @@ export const LandingPageView = () => {
                 className="w-full py-2.5 rounded-xl font-semibold text-xs text-[#426CF5] bg-[#EAF5FF] border border-[#E5EAF0] text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Compass className="w-3.5 h-3.5 text-[#426CF5]" />
-                <span>Interactive Tour Guide 🧭</span>
+                <span>Tour & Guide 🧭</span>
               </button>
 
               <button
