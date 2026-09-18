@@ -18,7 +18,8 @@ from backend.app.routers import (
     settings_router,
     inquiries_router,
     reviews_router,
-    blog_router
+    blog_router,
+    dpdp_router
 )
 
 from backend.app.services.security_service import EnterpriseSecurityMiddleware, fast_cache, global_rate_limiter
@@ -114,7 +115,7 @@ all_routers = [
     auth_router, superadmin_router, company_router, hr_router,
     verification_router, master_data_router, tickets_router,
     billing_router, documents_router, settings_router,
-    inquiries_router, reviews_router, blog_router
+    inquiries_router, reviews_router, blog_router, dpdp_router
 ]
 
 for r in all_routers:

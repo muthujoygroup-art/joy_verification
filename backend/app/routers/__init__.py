@@ -11,6 +11,7 @@ from backend.app.routers.settings import router as settings_router
 from backend.app.routers.inquiries import router as inquiries_router
 from backend.app.routers.reviews import router as reviews_router
 from backend.app.routers.blog import router as blog_router
+from backend.app.routers.dpdp import router as dpdp_router
 
 __all__ = [
     "auth_router",
@@ -25,6 +26,7 @@ __all__ = [
     "settings_router",
     "inquiries_router",
     "reviews_router",
-    "blog_router"
+    "blog_router",
+    "dpdp_router"
 ]
 

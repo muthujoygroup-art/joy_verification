@@ -23,6 +23,12 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
   const verifs = candidate.verifiedAttributes || {};
   const jData = candidate.joiningFormData || candidate.submittedFormData || {};
 
+  const maskAadhaarNo = (val) => {
+    if (!val) return 'Not Uploaded';
+    const digits = String(val).replace(/\D/g, '');
+    return digits.length >= 4 ? `XXXX-XXXX-${digits.slice(-4)}` : 'XXXX-XXXX-****';
+  };
+
   // Resolve extracted identity data for each document source
   const docDataMap = {
     aadhaar: {
@@ -31,7 +37,7 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
       dob: verifs.aadhaar?.dob || candidate.dob || jData.dob || 'Not Uploaded',
       address: verifs.aadhaar?.address || candidate.permanentAddress || jData.permanentAddressLine || 'Not Uploaded',
       fatherName: verifs.aadhaar?.careOf || verifs.aadhaar?.fatherName || candidate.fatherName || jData.fatherSpouseName || 'Not Uploaded',
-      docNo: candidate.aadhaarNo || verifs.aadhaar?.aadhaarNumber || 'Not Uploaded',
+      docNo: maskAadhaarNo(candidate.aadhaarNo || verifs.aadhaar?.aadhaarNumber),
       status: verifs.aadhaar ? 'Verified 🟢' : (candidate.aadhaarNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     pan: {

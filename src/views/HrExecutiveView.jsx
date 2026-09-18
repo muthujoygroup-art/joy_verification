@@ -23,6 +23,7 @@ import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossie
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
 import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
+import { DpdpComplianceModal } from '../components/DpdpComplianceModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
@@ -326,6 +327,7 @@ export const HrExecutiveView = () => {
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
   const [viewingDocComparisonCandidate, setViewingDocComparisonCandidate] = useState(null);
+  const [viewingDpdpCandidate, setViewingDpdpCandidate] = useState(null);
   const [viewingUploadedDocsCandidate, setViewingUploadedDocsCandidate] = useState(null);
   const [selectedDocPreview, setSelectedDocPreview] = useState(null);
   const [onboardingMode, setOnboardingMode] = useState('hr_filled'); // 'hr_filled' | 'candidate_filled'
@@ -2202,6 +2204,16 @@ export const HrExecutiveView = () => {
                           >
                             <FileText className="w-3.5 h-3.5 text-violet-700" />
                             <span>Doc Comparison PDF 📄</span>
+                          </button>
+
+                          {/* 4.3 DPDP Act 2023 Statutory Governance Desk Button */}
+                          <button
+                            onClick={() => setViewingDpdpCandidate(cand)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-slate-800 bg-slate-100 border-slate-300 hover:bg-slate-200 transition-all cursor-pointer"
+                            title="View DPDP Act 2023 Statutory Compliance, Candidate Consent & Cryptographic Audit Ledger"
+                          >
+                            <Scale className="w-3.5 h-3.5 text-slate-700" />
+                            <span>DPDP Rights 🛡️</span>
                           </button>
 
                           {/* 4.5 Manage / Verify Documents Later */}
@@ -5468,6 +5480,16 @@ export const HrExecutiveView = () => {
           isOpen={Boolean(viewingDocComparisonCandidate)}
           onClose={() => setViewingDocComparisonCandidate(null)}
           candidate={viewingDocComparisonCandidate}
+        />
+      )}
+
+      {/* Digital Personal Data Protection (DPDP) Act 2023 Statutory Governance Modal */}
+      {viewingDpdpCandidate && (
+        <DpdpComplianceModal
+          isOpen={Boolean(viewingDpdpCandidate)}
+          onClose={() => setViewingDpdpCandidate(null)}
+          candidate={viewingDpdpCandidate}
+          companyName={currentCompany?.name}
         />
       )}
 

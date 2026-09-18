@@ -1221,6 +1221,31 @@ export const api = {
       return { success: true, message: 'Review recorded in simulation mode' };
     }
   },
+
+  // 🛡️ DPDP Act 2023 Statutory Governance APIs
+  recordDpdpConsent: (candidateId, token, consentAgreed = true) => request('/dpdp/consent', {
+    method: 'POST',
+    body: JSON.stringify({
+      candidate_id: candidateId,
+      token: token,
+      consent_agreed: consentAgreed,
+      notice_version: '2023-DPDP-V2.4'
+    })
+  }),
+  requestDpdpErasure: (candidateId, token, reason = 'Candidate statutory request for data erasure under DPDP Section 12') => request('/dpdp/candidate-rights/erasure', {
+    method: 'POST',
+    body: JSON.stringify({
+      candidate_id: candidateId,
+      token: token,
+      reason: reason
+    })
+  }),
+  getDpdpAuditTrail: (candidateId = null, companyId = null) => {
+    const params = new URLSearchParams();
+    if (candidateId) params.append('candidate_id', candidateId);
+    if (companyId) params.append('company_id', companyId);
+    return request(`/dpdp/audit-trail?${params.toString()}`, {}, false);
+  }
 };
 
 export default api;
