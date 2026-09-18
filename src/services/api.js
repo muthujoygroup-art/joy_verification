@@ -491,6 +491,19 @@ export const api = {
       body: JSON.stringify(candidatesList),
     });
   },
+  importCandidatesBulk: (candidatesList) => {
+    requestCache.clear();
+    return request('/hr/candidates/bulk', {
+      method: 'POST',
+      body: JSON.stringify(candidatesList),
+    });
+  },
+  dispatchCandidateEmail: (payload) => {
+    return request('/hr/dispatch-link', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
   updateCandidate: (candidateId, candidateData) => {
     requestCache.clear();
     return request(`/hr/candidates/${candidateId}`, {

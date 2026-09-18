@@ -1393,23 +1393,23 @@ export const HrExecutiveView = () => {
                 {(currentCompany?.name || 'JC').charAt(0).toUpperCase()}
               </div>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Management</span>
-                <span className="text-[11px] sm:text-xs text-slate-700 font-bold truncate max-w-[260px] sm:max-w-none">
+                <span className="text-[11px] sm:text-xs text-slate-700 font-bold shrink-0">
                   • {activeHr.name} <span className="text-slate-400 font-normal">({currentCompany?.name || 'Joy Corporate Solutions'})</span>
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[10.5px] border border-emerald-300 shadow-2xs">
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[10.5px] border border-emerald-300 shadow-2xs shrink-0">
                   👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || `${currentCompany?.code || 'COMP001'}HR001`}
                 </span>
-                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[10.5px] border border-purple-300 shadow-2xs">
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[10.5px] border border-purple-300 shadow-2xs shrink-0">
                   🏢 Company: {currentCompany?.code || 'COMP001'}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight truncate">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight leading-snug break-words">
                 {currentHrDivMeta.title}
               </h2>
-              <p className="text-xs text-slate-600 mt-0.5 font-medium truncate">
+              <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed break-words">
                 {currentHrDivMeta.subtitle}
               </p>
             </div>

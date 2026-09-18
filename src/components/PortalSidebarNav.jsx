@@ -893,7 +893,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                     handleNavigate(pillar);
                   }}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                  <div className="flex items-center gap-2 min-w-0 pr-1.5 flex-1 overflow-hidden">
                     {/* Floating Squircle Icon */}
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black transition-transform duration-200 group-hover:scale-110 shrink-0 ${
                       isPillarActive
@@ -904,7 +904,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                     </div>
 
                     {/* Title + Subtitle */}
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h4 className="font-extrabold text-xs text-slate-900 tracking-tight truncate leading-tight group-hover:text-indigo-600 transition-colors">
                         {pillar.title}
                       </h4>
@@ -915,8 +915,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                   </div>
 
                   {/* Right: Module Count Badge + Accordion + / - */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className={`text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md ${
+                  <div className="flex items-center gap-1 shrink-0 ml-auto">
+                    <span className={`text-[8px] sm:text-[8.5px] font-black uppercase tracking-tight px-1.5 py-0.5 rounded-md whitespace-nowrap ${
                       isPillarActive
                         ? 'bg-indigo-100 text-indigo-900 font-bold border border-indigo-200'
                         : 'bg-slate-100 text-slate-500'
@@ -924,7 +924,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                       {pillar.badgeText}
                     </span>
 
-                    <span className="w-5 h-5 flex items-center justify-center rounded-lg text-slate-400 group-hover:text-slate-800 transition-transform duration-200">
+                    <span className="w-5 h-5 flex items-center justify-center rounded-lg text-slate-400 group-hover:text-slate-800 transition-transform duration-200 shrink-0">
                       {isExpanded ? (
                         <Minus className="w-3.5 h-3.5 text-indigo-600" />
                       ) : (
