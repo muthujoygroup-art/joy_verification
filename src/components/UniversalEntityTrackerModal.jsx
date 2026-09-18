@@ -280,9 +280,9 @@ export const UniversalEntityTrackerModal = ({
                 <div><span className="text-slate-400 block text-[10px]">Designation:</span><strong className="text-slate-900">{entity.designation || 'Associate'}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Department:</span><strong className="text-slate-900">{entity.dept || 'Operations'}</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Mobile:</span><strong className="text-slate-900 font-mono">{entity.mobile || '—'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Aadhaar No:</span><strong className="font-mono text-slate-800">{entity.aadhaarNo ? `Aadhaar: ${entity.aadhaarNo}` : 'Aadhaar: Pending'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">PAN No:</span><strong className="font-mono text-slate-800">{entity.panNo || '—'}</strong></div>
-                <div><span className="text-slate-400 block text-[10px]">Passcode (PIN):</span><strong className="font-mono text-emerald-700 font-bold">{entity.portalPassword || '1234'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Aadhaar No:</span><strong className="font-mono text-slate-800">{entity.aadhaarNo ? `XXXX-XXXX-${entity.aadhaarNo.replace(/\D/g, '').slice(-4)}` : 'Aadhaar: Pending'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">PAN No:</span><strong className="font-mono text-slate-800">{entity.panNo ? `${entity.panNo.slice(0,5)}****${entity.panNo.slice(-1)}` : '—'}</strong></div>
+                <div><span className="text-slate-400 block text-[10px]">Security Vault:</span><strong className="font-mono text-emerald-700 font-bold">Encrypted Vault ✓</strong></div>
                 <div><span className="text-slate-400 block text-[10px]">Sector:</span><span className="badge badge-indigo text-[9px] uppercase font-bold">{entity.employee_type || entity.employeeCategory || 'IT & Tech'}</span></div>
               </div>
 

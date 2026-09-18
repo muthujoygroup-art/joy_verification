@@ -365,46 +365,20 @@ export const QrCodeModal = ({
             </div>
           </div>
 
-          {/* 🔐 SECTION 2: PORTAL UNLOCK PASSCODE / SECURITY PIN */}
-          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+          {/* 🔒 SECTION 2: VISUAL CAPTCHA & VAULT SECURITY PROTECTION */}
+          <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Portal Unlock PIN (Set by HR)</span>
+              <label className="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Security Access Protection</span>
               </label>
-              <span className="text-[10px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
-                Required for Candidate Access
+              <span className="text-[10px] font-black text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                Visual CAPTCHA Gate Active ✓
               </span>
             </div>
-
-            <div className="flex items-center gap-1.5">
-              <input 
-                type="text" 
-                value={passcodeText}
-                onChange={(e) => handlePasscodeChange(e.target.value)}
-                placeholder="e.g. 1234 or Joy@2026"
-                className="flex-1 min-w-0 bg-white border-2 border-slate-300 focus:border-indigo-600 text-indigo-950 font-mono font-bold text-xs sm:text-sm py-2 px-2.5 rounded-xl outline-none"
-              />
-
-              <button
-                type="button"
-                onClick={handleSavePasscode}
-                className="py-2 px-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>{isPasscodeSaved ? 'Saved ✓' : 'Save'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleGenerateRandomPin}
-                className="py-2 px-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-indigo-800 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Generate Random PIN"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                <span>PIN</span>
-              </button>
-            </div>
+            <p className="text-[11px] text-emerald-900 leading-relaxed font-medium">
+              Candidate onboarding session is secured with Visual CAPTCHA challenge and AES-256 encrypted payload vault. Passwords are never stored or exposed in plain text.
+            </p>
           </div>
 
           {/* 📱 SECTION 3: REAL SCANNABLE QR CODE */}

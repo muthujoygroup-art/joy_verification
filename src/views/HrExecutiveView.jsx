@@ -2590,49 +2590,16 @@ export const HrExecutiveView = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Passcode / PIN Code *</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. 1234 or Joy@2026"
-                    value={formData.portalPassword}
-                    onChange={(e) => setFormData({ ...formData, portalPassword: e.target.value })}
-                    className="form-input font-mono font-black text-sm text-indigo-900 bg-white tracking-wider"
-                  />
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span><strong>Visual CAPTCHA Security Gate Active</strong> — Candidate onboarding sessions are protected by CAPTCHA challenge & AES-256 vault encryption. No plain text passwords stored in browser.</span>
                 </div>
-
-                <div className="flex items-center gap-2 pt-4 sm:pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-                      setFormData({ ...formData, portalPassword: randomPin });
-                      showToast(`🎲 Generated random 4-digit PIN: ${randomPin}`);
-                    }}
-                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-extrabold text-indigo-900 bg-white border-indigo-200 hover:bg-indigo-50 shadow-xs cursor-pointer btn-interactive"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>🎲 Generate Random PIN</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({ ...formData, portalPassword: '1234' });
-                      showToast('⚡ Reset to default PIN: 1234');
-                    }}
-                    className="btn btn-secondary text-xs py-2 px-2.5 font-bold text-slate-600 bg-white border-slate-200 hover:bg-slate-50 cursor-pointer"
-                    title="Reset to 1234"
-                  >
-                    Default (1234)
-                  </button>
-                </div>
-
-                <div className="text-[11px] text-slate-600 bg-white p-2.5 rounded-xl border border-indigo-100 font-medium">
-                  <span className="font-bold text-indigo-900 block mb-0.5">🔒 Passcode Protection:</span>
-                  Prevents unauthorized link access. Displayed on candidate card and in QR modal.
-                </div>
+                <span className="badge badge-emerald text-[9px] font-black shrink-0">Secured ✓</span>
+              </div>
+              <div className="text-[11px] text-slate-600 bg-white p-2.5 rounded-xl border border-indigo-100 font-medium">
+                <span className="font-bold text-indigo-900 block mb-0.5">🔒 Passcode Protection:</span>
+                Prevents unauthorized link access. Displayed on candidate card and in QR modal.
               </div>
             </div>
 

@@ -169,3 +169,44 @@ export const validateFieldWithWarning = (fieldType, value) => {
   }
   return null;
 };
+
+// 13. PII & Password Data Masking Helpers for Browser UI & Exports
+export const maskAadhaar = (val) => {
+  if (!val || typeof val !== 'string') return '';
+  const digits = val.replace(/\D/g, '');
+  if (digits.length >= 4) {
+    return `XXXX-XXXX-${digits.slice(-4)}`;
+  }
+  return 'XXXX-XXXX-****';
+};
+
+export const maskPan = (val) => {
+  if (!val || typeof val !== 'string') return '';
+  const clean = val.trim().toUpperCase();
+  if (clean.length === 10) {
+    return `${clean.slice(0, 5)}****${clean.slice(-1)}`;
+  }
+  return '*****';
+};
+
+export const maskBankAccount = (val) => {
+  if (!val || typeof val !== 'string') return '';
+  const digits = val.replace(/\D/g, '');
+  if (digits.length >= 4) {
+    return `••••••••${digits.slice(-4)}`;
+  }
+  return '••••••••';
+};
+
+export const maskMobile = (val) => {
+  if (!val || typeof val !== 'string') return '';
+  const digits = val.replace(/\D/g, '');
+  if (digits.length >= 10) {
+    return `+91 ${digits.slice(0, 2)}****${digits.slice(-4)}`;
+  }
+  return '+91 *******';
+};
+
+export const maskPassword = (val) => {
+  return '••••••••';
+};

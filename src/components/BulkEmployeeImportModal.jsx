@@ -2157,8 +2157,8 @@ export const BulkEmployeeImportModal = ({
                           <div className="font-mono text-slate-800">{cand.mobile}</div>
                           <div className="text-[10px] text-slate-400 truncate max-w-[160px]">{cand.email}</div>
                         </td>
-                        <td className="p-3 font-mono font-bold text-indigo-700">
-                          {cand.portalPassword}
+                        <td className="p-3 font-mono font-bold text-slate-500">
+                          ••••••••
                         </td>
                         <td className="p-3 font-mono text-[11px] text-slate-600">
                           <div className="truncate max-w-[200px]" title={cand.linkUrl}>
