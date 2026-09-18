@@ -22,6 +22,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
+import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
@@ -324,6 +325,7 @@ export const HrExecutiveView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
+  const [viewingDocComparisonCandidate, setViewingDocComparisonCandidate] = useState(null);
   const [viewingUploadedDocsCandidate, setViewingUploadedDocsCandidate] = useState(null);
   const [selectedDocPreview, setSelectedDocPreview] = useState(null);
   const [onboardingMode, setOnboardingMode] = useState('hr_filled'); // 'hr_filled' | 'candidate_filled'
@@ -548,10 +550,22 @@ export const HrExecutiveView = () => {
     setDownloadingCandidate(null);
     setViewingDossierCandidate(null);
     setViewingCertificateCandidate(null);
+    setViewingDocComparisonCandidate(null);
     setViewingUploadedDocsCandidate(null);
     setSelectedDocPreview(null);
     setActiveDrilldown(null);
     setViewingBgvReportCandidate(cand);
+  };
+
+  const openDocComparison = (cand) => {
+    setDownloadingCandidate(null);
+    setViewingDossierCandidate(null);
+    setViewingCertificateCandidate(null);
+    setViewingBgvReportCandidate(null);
+    setViewingUploadedDocsCandidate(null);
+    setSelectedDocPreview(null);
+    setActiveDrilldown(null);
+    setViewingDocComparisonCandidate(cand);
   };
 
   const openDownloader = (cand) => {
@@ -2178,6 +2192,16 @@ export const HrExecutiveView = () => {
                           >
                             <Award className="w-3.5 h-3.5 text-indigo-700" />
                             <span>JOY Certificate</span>
+                          </button>
+
+                          {/* 4.2 Document Comparison PDF Report Button */}
+                          <button
+                            onClick={() => openDocComparison(cand)}
+                            className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold text-violet-900 bg-violet-50 border-violet-200 hover:bg-violet-100 transition-all cursor-pointer"
+                            title="View & Download Side-by-Side Original Document Attribute Comparison PDF"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-violet-700" />
+                            <span>Doc Comparison PDF 📄</span>
                           </button>
 
                           {/* 4.5 Manage / Verify Documents Later */}
@@ -5435,6 +5459,15 @@ export const HrExecutiveView = () => {
         <OfficialVerificationCertificateModal
           candidate={viewingCertificateCandidate}
           onClose={() => setViewingCertificateCandidate(null)}
+        />
+      )}
+
+      {/* Statutory Original Document Attribute Comparison Report PDF Modal */}
+      {viewingDocComparisonCandidate && (
+        <DocumentComparisonPdfModal
+          isOpen={Boolean(viewingDocComparisonCandidate)}
+          onClose={() => setViewingDocComparisonCandidate(null)}
+          candidate={viewingDocComparisonCandidate}
         />
       )}
 

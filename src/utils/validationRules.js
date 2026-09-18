@@ -131,3 +131,41 @@ export const validateVoterId = (voterId) => {
   const regex = /^[A-Z]{3}[0-9]{7}$/;
   return regex.test(voterId.trim().toUpperCase());
 };
+
+// 12. Field Warning Popup Generator
+export const validateFieldWithWarning = (fieldType, value) => {
+  if (!value || typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  switch (fieldType) {
+    case 'pan':
+      if (trimmed.length > 0 && trimmed.length < 10) return 'PAN Card must be exactly 10 alphanumeric characters (e.g. ABCDE1234F).';
+      if (trimmed.length === 10 && !validatePan(trimmed)) return 'Invalid PAN format! First 5 characters must be uppercase letters, next 4 digits, last 1 letter.';
+      break;
+    case 'aadhaar':
+      const aDigits = trimmed.replace(/\D/g, '');
+      if (aDigits.length > 0 && aDigits.length < 12) return 'Aadhaar Number must be exactly 12 digits.';
+      break;
+    case 'mobile':
+      const mDigits = trimmed.replace(/\D/g, '');
+      if (mDigits.length > 0 && mDigits.length < 10) return 'Mobile Number must be exactly 10 digits.';
+      break;
+    case 'ifsc':
+      if (trimmed.length > 0 && trimmed.length < 11) return 'IFSC Code must be exactly 11 characters (e.g. HDFC0001234).';
+      if (trimmed.length === 11 && !validateIfsc(trimmed)) return 'Invalid IFSC Code! 5th character must be digit 0.';
+      break;
+    case 'pincode':
+      const pDigits = trimmed.replace(/\D/g, '');
+      if (pDigits.length > 0 && pDigits.length < 6) return 'Pincode must be exactly 6 digits.';
+      break;
+    case 'uan':
+      const uDigits = trimmed.replace(/\D/g, '');
+      if (uDigits.length > 0 && uDigits.length < 12) return 'EPFO UAN must be exactly 12 digits.';
+      break;
+    case 'passport':
+      if (trimmed.length > 0 && trimmed.length < 8) return 'Passport Number must be 8 alphanumeric characters (e.g. A1234567).';
+      break;
+    default:
+      return null;
+  }
+  return null;
+};

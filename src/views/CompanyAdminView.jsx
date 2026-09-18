@@ -11,6 +11,7 @@ import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { OfficialVerificationCertificateModal } from '../components/OfficialVerificationCertificateModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
+import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
@@ -141,6 +142,7 @@ export const CompanyAdminView = () => {
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
+  const [viewingDocComparisonCandidate, setViewingDocComparisonCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
@@ -4759,6 +4761,15 @@ export const CompanyAdminView = () => {
         <OfficialVerificationCertificateModal
           candidate={viewingCertificateCandidate}
           onClose={() => setViewingCertificateCandidate(null)}
+        />
+      )}
+
+      {/* Statutory Original Document Attribute Comparison Report PDF Modal */}
+      {viewingDocComparisonCandidate && (
+        <DocumentComparisonPdfModal
+          isOpen={Boolean(viewingDocComparisonCandidate)}
+          onClose={() => setViewingDocComparisonCandidate(null)}
+          candidate={viewingDocComparisonCandidate}
         />
       )}
 

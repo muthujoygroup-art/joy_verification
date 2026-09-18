@@ -14,6 +14,8 @@ import { LivePhotoCaptureModal } from '../components/LivePhotoCaptureModal';
 import { AiFaceMatchModal } from '../components/AiFaceMatchModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { PreVerificationAdvisoryModal } from '../components/PreVerificationAdvisoryModal';
+import { SecurityCaptchaGate } from '../components/SecurityCaptchaGate';
+import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -531,99 +533,19 @@ export const EmployeePortalView = ({ directToken = null }) => {
     );
   }
 
-  // 🔒 1. CANDIDATE SECURITY PASSCODE GATEWAY (DPDP Act 2023 Access Control)
+  // 🔒 1. CANDIDATE SECURITY CAPTCHA GATEWAY (DPDP Act 2023 Visual Access Control)
   if (!isUnlocked) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-sm sm:max-w-md mx-auto bg-white border-2 border-indigo-200 rounded-3xl shadow-2xl p-5 sm:p-8 space-y-5 sm:space-y-6 text-slate-900 animate-modal-spring relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500" />
-          
-          <div className="text-center space-y-2">
-            <img src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} alt="JOY Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto" />
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-wider">
-              <Lock className="w-3.5 h-3.5" />
-              <span>Identity Verification Portal</span>
-            </div>
-            <h2 className="text-lg sm:text-xl font-black text-slate-900">
-              Welcome, {candidate.name}
-            </h2>
-            <p className="text-xs text-slate-500 font-medium truncate px-2">
-              Employer: <strong className="text-slate-900">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>
-            </p>
-          </div>
-
-          <div className="p-3 sm:p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1">
-            <span className="font-bold block flex items-center gap-1.5 text-amber-900">
-              <KeyRound className="w-3.5 h-3.5 text-amber-700" />
-              <span>4-Digit PIN Required</span>
-            </span>
-            <p className="text-[11px] leading-relaxed text-amber-900/90">
-              Please enter the 4-digit PIN provided by your HR team to start your verification.
-            </p>
-          </div>
-
-          <form onSubmit={handleUnlockSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                4-Digit PIN (from HR) *
-              </label>
-              
-              <div className="relative flex items-center">
-                <input 
-                  type={showPassword ? 'text' : 'password'}
-                  autoFocus
-                  required
-                  placeholder="Enter 4-digit PIN..."
-                  value={passcodeDigits}
-                  onChange={(e) => {
-                    setPasscodeDigits(e.target.value);
-                    if (passcodeError) setPasscodeError('');
-                  }}
-                  className="w-full text-center text-lg sm:text-xl font-mono py-3 px-10 rounded-2xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none font-bold text-indigo-950 bg-slate-50/50 focus:bg-white transition-all tracking-widest"
-                />
-                
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-all cursor-pointer"
-                  title={showPassword ? 'Hide PIN' : 'Show PIN'}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-
-              {passcodeError && (
-                <div className="p-2 bg-rose-50 border border-rose-200 rounded-xl mt-2 text-[11px] text-rose-700 font-bold flex items-center gap-1.5 animate-fadeIn">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                  <span>{passcodeError}</span>
-                </div>
-              )}
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={isUnlocking}
-              className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer btn-interactive flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {isUnlocking ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Checking PIN...</span>
-                </>
-              ) : (
-                <>
-                  <KeyRound className="w-4 h-4" />
-                  <span>Start Verification 🚀</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 font-mono">
-            <span>Encrypted Session</span>
-            <span className="text-emerald-700 font-bold">100% Secure ✓</span>
-          </div>
-        </div>
+        <SecurityCaptchaGate
+          candidateName={candidate.name}
+          candidateEmpId={candidate.empId || candidate.employeeNumber}
+          companyName={candidate.companyName}
+          onCaptchaVerified={() => {
+            setIsUnlocked(true);
+            showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Security CAPTCHA verified.`);
+          }}
+        />
       </div>
     );
   }
