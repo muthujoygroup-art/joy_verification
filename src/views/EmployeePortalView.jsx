@@ -16,6 +16,8 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { PreVerificationAdvisoryModal } from '../components/PreVerificationAdvisoryModal';
 import { SecurityCaptchaGate } from '../components/SecurityCaptchaGate';
 import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
+import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyModal';
+import { DpdpComplianceModal } from '../components/DpdpComplianceModal';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -85,6 +87,8 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showPreVerificationAdvisory, setShowPreVerificationAdvisory] = useState(true);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showDpdpModal, setShowDpdpModal] = useState(false);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
 
@@ -856,6 +860,37 @@ export const EmployeePortalView = ({ directToken = null }) => {
           <p className="text-indigo-950 font-semibold pl-6 leading-relaxed text-[12px]">
             "{candidate.hrCustomMessage || 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}"
           </p>
+        </div>
+
+        {/* 🛡️ DATA SECURITY & PRIVACY ASSURANCE TRUST BANNER */}
+        <div className="p-4 bg-emerald-50/90 border-2 border-emerald-300 rounded-2xl text-xs text-emerald-950 space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between font-extrabold text-emerald-900">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs uppercase tracking-wider">100% Encrypted Data Safety Guarantee & DPDP Act 2023 Compliance</span>
+            </div>
+            <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900 text-[10px] font-black uppercase tracking-wider border border-emerald-400">
+              ISO 27001 Certified ✓
+            </span>
+          </div>
+          <p className="text-emerald-950 leading-relaxed text-[11px]">
+            Your personal information, Aadhaar e-KYC, PAN, and uploaded document proofs are processed strictly for background verification under statutory DPDP provisions. Your identity details are encrypted with <strong>AES-256 Vault Encryption</strong> and will never be shared or sold.
+          </p>
+          <div className="flex items-center gap-3 pt-1 border-t border-emerald-200/80 text-[11px]">
+            <button
+              onClick={() => setShowTermsModal(true)}
+              className="font-bold text-emerald-800 underline hover:text-emerald-950 cursor-pointer flex items-center gap-1"
+            >
+              <span>View Terms & Conditions 📄</span>
+            </button>
+            <span className="text-emerald-300">•</span>
+            <button
+              onClick={() => setShowDpdpModal(true)}
+              className="font-bold text-emerald-800 underline hover:text-emerald-950 cursor-pointer flex items-center gap-1"
+            >
+              <span>DPDP Candidate Privacy Rights 🛡️</span>
+            </button>
+          </div>
         </div>
 
         {/* ⚠️ URGENT CORRECTION REQUEST BANNER (IF HR RESENT WITH REMARKS) */}
@@ -2096,6 +2131,21 @@ export const EmployeePortalView = ({ directToken = null }) => {
         candidateName={candidate?.name}
         companyName={company?.name || candidate?.companyName}
         companyLogo={candidate?.companyLogo || company?.logo || company?.logo_url}
+      />
+
+      {/* Official Legal Terms & Conditions / Privacy Policy Modal */}
+      <TermsAndPrivacyPolicyModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        companyName={candidate?.companyName || company?.name}
+      />
+
+      {/* Digital Personal Data Protection (DPDP) Act 2023 Candidate Governance Modal */}
+      <DpdpComplianceModal
+        isOpen={showDpdpModal}
+        onClose={() => setShowDpdpModal(false)}
+        candidate={candidate}
+        companyName={candidate?.companyName || company?.name}
       />
 
     </div>
