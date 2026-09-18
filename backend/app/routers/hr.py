@@ -23,11 +23,14 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
     if hr_id:
         query = query.filter(Candidate.hr_id == hr_id)
     elif company_id:
-        comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
-        if not comp:
-            comp = db.query(Company).first()
-        target_id = comp.id if comp else company_id
-        query = query.filter((Candidate.company_id == target_id) | (Candidate.company_id == company_id))
+        target = company_id.strip()
+        comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
+        target_id = comp.id if comp else target
+        query = query.filter(
+            (Candidate.company_id == target_id) | 
+            (Candidate.company_id == target) | 
+            (Candidate.company_id.ilike(f"%{target}%"))
+        )
     candidates = query.order_by(Candidate.created_at.desc()).all()
     for c in candidates:
         if c.verifications_completed is None:
@@ -52,31 +55,31 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     Returns (candidate_instance, is_new_record: bool).
     """
     # 🛡️ Resolve company and clean identifiers (Prioritize exact Company ID)
-    comp = None
-    if payload.company_id:
-        comp = db.query(Company).filter(Company.id == payload.company_id).first()
-        if not comp:
-            comp = db.query(Company).filter(Company.code == payload.company_id).first()
+    requested_comp_id = (payload.company_id or "COMP001").strip()
+    comp = db.query(Company).filter(
+        (Company.id == requested_comp_id) | (Company.code == requested_comp_id)
+    ).first()
+
     if not comp:
-        comp = db.query(Company).first()
-    if not comp:
-        cid = payload.company_id or "COMP001"
+        comp_name = "Joy Corporate Solutions Private Limited" if requested_comp_id in ("COMP001", "comp-joy") else f"Partner Organization ({requested_comp_id})"
         comp = Company(
-            id=cid,
-            code="JOY001",
-            name="Joy Corporate Solutions Private Limited",
-            email="admin@joycorporatesolutions.com",
+            id=requested_comp_id,
+            code=requested_comp_id,
+            name=comp_name,
+            contact_person="Company Administrator",
+            email=f"admin_{requested_comp_id.lower()}@joycorporatesolutions.com",
             status="Active"
         )
         db.add(comp)
         try:
             db.commit()
             db.refresh(comp)
-        except Exception:
+        except Exception as e:
             db.rollback()
+            print(f"Error provisioning company '{requested_comp_id}': {e}")
             comp = db.query(Company).first()
 
-    resolved_comp_id = comp.id if comp else "COMP001"
+    resolved_comp_id = comp.id if comp else requested_comp_id
 
     clean_email = (payload.email or "").strip().lower() or None
     clean_mobile = None
