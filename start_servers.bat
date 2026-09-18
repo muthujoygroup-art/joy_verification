@@ -1,0 +1,6 @@
+@echo off
+echo Starting JOY Verification Platform Backend (FastAPI on Port 8000)...
+start "JOY Verification Backend" cmd /k "python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000"
+echo Starting JOY Verification Platform Frontend (Vite on Port 5173)...
+start "JOY Verification Frontend" cmd /k "npm run dev"
+echo Both servers started!
