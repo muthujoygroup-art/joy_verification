@@ -2107,7 +2107,7 @@ export const HrExecutiveView = () => {
                             <span className="text-[9px] text-slate-400 font-mono block">Expires: {lc.expiryDate}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-400 text-[10px] italic">Pending Verification</span>
+                          <span className="text-slate-600 font-bold text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Pending Verification</span>
                         )}
                       </td>
                       <td className="py-4 px-4 text-right">
