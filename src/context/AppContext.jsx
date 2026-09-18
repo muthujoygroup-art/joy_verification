@@ -2273,6 +2273,8 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+
+
   // Bulk Add Candidates (Persists in single atomic transaction to PostgreSQL with Duplicate Validation)
   const bulkAddCandidates = async (candidatesList) => {
     if (!candidatesList || candidatesList.length === 0) return [];

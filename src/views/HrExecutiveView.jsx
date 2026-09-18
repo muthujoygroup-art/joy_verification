@@ -368,8 +368,18 @@ export const HrExecutiveView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
-  const filteredCandidates = useMemo(() => {
+  const companyCandidates = useMemo(() => {
+    if (!currentCompany?.id) return candidates || [];
+    const compId = (currentCompany.id || '').toLowerCase();
+    const compCode = (currentCompany.code || '').toLowerCase();
     return (candidates || []).filter(c => {
+      const candCompId = (c.companyId || c.company_id || '').toLowerCase();
+      return !candCompId || candCompId === compId || candCompId === compCode || candCompId === 'comp-joy' || compId === 'comp001' || compId === 'comp-joy';
+    });
+  }, [candidates, currentCompany?.id, currentCompany?.code]);
+
+  const filteredCandidates = useMemo(() => {
+    return companyCandidates.filter(c => {
       const matchesSearch = !searchQuery.trim() || 
         c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.empId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -393,7 +403,7 @@ export const HrExecutiveView = () => {
 
       return matchesSearch && matchesStatus;
     });
-  }, [candidates, searchQuery, statusFilter]);
+  }, [companyCandidates, searchQuery, statusFilter]);
   const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
 
   // Dynamic Custom Fields State
@@ -1365,7 +1375,7 @@ export const HrExecutiveView = () => {
   const currentHrDivMeta = {
     ...currentHrDivMetaRaw,
     badgeText: typeof currentHrDivMetaRaw.badgeText === 'function' 
-      ? currentHrDivMetaRaw.badgeText(candidates.length) 
+      ? currentHrDivMetaRaw.badgeText(companyCandidates.length) 
       : currentHrDivMetaRaw.badgeText
   };
   const CurrentHrDivIcon = currentHrDivMeta.icon || Smartphone;
@@ -1478,16 +1488,16 @@ export const HrExecutiveView = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Total Candidates" 
-          value={candidates.length} 
+          value={companyCandidates.length} 
           subtext="Profiles Managed by HR" 
           icon={UserCheck} 
           color="emerald" 
           onClick={() => setActiveDrilldown({
             title: 'All Candidate Profiles',
             subtitle: `All candidate profiles managed under ${currentCompany?.name || 'Joy Corporate Solutions'}`,
-            metricValue: `${candidates.length} Profiles`,
+            metricValue: `${companyCandidates.length} Profiles`,
             metricType: 'hr_active',
-            data: candidates.map(c => ({
+            data: companyCandidates.map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -1502,16 +1512,16 @@ export const HrExecutiveView = () => {
         />
         <MetricCard 
           title="Sent Links" 
-          value={candidates.filter(c => c.status !== 'Draft').length} 
+          value={companyCandidates.filter(c => c.status !== 'Draft').length} 
           subtext="Verification Links Sent" 
           icon={Send} 
           color="cyan" 
           onClick={() => setActiveDrilldown({
             title: 'Sent Verification Links',
             subtitle: 'Candidates who have received a verification link via WhatsApp, SMS, or Email',
-            metricValue: `${candidates.filter(c => c.status !== 'Draft').length} Dispatched`,
+            metricValue: `${companyCandidates.filter(c => c.status !== 'Draft').length} Dispatched`,
             metricType: 'hr_dispatched',
-            data: candidates.filter(c => c.status !== 'Draft').map(c => ({
+            data: companyCandidates.filter(c => c.status !== 'Draft').map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -1526,16 +1536,16 @@ export const HrExecutiveView = () => {
         />
         <MetricCard 
           title="Verified Candidates" 
-          value={candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} 
+          value={companyCandidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} 
           subtext="Verification Completed" 
           icon={CheckCircle2} 
           color="indigo" 
           onClick={() => setActiveDrilldown({
             title: 'Verified Candidates',
             subtitle: 'Candidates with completed identity and document verifications',
-            metricValue: `${candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} Verified`,
+            metricValue: `${companyCandidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).length} Verified`,
             metricType: 'hr_verified',
-            data: candidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).map(c => ({
+            data: companyCandidates.filter(c => c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar)).map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -1550,16 +1560,16 @@ export const HrExecutiveView = () => {
         />
         <MetricCard 
           title="Pending Verification" 
-          value={candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} 
+          value={companyCandidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} 
           subtext="Awaiting Candidate Form" 
           icon={Clock} 
           color="amber" 
           onClick={() => setActiveDrilldown({
             title: 'Pending Candidate Verifications',
             subtitle: 'Candidates who have not yet submitted their OTP or photo verifications',
-            metricValue: `${candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} Pending`,
+            metricValue: `${companyCandidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).length} Pending`,
             metricType: 'hr_pending',
-            data: candidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).map(c => ({
+            data: companyCandidates.filter(c => !(c.status === 'Verified' && (c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar))).map(c => ({
               name: c.name,
               empId: c.empId,
               mobile: c.mobile,
@@ -1579,7 +1589,7 @@ export const HrExecutiveView = () => {
           
           {/* ⏳ JCS CERTIFICATE 60-DAY EXPIRY NOTICE BOARD BANNER */}
           {(() => {
-            const expiringCandidates = candidates.filter(c => {
+            const expiringCandidates = companyCandidates.filter(c => {
               const lc = getCertificateLifecycle(c);
               return lc.isVerified && (lc.isExpiringSoon || lc.isExpired);
             });
@@ -1748,14 +1758,14 @@ export const HrExecutiveView = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="form-select text-xs py-1.5 px-3 bg-white font-bold rounded-xl border-slate-200"
               >
-                <option value="All">All Statuses ({candidates.length})</option>
-                <option value="Link Sent">📧 Link Sent ({candidates.filter(c => c.status === 'Link Sent' || c.status?.toLowerCase()?.includes('link')).length})</option>
-                <option value="Pending Verification">⏳ Pending Verifications ({candidates.filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})</option>
-                <option value="Submitted - Pending HR Review">⚡ Pending HR Review ({candidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
-                <option value="Verified">✅ Verified Candidates ({candidates.filter(c => c.status === 'Verified').length})</option>
-                <option value="Active">🟢 Active ({candidates.filter(c => c.status?.toLowerCase() !== 'inactive').length})</option>
-                <option value="Inactive">⚪ Inactive ({candidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
-                <option value="Draft">Draft ({candidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
+                <option value="All">All Statuses ({companyCandidates.length})</option>
+                <option value="Link Sent">📧 Link Sent ({companyCandidates.filter(c => c.status === 'Link Sent' || c.status?.toLowerCase()?.includes('link')).length})</option>
+                <option value="Pending Verification">⏳ Pending Verifications ({companyCandidates.filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})</option>
+                <option value="Submitted - Pending HR Review">⚡ Pending HR Review ({companyCandidates.filter(c => c.status === 'Submitted - Pending HR Review').length})</option>
+                <option value="Verified">✅ Verified Candidates ({companyCandidates.filter(c => c.status === 'Verified').length})</option>
+                <option value="Active">🟢 Active ({companyCandidates.filter(c => c.status?.toLowerCase() !== 'inactive').length})</option>
+                <option value="Inactive">⚪ Inactive ({companyCandidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
+                <option value="Draft">Draft ({companyCandidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
               </select>
             </div>
           </div>
@@ -4963,15 +4973,15 @@ export const HrExecutiveView = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-bold text-slate-700 pt-2">
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
                 <span className="text-2xl font-black text-emerald-800 block">45%</span>
-                <span className="text-slate-600">Completed & Verified ({candidates.filter(c => c.status === 'Verified').length})</span>
+                <span className="text-slate-600">Completed & Verified ({companyCandidates.filter(c => c.status === 'Verified').length})</span>
               </div>
               <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 text-center">
                 <span className="text-2xl font-black text-sky-800 block">30%</span>
-                <span className="text-slate-600">In Active Verification ({candidates.filter(c => c.status === 'In Verification').length})</span>
+                <span className="text-slate-600">In Active Verification ({companyCandidates.filter(c => c.status === 'In Verification').length})</span>
               </div>
               <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
                 <span className="text-2xl font-black text-amber-800 block">25%</span>
-                <span className="text-slate-600">Link Sent / Pending ({candidates.filter(c => c.status === 'Link Sent').length})</span>
+                <span className="text-slate-600">Link Sent / Pending ({companyCandidates.filter(c => c.status === 'Link Sent').length})</span>
               </div>
             </div>
           </div>

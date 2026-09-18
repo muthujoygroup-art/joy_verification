@@ -81,6 +81,36 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
 
     resolved_comp_id = comp.id if comp else requested_comp_id
 
+    # 🛡️ Resolve HR user & ensure HrUser record exists in DB to prevent foreign key constraint violations
+    resolved_hr_id = None
+    if payload.hr_id:
+        req_hr_id = payload.hr_id.strip()
+        hr_user = db.query(HrUser).filter(
+            (HrUser.id == req_hr_id) | (HrUser.email == req_hr_id)
+        ).first()
+
+        if not hr_user:
+            hr_user = db.query(HrUser).filter(HrUser.company_id == resolved_comp_id).first()
+
+        if not hr_user:
+            hr_user = HrUser(
+                id=req_hr_id,
+                company_id=resolved_comp_id,
+                name="HR Recruiter",
+                email=f"hr_{req_hr_id.lower().replace(' ', '_')}@joycorporatesolutions.com",
+                status="Active"
+            )
+            db.add(hr_user)
+            try:
+                db.commit()
+                db.refresh(hr_user)
+            except Exception as hr_err:
+                db.rollback()
+                print(f"Error provisioning HR User '{req_hr_id}': {hr_err}")
+                hr_user = db.query(HrUser).filter(HrUser.company_id == resolved_comp_id).first()
+
+        resolved_hr_id = hr_user.id if hr_user else req_hr_id
+
     clean_email = (payload.email or "").strip().lower() or None
     clean_mobile = None
     if payload.mobile:
@@ -163,7 +193,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.linked_in_url: existing_cand.linked_in_url = payload.linked_in_url
         if payload.github_url: existing_cand.github_url = payload.github_url
         if payload.portfolio_url: existing_cand.portfolio_url = payload.portfolio_url
-        if payload.hr_id: existing_cand.hr_id = payload.hr_id
+        if resolved_hr_id: existing_cand.hr_id = resolved_hr_id
         if existing_cand.status != "Verified":
             existing_cand.status = "Link Sent"
         if not existing_cand.token:
@@ -268,7 +298,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         portfolio_url=payload.portfolio_url,
         twitter_url=payload.twitter_url,
         company_id=resolved_comp_id,
-        hr_id=payload.hr_id,
+        hr_id=resolved_hr_id,
         portal_password=payload.portal_password or "1234",
         status="Link Sent",
         verification_config=payload.verification_config or {
