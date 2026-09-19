@@ -3,7 +3,7 @@ import React from 'react';
 export const NdaAgreement = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const pan = c.panNo || jf.panNo || 'ABCDE1234F';
+  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
   const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
   const doj = c.doj || jf.doj || '2026-04-13';
   const designation = c.designation || jf.designation || 'Software Specialist';

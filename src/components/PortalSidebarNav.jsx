@@ -146,6 +146,30 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     return null;
   }, [effectiveRole, isCandidateRoute, candidates, selectedCandidateToken]);
 
+  const normStr = (str) => (str || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const scopedCandidates = useMemo(() => {
+    const rawList = candidates || [];
+    if (effectiveRole === 'superadmin') return rawList;
+
+    const userCompIdNorm = normStr(currentUser?.companyId || currentUser?.companyCode || currentUser?.companyName);
+    const pathComp = typeof window !== 'undefined' 
+      ? normStr(window.location.pathname.split('/hr/')[1]?.split('/')[0] || window.location.pathname.split('/company/')[1]?.split('/')[0])
+      : '';
+
+    const targetNorms = new Set([userCompIdNorm, pathComp].filter(Boolean));
+    if (!targetNorms.size) return rawList;
+
+    return rawList.filter(c => {
+      if (!c) return false;
+      const candCompNorm = normStr(c.companyId || c.company_id || c.companyCode || c.company_code || c.companyName || c.company_name);
+      if (!candCompNorm) return true;
+      if (targetNorms.has(candCompNorm)) return true;
+      if ((targetNorms.has('comp001') || targetNorms.has('compjoy')) && (candCompNorm === 'comp001' || candCompNorm === 'compjoy')) return true;
+      return false;
+    });
+  }, [candidates, effectiveRole, currentUser]);
+
   const activeCandidateCompanyFeatures = useMemo(() => {
     if (effectiveRole !== 'employee_link') return null;
     const candCompId = currentCandidate?.companyId || currentCandidate?.company_id;
@@ -455,12 +479,12 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           id: 'telemetry_candidates',
           title: '1. Dashboard & Candidates',
           subtitle: 'Verification Records & Stats',
-          badgeText: `${candidates.length} PROFILES`,
+          badgeText: `${scopedCandidates.length} PROFILES`,
           icon: ShieldCheck,
           colorClass: 'from-sky-600 to-teal-600',
           defaultTab: 'registry',
           divisions: [
-            { id: 'registry', label: `Candidate List (${candidates.length})`, tab: 'registry', icon: Users },
+            { id: 'registry', label: `Candidate List (${scopedCandidates.length})`, tab: 'registry', icon: Users },
             { id: 'telemetry', label: 'Verification Stats & Speeds', tab: 'telemetry', icon: TrendingUp }
           ]
         },
@@ -533,14 +557,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           id: 'pipeline_dossiers',
           title: '1. Candidate List',
           subtitle: 'Manage Employee Candidates',
-          badgeText: `${candidates.length} CANDIDATES`,
+          badgeText: `${scopedCandidates.length} CANDIDATES`,
           icon: Smartphone,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'pipeline',
           divisions: [
-            { id: 'pipeline', label: `All Candidates (${(candidates || []).length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
-            { id: 'pipeline_active', label: `Pending Verification (${(candidates || []).filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
-            { id: 'pipeline_verified', label: `Verified Candidates (${(candidates || []).filter(c => c.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
+            { id: 'pipeline', label: `All Candidates (${(scopedCandidates || []).length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
+            { id: 'pipeline_active', label: `Pending Verification (${(scopedCandidates || []).filter(c => c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_verified', label: `Verified Candidates (${(scopedCandidates || []).filter(c => c.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
         {

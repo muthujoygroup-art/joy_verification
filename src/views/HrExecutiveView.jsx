@@ -413,16 +413,23 @@ export const HrExecutiveView = () => {
   }, [resolvedUserCompanyId]);
 
   const companyCandidates = useMemo(() => {
-    const compId = (currentCompany?.id || activeHr?.companyId || resolvedUserCompanyId || '').toLowerCase();
-    const compCode = (currentCompany?.code || activeHr?.companyId || resolvedUserCompanyId || '').toLowerCase();
-    const rawList = (!compId ? (candidates || []) : (candidates || []).filter(c => {
-      const candCompId = (c.companyId || c.company_id || '').toLowerCase();
-      if (!candCompId) return true;
-      return candCompId === compId || 
-             candCompId === compCode || 
-             candCompId === resolvedUserCompanyId.toLowerCase() ||
-             (compId === 'comp001' && candCompId === 'comp-joy') || 
-             (candCompId === 'comp001' && compId === 'comp-joy');
+    const norm = (str) => (str || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const compIdNorm = norm(currentCompany?.id || activeHr?.companyId || resolvedUserCompanyId);
+    const compCodeNorm = norm(currentCompany?.code || activeHr?.companyId || resolvedUserCompanyId);
+    const compNameNorm = norm(currentCompany?.name);
+    const resUserCompNorm = norm(resolvedUserCompanyId);
+
+    const targetNorms = new Set([compIdNorm, compCodeNorm, compNameNorm, resUserCompNorm].filter(Boolean));
+
+    const rawList = (!targetNorms.size ? (candidates || []) : (candidates || []).filter(c => {
+      const candCompNorm = norm(c.companyId || c.company_id || c.companyCode || c.company_code || c.companyName || c.company_name);
+      if (!candCompNorm) return true;
+      if (targetNorms.has(candCompNorm)) return true;
+      if ((targetNorms.has('comp001') || targetNorms.has('compjoy')) && 
+          (candCompNorm === 'comp001' || candCompNorm === 'compjoy')) {
+        return true;
+      }
+      return false;
     }));
 
     const seen = new Set();
@@ -443,7 +450,7 @@ export const HrExecutiveView = () => {
       if (emailKey && emailKey.includes('@')) seen.add(`EML::${emailKey}`);
       return true;
     });
-  }, [candidates, currentCompany?.id, currentCompany?.code, activeHr?.companyId, resolvedUserCompanyId]);
+  }, [candidates, currentCompany?.id, currentCompany?.code, currentCompany?.name, activeHr?.companyId, resolvedUserCompanyId]);
 
   const filteredCandidates = useMemo(() => {
     return companyCandidates.filter(c => {

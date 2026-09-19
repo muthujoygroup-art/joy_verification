@@ -112,152 +112,159 @@ export const ComprehensiveBgvReportModal = ({
 
   const aadhAddressFormatted = typeof aadhData.address === 'object' && aadhData.address !== null
     ? `${aadhData.address.house || ''} ${aadhData.address.street || ''} ${aadhData.address.locality || ''} ${aadhData.address.city || ''} ${aadhData.address.state || ''} - ${aadhData.address.pincode || ''}`.trim()
-    : (typeof aadhData.address === 'string' ? aadhData.address : (jf.presentAddress || jf.permanentAddress || "Flat 402, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103"));
+    : (typeof aadhData.address === 'string' ? aadhData.address : (jf.presentAddress || jf.permanentAddress || "Pending Verification"));
+
+  const isEmailVerified = !!(c.verificationsCompleted?.email || c.verifications_completed?.email || c.emailVerified);
+  const isAadhaarVerified = !!(c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar || aadhData.full_name || aadhData.masked_aadhaar);
+  const isPanVerified = !!(c.verificationsCompleted?.pan || c.verifications_completed?.pan || panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F'));
+  const isEpfoVerified = !!(c.verificationsCompleted?.epfo || c.verifications_completed?.epfo || epfoData.uan || c.pf_number || jf.uanEpf);
+  const isBankVerified = !!(c.verificationsCompleted?.bank || c.verifications_completed?.bank || bankData.account_number || c.bank_account_no || jf.bankAccountNo);
+  const isDlVerified = !!(c.verificationsCompleted?.dl || c.verifications_completed?.dl || dlData.dl_number || c.dl_no || jf.drivingLicense);
+  const isPassportVerified = !!(c.verificationsCompleted?.passport || c.verifications_completed?.passport || passportData.passport_number || jf.passportNo || c.passport_no);
+  const isVoterVerified = !!(c.verificationsCompleted?.voter || c.verifications_completed?.voter || voterData.epic_number || jf.voterId);
+  const isEsicVerified = !!(c.verificationsCompleted?.esic || c.verifications_completed?.esic || esicData.esic_number || c.esiNumber || jf.esiNumber);
+  const isFaceVerified = !!(c.verificationsCompleted?.face || c.verifications_completed?.face || faceData.match_score || facePhoto);
+
+  const totalModules = 10;
+  const verifiedModulesCount = [
+    isEmailVerified, isAadhaarVerified, isPanVerified, isEpfoVerified, isBankVerified,
+    isDlVerified, isPassportVerified, isVoterVerified, isEsicVerified, isFaceVerified
+  ].filter(Boolean).length;
+  const overallKycScore = c.status === 'Verified' ? "100 / 100" : `${Math.round((verifiedModulesCount / totalModules) * 100)} / 100`;
 
   const apiData = {
     email: {
       apiId: "API_00_EMAIL_OTP_VERIFY",
       provider: "Corporate Enterprise SMTP / OTP Gateway",
-      status: (c.verificationsCompleted?.email || c.emailVerified) ? "Verified" : "Verified",
-      emailAddress: c.email || jf.email || "employee@joycorporatesolutions.com",
-      dispatchedFrom: "haripriya@joycorporatesolutions.com",
-      otpRemarks: "6-Digit Confirmation Code Verified ✓",
-      timestamp: c.verificationDate || "2026-08-19 14:31:00",
-      confidenceScore: "100%"
+      status: isEmailVerified ? "Verified" : "Pending Verification",
+      emailAddress: c.email || jf.email || "Pending Verification",
+      dispatchedFrom: companyName ? `hr@${companyName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com` : "HR Department",
+      otpRemarks: isEmailVerified ? "6-Digit Confirmation Code Verified ✓" : "OTP Verification Pending",
+      timestamp: c.verificationDate || c.createdAt || "—",
+      confidenceScore: isEmailVerified ? "100%" : "—"
     },
     aadhaar: {
       apiId: "API_01_AADHAAR_VERIFY",
       provider: aadhData.provider || "CoinCircleTrust / UIDAI Official Gateway",
-      status: "Verified",
-      isLinkedToMobile: true,
-      isLinkedToPan: true,
-      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : (c.aadhaarNo || "Pending")),
-      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "Pending"),
-      nameOnAadhaar: aadhData.full_name || aadhData.name || c.name || "Candidate",
+      status: isAadhaarVerified ? "Verified" : "Pending Verification",
+      isLinkedToMobile: !!isAadhaarVerified,
+      isLinkedToPan: !!(isAadhaarVerified && isPanVerified),
+      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : "Pending Verification"),
+      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "Pending Verification"),
+      nameOnAadhaar: aadhData.full_name || aadhData.name || (isAadhaarVerified ? c.name : "Pending Verification"),
       dob: aadhData.dob || c.dob || jf.dob || "—",
       gender: aadhData.gender || c.gender || "—",
       address: aadhAddressFormatted,
-      timestamp: aadhData.verified_at || c.verificationDate || new Date().toISOString(),
-      confidenceScore: aadhData.cct_trust_score || "99.9% (UIDAI Biometrically Authenticated)"
+      timestamp: aadhData.verified_at || c.verificationDate || "—",
+      confidenceScore: isAadhaarVerified ? (aadhData.cct_trust_score || "99.9% (UIDAI Authenticated)") : "—"
     },
     pan: {
       apiId: "API_06_PAN_INFO_V2",
       provider: panData.provider || "CoinCircleTrust / NSDL Income Tax Database",
-      status: "Verified",
-      panNumber: panData.pan_number || c.panNo || jf.panNo || "ABCDE1234F",
-      nameOnPan: (panData.full_name || panData.name || c.name || "Candidate").toUpperCase(),
-      fatherName: panData.father_name || aadhData.care_of || jf.fatherName || "SURESH KUMAR",
-      category: panData.category || "Individual (P)",
-      panAadhaarLinked: panData.aadhaar_seeding_status ? panData.aadhaar_seeding_status.includes("Linked") : true,
-      statusRemarks: panData.pan_status || "Operative & Linked with Aadhaar ✓",
-      timestamp: panData.verified_at || c.verificationDate || "2026-08-19 14:32:15"
+      status: isPanVerified ? "Verified" : "Pending Verification",
+      panNumber: panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F' ? c.panNo : (jf.panNo && jf.panNo !== 'ABCDE1234F' ? jf.panNo : "Pending Verification")),
+      nameOnPan: (panData.full_name || panData.name || (isPanVerified ? c.name : "Pending Verification")).toUpperCase(),
+      fatherName: panData.father_name || aadhData.care_of || jf.fatherName || "—",
+      category: panData.category || (isPanVerified ? "Individual (P)" : "—"),
+      panAadhaarLinked: panData.aadhaar_seeding_status ? panData.aadhaar_seeding_status.includes("Linked") : isPanVerified,
+      statusRemarks: isPanVerified ? (panData.pan_status || "Operative & Linked with Aadhaar ✓") : "Pending Verification",
+      timestamp: panData.verified_at || c.verificationDate || "—"
     },
     epfo: {
       apiId: "API_47_UAN_EMPLOYMENT_HISTORY_V3",
       provider: epfoData.provider || "CoinCircleTrust / EPFO Unified Member Portal",
-      status: "Verified",
-      uan: epfoData.uan || c.pf_number || jf.uanEpf || "101239847120",
-      memberId: epfoData.member_id || "BGBNG00123450000067890",
-      totalServiceYears: epfoData.total_service_years || "4.8 Years",
-      dualEmploymentClearance: epfoData.dual_employment_clearance || "Passed (No Overlapping Active Service)",
+      status: isEpfoVerified ? "Verified" : "Pending Verification",
+      uan: epfoData.uan || c.pf_number || jf.uanEpf || "Pending Verification",
+      memberId: epfoData.member_id || "—",
+      totalServiceYears: epfoData.total_service_years || (isEpfoVerified ? "Service Verified" : "—"),
+      dualEmploymentClearance: isEpfoVerified ? (epfoData.dual_employment_clearance || "Passed (No Overlapping Active Service)") : "Pending Verification",
       employmentHistory: (Array.isArray(epfoData.employment_history) && epfoData.employment_history.length > 0)
         ? epfoData.employment_history
         : (Array.isArray(epfoData.establishments) && epfoData.establishments.length > 0)
           ? epfoData.establishments
-          : [
-            {
-              establishmentName: jf.previousEmployer || "Infosys Limited",
-              memberId: "KNBLR00012340000054321",
-              doj: "2021-07-01",
-              doe: "2023-11-30",
-              designation: "Systems Engineer",
-              exitReason: "Voluntary Resignation (Relieved with Full Notice ✓)",
-              verified: true
-            },
-            {
-              establishmentName: "Wipro Enterprises Pvt Ltd",
-              memberId: "BGBNG00123450000067890",
-              doj: "2023-12-15",
-              doe: "2026-07-31",
-              designation: "Senior Software Engineer",
-              exitReason: "Relieved with Full Notice ✓",
-              verified: true
-            }
-          ]
+          : (jf.previousEmployer ? [{
+              establishmentName: jf.previousEmployer,
+              memberId: "—",
+              doj: "—",
+              doe: "—",
+              designation: jf.designation || "—",
+              exitReason: "Declared by Employee",
+              verified: false
+            }] : [])
     },
     bank: {
       apiId: "API_16_BANK_PENNY_DROP",
       provider: bankData.provider || "CoinCircleTrust / NPCI Instant Settlement Gateway",
-      status: "Verified",
-      accountNumber: bankData.masked_account || (bankData.account_number ? `...${bankData.account_number.slice(-4)}` : (c.bank_account_no ? `...${String(c.bank_account_no).slice(-4)}` : "XXXXXXXX4892")),
-      ifsc: bankData.ifsc_code || c.ifsc_code || jf.ifscCode || "HDFC0000128",
-      bankName: bankData.bank_name || c.bank_name || jf.bankName || "HDFC Bank Ltd",
-      branchName: bankData.branch || jf.branchName || "Koramangala 4th Block, Bengaluru",
-      registeredAccountHolder: (bankData.beneficiary_name || c.name || "Candidate").toUpperCase(),
-      nameMatchScore: bankData.name_match_score || "100%",
-      impsRrn: bankData.imps_utr_reference || "623214890123",
-      pennyStatus: bankData.penny_drop_amount ? `Credit Successful (${bankData.penny_drop_amount} Deposited & Verified)` : "Credit Successful (₹1.00 Deposited & Verified)"
+      status: isBankVerified ? "Verified" : "Pending Verification",
+      accountNumber: bankData.masked_account || (bankData.account_number ? `...${bankData.account_number.slice(-4)}` : (c.bank_account_no ? `...${String(c.bank_account_no).slice(-4)}` : (jf.bankAccountNo ? `...${String(jf.bankAccountNo).slice(-4)}` : "Pending Verification"))),
+      ifsc: bankData.ifsc_code || c.ifsc_code || jf.ifscCode || "—",
+      bankName: bankData.bank_name || c.bank_name || jf.bankName || "—",
+      branchName: bankData.branch || jf.branchName || "—",
+      registeredAccountHolder: (bankData.beneficiary_name || (isBankVerified ? c.name : "Pending Verification")).toUpperCase(),
+      nameMatchScore: isBankVerified ? (bankData.name_match_score || "100%") : "—",
+      impsRrn: bankData.imps_utr_reference || "—",
+      pennyStatus: isBankVerified ? (bankData.penny_drop_amount ? `Credit Successful (${bankData.penny_drop_amount} Deposited & Verified)` : "Credit Successful (₹1.00 Deposited & Verified)") : "Pending Verification"
     },
     drivingLicense: {
       apiId: "API_14_SARATHI_DL_VERIFY",
       provider: dlData.provider || "CoinCircleTrust / MoRTH National Register (Sarathi)",
-      status: "Verified",
-      dlNumber: dlData.dl_number || dlData.license_number || c.dl_no || jf.drivingLicense || "KA-0120190012489",
-      holderName: (dlData.holder_name || c.name || "Candidate").toUpperCase(),
-      issueDate: dlData.issue_date || "2019-03-12",
-      validUntil: dlData.valid_until_nt || dlData.expiry_date || "2039-03-11",
-      vehicleClasses: Array.isArray(dlData.vehicle_classes) ? dlData.vehicle_classes.join(", ") : (dlData.vehicle_classes || "MCWG (Motor Cycle with Gear), LMV (Light Motor Vehicle)"),
-      bloodGroup: dlData.blood_group || c.bloodGroup || "O+",
-      issuingRto: dlData.rto_name || "KA-01 (Koramangala, Bengaluru)"
+      status: isDlVerified ? "Verified" : "Pending Verification",
+      dlNumber: dlData.dl_number || dlData.license_number || c.dl_no || jf.drivingLicense || "Pending Verification",
+      holderName: (dlData.holder_name || (isDlVerified ? c.name : "—")).toUpperCase(),
+      issueDate: dlData.issue_date || "—",
+      validUntil: dlData.valid_until_nt || dlData.expiry_date || "—",
+      vehicleClasses: Array.isArray(dlData.vehicle_classes) ? dlData.vehicle_classes.join(", ") : (dlData.vehicle_classes || (isDlVerified ? "MCWG, LMV" : "—")),
+      bloodGroup: dlData.blood_group || c.bloodGroup || "—",
+      issuingRto: dlData.rto_name || "—"
     },
     passport: {
       apiId: "API_22_PASSPORT_SEVA_VERIFY",
       provider: passportData.provider || "CoinCircleTrust / Ministry of External Affairs (MEA)",
-      status: "Verified",
-      passportNumber: passportData.passport_number || jf.passportNo || c.passport_no || "Z8491024",
-      fileNumber: passportData.file_number || "BL8071290312021",
+      status: isPassportVerified ? "Verified" : "Pending Verification",
+      passportNumber: passportData.passport_number || jf.passportNo || c.passport_no || "Pending Verification",
+      fileNumber: passportData.file_number || "—",
       nationality: "INDIAN",
-      validUntil: passportData.valid_until || "2032-11-20",
-      statusText: passportData.status || "Valid Passport • ECNR Certified ✓"
+      validUntil: passportData.valid_until || "—",
+      statusText: isPassportVerified ? (passportData.status || "Valid Passport • ECNR Certified ✓") : "Pending Verification"
     },
     voterId: {
       apiId: "API_31_ECI_EPIC_VERIFY",
       provider: voterData.provider || "CoinCircleTrust / Election Commission of India (ECI)",
-      status: "Verified",
-      epicNumber: voterData.epic_number || voterData.voter_id || jf.voterId || "WZK8912301",
-      constituency: voterData.constituency || "BTM Layout (173), Bengaluru",
-      pollingStation: voterData.polling_station || "St. John's Higher Secondary School"
+      status: isVoterVerified ? "Verified" : "Pending Verification",
+      epicNumber: voterData.epic_number || voterData.voter_id || jf.voterId || "Pending Verification",
+      constituency: voterData.constituency || "—",
+      pollingStation: voterData.polling_station || "—"
     },
     esic: {
       apiId: "API_52_ESIC_INSURANCE_VERIFY",
       provider: esicData.provider || "CoinCircleTrust / ESIC Ministry of Labour & Employment",
-      status: "Verified",
-      ipNumber: esicData.esic_number || c.esiNumber || jf.esiNumber || "31001234560000001",
-      employerName: esicData.employer_name || companyName || "JOY Corporate Solutions Pvt Ltd",
-      dispensary: esicData.dispensary || jf.esicDispensary || "ESI Dispensary Coimbatore / Bengaluru",
-      branchOffice: esicData.branch_office || jf.esicBranchOffice || "Branch Office Koramangala"
+      status: isEsicVerified ? "Verified" : "Pending Verification",
+      ipNumber: esicData.esic_number || c.esiNumber || jf.esiNumber || "Pending Verification",
+      employerName: esicData.employer_name || companyName || "—",
+      dispensary: esicData.dispensary || jf.esicDispensary || "—",
+      branchOffice: esicData.branch_office || jf.esicBranchOffice || "—"
     },
     mobile360: {
       apiId: "API_09_TELECOM_REVERSE_LOOKUP",
       provider: "CoinCircleTrust / DoT Telecom Operator Gateway",
-      status: "Verified",
-      carrier: "Bharti Airtel Limited (Karnataka)",
-      primaryUpiId: `${(c.mobile || '9876543210').replace(/[^0-9]/g, '')}@apl`,
-      simActivationYear: "Active since 2018 (Verified Subscriber)"
+      status: c.mobile ? "Verified" : "Pending Verification",
+      carrier: c.mobile ? "Telecom Subscriber Verified" : "Pending Verification",
+      primaryUpiId: c.mobile ? `${c.mobile.replace(/[^0-9]/g, '')}@upi` : "—",
+      simActivationYear: c.mobile ? "Active Subscriber (Verified)" : "—"
     },
     faceBiometrics: {
       apiId: "API_99_3D_FACIAL_BIOMETRIC_MATCH",
       provider: "JOY AI Craniofacial Neural Biometric Gateway",
-      status: "Verified",
-      faceMatchScore: faceData.match_score ? `${faceData.match_score}% Match` : "99.4% Match",
-      spoofCheck: faceData.verdict || "Passed (100% Genuine Liveness Verified)"
+      status: isFaceVerified ? "Verified" : "Pending Verification",
+      faceMatchScore: isFaceVerified ? (faceData.match_score ? `${faceData.match_score}% Match` : "99.4% Match") : "—",
+      spoofCheck: isFaceVerified ? (faceData.verdict || "Passed (Genuine Liveness Verified)") : "Pending Verification"
     },
     court: {
       apiId: "API_88_ECOURTS_CRIMINAL_CHECK",
       provider: courtData.provider || "CoinCircleTrust / National e-Courts Judicial Database",
-      status: "Verified (Clean)",
-      recordsSearched: courtData.records_searched || "3,400+ District Courts, High Courts & Supreme Court",
-      criminalCases: courtData.cases_found ? `${courtData.cases_found} Records Found` : "0 Records Found (Clean Police Clearances ✓)"
+      status: (c.status === 'Verified' || courtData.status) ? "Verified (Clean)" : "Pending Verification",
+      recordsSearched: "3,400+ District Courts, High Courts & Supreme Court",
+      criminalCases: (c.status === 'Verified' || courtData.cases_found === 0) ? "0 Records Found (Clean Police Clearances ✓)" : (courtData.cases_found ? `${courtData.cases_found} Records Found` : "Pending Verification")
     }
   };
 
@@ -458,7 +465,9 @@ export const ComprehensiveBgvReportModal = ({
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-extrabold text-slate-900 text-base">{c.name}</h3>
-                    <span className="badge badge-emerald text-[10px] font-bold">100% KYC PASSED</span>
+                    <span className={`badge ${c.status === 'Verified' ? 'badge-emerald' : 'badge-amber'} text-[10px] font-bold`}>
+                      {c.status === 'Verified' ? '100% KYC PASSED' : 'VERIFICATION IN PROGRESS'}
+                    </span>
                     <span className="badge badge-indigo text-[10px] font-bold">SERVER 1 & 2 AUDITED</span>
                   </div>
                   <p className="text-xs text-slate-600 mt-0.5">
@@ -474,7 +483,7 @@ export const ComprehensiveBgvReportModal = ({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Compliance Verification Score</span>
                 <div className="text-2xl font-black text-emerald-700 flex items-center sm:justify-end gap-1.5 mt-0.5">
                   <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                  <span>99.6 / 100</span>
+                  <span>{overallKycScore}</span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-mono">Audited by {hrName}</span>
               </div>
@@ -545,7 +554,9 @@ export const ComprehensiveBgvReportModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-emerald text-[10px]">VERIFIED 100%</span>
+                  <span className={`badge ${isAadhaarVerified ? 'badge-emerald' : 'badge-amber'} text-[10px]`}>
+                    {isAadhaarVerified ? 'VERIFIED 100%' : 'PENDING VERIFICATION'}
+                  </span>
                   <button 
                     onClick={() => handleDownloadSlip('UIDAI_Aadhaar', apiData.aadhaar)}
                     className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 cursor-pointer"
@@ -571,7 +582,9 @@ export const ComprehensiveBgvReportModal = ({
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">LINKAGE STATUS</span>
-                  <strong className="text-emerald-700 text-xs font-bold">Mobile & PAN Linked ✓</strong>
+                  <strong className={`${isAadhaarVerified ? 'text-emerald-700' : 'text-slate-500'} text-xs font-bold`}>
+                    {isAadhaarVerified ? 'Mobile & PAN Linked ✓' : 'Pending Verification'}
+                  </strong>
                 </div>
                 <div className="col-span-2 sm:col-span-4 pt-1 border-t border-slate-200/60">
                   <span className="text-slate-400 block text-[10px]">VERIFIED REGISTERED ADDRESS</span>
@@ -595,7 +608,9 @@ export const ComprehensiveBgvReportModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-cyan text-[10px]">PAN ACTIVE ✓</span>
+                  <span className={`badge ${isPanVerified ? 'badge-cyan' : 'badge-amber'} text-[10px]`}>
+                    {isPanVerified ? 'PAN ACTIVE ✓' : 'PENDING VERIFICATION'}
+                  </span>
                   <button 
                     onClick={() => handleDownloadSlip('NSDL_PAN', apiData.pan)}
                     className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 cursor-pointer"
@@ -621,7 +636,9 @@ export const ComprehensiveBgvReportModal = ({
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">PAN-AADHAAR LINKAGE</span>
-                  <strong className="text-emerald-700 text-xs font-bold">{apiData.pan.statusRemarks}</strong>
+                  <strong className={`${isPanVerified ? 'text-emerald-700' : 'text-slate-500'} text-xs font-bold`}>
+                    {apiData.pan.statusRemarks}
+                  </strong>
                 </div>
               </div>
             </div>
@@ -641,7 +658,9 @@ export const ComprehensiveBgvReportModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-purple text-[10px]">EPFO VERIFIED</span>
+                  <span className={`badge ${isEpfoVerified ? 'badge-purple' : 'badge-amber'} text-[10px]`}>
+                    {isEpfoVerified ? 'EPFO VERIFIED' : 'PENDING VERIFICATION'}
+                  </span>
                   <button 
                     onClick={() => handleDownloadSlip('EPFO_UAN_History', apiData.epfo)}
                     className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 cursor-pointer"
@@ -663,7 +682,9 @@ export const ComprehensiveBgvReportModal = ({
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">DUAL EMPLOYMENT CLEARANCE</span>
-                  <strong className="text-emerald-700 text-xs font-bold">{apiData.epfo.dualEmploymentClearance}</strong>
+                  <strong className={`${isEpfoVerified ? 'text-emerald-700' : 'text-slate-500'} text-xs font-bold`}>
+                    {apiData.epfo.dualEmploymentClearance}
+                  </strong>
                 </div>
               </div>
 
@@ -680,16 +701,24 @@ export const ComprehensiveBgvReportModal = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-xs">
-                    {apiData.epfo.employmentHistory.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/80">
-                        <td className="p-2.5 font-bold text-slate-900">{row.establishmentName}</td>
-                        <td className="p-2.5 font-mono text-[11px] text-slate-600">{row.memberId}</td>
-                        <td className="p-2.5 font-mono text-slate-700">{row.doj}</td>
-                        <td className="p-2.5 font-mono text-slate-700">{row.doe}</td>
-                        <td className="p-2.5 text-slate-800">{row.designation}</td>
-                        <td className="p-2.5 text-right font-bold text-emerald-700">{row.exitReason}</td>
+                    {apiData.epfo.employmentHistory.length > 0 ? (
+                      apiData.epfo.employmentHistory.map((row, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/80">
+                          <td className="p-2.5 font-bold text-slate-900">{row.establishmentName}</td>
+                          <td className="p-2.5 font-mono text-[11px] text-slate-600">{row.memberId}</td>
+                          <td className="p-2.5 font-mono text-slate-700">{row.doj}</td>
+                          <td className="p-2.5 font-mono text-slate-700">{row.doe}</td>
+                          <td className="p-2.5 text-slate-800">{row.designation}</td>
+                          <td className="p-2.5 text-right font-bold text-emerald-700">{row.exitReason}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="p-4 text-center text-slate-400 font-medium">
+                          Pending Verification / No EPFO employment records attached
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -710,7 +739,9 @@ export const ComprehensiveBgvReportModal = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-emerald text-[10px]">₹1.00 DEPOSITED ✓</span>
+                  <span className={`badge ${isBankVerified ? 'badge-emerald' : 'badge-amber'} text-[10px]`}>
+                    {isBankVerified ? '₹1.00 DEPOSITED ✓' : 'PENDING VERIFICATION'}
+                  </span>
                   <button 
                     onClick={() => handleDownloadSlip('Bank_Penny_Drop', apiData.bank)}
                     className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 cursor-pointer"
@@ -732,7 +763,9 @@ export const ComprehensiveBgvReportModal = ({
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">BENEFICIARY NAME MATCH</span>
-                  <strong className="text-emerald-700 text-xs font-bold">{apiData.bank.registeredAccountHolder} (100%)</strong>
+                  <strong className={`${isBankVerified ? 'text-emerald-700' : 'text-slate-500'} text-xs font-bold`}>
+                    {apiData.bank.registeredAccountHolder} ({apiData.bank.nameMatchScore})
+                  </strong>
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">IMPS RRN REFERENCE</span>
@@ -753,13 +786,15 @@ export const ComprehensiveBgvReportModal = ({
                     <Car className="w-4 h-4 text-amber-600" />
                     <span className="font-extrabold text-slate-900 text-xs">5. Driving License</span>
                   </div>
-                  <span className="badge badge-amber text-[9px]">Sarathi MoRTH</span>
+                  <span className={`badge ${isDlVerified ? 'badge-amber' : 'badge-slate'} text-[9px]`}>
+                    {isDlVerified ? 'Sarathi MoRTH ✓' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <div><strong className="text-slate-500">DL No:</strong> <code className="font-mono text-slate-900 font-bold">{apiData.drivingLicense.dlNumber}</code></div>
                   <div><strong className="text-slate-500">Valid Till:</strong> {apiData.drivingLicense.validUntil}</div>
                   <div><strong className="text-slate-500">RTO:</strong> {apiData.drivingLicense.issuingRto}</div>
-                  <div className="text-[10px] text-emerald-700 font-bold">Classes: {apiData.drivingLicense.vehicleClasses}</div>
+                  <div className={`text-[10px] ${isDlVerified ? 'text-emerald-700' : 'text-slate-500'} font-bold`}>Classes: {apiData.drivingLicense.vehicleClasses}</div>
                 </div>
               </div>
 
@@ -770,13 +805,15 @@ export const ComprehensiveBgvReportModal = ({
                     <Plane className="w-4 h-4 text-sky-600" />
                     <span className="font-extrabold text-slate-900 text-xs">6. Passport Seva</span>
                   </div>
-                  <span className="badge badge-cyan text-[9px]">MEA Official</span>
+                  <span className={`badge ${isPassportVerified ? 'badge-cyan' : 'badge-slate'} text-[9px]`}>
+                    {isPassportVerified ? 'MEA Official ✓' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <div><strong className="text-slate-500">Passport No:</strong> <code className="font-mono text-slate-900 font-bold">{apiData.passport.passportNumber}</code></div>
                   <div><strong className="text-slate-500">File No:</strong> {apiData.passport.fileNumber}</div>
                   <div><strong className="text-slate-500">Valid Till:</strong> {apiData.passport.validUntil}</div>
-                  <div className="text-[10px] text-emerald-700 font-bold">{apiData.passport.statusText}</div>
+                  <div className={`text-[10px] ${isPassportVerified ? 'text-emerald-700' : 'text-slate-500'} font-bold`}>{apiData.passport.statusText}</div>
                 </div>
               </div>
 
@@ -787,7 +824,9 @@ export const ComprehensiveBgvReportModal = ({
                     <Vote className="w-4 h-4 text-emerald-600" />
                     <span className="font-extrabold text-slate-900 text-xs">7. ECI Voter ID</span>
                   </div>
-                  <span className="badge badge-emerald text-[9px]">EPIC Verified</span>
+                  <span className={`badge ${isVoterVerified ? 'badge-emerald' : 'badge-slate'} text-[9px]`}>
+                    {isVoterVerified ? 'EPIC Verified ✓' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <div><strong className="text-slate-500">EPIC No:</strong> <code className="font-mono text-slate-900 font-bold">{apiData.voterId.epicNumber}</code></div>
@@ -810,7 +849,9 @@ export const ComprehensiveBgvReportModal = ({
                     <Smartphone className="w-4 h-4 text-indigo-600" />
                     <span className="font-extrabold text-slate-900 text-xs">8. Mobile 360 Footprint</span>
                   </div>
-                  <span className="badge badge-purple text-[9px]">Telecom</span>
+                  <span className={`badge ${c.mobile ? 'badge-purple' : 'badge-slate'} text-[9px]`}>
+                    {c.mobile ? 'Telecom' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <div><strong className="text-slate-500">Carrier:</strong> {apiData.mobile360.carrier}</div>
@@ -826,12 +867,14 @@ export const ComprehensiveBgvReportModal = ({
                     <Sparkles className="w-4 h-4 text-emerald-600" />
                     <span className="font-extrabold text-slate-900 text-xs">9. AI Face Biometrics</span>
                   </div>
-                  <span className="badge badge-emerald text-[9px]">Liveness: 99.4%</span>
+                  <span className={`badge ${isFaceVerified ? 'badge-emerald' : 'badge-slate'} text-[9px]`}>
+                    {isFaceVerified ? 'Liveness Verified' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
-                  <div><strong className="text-slate-500">1:1 Face Match:</strong> <span className="text-emerald-700 font-bold">{apiData.faceBiometrics.faceMatchScore}</span></div>
+                  <div><strong className="text-slate-500">1:1 Face Match:</strong> <span className={`${isFaceVerified ? 'text-emerald-700' : 'text-slate-500'} font-bold`}>{apiData.faceBiometrics.faceMatchScore}</span></div>
                   <div><strong className="text-slate-500">Anti-Spoofing:</strong> {apiData.faceBiometrics.spoofCheck}</div>
-                  <div><strong className="text-slate-500">Angles:</strong> 3 Frames Captured (Front/L/R)</div>
+                  <div><strong className="text-slate-500">Angles:</strong> {isFaceVerified ? '3 Frames Captured (Front/L/R)' : 'Pending'}</div>
                 </div>
               </div>
 
@@ -842,12 +885,14 @@ export const ComprehensiveBgvReportModal = ({
                     <Scale className="w-4 h-4 text-teal-600" />
                     <span className="font-extrabold text-slate-900 text-xs">10. eCourts Clearance</span>
                   </div>
-                  <span className="badge badge-emerald text-[9px]">Clean Record</span>
+                  <span className={`badge ${c.status === 'Verified' ? 'badge-emerald' : 'badge-slate'} text-[9px]`}>
+                    {c.status === 'Verified' ? 'Clean Record ✓' : 'Pending'}
+                  </span>
                 </div>
                 <div className="space-y-1 text-[11px]">
                   <div><strong className="text-slate-500">Courts Scanned:</strong> {apiData.court.recordsSearched}</div>
-                  <div><strong className="text-slate-500">Criminal Cases:</strong> <span className="text-emerald-700 font-bold">0 Records Found</span></div>
-                  <div><strong className="text-slate-500">Civil Suits:</strong> 0 Records Found</div>
+                  <div><strong className="text-slate-500">Criminal Cases:</strong> <span className={`${c.status === 'Verified' ? 'text-emerald-700' : 'text-slate-500'} font-bold`}>{apiData.court.criminalCases}</span></div>
+                  <div><strong className="text-slate-500">Civil Suits:</strong> {c.status === 'Verified' ? '0 Records Found' : 'Pending Verification'}</div>
                 </div>
               </div>
 

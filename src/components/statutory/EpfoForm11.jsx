@@ -15,7 +15,7 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
   const bankAcc = jf.accountNumber || jf.bankAccountNo || '-';
   const ifsc = jf.ifscCode || '-';
   const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
-  const pan = c.panNo || jf.panNo || 'ABCDE1234F';
+  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
   const doj = c.doj || jf.doj || '2026-04-13';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 

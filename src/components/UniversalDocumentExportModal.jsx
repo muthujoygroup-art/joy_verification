@@ -404,14 +404,14 @@ export const UniversalDocumentExportModal = ({
               <tr>
                 <td>${i + 1}</td>
                 <td><strong>${c.name}</strong></td>
-                <td>${c.empId || `EMP-${400 + i}`}</td>
-                <td>${c.department || c.dept || 'Engineering'}</td>
-                <td>${c.designation || 'Associate'}</td>
-                <td>${c.email || ''}<br/>${c.mobile || ''}</td>
-                <td>XXXX-XXXX-${c.aadhaar ? c.aadhaar.slice(-4) : '9876'}</td>
-                <td>${c.pan || 'ABCDE1234F'}</td>
-                <td><span class="${c.status === 'VERIFIED' ? 'badge-success' : 'badge-warn'}">${c.status || 'VERIFIED'}</span></td>
-                <td>${c.verificationDate || '2026-08-26'}</td>
+                <td>${c.empId || c.employeeNumber || '—'}</td>
+                <td>${c.department || c.dept || '—'}</td>
+                <td>${c.designation || '—'}</td>
+                <td>${c.email || '—'}<br/>${c.mobile || '—'}</td>
+                <td>${(c.aadhaar || c.aadhaarNo) ? `XXXX-XXXX-${String(c.aadhaar || c.aadhaarNo).slice(-4)}` : 'Pending'}</td>
+                <td>${(c.pan || c.panNo) && (c.pan || c.panNo) !== 'ABCDE1234F' ? (c.pan || c.panNo) : 'Pending'}</td>
+                <td><span class="${c.status === 'Verified' || c.status === 'VERIFIED' ? 'badge-success' : 'badge-warn'}">${c.status || 'Draft'}</span></td>
+                <td>${c.verificationDate || 'Pending'}</td>
               </tr>
             `).join('')}
           </tbody>
