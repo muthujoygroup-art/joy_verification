@@ -209,9 +209,8 @@ export const QrCodeModal = ({
   };
 
   const handleShareWhatsApp = () => {
-    const cleanPin = (passcodeText || '1234').trim();
     const phone = (candidate.mobile || '').replace(/[^0-9]/g, '');
-    const message = `Hello ${candidate.name},\n\nPlease complete your official digital onboarding verification for ${company.name} using the link below:\n\n🔗 Link: ${verifyUrl}\n🔐 Security PIN: ${cleanPin}\n\nIssued by: ${hrSenderName} (${company.name})`;
+    const message = `Hello ${candidate.name},\n\nPlease complete your official digital onboarding verification for ${company.name} using the link below:\n\n🔗 Onboarding Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})`;
     const waUrl = `https://api.whatsapp.com/send?${phone ? `phone=${phone}&` : ''}text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
   };
@@ -225,11 +224,10 @@ export const QrCodeModal = ({
   }, [onClose]);
 
   const handleOpenMailClient = () => {
-    const cleanPin = (passcodeText || '1234').trim();
     const destEmail = targetEmail.trim() || candidate.email;
     const subject = encodeURIComponent(`Official Onboarding Verification - ${company.name} (${candidate.name})`);
     const body = encodeURIComponent(
-      `Dear ${candidate.name},\n\nCongratulations on your role as ${candidate.designation || 'Associate'} at ${company.name}!\n\nPlease complete your digital identity onboarding verification and statutory disclosures using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n🔐 Access PIN: ${cleanPin}\n\nIssued by: ${hrSenderName} (${company.name})\nContact: ${hrSenderEmail}\n\nBest regards,\n${hrSenderName}\nHuman Resources Team\n${company.name}`
+      `Dear ${candidate.name},\n\nCongratulations on your role as ${candidate.designation || 'Associate'} at ${company.name}!\n\nPlease complete your digital identity onboarding verification and statutory disclosures using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})\nContact: ${hrSenderEmail}\n\nBest regards,\n${hrSenderName}\nHuman Resources Team\n${company.name}`
     );
     window.location.href = `mailto:${destEmail}?subject=${subject}&body=${body}`;
   };

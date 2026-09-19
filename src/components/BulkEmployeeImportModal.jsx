@@ -1350,7 +1350,6 @@ export const BulkEmployeeImportModal = ({
       'Department': c.dept,
       'Employee ID': c.empId,
       'Candidate Token': c.token,
-      'Portal Security PIN': c.portalPassword,
       'Direct Onboarding Link URL': c.linkUrl,
       'Dispatch Status': c.status,
       'Company Name': currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
@@ -2131,7 +2130,6 @@ export const BulkEmployeeImportModal = ({
                       <th className="p-3">Candidate Employee</th>
                       <th className="p-3">Role & Category</th>
                       <th className="p-3">Contact</th>
-                      <th className="p-3">Security PIN</th>
                       <th className="p-3">Onboarding Link Token</th>
                       <th className="p-3 text-center">Status</th>
                       <th className="p-3 text-right">Action</th>
@@ -2152,9 +2150,6 @@ export const BulkEmployeeImportModal = ({
                         <td className="p-3">
                           <div className="font-mono text-slate-800">{cand.mobile}</div>
                           <div className="text-[10px] text-slate-400 truncate max-w-[160px]">{cand.email}</div>
-                        </td>
-                        <td className="p-3 font-mono font-bold text-slate-500">
-                          ••••••••
                         </td>
                         <td className="p-3 font-mono text-[11px] text-slate-600">
                           <div className="truncate max-w-[200px]" title={cand.linkUrl}>

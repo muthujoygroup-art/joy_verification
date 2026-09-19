@@ -2715,13 +2715,35 @@ export const AppProvider = ({ children }) => {
         });
         const cleanFetched = cands.map(mapCandidateObj);
         setCandidates(prev => {
-          const fetchedIds = new Set(cleanFetched.map(f => f.id || f.token));
-          const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => p && !fetchedIds.has(p.id) && !fetchedIds.has(p.token));
+          const fetchedKeys = new Set(cleanFetched.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
+          const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => {
+            if (!p) return false;
+            const pid = (p.id || '').toLowerCase();
+            const ptok = (p.token || '').toLowerCase();
+            const pem = (p.email || '').toLowerCase();
+            const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
+            return !fetchedKeys.has(pid) && !fetchedKeys.has(ptok) && (!pem || !fetchedKeys.has(pem)) && (!pemp || !fetchedKeys.has(pemp));
+          });
           const merged = [...cleanFetched, ...preservedLocal];
+          const seen = new Set();
+          const uniqueMerged = merged.filter(item => {
+            if (!item) return false;
+            const k1 = (item.token || item.id || '').toLowerCase();
+            const k2 = (item.email || '').toLowerCase();
+            const k3 = (item.empId || item.employeeNumber || '').toUpperCase();
+            const uniqueKey = `${k1}::${k2}::${k3}`;
+            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`))) {
+              return false;
+            }
+            if (k1) seen.add(`TOK::${k1}`);
+            if (k3) seen.add(`EMP::${k3}`);
+            seen.add(uniqueKey);
+            return true;
+          });
           try {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(merged));
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
           } catch (e) {}
-          return merged;
+          return uniqueMerged;
         });
         return cleanFetched;
       }

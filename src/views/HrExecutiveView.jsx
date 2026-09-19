@@ -415,8 +415,7 @@ export const HrExecutiveView = () => {
   const companyCandidates = useMemo(() => {
     const compId = (currentCompany?.id || activeHr?.companyId || resolvedUserCompanyId || '').toLowerCase();
     const compCode = (currentCompany?.code || activeHr?.companyId || resolvedUserCompanyId || '').toLowerCase();
-    if (!compId) return candidates || [];
-    return (candidates || []).filter(c => {
+    const rawList = (!compId ? (candidates || []) : (candidates || []).filter(c => {
       const candCompId = (c.companyId || c.company_id || '').toLowerCase();
       if (!candCompId) return true;
       return candCompId === compId || 
@@ -424,6 +423,25 @@ export const HrExecutiveView = () => {
              candCompId === resolvedUserCompanyId.toLowerCase() ||
              (compId === 'comp001' && candCompId === 'comp-joy') || 
              (candCompId === 'comp001' && compId === 'comp-joy');
+    }));
+
+    const seen = new Set();
+    return rawList.filter(c => {
+      if (!c) return false;
+      const tok = (c.token || c.id || '').toString().toLowerCase().trim();
+      const empKey = (c.empId || c.employeeNumber || '').toString().toUpperCase().trim();
+      const emailKey = (c.email || '').toString().toLowerCase().trim();
+      
+      const isDup = (tok && seen.has(`TOK::${tok}`)) || 
+                    (empKey && seen.has(`EMP::${empKey}`)) ||
+                    (emailKey && emailKey.includes('@') && seen.has(`EML::${emailKey}`));
+      
+      if (isDup) return false;
+      
+      if (tok) seen.add(`TOK::${tok}`);
+      if (empKey) seen.add(`EMP::${empKey}`);
+      if (emailKey && emailKey.includes('@')) seen.add(`EML::${emailKey}`);
+      return true;
     });
   }, [candidates, currentCompany?.id, currentCompany?.code, activeHr?.companyId, resolvedUserCompanyId]);
 
