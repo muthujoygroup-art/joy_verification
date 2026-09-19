@@ -430,6 +430,18 @@ export const HrExecutiveView = () => {
     });
   }, [companyCandidates, searchQuery, statusFilter]);
 
+  const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
+
+  // Dynamic Custom Fields State
+  const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
+  const [legacyFieldType, setLegacyFieldType] = useState('text');
+  const [legacyFieldRequired, setLegacyFieldRequired] = useState(false);
+  const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
+
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocDesc, setNewDocDesc] = useState('');
+  const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
+
   const [isSavingHrPref, setIsSavingHrPref] = useState(false);
   const [showSmtpPassword, setShowSmtpPassword] = useState(false);
   const [testSmtpEmail, setTestSmtpEmail] = useState(activeHr.email || '');
