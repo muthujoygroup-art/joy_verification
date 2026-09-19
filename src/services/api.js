@@ -474,8 +474,9 @@ export const api = {
 
   // HR Executive
   getCandidates: (params = {}) => {
+    requestCache.clear();
     const query = new URLSearchParams(params).toString();
-    return request(`/hr/candidates${query ? `?${query}` : ''}`, {}, true);
+    return request(`/hr/candidates${query ? `?${query}` : ''}`, {}, false);
   },
   createCandidate: (candidateData) => {
     requestCache.clear();

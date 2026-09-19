@@ -384,24 +384,45 @@ export const HrExecutiveView = () => {
     : { id: 'hr-1', companyId: 'COMP001', name: 'HR Recruiter', dept: 'Human Resources' };
 
   const currentCompany = (Array.isArray(companies) && companies.length > 0)
-    ? (companies.find(c => c.id === activeHr.companyId || c.email === activeHr.companyEmail || c.name === activeHr.companyName) || companies[0])
-    : {
-        id: activeHr.companyId || 'COMP001',
+    ? (companies.find(c => 
+        (c.id && activeHr.companyId && c.id.toLowerCase() === activeHr.companyId.toLowerCase()) || 
+        (c.code && activeHr.companyId && c.code.toLowerCase() === activeHr.companyId.toLowerCase()) ||
+        (c.email && activeHr.companyEmail && c.email.toLowerCase() === activeHr.companyEmail.toLowerCase()) || 
+        (c.name && activeHr.companyName && c.name.toLowerCase() === activeHr.companyName.toLowerCase())
+      ) || {
+        id: activeHr.companyId || currentUser?.companyId || 'COMP001',
         name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
-        code: 'COMP001'
+        code: activeHr.companyId || currentUser?.companyId || 'COMP001'
+      })
+    : {
+        id: activeHr.companyId || currentUser?.companyId || 'COMP001',
+        name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
+        code: activeHr.companyId || currentUser?.companyId || 'COMP001'
       };
 
   const hrPerms = currentCompany?.hrPermissions || {};
 
+  // Auto-fetch live candidate roster from PostgreSQL backend on workstation mount & company switch
+  useEffect(() => {
+    const targetCompId = currentCompany?.id || activeHr?.companyId || currentUser?.companyId;
+    if (targetCompId && typeof refreshCandidates === 'function') {
+      refreshCandidates(targetCompId);
+    }
+  }, [currentCompany?.id, activeHr?.companyId, currentUser?.companyId]);
+
   const companyCandidates = useMemo(() => {
-    if (!currentCompany?.id) return candidates || [];
-    const compId = (currentCompany.id || '').toLowerCase();
-    const compCode = (currentCompany.code || '').toLowerCase();
+    const compId = (currentCompany?.id || activeHr?.companyId || currentUser?.companyId || '').toLowerCase();
+    const compCode = (currentCompany?.code || activeHr?.companyId || currentUser?.companyId || '').toLowerCase();
+    if (!compId) return candidates || [];
     return (candidates || []).filter(c => {
       const candCompId = (c.companyId || c.company_id || '').toLowerCase();
-      return !candCompId || candCompId === compId || candCompId === compCode || candCompId === 'comp-joy' || compId === 'comp001' || compId === 'comp-joy';
+      if (!candCompId) return true;
+      return candCompId === compId || 
+             candCompId === compCode || 
+             (compId === 'comp001' && candCompId === 'comp-joy') || 
+             (candCompId === 'comp001' && compId === 'comp-joy');
     });
-  }, [candidates, currentCompany?.id, currentCompany?.code]);
+  }, [candidates, currentCompany?.id, currentCompany?.code, activeHr?.companyId, currentUser?.companyId]);
 
   const filteredCandidates = useMemo(() => {
     return companyCandidates.filter(c => {
