@@ -1838,6 +1838,7 @@ export const AppProvider = ({ children }) => {
       setLastActivityTimestamp(Date.now());
       setShowInactivityWarning(false);
       showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 10 Mins)!`);
+      return userObj;
     } catch (err) {
       console.error('Login failed:', err);
       throw err;
@@ -2673,8 +2674,7 @@ export const AppProvider = ({ children }) => {
   // Live Candidate Roster Synchronizer from PostgreSQL DB
   const refreshCandidates = async (companyId = null) => {
     try {
-      const params = companyId ? { company_id: companyId } : {};
-      const cands = await api.getCandidates(params);
+      const cands = await api.getCandidates({});
       if (cands && Array.isArray(cands)) {
         const mapCandidateObj = (c) => ({
           id: c.id,

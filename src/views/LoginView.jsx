@@ -358,10 +358,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        const hr = (hrUsers || []).find(h => h.email?.toLowerCase() === email) || (hrUsers || [])[0];
-        const comp = (companies || []).find(c => c.id === hr?.companyId) || (companies || [])[0];
-        const hrSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        await loginUser('hrexecutive', { email, password, hrId: hr?.id });
+        const userObj = await loginUser('hrexecutive', { email, password });
+        const compName = userObj?.companyName || userObj?.company_name || 'joy-corporate-solutions';
+        const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         navigate(`/hr/${hrSlug}`);
       }
     } catch (err) {
