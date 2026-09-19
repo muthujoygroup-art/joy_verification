@@ -368,6 +368,31 @@ export const HrExecutiveView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
+  // Dynamic HR Recruiter & Employer Company Resolution (Resolves from live logged-in session)
+  const activeHr = (currentUser && (currentUser.role === 'hrexecutive' || currentUser.role === 'hr' || currentUser.email))
+    ? {
+        id: currentUser.id || currentUser.hrId || 'hr-1',
+        name: currentUser.name || currentUser.userName || 'HR Recruiter',
+        email: currentUser.email || '',
+        dept: currentUser.dept || 'Human Resources',
+        companyId: currentUser.companyId || 'COMP001',
+        companyName: currentUser.companyName || 'Joy Corporate Solutions Private Limited',
+        hrCode: currentUser.hrCode || currentUser.code || currentUser.id || 'COMP001HR001'
+      }
+    : (Array.isArray(hrUsers) && hrUsers.length > 0)
+    ? (hrUsers.find(h => h.email?.toLowerCase() === currentUser?.email?.toLowerCase()) || hrUsers[0])
+    : { id: 'hr-1', companyId: 'COMP001', name: 'HR Recruiter', dept: 'Human Resources' };
+
+  const currentCompany = (Array.isArray(companies) && companies.length > 0)
+    ? (companies.find(c => c.id === activeHr.companyId || c.email === activeHr.companyEmail || c.name === activeHr.companyName) || companies[0])
+    : {
+        id: activeHr.companyId || 'COMP001',
+        name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
+        code: 'COMP001'
+      };
+
+  const hrPerms = currentCompany?.hrPermissions || {};
+
   const companyCandidates = useMemo(() => {
     if (!currentCompany?.id) return candidates || [];
     const compId = (currentCompany.id || '').toLowerCase();
@@ -404,42 +429,6 @@ export const HrExecutiveView = () => {
       return matchesSearch && matchesStatus;
     });
   }, [companyCandidates, searchQuery, statusFilter]);
-  const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
-
-  // Dynamic Custom Fields State
-  const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
-  const [legacyFieldType, setLegacyFieldType] = useState('text');
-  const [legacyFieldRequired, setLegacyFieldRequired] = useState(false);
-  const [showAddCustomFieldModal, setShowAddCustomFieldModal] = useState(false);
-
-  const [newDocTitle, setNewDocTitle] = useState('');
-  const [newDocDesc, setNewDocDesc] = useState('');
-  const [showAddCustomDocModal, setShowAddCustomDocModal] = useState(false);
-
-  // Dynamic HR Recruiter & Employer Company Resolution (Resolves from live logged-in session)
-  const activeHr = (currentUser && (currentUser.role === 'hrexecutive' || currentUser.role === 'hr' || currentUser.email))
-    ? {
-        id: currentUser.id || currentUser.hrId || 'hr-1',
-        name: currentUser.name || currentUser.userName || 'HR Recruiter',
-        email: currentUser.email || '',
-        dept: currentUser.dept || 'Human Resources',
-        companyId: currentUser.companyId || 'COMP001',
-        companyName: currentUser.companyName || 'Joy Corporate Solutions Private Limited',
-        hrCode: currentUser.hrCode || currentUser.code || currentUser.id || 'COMP001HR001'
-      }
-    : (Array.isArray(hrUsers) && hrUsers.length > 0)
-    ? (hrUsers.find(h => h.email?.toLowerCase() === currentUser?.email?.toLowerCase()) || hrUsers[0])
-    : { id: 'hr-1', companyId: 'COMP001', name: 'HR Recruiter', dept: 'Human Resources' };
-
-  const currentCompany = (Array.isArray(companies) && companies.length > 0)
-    ? (companies.find(c => c.id === activeHr.companyId || c.email === activeHr.companyEmail || c.name === activeHr.companyName) || companies[0])
-    : {
-        id: activeHr.companyId || 'COMP001',
-        name: activeHr.companyName || currentUser?.companyName || 'Joy Corporate Solutions Private Limited',
-        code: 'COMP001'
-      };
-
-  const hrPerms = currentCompany?.hrPermissions || {};
 
   const [isSavingHrPref, setIsSavingHrPref] = useState(false);
   const [showSmtpPassword, setShowSmtpPassword] = useState(false);
