@@ -44,7 +44,7 @@ export const VendorVerificationCertificateModal = ({ vendor, checkType = 'all', 
     try {
       const el = document.getElementById('printable-vendor-certificate');
       if (el) {
-        await exportElementToPdf(el, filename);
+        await exportElementToPdf(el, filename, { docId: certificateId });
       } else {
         window.print();
       }

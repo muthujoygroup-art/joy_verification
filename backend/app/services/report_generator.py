@@ -11,10 +11,14 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
 
 class NumberedCanvas(canvas.Canvas):
-    """Custom canvas that computes total page count dynamically for multi-page dossiers"""
-    def __init__(self, *args, **kwargs):
+    """Custom canvas that computes total page count dynamically for multi-page dossiers with unique anti-tamper Doc ID tracking"""
+    def __init__(self, *args, doc_id=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._saved_page_states = []
+        if not doc_id:
+            import uuid
+            doc_id = f"DOC-2026-{uuid.uuid4().hex[:8].upper()}"
+        self.doc_id = doc_id
 
     def showPage(self):
         self._saved_page_states.append(dict(self.__dict__))
@@ -30,13 +34,13 @@ class NumberedCanvas(canvas.Canvas):
 
     def draw_page_decorations(self, page_count):
         self.saveState()
-        self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor('#64748b'))
+        self.setFont("Helvetica-Bold", 7.5)
+        self.setFillColor(colors.HexColor('#4338ca')) # Deep Indigo
         
         # Running Top Header (Pages > 1)
         if self._pageNumber > 1:
-            self.drawString(36, 762, "JOY CORPORATE SOLUTIONS — COMPREHENSIVE EMPLOYEE DOSSIER")
-            self.drawRightString(576, 762, "CONFIDENTIAL & STATUTORY RECORD")
+            self.drawString(36, 762, f"JOY CORPORATE SOLUTIONS — STATUTORY DOSSIER • DOC ID: {self.doc_id}")
+            self.drawRightString(576, 762, "CONFIDENTIAL & AUTHENTICATED RECORD")
             self.setStrokeColor(colors.HexColor('#cbd5e1'))
             self.setLineWidth(0.5)
             self.line(36, 756, 576, 756)
@@ -46,7 +50,9 @@ class NumberedCanvas(canvas.Canvas):
         self.setLineWidth(0.5)
         self.line(36, 40, 576, 40)
         
-        self.drawString(36, 28, "Certified by JOY CORPORATE SOLUTIONS PVT LTD • ISO 27001:2022")
+        self.drawString(36, 28, f"DOC UNIQUE VERIFICATION ID: {self.doc_id} • JOY CORPORATE SOLUTIONS PVT LTD • ISO 27001:2022")
+        self.setFont("Helvetica", 8)
+        self.setFillColor(colors.HexColor('#64748b'))
         page_text = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(576, 28, page_text)
         self.restoreState()

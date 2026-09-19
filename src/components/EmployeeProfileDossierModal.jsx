@@ -261,6 +261,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);
+    const dossierDocId = `JCS-DOSSIER-2026-${c.id?.replace('emp-', '') || '101'}-${c.token ? c.token.substring(0, 6).toUpperCase() : 'REC'}`;
     const filename = `Employee_Master_Profile_Dossier_${(candidateName || 'Employee').replace(/\s+/g, '_')}.pdf`;
     
     try {
@@ -270,7 +271,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
       const el = document.getElementById('printable-employee-master-dossier');
       if (el) {
-        await exportElementToPdf(el, filename);
+        await exportElementToPdf(el, filename, { docId: dossierDocId });
         setDownloadSuccess('Complete Master Dossier PDF downloaded successfully!');
         setTimeout(() => setDownloadSuccess(null), 4000);
       } else {

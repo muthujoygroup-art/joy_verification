@@ -76,9 +76,11 @@ def export_official_certificate(identifier: str, db: Session = Depends(get_db)):
             "faceImages": {}
         }
 
+    import uuid
+    doc_id = f"DOC-2026-{uuid.uuid4().hex[:8].upper()}"
     pdf_buffer = generate_official_certificate_pdf(candidate_data)
     pdf_bytes = pdf_buffer.getvalue()
-    filename = f"JOY_Corporate_Certificate_{cand_name.replace(' ', '_')}.pdf"
+    filename = f"JOY_Corporate_Certificate_{cand_name.replace(' ', '_')}_{doc_id}.pdf"
     
     return Response(
         content=pdf_bytes,
@@ -189,9 +191,10 @@ def export_employee_profile_dossier(identifier: str, db: Session = Depends(get_d
             "documents": []
         }
     
+    doc_id = f"DOC-2026-{uuid.uuid4().hex[:8].upper()}"
     pdf_buffer = generate_employee_profile_dossier_pdf(candidate_data)
     pdf_bytes = pdf_buffer.getvalue()
-    filename = f"Employee_Master_Profile_Dossier_{cand_name.replace(' ', '_')}.pdf"
+    filename = f"Employee_Master_Profile_Dossier_{cand_name.replace(' ', '_')}_{doc_id}.pdf"
     
     return Response(
         content=pdf_bytes,
@@ -250,9 +253,10 @@ def export_bgv_dossier_pdf(identifier: str, db: Session = Depends(get_db)):
             "verificationsCompleted": {}
         }
     
+    doc_id = f"DOC-2026-{uuid.uuid4().hex[:8].upper()}"
     pdf_buffer = generate_360_bgv_dossier_pdf(candidate_data)
     pdf_bytes = pdf_buffer.getvalue()
-    filename = f"JOY_360_BGV_Dossier_{cand_name.replace(' ', '_')}.pdf"
+    filename = f"JOY_360_BGV_Dossier_{cand_name.replace(' ', '_')}_{doc_id}.pdf"
     
     return Response(
         content=pdf_bytes,

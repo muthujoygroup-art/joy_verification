@@ -63,7 +63,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
     try {
       const el = document.getElementById('printable-official-certificate');
       if (el) {
-        await exportElementToPdf(el, filename, { showFooter: false });
+        await exportElementToPdf(el, filename, { docId: certId, showFooter: true });
       } else {
         await api.downloadDocument(api.exportCertificatePdfUrl(candidate.token || candidate.id), filename);
       }

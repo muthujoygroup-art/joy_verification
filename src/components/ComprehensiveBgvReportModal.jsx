@@ -283,12 +283,13 @@ export const ComprehensiveBgvReportModal = ({
 
   const handleDownloadMasterPdf = async () => {
     setIsExporting(true);
+    const bgvDocId = `JCS-BGV-2026-${c.id?.replace('emp-', '') || '101'}-${c.token ? c.token.substring(0, 6).toUpperCase() : 'AUDIT'}`;
     const filename = `JOY_360_BGV_Dossier_${uniqueCode}_${(c.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
     try {
       const el = document.getElementById('printable-360-bgv-dossier');
       if (el) {
-        // High-resolution direct export
-        await exportElementToPdf(el, filename);
+        // High-resolution direct export with unique anti-tamper Doc ID
+        await exportElementToPdf(el, filename, { docId: bgvDocId });
       }
     } catch (e) {
       console.warn("BGV PDF export error:", e);
