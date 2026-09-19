@@ -931,6 +931,74 @@ def send_candidate_thank_you_email(
     return res
 
 
+def send_candidate_email_otp(
+    candidate_name: str,
+    candidate_email: str,
+    otp_code: str,
+    company_name: str = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
+    sender_hr_email: Optional[str] = None,
+    company_id: Optional[str] = None,
+    custom_smtp: Optional[Dict[str, Any]] = None,
+    db=None,
+    async_mode: bool = True
+) -> Dict[str, Any]:
+    """
+    Dispatches a 6-Digit Email OTP Verification email from HR to Candidate for inbox verification.
+    """
+    comp_logo = get_company_logo_or_fallback(company_id, db)
+    sender_brand = company_name or "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+    hr_from = sender_hr_email or "hr@joycorporatesolutions.com"
+
+    content = f"""
+    <div style="margin-bottom: 20px;">
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Official Candidate Email Address Verification
+        </h2>
+        <p style="font-size: 13.5px; color: #334155; margin: 0; line-height: 1.6;">
+            Dear <strong>{candidate_name}</strong>,<br/>
+            Your HR recruitment workstation at <strong>{company_name}</strong> has issued an official 6-digit OTP code to verify your candidate email address.
+        </p>
+    </div>
+
+    <!-- OTP Display Box -->
+    <div style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border: 2px solid #c084fc; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #7e22ce; margin-bottom: 8px; letter-spacing: 0.5px;">
+            🔐 YOUR 6-DIGIT EMAIL VERIFICATION OTP CODE:
+        </div>
+        <div style="font-size: 32px; font-weight: 900; font-family: monospace; color: #581c87; letter-spacing: 8px; margin: 8px 0;">
+            {otp_code}
+        </div>
+        <div style="font-size: 11px; color: #6b21a8; font-weight: 600;">
+            Valid for 10 minutes &bull; Sent from HR Email: {hr_from}
+        </div>
+    </div>
+
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 12px; color: #475569; margin-bottom: 18px;">
+        📌 <strong>Instructions:</strong> Enter this 6-digit OTP code on your digital onboarding verification screen to complete your official email address verification.
+    </div>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Email OTP Verification - {company_name}",
+        badge_text="OFFICIAL EMAIL OTP VERIFICATION",
+        content_html=content,
+        sender_brand=sender_brand,
+        logo_url=comp_logo
+    )
+
+    subject = f"📧 Your 6-Digit Email OTP Verification Code: {otp_code} ({company_name})"
+    return send_smtp_email(
+        to_email=candidate_email,
+        subject=subject,
+        html_content=html,
+        company_id=company_id,
+        custom_config=custom_smtp,
+        reply_to=hr_from,
+        db=db,
+        async_mode=async_mode
+    )
+
+
 # =============================================================================
 # 6. ✅ BGV VERIFICATION CERTIFIED NOTICE (To Candidate, HR & Company)
 # =============================================================================

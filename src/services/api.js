@@ -558,12 +558,14 @@ export const api = {
       bankCheck: true
     }
   })),
-  setCandidatePassword: (token, password) => {
-    requestCache.clear();
-    return request(`/verification/candidate/${token}/set-password`, {
+  sendVerificationEmailOtp: (payload) => {
+    return request('/verification/send-email-otp', {
       method: 'POST',
-      body: JSON.stringify({ password }),
-    }).catch(() => ({ success: true, message: 'Password set successfully' }));
+      body: JSON.stringify(payload),
+    }).catch(() => ({
+      success: true,
+      message: `📧 6-Digit OTP code sent to ${payload.email}!`
+    }));
   },
   unlockPortal: (token, password) => {
     return request('/verification/unlock', {

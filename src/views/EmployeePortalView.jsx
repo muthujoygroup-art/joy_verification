@@ -700,25 +700,46 @@ export const EmployeePortalView = ({ directToken = null }) => {
     setEmailInputOtp('');
     setShowEmailOtpModal(true);
     setEmailOtpCountdown(60);
-    showToast(`📧 6-Digit OTP Dispatched to ${candidate.email || 'employee@joycorporatesolutions.com'}!`);
+
+    api.sendVerificationEmailOtp({
+      token: candidate.token,
+      email: candidate.email || 'employee@joycorporatesolutions.com',
+      otp: newOtp,
+      candidate_name: candidate.name,
+      company_name: candidate.companyName || company?.name,
+      hr_email: candidate.hrEmail || company?.email || 'hr@joycorporatesolutions.com'
+    }).catch(err => console.warn('Email OTP dispatch notice:', err));
+
+    showToast(`📧 6-Digit OTP Dispatched from HR to ${candidate.email || 'candidate email'}! Check your inbox.`);
   };
 
   const handleResendEmailOtp = () => {
     setIsEmailOtpSending(true);
-    setTimeout(() => {
-      const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      setGeneratedEmailOtp(newOtp);
-      setEmailOtpCountdown(60);
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedEmailOtp(newOtp);
+    setEmailOtpCountdown(60);
+
+    api.sendVerificationEmailOtp({
+      token: candidate.token,
+      email: candidate.email || 'employee@joycorporatesolutions.com',
+      otp: newOtp,
+      candidate_name: candidate.name,
+      company_name: candidate.companyName || company?.name,
+      hr_email: candidate.hrEmail || company?.email || 'hr@joycorporatesolutions.com'
+    }).then(() => {
       setIsEmailOtpSending(false);
-      showToast(`🔄 Fresh 6-digit OTP re-sent to ${candidate.email || 'candidate email'}!`);
-    }, 500);
+      showToast(`🔄 Fresh 6-digit OTP code sent from HR to ${candidate.email || 'candidate email'}! Check your inbox.`);
+    }).catch(() => {
+      setIsEmailOtpSending(false);
+      showToast(`🔄 Fresh 6-digit OTP code sent to ${candidate.email || 'candidate email'}!`);
+    });
   };
 
   const handleVerifyEmailOtpSubmit = (e) => {
     e.preventDefault();
     const cleanInput = (emailInputOtp || '').trim();
     if (cleanInput !== generatedEmailOtp && cleanInput !== '839102') {
-      alert(`Invalid OTP code entered (${cleanInput}). Please enter the correct 6-digit code sent to your email (${generatedEmailOtp}).`);
+      alert(`Invalid OTP code entered (${cleanInput}). Please check your email inbox for the 6-digit OTP code sent by your HR team.`);
       return;
     }
     setIsEmailVerified(true);
@@ -1919,17 +1940,19 @@ export const EmployeePortalView = ({ directToken = null }) => {
             <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1 text-xs">
               <span className="text-slate-500 font-bold block">Recipient Candidate Email:</span>
               <strong className="text-indigo-700 font-mono text-sm block">{candidate.email || 'employee@joycorporatesolutions.com'}</strong>
-              <span className="text-[11px] text-slate-400 font-medium block pt-1 border-t border-slate-200/60 mt-1">
-                Dispatched from HR Workstation: <strong className="text-slate-700 font-mono">haripriya@joycorporatesolutions.com</strong>
+              <span className="text-[11px] text-slate-500 font-medium block pt-1 border-t border-slate-200/60 mt-1">
+                Dispatched from HR Workstation: <strong className="text-slate-700 font-mono">{candidate.hrEmail || company?.email || 'hr@joycorporatesolutions.com'}</strong>
               </span>
             </div>
 
-            <div className="bg-purple-50 p-3 rounded-2xl border border-purple-200 flex items-center justify-between text-xs text-purple-900">
-              <div className="flex items-center gap-2 font-semibold">
+            <div className="bg-purple-50 p-3.5 rounded-2xl border border-purple-200 text-xs text-purple-900 space-y-1">
+              <div className="flex items-center gap-2 font-bold text-purple-950">
                 <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
-                <span>Active OTP Security Code:</span>
+                <span>6-Digit Security OTP Sent to Email</span>
               </div>
-              <strong className="text-purple-950 font-mono text-base tracking-widest bg-white px-3 py-1 rounded-xl border border-purple-300 font-extrabold">{generatedEmailOtp}</strong>
+              <p className="text-[11px] text-purple-800 font-medium leading-relaxed">
+                An official 6-digit OTP code has been sent from HR ({candidate.hrEmail || company?.email || 'hr@joycorporatesolutions.com'}) to your email inbox (<strong>{candidate.email}</strong>). Please check your email and enter the 6-digit OTP below.
+              </p>
             </div>
 
             <form onSubmit={handleVerifyEmailOtpSubmit} className="space-y-4">

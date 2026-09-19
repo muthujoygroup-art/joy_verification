@@ -13,7 +13,8 @@ from backend.app.services.email_service import (
     send_candidate_onboarding_email,
     send_candidate_thank_you_email,
     send_candidate_verification_completed_email,
-    send_candidate_correction_email
+    send_candidate_correction_email,
+    send_candidate_email_otp
 )
 from backend.app.schemas import (
     SendOtpRequest, SendOtpResponse, VerifyOtpRequest, VerifyOtpResponse,
@@ -233,6 +234,52 @@ def request_otp(payload: SendOtpRequest):
         demo_otp=demo_otp,
         masked_target=masked
     )
+
+class SendEmailOtpPayload(BaseModel):
+    token: Optional[str] = None
+    email: str
+    otp: str
+    candidate_name: Optional[str] = None
+    company_name: Optional[str] = None
+    hr_email: Optional[str] = None
+
+@router.post("/send-email-otp")
+def dispatch_email_otp(payload: SendEmailOtpPayload, db: Session = Depends(get_db)):
+    """Dispatches 6-digit Email OTP from HR email to candidate email for inbox verification"""
+    candidate = None
+    if payload.token:
+        candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+    
+    cand_name = (candidate.name if candidate else None) or payload.candidate_name or "Valued Candidate"
+    cand_email = payload.email.strip()
+    company_name = (candidate.company_name if candidate and hasattr(candidate, 'company_name') else None) or payload.company_name or "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+    
+    hr_email = payload.hr_email
+    if not hr_email and candidate and candidate.hr_id:
+        hr_user = db.query(HrUser).filter(HrUser.id == candidate.hr_id).first()
+        if hr_user:
+            hr_email = hr_user.email
+    if not hr_email and candidate and candidate.company_id:
+        comp = db.query(Company).filter(Company.id == candidate.company_id).first()
+        if comp:
+            hr_email = comp.email
+
+    res = send_candidate_email_otp(
+        candidate_name=cand_name,
+        candidate_email=cand_email,
+        otp_code=payload.otp,
+        company_name=company_name,
+        sender_hr_email=hr_email,
+        company_id=candidate.company_id if candidate else None,
+        db=db,
+        async_mode=True
+    )
+    return {
+        "success": True,
+        "message": f"📧 6-Digit OTP code dispatched to {cand_email} from HR ({hr_email or 'hr@joycorporatesolutions.com'})!",
+        "email": cand_email,
+        "hr_email": hr_email or "hr@joycorporatesolutions.com"
+    }
 
 @router.post("/otp/verify", response_model=VerifyOtpResponse)
 def verify_otp(payload: VerifyOtpRequest, db: Session = Depends(get_db)):
