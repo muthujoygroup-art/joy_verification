@@ -867,21 +867,23 @@ export const BulkEmployeeImportModal = ({
           const presentPincode = findVal(['presentpincode', 'currentpin']) || permanentPincode;
 
           // 4. Employment Fields
-          let empTypeRaw = findVal(['employmenttype', 'employeetype', 'category', 'type', 'contracttype']) || 'Full-Time';
+          let empTypeRaw = findVal(['employmenttype', 'employeetype', 'category', 'type', 'contracttype']);
           let empType = 'Full-Time';
-          const lowerType = empTypeRaw.toLowerCase();
-          if (lowerType.includes('contract') || lowerType.includes('retainer')) empType = 'Contract';
-          else if (lowerType.includes('intern') || lowerType.includes('trainee') || lowerType.includes('apprentice')) empType = 'Intern';
-          else if (lowerType.includes('part') || lowerType.includes('freelance')) empType = 'Part-Time';
-          else if (lowerType.includes('exec') || lowerType.includes('lead') || lowerType.includes('director') || lowerType.includes('vp')) empType = 'Executive';
-          else if (lowerType.includes('vendor') || lowerType.includes('third')) empType = 'Vendor';
+          if (empTypeRaw) {
+            const lowerType = empTypeRaw.toLowerCase();
+            if (lowerType.includes('contract') || lowerType.includes('retainer')) empType = 'Contract';
+            else if (lowerType.includes('intern') || lowerType.includes('trainee') || lowerType.includes('apprentice')) empType = 'Intern';
+            else if (lowerType.includes('part') || lowerType.includes('freelance')) empType = 'Part-Time';
+            else if (lowerType.includes('exec') || lowerType.includes('lead') || lowerType.includes('director') || lowerType.includes('vp')) empType = 'Executive';
+            else if (lowerType.includes('vendor') || lowerType.includes('third')) empType = 'Vendor';
+          }
 
-          const designation = findVal(['designation', 'jobrole', 'role', 'title', 'position']) || 'Associate';
-          const dept = findVal(['department', 'dept', 'function', 'division']) || 'General Operations';
-          const empId = findVal(['employeeid', 'staffcode', 'empid', 'id']) || `${currentCompany?.code || 'JOY'}EMP${String(Date.now()).slice(-4)}${idx + 1}`;
-          const doj = findVal(['proposedjoiningdate', 'joiningdate', 'doj', 'dateofjoining']) || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
-          const workLocation = findVal(['worklocation', 'plantlocation', 'factorylocation', 'branch', 'hub', 'location']) || 'Main Office';
-          const workShift = findVal(['workshift', 'shift', 'shifttype']) || 'General Shift';
+          const designation = findVal(['designation', 'jobrole', 'role', 'title', 'position']) || '';
+          const dept = findVal(['department', 'dept', 'function', 'division']) || '';
+          const empId = findVal(['employeeid', 'staffcode', 'empid', 'id']) || `${currentCompany?.code || 'COMP002'}EMP${String(Date.now()).slice(-4)}${idx + 1}`;
+          const doj = findVal(['proposedjoiningdate', 'joiningdate', 'doj', 'dateofjoining']) || '';
+          const workLocation = findVal(['worklocation', 'plantlocation', 'factorylocation', 'branch', 'hub', 'location']) || '';
+          const workShift = findVal(['workshift', 'shift', 'shifttype']) || '';
           const offeredCtc = findVal(['offeredannualctc', 'offeredctc', 'annualctc', 'ctc', 'salary']);
 
           // 5. Statutory KYC Fields
@@ -916,17 +918,11 @@ export const BulkEmployeeImportModal = ({
 
           // Fallback Auto-Healing for Contact Details
           let finalEmail = email;
-          let finalMobile = mobile;
+          let finalMobile = mobile || '';
 
           if (!finalEmail && !finalMobile) {
             const cleanNameSlug = (name || 'candidate').toLowerCase().replace(/[^a-z0-9]/g, '');
             finalEmail = `${cleanNameSlug || 'employee'}${idx + 1}@joytrueprofile.com`;
-            finalMobile = `98765${String(10000 + idx + 1).slice(-5)}`;
-          } else if (!finalEmail) {
-            const cleanNameSlug = (name || 'candidate').toLowerCase().replace(/[^a-z0-9]/g, '');
-            finalEmail = `${cleanNameSlug || 'employee'}${idx + 1}@joytrueprofile.com`;
-          } else if (!finalMobile) {
-            finalMobile = `98765${String(10000 + idx + 1).slice(-5)}`;
           }
 
           const errors = [];
