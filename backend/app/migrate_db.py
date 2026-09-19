@@ -1,4 +1,4 @@
-﻿"""
+"""
 JOY DATA VERIFICATION - DATABASE SCHEMA MIGRATION & HEALTH CHECK UTILITY
 Ensures complete table and column parity between local and production databases
 without dropping or altering existing records.
@@ -42,7 +42,9 @@ def run_db_migrations():
             ("verified_attributes", "JSON DEFAULT '{}'"),
             ("manual_checks", "JSON DEFAULT '{}'"),
             ("joining_form_data", "JSON DEFAULT '{}'"),
-            ("industry_specialization", "JSON DEFAULT '{}'")
+            ("industry_specialization", "JSON DEFAULT '{}'"),
+            ("signing_papers", "JSON DEFAULT '{}'"),
+            ("category_documents", "JSON DEFAULT '{}'")
         ]
 
         for col_name, col_type in migrations:

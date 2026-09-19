@@ -8,6 +8,8 @@ import { NdaAgreement } from './statutory/NdaAgreement';
 import { PoshPolicyDeclaration } from './statutory/PoshPolicyDeclaration';
 import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
 import { ContractFormXIII } from './statutory/ContractFormXIII';
+import IndustryAgreementsModal from './statutory/IndustryAgreementsModal';
+import { EMPLOYEE_CATEGORIES, CATEGORIES_LIST, getEmployeeCategoryConfig } from '../config/employeeCategories';
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
@@ -2359,7 +2361,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <div>
                 <label className="text-slate-700 font-bold block mb-1">Select Employee Sector / Industry Category *</label>
                 <select
-                  value={formData.employeeCategory}
+                  value={formData.employeeCategory || 'it_tech'}
                   onChange={e => setFormData({
                     ...formData,
                     employeeCategory: e.target.value,
@@ -2370,200 +2372,58 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   })}
                   className="form-select text-xs font-black text-indigo-700 bg-indigo-50 border-indigo-200"
                 >
-                  <option value="it_tech">💻 Information Technology & Software Engineering</option>
-                  <option value="manufacturing">🏭 Manufacturing, Industrial & Assembly Plant</option>
-                  <option value="bfsi">🏦 Banking, Financial Services & Insurance (BFSI)</option>
-                  <option value="logistics">🚚 Logistics, Warehousing & Fleet Operations</option>
-                  <option value="healthcare">🩺 Healthcare, Clinical & Pharmaceuticals</option>
-                  <option value="sales_retail">🛍️ Corporate Sales, Retail & Marketing</option>
+                  {CATEGORIES_LIST.map((cat) => (
+                    <option key={cat.key} value={cat.key}>
+                      {cat.title} ({cat.badge})
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* Dynamic Industry Fields */}
+              {/* Dynamic 7-Category Industry Specialized Fields */}
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                {formData.employeeCategory === 'it_tech' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">GitHub / Code Portfolio Repository URL</label>
-                      <input
-                        type="url"
-                        value={formData.industrySpecialization?.githubUrl || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, githubUrl: e.target.value }
-                        })}
-                        placeholder="https://github.com/developer-profile"
-                        className="form-input font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">LinkedIn Profile URL</label>
-                      <input
-                        type="url"
-                        value={formData.industrySpecialization?.portfolioUrl || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, portfolioUrl: e.target.value }
-                        })}
-                        placeholder="https://linkedin.com/in/profile"
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-                )}
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                    <span>⚡ Specialized {getEmployeeCategoryConfig(formData.employeeCategory).title} Form Fields</span>
+                  </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                    {getEmployeeCategoryConfig(formData.employeeCategory).badge}
+                  </span>
+                </div>
 
-                {formData.employeeCategory === 'manufacturing' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Plant Location / Unit</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.plantLocation || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, plantLocation: e.target.value }
-                        })}
-                        placeholder="e.g. Unit 3 Assembly Plant"
-                        className="form-input"
-                      />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {getEmployeeCategoryConfig(formData.employeeCategory).specializedFields.map((field) => (
+                    <div key={field.key}>
+                      <label className="text-slate-700 font-bold block mb-1 text-xs">{field.label}</label>
+                      {field.type === 'select' ? (
+                        <select
+                          value={formData.industrySpecialization?.[field.key] || ''}
+                          onChange={e => setFormData({
+                            ...formData,
+                            industrySpecialization: { ...formData.industrySpecialization, [field.key]: e.target.value }
+                          })}
+                          className="form-select text-xs font-medium"
+                        >
+                          <option value="">Select {field.label}</option>
+                          {field.options?.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type || 'text'}
+                          value={formData.industrySpecialization?.[field.key] || ''}
+                          onChange={e => setFormData({
+                            ...formData,
+                            industrySpecialization: { ...formData.industrySpecialization, [field.key]: e.target.value }
+                          })}
+                          placeholder={field.placeholder || ''}
+                          className="form-input text-xs font-medium"
+                        />
+                      )}
                     </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Safety Shoe Size (Steel-Toe)</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.safetyShoeSize || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, safetyShoeSize: e.target.value }
-                        })}
-                        placeholder="e.g. UK 9 / EUR 43"
-                        className="form-input font-bold"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {formData.employeeCategory === 'bfsi' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">CA / CFA / CS Membership Number</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.certificationsBfsi || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, certificationsBfsi: e.target.value }
-                        })}
-                        placeholder="e.g. ICAI-MRN-419820"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">CIBIL Credit Score Bracket</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.cibilScoreRange || '795 - 830'}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, cibilScoreRange: e.target.value }
-                        })}
-                        className="form-input font-bold text-emerald-800"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {formData.employeeCategory === 'logistics' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Commercial DL Badge Number</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.commercialDlBadgeNo || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, commercialDlBadgeNo: e.target.value }
-                        })}
-                        placeholder="e.g. TN-01-TR-2020-98412"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Assigned Vehicle RC Number</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.forkliftLicenseNo || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, forkliftLicenseNo: e.target.value }
-                        })}
-                        placeholder="e.g. KA01MF4912"
-                        className="form-input font-mono"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {formData.employeeCategory === 'healthcare' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Medical / Nursing Council Registration Number</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.medicalCouncilRegNo || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, medicalCouncilRegNo: e.target.value }
-                        })}
-                        placeholder="e.g. KMC-REG-2012-9942"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Immunization & Vaccination Status</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.immunizationStatus || 'Hepatitis B (3 Doses Complete)'}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, immunizationStatus: e.target.value }
-                        })}
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {formData.employeeCategory === 'sales_retail' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Assigned Retail Store / Territory Code</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.assignedStoreCode || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, assignedStoreCode: e.target.value }
-                        })}
-                        placeholder="e.g. RET-BLR-PHOENIX-04"
-                        className="form-input font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-slate-700 font-bold block mb-1">Field Two-Wheeler Driving License</label>
-                      <input
-                        type="text"
-                        value={formData.industrySpecialization?.fssaiCertNo || ''}
-                        onChange={e => setFormData({
-                          ...formData,
-                          industrySpecialization: { ...formData.industrySpecialization, fssaiCertNo: e.target.value }
-                        })}
-                        placeholder="e.g. TN0120180004918"
-                        className="form-input font-mono"
-                      />
-                    </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
             </div>
           )}

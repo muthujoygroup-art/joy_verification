@@ -75,6 +75,9 @@ class Candidate(Base):
     manual_checks = Column(JSON, default=dict) # { hrReferenceCompleted: true, addressVerifiedPhysically: false }
     joining_form_data = Column(JSON, default=dict) # Full CiteHR 6-tab joining form data
     custom_fields = Column(JSON, default=dict) # Dynamic custom attributes configured on the fly by HR
+    industry_specialization = Column(JSON, default=dict) # 7-Category specialized form fields
+    signing_papers = Column(JSON, default=dict) # Statutory signed legal agreements
+    category_documents = Column(JSON, default=dict) # Dynamic category document upload slots
     specimen_signature = Column(Text, nullable=True)
     # Specialized Structured API Cache Data Stores
     aadhaar_data = Column(JSON, default=dict)

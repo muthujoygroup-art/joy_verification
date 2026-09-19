@@ -74,6 +74,9 @@ def run_migration():
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS joining_form_data JSON DEFAULT '{}';",
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verified_attributes JSON DEFAULT '{}';",
             "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS manual_checks JSON DEFAULT '{}';",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS industry_specialization JSON DEFAULT '{}';",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS signing_papers JSON DEFAULT '{}';",
+            "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS category_documents JSON DEFAULT '{}';",
             "ALTER TABLE communication_gateways ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"
         ]
         for stmt in alter_statements:

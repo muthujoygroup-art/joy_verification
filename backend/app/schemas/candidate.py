@@ -75,6 +75,9 @@ class CandidateBase(BaseModel):
     manual_checks: Optional[Dict[str, Any]] = None
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Any] = None
+    industry_specialization: Optional[Dict[str, Any]] = None
+    signing_papers: Optional[Dict[str, Any]] = None
+    category_documents: Optional[Dict[str, Any]] = None
     specimen_signature: Optional[str] = None
     documents: Optional[List[Any]] = []
 
@@ -145,6 +148,9 @@ class CandidateUpdate(BaseModel):
     manual_checks: Optional[Dict[str, Any]] = None
     joining_form_data: Optional[Dict[str, Any]] = None
     custom_fields: Optional[Dict[str, Any]] = None
+    industry_specialization: Optional[Dict[str, Any]] = None
+    signing_papers: Optional[Dict[str, Any]] = None
+    category_documents: Optional[Dict[str, Any]] = None
     specimen_signature: Optional[str] = None
 
 class CandidateResponse(CandidateBase):
@@ -155,6 +161,9 @@ class CandidateResponse(CandidateBase):
     verifications_completed: Dict[str, Any]
     face_images: Dict[str, Any]
     verified_attributes: Optional[Dict[str, Any]] = {}
+    industry_specialization: Optional[Dict[str, Any]] = {}
+    signing_papers: Optional[Dict[str, Any]] = {}
+    category_documents: Optional[Dict[str, Any]] = {}
     aadhaar_data: Optional[Dict[str, Any]] = {}
     pan_data: Optional[Dict[str, Any]] = {}
     bank_data: Optional[Dict[str, Any]] = {}
