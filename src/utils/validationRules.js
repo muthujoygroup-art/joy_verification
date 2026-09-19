@@ -210,3 +210,75 @@ export const maskMobile = (val) => {
 export const maskPassword = (val) => {
   return '••••••••';
 };
+
+/**
+ * 🔍 Duplicate Check Helper
+ * Checks if email, mobile, or document number (Aadhaar, PAN, Bank, Passport, UAN, DL) is already attached to another profile.
+ * Returns { isDuplicate: true/false, field: 'Aadhaar Card Number', name: 'John Doe', val: '1234' }
+ */
+export const checkProfileDocumentConflict = (fieldValues = {}, candidatesList = [], currentTokenOrId = null) => {
+  if (!candidatesList || !Array.isArray(candidatesList) || candidatesList.length === 0) {
+    return { isDuplicate: false };
+  }
+
+  const cleanCurrent = (currentTokenOrId || '').toString().toLowerCase().trim();
+
+  // Normalize inputs
+  const inputEmail = (fieldValues.email || '').toString().trim().toLowerCase();
+  const inputMobile = (fieldValues.mobile || '').toString().replace(/\D/g, '');
+  const inputAadhaar = (fieldValues.aadhaarNo || fieldValues.aadhaar_no || fieldValues.aadhaar || '').toString().replace(/\D/g, '');
+  const inputPan = (fieldValues.panNo || fieldValues.panNumber || fieldValues.pan || '').toString().trim().toUpperCase();
+  const inputBank = (fieldValues.bankAccountNo || fieldValues.accountNumber || fieldValues.accountNo || fieldValues.bankAccount || '').toString().replace(/\D/g, '');
+  const inputPassport = (fieldValues.passportNo || fieldValues.passportNumber || fieldValues.passport || '').toString().trim().toUpperCase();
+  const inputUan = (fieldValues.pfNumber || fieldValues.uan || fieldValues.uanEpf || '').toString().replace(/\D/g, '');
+  const inputDl = (fieldValues.drivingLicenseNo || fieldValues.dlNumber || fieldValues.dlNo || fieldValues.drivingLicense || '').toString().trim().toUpperCase();
+
+  for (const c of candidatesList) {
+    if (!c) continue;
+    const cToken = (c.token || c.id || '').toString().toLowerCase().trim();
+    if (cleanCurrent && (cToken === cleanCurrent || c.id?.toLowerCase() === cleanCurrent)) {
+      continue; // Skip comparing against self
+    }
+
+    const cName = c.name || 'another candidate profile';
+    const cEmail = (c.email || '').toString().trim().toLowerCase();
+    const cMobile = (c.mobile || '').toString().replace(/\D/g, '');
+    const cAadhaar = (c.aadhaarNo || c.aadhaar_no || '').toString().replace(/\D/g, '');
+    
+    const jf = c.joiningFormData || c.joining_form_data || {};
+    const attrs = c.verifiedAttributes || c.verified_attributes || {};
+
+    const cPan = (jf.panNo || attrs.pan?.pan_number || c.panNo || '').toString().trim().toUpperCase();
+    const cBank = (jf.bankAccountNo || attrs.bank?.account_number || c.bankAccountNo || '').toString().replace(/\D/g, '');
+    const cPassport = (jf.passportNo || attrs.passport?.passport_number || c.passportNo || '').toString().trim().toUpperCase();
+    const cUan = (c.pfNumber || c.pf_number || jf.pfNumber || '').toString().replace(/\D/g, '');
+    const cDl = (jf.drivingLicenseNo || attrs.drivingLicense?.dl_number || c.dlNumber || '').toString().trim().toUpperCase();
+
+    if (inputEmail && inputEmail.includes('@') && cEmail === inputEmail) {
+      return { isDuplicate: true, field: 'Email Address', name: cName, val: inputEmail };
+    }
+    if (inputMobile && inputMobile.length === 10 && cMobile === inputMobile) {
+      return { isDuplicate: true, field: 'Mobile Number', name: cName, val: inputMobile };
+    }
+    if (inputAadhaar && inputAadhaar.length === 12 && cAadhaar === inputAadhaar) {
+      return { isDuplicate: true, field: 'Aadhaar Card Number', name: cName, val: inputAadhaar };
+    }
+    if (inputPan && inputPan.length === 10 && cPan === inputPan) {
+      return { isDuplicate: true, field: 'PAN Card Number', name: cName, val: inputPan };
+    }
+    if (inputBank && inputBank.length >= 9 && cBank === inputBank) {
+      return { isDuplicate: true, field: 'Bank Account Number', name: cName, val: inputBank };
+    }
+    if (inputPassport && inputPassport.length >= 8 && cPassport === inputPassport) {
+      return { isDuplicate: true, field: 'Passport Number', name: cName, val: inputPassport };
+    }
+    if (inputUan && inputUan.length === 12 && cUan === inputUan) {
+      return { isDuplicate: true, field: 'EPFO UAN Number', name: cName, val: inputUan };
+    }
+    if (inputDl && inputDl.length >= 10 && cDl === inputDl) {
+      return { isDuplicate: true, field: 'Driving License Number', name: cName, val: inputDl };
+    }
+  }
+
+  return { isDuplicate: false };
+};

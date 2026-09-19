@@ -1,6 +1,6 @@
 import { logPortalError } from '../utils/errorLogger';
 import { SignaturePadModal } from '../components/SignaturePadModal';
-import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict } from '../utils/validationRules';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
@@ -102,7 +102,22 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [aadhaarInputOtp, setAadhaarInputOtp] = useState('');
   const [mobileInputOtp, setMobileInputOtp] = useState('');
   const [emailInputOtp, setEmailInputOtp] = useState('');
-  const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
+  const docConflict = useMemo(() => {
+    if (!candidate || !candidates || candidates.length === 0) return { isDuplicate: false };
+    const jfd = candidate?.joiningFormData || {};
+    return checkProfileDocumentConflict({
+      email: candidate?.email || jfd.email,
+      mobile: candidate?.mobile || jfd.mobile,
+      aadhaarNo: candidate?.aadhaarNo || candidate?.aadhaar_no || jfd.aadhaarNo,
+      panNo: candidate?.panNo || jfd.panNo,
+      bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || jfd.accountNo,
+      passportNo: candidate?.passportNo || jfd.passportNo,
+      pfNumber: candidate?.pfNumber || candidate?.uanEpf || jfd.pfNumber,
+      drivingLicenseNo: candidate?.dlNumber || candidate?.drivingLicense || jfd.drivingLicenseNo
+    }, candidates, candidate?.token || candidate?.id);
+  }, [candidate, candidates]);
 
   // 🔒 Security Passcode & 15-Minute Link Expiry States
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -1828,6 +1843,104 @@ export const EmployeePortalView = ({ directToken = null }) => {
           </div>
         )}
 
+      </div>
+
+      {/* ⚠️ REAL-TIME DUPLICATE PROFILE / DOCUMENT CONFLICT WARNING ALERT */}
+      {docConflict && docConflict.isDuplicate && (
+        <div className="p-4 bg-rose-50 border-2 border-rose-400 rounded-2xl text-xs text-rose-950 space-y-2 shadow-md animate-bounce">
+          <div className="flex items-center gap-2 font-black text-rose-900 text-sm">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>⚠️ Profile Conflict Indication: Duplicate Document / Particular Detected</span>
+          </div>
+          <p className="text-xs text-rose-900 font-medium leading-relaxed">
+            Warning: This <strong>{docConflict.field}</strong> (<code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-rose-300 text-rose-950">{docConflict.val}</code>) is already attached to another candidate profile (<strong>{docConflict.name}</strong>). Please correct your details to proceed with onboarding.
+          </p>
+        </div>
+      )}
+
+      {/* 📋 STATUTORY TERMS & CONDITIONS & DPDP ACT PRIVACY POLICY CONSENT CHECKLIST GATE */}
+      <div className="p-5 sm:p-6 bg-slate-900 text-white rounded-3xl border-2 border-indigo-500/50 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-white">Statutory Onboarding Agreement & DPDP Act 2023 Consent</h3>
+              <p className="text-xs text-slate-400 font-medium">Final verification submission checklist for candidate onboarding</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowTermsModal(true)}
+              className="text-xs text-indigo-300 hover:text-white font-bold underline cursor-pointer"
+            >
+              Terms & Conditions 📄
+            </button>
+            <span className="text-slate-600">•</span>
+            <button
+              type="button"
+              onClick={() => setShowDpdpModal(true)}
+              className="text-xs text-emerald-300 hover:text-white font-bold underline cursor-pointer"
+            >
+              DPDP Privacy Policy 🛡️
+            </button>
+          </div>
+        </div>
+
+        <label className="flex items-start gap-3 p-3.5 bg-slate-950 rounded-2xl border border-slate-800 cursor-pointer text-xs font-bold text-white hover:bg-slate-800/60 transition-all select-none">
+          <input 
+            type="checkbox"
+            checked={isTermsAccepted}
+            onChange={(e) => setIsTermsAccepted(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 border-slate-600 bg-slate-900 accent-indigo-500 cursor-pointer shrink-0" 
+          />
+          <span className="leading-relaxed text-slate-200">
+            I hereby accept the <strong className="text-white underline" onClick={(e) => { e.stopPropagation(); setShowTermsModal(true); }}>Terms & Conditions</strong> and consent to the <strong className="text-emerald-300 underline" onClick={(e) => { e.stopPropagation(); setShowDpdpModal(true); }}>DPDP Act 2023 Privacy Policy</strong>. I declare that all submitted personal, statutory, and document particulars are authentic and complete.
+          </span>
+        </label>
+
+        {/* FINAL ONBOARDING SUBMISSION BUTTON */}
+        <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-slate-400 font-medium">
+            {completedStepsCount < totalConfiguredSteps ? (
+              <span className="text-amber-400 font-bold flex items-center gap-1.5">
+                <Clock className="w-4 h-4" />
+                <span>Complete all {totalConfiguredSteps} required verification steps ({completedStepsCount}/{totalConfiguredSteps} done) to submit</span>
+              </span>
+            ) : !isTermsAccepted ? (
+              <span className="text-indigo-300 font-bold flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-indigo-400" />
+                <span>Check the Terms & Privacy Policy consent box above to enable final submission</span>
+              </span>
+            ) : docConflict && docConflict.isDuplicate ? (
+              <span className="text-rose-400 font-bold flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-rose-400" />
+                <span>Resolve duplicate document conflict ({docConflict.field}) to enable final submission</span>
+              </span>
+            ) : (
+              <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>All verification steps, consent requirements & document checks satisfied ✓</span>
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            disabled={completedStepsCount < totalConfiguredSteps || !isTermsAccepted || (docConflict && docConflict.isDuplicate)}
+            onClick={() => {
+              updateCandidateVerification(candidate.token, 'status', 'Submitted - Pending HR Review');
+              showToast('🎉 Onboarding Application & Verification Dossier Submitted to HR!');
+              confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            }}
+            className="w-full sm:w-auto py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-black text-sm shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-2 btn-interactive shrink-0"
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            <span>Submit Onboarding Application</span>
+          </button>
+        </div>
       </div>
 
       {/* Aadhaar OTP Modal */}

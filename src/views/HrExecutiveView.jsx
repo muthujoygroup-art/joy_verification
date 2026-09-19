@@ -1,5 +1,5 @@
 import { logPortalError } from '../utils/errorLogger';
-import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId } from '../utils/validationRules';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict } from '../utils/validationRules';
 import { EpfoForm11 } from '../components/statutory/EpfoForm11';
 import { EpfoForm2 } from '../components/statutory/EpfoForm2';
 import { EsicForm1 } from '../components/statutory/EsicForm1';
@@ -562,6 +562,11 @@ export const HrExecutiveView = () => {
       accountNo: formData.bankAccountNo
     });
   }, [formData]);
+
+  const hrDocConflict = useMemo(() => {
+    if (!candidates || !Array.isArray(candidates) || candidates.length === 0) return { isDuplicate: false };
+    return checkProfileDocumentConflict(formData, candidates, editingCandidate ? (editingCandidate.id || editingCandidate.token) : null);
+  }, [formData, candidates, editingCandidate]);
 
   // ⚡ Auto-Save Draft to LocalStorage across typing, reloads & disconnects
   useEffect(() => {
@@ -1261,6 +1266,12 @@ export const HrExecutiveView = () => {
     if (e) e.preventDefault();
     if (!formData.name || !formData.name.trim()) {
       showToast('⚠️ Please enter the Candidate Full Name to save profile & link.');
+      return;
+    }
+
+    if (hrDocConflict && hrDocConflict.isDuplicate) {
+      alert(`⚠️ Duplicate Entry Blocked: This ${hrDocConflict.field} (${hrDocConflict.val}) is already attached to profile "${hrDocConflict.name}". Duplicate profile creation or document matching is strictly disallowed.`);
+      showToast(`⚠️ Cannot save profile: ${hrDocConflict.field} (${hrDocConflict.val}) already attached to "${hrDocConflict.name}"`, 'error');
       return;
     }
 
@@ -4947,12 +4958,26 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            {/* ⚠️ REAL-TIME DUPLICATE PROFILE / DOCUMENT CONFLICT WARNING ALERT */}
+            {hrDocConflict && hrDocConflict.isDuplicate && (
+              <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-2xl text-xs text-rose-950 space-y-1 shadow-sm animate-bounce">
+                <div className="flex items-center gap-2 font-black text-rose-900 text-xs">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>⚠️ Profile Conflict Warning: Duplicate Document / Particular Detected</span>
+                </div>
+                <p className="text-[11px] text-rose-900 font-medium leading-relaxed">
+                  Warning: This <strong>{hrDocConflict.field}</strong> (<code className="font-mono font-bold bg-white px-1 py-0.5 rounded border border-rose-300 text-rose-950">{hrDocConflict.val}</code>) is already attached to another employee profile (<strong>{hrDocConflict.name}</strong>). Profile creation is blocked until corrected.
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
               <button 
                 type="button" 
                 onClick={() => { 
-                  if (editingCandidate) setEditingCandidate(null);
-                  setActiveMainSection('pipeline_dossiers'); 
+                  setEditingCandidate(null); 
+                  setFormData(getDefaultFormData(activeHr, currentCompany)); 
+                  setDelegatedFieldsMap({}); 
                   setActiveTab('pipeline'); 
                   setShowAddForm(false); 
                 }} 

@@ -12,6 +12,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
+import { checkProfileDocumentConflict } from '../utils/validationRules';
 import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
 import { 
   GENDER_OPTIONS, 
@@ -85,12 +86,13 @@ const FORM_SECTIONS = [
 ];
 
 export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onSubmitComplete }) => {
-  const { updateCandidateVerification, submitCandidateJoiningForm, showToast, masterDropdownOptions } = useApp();
+  const { candidates, updateCandidateVerification, submitCandidateJoiningForm, showToast, masterDropdownOptions } = useApp();
 
   const [activeSection, setActiveSection] = useState('personal'); // 'personal' | 'address' | 'education' | 'employment' | 'govt' | 'bank' | 'nominee' | 'industry' | 'documents' | 'statutory_forms'
   const [previewDoc, setPreviewDoc] = useState(null);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(true);
   const draftKey = `joy_joining_draft_${candidate?.id || candidate?.token || 'default'}`;
 
   // OTP Verification States
@@ -601,8 +603,25 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const delegatedMap = candidate?.delegatedFieldsMap || jfd.delegatedFieldsMap || candidate?.joiningFormData?.delegatedFieldsMap || {};
   const isFieldOmitted = (fieldKey) => delegatedMap[fieldKey] === 'omit';
 
+  const docConflict = useMemo(() => {
+    if (!candidates || !Array.isArray(candidates) || candidates.length === 0) return { isDuplicate: false };
+    return checkProfileDocumentConflict(formData, candidates, candidate?.token || candidate?.id);
+  }, [formData, candidates, candidate]);
+
   const handleFinalFormSubmit = (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+    if (docConflict && docConflict.isDuplicate) {
+      alert(`⚠️ Duplicate Document / Profile Conflict: This ${docConflict.field} (${docConflict.val}) is already attached to profile "${docConflict.name}". Duplicate documents or profile details cannot be submitted.`);
+      showToast(`⚠️ Duplicate ${docConflict.field} (${docConflict.val}) attached to profile "${docConflict.name}"!`, 'error');
+      return;
+    }
+
+    if (!isTermsAccepted) {
+      alert('Mandatory Statutory Consent Required: Please check the Terms & Conditions and Privacy Policy agreement checkbox before submitting.');
+      return;
+    }
+
     if (!aadhaarVerified || !mobileVerified) {
       alert('Mandatory OTP Verification Required: Please complete both Aadhaar OTP and Mobile OTP verification before submitting.');
       return;
@@ -2948,6 +2967,19 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
               </div>
 
+              {/* ⚠️ Real-Time Duplicate Profile / Document Conflict Alert */}
+              {docConflict && docConflict.isDuplicate && (
+                <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-2xl text-xs text-rose-950 space-y-1.5 shadow-sm animate-bounce">
+                  <div className="flex items-center gap-2 font-black text-rose-900 text-xs">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>⚠️ Profile Conflict Warning: Duplicate Document / Particular Detected</span>
+                  </div>
+                  <p className="text-[11px] text-rose-900 font-medium leading-relaxed">
+                    Warning: This <strong>{docConflict.field}</strong> (<code className="font-mono font-bold bg-white px-1 py-0.5 rounded border border-rose-300 text-rose-950">{docConflict.val}</code>) is already attached to another profile (<strong>{docConflict.name}</strong>). Please update this entry.
+                  </p>
+                </div>
+              )}
+
               {/* Legal Confirmation Declaration Box */}
               <div className="p-4 rounded-2xl bg-indigo-900 text-white border border-indigo-700 space-y-3 shadow-md">
                 <div className="flex items-start gap-2.5">
@@ -2955,11 +2987,12 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     type="checkbox" 
                     id="legalConfirmCheck" 
                     required 
-                    defaultChecked
-                    className="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                    checked={isTermsAccepted}
+                    onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 cursor-pointer accent-indigo-500" 
                   />
-                  <label htmlFor="legalConfirmCheck" className="text-xs text-indigo-100 leading-relaxed cursor-pointer">
-                    <strong>Legal Declaration & Digital Confirmation:</strong> I hereby solemnly declare that all information furnished in this application form is true, complete, and correct to the best of my knowledge. I authorize Joy Corporate Solutions & client group companies to verify all my educational, employment, medical, financial, and criminal records via authorized statutory and third-party gateways in compliance with the Digital Personal Data Protection (DPDP) Act 2023.
+                  <label htmlFor="legalConfirmCheck" className="text-xs text-indigo-100 leading-relaxed cursor-pointer select-none">
+                    <strong>Legal Declaration, Terms & Conditions & Privacy Policy Consent:</strong> I hereby solemnly declare that all information furnished in this application form is true, complete, and correct. I accept the Terms & Conditions and consent to DPDP Act 2023 background verification procedures by Joy Corporate Solutions.
                   </label>
                 </div>
 
