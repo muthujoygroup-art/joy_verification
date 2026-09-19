@@ -5443,6 +5443,13 @@ export const HrExecutiveView = () => {
             setActiveMainSection('pipeline_dossiers');
             setActiveTab('pipeline');
             setStatusFilter('All');
+            if (Array.isArray(results) && results.length > 0) {
+              setCandidates(prev => {
+                const resultIds = new Set(results.map(r => r.id || r.token));
+                const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => p && !resultIds.has(p.id) && !resultIds.has(p.token));
+                return [...results, ...filteredPrev];
+              });
+            }
             if (typeof refreshCandidates === 'function') {
               refreshCandidates(currentCompany?.id);
             }
