@@ -263,15 +263,23 @@ const HR_DIVISION_META_MAP = {
     colorClass: 'from-teal-600 to-emerald-700'
   },
   analytics: {
-    pillarBadge: '📊 3. Analytics & Settings',
+    pillarBadge: '📊 3. Reports & Settings',
     badgeText: () => 'TAT & Verification Telemetry',
-    title: 'Verification Turnaround Times, Throughput & Statutory Form Previews',
-    subtitle: 'Mean turnaround time telemetry, completed verification rate distributions, and EPFO / ESIC statutory form previews',
+    title: 'Verification Turnaround Times & Throughput Analytics',
+    subtitle: 'Mean turnaround time telemetry and completed verification rate distributions',
     icon: TrendingUp,
     colorClass: 'from-indigo-600 to-purple-700'
   },
+  statutory_forms: {
+    pillarBadge: '🏛️ 3. Reports & Settings',
+    badgeText: () => 'EPFO, ESI, TDS & NDA Hub',
+    title: 'Government Statutory Forms & Compliance Hub (EPFO, ESI, TDS, NDA)',
+    subtitle: 'Auto-generate, preview, and export official EPFO Form 11, Income Tax Form 16 TDS declarations, NDA agreements, and statutory DPDP consent certificates',
+    icon: Scale,
+    colorClass: 'from-amber-600 to-indigo-700'
+  },
   settings: {
-    pillarBadge: '⚙️ 3. Analytics & Settings',
+    pillarBadge: '⚙️ 3. Reports & Settings',
     badgeText: () => 'Preferences & Compliance Rules',
     title: 'Workstation Preferences, Statutory Rules & Notification Alerts',
     subtitle: 'Configure automated candidate reminder intervals, SMS/WhatsApp gateways, and statutory compliance parameters',
@@ -480,6 +488,7 @@ export const HrExecutiveView = () => {
   }, [companyCandidates, searchQuery, statusFilter]);
 
   const [activePreviewStatutoryForm, setActivePreviewStatutoryForm] = useState(null);
+  const [selectedCandidateForStatutoryId, setSelectedCandidateForStatutoryId] = useState(null);
 
   // Dynamic Custom Fields State
   const [legacyFieldLabel, setLegacyFieldLabel] = useState('');
@@ -666,6 +675,7 @@ export const HrExecutiveView = () => {
     pipeline: 'candidates',
     profiler: 'add-candidate',
     analytics: 'reports',
+    statutory_forms: 'statutory-forms',
     settings: 'settings'
   };
 
@@ -5058,6 +5068,124 @@ export const HrExecutiveView = () => {
                 <span className="text-2xl font-black text-amber-800 block">25%</span>
                 <span className="text-slate-600">Link Sent / Pending ({companyCandidates.filter(c => c.status === 'Link Sent').length})</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3B: GOVERNMENT STATUTORY FORMS HUB */}
+      {activeTab === 'statutory_forms' && (
+        <div className="glass-panel p-4 sm:p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-tab-switch">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Scale className="w-5 h-5 text-amber-600" />
+                <span>Government Statutory Compliance & Forms Hub</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Auto-generate and preview official EPFO Form 11, Income Tax Form 16 TDS declarations, NDA agreements, and statutory ESI certificates for any employee profile.
+              </p>
+            </div>
+            <span className="badge badge-amber text-[10px] font-bold">DPDP & LABOUR ACT COMPLIANT</span>
+          </div>
+
+          {/* Candidate Selection & Form Selector */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+            <div className="space-y-1.5">
+              <label className="font-bold text-slate-700 block">Select Employee Profile:</label>
+              <select
+                value={selectedCandidateForStatutoryId || companyCandidates[0]?.token || ''}
+                onChange={(e) => setSelectedCandidateForStatutoryId(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white font-bold text-slate-800 outline-none focus:border-amber-500"
+              >
+                {companyCandidates.map((cand) => (
+                  <option key={cand.token || cand.id} value={cand.token || cand.id}>
+                    {cand.name} ({cand.empId || cand.employeeNumber || 'ID Pending'}) — {cand.designation || 'Specialist'}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="font-bold text-slate-700 block">Active Company Scope:</label>
+              <div className="px-3 py-2 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-700 truncate">
+                {currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}
+              </div>
+            </div>
+          </div>
+
+          {/* 4 Core Statutory Form Action Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1">
+                <span className="badge badge-amber text-[9px] uppercase font-bold">EPFO SECTION 34</span>
+                <h4 className="font-extrabold text-sm text-amber-950">EPFO Form 11 Declaration</h4>
+                <p className="text-[11px] text-amber-900/80">Statutory Member Declaration for EPF & Pension Schemes.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const selCand = companyCandidates.find(c => (c.token || c.id) === selectedCandidateForStatutoryId) || companyCandidates[0];
+                  if (selCand) setActivePreviewStatutoryForm('epfo_form_11');
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Preview EPFO Form 11</span>
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1">
+                <span className="badge badge-cyan text-[9px] uppercase font-bold">INCOME TAX ACT U/S 115BAC</span>
+                <h4 className="font-extrabold text-sm text-sky-950">Form 16 TDS Declaration</h4>
+                <p className="text-[11px] text-sky-900/80">Annual Income Tax regime & previous employer salary declaration.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const selCand = companyCandidates.find(c => (c.token || c.id) === selectedCandidateForStatutoryId) || companyCandidates[0];
+                  if (selCand) setActivePreviewStatutoryForm('form_16_tds');
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Preview Form 16 TDS</span>
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-purple-50/80 border border-purple-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1">
+                <span className="badge badge-purple text-[9px] uppercase font-bold">DPDP ACT 2023 COMPLIANT</span>
+                <h4 className="font-extrabold text-sm text-purple-950">NDA & Data Security Agreement</h4>
+                <p className="text-[11px] text-purple-900/80">Non-disclosure, trade secrets & personal data privacy undertaking.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const selCand = companyCandidates.find(c => (c.token || c.id) === selectedCandidateForStatutoryId) || companyCandidates[0];
+                  if (selCand) setActivePreviewStatutoryForm('nda_agreement');
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Preview NDA Agreement</span>
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1">
+                <span className="badge badge-emerald text-[9px] uppercase font-bold">ESIC HEALTHCARE ACT</span>
+                <h4 className="font-extrabold text-sm text-emerald-950">ESIC Form 1 Registration</h4>
+                <p className="text-[11px] text-emerald-900/80">Employees' State Insurance medical dispensary & IP certificate.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const selCand = companyCandidates.find(c => (c.token || c.id) === selectedCandidateForStatutoryId) || companyCandidates[0];
+                  if (selCand) setActivePreviewStatutoryForm('epfo_form_11');
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Preview ESIC Certificate</span>
+              </button>
             </div>
           </div>
         </div>

@@ -590,7 +590,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'analytics',
           divisions: [
             { id: 'analytics', label: 'Verification Reports', tab: 'analytics', icon: TrendingUp },
-            { id: 'statutory_forms', label: 'Government Forms (EPF/ESI)', tab: 'analytics', icon: Scale },
+            { id: 'statutory_forms', label: 'Government Forms (EPF/ESI)', tab: 'statutory_forms', icon: Scale },
             { id: 'settings', label: 'HR Settings', tab: 'settings', icon: Settings }
           ]
         }
