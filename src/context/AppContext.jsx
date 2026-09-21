@@ -2500,27 +2500,48 @@ export const AppProvider = ({ children }) => {
   // 🏛️ Execute live government / institutional verification & data fetching for selected documents
   const verifyCandidateLiveDocument = async (candidateToken, docType, payloadData = {}) => {
     try {
+      const candObj = candidates.find(c => c.token === candidateToken || c.id === candidateToken) || {};
+      const jfd = { ...(candObj.joiningFormData || {}), ...(candObj.joining_form_data || {}), ...payloadData };
       let resp = null;
+
       if (docType === 'aadhaar') {
-        resp = await api.verifyAadhaarLive(candidateToken, payloadData.aadhaarNo || payloadData.aadhaar_number || '548912349876', payloadData.otp || '123456');
+        const aadhNum = payloadData.aadhaarNo || payloadData.aadhaar_number || candObj.aadhaarNo || candObj.aadhaar_no || jfd.aadhaarNo || '548912349876';
+        const otpVal = payloadData.otp || '123456';
+        resp = await api.verifyAadhaarLive(candidateToken, aadhNum, otpVal);
       } else if (docType === 'pan') {
-        resp = await api.verifyPanLive(candidateToken, payloadData.panNo || payloadData.pan_number || 'ABCDE1234F');
+        const panNum = payloadData.panNo || payloadData.pan_number || candObj.panNo || candObj.pan_no || jfd.panNo || 'ABCDE1234F';
+        resp = await api.verifyPanLive(candidateToken, panNum);
       } else if (docType === 'bankCheck' || docType === 'bank') {
-        resp = await api.verifyBankLive(candidateToken, payloadData.bankAccountNo || payloadData.account_number || '50100234129845', payloadData.ifscCode || payloadData.ifsc_code || 'HDFC0000128');
+        const accNum = payloadData.bankAccountNo || payloadData.account_number || candObj.bankAccountNo || jfd.bankAccountNo || jfd.accountNumber || '50100234129845';
+        const ifsc = payloadData.ifscCode || payloadData.ifsc_code || candObj.ifscCode || jfd.ifscCode || 'HDFC0000128';
+        resp = await api.verifyBankLive(candidateToken, accNum, ifsc);
       } else if (docType === 'drivingLicense' || docType === 'dl') {
-        resp = await api.verifyDlLive(candidateToken, payloadData.drivingLicense || payloadData.dl_number || 'KA0120200004910', payloadData.dob || '1996-05-15');
+        const dlNum = payloadData.drivingLicense || payloadData.dl_number || candObj.dlNumber || jfd.drivingLicense || jfd.dlNo || 'KA0120200004910';
+        const dobVal = payloadData.dob || candObj.dob || jfd.dob || '1996-05-15';
+        resp = await api.verifyDlLive(candidateToken, dlNum, dobVal);
       } else if (docType === 'uan' || docType === 'epfo' || docType === 'epfoUan') {
-        resp = await api.verifyEpfoLive(candidateToken, payloadData.uanEpf || payloadData.uan_number || '101239019283');
+        const uanNum = payloadData.uanEpf || payloadData.uan_number || candObj.pfNumber || jfd.uanEpf || jfd.uanNumber || '101239019283';
+        resp = await api.verifyEpfoLive(candidateToken, uanNum);
       } else if (docType === 'passport') {
-        resp = await api.verifyPassportLive(candidateToken, payloadData.passportNo || payloadData.passport_number || 'Z8491024', payloadData.dob || '1996-05-15');
+        const passNum = payloadData.passportNo || payloadData.passport_number || candObj.passportNo || jfd.passportNo || 'Z8491024';
+        const dobVal = payloadData.dob || candObj.dob || jfd.dob || '1996-05-15';
+        resp = await api.verifyPassportLive(candidateToken, passNum, dobVal);
       } else if (docType === 'voterId' || docType === 'voter_id') {
-        resp = await api.verifyVoterIdLive(candidateToken, payloadData.voterId || payloadData.epicNumber || 'WZK8912301', payloadData.dob || '1996-05-15');
+        const epicNum = payloadData.voterId || payloadData.epicNumber || candObj.voterId || jfd.voterId || 'WZK8912301';
+        const dobVal = payloadData.dob || candObj.dob || jfd.dob || '1996-05-15';
+        resp = await api.verifyVoterIdLive(candidateToken, epicNum, dobVal);
       } else if (docType === 'courtRecords' || docType === 'court') {
-        resp = await api.verifyCourtRecordsLive(candidateToken, payloadData.name || 'Candidate', payloadData.fatherName || 'Suresh Kumar P', payloadData.address || 'Bengaluru');
+        const candName = payloadData.name || candObj.name || 'Candidate';
+        const fatherName = payloadData.fatherName || candObj.fatherName || jfd.fatherName || 'Suresh Kumar P';
+        const addr = payloadData.address || candObj.permanentAddress || jfd.permanentAddress || 'Bengaluru';
+        resp = await api.verifyCourtRecordsLive(candidateToken, candName, fatherName, addr);
       } else if (docType === 'esic') {
-        resp = await api.verifyEsicLive(candidateToken, payloadData.esiNumber || payloadData.esicNo || '31001234560000001', payloadData.dob || '1996-05-15');
+        const esiNum = payloadData.esiNumber || payloadData.esicNo || candObj.esiNumber || jfd.esiNumber || '31001234560000001';
+        const dobVal = payloadData.dob || candObj.dob || jfd.dob || '1996-05-15';
+        resp = await api.verifyEsicLive(candidateToken, esiNum, dobVal);
       } else if (docType === 'vehicleRc' || docType === 'rc_details') {
-        resp = await api.verifyVehicleRcLive(candidateToken, payloadData.rcNumber || payloadData.rcNo || 'KA01AB1234');
+        const rcNum = payloadData.rcNumber || payloadData.rcNo || jfd.vehicleRc || 'KA01AB1234';
+        resp = await api.verifyVehicleRcLive(candidateToken, rcNum);
       }
 
       if (resp && resp.success) {
@@ -2539,12 +2560,14 @@ export const AppProvider = ({ children }) => {
             }
           };
         }));
-        showToast(`✅ ${docType.toUpperCase()} verified via CoinCircleTrust & saved in 360° Dossier!`);
+        showToast(`✅ ${docType.toUpperCase()} verified via CoinCircleTrust Gateway & saved to PostgreSQL!`);
         return resp;
       }
+      return resp;
     } catch (err) {
       console.warn(`Live verification error for ${docType}:`, err.message);
-      updateCandidateVerification(candidateToken, docType, true);
+      showToast(`⚠️ ${docType.toUpperCase()} check: ${err.message}`);
+      return { success: false, error: err.message };
     }
   };
 

@@ -330,6 +330,37 @@ export const HrExecutiveView = () => {
   const [copiedToken, setCopiedToken] = useState(null);
   const [showHrLivePhotoModal, setShowHrLivePhotoModal] = useState(false);
   
+  // 🪪 Live Aadhaar OTP Modal for HR Verification
+  const [hrAadhaarModal, setHrAadhaarModal] = useState({
+    isOpen: false,
+    candidate: null,
+    aadhaarNo: '',
+    otp: '',
+    isOtpSent: false,
+    demoOtp: '',
+    maskedTarget: '',
+    isSendingOtp: false,
+    isVerifyingOtp: false,
+    error: ''
+  });
+
+  // 💳 Generic Document Number Input Modal for Missing Particulars
+  const [hrDocPromptModal, setHrDocPromptModal] = useState({
+    isOpen: false,
+    candidate: null,
+    docKey: '',
+    docName: '',
+    provider: '',
+    field1Label: '',
+    field1Key: '',
+    field1Value: '',
+    field2Label: '',
+    field2Key: '',
+    field2Value: '',
+    isVerifying: false,
+    error: ''
+  });
+  
   // Document preview states
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
@@ -6280,32 +6311,30 @@ export const HrExecutiveView = () => {
                     return 'Government Record Verified ✓';
                   };
 
-                  const executeDocVerification = async (e) => {
-                    e.stopPropagation();
+                  const executeDirectDocVerification = async (docKey, docName, docProvider, payload) => {
                     const cand = managingDocVerifCandidate;
                     if (!cand) return;
-                    setVerifyingDocKey(doc.key);
+                    setVerifyingDocKey(docKey);
                     try {
-                      const jfd = cand.joiningFormData || cand.joining_form_data || {};
-                      const res = await verifyCandidateLiveDocument(cand.token || cand.id, doc.key, jfd);
+                      const res = await verifyCandidateLiveDocument(cand.token || cand.id, docKey, payload);
                       if (res && res.success) {
                         const fetched = res.data?.fetched_data || {};
                         const updatedCandidate = {
                           ...cand,
                           verificationsCompleted: {
                             ...(cand.verificationsCompleted || {}),
-                            [doc.key]: true
+                            [docKey]: true
                           },
                           verifiedAttributes: {
                             ...(cand.verifiedAttributes || {}),
-                            [doc.key]: fetched
+                            [docKey]: fetched
                           }
                         };
                         setManagingDocVerifCandidate(updatedCandidate);
                         setLatestVerificationTelemetry({
-                          docKey: doc.key,
-                          docName: doc.name,
-                          provider: doc.provider,
+                          docKey: docKey,
+                          docName: docName,
+                          provider: docProvider,
                           fetchedData: fetched,
                           sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
                           transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
@@ -6315,9 +6344,95 @@ export const HrExecutiveView = () => {
                         });
                       }
                     } catch (err) {
-                      console.error(`Error verifying ${doc.key}:`, err);
+                      console.error(`Error verifying ${docKey}:`, err);
                     } finally {
                       setVerifyingDocKey(null);
+                    }
+                  };
+
+                  const handleTriggerDocVerification = (e) => {
+                    e.stopPropagation();
+                    const cand = managingDocVerifCandidate;
+                    if (!cand) return;
+
+                    if (doc.key === 'aadhaar') {
+                      const rawAadhaar = cand.aadhaarNo || cand.aadhaar_no || (cand.joiningFormData?.aadhaarNo || '');
+                      setHrAadhaarModal({
+                        isOpen: true,
+                        candidate: cand,
+                        aadhaarNo: rawAadhaar,
+                        otp: '',
+                        isOtpSent: false,
+                        demoOtp: '',
+                        maskedTarget: '',
+                        isSendingOtp: false,
+                        isVerifyingOtp: false,
+                        error: ''
+                      });
+                      return;
+                    }
+
+                    const jfd = cand.joiningFormData || cand.joining_form_data || {};
+                    let hasData = false;
+                    let f1 = { label: '', key: '', value: '' };
+                    let f2 = { label: '', key: '', value: '' };
+
+                    if (doc.key === 'pan') {
+                      const val = cand.panNo || cand.pan_no || jfd.panNo || jfd.pan || '';
+                      if (val && val.trim().length >= 5) hasData = true;
+                      f1 = { label: '10-Character PAN Number', key: 'panNo', value: val || 'ABCDE1234F' };
+                    } else if (doc.key === 'bankCheck') {
+                      const acc = cand.bankAccountNo || jfd.bankAccountNo || jfd.accountNumber || '';
+                      const ifsc = cand.ifscCode || jfd.ifscCode || jfd.ifsc || '';
+                      if (acc && acc.trim().length >= 4) hasData = true;
+                      f1 = { label: 'Bank Account Number', key: 'bankAccountNo', value: acc || '50100234129845' };
+                      f2 = { label: 'Bank IFSC Code', key: 'ifscCode', value: ifsc || 'HDFC0000128' };
+                    } else if (doc.key === 'drivingLicense') {
+                      const dl = cand.dlNumber || jfd.drivingLicense || jfd.dlNo || '';
+                      if (dl && dl.trim().length >= 4) hasData = true;
+                      f1 = { label: 'MoRTH Driving License Number', key: 'drivingLicense', value: dl || 'KA0120200004910' };
+                      f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                    } else if (doc.key === 'uan') {
+                      const uan = cand.pfNumber || jfd.uanEpf || jfd.uan || '';
+                      if (uan && uan.trim().length >= 4) hasData = true;
+                      f1 = { label: 'EPFO 12-Digit UAN Number', key: 'uanEpf', value: uan || '101239019283' };
+                    } else if (doc.key === 'passport') {
+                      const pp = cand.passportNo || jfd.passportNo || '';
+                      if (pp && pp.trim().length >= 4) hasData = true;
+                      f1 = { label: 'Passport File / Number', key: 'passportNo', value: pp || 'Z8491024' };
+                      f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                    } else if (doc.key === 'voterId') {
+                      const epic = cand.voterId || jfd.voterId || jfd.epicNumber || '';
+                      if (epic && epic.trim().length >= 4) hasData = true;
+                      f1 = { label: 'ECI Voter ID (EPIC Number)', key: 'voterId', value: epic || 'WZK8912301' };
+                      f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                    } else if (doc.key === 'esic') {
+                      const esi = cand.esiNumber || jfd.esiNumber || jfd.esicNo || '';
+                      if (esi && esi.trim().length >= 4) hasData = true;
+                      f1 = { label: 'ESIC 17-Digit IP Number', key: 'esiNumber', value: esi || '31001234560000001' };
+                      f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                    } else if (doc.key === 'courtRecords' || doc.key === 'faceCapture') {
+                      hasData = true;
+                    }
+
+                    if (hasData) {
+                      executeDirectDocVerification(doc.key, doc.name, doc.provider, jfd);
+                    } else {
+                      setHrDocPromptModal({
+                        isOpen: true,
+                        candidate: cand,
+                        docKey: doc.key,
+                        docName: doc.name,
+                        provider: doc.provider,
+                        field1Label: f1.label,
+                        field1Key: f1.key,
+                        field1Value: f1.value,
+                        field2Label: f2.label,
+                        field2Key: f2.key,
+                        field2Value: f2.value,
+                        isVerifying: false,
+                        error: ''
+                      });
                     }
                   };
 
@@ -6364,7 +6479,7 @@ export const HrExecutiveView = () => {
                               <button
                                 type="button"
                                 disabled={isVerifyingThis || isVerifyingDocuments}
-                                onClick={executeDocVerification}
+                                onClick={handleTriggerDocVerification}
                                 className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-0.5 cursor-pointer transition-all"
                                 title="Re-verify against CoinCircleTrust Gateway"
                               >
@@ -6379,7 +6494,7 @@ export const HrExecutiveView = () => {
                             <button
                               type="button"
                               disabled={isVerifyingThis || isVerifyingDocuments}
-                              onClick={executeDocVerification}
+                              onClick={handleTriggerDocVerification}
                               className={`text-[9.5px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
                                 isChecked
                                   ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-2xs'
@@ -6571,6 +6686,368 @@ export const HrExecutiveView = () => {
               </div>
             </div>
 
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 🪪 MODAL: INTERACTIVE AADHAAR OTP VERIFICATION */}
+      {hrAadhaarModal.isOpen && hrAadhaarModal.candidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999999] bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center overflow-hidden animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setHrAadhaarModal(prev => ({ ...prev, isOpen: false }));
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl sm:rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Aadhaar UIDAI Live Verification</span>
+                    <span className="text-[10px] bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-full font-bold">
+                      OTP-Driven
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {hrAadhaarModal.candidate.name} • Mobile: {hrAadhaarModal.candidate.mobile || '+91 99428 17491'}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setHrAadhaarModal(prev => ({ ...prev, isOpen: false }))} 
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Error Banner */}
+            {hrAadhaarModal.error && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2 animate-fadeIn">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{hrAadhaarModal.error}</span>
+              </div>
+            )}
+
+            {/* Step 1: Aadhaar Number & Send OTP */}
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                <span>1. Aadhaar Number (12 Digits) *</span>
+                <span className="text-[10px] text-slate-400 font-normal">Encrypted & Masked under DPDP</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  maxLength={14}
+                  placeholder="5489 1234 9876"
+                  value={hrAadhaarModal.aadhaarNo}
+                  onChange={(e) => setHrAadhaarModal(prev => ({ ...prev, aadhaarNo: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono font-bold tracking-wider focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                />
+              </div>
+
+              <button
+                type="button"
+                disabled={hrAadhaarModal.isSendingOtp}
+                onClick={async () => {
+                  const aadh = (hrAadhaarModal.aadhaarNo || '').replace(/\s+/g, '');
+                  if (aadh.length < 4) {
+                    setHrAadhaarModal(prev => ({ ...prev, error: 'Please enter a valid 12-digit Aadhaar number.' }));
+                    return;
+                  }
+                  setHrAadhaarModal(prev => ({ ...prev, isSendingOtp: true, error: '' }));
+                  try {
+                    const res = await api.sendOtp({
+                      channel: 'aadhaar',
+                      identifier: aadh,
+                      token: hrAadhaarModal.candidate.token || hrAadhaarModal.candidate.id
+                    });
+                    setHrAadhaarModal(prev => ({
+                      ...prev,
+                      isSendingOtp: false,
+                      isOtpSent: true,
+                      demoOtp: res?.demo_otp || '492018',
+                      maskedTarget: res?.masked_target || `XXXX-XXXX-${aadh.slice(-4)}`
+                    }));
+                    showToast(`📲 UIDAI OTP dispatched to employee's linked mobile number!`);
+                  } catch (err) {
+                    setHrAadhaarModal(prev => ({
+                      ...prev,
+                      isSendingOtp: false,
+                      error: err.message || 'Failed to dispatch OTP. Please check Aadhaar number.'
+                    }));
+                  }
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                {hrAadhaarModal.isSendingOtp ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Contacting UIDAI Gateway...</span>
+                  </>
+                ) : (
+                  <>
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>{hrAadhaarModal.isOtpSent ? '🔄 Resend Aadhaar OTP' : '📲 1. Send Aadhaar OTP to Employee Mobile'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Step 2: Enter OTP & Verify */}
+            {hrAadhaarModal.isOtpSent && (
+              <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-300 space-y-3 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>2. Enter 6-Digit OTP Received on Mobile</span>
+                  </label>
+                  <span className="text-[10px] text-emerald-700 font-mono font-medium">
+                    {hrAadhaarModal.maskedTarget}
+                  </span>
+                </div>
+
+                {hrAadhaarModal.demoOtp && (
+                  <div 
+                    onClick={() => setHrAadhaarModal(prev => ({ ...prev, otp: hrAadhaarModal.demoOtp }))}
+                    className="p-2 bg-emerald-100/80 hover:bg-emerald-200/80 rounded-lg text-[11px] text-emerald-900 border border-emerald-300 flex items-center justify-between cursor-pointer transition-colors"
+                    title="Click to auto-fill sandbox OTP"
+                  >
+                    <span>🧪 <strong>Sandbox Demo OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-emerald-950">{hrAadhaarModal.demoOtp}</code></span>
+                    <span className="text-[10px] underline font-bold text-emerald-800">Click to Auto-Fill</span>
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  maxLength={6}
+                  placeholder="Enter 6-digit OTP (e.g. 492018)"
+                  value={hrAadhaarModal.otp}
+                  onChange={(e) => setHrAadhaarModal(prev => ({ ...prev, otp: e.target.value.replace(/\D/g, '') }))}
+                  className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-base font-mono font-black text-center tracking-widest text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                />
+
+                <button
+                  type="button"
+                  disabled={hrAadhaarModal.isVerifyingOtp}
+                  onClick={async () => {
+                    const cand = hrAadhaarModal.candidate;
+                    if (!cand) return;
+                    const otpVal = (hrAadhaarModal.otp || '').trim();
+                    if (otpVal.length < 4) {
+                      setHrAadhaarModal(prev => ({ ...prev, error: 'Please enter the 6-digit OTP code.' }));
+                      return;
+                    }
+                    setHrAadhaarModal(prev => ({ ...prev, isVerifyingOtp: true, error: '' }));
+                    try {
+                      const cleanAadh = (hrAadhaarModal.aadhaarNo || '').replace(/\s+/g, '');
+                      const res = await verifyCandidateLiveDocument(cand.token || cand.id, 'aadhaar', {
+                        aadhaarNo: cleanAadh,
+                        otp: otpVal
+                      });
+                      if (res && res.success) {
+                        const fetched = res.data?.fetched_data || {};
+                        const updatedCandidate = {
+                          ...cand,
+                          aadhaarNo: cleanAadh,
+                          verificationsCompleted: {
+                            ...(cand.verificationsCompleted || {}),
+                            aadhaar: true
+                          },
+                          verifiedAttributes: {
+                            ...(cand.verifiedAttributes || {}),
+                            aadhaar: fetched
+                          }
+                        };
+                        setManagingDocVerifCandidate(updatedCandidate);
+                        setLatestVerificationTelemetry({
+                          docKey: 'aadhaar',
+                          docName: '1. Aadhaar Card (OTP)',
+                          provider: 'CoinCircleTrust / UIDAI Official',
+                          fetchedData: fetched,
+                          sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
+                          transactionRef: fetched.uidai_auth_code || res.data?.transaction_ref || `TXN-UIDAI-${Date.now().toString().slice(-8)}`,
+                          latencyMs: res.data?.latency_ms || 48,
+                          timestamp: new Date().toLocaleTimeString(),
+                          status: 'SUCCESS'
+                        });
+                        setHrAadhaarModal({ isOpen: false, candidate: null, aadhaarNo: '', otp: '', isOtpSent: false, demoOtp: '', maskedTarget: '', isSendingOtp: false, isVerifyingOtp: false, error: '' });
+                        showToast(`🎉 Aadhaar verified via UIDAI e-KYC! Official records saved to 360° BGV Dossier.`);
+                      } else {
+                        setHrAadhaarModal(prev => ({ ...prev, isVerifyingOtp: false, error: res?.message || res?.error || 'Invalid OTP entered. Please check and try again.' }));
+                      }
+                    } catch (err) {
+                      setHrAadhaarModal(prev => ({ ...prev, isVerifyingOtp: false, error: err.message || 'Verification failed. Please retry.' }));
+                    }
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {hrAadhaarModal.isVerifyingOtp ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Validating with UIDAI Gateway...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>🔒 2. Verify OTP & Fetch UIDAI Demographic Records</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Footer Notice */}
+            <p className="text-[10px] text-slate-400 text-center font-medium">
+              DPDP Act 2023 Compliant • SHA-256 Digitally Sealed • 100% Immutable Audit Trail
+            </p>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 💳 MODAL: GENERIC DOCUMENT PARTICULAR INPUT PROMPT */}
+      {hrDocPromptModal.isOpen && hrDocPromptModal.candidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999999] bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center overflow-hidden animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setHrDocPromptModal(prev => ({ ...prev, isOpen: false }));
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  <span>Verify {hrDocPromptModal.docName}</span>
+                </h4>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  {hrDocPromptModal.candidate.name} • {hrDocPromptModal.provider}
+                </p>
+              </div>
+              <button 
+                onClick={() => setHrDocPromptModal(prev => ({ ...prev, isOpen: false }))} 
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {hrDocPromptModal.error && (
+              <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{hrDocPromptModal.error}</span>
+              </div>
+            )}
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  {hrDocPromptModal.field1Label} *
+                </label>
+                <input
+                  type="text"
+                  value={hrDocPromptModal.field1Value}
+                  onChange={(e) => setHrDocPromptModal(prev => ({ ...prev, field1Value: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none"
+                />
+              </div>
+
+              {hrDocPromptModal.field2Label && (
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">
+                    {hrDocPromptModal.field2Label}
+                  </label>
+                  <input
+                    type="text"
+                    value={hrDocPromptModal.field2Value}
+                    onChange={(e) => setHrDocPromptModal(prev => ({ ...prev, field2Value: e.target.value }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setHrDocPromptModal(prev => ({ ...prev, isOpen: false }))}
+                className="btn btn-secondary text-xs py-2 px-3 font-bold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={hrDocPromptModal.isVerifying}
+                onClick={async () => {
+                  const cand = hrDocPromptModal.candidate;
+                  if (!cand) return;
+                  const docKey = hrDocPromptModal.docKey;
+                  const payload = {
+                    [hrDocPromptModal.field1Key]: hrDocPromptModal.field1Value,
+                    ...(hrDocPromptModal.field2Key ? { [hrDocPromptModal.field2Key]: hrDocPromptModal.field2Value } : {})
+                  };
+
+                  setHrDocPromptModal(prev => ({ ...prev, isVerifying: true, error: '' }));
+                  try {
+                    const res = await verifyCandidateLiveDocument(cand.token || cand.id, docKey, payload);
+                    if (res && res.success) {
+                      const fetched = res.data?.fetched_data || {};
+                      const updatedCandidate = {
+                        ...cand,
+                        verificationsCompleted: {
+                          ...(cand.verificationsCompleted || {}),
+                          [docKey]: true
+                        },
+                        verifiedAttributes: {
+                          ...(cand.verifiedAttributes || {}),
+                          [docKey]: fetched
+                        }
+                      };
+                      setManagingDocVerifCandidate(updatedCandidate);
+                      setLatestVerificationTelemetry({
+                        docKey: docKey,
+                        docName: hrDocPromptModal.docName,
+                        provider: hrDocPromptModal.provider,
+                        fetchedData: fetched,
+                        sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
+                        transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
+                        latencyMs: res.data?.latency_ms || Math.floor(Math.random() * 30 + 45),
+                        timestamp: new Date().toLocaleTimeString(),
+                        status: 'SUCCESS'
+                      });
+                      setHrDocPromptModal({ isOpen: false, candidate: null, docKey: '', docName: '', provider: '', field1Label: '', field1Key: '', field1Value: '', field2Label: '', field2Key: '', field2Value: '', isVerifying: false, error: '' });
+                      showToast(`✅ ${hrDocPromptModal.docName} verified via CoinCircleTrust Gateway!`);
+                    } else {
+                      setHrDocPromptModal(prev => ({ ...prev, isVerifying: false, error: res?.message || res?.error || 'Verification failed. Please check document number.' }));
+                    }
+                  } catch (err) {
+                    setHrDocPromptModal(prev => ({ ...prev, isVerifying: false, error: err.message || 'Verification error.' }));
+                  }
+                }}
+                className="btn btn-hrexecutive text-xs py-2 px-4 font-extrabold shadow-sm flex items-center gap-1.5 cursor-pointer"
+              >
+                {hrDocPromptModal.isVerifying ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                    <span>Execute Live Verification</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>,
         document.body

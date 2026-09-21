@@ -221,12 +221,26 @@ def get_candidate_verification_records(token: str, db: Session = Depends(get_db)
 # 3. OTP Dispatch & Verification
 # -----------------------------------------------------------------------------
 @router.post("/otp/send", response_model=SendOtpResponse)
-def request_otp(payload: SendOtpRequest):
+def request_otp(payload: SendOtpRequest, db: Session = Depends(get_db)):
     """Dispatches Aadhaar UIDAI OTP or Mobile SMS OTP"""
+    clean_token = (payload.token or "").strip()
+    candidate = None
+    if clean_token:
+        candidate = db.query(Candidate).filter(
+            (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+        ).first()
+
+    target_id = (payload.identifier or "").strip()
+    if not target_id and candidate:
+        if payload.channel == "aadhaar":
+            target_id = candidate.aadhaar_no or "548912349876"
+        else:
+            target_id = candidate.mobile or "9876543210"
+
     success, msg, demo_otp, masked = generate_and_send_otp(
         channel=payload.channel,
-        identifier=payload.identifier,
-        token=payload.token
+        identifier=target_id,
+        token=candidate.token if candidate else clean_token
     )
     return SendOtpResponse(
         success=success,
@@ -248,7 +262,9 @@ def dispatch_email_otp(payload: SendEmailOtpPayload, db: Session = Depends(get_d
     """Dispatches 6-digit Email OTP from HR email to candidate email for inbox verification"""
     candidate = None
     if payload.token:
-        candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+        candidate = db.query(Candidate).filter(
+            (Candidate.token == payload.token) | (Candidate.id == payload.token)
+        ).first()
     
     cand_name = (candidate.name if candidate else None) or payload.candidate_name or "Valued Candidate"
     cand_email = payload.email.strip()
@@ -284,15 +300,19 @@ def dispatch_email_otp(payload: SendEmailOtpPayload, db: Session = Depends(get_d
 @router.post("/otp/verify", response_model=VerifyOtpResponse)
 def verify_otp(payload: VerifyOtpRequest, db: Session = Depends(get_db)):
     """Validates entered OTP, updates candidate verification status and stores in DB"""
-    candidate = db.query(Candidate).filter(Candidate.token == payload.token).first()
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
         
+    resolved_token = candidate.token or clean_token
     verified, msg = verify_otp_code(
         channel=payload.channel,
-        identifier=payload.identifier,
+        identifier=payload.identifier or (candidate.aadhaar_no if payload.channel == "aadhaar" else candidate.mobile),
         otp=payload.otp,
-        token=payload.token
+        token=resolved_token
     )
     
     if verified:
@@ -300,8 +320,8 @@ def verify_otp(payload: VerifyOtpRequest, db: Session = Depends(get_db)):
         if payload.channel == "aadhaar":
             verifs["aadhaar"] = True
             # Also save rich Aadhaar verification record
-            verify_aadhaar_live(db, payload.token, payload.identifier, payload.otp)
-        elif payload.channel == "mobile":
+            verify_aadhaar_live(db, resolved_token, payload.identifier or candidate.aadhaar_no or "548912349876", payload.otp)
+        elif payload.channel in ("mobile", "sms", "phone"):
             verifs["mobile"] = True
             save_and_enrich_candidate_verification(
                 db=db,
@@ -328,7 +348,12 @@ def verify_otp(payload: VerifyOtpRequest, db: Session = Depends(get_db)):
 @router.post("/verify-aadhaar")
 def endpoint_verify_aadhaar(payload: VerifyAadhaarRequest, db: Session = Depends(get_db)):
     """Verifies Aadhaar OTP with UIDAI and stores extracted demographic and address payload"""
-    success, msg, data = verify_aadhaar_live(db, payload.token, payload.aadhaar_number, payload.otp)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_aadhaar_live(db, token_to_use, payload.aadhaar_number, payload.otp)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}

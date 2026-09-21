@@ -20,8 +20,8 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
   const candDesignation = candidate.designation || 'Associate';
   const candDept = candidate.dept || 'General Operations';
 
-  const verifs = candidate.verifiedAttributes || {};
-  const jData = candidate.joiningFormData || candidate.submittedFormData || {};
+  const verifs = candidate.verifiedAttributes || candidate.verified_attributes || {};
+  const jData = candidate.joiningFormData || candidate.joining_form_data || candidate.submittedFormData || {};
 
   const maskAadhaarNo = (val) => {
     if (!val) return 'Not Uploaded';
@@ -29,79 +29,101 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
     return digits.length >= 4 ? `XXXX-XXXX-${digits.slice(-4)}` : 'XXXX-XXXX-****';
   };
 
+  const aadh = verifs.aadhaar || candidate.aadhaar_data || {};
+  const pan = verifs.pan || candidate.pan_data || {};
+  const dl = verifs.drivingLicense || verifs.dl || verifs.driving_license || candidate.dl_data || {};
+  const passport = verifs.passport || candidate.passport_data || {};
+  const epfo = verifs.epfoUan || verifs.uan || verifs.epfo || candidate.epfo_data || {};
+  const esic = verifs.esic || {};
+  const bank = verifs.bankCheck || verifs.bank || candidate.bank_data || {};
+  const voter = verifs.voter_id || verifs.voterId || {};
+
+  const aadhAddressStr = typeof aadh.address === 'object' && aadh.address !== null
+    ? `${aadh.address.house || ''} ${aadh.address.street || ''} ${aadh.address.city || ''} ${aadh.address.state || ''} ${aadh.address.pincode || ''}`.trim()
+    : (aadh.address || candidate.permanentAddress || jData.permanentAddress || 'Not Uploaded');
+
+  const isAadhaarDone = !!(candidate.verificationsCompleted?.aadhaar || candidate.verifications_completed?.aadhaar || aadh.full_name || aadh.name);
+  const isPanDone = !!(candidate.verificationsCompleted?.pan || candidate.verifications_completed?.pan || pan.pan_number || pan.pan);
+  const isDlDone = !!(candidate.verificationsCompleted?.drivingLicense || candidate.verifications_completed?.driving_license || dl.dl_number);
+  const isPassportDone = !!(candidate.verificationsCompleted?.passport || candidate.verifications_completed?.passport || passport.passport_number);
+  const isEpfoDone = !!(candidate.verificationsCompleted?.epfoUan || candidate.verifications_completed?.epfo || epfo.uan);
+  const isEsicDone = !!(candidate.verificationsCompleted?.esic || candidate.verifications_completed?.esic || esic.esic_number);
+  const isBankDone = !!(candidate.verificationsCompleted?.bankCheck || candidate.verifications_completed?.bank || bank.account_number);
+  const isVoterDone = !!(candidate.verificationsCompleted?.voterId || candidate.verifications_completed?.voter_id || voter.epic_number);
+
   // Resolve extracted identity data for each document source
   const docDataMap = {
     aadhaar: {
       label: 'AADHAAR CARD (UIDAI)',
-      name: verifs.aadhaar?.name || jData.fullName || candidate.name || 'Not Uploaded',
-      dob: verifs.aadhaar?.dob || candidate.dob || jData.dob || 'Not Uploaded',
-      address: verifs.aadhaar?.address || candidate.permanentAddress || jData.permanentAddressLine || 'Not Uploaded',
-      fatherName: verifs.aadhaar?.careOf || verifs.aadhaar?.fatherName || candidate.fatherName || jData.fatherSpouseName || 'Not Uploaded',
-      docNo: maskAadhaarNo(candidate.aadhaarNo || verifs.aadhaar?.aadhaarNumber),
-      status: verifs.aadhaar ? 'Verified 🟢' : (candidate.aadhaarNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: aadh.full_name || aadh.name || (isAadhaarDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded')),
+      dob: aadh.dob || (isAadhaarDone ? (candidate.dob || jData.dob) : 'Not Uploaded'),
+      address: aadhAddressStr,
+      fatherName: aadh.care_of || aadh.careOf || aadh.father_name || candidate.fatherName || jData.fatherName || 'Not Uploaded',
+      docNo: maskAadhaarNo(candidate.aadhaarNo || candidate.aadhaar_no || aadh.masked_aadhaar || aadh.aadhaar_number),
+      status: isAadhaarDone ? 'Verified 🟢' : (candidate.aadhaarNo || candidate.aadhaar_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     pan: {
       label: 'PAN CARD (NSDL / ITD)',
-      name: verifs.pan?.name || candidate.name || jData.fullName || 'Not Uploaded',
-      dob: verifs.pan?.dob || candidate.dob || jData.dob || 'Not Uploaded',
-      address: verifs.pan?.address || candidate.presentAddress || 'N/A (ITD Records)',
-      fatherName: verifs.pan?.fatherName || candidate.fatherName || jData.fatherSpouseName || 'Not Uploaded',
-      docNo: candidate.panNo || candidate.panNumber || verifs.pan?.panNumber || 'Not Uploaded',
-      status: verifs.pan ? 'Verified 🟢' : (candidate.panNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (pan.full_name || pan.name || (isPanDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded'))).toUpperCase(),
+      dob: pan.dob || candidate.dob || jData.dob || 'Not Uploaded',
+      address: pan.address || candidate.presentAddress || 'N/A (ITD Records)',
+      fatherName: pan.father_name || pan.fatherName || aadh.care_of || candidate.fatherName || jData.fatherName || 'Not Uploaded',
+      docNo: pan.pan_number || pan.pan || candidate.panNo || candidate.pan_no || 'Not Uploaded',
+      status: isPanDone ? 'Verified 🟢' : (candidate.panNo || candidate.pan_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     drivingLicense: {
       label: 'DRIVING LICENSE (MoRTH)',
-      name: verifs.drivingLicense?.name || candidate.drivingLicenseName || candidate.name || 'Not Uploaded',
-      dob: verifs.drivingLicense?.dob || candidate.dob || 'Not Uploaded',
-      address: verifs.drivingLicense?.address || candidate.presentAddress || 'Not Uploaded',
-      fatherName: verifs.drivingLicense?.fatherName || candidate.fatherName || 'Not Uploaded',
-      docNo: candidate.drivingLicense || verifs.drivingLicense?.dlNumber || 'Not Uploaded',
-      status: verifs.drivingLicense ? 'Verified 🟢' : (candidate.drivingLicense ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (dl.holder_name || dl.name || (isDlDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded'))).toUpperCase(),
+      dob: dl.dob || candidate.dob || 'Not Uploaded',
+      address: dl.address || candidate.presentAddress || 'Not Uploaded',
+      fatherName: dl.father_name || candidate.fatherName || 'Not Uploaded',
+      docNo: dl.dl_number || dl.license_number || candidate.dlNumber || candidate.dl_no || 'Not Uploaded',
+      status: isDlDone ? 'Verified 🟢' : (candidate.dlNumber || candidate.dl_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     passport: {
       label: 'PASSPORT (MEA)',
-      name: verifs.passport?.givenName ? `${verifs.passport.givenName} ${verifs.passport.surname || ''}` : (candidate.passportNo ? candidate.name : 'Not Uploaded'),
-      dob: verifs.passport?.dob || candidate.dob || 'Not Uploaded',
-      address: verifs.passport?.address || candidate.permanentAddress || 'Not Uploaded',
-      fatherName: verifs.passport?.fatherName || candidate.fatherName || 'Not Uploaded',
-      docNo: candidate.passportNo || verifs.passport?.passportNumber || 'Not Uploaded',
-      status: verifs.passport ? 'Verified 🟢' : (candidate.passportNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (passport.full_name || (passport.given_name ? `${passport.given_name} ${passport.surname || ''}` : (isPassportDone ? candidate.name : 'Not Uploaded'))).toUpperCase(),
+      dob: passport.dob || candidate.dob || 'Not Uploaded',
+      address: passport.address || candidate.permanentAddress || 'Not Uploaded',
+      fatherName: passport.father_name || candidate.fatherName || 'Not Uploaded',
+      docNo: passport.passport_number || candidate.passportNo || candidate.passport_no || 'Not Uploaded',
+      status: isPassportDone ? 'Verified 🟢' : (candidate.passportNo || candidate.passport_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     uan: {
       label: 'EPFO UAN (MEMBER SERVICE)',
-      name: verifs.epfo?.memberName || verifs.epfo?.name || candidate.name || 'Not Uploaded',
-      dob: verifs.epfo?.dob || candidate.dob || 'Not Uploaded',
-      address: verifs.epfo?.establishmentAddress || candidate.presentAddress || 'N/A (EPFO Records)',
-      fatherName: verifs.epfo?.fatherName || candidate.fatherName || 'Not Uploaded',
-      docNo: candidate.uanEpf || candidate.uan_no || candidate.pfNumber || verifs.epfo?.uanNumber || 'Not Uploaded',
-      status: verifs.epfo ? 'Verified 🟢' : (candidate.uanEpf ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (epfo.member_name || epfo.full_name || (isEpfoDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
+      dob: epfo.dob || candidate.dob || 'Not Uploaded',
+      address: epfo.establishment_address || candidate.presentAddress || 'N/A (EPFO Records)',
+      fatherName: epfo.father_name || candidate.fatherName || 'Not Uploaded',
+      docNo: epfo.uan || candidate.uanEpf || candidate.uan_no || candidate.pfNumber || candidate.pf_number || 'Not Uploaded',
+      status: isEpfoDone ? 'Verified 🟢' : (candidate.uanEpf || candidate.pfNumber ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     esic: {
       label: 'ESIC (INSURED PERSON)',
-      name: verifs.esic?.ipName || candidate.name || 'Not Uploaded',
-      dob: verifs.esic?.dob || candidate.dob || 'Not Uploaded',
-      address: verifs.esic?.address || candidate.presentAddress || 'N/A (ESIC Portal)',
-      fatherName: verifs.esic?.fatherName || candidate.fatherName || 'Not Uploaded',
-      docNo: candidate.esicNo || candidate.esiNumber || verifs.esic?.esicNumber || 'Not Uploaded',
-      status: verifs.esic ? 'Verified 🟢' : (candidate.esicNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (esic.insured_person_name || esic.ipName || (isEsicDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
+      dob: esic.dob || candidate.dob || 'Not Uploaded',
+      address: esic.address || candidate.presentAddress || 'N/A (ESIC Portal)',
+      fatherName: esic.father_name || candidate.fatherName || 'Not Uploaded',
+      docNo: esic.esic_number || candidate.esiNumber || candidate.esi_number || 'Not Uploaded',
+      status: isEsicDone ? 'Verified 🟢' : (candidate.esiNumber || candidate.esi_number ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     bank: {
       label: 'BANK ACCOUNT (IMPS PENNY DROP)',
-      name: verifs.bank?.beneficiaryName || candidate.bankAccountName || candidate.name || 'Not Uploaded',
+      name: (bank.beneficiary_name || bank.beneficiaryName || (isBankDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
       dob: 'N/A (Bank Privacy Policy)',
-      address: 'N/A (CBS Branch Records)',
+      address: bank.branch || 'N/A (CBS Branch Records)',
       fatherName: 'N/A (Bank CBS)',
-      docNo: candidate.bankAccountNo ? `A/C: ••••••${String(candidate.bankAccountNo).slice(-4)} (${candidate.bankName || 'Bank'})` : 'Not Uploaded',
-      status: verifs.bank ? 'Verified 🟢' : (candidate.bankAccountNo ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      docNo: (candidate.bankAccountNo || candidate.bank_account_no || bank.account_number) ? `A/C: ••••••${String(candidate.bankAccountNo || candidate.bank_account_no || bank.account_number).slice(-4)} (${candidate.bankName || bank.bank_name || 'Bank'})` : 'Not Uploaded',
+      status: isBankDone ? 'Verified 🟢' : (candidate.bankAccountNo || candidate.bank_account_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     voterId: {
       label: 'VOTER ID (EPIC / ECI)',
-      name: verifs.voterId?.name || candidate.voterId ? candidate.name : 'Not Uploaded',
-      dob: verifs.voterId?.dob || candidate.dob || 'Not Uploaded',
-      address: verifs.voterId?.address || candidate.permanentAddress || 'Not Uploaded',
-      fatherName: verifs.voterId?.relativeName || candidate.fatherName || 'Not Uploaded',
-      docNo: candidate.voterId || verifs.voterId?.voterId || 'Not Uploaded',
-      status: verifs.voterId ? 'Verified 🟢' : (candidate.voterId ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      name: (voter.name || (isVoterDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
+      dob: voter.dob || candidate.dob || 'Not Uploaded',
+      address: voter.address || candidate.permanentAddress || 'Not Uploaded',
+      fatherName: voter.relative_name || voter.relativeName || candidate.fatherName || 'Not Uploaded',
+      docNo: voter.epic_number || candidate.voterId || 'Not Uploaded',
+      status: isVoterDone ? 'Verified 🟢' : (candidate.voterId ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     }
   };
 

@@ -595,73 +595,47 @@ export const api = {
   sendOtp: (otpData) => request('/verification/otp/send', {
     method: 'POST',
     body: JSON.stringify(otpData),
-  }).catch(() => ({ success: true, message: 'OTP sent successfully to candidate' })),
+  }),
   verifyOtp: (verifyData) => request('/verification/otp/verify', {
     method: 'POST',
     body: JSON.stringify(verifyData),
-  }).catch(() => ({ success: true, verified: true, message: 'OTP verified successfully' })),
+  }),
   submitFaceCapture: (faceData) => request('/verification/face-capture', {
     method: 'POST',
     body: JSON.stringify(faceData),
-  }).catch(() => ({ success: true, livenessScore: 98.4, matchScore: 99.1, message: 'Biometric 3D Liveness Verified' })),
+  }),
   completeVerification: (completionData) => {
     requestCache.clear();
     return request('/verification/complete', {
       method: 'POST',
       body: JSON.stringify(completionData),
-    }).catch(() => ({ success: true, status: 'Verified', message: '🎉 Candidate Verification Complete!' }));
+    });
   },
   submitCandidateJoiningForm: (token, payload) => {
     requestCache.clear();
     return request('/verification/submit-joining', {
       method: 'POST',
       body: JSON.stringify({ token, ...payload }),
-    }).catch(() => ({ success: true, message: '7-Section Joining Form Submitted Successfully!' }));
+    });
   },
 
   // 🏛️ Upstream Government & Institutional Verification APIs
   verifyAadhaarLive: (token, aadhaarNumber, otp) => request('/verification/verify-aadhaar', {
     method: 'POST',
     body: JSON.stringify({ token, aadhaar_number: aadhaarNumber, otp }),
-  }).catch(() => ({
-    success: true,
-    status: 'VERIFIED',
-    full_name: 'KAVITHA RAMACHANDRAN',
-    dob: '1995-08-14',
-    gender: 'FEMALE',
-    aadhaar_masked: 'XXXX-XXXX-8912',
-    address: 'Flat 402, Green Glen Layout, Bellandur, Bengaluru, KA - 560103'
-  })),
+  }),
   verifyPanLive: (token, panNumber) => request('/verification/verify-pan', {
     method: 'POST',
     body: JSON.stringify({ token, pan_number: panNumber }),
-  }).catch(() => ({
-    success: true,
-    status: 'VALID',
-    name_on_card: 'KAVITHA RAMACHANDRAN',
-    pan_status: 'EXISTING AND OPERATIONAL',
-    aadhaar_seeding_status: 'LINKED'
-  })),
+  }),
   verifyBankLive: (token, accountNumber, ifscCode) => request('/verification/verify-bank', {
     method: 'POST',
     body: JSON.stringify({ token, account_number: accountNumber, ifsc_code: ifscCode }),
-  }).catch(() => ({
-    success: true,
-    status: 'SUCCESS',
-    account_exists: true,
-    name_at_bank: 'KAVITHA RAMACHANDRAN',
-    utr: `IMPS${Date.now().toString().slice(-9)}`
-  })),
+  }),
   verifyDlLive: (token, dlNumber, dob = '1996-05-15') => request('/verification/verify-dl', {
     method: 'POST',
     body: JSON.stringify({ token, dl_number: dlNumber, dob }),
-  }).catch(() => ({
-    success: true,
-    status: 'VALID',
-    cov: 'MCWG, LMV',
-    issue_date: '2016-04-10',
-    expiry_date: '2036-04-09'
-  })),
+  }),
   verifyEpfoLive: (token, uanNumber) => request('/verification/verify-epfo', {
     method: 'POST',
     body: JSON.stringify({ token, uan_number: uanNumber }),

@@ -104,6 +104,13 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [emailInputOtp, setEmailInputOtp] = useState('');
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
+  // Live OTP dispatch states
+  const [aadhaarDemoOtp, setAadhaarDemoOtp] = useState('123456');
+  const [mobileDemoOtp, setMobileDemoOtp] = useState('123456');
+  const [aadhaarOtpMasked, setAadhaarOtpMasked] = useState('');
+  const [isSendingAadhaarOtp, setIsSendingAadhaarOtp] = useState(false);
+  const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
+
   const docConflict = useMemo(() => {
     if (!candidate || !candidates || candidates.length === 0) return { isDuplicate: false };
     const jfd = candidate?.joiningFormData || {};
@@ -636,76 +643,135 @@ export const EmployeePortalView = ({ directToken = null }) => {
     setShowAiFaceMatchModal(true);
   };
 
-  const handleSendAadhaarOtp = () => {
-    setShowAadhaarOtpModal(true);
-    setAadhaarInputOtp('');
+  const handleSendAadhaarOtp = async () => {
+    setIsSendingAadhaarOtp(true);
+    const aadhClean = (candidate.aadhaarNo || candidate.aadhaar_no || '548912349876').replace(/\s+/g, '');
+    try {
+      const res = await api.sendOtp({
+        channel: 'aadhaar',
+        identifier: aadhClean,
+        token: candidate.token || candidate.id
+      });
+      if (res && res.demo_otp) setAadhaarDemoOtp(res.demo_otp);
+      if (res && res.masked_target) setAadhaarOtpMasked(res.masked_target);
+      setShowAadhaarOtpModal(true);
+      setAadhaarInputOtp('');
+      showToast('📲 UIDAI OTP dispatched to candidate registered mobile!');
+    } catch (err) {
+      console.warn('Aadhaar OTP dispatch notice:', err);
+      setShowAadhaarOtpModal(true);
+      setAadhaarInputOtp('');
+    } finally {
+      setIsSendingAadhaarOtp(false);
+    }
   };
 
-  const handleVerifyAadhaarOtpSubmit = (e) => {
-    e.preventDefault();
+  const handleVerifyAadhaarOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
     if (aadhaarInputOtp.length < 4) {
-      alert('Please enter 6-digit OTP code.');
+      alert('Please enter valid 6-digit OTP code.');
       return;
     }
     setShowAadhaarOtpModal(false);
     setIsFetchingAadhaarData(true);
-    setAadhaarFetchProgress(15);
+    setAadhaarFetchProgress(25);
     setAadhaarFetchStep(0); // Connecting to CIDR
 
-    // Step 1: Connecting to CIDR
-    setTimeout(() => {
-      setAadhaarFetchProgress(45);
+    const aadhClean = (candidate.aadhaarNo || candidate.aadhaar_no || '548912349876').replace(/\s+/g, '');
+    
+    try {
+      setAadhaarFetchProgress(55);
       setAadhaarFetchStep(1); // Validating 256-bit XML signature & OTP
-    }, 700);
 
-    // Step 2: Extracting e-KYC record
-    setTimeout(() => {
-      setAadhaarFetchProgress(80);
-      setAadhaarFetchStep(2); // Fetching official demographic e-KYC record & high-res portrait
-    }, 1400);
+      const res = await api.verifyAadhaarLive(candidate.token || candidate.id, aadhClean, aadhaarInputOtp);
+      
+      setAadhaarFetchProgress(85);
+      setAadhaarFetchStep(2); // Fetching official demographic e-KYC record
 
-    // Step 3: Populating master profile
-    setTimeout(() => {
-      setAadhaarFetchProgress(100);
-      setAadhaarFetchStep(3);
+      if (res && res.success) {
+        const fetched = res.data?.fetched_data || res.fetched_data || res || {};
+        const formattedAddress = typeof fetched.address === 'object' && fetched.address
+          ? `${fetched.address.house || ''} ${fetched.address.street || ''} ${fetched.address.locality || ''} ${fetched.address.city || ''} ${fetched.address.state || ''} - ${fetched.address.pincode || ''}`.trim()
+          : (fetched.address || '124, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103');
 
-      const fetchedData = {
-        name: candidate.name || 'Rajesh Suresh Kumar',
-        fatherName: 'Suresh Kumar',
-        dob: '1996-05-15',
-        gender: 'Male',
-        maskedAadhaar: candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876',
-        address: '124, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103',
-        photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
-        pincode: '560103',
-        uidaiTxnId: `UIDAI-TXN-${Date.now().toString().slice(-8)}`,
-        verifiedTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST',
-        xmlSignature: 'VALID_SHA256_RSA_2048'
-      };
+        const profileData = {
+          name: fetched.full_name || fetched.name || candidate.name,
+          fatherName: fetched.care_of || fetched.father_name || 'Suresh Kumar',
+          dob: fetched.dob || '1996-05-15',
+          gender: fetched.gender || 'Male',
+          maskedAadhaar: fetched.masked_aadhaar || (candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'),
+          address: formattedAddress,
+          photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
+          pincode: (typeof fetched.address === 'object' ? fetched.address?.pincode : '560034') || '560034',
+          uidaiTxnId: fetched.uidai_auth_code || `UIDAI-TXN-${Date.now().toString().slice(-8)}`,
+          verifiedTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST',
+          xmlSignature: fetched.sha256_seal || 'VALID_SHA256_RSA_2048'
+        };
 
-      setFetchedAadhaarProfile(fetchedData);
+        setAadhaarFetchProgress(100);
+        setAadhaarFetchStep(3);
+        setFetchedAadhaarProfile(profileData);
+        setShowAadhaarSuccessCard(true);
+        updateCandidateVerification(candidate.token, 'aadhaar', true);
+        showToast('🎉 UIDAI e-KYC Data Fetched & Verified Successfully! Profile updated with official government records.');
+        confetti({ particleCount: 90, spread: 70 });
+      } else {
+        alert(res?.message || 'Invalid OTP entered. Please check and try again.');
+        setShowAadhaarOtpModal(true);
+      }
+    } catch (err) {
+      alert(`Aadhaar verification error: ${err.message || 'Invalid OTP code'}`);
+      setShowAadhaarOtpModal(true);
+    } finally {
       setIsFetchingAadhaarData(false);
-      setShowAadhaarSuccessCard(true);
-      updateCandidateVerification(candidate.token, 'aadhaar', true);
-      showToast('🎉 UIDAI e-KYC Data Fetched & Verified Successfully! Profile updated with official government records.');
-      confetti({ particleCount: 90, spread: 70 });
-    }, 2200);
+    }
   };
 
-  const handleSendMobileOtp = () => {
-    setShowMobileOtpModal(true);
-    setMobileInputOtp('');
+  const handleSendMobileOtp = async () => {
+    setIsSendingMobileOtp(true);
+    const cleanMob = (candidate.mobile || '9942817491').replace(/\s+/g, '');
+    try {
+      const res = await api.sendOtp({
+        channel: 'mobile',
+        identifier: cleanMob,
+        token: candidate.token || candidate.id
+      });
+      if (res && res.demo_otp) setMobileDemoOtp(res.demo_otp);
+      setShowMobileOtpModal(true);
+      setMobileInputOtp('');
+      showToast('📱 SMS OTP dispatched to candidate registered mobile!');
+    } catch (err) {
+      setShowMobileOtpModal(true);
+      setMobileInputOtp('');
+    } finally {
+      setIsSendingMobileOtp(false);
+    }
   };
 
-  const handleVerifyMobileOtpSubmit = (e) => {
-    e.preventDefault();
+  const handleVerifyMobileOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
     if (mobileInputOtp.length < 4) {
       alert('Please enter valid 6-digit Mobile OTP.');
       return;
     }
-    updateCandidateVerification(candidate.token, 'mobile', true);
-    setShowMobileOtpModal(false);
-    showToast('📱 Mobile Number SMS OTP Verified Successfully!');
+    const cleanMob = (candidate.mobile || '9942817491').replace(/\s+/g, '');
+    try {
+      const res = await api.verifyOtp({
+        channel: 'mobile',
+        identifier: cleanMob,
+        otp: mobileInputOtp,
+        token: candidate.token || candidate.id
+      });
+      if (res && res.success) {
+        updateCandidateVerification(candidate.token, 'mobile', true);
+        setShowMobileOtpModal(false);
+        showToast('📱 Mobile Number SMS OTP Verified Successfully!');
+      } else {
+        alert(res?.message || 'Invalid Mobile OTP code.');
+      }
+    } catch (err) {
+      alert(`Mobile verification error: ${err.message || 'Invalid OTP'}`);
+    }
   };
 
 
@@ -1946,42 +2012,56 @@ export const EmployeePortalView = ({ directToken = null }) => {
       {/* Aadhaar OTP Modal */}
       {showAadhaarOtpModal && (
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-extrabold flex items-center gap-2">
-                <KeyRound className="w-5 h-5 text-indigo-600" />
-                <span>Aadhaar UIDAI OTP Verification</span>
-              </h3>
-              <button onClick={() => setShowAadhaarOtpModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">Aadhaar UIDAI e-KYC Verification</h3>
+                  <span className="text-[11px] text-slate-500 font-medium">Official Government CIDR / UIDAI Gateway</span>
+                </div>
+              </div>
+              <button onClick={() => setShowAadhaarOtpModal(false)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer">✕</button>
             </div>
 
-            <p className="text-xs text-slate-600 font-medium">
-              A 6-digit OTP code was sent to registered Aadhaar mobile for <strong className="text-slate-900 font-mono">{candidate.aadhaarNo}</strong>.
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              A 6-digit OTP code has been dispatched to your UIDAI registered mobile number for Aadhaar <strong className="text-slate-900 font-mono">{candidate.aadhaarNo || '5489 1234 9876'}</strong>.
             </p>
 
-            <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-200 text-center text-xs text-indigo-900 font-medium">
-              <span>💡 Test Sandbox OTP: </span>
-              <strong className="text-indigo-900 font-mono text-sm tracking-wider font-bold">123456</strong>
-            </div>
+            {aadhaarDemoOtp && (
+              <div 
+                onClick={() => setAadhaarInputOtp(aadhaarDemoOtp)}
+                className="bg-indigo-50 hover:bg-indigo-100/80 p-3 rounded-xl border border-indigo-200 text-xs text-indigo-950 flex items-center justify-between cursor-pointer transition-colors"
+                title="Click to auto-fill sandbox OTP"
+              >
+                <span>🧪 <strong>Sandbox Test OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-indigo-950">{aadhaarDemoOtp}</code></span>
+                <span className="text-[10px] underline font-bold text-indigo-700">Click to Auto-Fill</span>
+              </div>
+            )}
 
             <form onSubmit={handleVerifyAadhaarOtpSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Enter 6-Digit OTP *</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Enter 6-Digit UIDAI OTP *</label>
                 <input 
                   type="text" 
                   maxLength="6"
                   required
                   autoFocus
-                  placeholder="123456"
+                  placeholder="Enter 6-digit OTP..."
                   value={aadhaarInputOtp}
-                  onChange={(e) => setAadhaarInputOtp(e.target.value)}
-                  className="form-input text-center text-lg font-mono tracking-widest font-bold"
+                  onChange={(e) => setAadhaarInputOtp(e.target.value.replace(/\D/g, ''))}
+                  className="form-input text-center text-xl font-mono tracking-widest font-black py-2.5 rounded-2xl border-indigo-200 focus:border-indigo-500"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowAadhaarOtpModal(false)} className="btn btn-secondary text-xs">Cancel</button>
-                <button type="submit" className="btn btn-superadmin text-xs font-bold shadow-md">Verify Aadhaar</button>
+                <button type="submit" className="btn btn-hrexecutive text-xs font-extrabold shadow-md flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Verify Aadhaar e-KYC</span>
+                </button>
               </div>
             </form>
           </div>
@@ -1991,23 +2071,34 @@ export const EmployeePortalView = ({ directToken = null }) => {
       {/* Mobile OTP Modal */}
       {showMobileOtpModal && (
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-extrabold flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-sky-600" />
-                <span>Mobile Number SMS OTP Verification</span>
-              </h3>
-              <button onClick={() => setShowMobileOtpModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center font-black">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">Mobile SMS OTP Verification</h3>
+                  <span className="text-[11px] text-slate-500 font-medium">Direct Carrier Telecom Verification</span>
+                </div>
+              </div>
+              <button onClick={() => setShowMobileOtpModal(false)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer">✕</button>
             </div>
 
-            <p className="text-xs text-slate-600 font-medium">
-              SMS verification code dispatched to mobile <strong className="text-slate-900 font-mono">{candidate.mobile}</strong>.
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              SMS verification code dispatched to mobile <strong className="text-slate-900 font-mono">{candidate.mobile || '+91 99428 17491'}</strong>.
             </p>
 
-            <div className="bg-sky-50 p-3 rounded-xl border border-sky-200 text-center text-xs text-sky-900 font-medium">
-              <span>💡 Test Sandbox OTP: </span>
-              <strong className="text-sky-900 font-mono text-sm tracking-wider font-bold">123456</strong>
-            </div>
+            {mobileDemoOtp && (
+              <div 
+                onClick={() => setMobileInputOtp(mobileDemoOtp)}
+                className="bg-sky-50 hover:bg-sky-100/80 p-3 rounded-xl border border-sky-200 text-xs text-sky-950 flex items-center justify-between cursor-pointer transition-colors"
+                title="Click to auto-fill sandbox OTP"
+              >
+                <span>🧪 <strong>Sandbox Test OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-sky-950">{mobileDemoOtp}</code></span>
+                <span className="text-[10px] underline font-bold text-sky-700">Click to Auto-Fill</span>
+              </div>
+            )}
 
             <form onSubmit={handleVerifyMobileOtpSubmit} className="space-y-4">
               <div>
@@ -2017,16 +2108,19 @@ export const EmployeePortalView = ({ directToken = null }) => {
                   maxLength="6"
                   required
                   autoFocus
-                  placeholder="123456"
+                  placeholder="Enter 6-digit SMS code..."
                   value={mobileInputOtp}
-                  onChange={(e) => setMobileInputOtp(e.target.value)}
-                  className="form-input text-center text-lg font-mono tracking-widest font-bold"
+                  onChange={(e) => setMobileInputOtp(e.target.value.replace(/\D/g, ''))}
+                  className="form-input text-center text-xl font-mono tracking-widest font-black py-2.5 rounded-2xl border-sky-200 focus:border-sky-500"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowMobileOtpModal(false)} className="btn btn-secondary text-xs">Cancel</button>
-                <button type="submit" className="btn btn-company text-xs font-bold shadow-md">Verify Mobile OTP</button>
+                <button type="submit" className="btn btn-company text-xs font-extrabold shadow-md flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Verify Mobile OTP</span>
+                </button>
               </div>
             </form>
           </div>
