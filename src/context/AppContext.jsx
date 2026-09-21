@@ -3308,6 +3308,51 @@ export const AppProvider = ({ children }) => {
     showToast(`🎉 Subscription updated to ${targetPlan.name} (${quotaDisplay} @ ${rateDisplay})`);
   };
 
+  // 🚀 Enterprise Plan Upgrade Request (Submitted by Company Admin to Super Administrator)
+  const requestCompanyPlanUpgrade = async (companyId, requestDetails) => {
+    const targetComp = companies.find(c => c.id === companyId);
+    const targetPlan = POSTPAID_PLANS[requestDetails.planId] || POSTPAID_PLANS.tier3;
+    
+    const upgradeReqData = {
+      requested_plan_id: targetPlan.id,
+      requested_plan_name: targetPlan.name,
+      rate_per_profile: targetPlan.ratePerProfile,
+      max_limit: targetPlan.maxProfiles,
+      estimated_monthly_verifications: requestDetails.estimatedVolume || targetPlan.maxProfiles,
+      effective_date: requestDetails.effectiveDate || 'Immediate / Current Cycle',
+      notes: requestDetails.notes || '',
+      requested_at: new Date().toISOString(),
+      requested_by: targetComp?.contactPerson || 'Company Administrator',
+      status: 'Pending SuperAdmin Approval'
+    };
+
+    // Optimistically update company state with pending upgrade flag
+    setCompanies(prev => prev.map(c => {
+      if (c.id === companyId) {
+        return {
+          ...c,
+          pendingPlanUpgrade: upgradeReqData,
+          features: {
+            ...(c.features || {}),
+            pending_plan_upgrade: upgradeReqData
+          }
+        };
+      }
+      return c;
+    }));
+
+    try {
+      if (api.requestCompanyPlanUpgrade) {
+        await api.requestCompanyPlanUpgrade(companyId, upgradeReqData);
+      }
+    } catch (err) {
+      console.warn('Backend plan upgrade notice:', err);
+    }
+
+    showToast(`🚀 Plan upgrade request for "${targetPlan.name}" submitted to Super Administrator! Our enterprise relations team will review & apply your updated tariff.`);
+    return true;
+  };
+
   // ⚡ Settle Postpaid Month-End Verification Invoice via Razorpay / Payment Link
   const settlePostpaidInvoice = (companyId, paymentRecord, overrideAmount = null) => {
     const paidAmount = overrideAmount || paymentRecord?.totalAmount || paymentRecord?.baseAmount || 0;
@@ -4007,6 +4052,7 @@ export const AppProvider = ({ children }) => {
       getCompanyPostpaidPlan,
       calculateCompanyPostpaidBill,
       updateCompanyPostpaidPlan,
+      requestCompanyPlanUpgrade,
       settlePostpaidInvoice
     }}>
       {children}

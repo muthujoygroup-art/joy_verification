@@ -1232,3 +1232,110 @@ def verify_vendor_full_suite(company_id: str, payload: dict, db: Session = Depen
         "message": f"🎉 Full 11-registry statutory verification completed successfully for '{vendor_name}'!"
     }
 
+
+# =============================================================================
+# 🚀 ENTERPRISE SUBSCRIPTION UPGRADE & TIER AMENDMENT REQUESTS
+# =============================================================================
+@router.post("/{company_id}/plan-upgrade-request")
+def request_company_plan_upgrade(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """
+    Company Admin submits a formal request to Super Administrator to upgrade or modify their contracted subscription tier.
+    Preserves contractual governance, logs the amendment, and dispatches high-priority notification to Super Admin.
+    """
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    plan_name = payload.get("requested_plan_name") or payload.get("plan_name") or "300 Employees Plan"
+    plan_id = payload.get("requested_plan_id") or payload.get("plan_id") or "tier3"
+    est_vol = int(payload.get("estimated_monthly_verifications") or payload.get("estimated_volume") or 300)
+    effective_date = payload.get("effective_date") or "Immediate / Next Billing Cycle"
+    notes = (payload.get("notes") or "").strip()
+
+    req_record = {
+        "request_id": f"UPG-{uuid.uuid4().hex[:8].upper()}",
+        "company_id": comp.id,
+        "company_name": comp.name,
+        "current_plan": comp.plan,
+        "current_price_per_verification": comp.price_per_verification,
+        "requested_plan_id": plan_id,
+        "requested_plan_name": plan_name,
+        "estimated_monthly_verifications": est_vol,
+        "effective_date": effective_date,
+        "notes": notes,
+        "requested_at": datetime.utcnow().isoformat(),
+        "status": "Pending SuperAdmin Approval"
+    }
+
+    # Save inside company features
+    f = dict(comp.features or {})
+    f["pending_plan_upgrade"] = req_record
+    comp.features = f
+    db.commit()
+    db.refresh(comp)
+
+    # Also log in CompanyRequest table so SuperAdmin sees it in purchase/upgrade pipeline
+    try:
+        from backend.app.models.company_request import CompanyRequest
+        cr = CompanyRequest(
+            id=f"req_{uuid.uuid4().hex[:8]}",
+            company_name=comp.name,
+            contact_person=comp.contact_person or comp.name,
+            email=comp.email,
+            phone=comp.phone or "",
+            requested_plan=f"UPGRADE: {plan_name} (from {comp.plan})",
+            estimated_monthly_verifications=est_vol,
+            industry=comp.industry_sector or "Enterprise",
+            status="Pending",
+            notes=f"Plan upgrade requested by {comp.name} (#{comp.code}). Target Plan: {plan_name}. Remarks: {notes}",
+            created_at=datetime.utcnow()
+        )
+        db.add(cr)
+        db.commit()
+    except Exception as e:
+        print(f"Warning: Failed to record CompanyRequest for upgrade: {e}")
+
+    # Dispatch email notification to Super Admin
+    try:
+        from backend.app.services.email_service import _build_email_shell, send_smtp_email
+        from backend.app.models.super_admin import SuperAdminUser
+        sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+        sa_email = sa.email if sa else "admin@joycorporatesolutions.com"
+        app_url = settings.APP_BASE_URL.rstrip('/')
+
+        content = f"""
+        <h2 style="color: #0f172a; margin-top: 0;">🚀 Subscription Tier Upgrade Request</h2>
+        <p>Enterprise client <strong>{comp.name}</strong> (#{comp.code}) has requested a subscription plan upgrade.</p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 16px 0; font-size: 13px;">
+            <p style="margin: 4px 0;"><strong>Company:</strong> {comp.name} (#{comp.code})</p>
+            <p style="margin: 4px 0;"><strong>Current Plan:</strong> {comp.plan} (₹{comp.price_per_verification}/profile)</p>
+            <p style="margin: 4px 0;"><strong>Requested Upgrade:</strong> <span style="color: #4338ca; font-weight: bold;">{plan_name}</span></p>
+            <p style="margin: 4px 0;"><strong>Estimated Monthly Volume:</strong> {est_vol} profiles</p>
+            <p style="margin: 4px 0;"><strong>Effective Date:</strong> {effective_date}</p>
+            <p style="margin: 4px 0;"><strong>Client Remarks:</strong> {notes or 'Standard volume upgrade request'}</p>
+        </div>
+        """
+        html = _build_email_shell(
+            header_title=f"Plan Upgrade Request - {comp.name}",
+            badge_text="SUBSCRIPTION AMENDMENT",
+            content_html=content,
+            action_url=f"{app_url}/superadmin",
+            action_text="Review & Approve Upgrade in Super Admin Portal",
+            sender_brand="JOY Verification Platform"
+        )
+        send_smtp_email(
+            to_email=sa_email,
+            subject=f"🚀 Plan Upgrade Request: {comp.name} ➔ {plan_name}",
+            html_content=html,
+            db=db
+        )
+    except Exception as e:
+        print(f"Warning: Failed to email SuperAdmin about plan upgrade: {e}")
+
+    return {
+        "success": True,
+        "message": f"🎉 Plan upgrade request for '{plan_name}' submitted to Super Administrator! Our enterprise team will review & update your contracted tariff.",
+        "upgrade_request": req_record
+    }
+
+

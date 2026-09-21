@@ -2299,6 +2299,68 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </button>
           </div>
 
+          {/* Inbound Enterprise Registration & Plan Upgrade Requests Queue */}
+          {companyRequests && companyRequests.filter(r => r.status === 'Pending').length > 0 && (
+            <div className="p-5 rounded-2xl bg-indigo-50/70 border-2 border-indigo-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                  <h4 className="font-black text-sm text-slate-900">
+                    Inbound Enterprise & Plan Upgrade Requests ({companyRequests.filter(r => r.status === 'Pending').length} Action Required)
+                  </h4>
+                </div>
+                <span className="badge badge-indigo text-[10px] font-bold">Actionable Queue</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {companyRequests.filter(r => r.status === 'Pending').map(req => {
+                  const isUpgrade = (req.requested_plan || '').startsWith('UPGRADE:');
+                  return (
+                    <div key={req.id} className="p-3.5 bg-white rounded-xl border border-indigo-100 shadow-2xs space-y-2 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="font-black text-xs text-slate-900 flex items-center gap-1.5">
+                              {isUpgrade ? <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> : <Building2 className="w-3.5 h-3.5 text-purple-600" />}
+                              <span>{req.company_name}</span>
+                            </div>
+                            <div className="text-[11px] text-slate-500">{req.contact_person} • {req.email} • {req.phone}</div>
+                          </div>
+                          <span className={`badge text-[9px] font-black ${isUpgrade ? 'badge-purple' : 'badge-emerald'}`}>
+                            {isUpgrade ? '🚀 Plan Upgrade' : '🏢 New Registration'}
+                          </span>
+                        </div>
+                        <div className="mt-2 p-2 bg-slate-50 rounded-lg text-[11px] space-y-0.5 font-medium text-slate-700">
+                          <div><strong>Requested:</strong> <span className="text-indigo-700 font-bold">{req.requested_plan}</span></div>
+                          <div><strong>Volume:</strong> {req.estimated_monthly_verifications} profiles/mo</div>
+                          {req.notes && <div className="text-slate-500 italic">"{req.notes}"</div>}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => handleRejectCompanyRequest(req.id)}
+                          className="btn btn-secondary text-[10px] py-1 px-2.5 font-bold text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApproveCompanyRequest(req.id)}
+                          className="btn btn-superadmin text-[10px] py-1 px-3 font-black shadow-xs flex items-center gap-1 cursor-pointer hover:scale-102 transition-all"
+                        >
+                          <Check className="w-3 h-3" />
+                          <span>{isUpgrade ? 'Approve & Activate Upgrade 🚀' : 'Approve & Provision Account ✅'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs bg-white">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -2405,6 +2467,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         <div className="text-slate-500 text-[11px] font-medium mt-0.5">
                           Quota: <strong className="text-slate-900">{comp.verifiedCountThisMonth || 0}</strong> / {comp.maxLimit || 500} used
                         </div>
+                        {comp.features?.pending_plan_upgrade && (
+                          <div className="mt-1">
+                            <span className="badge badge-amber text-[8.5px] font-black animate-pulse flex items-center gap-1">
+                              <Sparkles className="w-2.5 h-2.5" />
+                              Upgrade Req: {comp.features.pending_plan_upgrade.requested_plan_name || comp.features.pending_plan_upgrade.requested_plan_id}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* 4. 10 Active Feature Flags */}

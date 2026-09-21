@@ -371,6 +371,13 @@ export const api = {
       message: `📧 HR Recruiter activation invitation email & password successfully dispatched!`
     }));
   },
+  requestCompanyPlanUpgrade: (companyId, upgradePayload) => {
+    requestCache.clear();
+    return request(`/company/${companyId}/plan-upgrade-request`, {
+      method: 'POST',
+      body: JSON.stringify(upgradePayload)
+    });
+  },
   createCompany: (companyData) => {
     requestCache.clear();
     return request('/superadmin/companies', {

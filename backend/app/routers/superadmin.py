@@ -1978,7 +1978,7 @@ def submit_company_request(payload: dict, db: Session = Depends(get_db)):
 
 @router.put("/company-requests/{request_id}/approve")
 def approve_company_request(request_id: str, db: Session = Depends(get_db)):
-    """Super Admin 1-Click Approval: Automatically provisions the company account, creates storage folder, and dispatches welcome email"""
+    """Super Admin 1-Click Approval: Automatically provisions or upgrades company account, updates tariffs, and dispatches confirmation email"""
     req = db.query(CompanyRequest).filter(CompanyRequest.id == request_id).first()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found.")
@@ -1987,30 +1987,118 @@ def approve_company_request(request_id: str, db: Session = Depends(get_db)):
     req.approved_at = datetime.utcnow()
     req.approved_by = "Super Administrator"
 
-    # Create Company automatically
+    # Check if company already exists (e.g. Upgrade Request or Existing Client)
+    existing_comp = db.query(Company).filter(
+        (Company.email == req.email) | (Company.name == req.company_name)
+    ).first()
+
+    clean_plan = (req.requested_plan or "Tier 1 (< 50 Employees)").replace("UPGRADE:", "").strip()
+    if " (from " in clean_plan:
+        clean_plan = clean_plan.split(" (from ")[0].strip()
+
+    plan_lower = clean_plan.lower()
+
+    # Determine storage, seats, quota, and per-profile rate from plan
+    if "tier 5" in plan_lower or "custom" in plan_lower or "500+" in plan_lower or "unlimited" in plan_lower or "premier" in plan_lower:
+        storage_gb = 500
+        max_seats = 100
+        quota = 999999
+        price = 150.0
+    elif "tier 4" in plan_lower or "500" in plan_lower:
+        storage_gb = 100
+        max_seats = 50
+        quota = 500
+        price = 180.0
+    elif "tier 3" in plan_lower or "300" in plan_lower:
+        storage_gb = 50
+        max_seats = 20
+        quota = 300
+        price = 200.0
+    elif "tier 2" in plan_lower or "100" in plan_lower or "150" in plan_lower:
+        storage_gb = 25
+        max_seats = 10
+        quota = 100
+        price = 230.0
+    elif "tier 1" in plan_lower or "50" in plan_lower:
+        storage_gb = 10
+        max_seats = 5
+        quota = 50
+        price = 250.0
+    else:
+        storage_gb = 25
+        max_seats = 10
+        quota = req.estimated_monthly_verifications or 300
+        price = 200.0
+
+    if existing_comp:
+        # 🚀 Upgrade existing company account!
+        existing_comp.plan = clean_plan
+        existing_comp.price_per_verification = price
+        existing_comp.max_limit = quota
+        existing_comp.max_hr_seats = max_seats
+        existing_comp.storage_limit_gb = storage_gb
+        existing_comp.monthly_quota_limit = quota
+
+        # Clear pending upgrade state from features
+        f = dict(existing_comp.features or {})
+        f.pop("pending_plan_upgrade", None)
+        existing_comp.features = f
+
+        db.commit()
+        db.refresh(existing_comp)
+
+        # Dispatch Plan Upgrade Confirmation Email
+        try:
+            app_url = settings.APP_BASE_URL.rstrip('/')
+            html = _build_email_shell(
+                header_title="Subscription Plan Upgrade Approved",
+                badge_text="CONTRACT AMENDMENT ACTIVE",
+                content_html=f"""
+                <h2 style="color: #0f172a; margin-top: 0;">🎉 Your Subscription Upgrade is Active!</h2>
+                <p>Dear {existing_comp.contact_person or existing_comp.name},</p>
+                <p>We are pleased to inform you that your request to upgrade to <strong>{clean_plan}</strong> has been approved and activated under your Master Services Agreement (MSA).</p>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 16px 0; font-size: 13px;">
+                    <p style="margin: 4px 0;"><strong>Company:</strong> {existing_comp.name} (#{existing_comp.code})</p>
+                    <p style="margin: 4px 0;"><strong>New Active Plan:</strong> {clean_plan}</p>
+                    <p style="margin: 4px 0;"><strong>Contracted Tariff:</strong> ₹{price} per verified profile</p>
+                    <p style="margin: 4px 0;"><strong>Monthly Included Volume:</strong> {quota if quota != 999999 else 'Unlimited (>500)'} profiles</p>
+                    <p style="margin: 4px 0;"><strong>HR Recruiter Seats:</strong> Up to {max_seats} seats</p>
+                    <p style="margin: 4px 0;"><strong>Storage Quota:</strong> {storage_gb} GB Cloud Vault</p>
+                </div>
+                <p>You can view your updated billing tier and manage employee background verifications directly in your portal.</p>
+                """,
+                action_url=f"{app_url}/company",
+                action_text="Open Company Dashboard",
+                sender_brand="JOY Verification Platform"
+            )
+            send_smtp_email(
+                to_email=existing_comp.email,
+                subject=f"🎉 Subscription Upgrade Approved: {clean_plan} is now Active!",
+                html_content=html,
+                db=db
+            )
+        except Exception as e:
+            print(f"Warning: Failed to email company about upgrade approval: {e}")
+
+        return {
+            "success": True,
+            "message": f"🎉 Plan upgrade to '{clean_plan}' approved & activated for {existing_comp.name}! Contracted tariff updated to ₹{price}/profile.",
+            "company": {
+                "id": existing_comp.id,
+                "name": existing_comp.name,
+                "code": existing_comp.code,
+                "email": existing_comp.email,
+                "plan": existing_comp.plan
+            }
+        }
+
+    # Otherwise: Provision Brand New Company Account
     total_comps = db.query(Company).count() + 1
     comp_code = f"COMP{total_comps:03d}"
     comp_id = f"comp-{uuid.uuid4().hex[:6]}"
     activation_token = f"comp_act_{uuid.uuid4().hex[:12]}"
     login_password_set = "Company@Admin2026"
     expires_at = datetime.utcnow() + timedelta(days=30)
-
-    # Determine storage and seats from plan
-    if "Starter" in req.requested_plan:
-        storage_gb = 5
-        max_seats = 2
-        quota = 100
-        price = 80.0
-    elif "Unlimited" in req.requested_plan or "Premier" in req.requested_plan:
-        storage_gb = 100
-        max_seats = 50
-        quota = 10000
-        price = 180.0
-    else:
-        storage_gb = 25
-        max_seats = 10
-        quota = 1000
-        price = 120.0
 
     tariffs = {
         "aadhaar": 15, "pan": 10, "bank": 8, "dl": 12, "epfo": 25,
@@ -2025,10 +2113,10 @@ def approve_company_request(request_id: str, db: Session = Depends(get_db)):
         phone=req.phone,
         email=req.email,
         password_hash=login_password_set,
-        plan=req.requested_plan,
+        plan=clean_plan,
         price_per_verification=price,
         max_limit=quota,
-        wallet_balance=5000.0, # Initial ₹5,000 credit buffer
+        wallet_balance=5000.0,
         storage_limit_gb=storage_gb,
         max_hr_seats=max_seats,
         monthly_quota_limit=quota,
