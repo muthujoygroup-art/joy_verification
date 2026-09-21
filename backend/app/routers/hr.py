@@ -202,6 +202,27 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.linked_in_url: existing_cand.linked_in_url = payload.linked_in_url
         if payload.github_url: existing_cand.github_url = payload.github_url
         if payload.portfolio_url: existing_cand.portfolio_url = payload.portfolio_url
+
+        # Check joining_form_data for statutory numbers fallback on update
+        if payload.joining_form_data:
+            jfd_up = dict(payload.joining_form_data)
+            if not existing_cand.pan_no and (jfd_up.get("panNo") or jfd_up.get("pan") or jfd_up.get("panNumber")):
+                existing_cand.pan_no = jfd_up.get("panNo") or jfd_up.get("pan") or jfd_up.get("panNumber")
+            if not existing_cand.pf_number and (jfd_up.get("uanEpf") or jfd_up.get("uan") or jfd_up.get("uanNumber")):
+                existing_cand.pf_number = jfd_up.get("uanEpf") or jfd_up.get("uan") or jfd_up.get("uanNumber")
+                existing_cand.uan_no = existing_cand.pf_number
+            if not existing_cand.bank_account_no and (jfd_up.get("bankAccountNo") or jfd_up.get("accountNumber")):
+                existing_cand.bank_account_no = jfd_up.get("bankAccountNo") or jfd_up.get("accountNumber")
+            if not existing_cand.ifsc_code and (jfd_up.get("ifscCode") or jfd_up.get("ifsc")):
+                existing_cand.ifsc_code = jfd_up.get("ifscCode") or jfd_up.get("ifsc")
+            if not existing_cand.bank_name and jfd_up.get("bankName"):
+                existing_cand.bank_name = jfd_up.get("bankName")
+            if not existing_cand.esi_number and (jfd_up.get("esiNumber") or jfd_up.get("esicNo")):
+                existing_cand.esi_number = jfd_up.get("esiNumber") or jfd_up.get("esicNo")
+            if not existing_cand.aadhaar_no and (jfd_up.get("aadhaarNo") or jfd_up.get("aadhaar")):
+                existing_cand.aadhaar_no = jfd_up.get("aadhaarNo") or jfd_up.get("aadhaar")
+            existing_cand.joining_form_data = jfd_up
+
         if resolved_hr_id: existing_cand.hr_id = resolved_hr_id
         if existing_cand.status != "Verified":
             existing_cand.status = "Link Sent"
@@ -210,7 +231,6 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
             existing_cand.token = f"tok_{clean_n}_{uuid.uuid4().hex[:4]}"
         existing_cand.portal_password = payload.portal_password or existing_cand.portal_password or "1234"
         if payload.verification_config: existing_cand.verification_config = payload.verification_config
-        if payload.joining_form_data: existing_cand.joining_form_data = payload.joining_form_data
         if payload.custom_fields: existing_cand.custom_fields = payload.custom_fields
         if payload.specimen_signature: existing_cand.specimen_signature = payload.specimen_signature
         if commit:
@@ -246,9 +266,31 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         "right": None
     }
     
-    joining_data = payload.joining_form_data or {}
+    joining_data = dict(payload.joining_form_data or {})
     if payload.documents:
         joining_data["uploadedDocuments"] = payload.documents
+
+    # Auto-extract and harmonize statutory & banking numbers from joining_data
+    pan_val = payload.pan_no or joining_data.get("panNo") or joining_data.get("pan") or joining_data.get("panNumber")
+    uan_val = payload.uan_no or payload.pf_number or joining_data.get("uanEpf") or joining_data.get("uan") or joining_data.get("uanNumber") or joining_data.get("pfNumber")
+    bank_acc_val = payload.bank_account_no or joining_data.get("bankAccountNo") or joining_data.get("accountNumber") or joining_data.get("accountNo")
+    ifsc_val = payload.ifsc_code or joining_data.get("ifscCode") or joining_data.get("ifsc")
+    bank_name_val = payload.bank_name or joining_data.get("bankName")
+    esi_val = payload.esi_number or joining_data.get("esiNumber") or joining_data.get("esicNo")
+    aadhaar_val = payload.aadhaar_no or joining_data.get("aadhaarNo") or joining_data.get("aadhaar")
+    father_val = payload.father_name or joining_data.get("fatherSpouseName") or joining_data.get("fatherName")
+    mother_val = payload.mother_name or joining_data.get("motherName")
+    perm_addr_val = payload.permanent_address or joining_data.get("permanentAddressLine") or joining_data.get("permanentAddress")
+    pres_addr_val = payload.present_address or joining_data.get("presentAddressLine") or joining_data.get("presentAddress") or perm_addr_val
+
+    # Ensure joining_data also contains consistent keys
+    if pan_val and not joining_data.get("panNo"): joining_data["panNo"] = pan_val
+    if uan_val and not joining_data.get("uanEpf"): joining_data["uanEpf"] = uan_val
+    if bank_acc_val and not joining_data.get("bankAccountNo"): joining_data["bankAccountNo"] = bank_acc_val
+    if ifsc_val and not joining_data.get("ifscCode"): joining_data["ifscCode"] = ifsc_val
+    if bank_name_val and not joining_data.get("bankName"): joining_data["bankName"] = bank_name_val
+    if esi_val and not joining_data.get("esiNumber"): joining_data["esiNumber"] = esi_val
+    if aadhaar_val and not joining_data.get("aadhaarNo"): joining_data["aadhaarNo"] = aadhaar_val
 
     new_candidate = Candidate(
         id=candidate_id,
@@ -258,48 +300,48 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         employee_number=payload.employee_number or hierarchical_emp_code,
         email=clean_email,
         mobile=clean_mobile or "",
-        aadhaar_no=payload.aadhaar_no,
+        aadhaar_no=aadhaar_val,
         designation=payload.designation or "Associate",
         dept=payload.dept or "General",
         employee_type=payload.employee_type or "it_tech",
-        dob=payload.dob,
-        doj=payload.doj,
-        age=payload.age,
-        gender=payload.gender or "Male",
-        marital_status=payload.marital_status or "Single",
-        mother_tongue=payload.mother_tongue or "Tamil",
+        dob=payload.dob or joining_data.get("dob"),
+        doj=payload.doj or joining_data.get("doj"),
+        age=payload.age or (int(joining_data.get("age")) if joining_data.get("age") else None),
+        gender=payload.gender or joining_data.get("gender") or "Male",
+        marital_status=payload.marital_status or joining_data.get("maritalStatus") or "Single",
+        mother_tongue=payload.mother_tongue or joining_data.get("motherTongue") or "Tamil",
         languages_known=payload.languages_known or "English, Tamil, Hindi",
-        pf_number=payload.pf_number,
-        esi_number=payload.esi_number,
+        pf_number=uan_val,
+        esi_number=esi_val,
         religion=payload.religion or "Hindu",
         caste=payload.caste,
         category=payload.category or "General",
         native_state=payload.native_state or "Tamil Nadu",
         native_district=payload.native_district or "Chennai",
         identification_marks=payload.identification_marks,
-        father_name=payload.father_name,
-        mother_name=payload.mother_name,
+        father_name=father_val,
+        mother_name=mother_val,
         spouse_name=payload.spouse_name,
-        blood_group=payload.blood_group,
-        state=payload.state,
-        district=payload.district,
-        city=payload.city,
+        blood_group=payload.blood_group or joining_data.get("bloodGroup"),
+        state=payload.state or joining_data.get("permanentState"),
+        district=payload.district or joining_data.get("permanentCity"),
+        city=payload.city or joining_data.get("permanentCity"),
         area=payload.area,
-        pincode=payload.pincode,
-        present_address=payload.present_address,
-        permanent_address=payload.permanent_address,
-        pan_no=payload.pan_no,
-        uan_no=payload.uan_no,
-        alternate_mobile=payload.alternate_mobile,
-        emergency_contact_name=payload.emergency_contact_name,
-        emergency_contact_phone=payload.emergency_contact_phone,
+        pincode=payload.pincode or joining_data.get("permanentPincode"),
+        present_address=pres_addr_val,
+        permanent_address=perm_addr_val,
+        pan_no=pan_val,
+        uan_no=uan_val,
+        alternate_mobile=payload.alternate_mobile or joining_data.get("alternateMobile"),
+        emergency_contact_name=payload.emergency_contact_name or joining_data.get("emergencyContactName"),
+        emergency_contact_phone=payload.emergency_contact_phone or joining_data.get("emergencyContactPhone"),
         qualification_category=payload.qualification_category,
-        highest_qualification=payload.highest_qualification,
+        highest_qualification=payload.highest_qualification or joining_data.get("highestQualification"),
         job_category=payload.job_category,
         job_type=payload.job_type,
-        bank_name=payload.bank_name,
-        bank_account_no=payload.bank_account_no,
-        ifsc_code=payload.ifsc_code,
+        bank_name=bank_name_val,
+        bank_account_no=bank_acc_val,
+        ifsc_code=ifsc_val,
         nominee_name=payload.nominee_name,
         nominee_relation=payload.nominee_relation,
         linked_in_url=payload.linked_in_url,

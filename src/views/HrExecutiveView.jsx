@@ -1915,16 +1915,69 @@ export const HrExecutiveView = () => {
                     </div>
 
                     {/* Contact & Identity Details Chips */}
-                    <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
-                      <div>
-                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Phone / Mobile</span>
-                        <span className="font-mono font-bold text-slate-900 text-[11px] truncate block">{cand.mobile || 'N/A'}</span>
+                    <div className="space-y-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-xs">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase block">Phone / Mobile</span>
+                          <span className="font-mono font-bold text-slate-900 text-[11px] truncate block">{cand.mobile || '—'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-500 uppercase block">Email Address</span>
+                          <span className="font-mono text-slate-700 text-[11px] truncate block">{cand.email || '—'}</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Masked Aadhaar</span>
-                        <span className="font-mono font-bold text-slate-700 text-[11px] truncate block">
-                          {cand.aadhaarNo ? `XXXX XXXX ${cand.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'}
-                        </span>
+
+                      {/* Extracted / Uploaded Document Numbers Grid */}
+                      <div className="pt-1.5 border-t border-slate-200/60 grid grid-cols-2 gap-1.5 text-[10px]">
+                        {(cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-slate-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-slate-400 block uppercase">Aadhaar</span>
+                            <span className="font-mono font-bold text-slate-800 truncate block">
+                              {cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo}
+                            </span>
+                          </div>
+                        )}
+                        {(cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-indigo-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-indigo-500 block uppercase">PAN No</span>
+                            <span className="font-mono font-bold text-indigo-950 truncate block">
+                              {cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan}
+                            </span>
+                          </div>
+                        )}
+                        {(cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-purple-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-purple-500 block uppercase">EPFO UAN</span>
+                            <span className="font-mono font-bold text-purple-950 truncate block">
+                              {cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan}
+                            </span>
+                          </div>
+                        )}
+                        {(cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-emerald-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-emerald-600 block uppercase">Bank A/C</span>
+                            <span className="font-mono font-bold text-emerald-950 truncate block">
+                              {cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber}
+                              {(cand.ifscCode || cand.joiningFormData?.ifscCode) ? ` (${cand.ifscCode || cand.joiningFormData?.ifscCode})` : ''}
+                            </span>
+                          </div>
+                        )}
+                        {(cand.esiNumber || cand.esicNo || cand.joiningFormData?.esiNumber || cand.joiningFormData?.esicNo) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-amber-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-amber-600 block uppercase">ESIC No</span>
+                            <span className="font-mono font-bold text-amber-950 truncate block">
+                              {cand.esiNumber || cand.esicNo || cand.joiningFormData?.esiNumber || cand.joiningFormData?.esicNo}
+                            </span>
+                          </div>
+                        )}
+                        {(cand.dlNumber || cand.drivingLicense || cand.joiningFormData?.drivingLicense || cand.joiningFormData?.dlNo) && (
+                          <div className="bg-white px-2 py-1 rounded-lg border border-sky-200 truncate">
+                            <span className="text-[8.5px] font-extrabold text-sky-600 block uppercase">DL No</span>
+                            <span className="font-mono font-bold text-sky-950 truncate block">
+                              {cand.dlNumber || cand.drivingLicense || cand.joiningFormData?.drivingLicense || cand.joiningFormData?.dlNo}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -2154,8 +2207,61 @@ export const HrExecutiveView = () => {
                         <div className="text-slate-500 text-[11px] font-medium">{(cand.designation || 'Associate') + (cand.empId || cand.employeeNumber ? ` • #${cand.empId || cand.employeeNumber}` : '')}</div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="text-slate-900 font-bold font-mono">{cand.mobile || '—'}</div>
-                        <div className="text-slate-500 text-[11px] font-mono">{cand.aadhaarNo ? `Aadhaar: ${cand.aadhaarNo}` : 'Aadhaar: Pending'}</div>
+                        <div className="text-slate-900 font-bold font-mono text-xs">{cand.mobile || '—'}</div>
+                        <div className="text-slate-500 text-[11px] truncate max-w-xs">{cand.email || ''}</div>
+                        
+                        {/* Extracted & Verified Document Number Badges */}
+                        <div className="flex flex-wrap gap-1 mt-1.5 max-w-sm">
+                          {(cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300 font-mono text-[9.5px] text-slate-800 font-bold" title="Aadhaar Number">
+                              <span className="text-[8.5px] font-black text-slate-500">UID:</span>
+                              {cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo}
+                            </span>
+                          )}
+                          {(cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-50 border border-indigo-200 font-mono text-[9.5px] text-indigo-950 font-bold" title="Income Tax PAN">
+                              <span className="text-[8.5px] font-black text-indigo-600">PAN:</span>
+                              {cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan}
+                            </span>
+                          )}
+                          {(cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 border border-purple-200 font-mono text-[9.5px] text-purple-950 font-bold" title="EPFO Universal Account Number (UAN)">
+                              <span className="text-[8.5px] font-black text-purple-600">UAN:</span>
+                              {cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan}
+                            </span>
+                          )}
+                          {(cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 font-mono text-[9.5px] text-emerald-950 font-bold" title="Bank Account & IFSC Code">
+                              <span className="text-[8.5px] font-black text-emerald-600">A/C:</span>
+                              {cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber}
+                              {(cand.ifscCode || cand.joiningFormData?.ifscCode) ? ` • ${cand.ifscCode || cand.joiningFormData?.ifscCode}` : ''}
+                            </span>
+                          )}
+                          {(cand.esiNumber || cand.esicNo || cand.joiningFormData?.esiNumber || cand.joiningFormData?.esicNo) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 font-mono text-[9.5px] text-amber-950 font-bold" title="ESIC Insurance IP Number">
+                              <span className="text-[8.5px] font-black text-amber-600">ESIC:</span>
+                              {cand.esiNumber || cand.esicNo || cand.joiningFormData?.esiNumber || cand.joiningFormData?.esicNo}
+                            </span>
+                          )}
+                          {(cand.dlNumber || cand.drivingLicense || cand.joiningFormData?.drivingLicense || cand.joiningFormData?.dlNo) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-sky-50 border border-sky-200 font-mono text-[9.5px] text-sky-950 font-bold" title="MoRTH Driving License">
+                              <span className="text-[8.5px] font-black text-sky-600">DL:</span>
+                              {cand.dlNumber || cand.drivingLicense || cand.joiningFormData?.drivingLicense || cand.joiningFormData?.dlNo}
+                            </span>
+                          )}
+                          {(cand.passportNo || cand.joiningFormData?.passportNo) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-violet-50 border border-violet-200 font-mono text-[9.5px] text-violet-950 font-bold" title="Passport Number">
+                              <span className="text-[8.5px] font-black text-violet-600">PASS:</span>
+                              {cand.passportNo || cand.joiningFormData?.passportNo}
+                            </span>
+                          )}
+                          {(cand.voterId || cand.joiningFormData?.voterId) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-teal-50 border border-teal-200 font-mono text-[9.5px] text-teal-950 font-bold" title="ECI Voter ID EPIC Number">
+                              <span className="text-[8.5px] font-black text-teal-600">EPIC:</span>
+                              {cand.voterId || cand.joiningFormData?.voterId}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex flex-wrap gap-1 max-w-xs text-[10px]">
@@ -6351,13 +6457,58 @@ export const HrExecutiveView = () => {
                     }
                   };
 
+                  const getCandidateDocInputValue = () => {
+                    const jfd = managingDocVerifCandidate.joiningFormData || managingDocVerifCandidate.joining_form_data || {};
+                    if (doc.key === 'aadhaar') {
+                      const v = managingDocVerifCandidate.aadhaarNo || managingDocVerifCandidate.aadhaar_no || jfd.aadhaarNo || '';
+                      return v ? `UID: ${v}` : '';
+                    }
+                    if (doc.key === 'pan') {
+                      const v = managingDocVerifCandidate.panNo || managingDocVerifCandidate.pan_no || managingDocVerifCandidate.panNumber || jfd.panNo || jfd.pan || '';
+                      return v ? `PAN: ${v}` : '';
+                    }
+                    if (doc.key === 'bankCheck') {
+                      const acc = managingDocVerifCandidate.bankAccountNo || managingDocVerifCandidate.accountNumber || jfd.bankAccountNo || jfd.accountNumber || '';
+                      const ifsc = managingDocVerifCandidate.ifscCode || jfd.ifscCode || jfd.ifsc || '';
+                      return acc ? `A/C: ${acc}${ifsc ? ` (${ifsc})` : ''}` : '';
+                    }
+                    if (doc.key === 'uan') {
+                      const u = managingDocVerifCandidate.pfNumber || managingDocVerifCandidate.uanNumber || managingDocVerifCandidate.uan_no || jfd.uanEpf || jfd.uan || '';
+                      return u ? `UAN: ${u}` : '';
+                    }
+                    if (doc.key === 'drivingLicense') {
+                      const dl = managingDocVerifCandidate.dlNumber || managingDocVerifCandidate.drivingLicense || jfd.drivingLicense || jfd.dlNo || '';
+                      return dl ? `DL: ${dl}` : '';
+                    }
+                    if (doc.key === 'passport') {
+                      const p = managingDocVerifCandidate.passportNo || managingDocVerifCandidate.passportNumber || jfd.passportNo || '';
+                      return p ? `Pass: ${p}` : '';
+                    }
+                    if (doc.key === 'voterId') {
+                      const v = managingDocVerifCandidate.voterId || managingDocVerifCandidate.epicNumber || jfd.voterId || '';
+                      return v ? `EPIC: ${v}` : '';
+                    }
+                    if (doc.key === 'courtRecords') {
+                      return managingDocVerifCandidate.name ? `Candidate: ${managingDocVerifCandidate.name}` : '';
+                    }
+                    if (doc.key === 'esic') {
+                      const e = managingDocVerifCandidate.esiNumber || managingDocVerifCandidate.esicNo || jfd.esiNumber || '';
+                      return e ? `ESIC: ${e}` : '';
+                    }
+                    if (doc.key === 'faceCapture') {
+                      return managingDocVerifCandidate.faceImages?.straight ? 'Biometric 3-Pose Ready' : '';
+                    }
+                    return '';
+                  };
+                  const docInputValue = getCandidateDocInputValue();
+
                   const handleTriggerDocVerification = (e) => {
                     e.stopPropagation();
                     const cand = managingDocVerifCandidate;
                     if (!cand) return;
 
+                    const rawAadhaar = cand.aadhaarNo || cand.aadhaar_no || (cand.joiningFormData?.aadhaarNo || '');
                     if (doc.key === 'aadhaar') {
-                      const rawAadhaar = cand.aadhaarNo || cand.aadhaar_no || (cand.joiningFormData?.aadhaarNo || '');
                       setHrAadhaarModal({
                         isOpen: true,
                         candidate: cand,
@@ -6378,46 +6529,63 @@ export const HrExecutiveView = () => {
                     let f1 = { label: '', key: '', value: '' };
                     let f2 = { label: '', key: '', value: '' };
 
+                    const unifiedPayload = {
+                      ...cand,
+                      ...jfd
+                    };
+
                     if (doc.key === 'pan') {
-                      const val = cand.panNo || cand.pan_no || jfd.panNo || jfd.pan || '';
+                      const val = cand.panNo || cand.pan_no || cand.panNumber || jfd.panNo || jfd.pan || '';
                       if (val && val.trim().length >= 5) hasData = true;
                       f1 = { label: '10-Character PAN Number', key: 'panNo', value: val || 'ABCDE1234F' };
+                      unifiedPayload.panNo = val || 'ABCDE1234F';
                     } else if (doc.key === 'bankCheck') {
-                      const acc = cand.bankAccountNo || jfd.bankAccountNo || jfd.accountNumber || '';
+                      const acc = cand.bankAccountNo || cand.accountNumber || jfd.bankAccountNo || jfd.accountNumber || '';
                       const ifsc = cand.ifscCode || jfd.ifscCode || jfd.ifsc || '';
                       if (acc && acc.trim().length >= 4) hasData = true;
                       f1 = { label: 'Bank Account Number', key: 'bankAccountNo', value: acc || '50100234129845' };
                       f2 = { label: 'Bank IFSC Code', key: 'ifscCode', value: ifsc || 'HDFC0000128' };
+                      unifiedPayload.bankAccountNo = acc || '50100234129845';
+                      unifiedPayload.ifscCode = ifsc || 'HDFC0000128';
                     } else if (doc.key === 'drivingLicense') {
-                      const dl = cand.dlNumber || jfd.drivingLicense || jfd.dlNo || '';
+                      const dl = cand.dlNumber || cand.drivingLicense || jfd.drivingLicense || jfd.dlNo || '';
                       if (dl && dl.trim().length >= 4) hasData = true;
                       f1 = { label: 'MoRTH Driving License Number', key: 'drivingLicense', value: dl || 'KA0120200004910' };
                       f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                      unifiedPayload.drivingLicense = dl || 'KA0120200004910';
+                      unifiedPayload.dob = cand.dob || jfd.dob || '1996-05-15';
                     } else if (doc.key === 'uan') {
-                      const uan = cand.pfNumber || jfd.uanEpf || jfd.uan || '';
+                      const uan = cand.pfNumber || cand.uanNumber || cand.uan_no || jfd.uanEpf || jfd.uan || '';
                       if (uan && uan.trim().length >= 4) hasData = true;
                       f1 = { label: 'EPFO 12-Digit UAN Number', key: 'uanEpf', value: uan || '101239019283' };
+                      unifiedPayload.uanEpf = uan || '101239019283';
                     } else if (doc.key === 'passport') {
-                      const pp = cand.passportNo || jfd.passportNo || '';
+                      const pp = cand.passportNo || cand.passportNumber || jfd.passportNo || '';
                       if (pp && pp.trim().length >= 4) hasData = true;
                       f1 = { label: 'Passport File / Number', key: 'passportNo', value: pp || 'Z8491024' };
                       f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                      unifiedPayload.passportNo = pp || 'Z8491024';
+                      unifiedPayload.dob = cand.dob || jfd.dob || '1996-05-15';
                     } else if (doc.key === 'voterId') {
-                      const epic = cand.voterId || jfd.voterId || jfd.epicNumber || '';
+                      const epic = cand.voterId || cand.epicNumber || jfd.voterId || jfd.epicNumber || '';
                       if (epic && epic.trim().length >= 4) hasData = true;
                       f1 = { label: 'ECI Voter ID (EPIC Number)', key: 'voterId', value: epic || 'WZK8912301' };
                       f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                      unifiedPayload.voterId = epic || 'WZK8912301';
+                      unifiedPayload.dob = cand.dob || jfd.dob || '1996-05-15';
                     } else if (doc.key === 'esic') {
-                      const esi = cand.esiNumber || jfd.esiNumber || jfd.esicNo || '';
+                      const esi = cand.esiNumber || cand.esicNo || jfd.esiNumber || jfd.esicNo || '';
                       if (esi && esi.trim().length >= 4) hasData = true;
                       f1 = { label: 'ESIC 17-Digit IP Number', key: 'esiNumber', value: esi || '31001234560000001' };
                       f2 = { label: 'Date of Birth (YYYY-MM-DD)', key: 'dob', value: cand.dob || jfd.dob || '1996-05-15' };
+                      unifiedPayload.esiNumber = esi || '31001234560000001';
+                      unifiedPayload.dob = cand.dob || jfd.dob || '1996-05-15';
                     } else if (doc.key === 'courtRecords' || doc.key === 'faceCapture') {
                       hasData = true;
                     }
 
                     if (hasData) {
-                      executeDirectDocVerification(doc.key, doc.name, doc.provider, jfd);
+                      executeDirectDocVerification(doc.key, doc.name, doc.provider, unifiedPayload);
                     } else {
                       setHrDocPromptModal({
                         isOpen: true,
@@ -6519,12 +6687,26 @@ export const HrExecutiveView = () => {
                         </div>
                       </div>
 
-                      {/* Verified Result Strip */}
-                      {isVerified && (
+                      {/* Result / Extracted Number Strip */}
+                      {isVerified ? (
                         <div className="pt-1.5 border-t border-emerald-200/80 flex items-center justify-between text-[10px] text-emerald-900 font-medium">
                           <span className="truncate font-mono font-bold">{getVerifiedSnippet()}</span>
                           <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold shrink-0 ml-1">
                             DPDP Sealed
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="pt-1.5 border-t border-slate-200/80 flex items-center justify-between text-[10px]">
+                          {docInputValue ? (
+                            <span className="text-indigo-950 font-mono font-bold truncate flex items-center gap-1 min-w-0" title="Extracted from Excel upload or candidate profile">
+                              <span className="text-[8.5px] px-1 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold uppercase shrink-0">Excel/Form:</span>
+                              <span className="truncate">{docInputValue}</span>
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic text-[9.5px]">No document number entered</span>
+                          )}
+                          <span className="text-[9px] text-slate-500 font-bold shrink-0 ml-1">
+                            {docInputValue ? '1-Click Ready ⚡' : 'Prompt on Verify'}
                           </span>
                         </div>
                       )}

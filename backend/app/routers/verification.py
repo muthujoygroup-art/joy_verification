@@ -186,7 +186,13 @@ def get_candidate_verification_records(token: str, db: Session = Depends(get_db)
     Returns all permanent, tamper-evident verification records and extracted data
     stored in PostgreSQL for the specified candidate.
     """
-    candidate = db.query(Candidate).filter(Candidate.token == token).first()
+    clean_token = (token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) |
+        (Candidate.id == clean_token) |
+        (Candidate.emp_id == clean_token) |
+        (Candidate.token.ilike(f"%{clean_token}%"))
+    ).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
         
@@ -249,6 +255,7 @@ def request_otp(payload: SendOtpRequest, db: Session = Depends(get_db)):
         masked_target=masked
     )
 
+
 class SendEmailOtpPayload(BaseModel):
     token: Optional[str] = None
     email: str
@@ -263,7 +270,7 @@ def dispatch_email_otp(payload: SendEmailOtpPayload, db: Session = Depends(get_d
     candidate = None
     if payload.token:
         candidate = db.query(Candidate).filter(
-            (Candidate.token == payload.token) | (Candidate.id == payload.token)
+            (Candidate.token == payload.token) | (Candidate.id == payload.token) | (Candidate.emp_id == payload.token)
         ).first()
     
     cand_name = (candidate.name if candidate else None) or payload.candidate_name or "Valued Candidate"
@@ -361,7 +368,12 @@ def endpoint_verify_aadhaar(payload: VerifyAadhaarRequest, db: Session = Depends
 @router.post("/verify-pan")
 def endpoint_verify_pan(payload: VerifyPanRequest, db: Session = Depends(get_db)):
     """Verifies PAN with NSDL Income Tax and stores verified attributes"""
-    success, msg, data = verify_pan_live(db, payload.token, payload.pan_number)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_pan_live(db, token_to_use, payload.pan_number)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -369,7 +381,12 @@ def endpoint_verify_pan(payload: VerifyPanRequest, db: Session = Depends(get_db)
 @router.post("/verify-bank")
 def endpoint_verify_bank(payload: VerifyBankRequest, db: Session = Depends(get_db)):
     """Executes IMPS Penny Drop via NPCI and stores verified beneficiary details"""
-    success, msg, data = verify_bank_account_live(db, payload.token, payload.account_number, payload.ifsc_code)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_bank_account_live(db, token_to_use, payload.account_number, payload.ifsc_code)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -377,7 +394,12 @@ def endpoint_verify_bank(payload: VerifyBankRequest, db: Session = Depends(get_d
 @router.post("/verify-dl")
 def endpoint_verify_dl(payload: VerifyDlRequest, db: Session = Depends(get_db)):
     """Verifies Driving License with MoRTH Sarathi and stores license categories and validity"""
-    success, msg, data = verify_driving_license_live(db, payload.token, payload.dl_number, payload.dob)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_driving_license_live(db, token_to_use, payload.dl_number, payload.dob)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -385,7 +407,12 @@ def endpoint_verify_dl(payload: VerifyDlRequest, db: Session = Depends(get_db)):
 @router.post("/verify-epfo")
 def endpoint_verify_epfo(payload: VerifyEpfoRequest, db: Session = Depends(get_db)):
     """Verifies EPFO UAN, checks for dual employment, and stores past establishments"""
-    success, msg, data = verify_epfo_uan_live(db, payload.token, payload.uan_number)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_epfo_uan_live(db, token_to_use, payload.uan_number)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -393,7 +420,12 @@ def endpoint_verify_epfo(payload: VerifyEpfoRequest, db: Session = Depends(get_d
 @router.post("/verify-passport")
 def endpoint_verify_passport(payload: VerifyPassportRequest, db: Session = Depends(get_db)):
     """Verifies Indian Passport with MEA Passport Seva registry and stores validity"""
-    success, msg, data = verify_passport_live(db, payload.token, payload.passport_number, payload.dob)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_passport_live(db, token_to_use, payload.passport_number, payload.dob)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -401,7 +433,12 @@ def endpoint_verify_passport(payload: VerifyPassportRequest, db: Session = Depen
 @router.post("/verify-voter-id")
 def endpoint_verify_voter_id(payload: VerifyVoterRequest, db: Session = Depends(get_db)):
     """Verifies Voter ID (EPIC) with Election Commission of India registry"""
-    success, msg, data = verify_voter_id_live(db, payload.token, payload.voter_id, payload.dob)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_voter_id_live(db, token_to_use, payload.voter_id, payload.dob)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -409,7 +446,12 @@ def endpoint_verify_voter_id(payload: VerifyVoterRequest, db: Session = Depends(
 @router.post("/verify-court-records")
 def endpoint_verify_court_records(payload: VerifyCourtRequest, db: Session = Depends(get_db)):
     """Searches real-time criminal and civil litigation records across Indian e-Courts"""
-    success, msg, data = verify_court_records_live(db, payload.token, payload.name, payload.father_name, payload.address)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_court_records_live(db, token_to_use, payload.name, payload.father_name, payload.address)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -417,7 +459,12 @@ def endpoint_verify_court_records(payload: VerifyCourtRequest, db: Session = Dep
 @router.post("/verify-vehicle-rc")
 def endpoint_verify_vehicle_rc(payload: VerifyVehicleRcRequest, db: Session = Depends(get_db)):
     """Verifies Vehicle Registration Certificate (RC) with MoRTH Vahan database"""
-    success, msg, data = verify_vehicle_rc_live(db, payload.token, payload.rc_number)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_vehicle_rc_live(db, token_to_use, payload.rc_number)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}
@@ -425,7 +472,12 @@ def endpoint_verify_vehicle_rc(payload: VerifyVehicleRcRequest, db: Session = De
 @router.post("/verify-esic")
 def endpoint_verify_esic(payload: VerifyEsicRequest, db: Session = Depends(get_db)):
     """Verifies ESIC Insurance details and employer registrations"""
-    success, msg, data = verify_esic_live(db, payload.token, payload.esic_number, payload.dob)
+    clean_token = (payload.token or "").strip()
+    candidate = db.query(Candidate).filter(
+        (Candidate.token == clean_token) | (Candidate.id == clean_token) | (Candidate.emp_id == clean_token)
+    ).first()
+    token_to_use = candidate.token if candidate else clean_token
+    success, msg, data = verify_esic_live(db, token_to_use, payload.esic_number, payload.dob)
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg, "data": data}

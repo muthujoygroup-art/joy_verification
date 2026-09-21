@@ -1332,14 +1332,44 @@ export const CompanyAdminView = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <div>
-                      <span className="text-[9px] font-bold text-slate-500 uppercase block">Department</span>
-                      <span className="font-bold text-slate-900 text-[11px] truncate block">{cand.dept || 'Engineering'}</span>
+                  <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Department</span>
+                        <span className="font-bold text-slate-900 text-[11px] truncate block">{cand.dept || 'Engineering'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Email Address</span>
+                        <span className="font-mono text-slate-700 text-[11px] truncate block">{cand.email}</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-[9px] font-bold text-slate-500 uppercase block">Email Address</span>
-                      <span className="font-mono text-slate-700 text-[11px] truncate block">{cand.email}</span>
+
+                    {/* Extracted Document Number Badges */}
+                    <div className="pt-1 border-t border-slate-200/60 grid grid-cols-2 gap-1 text-[9.5px]">
+                      {(cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo) && (
+                        <div className="bg-white px-1.5 py-0.5 rounded border border-slate-200 truncate">
+                          <span className="text-[8px] font-bold text-slate-400 block uppercase">Aadhaar</span>
+                          <span className="font-mono font-bold text-slate-800">{cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo}</span>
+                        </div>
+                      )}
+                      {(cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan) && (
+                        <div className="bg-white px-1.5 py-0.5 rounded border border-indigo-200 truncate">
+                          <span className="text-[8px] font-bold text-indigo-500 block uppercase">PAN</span>
+                          <span className="font-mono font-bold text-indigo-950">{cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan}</span>
+                        </div>
+                      )}
+                      {(cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan) && (
+                        <div className="bg-white px-1.5 py-0.5 rounded border border-purple-200 truncate">
+                          <span className="text-[8px] font-bold text-purple-500 block uppercase">UAN</span>
+                          <span className="font-mono font-bold text-purple-950">{cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan}</span>
+                        </div>
+                      )}
+                      {(cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber) && (
+                        <div className="bg-white px-1.5 py-0.5 rounded border border-emerald-200 truncate">
+                          <span className="text-[8px] font-bold text-emerald-600 block uppercase">Bank A/C</span>
+                          <span className="font-mono font-bold text-emerald-950">{cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1424,6 +1454,30 @@ export const CompanyAdminView = () => {
                       <td className="py-4 px-4">
                         <div className="font-bold text-slate-900 text-sm">{cand.name}</div>
                         <div className="text-slate-500 text-[11px] font-medium">{cand.email} • ID: #{cand.empId}</div>
+                        
+                        {/* Extracted Document Number Badges */}
+                        <div className="flex flex-wrap gap-1 mt-1 max-w-xs">
+                          {(cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo) && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-slate-100 border border-slate-300 font-mono text-[9px] text-slate-700 font-bold" title="Aadhaar">
+                              UID: {cand.aadhaarNo || cand.aadhaar_no || cand.joiningFormData?.aadhaarNo}
+                            </span>
+                          )}
+                          {(cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan) && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-indigo-50 border border-indigo-200 font-mono text-[9px] text-indigo-900 font-bold" title="PAN">
+                              PAN: {cand.panNo || cand.pan_no || cand.joiningFormData?.panNo || cand.joiningFormData?.pan}
+                            </span>
+                          )}
+                          {(cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan) && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-purple-50 border border-purple-200 font-mono text-[9px] text-purple-900 font-bold" title="EPFO UAN">
+                              UAN: {cand.pfNumber || cand.uanNumber || cand.uan_no || cand.joiningFormData?.uanEpf || cand.joiningFormData?.uan}
+                            </span>
+                          )}
+                          {(cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber) && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-emerald-50 border border-emerald-200 font-mono text-[9px] text-emerald-900 font-bold" title="Bank Account">
+                              A/C: {cand.bankAccountNo || cand.joiningFormData?.bankAccountNo || cand.joiningFormData?.accountNumber}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="text-slate-900 font-semibold">{cand.designation}</div>
