@@ -78,6 +78,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [forgotStep, setForgotStep] = useState(1); // 1 = request passcode, 2 = enter passcode & reset
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotOtp, setForgotOtp] = useState('');
+  const [devOtpHint, setDevOtpHint] = useState('');
   const [forgotNewPassword, setForgotNewPassword] = useState('');
   const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
   const [showForgotPw, setShowForgotPw] = useState(false);
@@ -104,6 +105,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setForgotStep(1);
     setForgotEmail(defaultEmail || emailInput || (selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : ''));
     setForgotOtp('');
+    setDevOtpHint('');
     setForgotNewPassword('');
     setForgotConfirmPassword('');
     setForgotError('');
@@ -114,6 +116,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const closeForgotMode = () => {
     setIsForgotMode(false);
     setForgotStep(1);
+    setDevOtpHint('');
     setForgotError('');
   };
 
@@ -124,8 +127,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setIsForgotLoading(true);
 
     try {
-      const emailToUse = (forgotEmail || emailInput || (selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : '')).trim();
-      if (!emailToUse) {
+      const isSuperAdmin = selectedRoleTab === 'superadmin';
+      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : (forgotEmail || emailInput).trim();
+      if (!emailToUse && !isSuperAdmin) {
         setForgotError('Please enter your registered account email.');
         setIsForgotLoading(false);
         return;
@@ -134,6 +138,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       const res = await requestForgotPassword(emailToUse, selectedRoleTab);
       setForgotSuccess(res.message || 'Passcode dispatched! Please check your email inbox.');
       setForgotEmail(res.email || emailToUse);
+      if (res.dev_otp) {
+        setDevOtpHint(res.dev_otp);
+      }
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your email.');
@@ -523,44 +530,68 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                   {/* STEP 1: REQUEST 6-DIGIT PASSCODE */}
                   {forgotStep === 1 && (
                     <form onSubmit={handleForgotRequestSubmit} className="space-y-4 text-xs">
-                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-[11px] leading-relaxed space-y-1">
-                        <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
-                          <Info className="w-3.5 h-3.5 text-indigo-600" />
-                          <span>Official Dispatch Target:</span>
+                      {selectedRoleTab === 'superadmin' ? (
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/40 to-slate-50 border border-indigo-200/90 shadow-sm space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shrink-0">
+                              <ShieldCheck className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-wider text-indigo-700">
+                                Protected Master Account
+                              </div>
+                              <div className="text-xs sm:text-sm font-black text-slate-900 font-mono flex items-center gap-2">
+                                <span>admin@joycorporatesolutions.com</span>
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  Verified Master
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-white/90 border border-indigo-100 text-[11px] text-slate-600 leading-relaxed flex items-start gap-2">
+                            <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                            <span>
+                              For platform security governance, the 6-digit recovery passcode will be dispatched exclusively to the Master Super Admin mailbox. Direct manual email entry is disabled.
+                            </span>
+                          </div>
                         </div>
-                        {selectedRoleTab === 'superadmin' && (
-                          <p>Instructions & 6-digit passcode will be dispatched to the Master Super Admin mail ID: <strong>admin@joycorporatesolutions.com</strong>.</p>
-                        )}
-                        {selectedRoleTab === 'company' && (
-                          <p>Instructions & 6-digit passcode will be dispatched to your company's registered email ID.</p>
-                        )}
-                        {selectedRoleTab === 'hrexecutive' && (
-                          <p>Instructions & 6-digit passcode will be dispatched to your assigned HR work email ID.</p>
-                        )}
-                      </div>
+                      ) : (
+                        <>
+                          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-[11px] leading-relaxed space-y-1">
+                            <div className="font-extrabold text-slate-900 flex items-center gap-1.5">
+                              <Info className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>Official Dispatch Target:</span>
+                            </div>
+                            {selectedRoleTab === 'company' && (
+                              <p>Instructions & 6-digit passcode will be dispatched to your company's registered email ID.</p>
+                            )}
+                            {selectedRoleTab === 'hrexecutive' && (
+                              <p>Instructions & 6-digit passcode will be dispatched to your assigned HR work email ID.</p>
+                            )}
+                          </div>
 
-                      <div>
-                        <label className="block text-slate-700 font-bold mb-1">
-                          {selectedRoleTab === 'superadmin' ? 'Super Admin Official Email *' : selectedRoleTab === 'company' ? 'Company Admin Registered Email *' : 'HR Work Email *'}
-                        </label>
-                        <div className="input-wrapper">
-                          <Mail className="input-icon-left" />
-                          <input 
-                            type="email" 
-                            required
-                            placeholder={
-                              selectedRoleTab === 'superadmin' 
-                                ? 'admin@joycorporatesolutions.com' 
-                                : selectedRoleTab === 'company' 
-                                ? 'e.g. contact@enterprise.com' 
-                                : 'e.g. hr@enterprise.com'
-                            }
-                            value={forgotEmail}
-                            onChange={(e) => setForgotEmail(e.target.value)}
-                            className="input-field-styled font-medium"
-                          />
-                        </div>
-                      </div>
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">
+                              {selectedRoleTab === 'company' ? 'Company Admin Registered Email *' : 'HR Work Email *'}
+                            </label>
+                            <div className="input-wrapper">
+                              <Mail className="input-icon-left" />
+                              <input 
+                                type="email" 
+                                required
+                                placeholder={
+                                  selectedRoleTab === 'company' 
+                                    ? 'e.g. contact@enterprise.com' 
+                                    : 'e.g. hr@enterprise.com'
+                                }
+                                value={forgotEmail}
+                                onChange={(e) => setForgotEmail(e.target.value)}
+                                className="input-field-styled font-medium"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
 
                       <div className="flex items-center gap-3 pt-2">
                         <button
@@ -569,7 +600,14 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                         >
                           <Send className="w-4 h-4" />
-                          <span>{isForgotLoading ? 'Dispatching Passcode...' : 'Send 6-Digit Passcode 🚀'}</span>
+                          <span>
+                            {isForgotLoading 
+                              ? 'Dispatching Passcode...' 
+                              : selectedRoleTab === 'superadmin' 
+                              ? 'Send 6-Digit Passcode to Master Email 🚀' 
+                              : 'Send 6-Digit Passcode 🚀'
+                            }
+                          </span>
                         </button>
                         <button
                           type="button"
@@ -586,16 +624,21 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                   {forgotStep === 2 && (
                     <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
                       <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-[11px] font-medium flex items-center justify-between">
-                        <div>
-                          <span>Passcode sent to: <strong>{forgotEmail}</strong></span>
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <span>
+                            Passcode sent to: <strong>{selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : forgotEmail}</strong>
+                          </span>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setForgotStep(1)}
-                          className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline cursor-pointer"
-                        >
-                          Change Email
-                        </button>
+                        {selectedRoleTab !== 'superadmin' && (
+                          <button
+                            type="button"
+                            onClick={() => setForgotStep(1)}
+                            className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline cursor-pointer"
+                          >
+                            Change Email
+                          </button>
+                        )}
                       </div>
 
                       <div>
@@ -614,9 +657,18 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                             className="input-field-styled font-mono font-bold tracking-widest text-center text-sm"
                           />
                         </div>
-                        <span className="text-[10px] text-slate-400 mt-0.5 block">
-                          Check spam/junk folder if not in primary inbox. (Demo fallback: 123456)
-                        </span>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                          <span>Check spam/junk folder if not in primary inbox.</span>
+                          {devOtpHint && (
+                            <button
+                              type="button"
+                              onClick={() => setForgotOtp(devOtpHint)}
+                              className="text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer"
+                            >
+                              Quick-Fill Passcode ({devOtpHint})
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

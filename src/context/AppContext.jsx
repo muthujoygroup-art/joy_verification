@@ -1475,8 +1475,25 @@ export const AppProvider = ({ children }) => {
   // Password Recovery Handlers
   const requestForgotPassword = async (email, role) => {
     try {
-      const resp = await api.forgotPassword(email, role);
+      const targetEmail = (email || (role === 'superadmin' ? 'admin@joycorporatesolutions.com' : '')).trim();
+      const resp = await api.forgotPassword(targetEmail, role);
       showToast(resp.message || 'Password reset passcode dispatched to official email!', 'success');
+      
+      // Push high-priority security in-app notification
+      try {
+        const notifItem = {
+          id: `notif-reset-${Date.now()}`,
+          role: role || 'superadmin',
+          title: role === 'superadmin' ? '🔐 Super Admin Reset Passcode Dispatched' : '🔐 Password Recovery Passcode Dispatched',
+          message: `A 6-digit recovery passcode was dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode valid for 30 minutes.`,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          isRead: false,
+          priority: 'high',
+          category: 'security'
+        };
+        setNotifications(prev => [notifItem, ...(Array.isArray(prev) ? prev : [])]);
+      } catch (e) {}
+
       return resp;
     } catch (err) {
       showToast(err.message || 'Failed to dispatch password recovery email', 'error');
