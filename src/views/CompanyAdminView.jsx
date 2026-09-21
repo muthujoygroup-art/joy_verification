@@ -90,6 +90,7 @@ export const CompanyAdminView = () => {
     updateCompanyVendor,
     deleteCompanyVendor,
     verifyVendorDocument,
+    verifyVendorFullSuite,
     verifyCompanyProfileDetail,
     requestCompanyProfileReview,
     POSTPAID_PLANS,
@@ -154,6 +155,7 @@ export const CompanyAdminView = () => {
   const [vendorCategoryFilter, setVendorCategoryFilter] = useState('All');
   const [verifyingDocModal, setVerifyingDocModal] = useState(null); // { vendor, checkType, docNumber, additionalData }
   const [isProcessingVendorCheck, setIsProcessingVendorCheck] = useState(false);
+  const [isProcessingFullSuite, setIsProcessingFullSuite] = useState(null); // vendorId when running full suite
   const [newVendorForm, setNewVendorForm] = useState({
     vendorName: '',
     category: 'IT Infrastructure & Cloud Services',
@@ -340,15 +342,32 @@ export const CompanyAdminView = () => {
     }
   };
 
-  // 🤝 VENDOR MANAGEMENT & STATUTORY VERIFICATION HANDLERS
-  const handleOpenVerifyModal = (vendor, checkType = 'gst') => {
+  // 🤝 VENDOR MANAGEMENT & 11-REGISTRY STATUTORY VERIFICATION HANDLERS
+  const handleOpenVerifyModal = (vendor, checkType = 'gst_details_basic_v2') => {
     let initialDoc = '';
-    if (checkType === 'gst') initialDoc = vendor.gstin || '';
-    else if (checkType === 'pan') initialDoc = vendor.pan || '';
-    else if (checkType === 'bank') initialDoc = vendor.bankAccount || '';
-    else if (checkType === 'msme') initialDoc = vendor.msmeNumber || '';
-    else if (checkType === 'epfo') initialDoc = vendor.epfoNumber || '';
-    else if (checkType === 'esic') initialDoc = vendor.esicNumber || '';
+    if (checkType === 'company_name_to_cin' || checkType === 'mca_company_search' || checkType === 'realtime_court_case_search') {
+      initialDoc = vendor.vendorName || '';
+    } else if (checkType === 'cin_to_company_details' || checkType === 'cin_to_mca' || checkType === 'cin_to_directors_lookup') {
+      initialDoc = vendor.cin || '';
+    } else if (checkType === 'llpin_to_company_details') {
+      initialDoc = vendor.llpin || '';
+    } else if (checkType === 'din_to_director_details' || checkType === 'din_to_mca') {
+      initialDoc = vendor.din || '';
+    } else if (checkType === 'gst' || checkType === 'gst_details_basic_v2') {
+      initialDoc = vendor.gstin || '';
+    } else if (checkType === 'fssai' || checkType === 'fssai_verification') {
+      initialDoc = vendor.fssai || '';
+    } else if (checkType === 'pan') {
+      initialDoc = vendor.pan || '';
+    } else if (checkType === 'bank') {
+      initialDoc = vendor.bankAccount || '';
+    } else if (checkType === 'msme') {
+      initialDoc = vendor.msmeNumber || '';
+    } else if (checkType === 'epfo') {
+      initialDoc = vendor.epfoNumber || '';
+    } else if (checkType === 'esic') {
+      initialDoc = vendor.esicNumber || '';
+    }
 
     setVerifyingDocModal({
       vendor,
@@ -368,7 +387,7 @@ export const CompanyAdminView = () => {
     const { vendor, checkType, docNumber, panName, bankAccount, bankIfsc, beneficiaryName } = verifyingDocModal;
 
     if (!docNumber && checkType !== 'bank') {
-      showToast('⚠️ Please enter the document number to verify', 'error');
+      showToast('⚠️ Please enter the document / entity identifier to verify', 'error');
       return;
     }
 
@@ -380,7 +399,10 @@ export const CompanyAdminView = () => {
     setIsProcessingVendorCheck(true);
     try {
       const additionalData = {
+        vendor_name: vendor.vendorName,
         company_name: panName || vendor.vendorName,
+        contact_person: vendor.contactPerson,
+        address: vendor.address,
         account_number: bankAccount,
         ifsc: bankIfsc,
         beneficiary_name: beneficiaryName || vendor.vendorName
@@ -390,12 +412,41 @@ export const CompanyAdminView = () => {
 
       const result = await verifyVendorDocument(company.id, vendor.id, checkType, docVal, additionalData);
       
-      showToast(`🎉 ${checkType.toUpperCase()} verified successfully! Added to monthly postpaid bill.`);
+      showToast(`🎉 ${checkType.replace(/_/g, ' ').toUpperCase()} verified successfully!`);
       setVerifyingDocModal(null);
     } catch (err) {
       showToast(`❌ Verification failed: ${err.message}`, 'error');
     } finally {
       setIsProcessingVendorCheck(false);
+    }
+  };
+
+  // 🚀 1-Click 11-in-1 Full Statutory Due Diligence Execution
+  const handleExecuteFullSuite = async (vendor) => {
+    if (!vendor) return;
+    setIsProcessingFullSuite(vendor.id);
+    try {
+      showToast(`⚡ Running 11-in-1 statutory checks for "${vendor.vendorName}"...`);
+      const result = await verifyVendorFullSuite(company.id, vendor.id, {
+        vendorName: vendor.vendorName,
+        cin: vendor.cin,
+        llpin: vendor.llpin,
+        din: vendor.din,
+        gstin: vendor.gstin,
+        fssai: vendor.fssai,
+        contactPerson: vendor.contactPerson,
+        address: vendor.address,
+        email: vendor.email,
+        phone: vendor.phone
+      });
+      showToast(`🎉 11-in-1 Verification Complete! Master Audit Certificate Ready.`);
+      if (result?.vendor) {
+        setSelectedCertVendor(result.vendor);
+      }
+    } catch (err) {
+      showToast(`❌ Verification failed: ${err.message}`, 'error');
+    } finally {
+      setIsProcessingFullSuite(null);
     }
   };
 
@@ -417,7 +468,11 @@ export const CompanyAdminView = () => {
         phone: '',
         email: '',
         address: '',
+        cin: '',
+        llpin: '',
+        din: '',
         gstin: '',
+        fssai: '',
         pan: '',
         bankAccount: '',
         bankIfsc: '',
@@ -2476,170 +2531,131 @@ export const CompanyAdminView = () => {
                               </div>
                             </td>
 
-                            {/* Col 3: Statutory Verification Check Matrix */}
+                            {/* Col 3: 11-Registry Statutory Verification Matrix */}
                             <td className="py-3.5 px-3 align-top">
-                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-w-md">
-                                
-                                {/* GST Check */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.gst?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">GSTIN</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.gstin || 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.gst?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'gst')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify GSTIN (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                              {(() => {
+                                const standardKeys = [
+                                  'company_name_to_cin', 'cin_to_company_details', 'cin_to_mca',
+                                  'llpin_to_company_details', 'mca_company_search', 'cin_to_directors_lookup',
+                                  'din_to_director_details', 'din_to_mca', 'gst_details_basic_v2',
+                                  'fssai_verification', 'realtime_court_case_search'
+                                ];
+                                const verifiedCount = standardKeys.filter(k => verifs[k]?.verified || (k === 'gst_details_basic_v2' && verifs.gst?.verified)).length;
+                                const isAllVerified = verifiedCount === 11 || vendor.overallStatus === '100% Statutory Verified';
 
-                                {/* PAN Check */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.pan?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">PAN Card</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.pan || 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.pan?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'pan')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify PAN (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                                return (
+                                  <div className="space-y-2 max-w-md">
+                                    {/* Overall Compliance Header Badge */}
+                                    <div className="flex items-center justify-between">
+                                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider ${
+                                        isAllVerified
+                                          ? 'bg-emerald-100 text-emerald-950 border border-emerald-300'
+                                          : verifiedCount > 0
+                                          ? 'bg-indigo-50 text-indigo-900 border border-indigo-200'
+                                          : 'bg-amber-50 text-amber-900 border border-amber-200'
+                                      }`}>
+                                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                                        <span>{isAllVerified ? '100% STATUTORY VERIFIED ✓' : `${verifiedCount}/11 Checks Verified`}</span>
+                                      </span>
+                                      {vendor.verifiedAt && (
+                                        <span className="text-[9px] text-slate-400 font-mono">
+                                          {vendor.verifiedAt.split(',')[0]}
+                                        </span>
+                                      )}
+                                    </div>
 
-                                {/* Bank Penny Drop IMPS */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.bank?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">Bank IMPS</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.bankAccount ? `••••${vendor.bankAccount.slice(-4)}` : 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.bank?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'bank')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify Bank Account (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                                    {/* Statutory Category Pills */}
+                                    <div className="grid grid-cols-3 gap-1.5 text-[9.5px]">
+                                      {/* MCA / CIN */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.company_name_to_cin?.verified || verifs.cin_to_company_details?.verified || verifs.cin_to_mca?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        MCA / CIN {(verifs.cin_to_company_details?.verified || verifs.company_name_to_cin?.verified) ? '✓' : '•'}
+                                      </div>
 
-                                {/* MSME Udyam */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.msme?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">MSME Udyam</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.msmeNumber || 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.msme?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'msme')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify MSME (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                                      {/* Directors / DIN */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.cin_to_directors_lookup?.verified || verifs.din_to_director_details?.verified || verifs.din_to_mca?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        Directors / DIN {(verifs.cin_to_directors_lookup?.verified || verifs.din_to_director_details?.verified) ? '✓' : '•'}
+                                      </div>
 
-                                {/* EPFO */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.epfo?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">EPFO Est.</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.epfoNumber || 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.epfo?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'epfo')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify EPFO (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                                      {/* GSTN Registry */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.gst_details_basic_v2?.verified || verifs.gst?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        GSTN {(verifs.gst_details_basic_v2?.verified || verifs.gst?.verified) ? '✓' : '•'}
+                                      </div>
 
-                                {/* ESIC */}
-                                <div className={`p-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1 ${
-                                  verifs.esic?.verified ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'
-                                }`}>
-                                  <div>
-                                    <strong className="block font-black">ESIC Reg.</strong>
-                                    <span className="font-mono text-[9px] block truncate max-w-[80px]">
-                                      {vendor.esicNumber || 'Not set'}
-                                    </span>
-                                  </div>
-                                  {verifs.esic?.verified ? (
-                                    <span className="text-emerald-600 font-black text-[11px]">✓</span>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenVerifyModal(vendor, 'esic')}
-                                      className="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-[9px] cursor-pointer"
-                                      title="Verify ESIC (Deducts ₹60)"
-                                    >
-                                      Verify ⚡
-                                    </button>
-                                  )}
-                                </div>
+                                      {/* LLPIN Registry */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.llpin_to_company_details?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        LLPIN {verifs.llpin_to_company_details?.verified ? '✓' : '•'}
+                                      </div>
 
-                              </div>
+                                      {/* FSSAI Safety */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.fssai_verification?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        FSSAI {verifs.fssai_verification?.verified ? '✓' : '•'}
+                                      </div>
+
+                                      {/* Realtime Court Search */}
+                                      <div className={`p-1 rounded-md border text-center font-bold ${
+                                        verifs.realtime_court_case_search?.verified
+                                          ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-200'
+                                      }`}>
+                                        Court Litigation {verifs.realtime_court_case_search?.verified ? '✓' : '•'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </td>
 
                             {/* Col 4: Action Buttons */}
                             <td className="py-3.5 px-4 align-top text-right">
                               <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5">
+                                {/* 1-Click 11-in-1 Full Suite Button */}
                                 <button
                                   type="button"
-                                  onClick={() => handleOpenVerifyModal(vendor, 'gst')}
-                                  className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 cursor-pointer shadow-2xs"
-                                  title="Verify any vendor statutory document"
+                                  disabled={isProcessingFullSuite === vendor.id}
+                                  onClick={() => handleExecuteFullSuite(vendor)}
+                                  className="btn text-[11px] py-1.5 px-3 flex items-center gap-1 font-black bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl shadow-2xs cursor-pointer disabled:opacity-50"
+                                  title="Execute all 11 statutory due diligence checks in real-time"
                                 >
-                                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-                                  <span>Verify ⚡</span>
+                                  {isProcessingFullSuite === vendor.id ? (
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Zap className="w-3.5 h-3.5 text-amber-300" />
+                                  )}
+                                  <span>{isProcessingFullSuite === vendor.id ? 'Auditing 11 Checks...' : '11-in-1 Verify ⚡'}</span>
                                 </button>
 
+                                {/* Single Check Modal Trigger */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenVerifyModal(vendor, 'gst_details_basic_v2')}
+                                  className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800 cursor-pointer shadow-2xs"
+                                  title="Verify any individual statutory document"
+                                >
+                                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                                  <span>Single 🔍</span>
+                                </button>
+
+                                {/* Certificate Modal Trigger */}
                                 <button
                                   type="button"
                                   onClick={() => setSelectedCertVendor(vendor)}
@@ -2650,6 +2666,7 @@ export const CompanyAdminView = () => {
                                   <span>Certificate 📄</span>
                                 </button>
 
+                                {/* Delete Vendor */}
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteVendor(vendor.id, vendor.vendorName)}
@@ -2671,11 +2688,11 @@ export const CompanyAdminView = () => {
 
           </div>
 
-          {/* ⚡ MODAL: VERIFY VENDOR STATUTORY DOCUMENT */}
+          {/* ⚡ MODAL: VERIFY VENDOR STATUTORY DOCUMENT (11 ENDPOINTS) */}
           {verifyingDocModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-              <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden">
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 via-slate-50 to-white">
+              <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden max-h-[90vh] flex flex-col">
+                <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 via-slate-50 to-white shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
                       <ShieldCheck className="w-5 h-5" />
@@ -2698,30 +2715,46 @@ export const CompanyAdminView = () => {
                   </button>
                 </div>
 
-                <form onSubmit={handleExecuteVendorCheck} className="p-6 space-y-4 text-xs">
-                  {/* Document Type Selector */}
+                <form onSubmit={handleExecuteVendorCheck} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+                  {/* Document Type Selector (11 Statutory Endpoints) */}
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1.5">Select Document Check Type *</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <label className="block font-bold text-slate-700 mb-1.5">Select Statutory Registry Check (11 Options) *</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {[
-                        { id: 'gst', label: 'GSTIN Portal' },
-                        { id: 'pan', label: 'Vendor PAN' },
-                        { id: 'bank', label: 'Bank Penny Drop' },
-                        { id: 'msme', label: 'MSME / Udyam' },
-                        { id: 'epfo', label: 'EPFO Est.' },
-                        { id: 'esic', label: 'ESIC Reg.' }
+                        { id: 'company_name_to_cin', label: '1. Co. Name to CIN', desc: 'MCA Name Query' },
+                        { id: 'cin_to_company_details', label: '2. CIN to Details', desc: 'MCA Capital & Class' },
+                        { id: 'cin_to_mca', label: '3. CIN to MCA', desc: 'INC-22A Filing Status' },
+                        { id: 'llpin_to_company_details', label: '4. LLPIN Details', desc: 'LLP Partners & Contrib.' },
+                        { id: 'mca_company_search', label: '5. MCA Search', desc: 'Master Search' },
+                        { id: 'cin_to_directors_lookup', label: '6. CIN to Directors', desc: 'Board List & DIN' },
+                        { id: 'din_to_director_details', label: '7. DIN Details', desc: 'Director Profile & PAN' },
+                        { id: 'din_to_mca', label: '8. DIN to MCA', desc: 'Sec 164(2) Audit' },
+                        { id: 'gst_details_basic_v2', label: '9. GST Details V2', desc: 'GSTN Taxpayer Filing' },
+                        { id: 'fssai_verification', label: '10. FSSAI License', desc: 'Food Safety 14-Digit' },
+                        { id: 'realtime_court_case_search', label: '11. Court Search', desc: 'NJDG Litigation Check' },
+                        { id: 'bank', label: 'Bank Penny Drop', desc: 'NPCI IMPS Match' }
                       ].map(item => (
                         <button
                           key={item.id}
                           type="button"
                           onClick={() => {
                             let docVal = '';
-                            if (item.id === 'gst') docVal = verifyingDocModal.vendor.gstin || '';
-                            else if (item.id === 'pan') docVal = verifyingDocModal.vendor.pan || '';
-                            else if (item.id === 'bank') docVal = verifyingDocModal.vendor.bankAccount || '';
-                            else if (item.id === 'msme') docVal = verifyingDocModal.vendor.msmeNumber || '';
-                            else if (item.id === 'epfo') docVal = verifyingDocModal.vendor.epfoNumber || '';
-                            else if (item.id === 'esic') docVal = verifyingDocModal.vendor.esicNumber || '';
+                            const v = verifyingDocModal.vendor;
+                            if (item.id === 'company_name_to_cin' || item.id === 'mca_company_search' || item.id === 'realtime_court_case_search') {
+                              docVal = v.vendorName || '';
+                            } else if (item.id === 'cin_to_company_details' || item.id === 'cin_to_mca' || item.id === 'cin_to_directors_lookup') {
+                              docVal = v.cin || '';
+                            } else if (item.id === 'llpin_to_company_details') {
+                              docVal = v.llpin || '';
+                            } else if (item.id === 'din_to_director_details' || item.id === 'din_to_mca') {
+                              docVal = v.din || '';
+                            } else if (item.id === 'gst_details_basic_v2' || item.id === 'gst') {
+                              docVal = v.gstin || '';
+                            } else if (item.id === 'fssai_verification') {
+                              docVal = v.fssai || '';
+                            } else if (item.id === 'bank') {
+                              docVal = v.bankAccount || '';
+                            }
 
                             setVerifyingDocModal(prev => ({
                               ...prev,
@@ -2729,40 +2762,54 @@ export const CompanyAdminView = () => {
                               docNumber: docVal
                             }));
                           }}
-                          className={`py-2 px-2.5 rounded-xl font-bold text-[11px] text-center border transition-all cursor-pointer ${
+                          className={`p-2 rounded-xl text-left border transition-all cursor-pointer ${
                             verifyingDocModal.checkType === item.id
                               ? 'bg-indigo-600 text-white border-indigo-700 shadow-2xs'
-                              : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                              : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
                           }`}
                         >
-                          {item.label}
+                          <strong className="block text-[11px] font-bold leading-tight">{item.label}</strong>
+                          <span className={`text-[9.5px] block truncate ${verifyingDocModal.checkType === item.id ? 'text-indigo-100' : 'text-slate-500'}`}>
+                            {item.desc}
+                          </span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Document Number Input */}
+                  {/* Dynamic Document Number / Identifier Input */}
                   {verifyingDocModal.checkType !== 'bank' && (
                     <div>
                       <label className="block font-bold text-slate-700 mb-1">
-                        {verifyingDocModal.checkType === 'gst' ? 'GSTIN Registration Number (15 Digits) *' :
-                         verifyingDocModal.checkType === 'pan' ? 'Vendor Company PAN Number (10 Characters) *' :
-                         verifyingDocModal.checkType === 'msme' ? 'MSME Udyam Registration Number *' :
-                         verifyingDocModal.checkType === 'epfo' ? 'EPFO Establishment Code *' :
-                         'ESIC Employer Registration Number *'}
+                        {verifyingDocModal.checkType === 'company_name_to_cin' ? 'Company / Corporate Entity Name *' :
+                         verifyingDocModal.checkType === 'cin_to_company_details' ? 'Corporate Identification Number (CIN) *' :
+                         verifyingDocModal.checkType === 'cin_to_mca' ? 'Corporate Identification Number (CIN) *' :
+                         verifyingDocModal.checkType === 'llpin_to_company_details' ? 'LLP Identification Number (LLPIN) *' :
+                         verifyingDocModal.checkType === 'mca_company_search' ? 'Entity Search Keyword / Name *' :
+                         verifyingDocModal.checkType === 'cin_to_directors_lookup' ? 'CIN for Directors / Signatories Lookup *' :
+                         verifyingDocModal.checkType === 'din_to_director_details' ? 'Director Identification Number (DIN - 8 Digits) *' :
+                         verifyingDocModal.checkType === 'din_to_mca' ? 'Director Identification Number (DIN) for MCA Audit *' :
+                         verifyingDocModal.checkType === 'gst_details_basic_v2' ? 'GSTIN Registration Number (15 Digits) *' :
+                         verifyingDocModal.checkType === 'fssai_verification' ? 'FSSAI Food Safety License Number (14 Digits) *' :
+                         verifyingDocModal.checkType === 'realtime_court_case_search' ? 'Entity / Individual Legal Name for Court Search *' :
+                         'Document / Registry Number *'}
                       </label>
                       <input
                         type="text"
                         required
                         value={verifyingDocModal.docNumber}
-                        onChange={(e) => setVerifyingDocModal(prev => ({ ...prev, docNumber: e.target.value.toUpperCase() }))}
+                        onChange={(e) => setVerifyingDocModal(prev => ({ ...prev, docNumber: e.target.value }))}
                         placeholder={
-                          verifyingDocModal.checkType === 'gst' ? 'e.g. 29AAAAA0000A1Z5' :
-                          verifyingDocModal.checkType === 'pan' ? 'e.g. AAACJ1234F' :
-                          verifyingDocModal.checkType === 'msme' ? 'e.g. UDYAM-KA-03-0012345' :
-                          'e.g. MHBAN0012345000'
+                          verifyingDocModal.checkType === 'company_name_to_cin' ? 'e.g. Apex Prime Solutions Private Limited' :
+                          verifyingDocModal.checkType === 'cin_to_company_details' ? 'e.g. U72900KA2018PTC115482' :
+                          verifyingDocModal.checkType === 'llpin_to_company_details' ? 'e.g. AAK-1234' :
+                          verifyingDocModal.checkType === 'din_to_director_details' ? 'e.g. 08912410' :
+                          verifyingDocModal.checkType === 'gst_details_basic_v2' ? 'e.g. 29AAACA1234A1Z5' :
+                          verifyingDocModal.checkType === 'fssai_verification' ? 'e.g. 11223344556677' :
+                          verifyingDocModal.checkType === 'realtime_court_case_search' ? 'e.g. Apex Prime Solutions' :
+                          'Enter document identifier'
                         }
-                        className="form-input font-mono font-bold text-xs"
+                        className="form-input font-bold text-xs"
                       />
                     </div>
                   )}
@@ -2825,7 +2872,7 @@ export const CompanyAdminView = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-2 pt-2">
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => setVerifyingDocModal(null)}
@@ -2851,10 +2898,10 @@ export const CompanyAdminView = () => {
             </div>
           )}
 
-          {/* 🏢 MODAL: REGISTER NEW VENDOR */}
+          {/* 🏢 MODAL: REGISTER NEW ENTERPRISE VENDOR (ALL 11 STATUTORY CREDENTIALS) */}
           {showAddVendorModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-              <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden max-h-[90vh] flex flex-col">
+              <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] flex flex-col">
                 <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 via-slate-50 to-white shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
@@ -2865,7 +2912,7 @@ export const CompanyAdminView = () => {
                         Register New Enterprise Vendor
                       </h4>
                       <p className="text-[11px] text-slate-500 font-medium">
-                        Onboard vendor for corporate compliance and statutory document verification
+                        Onboard vendor with statutory numbers for instant 11-in-1 due diligence verification
                       </p>
                     </div>
                   </div>
@@ -2882,20 +2929,20 @@ export const CompanyAdminView = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* Name */}
                     <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 mb-1">Vendor Company Legal Name *</label>
+                      <label className="block font-bold text-slate-700 mb-1">Vendor Legal Entity / Trade Name *</label>
                       <input
                         type="text"
                         required
                         value={newVendorForm.vendorName}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, vendorName: e.target.value })}
-                        placeholder="e.g. ZenScale Infrastructure Private Limited"
+                        placeholder="e.g. Apex Prime Solutions Private Limited"
                         className="form-input font-bold"
                       />
                     </div>
 
                     {/* Category */}
-                    <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 mb-1">Vendor Industry Category *</label>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Industry Category *</label>
                       <select
                         value={newVendorForm.category}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, category: e.target.value })}
@@ -2912,20 +2959,20 @@ export const CompanyAdminView = () => {
 
                     {/* Contact Person */}
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Contact Person Name *</label>
+                      <label className="block font-bold text-slate-700 mb-1">Contact Person / Signatory *</label>
                       <input
                         type="text"
                         required
                         value={newVendorForm.contactPerson}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, contactPerson: e.target.value })}
-                        placeholder="e.g. Rajesh Kumar"
+                        placeholder="e.g. Vikram Malhotra"
                         className="form-input font-bold"
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Contact Phone / Mobile</label>
+                      <label className="block font-bold text-slate-700 mb-1">Contact Phone</label>
                       <input
                         type="tel"
                         value={newVendorForm.phone}
@@ -2936,88 +2983,88 @@ export const CompanyAdminView = () => {
                     </div>
 
                     {/* Email */}
-                    <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 mb-1">Contact Email Address</label>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Official Email Address</label>
                       <input
                         type="email"
                         value={newVendorForm.email}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, email: e.target.value })}
-                        placeholder="e.g. billing@zenscale.com"
+                        placeholder="e.g. compliance@apexprime.in"
                         className="form-input"
+                      />
+                    </div>
+
+                    {/* CIN */}
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Corporate CIN Number</label>
+                      <input
+                        type="text"
+                        value={newVendorForm.cin || ''}
+                        onChange={(e) => setNewVendorForm({ ...newVendorForm, cin: e.target.value.toUpperCase() })}
+                        placeholder="e.g. U72900KA2018PTC115482"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+
+                    {/* LLPIN */}
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">LLPIN Number (If LLP)</label>
+                      <input
+                        type="text"
+                        value={newVendorForm.llpin || ''}
+                        onChange={(e) => setNewVendorForm({ ...newVendorForm, llpin: e.target.value.toUpperCase() })}
+                        placeholder="e.g. AAK-1234"
+                        className="form-input font-mono font-bold"
+                      />
+                    </div>
+
+                    {/* DIN */}
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Primary Director DIN (8 Digits)</label>
+                      <input
+                        type="text"
+                        maxLength={8}
+                        value={newVendorForm.din || ''}
+                        onChange={(e) => setNewVendorForm({ ...newVendorForm, din: e.target.value })}
+                        placeholder="e.g. 08912410"
+                        className="form-input font-mono font-bold"
                       />
                     </div>
 
                     {/* GSTIN */}
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">GSTIN Number</label>
+                      <label className="block font-bold text-slate-700 mb-1">GSTIN Number (15 Digits)</label>
                       <input
                         type="text"
                         maxLength={15}
                         value={newVendorForm.gstin}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, gstin: e.target.value.toUpperCase() })}
-                        placeholder="e.g. 29AAAAA0000A1Z5"
+                        placeholder="e.g. 29AAACA1234A1Z5"
                         className="form-input font-mono font-bold"
                       />
                     </div>
 
-                    {/* PAN */}
+                    {/* FSSAI */}
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Vendor PAN Number</label>
+                      <label className="block font-bold text-slate-700 mb-1">FSSAI License (14 Digits)</label>
                       <input
                         type="text"
-                        maxLength={10}
-                        value={newVendorForm.pan}
-                        onChange={(e) => setNewVendorForm({ ...newVendorForm, pan: e.target.value.toUpperCase() })}
-                        placeholder="e.g. AAACJ1234F"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-
-                    {/* Bank Account */}
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">Bank Account Number</label>
-                      <input
-                        type="text"
-                        value={newVendorForm.bankAccount}
-                        onChange={(e) => setNewVendorForm({ ...newVendorForm, bankAccount: e.target.value })}
-                        placeholder="e.g. 987654321001"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-
-                    {/* Bank IFSC */}
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">Bank IFSC Code</label>
-                      <input
-                        type="text"
-                        maxLength={11}
-                        value={newVendorForm.bankIfsc}
-                        onChange={(e) => setNewVendorForm({ ...newVendorForm, bankIfsc: e.target.value.toUpperCase() })}
-                        placeholder="e.g. HDFC0001234"
-                        className="form-input font-mono font-bold"
-                      />
-                    </div>
-
-                    {/* MSME */}
-                    <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 mb-1">MSME Udyam Registration Number</label>
-                      <input
-                        type="text"
-                        value={newVendorForm.msmeNumber}
-                        onChange={(e) => setNewVendorForm({ ...newVendorForm, msmeNumber: e.target.value.toUpperCase() })}
-                        placeholder="e.g. UDYAM-KA-03-0012345"
+                        maxLength={14}
+                        value={newVendorForm.fssai || ''}
+                        onChange={(e) => setNewVendorForm({ ...newVendorForm, fssai: e.target.value })}
+                        placeholder="e.g. 11223344556677"
                         className="form-input font-mono font-bold"
                       />
                     </div>
 
                     {/* Address */}
                     <div className="sm:col-span-2">
-                      <label className="block font-bold text-slate-700 mb-1">Vendor Registered Address</label>
+                      <label className="block font-bold text-slate-700 mb-1">Registered Business Address</label>
                       <textarea
                         rows={2}
                         value={newVendorForm.address}
                         onChange={(e) => setNewVendorForm({ ...newVendorForm, address: e.target.value })}
-                        placeholder="Building, Street, City, State, Pincode"
+                        placeholder="42, Electronic City Phase 1, Bangalore, Karnataka - 560100"
                         className="form-input text-xs"
                       />
                     </div>

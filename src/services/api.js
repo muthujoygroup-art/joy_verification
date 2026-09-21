@@ -1269,7 +1269,17 @@ export const api = {
     if (candidateId) params.append('candidate_id', candidateId);
     if (companyId) params.append('company_id', companyId);
     return request(`/dpdp/audit-trail?${params.toString()}`, {}, false);
-  }
+  },
+
+  // 🤝 Enterprise Vendor Statutory Verification APIs (11 Endpoints)
+  verifyVendorEndpointLive: (companyId, payload) => request(`/company/${companyId}/vendors/verify-endpoint`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  verifyVendorFullSuiteLive: (companyId, payload) => request(`/company/${companyId}/vendors/verify-full-suite`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
 };
 
 export default api;
