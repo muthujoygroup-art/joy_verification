@@ -400,23 +400,24 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
 };
 
 const SCHEMA_VERSION_KEY = 'joy_storage_schema_version';
-const CURRENT_SCHEMA_VERSION = 'joy_v2026_09_21_clean_v5';
+const CURRENT_SCHEMA_VERSION = 'joy_v2026_09_21_clean_v6';
 
-// Run immediate cache sanitation on module load to purge stale mock data
+// Immediate auto-purge of legacy mock storage on module load
 try {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const currentVer = localStorage.getItem(SCHEMA_VERSION_KEY);
-    if (currentVer !== CURRENT_SCHEMA_VERSION) {
-      localStorage.removeItem('joy_companies_v1');
-      localStorage.removeItem('joy_company_vendors_v1');
-      localStorage.removeItem('joy_candidates_v1');
-      localStorage.removeItem('joy_hr_users_v1');
-      localStorage.removeItem('joy_hr_employee_draft_v1');
-      localStorage.removeItem('joy_hr_draft_saved_time_v1');
-      localStorage.removeItem('joy_hr_delegated_map_v1');
-      localStorage.removeItem('joy_active_company_id');
-      localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
-    }
+  if (typeof window !== 'undefined') {
+    const keysToPurge = [
+      'joy_companies_v1', 'joy_companies',
+      'joy_hr_users_v1', 'joy_hr_users',
+      'joy_candidates_v1', 'joy_candidates',
+      'joy_company_vendors_v1', 'joy_company_vendors',
+      'joy_active_company_id', 'joy_company_features',
+      'joy_hr_employee_draft_v1', 'joy_hr_draft_saved_time_v1', 'joy_hr_delegated_map_v1'
+    ];
+    keysToPurge.forEach(k => {
+      try { localStorage.removeItem(k); } catch (e) {}
+      try { sessionStorage.removeItem(k); } catch (e) {}
+    });
+    localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
   }
 } catch (e) {}
 
@@ -427,58 +428,27 @@ const INITIAL_DEFAULT_VENDORS = [];
 
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState([]);
-  const [hrUsers, setHrUsers] = useState(INITIAL_HR_USERS);
-  const [vendors, setVendors] = useState(() => {
-    try {
-      const saved = localStorage.getItem('joy_company_vendors_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          const clean = parsed.filter(v => v && v.id && !['vend-101', 'vend-102', 'vend-103'].includes(v.id));
-          return clean;
-        }
-      }
-    } catch (e) {}
-    return INITIAL_DEFAULT_VENDORS;
-  });
-  const [candidates, setCandidates] = useState(() => {
-    try {
-      const saved = localStorage.getItem('joy_candidates_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          const clean = parsed
-            .filter(c => !!c && !!c.name && !['cand-kavitha-101', 'cand-arun-102', 'cand-1', 'cand-101', 'cand-102'].includes(c.id))
-            .map(c => {
-              const verifs = c.verificationsCompleted || c.verifications_completed || {};
-              const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
-              const safeStatus = (c.status === 'Verified' && !isFullyVerified) ? 'Link Sent' : (c.status || 'Link Dispatched 🟢');
-              return {
-                ...c,
-                status: safeStatus
-              };
-            });
-          const seen = new Set();
-          const deduped = clean.filter(c => {
-            if (seen.has(c.id || c.token)) return false;
-            seen.add(c.id || c.token);
-            return true;
-          });
-          return deduped;
-        }
-      }
-    } catch (e) {}
-    return INITIAL_CANDIDATES;
-  });
+  const [hrUsers, setHrUsers] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [candidates, setCandidates] = useState([]);
 
-  // Automatically sync candidates state to localStorage for persistence across reloads
+  // Auto-clean storage on mount
   useEffect(() => {
-    if (Array.isArray(candidates)) {
-      try {
-        localStorage.setItem('joy_candidates_v1', JSON.stringify(candidates));
-      } catch (e) {}
-    }
-  }, [candidates]);
+    try {
+      const keysToPurge = [
+        'joy_companies_v1', 'joy_companies',
+        'joy_hr_users_v1', 'joy_hr_users',
+        'joy_candidates_v1', 'joy_candidates',
+        'joy_company_vendors_v1', 'joy_company_vendors',
+        'joy_active_company_id', 'joy_company_features',
+        'joy_hr_employee_draft_v1', 'joy_hr_draft_saved_time_v1', 'joy_hr_delegated_map_v1'
+      ];
+      keysToPurge.forEach(k => {
+        try { localStorage.removeItem(k); } catch (e) {}
+        try { sessionStorage.removeItem(k); } catch (e) {}
+      });
+    } catch (e) {}
+  }, []);
 
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
   // 🛡️ Strict Enterprise Authentication: User must log in with valid credentials
@@ -1298,9 +1268,6 @@ export const AppProvider = ({ children }) => {
           });
           const cleanFetched = cands.map(mapCandidateObj);
           setCandidates(cleanFetched);
-          try {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanFetched));
-          } catch (e) {}
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -1400,48 +1367,6 @@ export const AppProvider = ({ children }) => {
 
     try { initGlobalErrorListeners(); } catch (e) {}
     fetchBackendData();
-  }, []);
-
-  // Sync candidates to localStorage for cross-tab persistence
-  useEffect(() => {
-    try {
-      if (Array.isArray(candidates)) {
-        localStorage.setItem('joy_candidates_v1', JSON.stringify(candidates));
-      }
-    } catch (e) {}
-  }, [candidates]);
-
-  // Sync companies to localStorage for cross-tab persistence
-  useEffect(() => {
-    try {
-      if (companies && companies.length > 0) {
-        localStorage.setItem('joy_companies_v1', JSON.stringify(companies));
-      }
-    } catch (e) {}
-  }, [companies]);
-
-  // Listen to cross-tab storage changes
-  useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === 'joy_candidates_v1' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setCandidates(parsed);
-          }
-        } catch (err) {}
-      }
-      if (e.key === 'joy_companies_v1' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setCompanies(parsed);
-          }
-        } catch (err) {}
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   // Login handler with JWT Session Generation
@@ -1716,17 +1641,7 @@ export const AppProvider = ({ children }) => {
       emailGateway: isMailOn
     };
 
-    setCompanies(prev => {
-      const updated = prev.map(c => c.id === companyId ? { ...c, features: syncedFeatures, plan: newPlan || c.plan } : c);
-      try {
-        localStorage.setItem('joy_companies_v1', JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-
-    try {
-      localStorage.setItem('joy_company_features', JSON.stringify(syncedFeatures));
-    } catch (e) {}
+    setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, features: syncedFeatures, plan: newPlan || c.plan } : c));
 
     try {
       await api.updateCompanyFeatures(companyId, syncedFeatures);
@@ -1916,7 +1831,6 @@ export const AppProvider = ({ children }) => {
 
       setCandidates(prev => {
         const nextList = [formatted, ...(Array.isArray(prev) ? prev : [])];
-        try { localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList)); } catch (e) {}
         return nextList;
       });
       setSelectedCandidateToken(formatted.token);
@@ -1939,7 +1853,6 @@ export const AppProvider = ({ children }) => {
       };
       setCandidates(prev => {
         const nextList = [newCand, ...(Array.isArray(prev) ? prev : [])];
-        try { localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList)); } catch (e) {}
         return nextList;
       });
       setSelectedCandidateToken(newToken);
@@ -2072,11 +1985,7 @@ export const AppProvider = ({ children }) => {
       setCandidates(prev => {
         const existingIds = new Set(formattedList.map(f => f.id || f.token));
         const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => p && !existingIds.has(p.id) && !existingIds.has(p.token));
-        const nextList = [...formattedList, ...filteredPrev];
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
-        } catch (e) {}
-        return nextList;
+        return [...formattedList, ...filteredPrev];
       });
 
       showToast(`Batch of ${formattedList.length} candidate profiles imported successfully!`);
@@ -2201,9 +2110,6 @@ export const AppProvider = ({ children }) => {
           }
           return c;
         });
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
-        } catch (e) {}
         return nextList;
       });
 
@@ -2222,17 +2128,12 @@ export const AppProvider = ({ children }) => {
           }
           return c;
         });
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
-        } catch (e) {}
         return nextList;
       });
       showToast(`✅ Profile for ${updatedData.name || 'employee'} updated!`);
       return { id: candidateIdOrToken, ...updatedData };
     }
   };
-
-
 
   // Toggle Candidate Status between Active (Pending/Verified) and Inactive
   const toggleCandidateStatus = async (candidateId, specificStatus = null) => {
@@ -2242,12 +2143,8 @@ export const AppProvider = ({ children }) => {
       const newStatus = specificStatus || (isCurrentlyInactive ? (cand?.previousStatus || 'Active') : 'Inactive');
       const prevStatus = cand?.status || 'Active';
       
-      // Update UI & LocalStorage Immediately
       setCandidates(prev => {
         const updated = prev.map(c => (c.id === candidateId || c.token === candidateId) ? { ...c, status: newStatus, previousStatus: isCurrentlyInactive ? prevStatus : (c.previousStatus || prevStatus), isActive: newStatus !== 'Inactive' } : c);
-        try {
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
-        } catch (e) {}
         return updated;
       });
 
@@ -2273,7 +2170,6 @@ export const AppProvider = ({ children }) => {
       setCandidates([]);
       try {
         localStorage.removeItem('joy_candidates_v1');
-        localStorage.setItem('joy_candidates_v1', JSON.stringify([]));
         localStorage.removeItem('joy_hr_employee_draft_v1');
         localStorage.removeItem('joy_hr_delegated_map_v1');
         localStorage.removeItem('joy_hr_draft_saved_time_v1');
@@ -2299,13 +2195,6 @@ export const AppProvider = ({ children }) => {
     try {
       await api.deleteCandidate(candidateId);
       setCandidates(prev => prev.filter(c => c.id !== candidateId && c.token !== candidateId));
-      try {
-        const saved = localStorage.getItem('joy_candidates_v1');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(parsed.filter(c => c.id !== candidateId && c.token !== candidateId)));
-        }
-      } catch (e) {}
       showToast('Candidate deleted successfully!');
       return true;
     } catch (err) {
@@ -2421,9 +2310,6 @@ export const AppProvider = ({ children }) => {
             seen.add(uniqueKey);
             return true;
           });
-          try {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
-          } catch (e) {}
           return uniqueMerged;
         });
         return cleanFetched;
@@ -2477,7 +2363,7 @@ export const AppProvider = ({ children }) => {
 
   // Candidate Submits Joining Form & Documents from Magic Link
   const submitCandidateJoiningForm = async (token, submittedFormData) => {
-    // 1. Optimistic Update in State & LocalStorage
+    // 1. Optimistic Update in State
     setCandidates(prev => {
       const updated = prev.map(cand => {
         if (cand.token !== token) return cand;
@@ -2518,9 +2404,6 @@ export const AppProvider = ({ children }) => {
           employeeType: submittedFormData.employeeCategory || submittedFormData.employeeType || cand.employeeType
         };
       });
-      try {
-        localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
-      } catch (e) {}
       return updated;
     });
 
@@ -2553,9 +2436,6 @@ export const AppProvider = ({ children }) => {
           verificationDate: new Date().toISOString().replace('T', ' ').substring(0, 16)
         };
       });
-      try {
-        localStorage.setItem('joy_candidates_v1', JSON.stringify(updated));
-      } catch (e) {}
       return updated;
     });
 
@@ -3408,7 +3288,6 @@ export const AppProvider = ({ children }) => {
         }
         return c;
       });
-      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
 
@@ -3451,7 +3330,6 @@ export const AppProvider = ({ children }) => {
         }
         return c;
       });
-      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
 
@@ -3638,7 +3516,6 @@ export const AppProvider = ({ children }) => {
 
     setVendors(prev => {
       const updated = [newVendor, ...prev];
-      try { localStorage.setItem('joy_company_vendors_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
 
@@ -3651,7 +3528,6 @@ export const AppProvider = ({ children }) => {
   const updateCompanyVendor = (vendorId, updateData) => {
     setVendors(prev => {
       const updated = prev.map(v => v.id === vendorId ? { ...v, ...updateData } : v);
-      try { localStorage.setItem('joy_company_vendors_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
     if (typeof showToast === 'function') {
@@ -3662,7 +3538,6 @@ export const AppProvider = ({ children }) => {
   const deleteCompanyVendor = (vendorId) => {
     setVendors(prev => {
       const updated = prev.filter(v => v.id !== vendorId);
-      try { localStorage.setItem('joy_company_vendors_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
     if (typeof showToast === 'function') {
@@ -3724,7 +3599,6 @@ export const AppProvider = ({ children }) => {
         }
         return c;
       });
-      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
 
@@ -3852,7 +3726,6 @@ export const AppProvider = ({ children }) => {
         }
         return v;
       });
-      try { localStorage.setItem('joy_company_vendors_v1', JSON.stringify(next)); } catch (e) {}
       return next;
     });
 
@@ -3892,7 +3765,6 @@ export const AppProvider = ({ children }) => {
         }
         return c;
       });
-      try { localStorage.setItem('joy_companies_v1', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
 
@@ -3963,7 +3835,6 @@ export const AppProvider = ({ children }) => {
         }
         return v;
       });
-      try { localStorage.setItem('joy_company_vendors_v1', JSON.stringify(next)); } catch (e) {}
       return next;
     });
 

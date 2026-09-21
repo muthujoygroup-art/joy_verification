@@ -786,9 +786,6 @@ export const CompanyAdminView = () => {
       updated.email = val;
       updated.emailOtp = val;
     }
-    try {
-      localStorage.setItem('joy_company_features', JSON.stringify(updated));
-    } catch (e) {}
     updateCompanyFeatures(company.id, updated);
   };
 
@@ -808,9 +805,6 @@ export const CompanyAdminView = () => {
       drivingLicense: false,
       passport: false
     };
-    try {
-      localStorage.setItem('joy_company_features', JSON.stringify(aadhaarOnly));
-    } catch (e) {}
     updateCompanyFeatures(company.id, aadhaarOnly);
   };
 
@@ -830,9 +824,6 @@ export const CompanyAdminView = () => {
       drivingLicense: true,
       passport: true
     };
-    try {
-      localStorage.setItem('joy_company_features', JSON.stringify(allStandard));
-    } catch (e) {}
     updateCompanyFeatures(company.id, allStandard);
   };
 
