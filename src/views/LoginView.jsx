@@ -28,6 +28,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const { 
     loginUser, 
     requestForgotPassword, 
+    verifyResetPasscode,
     completePasswordReset, 
     candidates, 
     companies, 
@@ -73,12 +74,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  // 🔑 Forgot Password / Recovery State
+  // 🔑 Forgot Password / Recovery State (Step 1: Request, Step 2: Verify OTP, Step 3: Set Password)
   const [isForgotMode, setIsForgotMode] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1 = request passcode, 2 = enter passcode & reset
+  const [forgotStep, setForgotStep] = useState(1); // 1 = request, 2 = verify OTP, 3 = set new password
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotOtp, setForgotOtp] = useState('');
-  const [devOtpHint, setDevOtpHint] = useState('');
   const [forgotNewPassword, setForgotNewPassword] = useState('');
   const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
   const [showForgotPw, setShowForgotPw] = useState(false);
@@ -105,7 +105,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setForgotStep(1);
     setForgotEmail(defaultEmail || emailInput || (selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : ''));
     setForgotOtp('');
-    setDevOtpHint('');
     setForgotNewPassword('');
     setForgotConfirmPassword('');
     setForgotError('');
@@ -116,10 +115,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const closeForgotMode = () => {
     setIsForgotMode(false);
     setForgotStep(1);
-    setDevOtpHint('');
     setForgotError('');
   };
 
+  // Step 1 Submit: Request 6-digit passcode
   const handleForgotRequestSubmit = async (e) => {
     e.preventDefault();
     setForgotError('');
@@ -136,11 +135,8 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       }
 
       const res = await requestForgotPassword(emailToUse, selectedRoleTab);
-      setForgotSuccess(res.message || 'Passcode dispatched! Please check your email inbox.');
+      setForgotSuccess(res.message || 'Passcode dispatched! Please check your email or notifications.');
       setForgotEmail(res.email || emailToUse);
-      if (res.dev_otp) {
-        setDevOtpHint(res.dev_otp);
-      }
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your email.');
@@ -149,15 +145,42 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     }
   };
 
+  // Step 2 Submit: Validate OTP / Passcode
+  const handleVerifyOtpSubmit = async (e) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotSuccess('');
+
+    if (!forgotOtp || !forgotOtp.trim()) {
+      setForgotError('Please enter the 6-digit passcode sent to your email.');
+      return;
+    }
+
+    setIsForgotLoading(true);
+    try {
+      const isSuperAdmin = selectedRoleTab === 'superadmin';
+      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : forgotEmail.trim();
+      const payload = {
+        email: emailToUse,
+        role: selectedRoleTab,
+        reset_code: forgotOtp.trim()
+      };
+      const res = await verifyResetPasscode(payload);
+      setForgotSuccess(res.message || 'Passcode verified! Please set your new secure password.');
+      setForgotStep(3);
+    } catch (err) {
+      setForgotError(err.message || 'Invalid or expired 6-digit passcode. Please check your code.');
+    } finally {
+      setIsForgotLoading(false);
+    }
+  };
+
+  // Step 3 Submit: Set new password and return to login
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     setForgotError('');
     setForgotSuccess('');
 
-    if (!forgotOtp.trim()) {
-      setForgotError('Please enter the 6-digit passcode sent to your email.');
-      return;
-    }
     if (!forgotNewPassword || forgotNewPassword.length < 4) {
       setForgotError('New password must be at least 4 characters.');
       return;
@@ -169,15 +192,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
     setIsForgotLoading(true);
     try {
+      const isSuperAdmin = selectedRoleTab === 'superadmin';
+      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : forgotEmail.trim();
       const payload = {
-        email: forgotEmail.trim(),
+        email: emailToUse,
         role: selectedRoleTab,
         reset_code: forgotOtp.trim(),
         new_password: forgotNewPassword.trim()
       };
       const res = await completePasswordReset(payload);
       setForgotSuccess(res.message || 'Password successfully updated!');
-      setEmailInput(forgotEmail.trim());
+      setEmailInput(emailToUse);
       setPasswordInput(forgotNewPassword.trim());
       setTimeout(() => {
         setIsForgotMode(false);
@@ -494,10 +519,18 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       </div>
                       <div>
                         <h3 className="font-black text-slate-900 text-sm">
-                          {forgotStep === 1 ? 'Recover Portal Password' : 'Set New Secure Password'}
+                          {forgotStep === 1 
+                            ? 'Recover Account Password' 
+                            : forgotStep === 2 
+                            ? 'Verify 6-Digit Passcode' 
+                            : 'Set New Secure Password'}
                         </h3>
                         <p className="text-[11px] text-slate-500 font-medium">
-                          {forgotStep === 1 ? 'Step 1 of 2: Request 6-digit reset passcode' : 'Step 2 of 2: Verify passcode and choose new password'}
+                          {forgotStep === 1 
+                            ? 'Step 1 of 3: Request 6-digit reset passcode' 
+                            : forgotStep === 2 
+                            ? 'Step 2 of 3: Enter 6-digit passcode sent to email' 
+                            : 'Step 3 of 3: Choose and confirm your new password'}
                         </p>
                       </div>
                     </div>
@@ -620,9 +653,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                     </form>
                   )}
 
-                  {/* STEP 2: VERIFY PASSCODE AND SET NEW PASSWORD */}
+                  {/* STEP 2: VERIFY 6-DIGIT PASSCODE ONLY */}
                   {forgotStep === 2 && (
-                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
+                    <form onSubmit={handleVerifyOtpSubmit} className="space-y-4 text-xs">
                       <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-[11px] font-medium flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
@@ -633,7 +666,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         {selectedRoleTab !== 'superadmin' && (
                           <button
                             type="button"
-                            onClick={() => setForgotStep(1)}
+                            onClick={() => { setForgotStep(1); setForgotError(''); setForgotSuccess(''); }}
                             className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline cursor-pointer"
                           >
                             Change Email
@@ -643,7 +676,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">
-                          6-Digit Passcode (from Email) *
+                          Enter 6-Digit Passcode (from Email / Notifications) *
                         </label>
                         <div className="input-wrapper">
                           <KeyRound className="input-icon-left text-indigo-600" />
@@ -654,21 +687,46 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                             placeholder="e.g. 583921"
                             value={forgotOtp}
                             onChange={(e) => setForgotOtp(e.target.value)}
-                            className="input-field-styled font-mono font-bold tracking-widest text-center text-sm"
+                            className="input-field-styled font-mono font-bold tracking-widest text-center text-base"
+                            autoFocus
                           />
                         </div>
-                        <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
-                          <span>Check spam/junk folder if not in primary inbox.</span>
-                          {devOtpHint && (
-                            <button
-                              type="button"
-                              onClick={() => setForgotOtp(devOtpHint)}
-                              className="text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer"
-                            >
-                              Quick-Fill Passcode ({devOtpHint})
-                            </button>
-                          )}
-                        </div>
+                        <span className="text-[10px] text-slate-400 mt-1 block">
+                          Please enter the 6-digit verification passcode to unlock password reset.
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          type="submit"
+                          disabled={isForgotLoading || !forgotOtp.trim()}
+                          className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          <span>{isForgotLoading ? 'Verifying Passcode...' : 'Verify Passcode & Continue 🔐'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleForgotRequestSubmit}
+                          disabled={isForgotLoading}
+                          className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Resend Passcode to Email"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Resend</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* STEP 3: SET NEW PASSWORD (AFTER OTP IS VERIFIED) */}
+                  {forgotStep === 3 && (
+                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
+                      <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-bold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>
+                          Passcode verified for: <strong>{selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : forgotEmail}</strong>. Please enter your new password below.
+                        </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -684,6 +742,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               value={forgotNewPassword}
                               onChange={(e) => setForgotNewPassword(e.target.value)}
                               className="input-field-styled pr-10 font-medium"
+                              autoFocus
                             />
                             <button
                               type="button"
@@ -715,21 +774,18 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <div className="flex items-center gap-3 pt-2">
                         <button
                           type="submit"
-                          disabled={isForgotLoading}
+                          disabled={isForgotLoading || !forgotNewPassword || !forgotConfirmPassword}
                           className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                         >
-                          <ShieldCheck className="w-4 h-4" />
-                          <span>{isForgotLoading ? 'Updating Password...' : 'Save New Password & Sign In 🔑'}</span>
+                          <KeyRound className="w-4 h-4" />
+                          <span>{isForgotLoading ? 'Updating Password...' : 'Save New Password & Log In 🚀'}</span>
                         </button>
                         <button
                           type="button"
-                          onClick={handleForgotRequestSubmit}
-                          disabled={isForgotLoading}
-                          className="px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
-                          title="Resend Passcode to Email"
+                          onClick={() => setForgotStep(2)}
+                          className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors cursor-pointer"
                         >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Resend</span>
+                          Back
                         </button>
                       </div>
                     </form>

@@ -1477,7 +1477,9 @@ export const AppProvider = ({ children }) => {
     try {
       const targetEmail = (email || (role === 'superadmin' ? 'admin@joycorporatesolutions.com' : '')).trim();
       const resp = await api.forgotPassword(targetEmail, role);
-      showToast(resp.message || 'Password reset passcode dispatched to official email!', 'success');
+      
+      const otpCode = resp.dev_otp ? ` [Code: ${resp.dev_otp}]` : '';
+      showToast((resp.message || 'Password reset passcode dispatched to official email!') + (resp.dev_otp ? ` OTP: ${resp.dev_otp}` : ''), 'success');
       
       // Push high-priority security in-app notification
       try {
@@ -1485,7 +1487,7 @@ export const AppProvider = ({ children }) => {
           id: `notif-reset-${Date.now()}`,
           role: role || 'superadmin',
           title: role === 'superadmin' ? '🔐 Super Admin Reset Passcode Dispatched' : '🔐 Password Recovery Passcode Dispatched',
-          message: `A 6-digit recovery passcode was dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode valid for 30 minutes.`,
+          message: `6-digit recovery passcode${otpCode} dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode is valid for 30 minutes.`,
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
           isRead: false,
           priority: 'high',
@@ -1497,6 +1499,17 @@ export const AppProvider = ({ children }) => {
       return resp;
     } catch (err) {
       showToast(err.message || 'Failed to dispatch password recovery email', 'error');
+      throw err;
+    }
+  };
+
+  const verifyResetPasscode = async (payload) => {
+    try {
+      const resp = await api.verifyResetCode(payload);
+      showToast(resp.message || 'Passcode verified successfully!', 'success');
+      return resp;
+    } catch (err) {
+      showToast(err.message || 'Invalid or expired passcode', 'error');
       throw err;
     }
   };
@@ -3962,6 +3975,7 @@ export const AppProvider = ({ children }) => {
       currentRole,
       loginUser,
       requestForgotPassword,
+      verifyResetPasscode,
       completePasswordReset,
       setRoleView,
       logoutUser,

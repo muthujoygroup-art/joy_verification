@@ -153,6 +153,10 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ email, role })
   }),
+  verifyResetCode: (payload) => request('/auth/verify-reset-code', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
   resetPassword: (payload) => request('/auth/reset-password', {
     method: 'POST',
     body: JSON.stringify(payload)

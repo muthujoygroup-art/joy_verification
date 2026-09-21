@@ -325,6 +325,47 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
     raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")
 
 
+@router.post("/verify-reset-code")
+def verify_reset_code(payload: dict):
+    """
+    Validates the 6-digit OTP passcode before allowing user to enter new password.
+    """
+    role = (payload.get("role") or "superadmin").strip().lower()
+    email = (payload.get("email") or "").strip().lower()
+    reset_code = (payload.get("reset_code") or payload.get("otp") or payload.get("token") or "").strip()
+    
+    if role in ("superadmin", "super_admin"):
+        effective_role = "superadmin"
+        if not email:
+            email = "admin@joycorporatesolutions.com"
+    elif role in ("company", "companyadmin"):
+        effective_role = "company"
+    elif role in ("hrexecutive", "hr"):
+        effective_role = "hrexecutive"
+    else:
+        raise HTTPException(status_code=400, detail="Invalid role specified.")
+        
+    if not email:
+        raise HTTPException(status_code=400, detail="Registered account email is required.")
+    if not reset_code:
+        raise HTTPException(status_code=400, detail="6-digit passcode / OTP is required.")
+        
+    is_valid = verify_password_reset_otp(email, effective_role, reset_code)
+    if not is_valid:
+        raise HTTPException(
+            status_code=400, 
+            detail="Invalid or expired 6-digit passcode. Please check your email or request a new code."
+        )
+        
+    return {
+        "success": True,
+        "valid": True,
+        "message": "Passcode verified successfully! You may now set your new password.",
+        "email": email,
+        "role": effective_role
+    }
+
+
 @router.post("/reset-password")
 def reset_password(payload: dict, db: Session = Depends(get_db)):
     """
