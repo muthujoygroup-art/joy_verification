@@ -1031,143 +1031,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // NOTIFICATIONS (CROSS-ROLE SMART NOTIFICATION FEED)
-  const [notifications, setNotifications] = useState([
-    // HR NOTIFICATIONS (CRITICAL 60-DAY EXPIRY + PIPELINE)
-    {
-      id: 'notif-hr-1',
-      role: 'hr',
-      title: '⏳ JCS Certificate Expiring Soon (6 Days Left)',
-      message: 'Employee Vikram Sethi (JOY-2026-92) verified on 2026-07-02 has a JCS Certificate expiring on 2026-08-31. Please download the permanent dossier backup or dispatch a re-verification link.',
-      timestamp: '2026-08-25 08:30',
-      isRead: false,
-      priority: 'high',
-      category: 'expiry',
-      candidateToken: 'tok_vikram_771',
-      candidateName: 'Vikram Sethi'
-    },
-    {
-      id: 'notif-hr-2',
-      role: 'hr',
-      title: '🚨 Urgent: Certificate Expiry Tomorrow!',
-      message: 'Employee Pooja Sharma (JOY-2026-95) verified on 2026-06-27 is reaching the 60-day retention cutoff tomorrow. Take action now.',
-      timestamp: '2026-08-25 09:00',
-      isRead: false,
-      priority: 'critical',
-      category: 'expiry',
-      candidateToken: 'tok_pooja_229',
-      candidateName: 'Pooja Sharma'
-    },
-    {
-      id: 'notif-hr-3',
-      role: 'hr',
-      title: '✅ Candidate Verification Completed',
-      message: 'Rajesh Kumar completed Aadhaar OTP and Live Biometric Face Capture with 99.4% confidence score.',
-      timestamp: '2026-08-24 16:45',
-      isRead: true,
-      priority: 'normal',
-      category: 'verification',
-      candidateToken: 'tok_rajesh_891',
-      candidateName: 'Rajesh Kumar'
-    },
-    {
-      id: 'notif-hr-4',
-      role: 'hr',
-      title: '⚠️ Candidate Onboarding Stalled (>48h)',
-      message: 'Candidate Sunita Mehra received verification link 48 hours ago but has pending Mobile OTP. Click to resend WhatsApp/SMS reminder.',
-      timestamp: '2026-08-24 14:10',
-      isRead: false,
-      priority: 'medium',
-      category: 'candidate',
-      candidateToken: 'tok_sunita_412',
-      candidateName: 'Sunita Mehra'
-    },
-
-    // COMPANY ADMIN NOTIFICATIONS
-    {
-      id: 'notif-comp-1',
-      role: 'company',
-      title: '⏳ Workforce Compliance: 2 Certificates Expiring',
-      message: '2 employee JCS Certificates in your organization are expiring within 15 days (60-day policy). View the Master Registry to archive dossiers or renew verifications.',
-      timestamp: '2026-08-25 08:30',
-      isRead: false,
-      priority: 'high',
-      category: 'expiry'
-    },
-    {
-      id: 'notif-comp-2',
-      role: 'company',
-      title: '💳 Monthly Verification Quota Alert',
-      message: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED has utilized 420 / 500 verifications (84% of monthly Premier limit). Auto-rollover enabled.',
-      timestamp: '2026-08-24 18:00',
-      isRead: false,
-      priority: 'medium',
-      category: 'billing'
-    },
-    {
-      id: 'notif-comp-3',
-      role: 'company',
-      title: '👥 HR Workstation Activity Summary',
-      message: 'HR Executive Priya Sundaram created 4 candidate verification links and finalized 2 verified dossiers today.',
-      timestamp: '2026-08-24 17:30',
-      isRead: true,
-      priority: 'normal',
-      category: 'hr'
-    },
-
-    // SUPER ADMIN NOTIFICATIONS
-    {
-      id: 'notif-sa-1',
-      role: 'superadmin',
-      title: '💳 Enterprise Bill Settled (₹14,160)',
-      message: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED completed monthly invoice payment via UPI QR Code. Receipt #PAY-2026-9812 logged in PostgreSQL.',
-      timestamp: '2026-08-25 09:15',
-      isRead: false,
-      priority: 'high',
-      category: 'billing'
-    },
-    {
-      id: 'notif-sa-2',
-      role: 'superadmin',
-      title: '🚨 Upstream Gateway Latency Spike',
-      message: 'API SETU DigiLocker Govt gateway experienced 8.4s response latency on Aadhaar KYC calls. Traffic auto-routed to Sandbox fallback.',
-      timestamp: '2026-08-24 15:20',
-      isRead: false,
-      priority: 'critical',
-      category: 'system'
-    },
-    {
-      id: 'notif-sa-3',
-      role: 'superadmin',
-      title: '🏢 New Enterprise Onboarding Complete',
-      message: 'Starlight Healthcare Solutions onboarded with 10 Feature Matrix Flags and Basic Tier (₹80/check).',
-      timestamp: '2026-08-24 11:00',
-      isRead: true,
-      priority: 'normal',
-      category: 'company'
-    },
-
-    // CANDIDATE PORTAL NOTIFICATIONS
-    {
-      id: 'notif-cand-1',
-      role: 'candidate',
-      title: '📜 JCS Official Certificate Ready (60-Day Access)',
-      message: 'Your official JOY Corporate Solutions Verification Certificate is generated and accessible for download for the next 60 days.',
-      timestamp: '2026-08-24 16:45',
-      isRead: false,
-      priority: 'high',
-      category: 'certificate'
-    },
-    {
-      id: 'notif-cand-2',
-      role: 'candidate',
-      title: '🔒 Secure Onboarding Link Activated',
-      message: 'Your secure onboarding token is encrypted and active for 7 calendar days on this device.',
-      timestamp: '2026-08-24 10:00',
-      isRead: true,
-      priority: 'normal',
-      category: 'security'
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const [notificationPreferences, setNotificationPreferences] = useState({
     superadmin: { whatsapp: true, email: true, sms: true, inAppSound: true },
@@ -1177,42 +1041,10 @@ export const AppProvider = ({ children }) => {
   });
 
   // PAYMENT LEDGER
-  const [companyPaymentLedger, setCompanyPaymentLedger] = useState({
-    'comp-1': { status: 'SETTLED ✅', paymentId: 'PAY-2026-9812', date: '2026-08-20 11:20', amount: 14160, method: 'UPI QR (GPay / Razorpay)' },
-    'comp-2': { status: 'PENDING DEBIT ⏳', paymentId: null, date: null, amount: 21240, method: null }
-  });
+  const [companyPaymentLedger, setCompanyPaymentLedger] = useState({});
 
   // SUPPORT TICKETS
-  const [supportTickets, setSupportTickets] = useState([
-    {
-      id: 'TICK-2026-881',
-      companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      companyId: 'comp-1',
-      reporterName: 'Priya Sundaram (HR)',
-      subject: 'Aadhaar OTP Carrier Gateway Delay on Mobile Verification',
-      category: 'API Gateway',
-      priority: 'High',
-      status: 'In Progress',
-      createdAt: '2026-08-20 12:45:10',
-      details: 'Candidates reported 30-second SMS OTP delivery delay for Jio numbers.',
-      messages: [
-        {
-          id: 'msg-1',
-          sender: 'Priya Sundaram (HR)',
-          text: 'Candidates reported 30-second SMS OTP delivery delay for Jio mobile numbers during onboarding.',
-          timestamp: '2026-08-20 12:45:10',
-          type: 'user_ticket'
-        },
-        {
-          id: 'msg-2',
-          sender: 'Super Admin Support',
-          text: 'Inspecting Jio carrier gateway routing table and switching fallback SMS router to AWS SNS.',
-          timestamp: '2026-08-20 13:10:00',
-          type: 'admin_reply'
-        }
-      ]
-    }
-  ]);
+  const [supportTickets, setSupportTickets] = useState([]);
 
   // SUPER ADMIN API CONFIGURATIONS (SERVER 1: SANDBOX + SERVER 2: COINCIRCLETRUST)
   const [apiConfigurations, setApiConfigurations] = useState({
@@ -3426,113 +3258,23 @@ export const AppProvider = ({ children }) => {
   };
 
   // 📜 CUSTOM COMPANY TERMS & CONDITIONS CONTRACTS STATE
-  const [customCompanyTerms, setCustomCompanyTerms] = useState({
-    'comp-1': {
-      companyId: 'comp-1',
-      companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      retentionDays: 60,
-      customSla: '99.95% High-Availability SLA Tier',
-      customIndemnityLimit: '₹10,00,000 INR',
-      customClauseNotes: 'Dedicated 24/7 priority enterprise support line & quarterly cryptographic audit certifications.',
-      boundVersion: 'v2.4-2026',
-      signedBy: 'Muthu Kumar P (Director HR)',
-      signedDate: '2026-08-15 10:30'
-    },
-    'comp-2': {
-      companyId: 'comp-2',
-      companyName: 'Apex Logistics Solutions',
-      retentionDays: 90,
-      customSla: '99.9% Standard Commercial Tier',
-      customIndemnityLimit: '₹5,00,000 INR',
-      customClauseNotes: 'Extended 90-day fleet driver KYC retention with fast-track automated DL authentication.',
-      boundVersion: 'v2.4-2026',
-      signedBy: 'Sneha Patel (Operations Head)',
-      signedDate: '2026-08-18 14:20'
-    },
-    'comp-3': {
-      companyId: 'comp-3',
-      companyName: 'Starlight Healthcare Solutions',
-      retentionDays: 60,
-      customSla: '99.9% Clinical Priority Tier',
-      customIndemnityLimit: '₹15,00,000 INR',
-      customClauseNotes: 'Healthcare clinical background check indemnity & priority criminal record verification.',
-      boundVersion: 'v2.4-2026',
-      signedBy: 'Dr. Ramesh Iyer (Medical Director)',
-      signedDate: '2026-08-22 09:45'
-    }
-  });
+  const [customCompanyTerms, setCustomCompanyTerms] = useState({});
 
   // 👥 MULTI-ROLE LOGIN TELEMETRY & LIVE SESSIONS
   const [multiRoleSessions, setMultiRoleSessions] = useState([
     {
-      id: 'sess-101',
+      id: 'sess-superadmin-01',
       role: 'superadmin',
       roleLabel: 'Super Admin',
       userName: 'Super Administrator',
       email: 'admin@joycorporatesolutions.com',
       company: 'JOY Platform HQ',
       ipAddress: '127.0.0.1 (Localhost Gateway)',
-      device: 'Chrome 128 / Windows 11 (Host)',
-      loginTime: '2026-08-25 08:00:12',
+      device: 'Secure Web Workstation',
+      loginTime: new Date().toISOString().replace('T', ' ').substring(0, 19),
       lastActive: 'Just now',
-      actionsCount: 52,
+      actionsCount: 1,
       status: 'Active 🟢'
-    },
-    {
-      id: 'sess-102',
-      role: 'company',
-      roleLabel: 'Company Admin',
-      userName: 'Muthu Kumar P',
-      email: 'muthukumar@joyglobalcorp.com',
-      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      ipAddress: '192.168.1.83 (Wi-Fi Internal)',
-      device: 'Edge 127 / macOS Sequoia',
-      loginTime: '2026-08-25 08:30:45',
-      lastActive: '4 mins ago',
-      actionsCount: 22,
-      status: 'Active 🟢'
-    },
-    {
-      id: 'sess-103',
-      role: 'hrexecutive',
-      roleLabel: 'HR Executive',
-      userName: 'Muthu Kumar P (HR Lead)',
-      email: 'muthujoygroup@gmail.com',
-      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      ipAddress: '106.51.24.112 (Bengaluru ISP)',
-      device: 'Chrome 128 / Windows 11',
-      loginTime: '2026-08-25 08:45:00',
-      lastActive: '1 min ago',
-      actionsCount: 38,
-      status: 'Active 🟢'
-    },
-    {
-      id: 'sess-104',
-      role: 'hrexecutive',
-      roleLabel: 'HR Executive',
-      userName: 'Sneha Patel',
-      email: 'sneha.p@apexlogistics.in',
-      company: 'Apex Logistics Solutions',
-      ipAddress: '157.48.92.10 (Mumbai Gateway)',
-      device: 'Safari 17 / iOS Mobile',
-      loginTime: '2026-08-25 09:10:20',
-      lastActive: '12 mins ago',
-      actionsCount: 14,
-      status: 'Active 🟢'
-    },
-    {
-      id: 'sess-105',
-      role: 'employee_link',
-      roleLabel: 'Candidate Link',
-      userName: 'Rajesh Kumar',
-      email: 'rajesh.k@gmail.com',
-      company: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-      ipAddress: '49.37.112.98 (Jio 5G Mobile)',
-      device: 'Chrome Mobile / Android 14',
-      loginTime: '2026-08-24 16:30:10',
-      lastActive: 'Yesterday',
-      actionsCount: 8,
-      status: 'Completed / Idle 🟡'
     }
   ]);
 
