@@ -2059,34 +2059,6 @@ export const LandingPageView = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Regional Support Hubs */}
-              <div className="bg-[#FCFCFA] p-6 rounded-3xl border border-[#E5EAF0] shadow-xs space-y-3">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-[#182230]">Regional Operations Hubs</h4>
-                <div className="space-y-2 text-xs">
-                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
-                    <div>
-                      <strong className="text-slate-800 block">Chennai / Sriperumbudur Hub</strong>
-                      <span className="text-[11px] text-slate-500">Automotive & Electronics Cluster</span>
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
-                    <div>
-                      <strong className="text-slate-800 block">Gujarat / Sanand Mega Zone</strong>
-                      <span className="text-[11px] text-slate-500">EV & Heavy Engineering</span>
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-white border border-[#E5EAF0] flex items-center justify-between">
-                    <div>
-                      <strong className="text-slate-800 block">Mumbai / Bhiwandi Cluster</strong>
-                      <span className="text-[11px] text-slate-500">3PL & Logistics Mega Center</span>
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Active</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
