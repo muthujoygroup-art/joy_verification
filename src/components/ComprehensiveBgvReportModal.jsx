@@ -178,19 +178,29 @@ export const ComprehensiveBgvReportModal = ({
       memberId: epfoData.member_id || "—",
       totalServiceYears: epfoData.total_service_years || (isEpfoVerified ? "Service Verified" : "—"),
       dualEmploymentClearance: isEpfoVerified ? (epfoData.dual_employment_clearance || "Passed (No Overlapping Active Service)") : "Pending Verification",
-      employmentHistory: (Array.isArray(epfoData.employment_history) && epfoData.employment_history.length > 0)
-        ? epfoData.employment_history
-        : (Array.isArray(epfoData.establishments) && epfoData.establishments.length > 0)
-          ? epfoData.establishments
-          : (jf.previousEmployer ? [{
-              establishmentName: jf.previousEmployer,
-              memberId: "—",
-              doj: "—",
-              doe: "—",
-              designation: jf.designation || "—",
-              exitReason: "Declared by Employee",
-              verified: false
-            }] : [])
+      employmentHistory: (() => {
+        const rawHistory = (Array.isArray(epfoData.employment_history) && epfoData.employment_history.length > 0)
+          ? epfoData.employment_history
+          : (Array.isArray(epfoData.establishments) && epfoData.establishments.length > 0)
+            ? epfoData.establishments
+            : (jf.previousEmployer ? [{
+                establishmentName: jf.previousEmployer,
+                memberId: "—",
+                doj: "—",
+                doe: "—",
+                designation: jf.designation || "—",
+                exitReason: "Declared by Employee",
+                verified: false
+              }] : []);
+        const seen = new Set();
+        return rawHistory.filter(row => {
+          if (!row) return false;
+          const k = `${row.establishmentName || row.establishment_name || ''}_${row.memberId || row.member_id || ''}_${row.doj || ''}`.toLowerCase().trim();
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+      })()
     },
     bank: {
       apiId: "API_16_BANK_PENNY_DROP",

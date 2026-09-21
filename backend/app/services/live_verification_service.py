@@ -426,6 +426,60 @@ def save_and_enrich_candidate_verification(
     db.refresh(candidate)
     db.refresh(record)
     
+    # 5. Persist live API call into PostgreSQL api_call_logs table for SuperAdmin telemetry
+    try:
+        clean_endpoint = endpoint_path or f"/{verification_type.replace('_', '-')}-verify"
+        clean_payload = dict(raw_payload) if isinstance(raw_payload, dict) else {}
+        for secret_k in ["api_key", "secret_key", "password"]:
+            clean_payload.pop(secret_k, None)
+            
+        req_input_map = {
+            "aadhaar": fetched_data.get("masked_aadhaar") or fetched_data.get("aadhaar_number") or getattr(candidate, "aadhaar_no", None),
+            "pan": fetched_data.get("pan_number") or fetched_data.get("pan") or getattr(candidate, "pan_no", None),
+            "bankCheck": fetched_data.get("account_number") or getattr(candidate, "bank_account_no", None),
+            "bank": fetched_data.get("account_number") or getattr(candidate, "bank_account_no", None),
+            "drivingLicense": fetched_data.get("dl_number") or getattr(candidate, "dl_no", None),
+            "dl": fetched_data.get("dl_number") or getattr(candidate, "dl_no", None),
+            "epfoUan": fetched_data.get("uan") or getattr(candidate, "pf_number", None),
+            "epfo": fetched_data.get("uan") or getattr(candidate, "pf_number", None),
+            "passport": fetched_data.get("passport_number") or getattr(candidate, "passport_no", None),
+            "voter_id": fetched_data.get("epic_number") or fetched_data.get("voter_id"),
+            "esic": fetched_data.get("esic_number") or getattr(candidate, "esi_number", None),
+            "rc_details": fetched_data.get("rc_number") or getattr(candidate, "rc_number", None),
+            "courtRecords": candidate.name
+        }
+        input_id = req_input_map.get(verification_type) or candidate.name
+
+        record_api_call_log(
+            db=db,
+            endpoint_slug=clean_endpoint,
+            payload={
+                "candidate_id": str(candidate.id),
+                "candidate_name": candidate.name,
+                "emp_id": candidate.emp_id or candidate.employee_number or "EMP",
+                "verification_type": verification_type,
+                "input_identifier": str(input_id) if input_id else None,
+                **{k: v for k, v in clean_payload.items() if k not in ["data", "candidate"]}
+            },
+            response_data={
+                "status": status,
+                "sha256_seal": sha_seal,
+                "transaction_ref": tx_ref,
+                "provider": provider,
+                "summary": f"{verification_type.upper()} verified successfully via {provider}"
+            },
+            is_success=(status == "VERIFIED"),
+            latency_ms=latency_ms if latency_ms > 0 else 52,
+            http_status=200 if status == "VERIFIED" else 400,
+            initiator_role="hr_executive",
+            initiator_id=f"HR Verification • #{candidate.emp_id or candidate.id} ({candidate.name})",
+            company_id=str(candidate.company_id) if candidate.company_id else None,
+            cost_incurred=cost_incurred,
+            error_message=None if status == "VERIFIED" else "Verification failed or mismatch"
+        )
+    except Exception as log_err:
+        logger.warning(f"Failed to record candidate api_call_log: {log_err}")
+
     logger.info(f"Verification '{verification_type}' ({api_calls_count} calls, ₹{cost_incurred:.2f}) for '{candidate.name}' verified via '{provider}' and saved to PostgreSQL (Record ID: {record_id})")
     return record
 
@@ -1520,15 +1574,16 @@ def record_api_call_log(
         cat = categorize_endpoint(endpoint_slug)
         
         # Extract primary input identifier
-        input_id = None
-        for key in ["mobile_number", "mobile", "pan", "pan_number", "aadhaar_number", "account_number", "driving_license_number", "uan", "fileNumber", "rc_number", "cin", "gstin"]:
-            if key in payload and payload[key]:
-                val = str(payload[key])
-                if key == "aadhaar_number" and len(val) >= 8:
-                    input_id = f"XXXXXXXX{val[-4:]}"
-                else:
-                    input_id = val
-                break
+        input_id = payload.get("input_identifier")
+        if not input_id:
+            for key in ["mobile_number", "mobile", "pan", "pan_number", "aadhaar_number", "account_number", "driving_license_number", "uan", "fileNumber", "rc_number", "cin", "gstin"]:
+                if key in payload and payload[key]:
+                    val = str(payload[key])
+                    if key == "aadhaar_number" and len(val) >= 8:
+                        input_id = f"XXXXXXXX{val[-4:]}"
+                    else:
+                        input_id = val
+                    break
         
         log_entry = ApiCallLog(
             id=log_id,

@@ -162,17 +162,26 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const portfolio = jf.portfolioUrl || c.portfolioUrl || spec.portfolioUrl || '';
   const twitter = jf.twitterUrl || c.twitterUrl || '';
 
-  // Dynamic Multi-Row Education Qualifications
+  // Dynamic Multi-Row Education Qualifications (Deduplicated)
   const rawEduList = (Array.isArray(jf.educationList) && jf.educationList.length > 0)
     ? jf.educationList
     : (Array.isArray(c.educationList) && c.educationList.length > 0)
       ? c.educationList
       : [];
-  const eduList = rawEduList.filter(e => e && (e.degreeName || e.institutionName || e.qualificationCategory));
+  const filteredEduList = rawEduList.filter(e => e && (e.degreeName || e.institutionName || e.qualificationCategory));
+  const seenEduKeys = new Set();
+  const eduList = [];
+  for (const e of filteredEduList) {
+    const k = `${e.degreeName || ''}_${e.institutionName || ''}_${e.passingYear || ''}`.toLowerCase().trim();
+    if (k && !seenEduKeys.has(k)) {
+      seenEduKeys.add(k);
+      eduList.push(e);
+    }
+  }
 
-  // Dynamic Custom Fields Extraction
+  // Dynamic Custom Fields Extraction (Deduplicated)
   const rawCustomFields = jf.customFields || c.customFields || c.custom_fields || c.customFieldsList || [];
-  const customFieldsArray = Array.isArray(rawCustomFields)
+  const rawCustomFieldsArray = Array.isArray(rawCustomFields)
     ? rawCustomFields
     : typeof rawCustomFields === 'object' && rawCustomFields !== null
       ? Object.entries(rawCustomFields).map(([k, v]) => ({
@@ -183,37 +192,61 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           required: typeof v === 'object' ? !!v.required : false
         }))
       : [];
+  const seenFieldKeys = new Set();
+  const customFieldsArray = [];
+  for (const f of rawCustomFieldsArray) {
+    if (!f) continue;
+    const k = (f.key || f.label || '').toLowerCase().trim();
+    if (k && !seenFieldKeys.has(k)) {
+      seenFieldKeys.add(k);
+      customFieldsArray.push(f);
+    }
+  }
 
-  // Dynamic Multi-Row Previous Employment Experience
+  // Dynamic Multi-Row Previous Employment Experience (Deduplicated)
   const rawExpList = (Array.isArray(jf.experienceList) && jf.experienceList.length > 0)
     ? jf.experienceList
     : (Array.isArray(c.experienceList) && c.experienceList.length > 0)
       ? c.experienceList
       : [];
-  const expList = rawExpList.filter(e => e && (e.companyName || e.institutionName || e.designation));
+  const filteredExpList = rawExpList.filter(e => e && (e.companyName || e.institutionName || e.designation));
+  const seenExpKeys = new Set();
+  const expList = [];
+  for (const exp of filteredExpList) {
+    const k = `${exp.companyName || ''}_${exp.designation || ''}_${exp.fromDate || ''}`.toLowerCase().trim();
+    if (k && !seenExpKeys.has(k)) {
+      seenExpKeys.add(k);
+      expList.push(exp);
+    }
+  }
 
-  // Construct attached documents list for exhibits (DB records + JSON Form data)
+  // Construct attached documents list for exhibits (DB records + JSON Form data, Strict Deduplication)
   const attachedDocsMap = jf.uploadedDocuments || c.uploadedDocuments || {};
-  let attachedExhibits = [];
+  const allExhibits = [];
 
   if (Array.isArray(c.documents) && c.documents.length > 0) {
-    attachedExhibits = c.documents.map(d => ({
-      id: d.id || d.document_type || d.type,
-      title: d.title || (d.document_type ? d.document_type.replace(/([A-Z])/g, ' $1').toUpperCase() : 'DOCUMENT EXHIBIT'),
-      name: d.file_name || d.name || `${d.document_type || 'document'}.pdf`,
-      doc_type: d.document_type || d.doc_type || d.type,
-      file_format: (d.file_format || (d.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : d.file_name?.toLowerCase().endsWith('.png') ? 'PNG' : 'JPG')).toUpperCase(),
-      file_size_kb: d.file_size_kb || 450,
-      file_path: d.file_path || d.dataUrl || d.data || ''
-    }));
-  } else if (Object.keys(attachedDocsMap).length > 0) {
-    attachedExhibits = Object.entries(attachedDocsMap).map(([key, val]) => {
+    c.documents.forEach(d => {
+      if (d) {
+        allExhibits.push({
+          id: d.id || d.document_type || d.type,
+          title: d.title || (d.document_type ? d.document_type.replace(/([A-Z])/g, ' $1').toUpperCase() : 'DOCUMENT EXHIBIT'),
+          name: d.file_name || d.name || `${d.document_type || 'document'}.pdf`,
+          doc_type: d.document_type || d.doc_type || d.type,
+          file_format: (d.file_format || (d.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : d.file_name?.toLowerCase().endsWith('.png') ? 'PNG' : 'JPG')).toUpperCase(),
+          file_size_kb: d.file_size_kb || 450,
+          file_path: d.file_path || d.dataUrl || d.data || ''
+        });
+      }
+    });
+  }
+  if (Object.keys(attachedDocsMap).length > 0) {
+    Object.entries(attachedDocsMap).forEach(([key, val]) => {
       const isObj = typeof val === 'object' && val !== null;
       const fileData = isObj ? (val.dataUrl || val.file_path || val.data || '') : (typeof val === 'string' ? val : '');
       const fileName = isObj ? (val.name || `${key}_document.pdf`) : `${key}_document.pdf`;
       const fileType = isObj ? (val.type || val.file_format || key) : 'pdf';
       const format = (fileName.toLowerCase().endsWith('.pdf') || String(fileType).includes('pdf')) ? 'PDF' : (fileName.toLowerCase().endsWith('.png') || String(fileType).includes('png')) ? 'PNG' : 'JPG';
-      return {
+      allExhibits.push({
         id: key,
         title: isObj && val.title ? val.title : key.replace(/([A-Z])/g, ' $1').toUpperCase(),
         name: fileName,
@@ -221,8 +254,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         file_format: format,
         file_size_kb: isObj && val.file_size_kb ? val.file_size_kb : 450,
         file_path: fileData
-      };
+      });
     });
+  }
+
+  // Deduplicate exhibits by normalized doc_type / key
+  const attachedExhibits = [];
+  const seenExhibitKeys = new Set();
+  for (const ex of allExhibits) {
+    const rawKey = (ex.doc_type || ex.id || ex.name || ex.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (rawKey && !seenExhibitKeys.has(rawKey)) {
+      seenExhibitKeys.add(rawKey);
+      attachedExhibits.push(ex);
+    }
   }
 
   const handleDownloadExhibit = (doc) => {
