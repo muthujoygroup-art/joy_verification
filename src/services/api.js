@@ -519,9 +519,12 @@ export const api = {
     });
   },
   dispatchCandidateEmail: (payload) => {
+    const cleanPayload = typeof payload === 'object' 
+      ? { channel: 'email', ...payload }
+      : { channel: 'email', candidate_id: payload };
     return request('/hr/dispatch-link', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(cleanPayload),
     });
   },
   updateCandidate: (candidateId, candidateData) => {
@@ -941,15 +944,6 @@ export const api = {
     return request('/settings/test-email', {
       method: 'POST',
       body: JSON.stringify({ to_email: toEmail, smtp_config: smtpConfig }),
-    });
-  },
-  dispatchCandidateEmail: (dispatchData) => {
-    const payload = typeof dispatchData === 'object' 
-      ? { channel: 'email', ...dispatchData }
-      : { channel: 'email', candidate_id: dispatchData };
-    return request('/hr/dispatch-link', {
-      method: 'POST',
-      body: JSON.stringify(payload),
     });
   },
 

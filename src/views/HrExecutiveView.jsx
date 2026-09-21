@@ -460,13 +460,14 @@ export const HrExecutiveView = () => {
     const resUserCompNorm = norm(resolvedUserCompanyId);
 
     const targetNorms = new Set([compIdNorm, compCodeNorm, compNameNorm, resUserCompNorm].filter(Boolean));
+    const joyAliases = new Set(['comp001', 'compjoy', 'comptest1', 'joy01', 'joy', 'joycorp', 'joycorporatesolutions', 'joycorporatesolutionsprivatelimited']);
+    const isJoyTarget = Array.from(targetNorms).some(n => joyAliases.has(n));
 
     const rawList = (!targetNorms.size ? (candidates || []) : (candidates || []).filter(c => {
       const candCompNorm = norm(c.companyId || c.company_id || c.companyCode || c.company_code || c.companyName || c.company_name);
       if (!candCompNorm) return true;
       if (targetNorms.has(candCompNorm)) return true;
-      if ((targetNorms.has('comp001') || targetNorms.has('compjoy')) && 
-          (candCompNorm === 'comp001' || candCompNorm === 'compjoy')) {
+      if (isJoyTarget && (joyAliases.has(candCompNorm) || candCompNorm.includes('comp') || candCompNorm.includes('joy'))) {
         return true;
       }
       return false;

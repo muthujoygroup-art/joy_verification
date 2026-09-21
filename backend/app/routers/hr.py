@@ -14,7 +14,7 @@ router = APIRouter(prefix="/hr", tags=["HR Executive"])
 
 @router.get("/candidates", response_model=List[CandidateResponse])
 def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = Depends(get_db)):
-    """Fetch candidates filtered by HR executive or Company"""
+    """Fetch candidates filtered by HR executive or Company with multi-alias support"""
     try:
         apply_runtime_migrations(db.get_bind())
     except Exception:
@@ -24,13 +24,22 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
         query = query.filter(Candidate.hr_id == hr_id)
     elif company_id:
         target = company_id.strip()
-        comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
-        target_id = comp.id if comp else target
-        query = query.filter(
-            (Candidate.company_id == target_id) | 
-            (Candidate.company_id == target) | 
-            (Candidate.company_id.ilike(f"%{target}%"))
-        )
+        joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp"]
+        clean_target = target.lower().replace("-", "").replace("_", "")
+        if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
+            query = query.filter(
+                (Candidate.company_id.in_(["COMP001", "comp-joy", "comp-test-1", "JOY01", "compjoy", target])) |
+                (Candidate.company_id.ilike("%comp%")) |
+                (Candidate.company_id.ilike("%joy%"))
+            )
+        else:
+            comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
+            target_id = comp.id if comp else target
+            query = query.filter(
+                (Candidate.company_id == target_id) | 
+                (Candidate.company_id == target) | 
+                (Candidate.company_id.ilike(f"%{target}%"))
+            )
     candidates = query.order_by(Candidate.created_at.desc()).all()
     for c in candidates:
         if c.verifications_completed is None:
@@ -61,7 +70,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     ).first()
 
     if not comp:
-        comp_name = "Joy Corporate Solutions Private Limited" if requested_comp_id in ("COMP001", "comp-joy") else f"Partner Organization ({requested_comp_id})"
+        comp_name = "Joy Corporate Solutions Private Limited" if requested_comp_id.upper() in ("COMP001", "COMP-JOY", "COMP-TEST-1", "JOY01") else f"Partner Organization ({requested_comp_id})"
         comp = Company(
             id=requested_comp_id,
             code=requested_comp_id,
@@ -77,9 +86,9 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         except Exception as e:
             db.rollback()
             print(f"Error provisioning company '{requested_comp_id}': {e}")
-            comp = db.query(Company).first()
+            comp = db.query(Company).filter(Company.id == requested_comp_id).first() or db.query(Company).first()
 
-    resolved_comp_id = comp.id if comp else requested_comp_id
+    resolved_comp_id = requested_comp_id if comp is None else comp.id
 
     # 🛡️ Resolve HR user & ensure HrUser record exists in DB to prevent foreign key constraint violations
     resolved_hr_id = None

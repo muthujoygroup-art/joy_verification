@@ -112,6 +112,7 @@ export const BulkEmployeeImportModal = ({
   const { 
     addCandidate, 
     bulkAddCandidates, 
+    refreshCandidates,
     showToast, 
     companies, 
     currentUser, 
@@ -1300,6 +1301,10 @@ export const BulkEmployeeImportModal = ({
             showToast(`📧 Onboarding emails queued for ${emailCandidates.length} candidates.`);
           }
         }
+      }
+
+      if (typeof refreshCandidates === 'function') {
+        refreshCandidates(targetCompanyId);
       }
 
       if (onImportComplete) onImportComplete(createdResults);

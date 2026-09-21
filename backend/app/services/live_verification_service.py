@@ -406,11 +406,23 @@ def save_and_enrich_candidate_verification(
         candidate.esi_number = fetched_data.get("esic_number") or fetched_data.get("esi_no")
         jform["esiNumber"] = candidate.esi_number
 
-    # SECTION 5: Employment History & Dual Employment Checks
-    if "employment_history" in fetched_data and isinstance(fetched_data["employment_history"], list):
-        jform["employmentHistory"] = fetched_data["employment_history"]
-    elif "establishments" in fetched_data and isinstance(fetched_data["establishments"], list):
-        jform["employmentHistory"] = fetched_data["establishments"]
+    # SECTION 5: Employment History & Dual Employment Checks (Deduplicated)
+    incoming_history = fetched_data.get("employment_history") or fetched_data.get("establishments")
+    if incoming_history and isinstance(incoming_history, list):
+        existing_history = jform.get("employmentHistory") if isinstance(jform.get("employmentHistory"), list) else []
+        seen_est = set()
+        deduped_history = []
+        for est in (incoming_history + existing_history):
+            if not isinstance(est, dict):
+                continue
+            est_key = (
+                str(est.get("establishment_id") or est.get("est_id") or est.get("company_name") or est.get("establishment_name") or "") + "::" +
+                str(est.get("member_id") or est.get("doj") or est.get("designation") or "")
+            ).strip().lower()
+            if est_key and est_key not in seen_est:
+                seen_est.add(est_key)
+                deduped_history.append(est)
+        jform["employmentHistory"] = deduped_history
 
     # SECTION 6: Background Verification Verdicts
     if "court_cases" in fetched_data or "verdict" in fetched_data:

@@ -427,28 +427,31 @@ const INITIAL_CANDIDATES = [];
 const INITIAL_DEFAULT_VENDORS = [];
 
 export const AppProvider = ({ children }) => {
-  const [companies, setCompanies] = useState([]);
-  const [hrUsers, setHrUsers] = useState([]);
-  const [vendors, setVendors] = useState([]);
-  const [candidates, setCandidates] = useState([]);
-
-  // Auto-clean storage on mount
-  useEffect(() => {
+  const [companies, setCompanies] = useState(() => {
     try {
-      const keysToPurge = [
-        'joy_companies_v1', 'joy_companies',
-        'joy_hr_users_v1', 'joy_hr_users',
-        'joy_candidates_v1', 'joy_candidates',
-        'joy_company_vendors_v1', 'joy_company_vendors',
-        'joy_active_company_id', 'joy_company_features',
-        'joy_hr_employee_draft_v1', 'joy_hr_draft_saved_time_v1', 'joy_hr_delegated_map_v1'
-      ];
-      keysToPurge.forEach(k => {
-        try { localStorage.removeItem(k); } catch (e) {}
-        try { sessionStorage.removeItem(k); } catch (e) {}
-      });
-    } catch (e) {}
-  }, []);
+      const saved = localStorage.getItem('joy_companies_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [hrUsers, setHrUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_hr_users_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [vendors, setVendors] = useState([]);
+  const [candidates, setCandidates] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_candidates_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   const [activeInvoiceModal, setActiveInvoiceModal] = useState(null);
   // 🛡️ Strict Enterprise Authentication: User must log in with valid credentials
@@ -1268,6 +1271,9 @@ export const AppProvider = ({ children }) => {
           });
           const cleanFetched = cands.map(mapCandidateObj);
           setCandidates(cleanFetched);
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanFetched));
+          } catch (e) {}
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -2280,6 +2286,7 @@ export const AppProvider = ({ children }) => {
           faceImages: c.face_images || c.faceImages || { straight: null, left: null, right: null },
           joiningFormData: c.joining_form_data || c.joiningFormData || {},
           customFields: c.custom_fields || c.customFields || {},
+          verifiedAttributes: c.verified_attributes || c.verifiedAttributes || {},
           documents: c.documents || [],
           verificationDate: c.verification_date || c.verificationDate
         });
@@ -2310,6 +2317,9 @@ export const AppProvider = ({ children }) => {
             seen.add(uniqueKey);
             return true;
           });
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
+          } catch (e) {}
           return uniqueMerged;
         });
         return cleanFetched;
