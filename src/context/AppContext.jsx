@@ -399,12 +399,30 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
   };
 };
 
+const SCHEMA_VERSION_KEY = 'joy_storage_schema_version';
+const CURRENT_SCHEMA_VERSION = 'joy_v2026_09_21_clean_v5';
+
+// Run immediate cache sanitation on module load to purge stale mock data
+try {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const currentVer = localStorage.getItem(SCHEMA_VERSION_KEY);
+    if (currentVer !== CURRENT_SCHEMA_VERSION) {
+      localStorage.removeItem('joy_companies_v1');
+      localStorage.removeItem('joy_company_vendors_v1');
+      localStorage.removeItem('joy_candidates_v1');
+      localStorage.removeItem('joy_hr_users_v1');
+      localStorage.removeItem('joy_hr_employee_draft_v1');
+      localStorage.removeItem('joy_hr_draft_saved_time_v1');
+      localStorage.removeItem('joy_hr_delegated_map_v1');
+      localStorage.removeItem('joy_active_company_id');
+      localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
+    }
+  }
+} catch (e) {}
+
 const INITIAL_COMPANIES = [];
-
 const INITIAL_HR_USERS = [];
-
 const INITIAL_CANDIDATES = [];
-
 const INITIAL_DEFAULT_VENDORS = [];
 
 export const AppProvider = ({ children }) => {
@@ -416,7 +434,6 @@ export const AppProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          // Filter out legacy dummy mock items
           const clean = parsed.filter(v => v && v.id && !['vend-101', 'vend-102', 'vend-103'].includes(v.id));
           return clean;
         }
@@ -431,7 +448,7 @@ export const AppProvider = ({ children }) => {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
           const clean = parsed
-            .filter(c => !!c && !!c.name && !['cand-kavitha-101', 'cand-arun-102', 'cand-1'].includes(c.id))
+            .filter(c => !!c && !!c.name && !['cand-kavitha-101', 'cand-arun-102', 'cand-1', 'cand-101', 'cand-102'].includes(c.id))
             .map(c => {
               const verifs = c.verificationsCompleted || c.verifications_completed || {};
               const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
@@ -441,14 +458,12 @@ export const AppProvider = ({ children }) => {
                 status: safeStatus
               };
             });
-          // Deduplicate by ID
           const seen = new Set();
           const deduped = clean.filter(c => {
             if (seen.has(c.id || c.token)) return false;
             seen.add(c.id || c.token);
             return true;
           });
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(deduped));
           return deduped;
         }
       }
@@ -1282,15 +1297,10 @@ export const AppProvider = ({ children }) => {
             verificationDate: c.verification_date || c.verificationDate
           });
           const cleanFetched = cands.map(mapCandidateObj);
-          setCandidates(prev => {
-            const fetchedIds = new Set(cleanFetched.map(f => f.id || f.token));
-            const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => p && !fetchedIds.has(p.id) && !fetchedIds.has(p.token));
-            const merged = [...cleanFetched, ...preservedLocal];
-            try {
-              localStorage.setItem('joy_candidates_v1', JSON.stringify(merged));
-            } catch (e) {}
-            return merged;
-          });
+          setCandidates(cleanFetched);
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanFetched));
+          } catch (e) {}
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -3969,6 +3979,33 @@ export const AppProvider = ({ children }) => {
     };
   };
 
+  const purgeClientCacheAndReset = async () => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('joy_companies_v1');
+        localStorage.removeItem('joy_company_vendors_v1');
+        localStorage.removeItem('joy_candidates_v1');
+        localStorage.removeItem('joy_hr_users_v1');
+        localStorage.removeItem('joy_hr_employee_draft_v1');
+        localStorage.removeItem('joy_hr_draft_saved_time_v1');
+        localStorage.removeItem('joy_hr_delegated_map_v1');
+        localStorage.removeItem('joy_active_company_id');
+        localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
+      }
+      setCompanies([]);
+      setHrUsers([]);
+      setCandidates([]);
+      setVendors([]);
+      if (typeof showToast === 'function') {
+        showToast('🧹 Local client cache purged! Directory refreshed to 0.');
+      }
+    } catch (e) {
+      if (typeof showToast === 'function') {
+        showToast('Cache purge notice: ' + e.message, 'error');
+      }
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -3977,6 +4014,7 @@ export const AppProvider = ({ children }) => {
       requestForgotPassword,
       verifyResetPasscode,
       completePasswordReset,
+      purgeClientCacheAndReset,
       setRoleView,
       logoutUser,
       companies,

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Dict, Any, List
+from datetime import datetime
 
 from backend.app.database import get_db
 from backend.app.models import SystemSetting, PlatformGuideline, CommunicationGateway
@@ -43,6 +44,78 @@ def get_communication_gateways(company_id: str = None, db: Session = Depends(get
     """Fetch configured WhatsApp, SMTP, and SMS gateways"""
     gateways = db.query(CommunicationGateway).all()
     return gateways
+
+@router.get("/superadmin/profile")
+def get_superadmin_profile(db: Session = Depends(get_db)):
+    """Fetch Master Super Administrator account details"""
+    from backend.app.models.super_admin import SuperAdminUser
+    sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+    if not sa:
+        sa = db.query(SuperAdminUser).first()
+    if not sa:
+        return {
+            "id": "sa-master-01",
+            "name": "Super Administrator",
+            "email": "admin@joycorporatesolutions.com",
+            "role": "superadmin",
+            "status": "Active"
+        }
+    return {
+        "id": sa.id,
+        "name": sa.name,
+        "email": sa.email,
+        "role": sa.role,
+        "status": sa.status,
+        "created_at": sa.created_at.strftime("%Y-%m-%d %H:%M:%S") if sa.created_at else None,
+        "last_login_at": sa.last_login_at.strftime("%Y-%m-%d %H:%M:%S") if sa.last_login_at else None
+    }
+
+@router.put("/superadmin/profile")
+def update_superadmin_profile(payload: dict, db: Session = Depends(get_db)):
+    """Update Super Administrator name, master email address, and optional password"""
+    from backend.app.models.super_admin import SuperAdminUser
+    new_name = (payload.get("name") or "").strip()
+    new_email = (payload.get("email") or "").strip().lower()
+    new_password = (payload.get("new_password") or payload.get("password") or "").strip()
+
+    if not new_email or "@" not in new_email:
+        raise HTTPException(status_code=400, detail="Valid Super Admin email is required.")
+
+    sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+    if not sa:
+        sa = db.query(SuperAdminUser).first()
+
+    if not sa:
+        sa = SuperAdminUser(
+            id="sa-master-01",
+            name=new_name or "Super Administrator",
+            email=new_email,
+            password_hash=new_password or "SuperAdmin@2026",
+            role="superadmin",
+            status="Active"
+        )
+        db.add(sa)
+    else:
+        if new_name:
+            sa.name = new_name
+        sa.email = new_email
+        if new_password and len(new_password) >= 4:
+            sa.password_hash = new_password
+
+    db.commit()
+    db.refresh(sa)
+
+    return {
+        "success": True,
+        "message": "Super Administrator profile & official master email updated successfully!",
+        "profile": {
+            "id": sa.id,
+            "name": sa.name,
+            "email": sa.email,
+            "role": sa.role,
+            "status": sa.status
+        }
+    }
 
 @router.post("/email-config")
 @router.post("/gateways")
@@ -93,8 +166,6 @@ def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error saving SMTP settings: {str(e)}")
-
-from datetime import datetime
 
 
 @router.get("/email-config")

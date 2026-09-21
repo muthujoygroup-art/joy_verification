@@ -197,18 +197,19 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
     app_url = settings.APP_BASE_URL.rstrip('/')
     
     if role in ("superadmin", "super_admin"):
-        # Target superadmin email: either entered email if registered, or default official master email
-        target_email = "admin@joycorporatesolutions.com"
+        # Target superadmin email: query SuperAdminUser from DB to get the latest updated master email
+        sa = None
         if raw_email:
             sa = db.query(SuperAdminUser).filter(SuperAdminUser.email.ilike(raw_email)).first()
-            if sa:
-                target_email = sa.email.lower()
-            elif raw_email == "admin@joycorporatesolutions.com" or raw_email == "superadmin@joyverification.com":
-                target_email = raw_email
-        
-        user_name = "Super Administrator"
+        if not sa:
+            sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+        if not sa:
+            sa = db.query(SuperAdminUser).first()
+
+        target_email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
+        user_name = sa.name if sa else "Super Administrator"
         role_label = "Super Administrator"
-        otp_data = create_password_reset_otp(target_email, "superadmin", user_id="superadmin-master")
+        otp_data = create_password_reset_otp(target_email, "superadmin", user_id=sa.id if sa else "superadmin-master")
         reset_link = f"{app_url}/superadmin?reset_token={otp_data['token']}"
         
         email_sent = False
@@ -326,7 +327,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
 
 
 @router.post("/verify-reset-code")
-def verify_reset_code(payload: dict):
+def verify_reset_code(payload: dict, db: Session = Depends(get_db)):
     """
     Validates the 6-digit OTP passcode before allowing user to enter new password.
     """
@@ -337,7 +338,10 @@ def verify_reset_code(payload: dict):
     if role in ("superadmin", "super_admin"):
         effective_role = "superadmin"
         if not email:
-            email = "admin@joycorporatesolutions.com"
+            sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+            if not sa:
+                sa = db.query(SuperAdminUser).first()
+            email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
     elif role in ("company", "companyadmin"):
         effective_role = "company"
     elif role in ("hrexecutive", "hr"):
@@ -377,22 +381,27 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
     reset_code = (payload.get("reset_code") or payload.get("otp") or payload.get("token") or "").strip()
     new_password = (payload.get("new_password") or payload.get("password") or "").strip()
     
-    if not email:
-        raise HTTPException(status_code=400, detail="Registered account email is required.")
-    if not reset_code:
-        raise HTTPException(status_code=400, detail="Password reset passcode / OTP is required.")
-    if not new_password or len(new_password) < 4:
-        raise HTTPException(status_code=400, detail="New password must be at least 4 characters long.")
-
     # Normalize role
     if role in ("superadmin", "super_admin"):
         effective_role = "superadmin"
+        if not email:
+            sa = db.query(SuperAdminUser).filter(SuperAdminUser.role == "superadmin").first()
+            if not sa:
+                sa = db.query(SuperAdminUser).first()
+            email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
     elif role in ("company", "companyadmin"):
         effective_role = "company"
     elif role in ("hrexecutive", "hr"):
         effective_role = "hrexecutive"
     else:
         raise HTTPException(status_code=400, detail="Invalid role specified.")
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Registered account email is required.")
+    if not reset_code:
+        raise HTTPException(status_code=400, detail="Password reset passcode / OTP is required.")
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="New password must be at least 4 characters long.")
 
     # Validate OTP / token
     is_valid = verify_password_reset_otp(email, effective_role, reset_code)

@@ -157,7 +157,8 @@ export const SuperAdminView = () => {
     getCompanyPostpaidPlan,
     calculateCompanyPostpaidBill,
     updateCompanyPostpaidPlan,
-    settlePostpaidInvoice
+    settlePostpaidInvoice,
+    purgeClientCacheAndReset
   } = useApp();
 
   const navigate = useNavigate();
@@ -658,6 +659,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
   const [testEmailResult, setTestEmailResult] = useState(null);
 
+  // 👑 Super Administrator Master Profile Account States
+  const [superAdminProfile, setSuperAdminProfile] = useState({
+    name: 'Super Administrator',
+    email: 'admin@joycorporatesolutions.com',
+    role: 'superadmin',
+    newPassword: ''
+  });
+  const [isSavingSuperAdminProfile, setIsSavingSuperAdminProfile] = useState(false);
+  const [showSuperAdminNewPassword, setShowSuperAdminNewPassword] = useState(false);
+
   const [editApiConfig, setEditApiConfig] = useState(() => ({
     server1_sandbox: {
       apiKey: apiConfigurations.server1_sandbox?.apiKey || 'sb_live_key_9942a1bc88',
@@ -828,7 +839,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         console.warn('Could not load SMTP config from DB:', err);
       }
     };
+
+    // Fetch Master Super Administrator account details from DB
+    const loadSuperAdminProfile = async () => {
+      try {
+        const prof = await api.getSuperAdminProfile();
+        if (prof && prof.email) {
+          setSuperAdminProfile(prev => ({
+            ...prev,
+            name: prof.name || prev.name,
+            email: prof.email || prev.email,
+            role: prof.role || prev.role
+          }));
+        }
+      } catch (err) {
+        console.warn('Could not load superadmin profile:', err);
+      }
+    };
+
     loadEmailSettings();
+    loadSuperAdminProfile();
   }, []);
 
   useEffect(() => {
@@ -1187,6 +1217,36 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       showToast(`❌ Failed to save SMTP configuration: ${err.message || 'Server error'}`, 'error');
     } finally {
       setIsSavingSmtp(false);
+    }
+  };
+
+  // 👑 Save Super Administrator Master Profile & Email Account
+  const handleSaveSuperAdminProfile = async (e) => {
+    if (e) e.preventDefault();
+    if (!superAdminProfile.email || !superAdminProfile.email.includes('@')) {
+      showToast('⚠️ Please provide a valid Super Admin email address.', 'error');
+      return;
+    }
+    setIsSavingSuperAdminProfile(true);
+    try {
+      const payload = {
+        name: (superAdminProfile.name || 'Super Administrator').trim(),
+        email: superAdminProfile.email.trim().toLowerCase(),
+        password: superAdminProfile.newPassword ? superAdminProfile.newPassword.trim() : undefined
+      };
+      const res = await api.updateSuperAdminProfile(payload);
+      showToast(res.message || '✨ Super Admin Master Account & Mailbox updated successfully!');
+      setSuperAdminProfile(prev => ({
+        ...prev,
+        name: res.profile?.name || prev.name,
+        email: res.profile?.email || prev.email,
+        newPassword: ''
+      }));
+    } catch (err) {
+      console.warn('Error saving Super Admin profile:', err);
+      showToast(`❌ Failed to update Super Admin profile: ${err.message || 'Server error'}`, 'error');
+    } finally {
+      setIsSavingSuperAdminProfile(false);
     }
   };
 
@@ -5420,6 +5480,157 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       {activeTab === 'settings' && (
         <div className="space-y-6">
           
+          {/* 👑 Super Administrator Master Account & Official Mailbox Profile */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900">Super Administrator Master Account & Official Mailbox</h3>
+                    <span className="badge badge-purple text-[10px] font-bold">MASTER GOVERNANCE</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Configure the master Super Admin profile details, official recovery mailbox, and master credentials saved directly in PostgreSQL database.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSaveSuperAdminProfile}
+                  disabled={isSavingSuperAdminProfile}
+                  className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+                >
+                  {isSavingSuperAdminProfile ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSavingSuperAdminProfile ? 'Saving Profile...' : 'Save Master Profile 💾'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Super Admin Full Name *
+                </label>
+                <input 
+                  type="text" 
+                  value={superAdminProfile.name}
+                  onChange={(e) => setSuperAdminProfile({ ...superAdminProfile, name: e.target.value })}
+                  placeholder="e.g. Super Administrator"
+                  className="form-input font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Official administrator display name</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Official Master Email Address *
+                </label>
+                <input 
+                  type="email" 
+                  value={superAdminProfile.email}
+                  onChange={(e) => setSuperAdminProfile({ ...superAdminProfile, email: e.target.value })}
+                  placeholder="admin@joycorporatesolutions.com"
+                  className="form-input font-mono font-bold text-indigo-700 bg-indigo-50/50"
+                />
+                <span className="text-[10px] text-indigo-600 mt-0.5 block font-semibold">
+                  ✉️ All recovery OTPs & critical master alerts dispatch to this mailbox
+                </span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  New Master Password (Optional)
+                </label>
+                <div className="relative flex items-center">
+                  <input 
+                    type={showSuperAdminNewPassword ? 'text' : 'password'}
+                    value={superAdminProfile.newPassword}
+                    onChange={(e) => setSuperAdminProfile({ ...superAdminProfile, newPassword: e.target.value })}
+                    placeholder="Leave blank to keep existing password"
+                    className="form-input pr-9 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSuperAdminNewPassword(!showSuperAdminNewPassword)}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  >
+                    {showSuperAdminNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">
+                  Only fill if you want to update the master login password (min 4 chars)
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-slate-700">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  Active Role: <strong>Super Administrator (Platform Owner)</strong> • Database Synced: <strong className="text-emerald-700">PostgreSQL (super_admin_users)</strong>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                <span>Account ID: {superAdminProfile.id || 'sa-master-01'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 🧹 Client Storage Cache & Directory Synchronization Maintenance */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center font-black shadow-xs shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-slate-900">Client Storage Cache & Directory Maintenance</h3>
+                    <span className="badge badge-rose text-[10px] font-bold">DATABASE SYNC</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Purge stale local browser mock data (companies, candidates, drafts, vendors) and guarantee fresh real-time directory synchronization from PostgreSQL.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to purge local browser storage caches? This will ensure only database entities are visible.')) {
+                      purgeClientCacheAndReset();
+                    }
+                  }}
+                  className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100 cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Purge Local Storage Cache 🧹</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span className="text-slate-600 font-medium">Registered Companies in State:</span>
+                <span className="font-black text-slate-900">{companies.length}</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span className="text-slate-600 font-medium">HR Recruiters in State:</span>
+                <span className="font-black text-slate-900">{hrUsers.length}</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span className="text-slate-600 font-medium">Candidates / Employees in State:</span>
+                <span className="font-black text-slate-900">{candidates.length}</span>
+              </div>
+            </div>
+          </div>
+
           {/* 🎨 Official Platform Branding & Logo Customization Console */}
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">

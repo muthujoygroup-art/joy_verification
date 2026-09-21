@@ -103,7 +103,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const openForgotMode = (defaultEmail = '') => {
     setIsForgotMode(true);
     setForgotStep(1);
-    setForgotEmail(defaultEmail || emailInput || (selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : ''));
+    setForgotEmail(defaultEmail || (selectedRoleTab === 'superadmin' ? '' : emailInput));
     setForgotOtp('');
     setForgotNewPassword('');
     setForgotConfirmPassword('');
@@ -120,14 +120,14 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
   // Step 1 Submit: Request 6-digit passcode
   const handleForgotRequestSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setForgotError('');
     setForgotSuccess('');
     setIsForgotLoading(true);
 
     try {
       const isSuperAdmin = selectedRoleTab === 'superadmin';
-      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : (forgotEmail || emailInput).trim();
+      const emailToUse = isSuperAdmin ? (forgotEmail || '').trim() : (forgotEmail || emailInput).trim();
       if (!emailToUse && !isSuperAdmin) {
         setForgotError('Please enter your registered account email.');
         setIsForgotLoading(false);
@@ -136,7 +136,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
       const res = await requestForgotPassword(emailToUse, selectedRoleTab);
       setForgotSuccess(res.message || 'Passcode dispatched! Please check your email or notifications.');
-      setForgotEmail(res.email || emailToUse);
+      setForgotEmail(res.email || emailToUse || 'admin@joycorporatesolutions.com');
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your email.');
@@ -147,7 +147,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
   // Step 2 Submit: Validate OTP / Passcode
   const handleVerifyOtpSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setForgotError('');
     setForgotSuccess('');
 
@@ -158,8 +158,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
     setIsForgotLoading(true);
     try {
-      const isSuperAdmin = selectedRoleTab === 'superadmin';
-      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : forgotEmail.trim();
+      const emailToUse = forgotEmail.trim();
       const payload = {
         email: emailToUse,
         role: selectedRoleTab,
@@ -177,7 +176,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
   // Step 3 Submit: Set new password and return to login
   const handleResetPasswordSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setForgotError('');
     setForgotSuccess('');
 
@@ -192,8 +191,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
     setIsForgotLoading(true);
     try {
-      const isSuperAdmin = selectedRoleTab === 'superadmin';
-      const emailToUse = isSuperAdmin ? 'admin@joycorporatesolutions.com' : forgotEmail.trim();
+      const emailToUse = forgotEmail.trim();
       const payload = {
         email: emailToUse,
         role: selectedRoleTab,
@@ -574,7 +572,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                                 Protected Master Account
                               </div>
                               <div className="text-xs sm:text-sm font-black text-slate-900 font-mono flex items-center gap-2">
-                                <span>admin@joycorporatesolutions.com</span>
+                                <span>{emailInput || 'Master Super Admin Mailbox'}</span>
                                 <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
                                   Verified Master
                                 </span>
@@ -584,7 +582,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           <div className="p-2.5 rounded-xl bg-white/90 border border-indigo-100 text-[11px] text-slate-600 leading-relaxed flex items-start gap-2">
                             <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                             <span>
-                              For platform security governance, the 6-digit recovery passcode will be dispatched exclusively to the Master Super Admin mailbox. Direct manual email entry is disabled.
+                              For platform security governance, the 6-digit recovery passcode will be dispatched exclusively to the registered Super Admin master mailbox. Direct manual email entry is disabled.
                             </span>
                           </div>
                         </div>
@@ -660,7 +658,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         <div className="flex items-center gap-2">
                           <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
                           <span>
-                            Passcode sent to: <strong>{selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : forgotEmail}</strong>
+                            Passcode sent to: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Email')}</strong>
                           </span>
                         </div>
                         {selectedRoleTab !== 'superadmin' && (
@@ -725,7 +723,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-bold flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>
-                          Passcode verified for: <strong>{selectedRoleTab === 'superadmin' ? 'admin@joycorporatesolutions.com' : forgotEmail}</strong>. Please enter your new password below.
+                          Passcode verified for: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Account')}</strong>. Please enter your new password below.
                         </span>
                       </div>
 

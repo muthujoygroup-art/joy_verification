@@ -1283,6 +1283,27 @@ export const api = {
   verifyVendorFullSuiteLive: (companyId, payload) => request(`/company/${companyId}/vendors/verify-full-suite`, {
     method: 'POST',
     body: JSON.stringify(payload)
+  }),
+
+  // ⚙️ SuperAdmin Profile & System Settings
+  getSuperAdminProfile: () => request('/settings/superadmin/profile', {}, true),
+  updateSuperAdminProfile: (payload) => request('/settings/superadmin/profile', {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  getEmailConfig: () => request('/settings/email-config', {}, true),
+  saveEmailConfig: (payload) => request('/settings/email-config', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  testEmailDispatch: (payload) => request('/settings/test-email', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  getRoleSettings: (role) => request(`/settings/role/${role}`, {}, true),
+  updateRoleSettings: (role, settings) => request('/settings/role', {
+    method: 'PUT',
+    body: JSON.stringify({ role, settings })
   })
 };
 
