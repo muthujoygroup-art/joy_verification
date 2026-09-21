@@ -403,236 +403,9 @@ const INITIAL_COMPANIES = [];
 
 const INITIAL_HR_USERS = [];
 
-const INITIAL_CANDIDATES = [
-  {
-    id: 'cand-kavitha-101',
-    token: 'tok_kavitha_ramachandran_891',
-    empId: 'JOY-EMP-001',
-    employeeNumber: 'JOY-EMP-001',
-    name: 'Kavitha Ramachandran',
-    email: 'kavitha.r@joytrueprofile.com',
-    mobile: '9845011223',
-    aadhaarNo: 'XXXX-XXXX-8912',
-    panNo: 'AABCK8912R',
-    designation: 'Senior Software Engineer',
-    dept: 'Engineering & Tech',
-    employeeType: 'IT & Tech',
-    companyId: 'comp-joy',
-    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    hrId: 'hr-1',
-    status: 'Link Sent',
-    portalPassword: '1234',
-    doj: '2026-10-01',
-    dob: '1995-08-14',
-    verificationConfig: { aadhaar: true, email: true, mobileOtp: true, faceCapture: true, pan: true, bankCheck: true },
-    verificationsCompleted: { aadhaar: false, mobile: false, face: false },
-    joiningFormData: {}
-  },
-  {
-    id: 'cand-arun-102',
-    token: 'tok_arun_kumar_742',
-    empId: 'JOY-EMP-002',
-    employeeNumber: 'JOY-EMP-002',
-    name: 'Arun Kumar V',
-    email: 'arun.v@joytrueprofile.com',
-    mobile: '9740088991',
-    aadhaarNo: 'XXXX-XXXX-4531',
-    panNo: 'BPAAK4531M',
-    designation: 'Operations Specialist',
-    dept: 'General Operations',
-    employeeType: 'Full-Time',
-    companyId: 'comp-joy',
-    companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    hrId: 'hr-1',
-    status: 'Verified',
-    portalPassword: '1234',
-    doj: '2026-09-15',
-    dob: '1993-04-22',
-    verificationConfig: { aadhaar: true, email: true, mobileOtp: true, faceCapture: true, pan: true, bankCheck: true },
-    verificationsCompleted: { aadhaar: true, mobile: true, face: true },
-    joiningFormData: {}
-  }
-];
+const INITIAL_CANDIDATES = [];
 
-const INITIAL_DEFAULT_VENDORS = [
-  {
-    id: 'vend-101',
-    companyId: 'comp-joy',
-    vendorCode: 'VEND-001',
-    vendorName: 'Apex Prime Staffing & Facility Solutions LLP',
-    tradeName: 'Apex Manpower Services',
-    category: 'Staffing & Manpower Solutions',
-    contactPerson: 'Vikram Malhotra',
-    email: 'compliance@apexstaffing.in',
-    phone: '+91 98450 11223',
-    address: '42, Cyber Park, Electronic City Phase 1, Bangalore - 560100',
-    gstin: '29AAACA1234A1Z5',
-    pan: 'AAACA1234A',
-    bankAccount: '987654321012',
-    bankIfsc: 'HDFC0000053',
-    msmeNumber: 'UDYAM-KR-03-0018921',
-    epfoNumber: 'BGBLR0018921000',
-    esicNumber: '53000189210000001',
-    overallStatus: 'Verified',
-    verifiedAt: '2026-09-08 11:30 IST',
-    verifications: {
-      gst: {
-        status: 'Verified',
-        documentNumber: '29AAACA1234A1Z5',
-        legalName: 'Apex Prime Staffing & Facility Solutions LLP',
-        tradeName: 'Apex Manpower Services',
-        taxpayerType: 'Regular Taxpayer',
-        activeStatus: 'Active',
-        filingStatus: 'Up to Date (GSTR-1 & 3B Compliant)',
-        verifiedAt: '2026-09-08 11:30 IST',
-        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
-      },
-      pan: {
-        status: 'Verified',
-        documentNumber: 'AAACA1234A',
-        nameOnPan: 'Apex Prime Staffing & Facility Solutions LLP',
-        category: 'Limited Liability Partnership',
-        panStatus: 'Valid & Active in NSDL Database',
-        verifiedAt: '2026-09-08 11:31 IST',
-        validityNotice: 'Point-in-Time statutory verification: Validated against Income Tax / NSDL records.'
-      },
-      bank: {
-        status: 'Verified',
-        accountNumber: '••••••••1012',
-        ifsc: 'HDFC0000053',
-        bankName: 'HDFC Bank Ltd',
-        beneficiaryName: 'APEX PRIME STAFFING LLP',
-        matchScore: 100,
-        utrNumber: 'NPCI-IMPS-982187361284',
-        verifiedAt: '2026-09-08 11:32 IST',
-        validityNotice: 'Point-in-Time statutory verification: ₹1 IMPS Penny Drop account confirmation.'
-      },
-      msme: {
-        status: 'Verified',
-        documentNumber: 'UDYAM-KR-03-0018921',
-        enterpriseType: 'Medium Enterprise (Services)',
-        majorActivity: 'Services - Employment Placement & Facility Management',
-        verifiedAt: '2026-09-08 11:33 IST',
-        validityNotice: 'Point-in-Time statutory verification: Ministry of MSME Udyam Gateway.'
-      }
-    }
-  },
-  {
-    id: 'vend-102',
-    companyId: 'comp-joy',
-    vendorCode: 'VEND-002',
-    vendorName: 'Falcon Fleet & Heavy Logistics Private Limited',
-    tradeName: 'Falcon Cargo Transport',
-    category: 'Corporate Logistics & Fleet',
-    contactPerson: 'Gurpreet Singh',
-    email: 'billing@falconheavy.com',
-    phone: '+91 98110 44556',
-    address: 'Plot 18, Transport Nagar, Peenya 2nd Stage, Bangalore - 560058',
-    gstin: '29AABCF9876K1Z2',
-    pan: 'AABCF9876K',
-    bankAccount: '50200049182741',
-    bankIfsc: 'ICIC0000047',
-    msmeNumber: 'UDYAM-KR-03-0044551',
-    epfoNumber: 'BGBLR0044551000',
-    esicNumber: '',
-    overallStatus: 'Partially Verified',
-    verifiedAt: '2026-09-09 10:15 IST',
-    verifications: {
-      gst: {
-        status: 'Verified',
-        documentNumber: '29AABCF9876K1Z2',
-        legalName: 'Falcon Fleet & Heavy Logistics Private Limited',
-        tradeName: 'Falcon Cargo Transport',
-        taxpayerType: 'Regular Taxpayer',
-        activeStatus: 'Active',
-        filingStatus: 'Active & Compliant',
-        verifiedAt: '2026-09-09 10:15 IST',
-        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
-      },
-      pan: {
-        status: 'Pending',
-        documentNumber: 'AABCF9876K',
-        verifiedAt: null
-      }
-    }
-  },
-  {
-    id: 'vend-103',
-    companyId: 'comp-joy',
-    vendorCode: 'VEND-003',
-    vendorName: 'CloudMatrix Technologies Private Limited',
-    tradeName: 'CloudMatrix Enterprise Solutions',
-    category: 'IT Infrastructure & Cloud Services',
-    contactPerson: 'Deepak Narayanan',
-    email: 'admin@cloudmatrix.io',
-    phone: '+91 97400 88991',
-    address: 'Level 5, Brigade Tech Gardens, Brookefield, Bangalore - 560066',
-    gstin: '29AABCC5544R1ZR',
-    pan: 'AABCC5544R',
-    bankAccount: '110294817263',
-    bankIfsc: 'SBIN0004051',
-    msmeNumber: 'UDYAM-KR-03-0099882',
-    epfoNumber: 'BGBLR0099882000',
-    esicNumber: '53000998820000001',
-    overallStatus: 'Verified',
-    verifiedAt: '2026-09-09 12:00 IST',
-    verifications: {
-      gst: {
-        status: 'Verified',
-        documentNumber: '29AABCC5544R1ZR',
-        legalName: 'CloudMatrix Technologies Private Limited',
-        tradeName: 'CloudMatrix Enterprise Solutions',
-        taxpayerType: 'Regular Taxpayer',
-        activeStatus: 'Active',
-        filingStatus: 'Active (Current)',
-        verifiedAt: '2026-09-09 12:00 IST',
-        validityNotice: 'Point-in-Time statutory verification: Authenticated directly against GSTN portal.'
-      },
-      pan: {
-        status: 'Verified',
-        documentNumber: 'AABCC5544R',
-        nameOnPan: 'CloudMatrix Technologies Private Limited',
-        category: 'Private Limited Company',
-        panStatus: 'Active & In Good Standing',
-        verifiedAt: '2026-09-09 12:01 IST',
-        validityNotice: 'Point-in-Time statutory verification: Validated against Income Tax / NSDL records.'
-      },
-      bank: {
-        status: 'Verified',
-        accountNumber: '••••••••7263',
-        ifsc: 'SBIN0004051',
-        bankName: 'State Bank of India',
-        beneficiaryName: 'CLOUDMATRIX TECHNOLOGIES PVT LTD',
-        matchScore: 100,
-        utrNumber: 'NPCI-IMPS-110294817263',
-        verifiedAt: '2026-09-09 12:02 IST',
-        validityNotice: 'Point-in-Time statutory verification: ₹1 IMPS Penny Drop account confirmation.'
-      },
-      msme: {
-        status: 'Verified',
-        documentNumber: 'UDYAM-KR-03-0099882',
-        enterpriseType: 'Small Enterprise',
-        majorActivity: 'Services - Information Technology',
-        verifiedAt: '2026-09-09 12:03 IST',
-        validityNotice: 'Point-in-Time statutory verification: Ministry of MSME Gateway.'
-      },
-      epfo: {
-        status: 'Verified',
-        documentNumber: 'BGBLR0099882000',
-        establishmentName: 'CLOUDMATRIX TECHNOLOGIES PRIVATE LIMITED',
-        verifiedAt: '2026-09-09 12:04 IST',
-        validityNotice: 'Point-in-Time statutory verification: EPFO Gateway.'
-      },
-      esic: {
-        status: 'Verified',
-        documentNumber: '53000998820000001',
-        employerName: 'CLOUDMATRIX TECHNOLOGIES PRIVATE LIMITED',
-        verifiedAt: '2026-09-09 12:05 IST',
-        validityNotice: 'Point-in-Time statutory verification: ESIC Gateway.'
-      }
-    }
-  }
-];
+const INITIAL_DEFAULT_VENDORS = [];
 
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState([]);
@@ -642,7 +415,11 @@ export const AppProvider = ({ children }) => {
       const saved = localStorage.getItem('joy_company_vendors_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 2) return parsed;
+        if (Array.isArray(parsed)) {
+          // Filter out legacy dummy mock items
+          const clean = parsed.filter(v => v && v.id && !['vend-101', 'vend-102', 'vend-103'].includes(v.id));
+          return clean;
+        }
       }
     } catch (e) {}
     return INITIAL_DEFAULT_VENDORS;
@@ -653,22 +430,26 @@ export const AppProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const defaultCompId = 'comp-joy';
           const clean = parsed
-            .filter(c => !!c && !!c.name)
+            .filter(c => !!c && !!c.name && !['cand-kavitha-101', 'cand-arun-102', 'cand-1'].includes(c.id))
             .map(c => {
               const verifs = c.verificationsCompleted || c.verifications_completed || {};
               const isFullyVerified = !!(verifs.aadhaar && verifs.face && (verifs.mobile || verifs.email));
               const safeStatus = (c.status === 'Verified' && !isFullyVerified) ? 'Link Sent' : (c.status || 'Link Dispatched 🟢');
               return {
                 ...c,
-                companyId: (c.companyId && c.companyId !== 'comp-1') ? c.companyId : defaultCompId,
-                company_id: (c.company_id && c.company_id !== 'comp-1') ? c.company_id : defaultCompId,
                 status: safeStatus
               };
             });
-          localStorage.setItem('joy_candidates_v1', JSON.stringify(clean));
-          return clean;
+          // Deduplicate by ID
+          const seen = new Set();
+          const deduped = clean.filter(c => {
+            if (seen.has(c.id || c.token)) return false;
+            seen.add(c.id || c.token);
+            return true;
+          });
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(deduped));
+          return deduped;
         }
       }
     } catch (e) {}
@@ -1539,14 +1320,28 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchBackendData = async () => {
       try {
-        const [comps, cands, dropdowns, logs, tickets, apiCfgs] = await Promise.all([
+        const [comps, cands, dropdowns, logs, tickets, apiCfgs, hrList] = await Promise.all([
           api.getCompanies().catch(() => null),
           api.getCandidates().catch(() => null),
           api.getMasterDropdowns().catch(() => null),
           api.getLogs().catch(() => null),
           api.getTickets().catch(() => null),
           api.getApiConfigs().catch(() => null),
+          api.getAllHrUsers().catch(() => null)
         ]);
+
+        if (hrList && Array.isArray(hrList)) {
+          const seenHr = new Set();
+          const uniqueHrs = [];
+          for (const h of hrList) {
+            const hrKey = (h.id || h.email || '').toLowerCase();
+            if (hrKey && !seenHr.has(hrKey)) {
+              seenHr.add(hrKey);
+              uniqueHrs.push(h);
+            }
+          }
+          setHrUsers(uniqueHrs);
+        }
 
         if (comps && Array.isArray(comps)) {
           // Deduplicate companies by id and email

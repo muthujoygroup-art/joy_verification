@@ -336,6 +336,14 @@ export const api = {
       message: '🎉 HR Recruiter approved and live login access granted!'
     }));
   },
+  getAllHrUsers: () => request('/superadmin/hr-users').catch(() => []),
+  updateSuperAdminHrPassword: (hrId, password, sendEmail = true) => {
+    requestCache.clear();
+    return request(`/superadmin/hr-users/${hrId}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password, send_email: sendEmail })
+    });
+  },
   updateHrPassword: (companyId, hrId, password, sendEmail = true) => {
     requestCache.clear();
     return request(`/company/${companyId}/hr-users/${hrId}/password`, {

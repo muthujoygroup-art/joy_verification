@@ -3,6 +3,7 @@ from backend.app.services.logger_service import record_system_error_log
 from backend.app.services.email_service import (
     send_hr_invitation_email,
     send_hr_approval_email,
+    send_password_changed_confirmation_email,
     send_smtp_email,
     get_smtp_config,
     _build_email_shell
@@ -507,6 +508,17 @@ def update_company_portal_password(company_id: str, payload: dict, db: Session =
     comp.password_hash = new_password
     db.commit()
     db.refresh(comp)
+
+    try:
+        send_password_changed_confirmation_email(
+            to_email=comp.email,
+            user_name=comp.contact_person or comp.name,
+            role_label=f"Company Administrator — {comp.name}",
+            company_id=comp.id,
+            db=db
+        )
+    except Exception as e:
+        print(f"Warning: Failed to dispatch confirmation email on company portal password update: {e}")
 
     return {
         "success": True,

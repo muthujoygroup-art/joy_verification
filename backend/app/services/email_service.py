@@ -1251,3 +1251,82 @@ def send_password_reset_email(
     subject = f"🔐 Password Reset Request — JOY True Profile ({role_label})"
     return send_smtp_email(to_email, subject, html, company_id=company_id, db=db)
 
+
+# =============================================================================
+# 10. ✅ PASSWORD CHANGED NOTIFICATION EMAIL (Super Admin, Company Admin, HR Recruiter)
+# =============================================================================
+def send_password_changed_confirmation_email(
+    to_email: str,
+    user_name: str,
+    role_label: str,
+    company_id: Optional[str] = None,
+    db = None
+) -> Dict[str, Any]:
+    """
+    Dispatches a security confirmation email verifying that the password has been successfully changed.
+    """
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    action_url = f"{app_url}/login"
+
+    content = f"""
+    <div style="margin-bottom: 22px;">
+        <h2 style="color: #0f172a; font-size: 18px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            🎉 Password Changed Successfully
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            Hello <strong>{user_name}</strong>, this email confirms that your account password for <strong>{role_label}</strong> on the <strong>JOY True Profile Verification Platform</strong> has been successfully updated.
+        </p>
+    </div>
+
+    <!-- Confirmation Badge Box -->
+    <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 28px; margin-bottom: 6px;">🛡️</div>
+        <div style="font-size: 16px; font-weight: 900; color: #065f46; letter-spacing: 0.5px;">
+            Security Credentials Updated
+        </div>
+        <div style="font-size: 12px; color: #047857; margin-top: 6px; font-weight: 600;">
+            Updated on: <strong>{datetime.utcnow().strftime('%d %b %Y, %I:%M %p UTC')}</strong>
+        </div>
+    </div>
+
+    <!-- Account Details Table -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #0f172a; margin-bottom: 10px; letter-spacing: 0.5px;">
+            📋 Security Details:
+        </div>
+        <table width="100%" border="0" cellspacing="4" cellpadding="0" style="font-size: 12.5px;">
+            <tr>
+                <td width="38%" style="color: #64748b; font-weight: 600;">Account Role:</td>
+                <td style="color: #0f172a; font-weight: 800;">{role_label}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Registered Email:</td>
+                <td style="color: #065f46; font-weight: 800; font-family: monospace;">{to_email}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Security Status:</td>
+                <td style="color: #10b981; font-weight: 800;">Active & Secured 🔒</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Security Advisory -->
+    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; font-size: 11.5px; color: #92400e; line-height: 1.5;">
+        ⚠️ <strong>Did you not authorize this change?</strong> If you did not make this change, please immediately contact the Super Administrator at <strong>admin@joycorporatesolutions.com</strong> or your company administrator to secure your account.
+    </div>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Password Changed — {role_label}",
+        badge_text="SECURITY CONFIRMATION",
+        content_html=content,
+        action_url=action_url,
+        action_text="Log In with New Password 🔑",
+        sender_brand="JOY CORPORATE SOLUTIONS",
+        logo_url=PROJECT_LOGO_URL
+    )
+
+    subject = f"✅ Password Changed Successfully — JOY True Profile ({role_label})"
+    return send_smtp_email(to_email, subject, html, company_id=company_id, db=db)
+
+

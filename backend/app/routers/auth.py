@@ -12,7 +12,10 @@ from backend.app.services.session_service import (
     verify_password_reset_otp,
     clear_password_reset_otp
 )
-from backend.app.services.email_service import send_password_reset_email
+from backend.app.services.email_service import (
+    send_password_reset_email,
+    send_password_changed_confirmation_email
+)
 
 router = APIRouter(prefix="/auth", tags=["Authentication & Session Management"])
 
@@ -365,6 +368,9 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
         ).first()
         if sa:
             sa.password_hash = new_password
+            db.commit()
+            sa_email = sa.email
+            sa_name = sa.name or "Super Administrator"
         else:
             new_sa = SuperAdminUser(
                 email=email or "admin@joycorporatesolutions.com",
@@ -372,7 +378,19 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
                 password_hash=new_password
             )
             db.add(new_sa)
-        db.commit()
+            db.commit()
+            sa_email = new_sa.email
+            sa_name = new_sa.name
+
+        try:
+            send_password_changed_confirmation_email(
+                to_email=sa_email,
+                user_name=sa_name,
+                role_label="Super Administrator",
+                db=db
+            )
+        except Exception as e:
+            print(f"Warning: Failed to dispatch SuperAdmin password changed confirmation email: {e}")
 
     elif effective_role == "company":
         comp = db.query(Company).filter(Company.email.ilike(email)).first()
@@ -381,12 +399,37 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
         comp.password_hash = new_password
         db.commit()
 
+        try:
+            send_password_changed_confirmation_email(
+                to_email=comp.email,
+                user_name=comp.contact_person or comp.name,
+                role_label=f"Company Administrator — {comp.name}",
+                company_id=comp.id,
+                db=db
+            )
+        except Exception as e:
+            print(f"Warning: Failed to dispatch Company password changed confirmation email: {e}")
+
     elif effective_role == "hrexecutive":
         hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
         if not hr:
             raise HTTPException(status_code=404, detail="HR recruiter workstation not found.")
         hr.password_hash = new_password
         db.commit()
+
+        comp = db.query(Company).filter(Company.id == hr.company_id).first()
+        comp_name = comp.name if comp else "Enterprise Organization"
+
+        try:
+            send_password_changed_confirmation_email(
+                to_email=hr.email,
+                user_name=hr.name or "HR Recruiter",
+                role_label=f"HR Recruiter — {comp_name}",
+                company_id=hr.company_id,
+                db=db
+            )
+        except Exception as e:
+            print(f"Warning: Failed to dispatch HR password changed confirmation email: {e}")
 
     # Clear OTP after successful use
     clear_password_reset_otp(email, effective_role)

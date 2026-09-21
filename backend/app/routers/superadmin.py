@@ -7,11 +7,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from backend.app.models import VerificationRecord
-from backend.app.services.email_service import send_company_welcome_email
+from backend.app.services.email_service import (
+    send_company_welcome_email,
+    send_password_changed_confirmation_email,
+    send_smtp_email,
+    _build_email_shell
+)
+from backend.app.config import settings
 
 from pydantic import BaseModel
 from backend.app.database import get_db
-from backend.app.models import Company, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
+from backend.app.models import Company, HrUser, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
 from backend.app.services.live_verification_service import test_generic_neev_endpoint
 from backend.app.services.neev_catalogue import NEEV_81_ENDPOINTS
 from backend.app.schemas import (
@@ -43,6 +49,111 @@ def set_company_activation_password(company_id: str, payload: dict, db: Session 
         "message": f"Activation password updated to '{password}' for {comp.name}",
         "activation_password": comp.activation_password
     }
+
+
+@router.put("/companies/{company_id}/password")
+def set_company_login_password_superadmin(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Super Admin direct password update for enterprise client company"""
+    password = (payload.get("password") or "").strip()
+    if not password or len(password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters long")
+
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    comp.password_hash = password
+    comp.activation_password = password
+    db.commit()
+    db.refresh(comp)
+
+    email_sent = False
+    if payload.get("send_email", True) and comp.email:
+        try:
+            send_res = send_password_changed_confirmation_email(
+                to_email=comp.email,
+                user_name=comp.contact_person or comp.name,
+                role_label=f"Company Administrator — {comp.name}",
+                company_id=comp.id,
+                db=db
+            )
+            email_sent = bool(send_res.get("success"))
+        except Exception as e:
+            print(f"Warning: SuperAdmin failed to send company password email: {e}")
+
+    return {
+        "success": True,
+        "message": f"🎉 Login password updated for {comp.name}! (Email notification: {'Dispatched' if email_sent else 'Skipped'})",
+        "email_sent": email_sent
+    }
+
+
+@router.put("/hr-users/{hr_id}/password")
+def set_hr_user_password_superadmin(hr_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Super Admin direct password update for any HR recruiter workstation"""
+    password = (payload.get("password") or "").strip()
+    if not password or len(password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters long")
+
+    hr = db.query(HrUser).filter(HrUser.id == hr_id).first()
+    if not hr:
+        raise HTTPException(status_code=404, detail="HR recruiter not found")
+
+    hr.password_hash = password
+    db.commit()
+    db.refresh(hr)
+
+    comp = db.query(Company).filter(Company.id == hr.company_id).first()
+    comp_name = comp.name if comp else "Enterprise Organization"
+
+    email_sent = False
+    if payload.get("send_email", True) and hr.email:
+        try:
+            send_res = send_password_changed_confirmation_email(
+                to_email=hr.email,
+                user_name=hr.name or "HR Recruiter",
+                role_label=f"HR Recruiter — {comp_name}",
+                company_id=hr.company_id,
+                db=db
+            )
+            email_sent = bool(send_res.get("success"))
+        except Exception as e:
+            print(f"Warning: SuperAdmin failed to send HR password email: {e}")
+
+    return {
+        "success": True,
+        "message": f"🎉 Workstation password updated for {hr.name}! (Email notification: {'Dispatched' if email_sent else 'Skipped'})",
+        "email_sent": email_sent
+    }
+
+
+@router.get("/hr-users")
+def get_all_hr_users_superadmin(db: Session = Depends(get_db)):
+    """Super Admin fetch all registered HR recruiters across all companies (strictly deduplicated)"""
+    hrs = db.query(HrUser).order_by(HrUser.created_at.desc()).all()
+    seen_ids = set()
+    result = []
+    for h in hrs:
+        if h.id in seen_ids:
+            continue
+        seen_ids.add(h.id)
+        comp = db.query(Company).filter(Company.id == h.company_id).first()
+        result.append({
+            "id": h.id,
+            "company_id": h.company_id,
+            "companyId": h.company_id,
+            "company_name": comp.name if comp else "Organization",
+            "name": h.name or "HR Recruiter",
+            "email": h.email or "",
+            "phone": h.phone or "",
+            "dept": h.dept or "Human Resources",
+            "designation": h.designation or "HR Recruiter",
+            "status": h.status or "Active",
+            "activation_status": h.activation_status or "Active",
+            "active_links": int(h.active_links or 0),
+            "created_at": h.created_at.isoformat() if h.created_at else None
+        })
+    return result
 
 
 def format_company_dict(c: Company) -> Dict[str, Any]:

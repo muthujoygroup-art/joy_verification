@@ -90,174 +90,21 @@ def run_migration():
     db = SessionLocal()
     try:
         # 3. Seed Super Admin User if not exists
-        admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "superadmin@joyverification.com").first()
-        if not admin:
-            admin = SuperAdminUser(
-                id="superadmin-01",
-                name="Super Administrator",
-                email="superadmin@joyverification.com",
-                password_hash=hashlib.sha256("Master@Admin2026".encode()).hexdigest(),
-                role="superadmin",
-                status="Active",
-                two_factor_enabled=True,
-                last_login_at=datetime.utcnow()
-            )
-            db.add(admin)
-            print("✓ Seeded SuperAdminUser (superadmin@joyverification.com)")
-
-        # 3. Seed Companies with password
-        comp = db.query(Company).filter(Company.id == "comp-1").first()
-        if not comp:
-            comp = Company(
-                id="comp-1",
-                name="JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
-                code="JOYCORP",
-                contact_person="Muthu Kumar P",
-                email="muthujoygroup@gmail.com",
-                password_hash=hashlib.sha256("Company@Admin2026".encode()).hexdigest(),
-                plan="Enterprise Premier",
-                price_per_verification=120.0,
-                verified_count_this_month=142,
-                max_limit=500,
-                wallet_balance=50000.0,
-                status="Active",
-                features={
-                    "aadhaar": True, "pan": True, "bankCheck": True, "uan": True,
-                    "drivingLicense": True, "passport": True, "aiFaceBiometrics": True,
-                    "mobileOtp": True, "emailGateway": True, "faceCapture": True
-                }
-            )
-            db.add(comp)
-            print("✓ Seeded Company (JOY CORPORATE SOLUTIONS PRIVATE LIMITED)")
-        elif "acme" in comp.name.lower():
-            comp.name = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
-            comp.code = "JOYCORP"
-            comp.contact_person = "Muthu Kumar P"
-            comp.email = "muthujoygroup@gmail.com"
-
-        # 4. Seed HR User with password
-        hr = db.query(HrUser).filter(HrUser.id == "hr-1").first()
-        if not hr:
-            hr = HrUser(
-                id="hr-1",
-                company_id="comp-1",
-                name="Muthu Kumar P (HR Lead)",
-                email="muthujoygroup@gmail.com",
-                password_hash=hashlib.sha256("Hr@Recruiter2026".encode()).hexdigest(),
-                dept="Talent Acquisition & BGV",
-                active_links=5,
-                status="Active"
-            )
-            db.add(hr)
-            print("✓ Seeded HrUser (Muthu Kumar P)")
-
-        # 5. Seed Candidate if not exists
-        cand = db.query(Candidate).filter(Candidate.id == "cand-1").first()
-        if not cand:
-            cand = Candidate(
-                id="cand-1",
-                token="tok_sunita_412",
-                name="Sunita Mehra",
-                emp_id="EMP-2026-8812",
-                email="sunita.mehra@example.com",
-                mobile="+91 9876543210",
-                aadhaar_no="541289123412",
-                designation="Senior Frontend Engineer",
-                dept="Engineering & UI/UX",
-                company_id="comp-1",
-                hr_id="hr-1",
-                status="Verified",
-                verification_config={"aadhaar": True, "pan": True, "bankCheck": True, "aiFaceBiometrics": True},
-                verifications_completed={"aadhaar": True, "pan": True, "bankCheck": True, "aiFaceBiometrics": True},
-                verified_attributes={
-                    "fullName": "Sunita Mehra",
-                    "fatherName": "Rajesh Mehra",
-                    "dob": "1995-08-14",
-                    "gender": "Female",
-                    "panNumber": "ABCDE1234F",
-                    "bankAccountNo": "100239102931",
-                    "ifscCode": "HDFC0001234",
-                    "bankName": "HDFC Bank Ltd",
-                    "bloodGroup": "B+",
-                    "maritalStatus": "Single"
-                },
-                verification_date=datetime.utcnow()
-            )
-            db.add(cand)
-            print("✓ Seeded Candidate (Sunita Mehra)")
-
-        # 6. Seed VerificationRecord if not exists
-        vr = db.query(VerificationRecord).filter(VerificationRecord.id == "vr-aadh-01").first()
-        if not vr:
-            vr = VerificationRecord(
-                id="vr-aadh-01",
-                candidate_id="cand-1",
-                token="tok_sunita_412",
-                verification_type="aadhaar",
-                status="VERIFIED",
-                provider="Server 1: Sandbox.co.in (UIDAI Direct)",
-                transaction_ref="UIDAI-TXN-20260828-99120",
-                fetched_data={"name": "Sunita Mehra", "dob": "1995-08-14", "gender": "Female", "maskedAadhaar": "XXXX-XXXX-3412"},
-                raw_payload={"status": "VALID", "signature": "SHA256_RSA_2048", "issuer": "UIDAI Central ID Repository"},
-                confidence_score=1.0,
-                sha256_seal="sha256_seal_99812480192841_joy_audit"
-            )
-            db.add(vr)
-            print("✓ Seeded VerificationRecord (Aadhaar)")
-
-        # 7. Seed CandidateDocument if not exists
-        cd = db.query(CandidateDocument).filter(CandidateDocument.id == "cd-01").first()
-        if not cd:
-            cd = CandidateDocument(
-                id="cd-01",
-                candidate_id="cand-1",
-                title="Official Aadhaar e-KYC XML Portrait",
-                doc_type="aadhaar",
-                file_format="pdf",
-                file_path="/storage/documents/cand-1/aadhaar_verified.pdf",
-                file_size_kb=420.5
-            )
-            db.add(cd)
-            print("✓ Seeded CandidateDocument (Aadhaar e-KYC)")
-
-        # 8. Seed Invoice if not exists
-        inv = db.query(Invoice).filter(Invoice.id == "inv-2026-01").first()
-        if not inv:
-            inv = Invoice(
-                id="inv-2026-01",
-                company_id="comp-1",
-                month="August",
-                year=2026,
-                verifications_count=142,
-                unit_price=120.0,
-                subtotal=17040.0,
-                tax_rate=18.0,
-                tax_amount=3067.2,
-                total_amount=20107.2,
-                status="PENDING",
-                due_date=datetime.utcnow() + timedelta(days=15),
-                line_items=[
-                    {"item": "Aadhaar e-KYC Verifications", "qty": 142, "unit": 60.0, "total": 8520.0},
-                    {"item": "PAN + Bank Account Verifications", "qty": 142, "unit": 60.0, "total": 8520.0}
-                ]
-            )
-            db.add(inv)
-            print("✓ Seeded Invoice (INV-2026-01)")
-
-        # 9. Seed PaymentRecord if not exists
-        pay = db.query(PaymentRecord).filter(PaymentRecord.id == "pay-01").first()
-        if not pay:
-            pay = PaymentRecord(
-                id="pay-01",
-                company_id="comp-1",
-                amount=50000.0,
-                payment_method="Razorpay UPI Auto-Recharge",
-                transaction_ref="pay_rzp_live_9912401",
-                status="SUCCESS",
-                notes="Enterprise Credit Wallet Recharge (416 checks)"
-            )
-            db.add(pay)
-            print("✓ Seeded PaymentRecord (Wallet Recharge)")
+        for sa_email in ["admin@joycorporatesolutions.com", "superadmin@joyverification.com"]:
+            admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == sa_email).first()
+            if not admin:
+                admin = SuperAdminUser(
+                    id=f"superadmin-{uuid.uuid4().hex[:6]}",
+                    name="Super Administrator",
+                    email=sa_email,
+                    password_hash="SuperAdmin@2026",
+                    role="superadmin",
+                    status="Active",
+                    two_factor_enabled=True,
+                    last_login_at=datetime.utcnow()
+                )
+                db.add(admin)
+                print(f"✓ Seeded SuperAdminUser ({sa_email})")
 
         # 10. Seed AuditTrailLog if not exists
         audit = db.query(AuditTrailLog).filter(AuditTrailLog.id == "audit-01").first()
