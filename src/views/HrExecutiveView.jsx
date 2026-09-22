@@ -6438,6 +6438,7 @@ export const HrExecutiveView = () => {
                           }
                         };
                         setManagingDocVerifCandidate(updatedCandidate);
+                        setCandidates(prev => prev.map(c => (c.id === updatedCandidate.id || c.token === updatedCandidate.token) ? updatedCandidate : c));
                         setLatestVerificationTelemetry({
                           docKey: docKey,
                           docName: docName,
@@ -7196,6 +7197,7 @@ export const HrExecutiveView = () => {
                         }
                       };
                       setManagingDocVerifCandidate(updatedCandidate);
+                      setCandidates(prev => prev.map(c => (c.id === updatedCandidate.id || c.token === updatedCandidate.token) ? updatedCandidate : c));
                       setLatestVerificationTelemetry({
                         docKey: docKey,
                         docName: hrDocPromptModal.docName,
