@@ -54,6 +54,10 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
             c.custom_fields = {}
         if c.manual_checks is None:
             c.manual_checks = {}
+        if c.verified_attributes is None:
+            c.verified_attributes = {}
+        if c.discrepancies_detected is None:
+            c.discrepancies_detected = []
         if not c.status:
             c.status = "Link Sent"
     return candidates
@@ -803,6 +807,7 @@ def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Se
 
 
 @router.put("/candidates/{candidate_id}/status")
+@router.put("/candidates/{candidate_id}/toggle-status")
 def toggle_candidate_status(candidate_id: str, payload: dict, db: Session = Depends(get_db)):
     """Set candidate verification status: 'Verified' | 'Link Sent' | 'In Verification' | 'Inactive' | 'Discontinued' | 'Withdrawn'"""
     cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()

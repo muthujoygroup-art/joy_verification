@@ -479,15 +479,16 @@ export const HrExecutiveView = () => {
       const tok = (c.token || c.id || '').toString().toLowerCase().trim();
       const empKey = (c.empId || c.employeeNumber || '').toString().toUpperCase().trim();
       const emailKey = (c.email || '').toString().toLowerCase().trim();
+      const isGenericEmp = !empKey || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(empKey);
       
       const isDup = (tok && seen.has(`TOK::${tok}`)) || 
-                    (empKey && seen.has(`EMP::${empKey}`)) ||
+                    (!isGenericEmp && seen.has(`EMP::${empKey}`)) ||
                     (emailKey && emailKey.includes('@') && seen.has(`EML::${emailKey}`));
       
       if (isDup) return false;
       
       if (tok) seen.add(`TOK::${tok}`);
-      if (empKey) seen.add(`EMP::${empKey}`);
+      if (!isGenericEmp) seen.add(`EMP::${empKey}`);
       if (emailKey && emailKey.includes('@')) seen.add(`EML::${emailKey}`);
       return true;
     });

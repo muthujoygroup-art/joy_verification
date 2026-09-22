@@ -1314,13 +1314,14 @@ export const AppProvider = ({ children }) => {
               if (!item) return false;
               const k1 = (item.token || item.id || '').toLowerCase();
               const k2 = (item.email || '').toLowerCase();
-              const k3 = (item.empId || item.employeeNumber || '').toUpperCase();
+              const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
+              const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
               const uniqueKey = `${k1}::${k2}::${k3}`;
-              if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
+              if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (!isGenericEmp && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
                 return false;
               }
               if (k1) seen.add(`TOK::${k1}`);
-              if (k3) seen.add(`EMP::${k3}`);
+              if (!isGenericEmp) seen.add(`EMP::${k3}`);
               if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
               seen.add(uniqueKey);
               return true;
@@ -1750,9 +1751,11 @@ export const AppProvider = ({ children }) => {
 
   // Add Candidate (Persists to PostgreSQL with Duplicate Validation)
   const addCandidate = async (candidateData) => {
+    const candidatePin = candidateData.portalPassword || candidateData.securityPin || candidateData.portal_password || '1234';
     const cleanEmail = (candidateData.email || '').trim().toLowerCase();
     const cleanMobile = (candidateData.mobile || '').replace(/\s+/g, '');
     const cleanEmpId = (candidateData.empId || candidateData.employeeNumber || '').trim().toUpperCase();
+    const isGenericEmp = !cleanEmpId || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(cleanEmpId);
 
     const existingDuplicate = candidates.find(c => {
       const cEmail = (c.email || '').trim().toLowerCase();
@@ -1760,8 +1763,8 @@ export const AppProvider = ({ children }) => {
       const cEmpId = (c.empId || c.employeeNumber || '').trim().toUpperCase();
 
       return (cleanEmail && cEmail === cleanEmail) ||
-             (cleanMobile && cMobile === cleanMobile) ||
-             (cleanEmpId && cEmpId === cleanEmpId);
+             (cleanMobile && cleanMobile.length === 10 && cMobile === cleanMobile) ||
+             (!isGenericEmp && cleanEmpId && cEmpId === cleanEmpId);
     });
 
     // If duplicate exists and not explicitly marked for bulk creation, return existing
@@ -1781,7 +1784,7 @@ export const AppProvider = ({ children }) => {
         employee_number: candidateData.employeeNumber || candidateData.empId,
         email: candidateData.email,
         mobile: candidateData.mobile,
-        aadhaar_no: candidateData.aadhaarNo,
+        aadhaar_no: candidateData.aadhaarNo || candidateData.aadhaar_no,
         designation: candidateData.designation,
         dept: candidateData.dept,
         employee_type: candidateData.employeeCategory || candidateData.employeeType || 'it_tech',
@@ -1789,52 +1792,52 @@ export const AppProvider = ({ children }) => {
         doj: candidateData.doj,
         age: parseInt(candidateData.age) || null,
         gender: candidateData.gender,
-        marital_status: candidateData.maritalStatus,
-        mother_tongue: candidateData.motherTongue,
-        languages_known: candidateData.languagesKnown,
-        pf_number: candidateData.pfNumber || candidateData.uanEpf,
-        esi_number: candidateData.esiNumber || candidateData.esicNo,
+        marital_status: candidateData.maritalStatus || candidateData.marital_status,
+        mother_tongue: candidateData.motherTongue || candidateData.mother_tongue,
+        languages_known: candidateData.languagesKnown || candidateData.languages_known,
+        pf_number: candidateData.pfNumber || candidateData.uanEpf || candidateData.pf_number || candidateData.uan_no,
+        esi_number: candidateData.esiNumber || candidateData.esicNo || candidateData.esi_number,
         religion: candidateData.religion,
         caste: candidateData.caste,
         category: candidateData.category,
-        native_state: candidateData.nativeState,
-        native_district: candidateData.nativeDistrict,
-        identification_marks: candidateData.identificationMarks,
-        father_name: candidateData.fatherName,
-        mother_name: candidateData.motherName,
-        spouse_name: candidateData.spouseName,
-        blood_group: candidateData.bloodGroup,
+        native_state: candidateData.nativeState || candidateData.native_state,
+        native_district: candidateData.nativeDistrict || candidateData.native_district,
+        identification_marks: candidateData.identificationMarks || candidateData.identification_marks,
+        father_name: candidateData.fatherName || candidateData.father_name,
+        mother_name: candidateData.motherName || candidateData.mother_name,
+        spouse_name: candidateData.spouseName || candidateData.spouse_name,
+        blood_group: candidateData.bloodGroup || candidateData.blood_group,
         state: candidateData.state,
         district: candidateData.district,
         city: candidateData.city,
         area: candidateData.area,
         pincode: candidateData.pincode,
-        present_address: candidateData.presentAddress,
-        permanent_address: candidateData.permanentAddress,
-        pan_no: candidateData.panNo,
-        uan_no: candidateData.uanEpf || candidateData.uan_no,
-        alternate_mobile: candidateData.alternateMobile,
-        emergency_contact_name: candidateData.emergencyContactName,
-        emergency_contact_phone: candidateData.emergencyContactPhone,
-        qualification_category: candidateData.qualificationCategory,
-        highest_qualification: candidateData.highestQualification,
-        job_category: candidateData.jobCategory,
-        job_type: candidateData.jobType,
-        bank_name: candidateData.bankName,
-        bank_account_no: candidateData.bankAccountNo,
-        ifsc_code: candidateData.ifscCode,
-        nominee_name: candidateData.nomineeName,
-        nominee_relation: candidateData.nomineeRelation,
-        linked_in_url: candidateData.linkedInUrl,
-        github_url: candidateData.githubUrl,
-        portfolio_url: candidateData.portfolioUrl,
-        twitter_url: candidateData.twitterUrl,
-        company_id: candidateData.companyId,
-        hr_id: candidateData.hrId,
+        present_address: candidateData.presentAddress || candidateData.present_address,
+        permanent_address: candidateData.permanentAddress || candidateData.permanent_address,
+        pan_no: candidateData.panNo || candidateData.pan_no,
+        uan_no: candidateData.uanEpf || candidateData.uan_no || candidateData.pfNumber,
+        alternate_mobile: candidateData.alternateMobile || candidateData.alternate_mobile,
+        emergency_contact_name: candidateData.emergencyContactName || candidateData.emergency_contact_name,
+        emergency_contact_phone: candidateData.emergencyContactPhone || candidateData.emergency_contact_phone,
+        qualification_category: candidateData.qualificationCategory || candidateData.qualification_category,
+        highest_qualification: candidateData.highestQualification || candidateData.highest_qualification,
+        job_category: candidateData.jobCategory || candidateData.job_category,
+        job_type: candidateData.jobType || candidateData.job_type,
+        bank_name: candidateData.bankName || candidateData.bank_name,
+        bank_account_no: candidateData.bankAccountNo || candidateData.bank_account_no,
+        ifsc_code: candidateData.ifscCode || candidateData.ifsc_code,
+        nominee_name: candidateData.nomineeName || candidateData.nominee_name,
+        nominee_relation: candidateData.nomineeRelation || candidateData.nominee_relation,
+        linked_in_url: candidateData.linkedInUrl || candidateData.linked_in_url,
+        github_url: candidateData.githubUrl || candidateData.github_url,
+        portfolio_url: candidateData.portfolioUrl || candidateData.portfolio_url,
+        twitter_url: candidateData.twitterUrl || candidateData.twitter_url,
+        company_id: candidateData.companyId || candidateData.company_id || 'COMP001',
+        hr_id: candidateData.hrId || candidateData.hr_id || 'HR001',
         portal_password: candidatePin,
-        verification_config: candidateData.verificationConfig,
-        manual_checks: candidateData.manualChecks,
-        joining_form_data: candidateData.joiningFormData || candidateData,
+        verification_config: candidateData.verificationConfig || candidateData.verification_config,
+        manual_checks: candidateData.manualChecks || candidateData.manual_checks,
+        joining_form_data: candidateData.joiningFormData || candidateData.joining_form_data || candidateData,
         custom_fields: candidateData.customFields || candidateData.custom_fields || {},
         industry_specialization: candidateData.industrySpecialization || candidateData.industry_specialization || {},
         signing_papers: candidateData.signingPapers || candidateData.signing_papers || {},
@@ -1843,78 +1846,44 @@ export const AppProvider = ({ children }) => {
         documents: candidateData.documents || candidateData.uploadedDocumentsList || []
       });
 
-      const formatted = {
-        id: created.id || `emp-${Date.now()}`,
-        token: created.token || candidateData.token || `tok_${(candidateData.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`,
-        name: created.name || candidateData.name,
-        empId: created.emp_id || candidateData.empId,
-        employeeNumber: created.employee_number || candidateData.employeeNumber || candidateData.empId,
-        email: created.email || candidateData.email,
-        mobile: created.mobile || candidateData.mobile,
-        aadhaarNo: created.aadhaar_no || candidateData.aadhaarNo,
-        designation: created.designation || candidateData.designation,
-        dept: created.dept || candidateData.dept,
-        employeeType: created.employee_type || candidateData.employeeType || candidateData.employeeCategory || 'it_tech',
-        employeeCategory: created.employee_type || candidateData.employeeCategory || candidateData.employeeType || 'it_tech',
-        industrySpecialization: created.industry_specialization || candidateData.industrySpecialization || {},
-        signingPapers: created.signing_papers || candidateData.signingPapers || {},
-        categoryDocuments: created.category_documents || candidateData.categoryDocuments || {},
-        dob: created.dob || candidateData.dob,
-        doj: created.doj || candidateData.doj,
-        age: created.age || candidateData.age,
-        gender: created.gender || candidateData.gender,
-        maritalStatus: created.marital_status || candidateData.maritalStatus,
-        motherTongue: created.mother_tongue || candidateData.motherTongue,
-        languagesKnown: created.languages_known || candidateData.languagesKnown,
-        pfNumber: created.pf_number || candidateData.pfNumber || candidateData.uanEpf,
-        esiNumber: created.esi_number || candidateData.esiNumber || candidateData.esicNo,
-        religion: created.religion || candidateData.religion,
-        caste: created.caste || candidateData.caste,
-        category: created.category || candidateData.category,
-        nativeState: created.native_state || candidateData.nativeState,
-        nativeDistrict: created.native_district || candidateData.nativeDistrict,
-        identificationMarks: created.identification_marks || candidateData.identificationMarks,
-        companyId: created.company_id || candidateData.companyId || 'comp-joy',
-        company_id: created.company_id || candidateData.companyId || 'comp-joy',
-        companyLogo: resolvedCompanyLogo,
-        hrId: created.hr_id || candidateData.hrId || 'hr-1',
-        status: created.status || candidateData.status || 'Link Dispatched 🟢',
-        portalPassword: created.portal_password || candidatePin,
-        verificationConfig: created.verification_config || candidateData.verificationConfig || {},
-        verificationsCompleted: created.verifications_completed || { aadhaar: false, mobile: false, face: false },
-        photo: created.face_images?.straight || candidateData.photo || null,
-        faceImages: created.face_images || candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
-        manualChecks: created.manual_checks || candidateData.manualChecks || {},
-        joiningFormData: created.joining_form_data || candidateData.joiningFormData || candidateData,
-        customFields: created.custom_fields || candidateData.customFields || {},
-        documents: candidateData.documents || candidateData.uploadedDocumentsList || [],
-        verificationDate: created.verification_date || new Date().toLocaleDateString('en-GB')
-      };
+      const formatted = mapCandidateDto({
+        ...candidateData,
+        ...created,
+        id: created.id || candidateData.id || `emp-${Date.now()}`,
+        token: created.token || candidateData.token,
+        status: created.status || candidateData.status || 'Link Sent',
+        portal_password: created.portal_password || candidatePin,
+        company_id: created.company_id || candidateData.companyId || 'COMP001',
+        companyLogo: resolvedCompanyLogo
+      });
 
       setCandidates(prev => {
         const nextList = [formatted, ...(Array.isArray(prev) ? prev : [])];
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
         return nextList;
       });
       setSelectedCandidateToken(formatted.token);
-      showToast(`Verification token created for ${candidateData.name}! Saved in DB.`);
+      showToast(`✅ Candidate "${candidateData.name}" created and saved in PostgreSQL Database!`);
       return formatted.token;
     } catch (err) {
+      console.warn('Backend candidate creation fallback:', err);
       const newToken = candidateData.token || `tok_${(candidateData.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
-      const newCand = {
-        id: `emp-${Date.now()}`,
+      const fallbackCand = mapCandidateDto({
+        ...candidateData,
+        id: candidateData.id || `emp-${Date.now()}`,
         token: newToken,
         companyLogo: resolvedCompanyLogo,
-        verificationsCompleted: { aadhaar: false, mobile: false, face: false },
-        photo: candidateData.photo || null,
-        faceImages: candidateData.faceImages || (candidateData.photo ? { straight: candidateData.photo, left: candidateData.photo, right: candidateData.photo } : { straight: null, left: null, right: null }),
-        verificationDate: new Date().toLocaleDateString('en-GB'),
-        ...candidateData,
-        companyId: candidateData.companyId || 'comp-joy',
-        company_id: candidateData.companyId || 'comp-joy',
-        status: candidateData.status || 'Link Dispatched 🟢'
-      };
+        company_id: candidateData.companyId || candidateData.company_id || 'COMP001',
+        portal_password: candidatePin,
+        status: candidateData.status || 'Link Sent'
+      });
       setCandidates(prev => {
-        const nextList = [newCand, ...(Array.isArray(prev) ? prev : [])];
+        const nextList = [fallbackCand, ...(Array.isArray(prev) ? prev : [])];
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
         return nextList;
       });
       setSelectedCandidateToken(newToken);
@@ -2346,13 +2315,14 @@ export const AppProvider = ({ children }) => {
             if (!item) return false;
             const k1 = (item.token || item.id || '').toLowerCase();
             const k2 = (item.email || '').toLowerCase();
-            const k3 = (item.empId || item.employeeNumber || '').toUpperCase();
+            const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
+            const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
             const uniqueKey = `${k1}::${k2}::${k3}`;
-            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
+            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (!isGenericEmp && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
               return false;
             }
             if (k1) seen.add(`TOK::${k1}`);
-            if (k3) seen.add(`EMP::${k3}`);
+            if (!isGenericEmp) seen.add(`EMP::${k3}`);
             if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
             seen.add(uniqueKey);
             return true;
