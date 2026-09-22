@@ -1858,7 +1858,19 @@ export const AppProvider = ({ children }) => {
       });
 
       setCandidates(prev => {
-        const nextList = [formatted, ...(Array.isArray(prev) ? prev : [])];
+        const candidateId = (formatted.id || '').toLowerCase().trim();
+        const candidateTok = (formatted.token || '').toLowerCase().trim();
+        const candidateEmail = (formatted.email || '').toLowerCase().trim();
+        const candidateMobile = (formatted.mobile || '').replace(/\D/g, '');
+        const filtered = (Array.isArray(prev) ? prev : []).filter(c => {
+          if (!c) return false;
+          if (candidateId && (c.id || '').toLowerCase().trim() === candidateId) return false;
+          if (candidateTok && (c.token || '').toLowerCase().trim() === candidateTok) return false;
+          if (candidateEmail && candidateEmail.includes('@') && (c.email || '').toLowerCase().trim() === candidateEmail) return false;
+          if (candidateMobile && candidateMobile.length === 10 && (c.mobile || '').replace(/\D/g, '') === candidateMobile) return false;
+          return true;
+        });
+        const nextList = [formatted, ...filtered];
         try {
           localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
         } catch (e) {}
@@ -1880,7 +1892,19 @@ export const AppProvider = ({ children }) => {
         status: candidateData.status || 'Link Sent'
       });
       setCandidates(prev => {
-        const nextList = [fallbackCand, ...(Array.isArray(prev) ? prev : [])];
+        const candidateId = (fallbackCand.id || '').toLowerCase().trim();
+        const candidateTok = (fallbackCand.token || '').toLowerCase().trim();
+        const candidateEmail = (fallbackCand.email || '').toLowerCase().trim();
+        const candidateMobile = (fallbackCand.mobile || '').replace(/\D/g, '');
+        const filtered = (Array.isArray(prev) ? prev : []).filter(c => {
+          if (!c) return false;
+          if (candidateId && (c.id || '').toLowerCase().trim() === candidateId) return false;
+          if (candidateTok && (c.token || '').toLowerCase().trim() === candidateTok) return false;
+          if (candidateEmail && candidateEmail.includes('@') && (c.email || '').toLowerCase().trim() === candidateEmail) return false;
+          if (candidateMobile && candidateMobile.length === 10 && (c.mobile || '').replace(/\D/g, '') === candidateMobile) return false;
+          return true;
+        });
+        const nextList = [fallbackCand, ...filtered];
         try {
           localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
         } catch (e) {}

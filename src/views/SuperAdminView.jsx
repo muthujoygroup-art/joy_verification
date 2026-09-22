@@ -158,7 +158,8 @@ export const SuperAdminView = () => {
     calculateCompanyPostpaidBill,
     updateCompanyPostpaidPlan,
     settlePostpaidInvoice,
-    purgeClientCacheAndReset
+    purgeClientCacheAndReset,
+    purgeDuplicateCandidates
   } = useApp();
 
   const navigate = useNavigate();
@@ -1999,12 +2000,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             {/* 3. MATCHED EMPLOYEES & CANDIDATES */}
             <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2 flex-wrap gap-2">
                 <h4 className="text-xs font-black uppercase text-sky-900 tracking-wider flex items-center gap-2">
                   <Users className="w-4 h-4 text-sky-600" />
                   <span>3. Employees & Candidates Directory ({globalSearchQuery ? searchResults.candidates.length : enrichedDirectory.candidates.length})</span>
                 </h4>
-                <span className="badge badge-sky text-[9px] font-bold">Prefix: COMPxxxEMPxxx</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (typeof purgeDuplicateCandidates === 'function') {
+                        await purgeDuplicateCandidates();
+                      }
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                    title="Purge duplicate candidate profiles and re-sequence unique profile IDs"
+                  >
+                    <span>🧹 Deduplicate & Clean</span>
+                  </button>
+                  <span className="badge badge-sky text-[9px] font-bold">Prefix: COMPxxxEMPxxx</span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

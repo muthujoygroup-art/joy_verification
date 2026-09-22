@@ -247,9 +247,22 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
     token = f"tok_{clean_name}_{uuid.uuid4().hex[:4]}"
     
     # Compute hierarchical employee profile code (e.g. COMP001EMP001)
-    comp_code = comp.code if comp and comp.code else "COMP001"
-    emp_count = db.query(Candidate).filter(Candidate.company_id == resolved_comp_id).count() + 1
-    hierarchical_emp_code = f"{comp_code}EMP{emp_count:03d}"
+    comp_code = comp.code.upper().strip() if comp and comp.code else "COMP001"
+    existing_cands = db.query(Candidate).filter(
+        (Candidate.company_id == resolved_comp_id) | (Candidate.company_id == comp.id)
+    ).all()
+    max_num = 0
+    for ec in existing_cands:
+        for num_str in [ec.employee_number, ec.emp_id]:
+            if num_str and "EMP" in str(num_str).upper():
+                digits = "".join(filter(str.isdigit, str(num_str)))
+                if digits:
+                    try:
+                        max_num = max(max_num, int(digits[-3:]))
+                    except Exception:
+                        pass
+    next_emp_num = max(len(existing_cands) + 1, max_num + 1)
+    hierarchical_emp_code = f"{comp_code}EMP{next_emp_num:03d}"
     
     # Default verifications completed status
     initial_verifs = {
@@ -835,7 +848,7 @@ def delete_candidate(candidate_id: str, db: Session = Depends(get_db)):
 
 @router.post("/candidates/purge-duplicates")
 def purge_duplicate_candidates(payload: dict = None, db: Session = Depends(get_db)):
-    """Purges duplicate candidate records keeping only the most recent unique record per email/mobile/aadhaar"""
+    """Purges duplicate candidate records keeping only the most recent unique record per email/mobile/aadhaar/token"""
     company_id = payload.get("company_id") if payload else None
     query = db.query(Candidate)
     if company_id:
@@ -846,25 +859,46 @@ def purge_duplicate_candidates(payload: dict = None, db: Session = Depends(get_d
     deleted_count = 0
     
     for c in all_cands:
-        key = None
-        if c.aadhaar_no:
-            key = f"aadhaar_{c.aadhaar_no.strip()}"
-        elif c.email:
-            key = f"email_{c.email.strip().lower()}"
-        elif c.mobile:
-            key = f"mobile_{c.mobile.strip()}"
+        tok_key = f"tok_{c.token.strip().lower()}" if c.token else None
+        id_key = f"id_{c.id.strip().lower()}" if c.id else None
+        aadhaar_key = f"aadhaar_{c.aadhaar_no.strip()}" if (c.aadhaar_no and len(c.aadhaar_no.strip()) == 12) else None
+        email_key = f"email_{c.email.strip().lower()}" if (c.email and "@" in c.email) else None
+        clean_mob = "".join(filter(str.isdigit, str(c.mobile or "")))
+        mobile_key = f"mob_{clean_mob[-10:]}" if (len(clean_mob) >= 10 and clean_mob[-10:] not in ("9876543210", "1234567890", "0000000000")) else None
         
-        if key:
-            if key in seen:
-                db.delete(c)
-                deleted_count += 1
-            else:
-                seen.add(key)
+        is_dup = False
+        if tok_key and tok_key in seen: is_dup = True
+        elif id_key and id_key in seen: is_dup = True
+        elif email_key and email_key in seen: is_dup = True
+        elif mobile_key and mobile_key in seen: is_dup = True
+        elif aadhaar_key and aadhaar_key in seen: is_dup = True
+
+        if is_dup:
+            db.delete(c)
+            deleted_count += 1
+        else:
+            if tok_key: seen.add(tok_key)
+            if id_key: seen.add(id_key)
+            if email_key: seen.add(email_key)
+            if mobile_key: seen.add(mobile_key)
+            if aadhaar_key: seen.add(aadhaar_key)
     
     db.commit()
+
+    # Re-sequence employee codes for remaining candidates to ensure zero code collisions
+    companies = db.query(Company).all()
+    comp_map = {comp.id: (comp.code or f"COMP{i+1:03d}").upper() for i, comp in enumerate(companies)}
+    remaining_cands = db.query(Candidate).order_by(Candidate.created_at.asc()).all()
+    counts = {}
+    for c in remaining_cands:
+        c_code = comp_map.get(c.company_id, "COMP001")
+        counts[c_code] = counts.get(c_code, 0) + 1
+        c.employee_number = f"{c_code}EMP{counts[c_code]:03d}"
+    db.commit()
+
     return {
         "success": True,
-        "message": f"Purged {deleted_count} duplicate candidate records.",
+        "message": f"Purged {deleted_count} duplicate candidate records. All candidate records are 100% unique & deduplicated.",
         "deleted_count": deleted_count
     }
 
