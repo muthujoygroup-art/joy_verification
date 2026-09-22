@@ -22,6 +22,7 @@ import { OfficialVerificationCertificateModal } from '../components/OfficialVeri
 import { EmployeeProfileDossierModal } from '../components/EmployeeProfileDossierModal';
 import { MetricDrilldownModal } from '../components/MetricDrilldownModal';
 import { ComprehensiveBgvReportModal } from '../components/ComprehensiveBgvReportModal';
+import { IndividualDocumentSlipModal } from '../components/IndividualDocumentSlipModal';
 import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
 import { DpdpComplianceModal } from '../components/DpdpComplianceModal';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
@@ -366,6 +367,19 @@ export const HrExecutiveView = () => {
   const [viewingCertificateCandidate, setViewingCertificateCandidate] = useState(null);
   const [viewingDossierCandidate, setViewingDossierCandidate] = useState(null);
   const [viewingBgvReportCandidate, setViewingBgvReportCandidate] = useState(null);
+  const [viewingDocSlipModal, setViewingDocSlipModal] = useState(null); // { candidate, docType, dataObj }
+  const [confirmReverifyModal, setConfirmReverifyModal] = useState({
+    isOpen: false,
+    candidate: null,
+    docKey: '',
+    docName: '',
+    docProvider: '',
+    docIcon: '📄',
+    docInputValue: '',
+    payload: null,
+    isBatch: false,
+    keysToVerify: []
+  });
   const [viewingDocComparisonCandidate, setViewingDocComparisonCandidate] = useState(null);
   const [viewingDpdpCandidate, setViewingDpdpCandidate] = useState(null);
   const [viewingUploadedDocsCandidate, setViewingUploadedDocsCandidate] = useState(null);
@@ -5862,6 +5876,18 @@ export const HrExecutiveView = () => {
         />
       )}
 
+      {/* 📄 Individual Document Official Verification Slip Modal */}
+      {viewingDocSlipModal && (
+        <IndividualDocumentSlipModal
+          candidate={viewingDocSlipModal.candidate}
+          docType={viewingDocSlipModal.docType}
+          dataObj={viewingDocSlipModal.dataObj}
+          companyName={currentCompany?.name || "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"}
+          hrName={activeHr?.name || "PRAVEEN B"}
+          onClose={() => setViewingDocSlipModal(null)}
+        />
+      )}
+
       {/* Statutory Legal & DPDP Compliance Handbook Modal */}
       <LegalComplianceHandbookModal
         isOpen={showLegalHandbook}
@@ -6511,28 +6537,12 @@ export const HrExecutiveView = () => {
                   };
                   const docInputValue = getCandidateDocInputValue();
 
-                  const handleTriggerDocVerification = (e) => {
+                  const handleTriggerDocVerification = (e, isReverify = false) => {
                     e.stopPropagation();
                     const cand = managingDocVerifCandidate;
                     if (!cand) return;
 
                     const rawAadhaar = cand.aadhaarNo || cand.aadhaar_no || (cand.joiningFormData?.aadhaarNo || '');
-                    if (doc.key === 'aadhaar') {
-                      setHrAadhaarModal({
-                        isOpen: true,
-                        candidate: cand,
-                        aadhaarNo: rawAadhaar,
-                        otp: '',
-                        isOtpSent: false,
-                        demoOtp: '',
-                        maskedTarget: '',
-                        isSendingOtp: false,
-                        isVerifyingOtp: false,
-                        error: ''
-                      });
-                      return;
-                    }
-
                     const jfd = cand.joiningFormData || cand.joining_form_data || {};
                     let hasData = false;
                     let f1 = { label: '', key: '', value: '' };
@@ -6543,7 +6553,9 @@ export const HrExecutiveView = () => {
                       ...jfd
                     };
 
-                    if (doc.key === 'pan') {
+                    if (doc.key === 'aadhaar') {
+                      if (rawAadhaar && rawAadhaar.trim().length >= 4) hasData = true;
+                    } else if (doc.key === 'pan') {
                       const val = cand.panNo || cand.pan_no || cand.panNumber || jfd.panNo || jfd.pan || '';
                       if (val && val.trim().length >= 5) hasData = true;
                       f1 = { label: '10-Character PAN Number', key: 'panNo', value: val || 'ABCDE1234F' };
@@ -6593,6 +6605,43 @@ export const HrExecutiveView = () => {
                       hasData = true;
                     }
 
+                    // 🛡️ If document is already verified or user clicked Re-Verify -> Prompt Confirmation Modal
+                    if (isVerified || isReverify) {
+                      setConfirmReverifyModal({
+                        isOpen: true,
+                        candidate: cand,
+                        docKey: doc.key,
+                        docName: doc.name,
+                        docProvider: doc.provider,
+                        docIcon: doc.icon,
+                        docInputValue: docInputValue || 'Candidate Profile Record',
+                        payload: unifiedPayload,
+                        hasData: hasData,
+                        f1: f1,
+                        f2: f2,
+                        isBatch: false,
+                        keysToVerify: []
+                      });
+                      return;
+                    }
+
+                    // First-time verification
+                    if (doc.key === 'aadhaar') {
+                      setHrAadhaarModal({
+                        isOpen: true,
+                        candidate: cand,
+                        aadhaarNo: rawAadhaar,
+                        otp: '',
+                        isOtpSent: false,
+                        demoOtp: '',
+                        maskedTarget: '',
+                        isSendingOtp: false,
+                        isVerifyingOtp: false,
+                        error: ''
+                      });
+                      return;
+                    }
+
                     if (hasData) {
                       executeDirectDocVerification(doc.key, doc.name, doc.provider, unifiedPayload);
                     } else {
@@ -6628,7 +6677,7 @@ export const HrExecutiveView = () => {
                         setManagingDocVerifCandidate(updated);
                         setCandidates(prev => prev.map(c => (c.id === updated.id || c.token === updated.token) ? updated : c));
                       }}
-                      className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-2 select-none ${
+                      className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-2.5 select-none ${
                         isVerifyingThis
                           ? 'bg-amber-50 border-amber-400 shadow-md ring-2 ring-amber-300 animate-pulse'
                           : isVerified
@@ -6649,22 +6698,41 @@ export const HrExecutiveView = () => {
 
                         <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
                           {isVerified ? (
-                            <div className="flex items-center gap-1">
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-950 border border-emerald-300 flex items-center gap-1">
-                                <Check className="w-3 h-3 text-emerald-700" />
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 flex items-center gap-1 shadow-2xs">
+                                <Check className="w-3 h-3 text-emerald-700 stroke-[3]" />
                                 <span>Verified ✓</span>
                               </span>
                               <button
                                 type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setViewingDocSlipModal({
+                                    candidate: managingDocVerifCandidate,
+                                    docType: doc.key,
+                                    dataObj: docData
+                                  });
+                                }}
+                                className="text-[9.5px] font-bold px-2 py-0.8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                                title="View official statutory government-style verification slip (PDF)"
+                              >
+                                <FileText className="w-3 h-3 text-indigo-600" />
+                                <span>Slip 📄</span>
+                              </button>
+                              <button
+                                type="button"
                                 disabled={isVerifyingThis || isVerifyingDocuments}
-                                onClick={handleTriggerDocVerification}
-                                className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-0.5 cursor-pointer transition-all"
-                                title="Re-verify against CoinCircleTrust Gateway"
+                                onClick={(e) => handleTriggerDocVerification(e, true)}
+                                className="text-[9.5px] font-bold px-2 py-0.8 rounded-lg bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 flex items-center gap-1 cursor-pointer transition-all shadow-2xs hover:border-amber-400"
+                                title="Re-verify against live government gateway (fetches fresh point-in-time snapshot)"
                               >
                                 {isVerifyingThis ? (
-                                  <Loader2 className="w-2.5 h-2.5 animate-spin text-emerald-600" />
+                                  <Loader2 className="w-3 h-3 animate-spin text-amber-600" />
                                 ) : (
-                                  <span>🔄</span>
+                                  <>
+                                    <RefreshCw className="w-3 h-3 text-amber-600" />
+                                    <span>Re-Verify 🔄</span>
+                                  </>
                                 )}
                               </button>
                             </div>
@@ -6672,23 +6740,23 @@ export const HrExecutiveView = () => {
                             <button
                               type="button"
                               disabled={isVerifyingThis || isVerifyingDocuments}
-                              onClick={handleTriggerDocVerification}
-                              className={`text-[9.5px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                              onClick={(e) => handleTriggerDocVerification(e, false)}
+                              className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
                                 isChecked
-                                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-2xs'
-                                  : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+                                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-sm'
+                                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 hover:border-slate-400'
                               }`}
                               title={`Verify ${doc.name} via CoinCircleTrust API now`}
                             >
                               {isVerifyingThis ? (
                                 <>
-                                  <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-300" />
                                   <span>Checking...</span>
                                 </>
                               ) : (
                                 <>
-                                  <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
-                                  <span>Verify</span>
+                                  <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                  <span>Verify ⚡</span>
                                 </>
                               )}
                             </button>
@@ -6699,7 +6767,7 @@ export const HrExecutiveView = () => {
                       {/* Result / Extracted Number Strip */}
                       {isVerified ? (
                         <div className="pt-1.5 border-t border-emerald-200/80 flex items-center justify-between text-[10px] text-emerald-900 font-medium">
-                          <span className="truncate font-mono font-bold">{getVerifiedSnippet()}</span>
+                          <span className="truncate font-mono font-bold" title={getVerifiedSnippet()}>{getVerifiedSnippet()}</span>
                           <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold shrink-0 ml-1">
                             DPDP Sealed
                           </span>
@@ -6824,41 +6892,69 @@ export const HrExecutiveView = () => {
                 <button
                   type="button"
                   disabled={isVerifyingDocuments}
-                  onClick={async () => {
+                  onClick={() => {
                     const cand = managingDocVerifCandidate;
                     if (!cand) return;
-                    setIsVerifyingDocuments(true);
-                    try {
-                      const cfg = cand.verificationConfig || {};
-                      const activeKeys = Object.keys(cfg).filter(k => cfg[k]);
-                      const keysToVerify = activeKeys.length > 0 ? activeKeys : ['aadhaar', 'pan', 'bankCheck', 'uan', 'drivingLicense', 'passport', 'voterId', 'courtRecords', 'esic'];
-                      
-                      const res = await verifyAllCandidateDocuments(cand.token || cand.id, keysToVerify);
-                      if (res && res.candidate) {
-                        const updated = {
-                          ...cand,
-                          ...res.candidate,
-                          verificationsCompleted: res.candidate.verifications_completed || res.candidate.verificationsCompleted || cand.verificationsCompleted,
-                          verifiedAttributes: res.candidate.verified_attributes || res.candidate.verifiedAttributes || cand.verifiedAttributes,
-                          status: res.candidate.status || 'Verified'
-                        };
-                        setManagingDocVerifCandidate(updated);
-                        setLatestVerificationTelemetry({
-                          docKey: 'all',
-                          docName: 'All 10+ Verification APIs (Batch Run)',
-                          provider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
-                          fetchedData: res.results || {},
-                          sha256Seal: `SHA256-BATCH-${Date.now().toString(36).toUpperCase()}`,
-                          transactionRef: `TXN-BATCH-${Date.now().toString().slice(-8)}`,
-                          latencyMs: 142,
-                          timestamp: new Date().toLocaleTimeString(),
-                          status: 'SUCCESS'
-                        });
+                    const cfg = cand.verificationConfig || {};
+                    const activeKeys = Object.keys(cfg).filter(k => cfg[k]);
+                    const keysToVerify = activeKeys.length > 0 ? activeKeys : ['aadhaar', 'pan', 'bankCheck', 'uan', 'drivingLicense', 'passport', 'voterId', 'courtRecords', 'esic'];
+                    
+                    const hasAnyVerified = keysToVerify.some(k => 
+                      cand.verificationsCompleted?.[k] || 
+                      cand.verifiedAttributes?.[k] ||
+                      (k === 'bankCheck' && (cand.verificationsCompleted?.bank || cand.verificationsCompleted?.bankCheck)) ||
+                      (k === 'uan' && (cand.verificationsCompleted?.epfoUan || cand.verificationsCompleted?.uan || cand.verificationsCompleted?.epfo)) ||
+                      (k === 'drivingLicense' && (cand.verificationsCompleted?.driving_license || cand.verificationsCompleted?.drivingLicense || cand.verificationsCompleted?.dl)) ||
+                      (k === 'voterId' && (cand.verificationsCompleted?.voter_id || cand.verificationsCompleted?.voterId))
+                    );
+
+                    const executeBatchVerification = async (keys) => {
+                      setIsVerifyingDocuments(true);
+                      try {
+                        const res = await verifyAllCandidateDocuments(cand.token || cand.id, keys);
+                        if (res && res.candidate) {
+                          const updated = {
+                            ...cand,
+                            ...res.candidate,
+                            verificationsCompleted: res.candidate.verifications_completed || res.candidate.verificationsCompleted || cand.verificationsCompleted,
+                            verifiedAttributes: res.candidate.verified_attributes || res.candidate.verifiedAttributes || cand.verifiedAttributes,
+                            status: res.candidate.status || 'Verified'
+                          };
+                          setManagingDocVerifCandidate(updated);
+                          setLatestVerificationTelemetry({
+                            docKey: 'all',
+                            docName: 'All 10+ Statutory Verification APIs (Batch Run)',
+                            provider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                            fetchedData: res.results || {},
+                            sha256Seal: `SHA256-BATCH-${Date.now().toString(36).toUpperCase()}`,
+                            transactionRef: `TXN-BATCH-${Date.now().toString().slice(-8)}`,
+                            latencyMs: 142,
+                            timestamp: new Date().toLocaleTimeString(),
+                            status: 'SUCCESS'
+                          });
+                        }
+                      } catch (e) {
+                        console.error("Batch verification error:", e);
+                      } finally {
+                        setIsVerifyingDocuments(false);
                       }
-                    } catch (e) {
-                      console.error("Batch verification error:", e);
-                    } finally {
-                      setIsVerifyingDocuments(false);
+                    };
+
+                    if (hasAnyVerified) {
+                      setConfirmReverifyModal({
+                        isOpen: true,
+                        candidate: cand,
+                        docKey: 'all',
+                        docName: `Batch Re-Verification (${keysToVerify.length} Statutory Gates)`,
+                        docProvider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                        docIcon: '⚡',
+                        docInputValue: `Employee: ${cand.name}`,
+                        payload: null,
+                        isBatch: true,
+                        keysToVerify: keysToVerify
+                      });
+                    } else {
+                      executeBatchVerification(keysToVerify);
                     }
                   }}
                   className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-50"
@@ -6876,6 +6972,207 @@ export const HrExecutiveView = () => {
                   )}
                 </button>
               </div>
+            </div>
+
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 🔄 MODAL: STATUTORY RE-VERIFICATION SECOND-ATTEMPT CONFIRMATION */}
+      {confirmReverifyModal.isOpen && confirmReverifyModal.candidate && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999999] bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center overflow-hidden animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConfirmReverifyModal(prev => ({ ...prev, isOpen: false }));
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl sm:rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">
+                  <RefreshCw className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Confirm Statutory Re-Verification 🔄</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {confirmReverifyModal.candidate.name} • #{confirmReverifyModal.candidate.empId || 'EMP-2026'} • {currentCompany?.name}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setConfirmReverifyModal(prev => ({ ...prev, isOpen: false }))} 
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Verification Details Box */}
+            <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{confirmReverifyModal.docIcon || '📄'}</span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-black text-amber-950 uppercase tracking-wider block">
+                    {confirmReverifyModal.isBatch ? 'BATCH VERIFICATION RUN' : 'TARGET STATUTORY DOCUMENT'}
+                  </span>
+                  <strong className="text-sm text-slate-900 font-extrabold block">
+                    {confirmReverifyModal.docName}
+                  </strong>
+                  <span className="text-[11px] text-amber-900 font-mono block mt-0.5">
+                    Provider: {confirmReverifyModal.docProvider}
+                  </span>
+                </div>
+              </div>
+
+              {confirmReverifyModal.docInputValue && !confirmReverifyModal.isBatch && (
+                <div className="p-2.5 bg-white rounded-xl border border-amber-200 text-xs font-mono font-bold text-slate-800 flex items-center justify-between">
+                  <span className="text-slate-500 font-normal">Identifier / Input:</span>
+                  <span>{confirmReverifyModal.docInputValue}</span>
+                </div>
+              )}
+
+              <div className="p-3 bg-white/90 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-1.5">
+                <div className="font-extrabold flex items-center gap-1.5 text-amber-900">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Are you sure you want to perform another verification for this employee document?</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>SuperAdmin Consumption Ledger</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setConfirmReverifyModal(prev => ({ ...prev, isOpen: false }))}
+                className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
+              >
+                Cancel (Keep Existing Data)
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const modal = confirmReverifyModal;
+                  const cand = modal.candidate;
+                  setConfirmReverifyModal(prev => ({ ...prev, isOpen: false }));
+                  
+                  if (modal.isBatch) {
+                    setIsVerifyingDocuments(true);
+                    try {
+                      const res = await verifyAllCandidateDocuments(cand.token || cand.id, modal.keysToVerify);
+                      if (res && res.candidate) {
+                        const updated = {
+                          ...cand,
+                          ...res.candidate,
+                          verificationsCompleted: res.candidate.verifications_completed || res.candidate.verificationsCompleted || cand.verificationsCompleted,
+                          verifiedAttributes: res.candidate.verified_attributes || res.candidate.verifiedAttributes || cand.verifiedAttributes,
+                          status: res.candidate.status || 'Verified'
+                        };
+                        setManagingDocVerifCandidate(updated);
+                        setLatestVerificationTelemetry({
+                          docKey: 'all',
+                          docName: 'All 10+ Statutory Verification APIs (Batch Run)',
+                          provider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                          fetchedData: res.results || {},
+                          sha256Seal: `SHA256-BATCH-${Date.now().toString(36).toUpperCase()}`,
+                          transactionRef: `TXN-BATCH-${Date.now().toString().slice(-8)}`,
+                          latencyMs: 142,
+                          timestamp: new Date().toLocaleTimeString(),
+                          status: 'SUCCESS'
+                        });
+                      }
+                    } catch (e) {
+                      console.error("Batch re-verification error:", e);
+                    } finally {
+                      setIsVerifyingDocuments(false);
+                    }
+                    return;
+                  }
+
+                  if (modal.docKey === 'aadhaar') {
+                    const rawAadhaar = cand.aadhaarNo || cand.aadhaar_no || (cand.joiningFormData?.aadhaarNo || '');
+                    setHrAadhaarModal({
+                      isOpen: true,
+                      candidate: cand,
+                      aadhaarNo: rawAadhaar,
+                      otp: '',
+                      isOtpSent: false,
+                      demoOtp: '',
+                      maskedTarget: '',
+                      isSendingOtp: false,
+                      isVerifyingOtp: false,
+                      error: ''
+                    });
+                    return;
+                  }
+
+                  if (modal.hasData) {
+                    setVerifyingDocKey(modal.docKey);
+                    try {
+                      const res = await verifyCandidateLiveDocument(cand.token || cand.id, modal.docKey, modal.payload);
+                      if (res && res.success) {
+                        const fetched = res.data?.fetched_data || {};
+                        const updatedCandidate = {
+                          ...cand,
+                          verificationsCompleted: {
+                            ...(cand.verificationsCompleted || {}),
+                            [modal.docKey]: true
+                          },
+                          verifiedAttributes: {
+                            ...(cand.verifiedAttributes || {}),
+                            [modal.docKey]: fetched
+                          }
+                        };
+                        setManagingDocVerifCandidate(updatedCandidate);
+                        setCandidates(prev => prev.map(c => (c.id === updatedCandidate.id || c.token === updatedCandidate.token) ? updatedCandidate : c));
+                        setLatestVerificationTelemetry({
+                          docKey: modal.docKey,
+                          docName: modal.docName,
+                          provider: modal.docProvider,
+                          fetchedData: fetched,
+                          sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
+                          transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
+                          latencyMs: res.data?.latency_ms || Math.floor(Math.random() * 30 + 45),
+                          timestamp: new Date().toLocaleTimeString(),
+                          status: 'SUCCESS'
+                        });
+                      }
+                    } catch (err) {
+                      console.error(`Error re-verifying ${modal.docKey}:`, err);
+                    } finally {
+                      setVerifyingDocKey(null);
+                    }
+                  } else {
+                    setHrDocPromptModal({
+                      isOpen: true,
+                      candidate: cand,
+                      docKey: modal.docKey,
+                      docName: modal.docName,
+                      provider: modal.docProvider,
+                      field1Label: modal.f1?.label || 'Document Number',
+                      field1Key: modal.f1?.key || 'docNumber',
+                      field1Value: modal.f1?.value || '',
+                      field2Label: modal.f2?.label || '',
+                      field2Key: modal.f2?.key || '',
+                      field2Value: modal.f2?.value || '',
+                      isVerifying: false,
+                      error: ''
+                    });
+                  }
+                }}
+                className="btn bg-amber-600 hover:bg-amber-700 text-white text-xs py-2 px-4.5 font-black shadow-md flex items-center gap-1.5 cursor-pointer rounded-xl transition-all"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
+                <span>Yes, Proceed with Re-Verification ⚡</span>
+              </button>
             </div>
 
           </div>

@@ -53,6 +53,7 @@ export const ComprehensiveBgvReportModal = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isReverifying, setIsReverifying] = useState(false);
+  const [showReverifyConfirmModal, setShowReverifyConfirmModal] = useState(false);
   const [liveCandidate, setLiveCandidate] = useState(candidate);
   const [selectedSlip, setSelectedSlip] = useState(null); // { docType: 'UIDAI_Aadhaar', data: ... }
 
@@ -370,7 +371,7 @@ export const ComprehensiveBgvReportModal = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={handleLiveReverify}
+              onClick={() => setShowReverifyConfirmModal(true)}
               disabled={isReverifying}
               className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-amber-500 shadow-sm transition-all"
               title="Execute live real-time verification against CoinCircleTrust Gateways"
@@ -976,6 +977,94 @@ export const ComprehensiveBgvReportModal = ({
         </div>
 
       </div>
+
+      {/* 🔄 Re-Verification Confirmation Modal */}
+      {showReverifyConfirmModal && (
+        <div 
+          className="fixed inset-0 z-[99999] bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center overflow-hidden animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowReverifyConfirmModal(false);
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl sm:rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">
+                  <Zap className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Confirm Statutory Re-Verification 🔄</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {c.name} • #{uniqueCode} • {companyName}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowReverifyConfirmModal(false)} 
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Verification Details Box */}
+            <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🏛️</span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-black text-amber-950 uppercase tracking-wider block">
+                    COMPLETE 360° BGV RE-VERIFICATION
+                  </span>
+                  <strong className="text-sm text-slate-900 font-extrabold block">
+                    All 10+ Statutory Verification Gates (Neev 81 APIs)
+                  </strong>
+                  <span className="text-[11px] text-amber-900 font-mono block mt-0.5">
+                    Provider: CoinCircleTrust Multi-Provider Hub (UIDAI, NSDL, NPCI, MoRTH, EPFO, MEA, ECI, eCourts, ESIC)
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-white/90 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-1.5">
+                <div className="font-extrabold flex items-center gap-1.5 text-amber-900">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Are you sure you want to perform another verification for this employee document?</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>SuperAdmin Consumption Ledger</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowReverifyConfirmModal(false)}
+                className="btn btn-secondary text-xs py-2 px-4 font-bold cursor-pointer"
+              >
+                Cancel (Keep Current Data)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowReverifyConfirmModal(false);
+                  handleLiveReverify();
+                }}
+                className="btn bg-amber-600 hover:bg-amber-700 text-white text-xs py-2 px-4.5 font-black shadow-md flex items-center gap-1.5 cursor-pointer rounded-xl transition-all"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
+                <span>Yes, Proceed with Re-Verification ⚡</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Individual Document Verification Slip Modal */}
       {selectedSlip && (
