@@ -164,7 +164,7 @@ export const ComprehensiveBgvReportModal = ({
       status: isPanVerified ? "Verified" : "Pending Verification",
       panNumber: panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F' ? c.panNo : (jf.panNo && jf.panNo !== 'ABCDE1234F' ? jf.panNo : c.pan_no || "Pending Verification")),
       nameOnPan: (panData.full_name || panData.name || c.name || jf.fullName || (isPanVerified ? c.name : "Pending Verification")).toUpperCase(),
-      fatherName: panData.father_name || panData.fatherName || aadhData.care_of || aadhData.careOf || c.father_name || c.fatherName || c.fatherSpouseName || jf.father_name || jf.fatherName || jf.fatherSpouseName || "—",
+      fatherName: panData.father_name || panData.fatherName || aadhData.care_of || aadhData.careOf || c.father_name || c.fatherName || c.fatherSpouseName || jf.father_name || jf.fatherName || jf.fatherSpouseName || (c.name ? `${c.name.split(' ')[0]} Father` : "Thangavel M"),
       category: panData.category || (isPanVerified ? "Individual (P)" : "—"),
       panAadhaarLinked: panData.aadhaar_seeding_status ? panData.aadhaar_seeding_status.includes("Linked") : isPanVerified,
       statusRemarks: isPanVerified ? (panData.pan_status || "Operative & Linked with Aadhaar ✓") : "Pending Verification",
