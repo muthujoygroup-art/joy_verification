@@ -104,7 +104,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def global_catchall_exception_handler(request: Request, exc: Exception):
     import traceback
     error_trace = traceback.format_exc()
-    print(f"❌ CRITICAL SERVER ERROR: {exc}\n{error_trace}")
+    logger.error(f"[CRITICAL SERVER ERROR]: {exc}\n{error_trace}")
     return JSONResponse(
         status_code=500,
         content={"detail": f"Server Error: {str(exc)}", "type": type(exc).__name__}

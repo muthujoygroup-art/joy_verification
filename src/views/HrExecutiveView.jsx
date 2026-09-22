@@ -5765,7 +5765,11 @@ export const HrExecutiveView = () => {
               setCandidates(prev => {
                 const resultIds = new Set(results.map(r => r.id || r.token));
                 const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => p && !resultIds.has(p.id) && !resultIds.has(p.token));
-                return [...results, ...filteredPrev];
+                const nextList = [...results, ...filteredPrev];
+                try {
+                  localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+                } catch (e) {}
+                return nextList;
               });
             }
             if (typeof refreshCandidates === 'function') {

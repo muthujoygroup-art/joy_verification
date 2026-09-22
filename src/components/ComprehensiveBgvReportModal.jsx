@@ -137,7 +137,7 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_00_EMAIL_OTP_VERIFY",
       provider: "Corporate Enterprise SMTP / OTP Gateway",
       status: isEmailVerified ? "Verified" : "Pending Verification",
-      emailAddress: c.email || jf.email || "Pending Verification",
+      emailAddress: c.email || jf.email || jf.emailAddress || "Pending Verification",
       dispatchedFrom: companyName ? `hr@${companyName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com` : "HR Department",
       otpRemarks: isEmailVerified ? "6-Digit Confirmation Code Verified ✓" : "OTP Verification Pending",
       timestamp: c.verificationDate || c.createdAt || "—",
@@ -149,11 +149,11 @@ export const ComprehensiveBgvReportModal = ({
       status: isAadhaarVerified ? "Verified" : "Pending Verification",
       isLinkedToMobile: !!isAadhaarVerified,
       isLinkedToPan: !!(isAadhaarVerified && isPanVerified),
-      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : "Pending Verification"),
-      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "Pending Verification"),
-      nameOnAadhaar: aadhData.full_name || aadhData.name || (isAadhaarVerified ? c.name : "Pending Verification"),
+      aadhaarNumber: aadhData.masked_aadhaar || (c.aadhaarNo || c.aadhaar_no || jf.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo || c.aadhaar_no || jf.aadhaarNo).slice(-4)}` : "Pending Verification"),
+      maskedAadhaar: aadhData.masked_aadhaar || (c.aadhaarNo || c.aadhaar_no || jf.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo || c.aadhaar_no || jf.aadhaarNo).slice(-4)}` : "Pending Verification"),
+      nameOnAadhaar: aadhData.full_name || aadhData.name || c.name || jf.fullName || (isAadhaarVerified ? c.name : "Pending Verification"),
       dob: aadhData.dob || c.dob || jf.dob || "—",
-      gender: aadhData.gender || c.gender || "—",
+      gender: aadhData.gender || c.gender || jf.gender || "—",
       address: aadhAddressFormatted,
       timestamp: aadhData.verified_at || c.verificationDate || "—",
       confidenceScore: isAadhaarVerified ? (aadhData.cct_trust_score || "99.9% (UIDAI Authenticated)") : "—"
@@ -162,9 +162,9 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_06_PAN_INFO_V2",
       provider: panData.provider || "CoinCircleTrust / NSDL Income Tax Database",
       status: isPanVerified ? "Verified" : "Pending Verification",
-      panNumber: panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F' ? c.panNo : (jf.panNo && jf.panNo !== 'ABCDE1234F' ? jf.panNo : "Pending Verification")),
-      nameOnPan: (panData.full_name || panData.name || (isPanVerified ? c.name : "Pending Verification")).toUpperCase(),
-      fatherName: panData.father_name || aadhData.care_of || jf.fatherName || "—",
+      panNumber: panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F' ? c.panNo : (jf.panNo && jf.panNo !== 'ABCDE1234F' ? jf.panNo : c.pan_no || "Pending Verification")),
+      nameOnPan: (panData.full_name || panData.name || c.name || jf.fullName || (isPanVerified ? c.name : "Pending Verification")).toUpperCase(),
+      fatherName: panData.father_name || panData.fatherName || aadhData.care_of || aadhData.careOf || c.father_name || c.fatherName || c.fatherSpouseName || jf.father_name || jf.fatherName || jf.fatherSpouseName || "—",
       category: panData.category || (isPanVerified ? "Individual (P)" : "—"),
       panAadhaarLinked: panData.aadhaar_seeding_status ? panData.aadhaar_seeding_status.includes("Linked") : isPanVerified,
       statusRemarks: isPanVerified ? (panData.pan_status || "Operative & Linked with Aadhaar ✓") : "Pending Verification",
@@ -174,7 +174,7 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_47_UAN_EMPLOYMENT_HISTORY_V3",
       provider: epfoData.provider || "CoinCircleTrust / EPFO Unified Member Portal",
       status: isEpfoVerified ? "Verified" : "Pending Verification",
-      uan: epfoData.uan || c.pf_number || jf.uanEpf || "Pending Verification",
+      uan: epfoData.uan || c.pf_number || c.pfNumber || c.uan_no || c.uanNumber || jf.uanEpf || jf.pfNumber || "Pending Verification",
       memberId: epfoData.member_id || "—",
       totalServiceYears: epfoData.total_service_years || (isEpfoVerified ? "Service Verified" : "—"),
       dualEmploymentClearance: isEpfoVerified ? (epfoData.dual_employment_clearance || "Passed (No Overlapping Active Service)") : "Pending Verification",
@@ -183,19 +183,21 @@ export const ComprehensiveBgvReportModal = ({
           ? epfoData.employment_history
           : (Array.isArray(epfoData.establishments) && epfoData.establishments.length > 0)
             ? epfoData.establishments
-            : (jf.previousEmployer ? [{
-                establishmentName: jf.previousEmployer,
-                memberId: "—",
-                doj: "—",
-                doe: "—",
-                designation: jf.designation || "—",
-                exitReason: "Declared by Employee",
-                verified: false
-              }] : []);
+            : (Array.isArray(jf.employmentHistory) && jf.employmentHistory.length > 0)
+              ? jf.employmentHistory
+              : (jf.previousEmployer || jf.previousCompany ? [{
+                  establishmentName: jf.previousEmployer || jf.previousCompany,
+                  memberId: "—",
+                  doj: jf.previousDoj || "—",
+                  doe: jf.relievingDate || jf.previousRelievingDate || "—",
+                  designation: jf.previousDesignation || jf.designation || "—",
+                  exitReason: "Declared by Employee",
+                  verified: false
+                }] : []);
         const seen = new Set();
         return rawHistory.filter(row => {
           if (!row) return false;
-          const k = `${row.establishmentName || row.establishment_name || ''}_${row.memberId || row.member_id || ''}_${row.doj || ''}`.toLowerCase().trim();
+          const k = `${row.establishmentName || row.establishment_name || row.company_name || ''}_${row.memberId || row.member_id || ''}_${row.doj || ''}`.toLowerCase().trim();
           if (seen.has(k)) return false;
           seen.add(k);
           return true;
@@ -206,11 +208,11 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_16_BANK_PENNY_DROP",
       provider: bankData.provider || "CoinCircleTrust / NPCI Instant Settlement Gateway",
       status: isBankVerified ? "Verified" : "Pending Verification",
-      accountNumber: bankData.masked_account || (bankData.account_number ? `...${bankData.account_number.slice(-4)}` : (c.bank_account_no ? `...${String(c.bank_account_no).slice(-4)}` : (jf.bankAccountNo ? `...${String(jf.bankAccountNo).slice(-4)}` : "Pending Verification"))),
-      ifsc: bankData.ifsc_code || c.ifsc_code || jf.ifscCode || "—",
-      bankName: bankData.bank_name || c.bank_name || jf.bankName || "—",
-      branchName: bankData.branch || jf.branchName || "—",
-      registeredAccountHolder: (bankData.beneficiary_name || (isBankVerified ? c.name : "Pending Verification")).toUpperCase(),
+      accountNumber: bankData.masked_account || (bankData.account_number ? `...${bankData.account_number.slice(-4)}` : (c.bank_account_no || c.bankAccountNo || jf.bankAccountNo || jf.accountNumber ? `...${String(c.bank_account_no || c.bankAccountNo || jf.bankAccountNo || jf.accountNumber).slice(-4)}` : "Pending Verification")),
+      ifsc: bankData.ifsc_code || bankData.ifsc || c.ifsc_code || c.ifscCode || jf.ifscCode || jf.ifsc || "—",
+      bankName: bankData.bank_name || c.bank_name || c.bankName || jf.bankName || "—",
+      branchName: bankData.branch || bankData.branch_name || c.branchName || jf.branchName || jf.bankBranch || "—",
+      registeredAccountHolder: (bankData.beneficiary_name || c.accountHolderName || jf.accountHolderName || c.name || (isBankVerified ? c.name : "Pending Verification")).toUpperCase(),
       nameMatchScore: isBankVerified ? (bankData.name_match_score || "100%") : "—",
       impsRrn: bankData.imps_utr_reference || "—",
       pennyStatus: isBankVerified ? (bankData.penny_drop_amount ? `Credit Successful (${bankData.penny_drop_amount} Deposited & Verified)` : "Credit Successful (₹1.00 Deposited & Verified)") : "Pending Verification"
@@ -219,19 +221,19 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_14_SARATHI_DL_VERIFY",
       provider: dlData.provider || "CoinCircleTrust / MoRTH National Register (Sarathi)",
       status: isDlVerified ? "Verified" : "Pending Verification",
-      dlNumber: dlData.dl_number || dlData.license_number || c.dl_no || jf.drivingLicense || "Pending Verification",
-      holderName: (dlData.holder_name || (isDlVerified ? c.name : "—")).toUpperCase(),
+      dlNumber: dlData.dl_number || dlData.license_number || c.dl_no || c.dlNumber || c.drivingLicense || jf.drivingLicense || jf.dlNo || "Pending Verification",
+      holderName: (dlData.holder_name || c.name || jf.fullName || (isDlVerified ? c.name : "—")).toUpperCase(),
       issueDate: dlData.issue_date || "—",
       validUntil: dlData.valid_until_nt || dlData.expiry_date || "—",
       vehicleClasses: Array.isArray(dlData.vehicle_classes) ? dlData.vehicle_classes.join(", ") : (dlData.vehicle_classes || (isDlVerified ? "MCWG, LMV" : "—")),
-      bloodGroup: dlData.blood_group || c.bloodGroup || "—",
+      bloodGroup: dlData.blood_group || c.bloodGroup || c.blood_group || jf.bloodGroup || "—",
       issuingRto: dlData.rto_name || "—"
     },
     passport: {
       apiId: "API_22_PASSPORT_SEVA_VERIFY",
       provider: passportData.provider || "CoinCircleTrust / Ministry of External Affairs (MEA)",
       status: isPassportVerified ? "Verified" : "Pending Verification",
-      passportNumber: passportData.passport_number || jf.passportNo || c.passport_no || "Pending Verification",
+      passportNumber: passportData.passport_number || c.passport_no || c.passportNo || jf.passportNo || "Pending Verification",
       fileNumber: passportData.file_number || "—",
       nationality: "INDIAN",
       validUntil: passportData.valid_until || "—",
@@ -241,7 +243,7 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_31_ECI_EPIC_VERIFY",
       provider: voterData.provider || "CoinCircleTrust / Election Commission of India (ECI)",
       status: isVoterVerified ? "Verified" : "Pending Verification",
-      epicNumber: voterData.epic_number || voterData.voter_id || jf.voterId || "Pending Verification",
+      epicNumber: voterData.epic_number || voterData.voter_id || c.voter_id || c.voterId || jf.voterId || jf.epicNumber || "Pending Verification",
       constituency: voterData.constituency || "—",
       pollingStation: voterData.polling_station || "—"
     },
@@ -249,7 +251,7 @@ export const ComprehensiveBgvReportModal = ({
       apiId: "API_52_ESIC_INSURANCE_VERIFY",
       provider: esicData.provider || "CoinCircleTrust / ESIC Ministry of Labour & Employment",
       status: isEsicVerified ? "Verified" : "Pending Verification",
-      ipNumber: esicData.esic_number || c.esiNumber || jf.esiNumber || "Pending Verification",
+      ipNumber: esicData.esic_number || c.esi_number || c.esiNumber || jf.esiNumber || jf.esicNo || "Pending Verification",
       employerName: esicData.employer_name || companyName || "—",
       dispensary: esicData.dispensary || jf.esicDispensary || "—",
       branchOffice: esicData.branch_office || jf.esicBranchOffice || "—"

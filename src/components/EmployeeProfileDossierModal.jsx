@@ -112,48 +112,48 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   // Clean, Dynamic Attributes Resolution (Removing fake mock fallbacks)
   const candidateName = jf.fullName || jf.name || c.name || '-';
-  const fatherName = jf.fatherName || c.fatherName || aadhData.care_of || panData.father_name || epfoData.father_name || '-';
-  const motherName = jf.motherName || c.motherName || '-';
-  const maritalStatus = jf.maritalStatus || c.maritalStatus || 'Single';
+  const fatherName = jf.fatherName || jf.father_name || jf.fatherSpouseName || c.fatherName || c.father_name || c.fatherSpouseName || aadhData.care_of || aadhData.careOf || panData.father_name || panData.fatherName || epfoData.father_name || '-';
+  const motherName = jf.motherName || jf.mother_name || c.motherName || c.mother_name || '-';
+  const maritalStatus = jf.maritalStatus || jf.marital_status || c.maritalStatus || c.marital_status || 'Single';
   const spouseName = maritalStatus === 'Married' 
-    ? (jf.spouseName || c.spouseName || '-') 
+    ? (jf.spouseName || jf.spouse_name || c.spouseName || c.spouse_name || '-') 
     : 'N/A (Single)';
   const dob = jf.dob || c.dob || aadhData.dob || panData.dob || epfoData.dob || dlData.dob || '-';
   const doj = jf.doj || c.doj || '-';
   const age = String(jf.age || c.age || (dob && dob !== '-' && dob.length >= 4 ? (new Date().getFullYear() - parseInt(dob.substring(0, 4))) : '-'));
-  const bloodGroup = jf.bloodGroup || c.bloodGroup || dlData.blood_group || '-';
+  const bloodGroup = jf.bloodGroup || jf.blood_group || c.bloodGroup || c.blood_group || dlData.blood_group || '-';
   const gender = jf.gender || c.gender || '-';
-  const motherTongue = jf.motherTongue || c.motherTongue || '-';
-  const languagesKnown = jf.languagesKnown || c.languagesKnown || '-';
+  const motherTongue = jf.motherTongue || jf.mother_tongue || c.motherTongue || c.mother_tongue || '-';
+  const languagesKnown = jf.languagesKnown || jf.languages_known || c.languagesKnown || c.languages_known || '-';
   const religion = jf.religion || c.religion || '-';
   const caste = jf.caste || c.caste || '-';
   const category = jf.category || c.category || 'General';
-  const nativeState = jf.nativeState || jf.state || c.nativeState || '-';
-  const nativeDistrict = jf.nativeDistrict || jf.city || c.nativeDistrict || '-';
-  const identificationMarks = jf.identificationMarks || jf.identificationMark1 || c.identificationMarks || '-';
+  const nativeState = jf.nativeState || jf.native_state || jf.state || c.nativeState || c.native_state || '-';
+  const nativeDistrict = jf.nativeDistrict || jf.native_district || jf.city || c.nativeDistrict || c.native_district || '-';
+  const identificationMarks = jf.identificationMarks || jf.identification_marks || jf.identificationMark1 || c.identificationMarks || c.identification_marks || '-';
   const mobile = jf.mobile || c.mobile || '-';
   const email = jf.email || c.email || '-';
-  const emergencyContactName = jf.emergencyContactName || '-';
-  const emergencyContactPhone = jf.emergencyContactPhone || '-';
-  const presentAddress = jf.presentAddress || (jf.area || jf.city || jf.state ? `${jf.area || ''} ${jf.city || ''} ${jf.state || ''} ${jf.pincode || ''}`.trim() : c.presentAddress || '-');
-  const permanentAddress = jf.permanentAddress || c.permanentAddress || presentAddress || '-';
+  const emergencyContactName = jf.emergencyContactName || jf.emergency_contact_name || c.emergencyContactName || c.emergency_contact_name || '-';
+  const emergencyContactPhone = jf.emergencyContactPhone || jf.emergency_contact_phone || c.emergencyContactPhone || c.emergency_contact_phone || '-';
+  const presentAddress = jf.presentAddress || jf.present_address || jf.presentAddressLine || (jf.area || jf.city || jf.state ? `${jf.area || ''} ${jf.city || ''} ${jf.state || ''} ${jf.pincode || ''}`.trim() : c.presentAddress || c.present_address || '-');
+  const permanentAddress = jf.permanentAddress || jf.permanent_address || jf.permanentAddressLine || c.permanentAddress || c.permanent_address || presentAddress || '-';
 
-  const bankName = jf.bankName || bankData.bank_name || c.bankName || '-';
-  const accNo = jf.accountNo || jf.accountNumber || jf.bankAccountNo || bankData.account_number || c.bankAccountNo || '-';
-  const ifsc = jf.ifscCode || bankData.ifsc_code || c.ifscCode || '-';
-  const branch = jf.branchName || jf.bankBranch || bankData.branch || '-';
-  const panNo = jf.panNo || panData.pan_number || c.panNo || '-';
-  const aadhaarNo = jf.aadhaarNo || aadhData.masked_aadhaar || c.aadhaarNo || '-';
-  const dlNo = jf.dlNo || dlData.dl_number || c.dlNo || '-';
-  const passportNo = jf.passportNo || passportData.passport_number || passportData.fileNumber || c.passportNo || '-';
-  const voterId = jf.voterId || voterData.voter_id || voterData.epic_number || c.voterId || '-';
-  const uanNo = jf.uanEpf || jf.pfNumber || epfoData.uan || c.uanEpf || c.pfNumber || '-';
-  const pfNum = jf.pfNumber || c.pfNumber || uanNo || '-';
-  const esiNum = jf.esiNumber || jf.esicNo || esicData.esic_number || c.esiNumber || '-';
-  const vehicleRcNo = jf.rcNumber || rcData.rc_number || c.rcNumber || '-';
+  const bankName = jf.bankName || jf.bank_name || bankData.bank_name || c.bankName || c.bank_name || '-';
+  const accNo = jf.accountNo || jf.accountNumber || jf.bankAccountNo || jf.bank_account_no || bankData.account_number || c.bankAccountNo || c.bank_account_no || '-';
+  const ifsc = jf.ifscCode || jf.ifsc_code || bankData.ifsc_code || c.ifscCode || c.ifsc_code || '-';
+  const branch = jf.branchName || jf.branch_name || jf.bankBranch || bankData.branch || '-';
+  const panNo = jf.panNo || jf.pan_no || panData.pan_number || c.panNo || c.pan_no || '-';
+  const aadhaarNo = jf.aadhaarNo || jf.aadhaar_no || aadhData.masked_aadhaar || c.aadhaarNo || c.aadhaar_no || '-';
+  const dlNo = jf.dlNo || jf.dl_no || jf.drivingLicense || dlData.dl_number || c.dlNo || c.dlNumber || '-';
+  const passportNo = jf.passportNo || jf.passport_no || passportData.passport_number || passportData.fileNumber || c.passportNo || c.passport_no || '-';
+  const voterId = jf.voterId || jf.voter_id || voterData.voter_id || voterData.epic_number || c.voterId || c.voter_id || '-';
+  const uanNo = jf.uanEpf || jf.uan_no || jf.pfNumber || jf.pf_number || epfoData.uan || c.uanEpf || c.pfNumber || c.pf_number || '-';
+  const pfNum = jf.pfNumber || jf.pf_number || c.pfNumber || c.pf_number || uanNo || '-';
+  const esiNum = jf.esiNumber || jf.esi_number || jf.esicNo || esicData.esic_number || c.esiNumber || c.esi_number || '-';
+  const vehicleRcNo = jf.rcNumber || jf.rc_number || rcData.rc_number || c.rcNumber || '-';
   const courtVerdict = jf.courtRecordStatus || courtData.verdict || c.courtRecordStatus || 'Clear / Verified';
-  const nomineeName = jf.nomineeName || (maritalStatus === 'Married' ? (jf.spouseName || c.spouseName || '-') : (jf.fatherName || c.fatherName || '-'));
-  const nomineeRelation = jf.nomineeRelation || (maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeName = jf.nomineeName || jf.nominee_name || (maritalStatus === 'Married' ? (jf.spouseName || c.spouseName || '-') : (jf.fatherName || c.fatherName || '-'));
+  const nomineeRelation = jf.nomineeRelation || jf.nominee_relation || (maritalStatus === 'Married' ? 'Spouse' : 'Father');
   const nomineePhone = jf.nomineePhone || jf.emergencyContactPhone || mobile;
 
   // Social Media & Online Professional Presence

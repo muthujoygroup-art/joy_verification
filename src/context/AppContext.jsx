@@ -418,10 +418,10 @@ const mapCandidateDto = (c) => {
   const dl = c.dl_number || c.dlNumber || jfd.drivingLicense || jfd.dlNo || cf.dl_number || '';
   const pass = c.passport_no || c.passportNo || jfd.passportNo || cf.passport_no || '';
   const voter = c.voter_id || c.voterId || jfd.voterId || jfd.epicNumber || cf.voter_id || '';
-  const father = c.father_name || c.fatherName || jfd.fatherName || cf.father_name || '';
-  const mother = c.mother_name || c.motherName || jfd.motherName || cf.mother_name || '';
-  const permAddr = c.permanent_address || c.permanentAddress || jfd.permanentAddress || cf.permanent_address || '';
-  const presAddr = c.present_address || c.presentAddress || jfd.presentAddress || cf.present_address || '';
+  const father = c.father_name || c.fatherName || c.fatherSpouseName || jfd.fatherName || jfd.father_name || jfd.fatherSpouseName || cf.father_name || '';
+  const mother = c.mother_name || c.motherName || jfd.motherName || jfd.mother_name || cf.mother_name || '';
+  const permAddr = c.permanent_address || c.permanentAddress || jfd.permanentAddress || jfd.permanentAddressLine || cf.permanent_address || '';
+  const presAddr = c.present_address || c.presentAddress || jfd.presentAddress || jfd.presentAddressLine || permAddr || cf.present_address || '';
   const blood = c.blood_group || c.bloodGroup || jfd.bloodGroup || cf.blood_group || '';
   const aadhaar = c.aadhaar_no || c.aadhaarNo || jfd.aadhaarNo || cf.aadhaar_no || '';
   
@@ -2566,20 +2566,26 @@ export const AppProvider = ({ children }) => {
 
       if (resp && resp.success) {
         const fetched = resp.data?.fetched_data || {};
-        setCandidates(prev => prev.map(cand => {
-          if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
-          const updatedVerifs = { ...cand.verificationsCompleted, [docType]: true };
-          const updatedAttrs = { ...(cand.verifiedAttributes || {}), [docType]: fetched };
-          return {
-            ...cand,
-            verificationsCompleted: updatedVerifs,
-            verifiedAttributes: updatedAttrs,
-            joiningFormData: {
-              ...(cand.joiningFormData || {}),
-              ...fetched
-            }
-          };
-        }));
+        setCandidates(prev => {
+          const nextList = (Array.isArray(prev) ? prev : []).map(cand => {
+            if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
+            const updatedVerifs = { ...cand.verificationsCompleted, [docType]: true };
+            const updatedAttrs = { ...(cand.verifiedAttributes || {}), [docType]: fetched };
+            return {
+              ...cand,
+              verificationsCompleted: updatedVerifs,
+              verifiedAttributes: updatedAttrs,
+              joiningFormData: {
+                ...(cand.joiningFormData || {}),
+                ...fetched
+              }
+            };
+          });
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+          } catch (e) {}
+          return nextList;
+        });
         showToast(`✅ ${docType.toUpperCase()} verified via CoinCircleTrust Gateway & saved to PostgreSQL!`);
         return resp;
       }
@@ -2591,20 +2597,26 @@ export const AppProvider = ({ children }) => {
         ...payloadData,
         ...(candObj.joiningFormData || {})
       };
-      setCandidates(prev => prev.map(cand => {
-        if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
-        const updatedVerifs = { ...cand.verificationsCompleted, [docType]: true };
-        const updatedAttrs = { ...(cand.verifiedAttributes || {}), [docType]: simulatedFetched };
-        return {
-          ...cand,
-          verificationsCompleted: updatedVerifs,
-          verifiedAttributes: updatedAttrs,
-          joiningFormData: {
-            ...(cand.joiningFormData || {}),
-            ...simulatedFetched
-          }
-        };
-      }));
+      setCandidates(prev => {
+        const nextList = (Array.isArray(prev) ? prev : []).map(cand => {
+          if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
+          const updatedVerifs = { ...cand.verificationsCompleted, [docType]: true };
+          const updatedAttrs = { ...(cand.verifiedAttributes || {}), [docType]: simulatedFetched };
+          return {
+            ...cand,
+            verificationsCompleted: updatedVerifs,
+            verifiedAttributes: updatedAttrs,
+            joiningFormData: {
+              ...(cand.joiningFormData || {}),
+              ...simulatedFetched
+            }
+          };
+        });
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
       showToast(`✅ ${docType.toUpperCase()} verified and updated in employee dossier!`);
       return {
         success: true,
@@ -2623,14 +2635,20 @@ export const AppProvider = ({ children }) => {
         ...payloadData,
         ...(candObj.joiningFormData || {})
       };
-      setCandidates(prev => prev.map(cand => {
-        if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
-        return {
-          ...cand,
-          verificationsCompleted: { ...(cand.verificationsCompleted || {}), [docType]: true },
-          verifiedAttributes: { ...(cand.verifiedAttributes || {}), [docType]: fallbackData }
-        };
-      }));
+      setCandidates(prev => {
+        const nextList = (Array.isArray(prev) ? prev : []).map(cand => {
+          if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
+          return {
+            ...cand,
+            verificationsCompleted: { ...(cand.verificationsCompleted || {}), [docType]: true },
+            verifiedAttributes: { ...(cand.verifiedAttributes || {}), [docType]: fallbackData }
+          };
+        });
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+        } catch (e) {}
+        return nextList;
+      });
       showToast(`✅ ${docType.toUpperCase()} verification completed!`);
       return {
         success: true,
@@ -2650,28 +2668,34 @@ export const AppProvider = ({ children }) => {
       const resp = await api.verifyAllCandidateDocuments(candidateToken, docTypes);
       if (resp && resp.success) {
         const updatedCandidate = resp.candidate || {};
-        setCandidates(prev => prev.map(cand => {
-          if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
-          return {
-            ...cand,
-            status: updatedCandidate.status || 'Verified',
-            verificationDate: updatedCandidate.verification_date || new Date().toISOString(),
-            verificationsCompleted: {
-              ...(cand.verificationsCompleted || {}),
-              ...(updatedCandidate.verifications_completed || {})
-            },
-            verifiedAttributes: {
-              ...(cand.verifiedAttributes || {}),
-              ...(updatedCandidate.verified_attributes || {})
-            },
-            joiningFormData: {
-              ...(cand.joiningFormData || {}),
-              ...(updatedCandidate.joining_form_data || {})
-            },
-            riskScore: updatedCandidate.risk_score ?? cand.riskScore,
-            bgvVerdict: updatedCandidate.bgv_verdict || cand.bgvVerdict
-          };
-        }));
+        setCandidates(prev => {
+          const nextList = (Array.isArray(prev) ? prev : []).map(cand => {
+            if (cand.token !== candidateToken && cand.id !== candidateToken) return cand;
+            return {
+              ...cand,
+              status: updatedCandidate.status || 'Verified',
+              verificationDate: updatedCandidate.verification_date || new Date().toISOString(),
+              verificationsCompleted: {
+                ...(cand.verificationsCompleted || {}),
+                ...(updatedCandidate.verifications_completed || {})
+              },
+              verifiedAttributes: {
+                ...(cand.verifiedAttributes || {}),
+                ...(updatedCandidate.verified_attributes || {})
+              },
+              joiningFormData: {
+                ...(cand.joiningFormData || {}),
+                ...(updatedCandidate.joining_form_data || {})
+              },
+              riskScore: updatedCandidate.risk_score ?? cand.riskScore,
+              bgvVerdict: updatedCandidate.bgv_verdict || cand.bgvVerdict
+            };
+          });
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(nextList));
+          } catch (e) {}
+          return nextList;
+        });
         showToast(`✅ ${resp.message || 'All documents verified & stored in 360 BGV Dossier!'}`);
         return resp;
       }

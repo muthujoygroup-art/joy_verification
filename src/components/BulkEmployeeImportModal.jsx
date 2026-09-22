@@ -1276,20 +1276,49 @@ export const BulkEmployeeImportModal = ({
 
       const createdResults = (imported || []).map((cand, idx) => {
         const orig = candidatesToImport[idx] || {};
-        const tokenString = cand.token || `tok_${(cand.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
+        const payload = candidatePayloads[idx] || {};
+        const tokenString = cand.token || payload.token || `tok_${(cand.name || orig.name || 'cand').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100 + Math.random() * 900)}`;
         return {
+          ...payload,
           ...orig,
-          name: cand.name || orig.name,
-          email: cand.email || orig.email,
-          mobile: cand.mobile || orig.mobile,
-          empId: cand.empId || cand.emp_id || orig.empId,
-          designation: cand.designation || orig.designation,
-          dept: cand.dept || orig.dept,
-          employeeType: cand.employeeType || orig.employeeType,
+          ...cand,
+          id: cand.id || payload.id || `emp-${Date.now()}-${idx}`,
           token: tokenString,
+          name: cand.name || orig.name || payload.name,
+          email: cand.email || orig.email || payload.email,
+          mobile: cand.mobile || orig.mobile || payload.mobile,
+          empId: cand.empId || cand.emp_id || orig.empId || payload.empId,
+          employeeNumber: cand.employeeNumber || cand.employee_number || cand.empId || orig.empId || payload.empId,
+          designation: cand.designation || orig.designation || payload.designation,
+          dept: cand.dept || orig.dept || payload.dept,
+          employeeType: cand.employeeType || orig.employeeType || payload.employeeType,
+          companyId: targetCompanyId,
+          company_id: targetCompanyId,
+          companyName: targetCompanyName,
+          company_name: targetCompanyName,
+          hrId: targetHrId,
+          hr_id: targetHrId,
+          fatherName: cand.fatherName || cand.father_name || orig.fatherSpouseName || payload.fatherName || '',
+          father_name: cand.fatherName || cand.father_name || orig.fatherSpouseName || payload.fatherName || '',
+          motherName: cand.motherName || cand.mother_name || orig.motherName || payload.motherName || '',
+          mother_name: cand.motherName || cand.mother_name || orig.motherName || payload.motherName || '',
+          permanentAddress: cand.permanentAddress || cand.permanent_address || orig.permanentAddressLine || payload.permanentAddress || '',
+          presentAddress: cand.presentAddress || cand.present_address || orig.presentAddressLine || payload.presentAddress || '',
+          panNo: cand.panNo || cand.pan_no || orig.pan || payload.panNo || '',
+          pan_no: cand.panNo || cand.pan_no || orig.pan || payload.panNo || '',
+          aadhaarNo: cand.aadhaarNo || cand.aadhaar_no || orig.aadhaar || payload.aadhaarNo || '',
+          aadhaar_no: cand.aadhaarNo || cand.aadhaar_no || orig.aadhaar || payload.aadhaarNo || '',
+          bankAccountNo: cand.bankAccountNo || cand.bank_account_no || orig.bankAccountNo || payload.bankAccountNo || '',
+          bank_account_no: cand.bankAccountNo || cand.bank_account_no || orig.bankAccountNo || payload.bankAccountNo || '',
+          ifscCode: cand.ifscCode || cand.ifsc_code || orig.bankIfsc || payload.ifscCode || '',
+          ifsc_code: cand.ifscCode || cand.ifsc_code || orig.bankIfsc || payload.ifscCode || '',
+          bankName: cand.bankName || cand.bank_name || orig.bankName || payload.bankName || '',
           portalPassword: '1234',
           linkUrl: `${window.location.origin}/employee?token=${tokenString}&mode=onboarding`,
-          status: autoSendLinks ? 'Link Dispatched 🟢' : 'Profile Created 🟡'
+          status: autoSendLinks ? 'Link Sent' : 'Pending',
+          joiningFormData: cand.joiningFormData || payload.joiningFormData || {},
+          verifiedAttributes: cand.verifiedAttributes || cand.verified_attributes || {},
+          verificationsCompleted: cand.verificationsCompleted || cand.verifications_completed || { aadhaar: false, mobile: false, face: false }
         };
       });
 

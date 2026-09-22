@@ -451,7 +451,7 @@ def get_table_columns(table_name: str = "api_configurations") -> set:
             pass
     return cols
 
-def ensure_api_config_schema():
+def ensure_api_config_schema(db: Optional[Session] = None):
     """Guarantees all columns for api_configurations and api_call_logs exist in PostgreSQL/SQLite"""
     from sqlalchemy import text
     from backend.app.database import engine
