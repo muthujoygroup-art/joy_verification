@@ -862,20 +862,25 @@ def verify_aadhaar_live(
         verification_type="aadhaar",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=2,
-        cost_incurred=8.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=2 if live_ok else 0,
+        cost_incurred=8.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 48,
         endpoint_path="/aadhaar-detail-verification-v2",
         api_id="neev_aadhaar_v2"
     )
 
-    return True, "Aadhaar e-KYC demographic verified via Neev API UIDAI Gateway!", {
+    msg = "Aadhaar e-KYC demographic verified via Live UIDAI Gateway!" if live_ok else f"Aadhaar verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 2,
-        "cost_incurred": 8.0
+        "api_calls": 2 if live_ok else 0,
+        "cost_incurred": 8.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -964,20 +969,25 @@ def verify_pan_live(
         verification_type="pan",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 38,
         endpoint_path="/pan-details-v1",
         api_id="neev_pan_v1"
     )
 
-    return True, "NSDL / ITD PAN Card verified via Neev API Gateway!", {
+    msg = "NSDL / ITD PAN Card verified via Live CoinCircleTrust Gateway!" if live_ok else f"PAN verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1053,20 +1063,25 @@ def verify_bank_account_live(
         verification_type="bankCheck",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 54,
         endpoint_path="/account-validation",
         api_id="neev_bank_acc_v1"
     )
 
-    return True, "Bank Account verified via Neev API NPCI Penny Drop Switch!", {
+    msg = "Bank Account verified via Live NPCI Penny Drop Switch!" if live_ok else f"Bank Account verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1148,20 +1163,25 @@ def verify_driving_license_live(
         verification_type="drivingLicense",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 64,
         endpoint_path="/driving-license-details",
         api_id="neev_dl_v1"
     )
 
-    return True, "Driving License verified with MoRTH Sarathi via Neev API!", {
+    msg = "Driving License verified with MoRTH Sarathi via Live Gateway!" if live_ok else f"Driving License verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1310,20 +1330,25 @@ def verify_epfo_uan_live(
         verification_type="epfoUan",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=2,
-        cost_incurred=8.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=2 if live_ok else 0,
+        cost_incurred=8.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 85,
         endpoint_path="/uan-to-employment-profile",
         api_id="neev_uan_profile_v1"
     )
 
-    return True, "EPFO UAN Dual Employment & Service History verified via Neev API Gateway!", {
+    msg = "EPFO UAN Dual Employment & Service History verified via Live Gateway!" if live_ok else f"EPFO UAN verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 2,
-        "cost_incurred": 8.0
+        "api_calls": 2 if live_ok else 0,
+        "cost_incurred": 8.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1394,20 +1419,25 @@ def verify_passport_live(
         verification_type="passport",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 72,
         endpoint_path="/passport-verification",
         api_id="neev_passport_v1"
     )
 
-    return True, "Passport verified via Neev API Ministry of External Affairs Gateway!", {
+    msg = "Passport verified via Live MEA Gateway!" if live_ok else f"Passport verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1480,20 +1510,25 @@ def verify_voter_id_live(
         verification_type="voter_id",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 55,
         endpoint_path="/voter-id-details",
         api_id="neev_voter_v1"
     )
 
-    return True, "Voter ID verified via Election Commission of India Gateway!", {
+    msg = "Voter ID verified via Election Commission of India Gateway!" if live_ok else f"Voter ID verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1567,20 +1602,25 @@ def verify_court_records_live(
         verification_type="courtRecords",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=6.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=6.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 95,
         endpoint_path="/realtime-court-case-search",
         api_id="neev_court_v1"
     )
 
-    return True, "Realtime Court & Criminal Case search completed across Indian Judiciary!", {
+    msg = "Realtime Court & Criminal Case search completed across Indian Judiciary!" if live_ok else f"Court records verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 6.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 6.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1650,20 +1690,25 @@ def verify_vehicle_rc_live(
         verification_type="rc_details",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 60,
         endpoint_path="/rc-details",
         api_id="neev_rc_v1"
     )
 
-    return True, "Vehicle Registration Certificate (RC) verified via Vahan MoRTH!", {
+    msg = "Vehicle Registration Certificate (RC) verified via Vahan MoRTH!" if live_ok else f"Vehicle RC verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
@@ -1739,20 +1784,25 @@ def verify_esic_live(
         verification_type="esic",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"],
-        api_calls_count=1,
-        cost_incurred=4.0,
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        api_calls_count=1 if live_ok else 0,
+        cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 50,
         endpoint_path="/esic-data",
         api_id="neev_esic_v1"
     )
 
-    return True, "ESIC Insured Person Record verified via Ministry of Labour & Employment!", {
+    msg = "ESIC Insured Person Record verified via Ministry of Labour & Employment!" if live_ok else f"ESIC verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+
+    return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 1,
-        "cost_incurred": 4.0
+        "api_calls": 1 if live_ok else 0,
+        "cost_incurred": 4.0 if live_ok else 0.0,
+        "is_live": live_ok,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
+        "upstream_error": err_msg if not live_ok else None
     }
 
 
