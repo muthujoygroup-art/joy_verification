@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
 import api from '../services/api';
 import { useApp } from '../context/AppContext';
+import { excelSerialToDate } from '../utils/validationRules';
 import { 
   Upload, 
   Download, 
@@ -779,7 +780,7 @@ export const BulkEmployeeImportModal = ({
           const name = findVal(['fullname', 'candidatename', 'employeename', 'name']) || `Candidate #${idx + 1}`;
           const fatherSpouseName = findVal(['fatherspousename', 'fathername', 'father', 'spouse', 'husband']);
           const motherName = findVal(['mothername', 'mother']);
-          const dob = findVal(['dateofbirth', 'dob', 'birthdate', 'birth']);
+          const dob = excelSerialToDate(findVal(['dateofbirth', 'dob', 'birthdate', 'birth']));
           const age = findVal(['age', 'yearsold']);
           const gender = findVal(['gender', 'sex']) || 'Male';
           const bloodGroup = findVal(['bloodgroup', 'blood']);

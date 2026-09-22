@@ -111,21 +111,6 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [isSendingAadhaarOtp, setIsSendingAadhaarOtp] = useState(false);
   const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
 
-  const docConflict = useMemo(() => {
-    if (!candidate || !candidates || candidates.length === 0) return { isDuplicate: false };
-    const jfd = candidate?.joiningFormData || {};
-    return checkProfileDocumentConflict({
-      email: candidate?.email || jfd.email,
-      mobile: candidate?.mobile || jfd.mobile,
-      aadhaarNo: candidate?.aadhaarNo || candidate?.aadhaar_no || jfd.aadhaarNo,
-      panNo: candidate?.panNo || jfd.panNo,
-      bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || jfd.accountNo,
-      passportNo: candidate?.passportNo || jfd.passportNo,
-      pfNumber: candidate?.pfNumber || candidate?.uanEpf || jfd.pfNumber,
-      drivingLicenseNo: candidate?.dlNumber || candidate?.drivingLicense || jfd.drivingLicenseNo
-    }, candidates, candidate?.token || candidate?.id);
-  }, [candidate, candidates]);
-
   // 🔒 Security Passcode & 15-Minute Link Expiry States
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passcodeDigits, setPasscodeDigits] = useState('');
@@ -181,6 +166,22 @@ export const EmployeePortalView = ({ directToken = null }) => {
     }
     return null;
   }, [directCandidate, tokenToFetch, candidates, getActiveCandidate]);
+
+  const docConflict = useMemo(() => {
+    if (!candidate || !candidates || candidates.length === 0) return { isDuplicate: false };
+    const jfd = candidate?.joiningFormData || {};
+    return checkProfileDocumentConflict({
+      email: candidate?.email || jfd.email,
+      mobile: candidate?.mobile || jfd.mobile,
+      aadhaarNo: candidate?.aadhaarNo || candidate?.aadhaar_no || jfd.aadhaarNo,
+      panNo: candidate?.panNo || jfd.panNo,
+      bankAccountNo: candidate?.bankAccountNo || jfd.bankAccountNo || jfd.accountNo,
+      passportNo: candidate?.passportNo || jfd.passportNo,
+      pfNumber: candidate?.pfNumber || candidate?.uanEpf || jfd.pfNumber,
+      drivingLicenseNo: candidate?.dlNumber || candidate?.drivingLicense || jfd.drivingLicenseNo
+    }, candidates, candidate?.token || candidate?.id);
+  }, [candidate, candidates]);
+
   const isAllComplete = candidate?.status === 'Verified';
 
   const { verificationConfig = {}, verificationsCompleted = {} } = candidate || {};

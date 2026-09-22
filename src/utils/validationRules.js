@@ -212,6 +212,66 @@ export const maskPassword = (val) => {
 };
 
 /**
+ * 📅 Excel Serial Date & Universal Date Formatter
+ * Converts raw Excel date numbers (e.g., 37824) to formatted DD-MM-YYYY dates.
+ * Also standardizes ISO strings, DD/MM/YYYY, etc.
+ */
+export const excelSerialToDate = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  let numVal = val;
+  if (typeof val === 'string') {
+    const trimmed = val.trim();
+    // Check if it is a pure integer string of 4-5 digits (Excel serial)
+    if (/^\d{4,5}$/.test(trimmed)) {
+      numVal = parseInt(trimmed, 10);
+    } else {
+      // Check if string contains serial with trailing text e.g. "37824 (MALE)"
+      const serialMatch = trimmed.match(/^(\d{4,5})\s*(.*)$/);
+      if (serialMatch) {
+        numVal = parseInt(serialMatch[1], 10);
+        const suffix = serialMatch[2];
+        if (numVal > 1000 && numVal < 70000) {
+          const utc_days = Math.floor(numVal - 25569);
+          const date = new Date(utc_days * 86400 * 1000);
+          const y = date.getUTCFullYear();
+          const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+          const d = String(date.getUTCDate()).padStart(2, '0');
+          const formatted = `${d}-${m}-${y}`;
+          return suffix ? `${formatted} ${suffix}` : formatted;
+        }
+      }
+    }
+  }
+
+  if (typeof numVal === 'number' && numVal > 1000 && numVal < 70000) {
+    const utc_days = Math.floor(numVal - 25569);
+    const date = new Date(utc_days * 86400 * 1000);
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(date.getUTCDate()).padStart(2, '0');
+    return `${d}-${m}-${y}`;
+  }
+
+  return String(val);
+};
+
+export const formatDisplayDate = (val) => {
+  if (!val) return '—';
+  const converted = excelSerialToDate(val);
+  if (!converted || converted === '—') return '—';
+  
+  // If in YYYY-MM-DD format, format nicely as DD-MM-YYYY
+  const isoMatch = converted.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (isoMatch) {
+    const y = isoMatch[1];
+    const m = isoMatch[2].padStart(2, '0');
+    const d = isoMatch[3].padStart(2, '0');
+    return `${d}-${m}-${y}`;
+  }
+  return converted;
+};
+
+/**
  * 🔍 Duplicate Check Helper
  * Checks if email, mobile, or document number (Aadhaar, PAN, Bank, Passport, UAN, DL) is already attached to another profile.
  * Returns { isDuplicate: true/false, field: 'Aadhaar Card Number', name: 'John Doe', val: '1234' }

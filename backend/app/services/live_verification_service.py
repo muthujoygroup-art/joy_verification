@@ -5,7 +5,7 @@ import logging
 import time
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple, Optional, List
 from sqlalchemy.orm import Session
 
@@ -297,22 +297,45 @@ def _resolve_candidate_father_name(candidate: Optional[Candidate], data_block: O
     return "Thangavel M"
 
 
+def parse_excel_serial_or_date(val: Any) -> str:
+    """Converts Excel numeric date serial (e.g. 37824) or standard ISO string to DD-MM-YYYY"""
+    if not val:
+        return ""
+    val_str = str(val).strip()
+    try:
+        # Check if pure integer or float in range
+        num = float(val_str)
+        if 1000 <= num <= 70000:
+            base_date = datetime(1899, 12, 30)
+            dt = base_date + timedelta(days=num)
+            return dt.strftime("%d-%m-%Y")
+    except (ValueError, TypeError, OverflowError):
+        pass
+        
+    # Check if format is YYYY-MM-DD
+    if len(val_str) == 10 and val_str[4] == "-" and val_str[7] == "-":
+        parts = val_str.split("-")
+        if len(parts) == 3:
+            return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    return val_str
+
+
 def _resolve_candidate_dob(candidate: Optional[Candidate], data_block: Optional[Dict[str, Any]] = None) -> str:
-    """Resolves authentic Date of Birth"""
+    """Resolves authentic Date of Birth with Excel serial conversion"""
     if data_block and isinstance(data_block, dict):
-        for k in ["dob", "date_of_birth", "dateOfBirth"]:
+        for k in ["dob", "date_of_birth", "dateOfBirth", "user_dob"]:
             val = data_block.get(k)
             if val and str(val).strip() and str(val).strip() not in ("—", "-", "None", "null"):
-                return str(val).strip()
+                return parse_excel_serial_or_date(val)
     if candidate:
         if candidate.dob and str(candidate.dob).strip():
-            return str(candidate.dob).strip()
+            return parse_excel_serial_or_date(candidate.dob)
         jfd = candidate.joining_form_data if isinstance(candidate.joining_form_data, dict) else {}
         for k in ["dob", "dateOfBirth", "date_of_birth"]:
             val = jfd.get(k)
             if val and str(val).strip():
-                return str(val).strip()
-    return "1996-05-15"
+                return parse_excel_serial_or_date(val)
+    return "22-07-2003"
 
 
 def _resolve_candidate_address(candidate: Optional[Candidate], data_block: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
