@@ -400,31 +400,120 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
 };
 
 const SCHEMA_VERSION_KEY = 'joy_storage_schema_version';
-const CURRENT_SCHEMA_VERSION = 'joy_v2026_09_21_clean_v6';
+const CURRENT_SCHEMA_VERSION = 'joy_v2026_09_22_persistent_v1';
 
-// Immediate auto-purge of legacy mock storage on module load
-try {
-  if (typeof window !== 'undefined') {
-    const keysToPurge = [
-      'joy_companies_v1', 'joy_companies',
-      'joy_hr_users_v1', 'joy_hr_users',
-      'joy_candidates_v1', 'joy_candidates',
-      'joy_company_vendors_v1', 'joy_company_vendors',
-      'joy_active_company_id', 'joy_company_features',
-      'joy_hr_employee_draft_v1', 'joy_hr_draft_saved_time_v1', 'joy_hr_delegated_map_v1'
-    ];
-    keysToPurge.forEach(k => {
-      try { localStorage.removeItem(k); } catch (e) {}
-      try { sessionStorage.removeItem(k); } catch (e) {}
-    });
-    localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
-  }
-} catch (e) {}
-
-const INITIAL_COMPANIES = [];
-const INITIAL_HR_USERS = [];
-const INITIAL_CANDIDATES = [];
-const INITIAL_DEFAULT_VENDORS = [];
+const mapCandidateDto = (c) => {
+  if (!c) return null;
+  const jfd = c.joining_form_data || c.joiningFormData || {};
+  const cf = c.custom_fields || c.customFields || {};
+  const verifs = c.verifications_completed || c.verificationsCompleted || {};
+  const attrs = c.verified_attributes || c.verifiedAttributes || {};
+  
+  const pan = c.pan_no || c.panNo || c.pan_number || jfd.panNo || jfd.pan || cf.pan_no || '';
+  const pf = c.pf_number || c.pfNumber || c.uan_no || c.uan || jfd.uanEpf || jfd.uanNumber || cf.pf_number || '';
+  const bankAcc = c.bank_account_no || c.bankAccountNo || c.accountNumber || jfd.bankAccountNo || jfd.accountNumber || cf.bank_account_no || '';
+  const ifsc = c.ifsc_code || c.ifscCode || jfd.ifscCode || jfd.ifsc || cf.ifsc_code || '';
+  const bName = c.bank_name || c.bankName || jfd.bankName || cf.bank_name || '';
+  const esi = c.esi_number || c.esiNumber || jfd.esiNumber || jfd.esicNo || cf.esi_number || '';
+  const dl = c.dl_number || c.dlNumber || jfd.drivingLicense || jfd.dlNo || cf.dl_number || '';
+  const pass = c.passport_no || c.passportNo || jfd.passportNo || cf.passport_no || '';
+  const voter = c.voter_id || c.voterId || jfd.voterId || jfd.epicNumber || cf.voter_id || '';
+  const father = c.father_name || c.fatherName || jfd.fatherName || cf.father_name || '';
+  const mother = c.mother_name || c.motherName || jfd.motherName || cf.mother_name || '';
+  const permAddr = c.permanent_address || c.permanentAddress || jfd.permanentAddress || cf.permanent_address || '';
+  const presAddr = c.present_address || c.presentAddress || jfd.presentAddress || cf.present_address || '';
+  const blood = c.blood_group || c.bloodGroup || jfd.bloodGroup || cf.blood_group || '';
+  const aadhaar = c.aadhaar_no || c.aadhaarNo || jfd.aadhaarNo || cf.aadhaar_no || '';
+  
+  return {
+    id: c.id,
+    token: c.token,
+    name: c.name,
+    empId: c.emp_id || c.empId,
+    emp_id: c.emp_id || c.empId,
+    employeeNumber: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
+    employee_number: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
+    email: c.email,
+    mobile: c.mobile,
+    aadhaarNo: aadhaar,
+    aadhaar_no: aadhaar,
+    panNo: pan,
+    pan_no: pan,
+    pfNumber: pf,
+    pf_number: pf,
+    uan_no: pf,
+    bankAccountNo: bankAcc,
+    bank_account_no: bankAcc,
+    ifscCode: ifsc,
+    ifsc_code: ifsc,
+    bankName: bName,
+    bank_name: bName,
+    esiNumber: esi,
+    esi_number: esi,
+    dlNumber: dl,
+    dl_number: dl,
+    passportNo: pass,
+    passport_no: pass,
+    voterId: voter,
+    voter_id: voter,
+    fatherName: father,
+    father_name: father,
+    motherName: mother,
+    mother_name: mother,
+    permanentAddress: permAddr,
+    permanent_address: permAddr,
+    presentAddress: presAddr,
+    present_address: presAddr,
+    bloodGroup: blood,
+    blood_group: blood,
+    designation: c.designation || 'Associate',
+    dept: c.dept || 'Operations',
+    companyId: c.company_id || c.companyId || 'comp-joy',
+    company_id: c.company_id || c.companyId || 'comp-joy',
+    companyName: c.company_name || c.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+    hrId: c.hr_id || c.hrId,
+    hr_id: c.hr_id || c.hrId,
+    status: ((c.status === 'Verified' && !(verifs.aadhaar || verifs.pan || verifs.bankCheck)) ? 'Link Sent' : (c.status || 'Link Sent')),
+    portalPassword: c.portal_password || c.portalPassword || '1234',
+    portal_password: c.portal_password || c.portalPassword || '1234',
+    employeeType: c.employee_type || c.employeeType || 'it_tech',
+    employee_type: c.employee_type || c.employeeType || 'it_tech',
+    dob: c.dob || jfd.dob,
+    doj: c.doj || jfd.doj,
+    age: c.age || jfd.age,
+    gender: c.gender || jfd.gender || 'Male',
+    maritalStatus: c.marital_status || c.maritalStatus || jfd.maritalStatus || 'Single',
+    marital_status: c.marital_status || c.maritalStatus || jfd.maritalStatus || 'Single',
+    motherTongue: c.mother_tongue || c.motherTongue || jfd.motherTongue || 'Tamil',
+    mother_tongue: c.mother_tongue || c.motherTongue || jfd.motherTongue || 'Tamil',
+    languagesKnown: c.languages_known || c.languagesKnown || 'English, Tamil, Hindi',
+    languages_known: c.languages_known || c.languagesKnown || 'English, Tamil, Hindi',
+    religion: c.religion || 'Hindu',
+    caste: c.caste,
+    category: c.category || 'General',
+    nativeState: c.native_state || c.nativeState || 'Tamil Nadu',
+    native_state: c.native_state || c.nativeState || 'Tamil Nadu',
+    nativeDistrict: c.native_district || c.nativeDistrict || 'Chennai',
+    native_district: c.native_district || c.nativeDistrict || 'Chennai',
+    identificationMarks: c.identification_marks || c.identificationMarks,
+    identification_marks: c.identification_marks || c.identificationMarks,
+    specimenSignature: c.specimen_signature || c.specimenSignature,
+    specimen_signature: c.specimen_signature || c.specimenSignature,
+    customFields: cf,
+    custom_fields: cf,
+    documents: c.documents || [],
+    verificationConfig: c.verification_config || c.verificationConfig || {},
+    verificationsCompleted: verifs,
+    faceImages: c.face_images || c.faceImages || { straight: null, left: null, right: null },
+    manualChecks: c.manual_checks || c.manualChecks || {},
+    joiningFormData: jfd,
+    joining_form_data: jfd,
+    verifiedAttributes: attrs,
+    verificationDate: c.verification_date || c.verificationDate,
+    riskScore: c.risk_score ?? c.riskScore ?? 0,
+    bgvVerdict: c.bgv_verdict || c.bgvVerdict || 'Pending Review'
+  };
+};
 
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState(() => {
@@ -1208,72 +1297,39 @@ export const AppProvider = ({ children }) => {
         }
 
         if (cands && Array.isArray(cands)) {
-          const mapCandidateObj = (c) => ({
-            id: c.id,
-            token: c.token,
-            name: c.name,
-            empId: c.emp_id || c.empId,
-            emp_id: c.emp_id || c.empId,
-            employeeNumber: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
-            employee_number: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
-            email: c.email,
-            mobile: c.mobile,
-            aadhaarNo: c.aadhaar_no || c.aadhaarNo,
-            aadhaar_no: c.aadhaar_no || c.aadhaarNo,
-            designation: c.designation,
-            dept: c.dept,
-            companyId: c.company_id || c.companyId,
-            company_id: c.company_id || c.companyId,
-            companyName: c.company_name || c.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-            hrId: c.hr_id || c.hrId,
-            hr_id: c.hr_id || c.hrId,
-            status: ((c.status === 'Verified' && !(c.verifications_completed?.aadhaar || c.verificationsCompleted?.aadhaar)) ? 'Link Sent' : (c.status || 'Link Sent')),
-            portalPassword: c.portal_password || c.portalPassword || '1234',
-            portal_password: c.portal_password || c.portalPassword || '1234',
-            employeeType: c.employee_type || c.employeeType || 'it_tech',
-            employee_type: c.employee_type || c.employeeType || 'it_tech',
-            dob: c.dob,
-            doj: c.doj,
-            age: c.age,
-            gender: c.gender,
-            maritalStatus: c.marital_status || c.maritalStatus,
-            marital_status: c.marital_status || c.maritalStatus,
-            motherTongue: c.mother_tongue || c.motherTongue,
-            mother_tongue: c.mother_tongue || c.motherTongue,
-            languagesKnown: c.languages_known || c.languagesKnown,
-            languages_known: c.languages_known || c.languagesKnown,
-            pfNumber: c.pf_number || c.pfNumber,
-            pf_number: c.pf_number || c.pfNumber,
-            esiNumber: c.esi_number || c.esiNumber,
-            esi_number: c.esi_number || c.esiNumber,
-            religion: c.religion,
-            caste: c.caste,
-            category: c.category,
-            nativeState: c.native_state || c.nativeState,
-            native_state: c.native_state || c.nativeState,
-            nativeDistrict: c.native_district || c.nativeDistrict,
-            native_district: c.native_district || c.nativeDistrict,
-            identificationMarks: c.identification_marks || c.identificationMarks,
-            identification_marks: c.identification_marks || c.identificationMarks,
-            specimenSignature: c.specimen_signature || c.specimenSignature,
-            specimen_signature: c.specimen_signature || c.specimenSignature,
-            customFields: c.custom_fields || c.customFields || {},
-            custom_fields: c.custom_fields || c.customFields || {},
-            documents: c.documents || [],
-            verificationConfig: c.verification_config || c.verificationConfig || {},
-            verificationsCompleted: c.verifications_completed || c.verificationsCompleted || {},
-            faceImages: c.face_images || c.faceImages || { straight: null, left: null, right: null },
-            manualChecks: c.manual_checks || c.manualChecks || {},
-            joiningFormData: c.joining_form_data || c.joiningFormData || {},
-            joining_form_data: c.joining_form_data || c.joiningFormData || {},
-            verifiedAttributes: c.verified_attributes || c.verifiedAttributes || {},
-            verificationDate: c.verification_date || c.verificationDate
+          const cleanFetched = cands.map(mapCandidateDto).filter(Boolean);
+          setCandidates(prev => {
+            const fetchedKeys = new Set(cleanFetched.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
+            const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => {
+              if (!p) return false;
+              const pid = (p.id || '').toLowerCase();
+              const ptok = (p.token || '').toLowerCase();
+              const pem = (p.email || '').toLowerCase();
+              const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
+              return !fetchedKeys.has(pid) && !fetchedKeys.has(ptok) && (!pem || !fetchedKeys.has(pem)) && (!pemp || !fetchedKeys.has(pemp));
+            }).map(mapCandidateDto).filter(Boolean);
+            const merged = [...cleanFetched, ...preservedLocal];
+            const seen = new Set();
+            const uniqueMerged = merged.filter(item => {
+              if (!item) return false;
+              const k1 = (item.token || item.id || '').toLowerCase();
+              const k2 = (item.email || '').toLowerCase();
+              const k3 = (item.empId || item.employeeNumber || '').toUpperCase();
+              const uniqueKey = `${k1}::${k2}::${k3}`;
+              if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
+                return false;
+              }
+              if (k1) seen.add(`TOK::${k1}`);
+              if (k3) seen.add(`EMP::${k3}`);
+              if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
+              seen.add(uniqueKey);
+              return true;
+            });
+            try {
+              localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
+            } catch (e) {}
+            return uniqueMerged;
           });
-          const cleanFetched = cands.map(mapCandidateObj);
-          setCandidates(cleanFetched);
-          try {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanFetched));
-          } catch (e) {}
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -2014,9 +2070,20 @@ export const AppProvider = ({ children }) => {
       });
 
       setCandidates(prev => {
-        const existingIds = new Set(formattedList.map(f => f.id || f.token));
-        const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => p && !existingIds.has(p.id) && !existingIds.has(p.token));
-        return [...formattedList, ...filteredPrev];
+        const existingIds = new Set(formattedList.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
+        const filteredPrev = (Array.isArray(prev) ? prev : []).filter(p => {
+          if (!p) return false;
+          const pid = (p.id || '').toLowerCase();
+          const ptok = (p.token || '').toLowerCase();
+          const pem = (p.email || '').toLowerCase();
+          const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
+          return !existingIds.has(pid) && !existingIds.has(ptok) && (!pem || !existingIds.has(pem)) && (!pemp || !existingIds.has(pemp));
+        });
+        const merged = [...formattedList, ...filteredPrev].map(mapCandidateDto).filter(Boolean);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(merged));
+        } catch (e) {}
+        return merged;
       });
 
       showToast(`Batch of ${formattedList.length} candidate profiles imported successfully!`);
@@ -2241,28 +2308,13 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await api.purgeDuplicateCandidates(companyId);
       showToast(res.message || 'Duplicate candidate profiles purged!');
-      const freshCands = await api.getCandidates(null, companyId);
+      const freshCands = await api.getCandidates({});
       if (freshCands && Array.isArray(freshCands)) {
-        setCandidates(freshCands.map(c => ({
-          id: c.id,
-          token: c.token,
-          name: c.name,
-          empId: c.emp_id,
-          email: c.email,
-          mobile: c.mobile,
-          aadhaarNo: c.aadhaar_no,
-          designation: c.designation,
-          dept: c.dept,
-          companyId: c.company_id,
-          hrId: c.hr_id,
-          status: c.status,
-          portalPassword: c.portal_password || '1234',
-          verificationConfig: c.verification_config || {},
-          verificationsCompleted: c.verifications_completed || {},
-          faceImages: c.face_images || { straight: null, left: null, right: null },
-          joiningFormData: c.joining_form_data || {},
-          customFields: c.custom_fields || {}
-        })));
+        const cleanFresh = freshCands.map(mapCandidateDto).filter(Boolean);
+        setCandidates(cleanFresh);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(cleanFresh));
+        } catch (e) {}
       }
       return true;
     } catch (err) {
@@ -2277,45 +2329,7 @@ export const AppProvider = ({ children }) => {
     try {
       const cands = await api.getCandidates({});
       if (cands && Array.isArray(cands)) {
-        const mapCandidateObj = (c) => ({
-          id: c.id,
-          token: c.token,
-          name: c.name,
-          empId: c.emp_id || c.empId,
-          emp_id: c.emp_id || c.empId,
-          employeeNumber: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
-          employee_number: c.employee_number || c.employeeNumber || c.emp_id || c.empId,
-          email: c.email,
-          mobile: c.mobile,
-          aadhaarNo: c.aadhaar_no || c.aadhaarNo,
-          aadhaar_no: c.aadhaar_no || c.aadhaarNo,
-          designation: c.designation,
-          dept: c.dept,
-          companyId: c.company_id || c.companyId,
-          company_id: c.company_id || c.companyId,
-          companyName: c.company_name || c.companyName || 'Joy Corporate Solutions Private Limited',
-          hrId: c.hr_id || c.hrId,
-          hr_id: c.hr_id || c.hrId,
-          status: c.status || 'Link Sent',
-          portalPassword: c.portal_password || c.portalPassword || '1234',
-          portal_password: c.portal_password || c.portalPassword || '1234',
-          employeeType: c.employee_type || c.employeeType || 'it_tech',
-          employee_type: c.employee_type || c.employeeType || 'it_tech',
-          dob: c.dob,
-          doj: c.doj,
-          age: c.age,
-          gender: c.gender,
-          maritalStatus: c.marital_status || c.maritalStatus,
-          verificationConfig: c.verification_config || c.verificationConfig || {},
-          verificationsCompleted: c.verifications_completed || c.verificationsCompleted || {},
-          faceImages: c.face_images || c.faceImages || { straight: null, left: null, right: null },
-          joiningFormData: c.joining_form_data || c.joiningFormData || {},
-          customFields: c.custom_fields || c.customFields || {},
-          verifiedAttributes: c.verified_attributes || c.verifiedAttributes || {},
-          documents: c.documents || [],
-          verificationDate: c.verification_date || c.verificationDate
-        });
-        const cleanFetched = cands.map(mapCandidateObj);
+        const cleanFetched = cands.map(mapCandidateDto).filter(Boolean);
         setCandidates(prev => {
           const fetchedKeys = new Set(cleanFetched.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
           const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => {
@@ -2325,7 +2339,7 @@ export const AppProvider = ({ children }) => {
             const pem = (p.email || '').toLowerCase();
             const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
             return !fetchedKeys.has(pid) && !fetchedKeys.has(ptok) && (!pem || !fetchedKeys.has(pem)) && (!pemp || !fetchedKeys.has(pemp));
-          });
+          }).map(mapCandidateDto).filter(Boolean);
           const merged = [...cleanFetched, ...preservedLocal];
           const seen = new Set();
           const uniqueMerged = merged.filter(item => {
@@ -2334,11 +2348,12 @@ export const AppProvider = ({ children }) => {
             const k2 = (item.email || '').toLowerCase();
             const k3 = (item.empId || item.employeeNumber || '').toUpperCase();
             const uniqueKey = `${k1}::${k2}::${k3}`;
-            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`))) {
+            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (k3 && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
               return false;
             }
             if (k1) seen.add(`TOK::${k1}`);
             if (k3) seen.add(`EMP::${k3}`);
+            if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
             seen.add(uniqueKey);
             return true;
           });

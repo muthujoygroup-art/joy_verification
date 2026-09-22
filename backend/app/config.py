@@ -90,10 +90,10 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------
     SMTP_HOST: str = os.getenv("SMTP_HOST", "mail.joycorporatesolutions.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "465"))
-    SMTP_USER: str = os.getenv("SMTP_USER", "noreply@joycorporatesolutions.com")
-    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SMTP_USER: str = os.getenv("SMTP_USER", "admin@joycorporatesolutions.com")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "Joyson@5610")
     SMTP_USE_SSL: bool = os.getenv("SMTP_USE_SSL", "true").lower() in ("true", "1", "yes")
-    EMAILS_FROM_EMAIL: str = os.getenv("EMAILS_FROM_EMAIL", "noreply@joycorporatesolutions.com")
+    EMAILS_FROM_EMAIL: str = os.getenv("EMAILS_FROM_EMAIL", "admin@joycorporatesolutions.com")
     EMAILS_FROM_NAME: str = os.getenv("EMAILS_FROM_NAME", "JOY Corporate Solutions BGV")
     
     # -------------------------------------------------------------

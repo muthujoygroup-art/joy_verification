@@ -458,7 +458,8 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
                 designation=new_candidate.designation or "Associate",
                 sender_hr_name=hr_name,
                 sender_hr_email=hr_email,
-                db=db
+                db=db,
+                async_mode=True
             )
     except Exception as e:
         print(f"Warning: Failed to dispatch candidate onboarding email: {e}")
@@ -682,7 +683,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
         except Exception:
             pass
 
-    app_url = "https://test2.joycorporatesolutions.com"
+    app_url = (settings.APP_BASE_URL or "https://test2.joycorporatesolutions.com").rstrip('/')
     verify_url = f"{app_url}/verify?token={target_token}"
 
     # 4. Dispatch onboarding email to Candidate
@@ -700,12 +701,13 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
             sender_hr_name=hr_name,
             sender_hr_email=hr_email,
             custom_smtp=custom_smtp,
-            db=db
+            db=db,
+            async_mode=True
         )
     except Exception as em_err:
         email_res = {"success": False, "error": str(em_err)}
 
-    email_sent = bool(email_res and email_res.get("success"))
+    email_sent = bool(email_res and (email_res.get("success") or email_res.get("dispatched_async")))
     email_error = email_res.get("error") if (email_res and not email_sent) else None
 
     return {
