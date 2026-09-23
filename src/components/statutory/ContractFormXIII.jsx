@@ -4,14 +4,14 @@ export const ContractFormXIII = ({ candidate, jf = {}, companyName = "JOY CORPOR
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
   const fatherName = c.fatherName || jf.fatherName || c.spouseName || jf.spouseName || '-';
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const designation = c.designation || jf.designation || 'Field Specialist / Operator';
-  const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-CONTR-2026-001';
+  const doj = c.doj || jf.doj || '-';
+  const designation = c.designation || jf.designation || '-';
+  const empId = c.employeeNumber || c.empId || jf.empId || '-';
   const mobile = c.mobile || jf.mobile || '-';
-  const wages = jf.wageRate || jf.monthlyCtc || '₹ 24,500 / Month';
+  const wages = jf.wageRate || jf.monthlyCtc || '-';
   const address = jf.permanentAddress || c.permanentAddress || '-';
   const contractor = jf.contractorAgencyName || companyName;
-  const licenseNo = jf.clraLicenseNo || 'CLRA/TN/2026/0498';
+  const licenseNo = jf.clraLicenseNo || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (

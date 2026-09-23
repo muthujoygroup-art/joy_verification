@@ -44,7 +44,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
   const isFullyVerified = candidate.status === 'Verified' || candidate.status === 'VERIFIED';
   const certId = `JCS-VERIF-2026-${candidate.id?.replace('emp-', '') || '101'}-${isFullyVerified ? '889' : 'DRAFT'}`;
   const verifDate = isFullyVerified 
-    ? (candidate.verificationDate || '2026-08-28 10:30 IST') 
+    ? (candidate.verificationDate || new Date().toLocaleString('en-IN')) 
     : 'Pending Final Verification';
   const companyName = candidate.companyName || candidate.joiningFormData?.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
 
@@ -58,7 +58,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
   const handleDownloadPdf = async () => {
     setIsExporting(true);
-    const empIdCode = candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || 'COMP001EMP001';
+    const empIdCode = candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || candidate.employeeNumber || 'EMP001';
     const filename = `JOY_Certificate_${empIdCode}_${(candidate.name || 'Candidate').replace(/\s+/g, '_')}.pdf`;
     try {
       const el = document.getElementById('printable-official-certificate');
@@ -246,7 +246,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Designation</span>
-              <strong className="text-slate-900 font-bold">{candidate.designation || 'Associate'}</strong>
+              <strong className="text-slate-900 font-bold">{candidate.designation || '—'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Employer Enterprise</span>
@@ -254,15 +254,15 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Mobile Number</span>
-              <strong className="text-slate-900 font-bold font-mono">{candidate.mobile}</strong>
+              <strong className="text-slate-900 font-bold font-mono">{candidate.mobile || '—'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Aadhaar Identity Ref</span>
-              <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'}</strong>
+              <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${String(candidate.aadhaarNo).slice(-4)}` : '—'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Department / Division</span>
-              <strong className="text-slate-900 font-bold text-xs truncate block">{candidate.dept || candidate.department || 'Operations'}</strong>
+              <strong className="text-slate-900 font-bold text-xs truncate block">{candidate.dept || candidate.department || '—'}</strong>
             </div>
             <div>
               <span className="text-[11px] text-slate-400 font-medium block">Biometrics Liveness Score</span>
@@ -414,7 +414,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
 
             <div className="text-right space-y-1">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">Authorized Signatory</span>
-              <p className="font-serif italic font-bold text-indigo-950 text-sm">Vikramaditya Rao</p>
+              <p className="font-serif italic font-bold text-indigo-950 text-sm">{candidate.authorizedSignatory || 'Authorized Compliance Officer'}</p>
               <p className="text-[11px] font-semibold text-slate-700">Chief Compliance Officer (CCO)</p>
             </div>
           </div>

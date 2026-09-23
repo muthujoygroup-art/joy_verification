@@ -3,9 +3,9 @@ import React from 'react';
 export const NonCompeteAgreement = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const designation = c.designation || jf.designation || 'Specialist';
-  const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
+  const doj = c.doj || jf.doj || '-';
+  const designation = c.designation || jf.designation || '-';
+  const empId = c.employeeNumber || c.empId || jf.empId || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -23,7 +23,7 @@ export const NonCompeteAgreement = ({ candidate, jf = {}, companyName = "JOY COR
 
       <div className="space-y-2 text-xs leading-relaxed">
         <p>
-          This Non-Compete and Non-Solicitation Covenant is entered into on <strong className="font-mono">{doj}</strong> by and between <strong>{companyName}</strong> and <strong>{name}</strong> ({designation}, ID: {empId}).
+          This Non-Compete and Non-Solicitation Covenant is entered into on <strong className="font-mono">{doj}</strong> by and between <strong>{companyName}</strong> and <strong>{name}</strong> ({designation !== '-' ? `${designation}, ` : ''}ID: {empId}).
         </p>
 
         <div className="p-3 bg-slate-50 border border-slate-300 rounded-lg space-y-2 text-[11px]">
@@ -38,7 +38,7 @@ export const NonCompeteAgreement = ({ candidate, jf = {}, companyName = "JOY COR
       <div className="flex items-end justify-between pt-3 text-[11px] border-t border-slate-300">
         <div>
           <div>Date: <strong className="font-mono">{doj}</strong></div>
-          <div>Place: <strong>Bengaluru / India</strong></div>
+          <div>Place: <strong>{jf.currentCity || jf.city || c.city || c.nativeDistrict || '-'}</strong></div>
         </div>
         <div className="text-right min-w-[140px]">
           {specimenSig ? (

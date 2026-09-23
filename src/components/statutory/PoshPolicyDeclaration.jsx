@@ -3,9 +3,9 @@ import React from 'react';
 export const PoshPolicyDeclaration = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const designation = c.designation || jf.designation || 'Specialist';
-  const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
+  const doj = c.doj || jf.doj || '-';
+  const designation = c.designation || jf.designation || '-';
+  const empId = c.employeeNumber || c.empId || jf.empId || '-';
   const email = c.email || jf.email || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
@@ -37,13 +37,13 @@ export const PoshPolicyDeclaration = ({ candidate, jf = {}, companyName = "JOY C
       <div className="space-y-1.5 p-3 bg-slate-50 border border-slate-300 rounded-lg text-[10px] leading-relaxed">
         <strong className="block uppercase font-black text-slate-900 underline">EMPLOYEE ACKNOWLEDGMENT & PLEDGE</strong>
         <p>
-          I, <strong>{name}</strong> (Designation: <strong>{designation}</strong>, Emp ID: <strong>{empId}</strong>), acknowledge that I have read and understood the POSH Policy and Code of Conduct of <strong>{companyName}</strong>. I pledge to adhere strictly to workplace behavioral guidelines and zero-tolerance standards.
+          I, <strong>{name}</strong> ({designation !== '-' ? `Designation: ${designation}, ` : ''}Emp ID: <strong>{empId}</strong>), acknowledge that I have read and understood the POSH Policy and Code of Conduct of <strong>{companyName}</strong>. I pledge to adhere strictly to workplace behavioral guidelines and zero-tolerance standards.
         </p>
         
         <div className="flex items-end justify-between pt-3 text-[11px]">
           <div>
             <div>Date: <strong className="font-mono">{doj}</strong></div>
-            <div>Place: <strong>Corporate Station</strong></div>
+            <div>Place: <strong>{jf.currentCity || jf.city || c.city || c.nativeDistrict || '-'}</strong></div>
             <div className="text-[9px] text-slate-500 font-mono mt-0.5">Email: {email}</div>
           </div>
           <div className="text-right min-w-[140px]">

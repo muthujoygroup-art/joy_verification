@@ -7,22 +7,22 @@ export const EpfoForm2 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const fatherOrSpouse = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || '-';
   const dob = c.dob || jf.dob || '-';
   const uan = c.uanEpf || jf.uanEpf || c.pfNumber || jf.pfNumber || '-';
-  const gender = c.gender || jf.gender || 'Female';
-  const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
+  const gender = c.gender || jf.gender || '-';
+  const maritalStatus = c.maritalStatus || jf.maritalStatus || '-';
   const address = jf.permanentAddress || c.permanentAddress || '-';
   
   // Clean dynamic nominee particulars
   const nomineeName = jf.nomineeName || c.nomineeName || (c.maritalStatus === 'Married' ? (c.spouseName || jf.spouseName) : (c.fatherName || jf.fatherName)) || '-';
-  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : (c.maritalStatus === 'Single' ? 'Father' : '-'));
   const nomineeAddr = jf.nomineeAddress || jf.permanentAddress || c.permanentAddress || address || '-';
   const rawNomineeDob = jf.nomineeDob || (c.maritalStatus === 'Married' ? jf.spouseDob : '') || '';
   const nomineeDob = rawNomineeDob || '-';
   const nomineeAge = jf.nomineeAge || (rawNomineeDob ? calculateAccurateAge(rawNomineeDob) : null) || (c.maritalStatus === 'Married' ? (calculateAccurateAge(jf.spouseDob) || jf.spouseAge) : null) || '-';
-  const nomineeShare = jf.nomineeShare || '100%';
-  const nomineeGuardian = jf.nomineeGuardian || 'N/A (Major)';
+  const nomineeShare = nomineeName !== '-' ? (jf.nomineeShare || '100%') : '-';
+  const nomineeGuardian = nomineeName !== '-' ? (jf.nomineeGuardian || 'N/A (Major)') : '-';
 
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || 'Corporate Station';
+  const doj = c.doj || jf.doj || '-';
+  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (

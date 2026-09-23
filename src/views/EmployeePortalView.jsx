@@ -902,7 +902,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{candidate.name}</h2>
               <p className="text-xs text-slate-600 font-medium mt-0.5">
-                Role: <strong className="text-slate-900 font-bold">{candidate.designation || 'Specialist'}</strong> • Dept: <strong className="text-slate-900 font-bold">{candidate.dept || 'Engineering'}</strong> • Unique ID: <code className="text-indigo-900 font-black font-mono">{candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || 'COMP001EMP001'}</code>
+                Role: <strong className="text-slate-900 font-bold">{candidate.designation || jf.designation || '—'}</strong> • Dept: <strong className="text-slate-900 font-bold">{candidate.dept || candidate.department || jf.dept || '—'}</strong> • Unique ID: <code className="text-indigo-900 font-black font-mono">{candidate.employeeCode || candidate.uniqueProfileId || candidate.empId || candidate.employeeNumber || '—'}</code>
               </p>
             </div>
           </div>

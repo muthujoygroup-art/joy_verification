@@ -6,8 +6,8 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
   const fatherOrSpouse = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || '-';
   const isSpouse = !!(c.spouseName || jf.spouseName || c.maritalStatus === 'Married');
   const dob = c.dob || jf.dob || '-';
-  const gender = c.gender || jf.gender || 'Female';
-  const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
+  const gender = c.gender || jf.gender || '-';
+  const maritalStatus = c.maritalStatus || jf.maritalStatus || '-';
   const mobile = c.mobile || jf.mobile || '-';
   const email = c.email || jf.email || '-';
   const uan = c.uanEpf || jf.uanEpf || c.pfNumber || jf.pfNumber || '-';
@@ -21,9 +21,9 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
   const bankAcc = jf.accountNumber || jf.bankAccountNo || c.bankAccountNo || '-';
   const ifsc = jf.ifscCode || c.ifscCode || '-';
   const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
-  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || 'Corporate Station';
+  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : '-');
+  const doj = c.doj || jf.doj || '-';
+  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -173,7 +173,7 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
       {/* Declaration by Present Employer */}
       <div className="p-3 border-2 border-dashed border-slate-400 rounded-lg text-[10px] space-y-1.5 bg-slate-50/50">
         <strong className="block uppercase font-black text-slate-900 underline">DECLARATION BY PRESENT EMPLOYER</strong>
-        <p>A. The member Mr./Ms./Mrs. <strong>{name}</strong> has joined on <strong className="font-mono">{doj}</strong> and has been allotted PF Number <strong className="font-mono">{c.employeeNumber || c.empId || 'COMP001EMP001'}</strong>.</p>
+        <p>A. The member Mr./Ms./Mrs. <strong>{name}</strong> has joined on <strong className="font-mono">{doj}</strong> and has been allotted PF Number <strong className="font-mono">{c.employeeNumber || c.empId || jf.empId || '-'}</strong>.</p>
         <p>B. In case the person was earlier not a member of EPF Scheme: The UAN allotted is <strong className="font-mono">{uan}</strong>.</p>
         <p>C. In case the person was earlier a member of EPF Scheme: The above PF Account number has been tagged with his/her UAN/Previous Member ID.</p>
         
@@ -183,7 +183,7 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
             <div className="font-bold text-slate-800">{companyName}</div>
           </div>
           <div className="text-right">
-            <div className="font-bold text-slate-900">Joy Manpower Service / HR Authorized Signatory</div>
+            <div className="font-bold text-slate-900">{companyName} — Authorized HR Signatory</div>
             <div className="text-[9px] text-slate-500">Signature of Employer with Seal of Establishment</div>
           </div>
         </div>

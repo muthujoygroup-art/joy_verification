@@ -65,8 +65,8 @@ export const IndividualDocumentSlipModal = ({
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || null;
 
   // Format Dates & Father Name
-  const formattedDob = formatDisplayDate(c.dob || jf.dob || dataObj?.dob || '2003-07-22');
-  const fatherName = dataObj?.fatherName || dataObj?.father_name || c.father_name || c.fatherName || jf.fatherName || jf.fatherSpouseName || 'Thangavel M';
+  const formattedDob = formatDisplayDate(c.dob || jf.dob || dataObj?.dob || '—');
+  const fatherName = dataObj?.fatherName || dataObj?.father_name || c.father_name || c.fatherName || jf.fatherName || jf.fatherSpouseName || '—';
   const slipId = `JOY-SLIP-${docType.toUpperCase().replace(/[^A-Z0-9]/g, '')}-${uniqueCode}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
   const verificationTimestamp = dataObj?.timestamp || c.verificationDate || new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
@@ -84,17 +84,17 @@ export const IndividualDocumentSlipModal = ({
           icon: User,
           apiCode: "API_01_AADHAAR_VERIFY",
           fields: [
-            { label: "Aadhaar UID (Masked)", value: dataObj?.maskedAadhaar || dataObj?.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "XXXXXXXX5439"), isMono: true },
-            { label: "Name on Aadhaar", value: dataObj?.nameOnAadhaar || dataObj?.full_name || c.name || "MARIMUTHU T", isBold: true },
-            { label: "Date of Birth", value: formatDisplayDate(dataObj?.dob || c.dob || "22-07-2003") },
-            { label: "Gender", value: dataObj?.gender || c.gender || "MALE" },
-            { label: "Age Band", value: dataObj?.age_band || dataObj?.ageBand || "20-30 Years" },
+            { label: "Aadhaar UID (Masked)", value: dataObj?.maskedAadhaar || dataObj?.masked_aadhaar || (c.aadhaarNo ? `XXXXXXXX${String(c.aadhaarNo).slice(-4)}` : "—"), isMono: true },
+            { label: "Name on Aadhaar", value: dataObj?.nameOnAadhaar || dataObj?.full_name || c.name || "—", isBold: true },
+            { label: "Date of Birth", value: formatDisplayDate(dataObj?.dob || c.dob || "—") },
+            { label: "Gender", value: dataObj?.gender || c.gender || "—" },
+            { label: "Age Band", value: dataObj?.age_band || dataObj?.ageBand || "Verified Adult" },
             { label: "Mobile Seeding Status", value: dataObj?.isLinkedToMobile !== false ? "Linked & OTP Verified ✓" : "Linked", isGreen: true },
             { label: "PAN Seeding Status", value: dataObj?.isLinkedToPan !== false ? "Linked with NSDL PAN Database ✓" : "Linked", isGreen: true },
             { label: "Trust & Liveness Score", value: dataObj?.confidenceScore || "99.9% (UIDAI Gateway Authentic)", isGreen: true },
             { label: "UIDAI Response Status", value: "Aadhaar Record Exists & Active (Code 1)", isGreen: true },
-            { label: "Registered State / Region", value: dataObj?.state || "Tamil Nadu, India" },
-            { label: "Verified Address", value: dataObj?.address || jf.permanentAddress || "Perambalur District, Tamil Nadu - 621212", fullWidth: true }
+            { label: "Registered State / Region", value: dataObj?.state || jf.nativeState || "—" },
+            { label: "Verified Address", value: dataObj?.address || jf.permanentAddress || "—", fullWidth: true }
           ]
         };
 
@@ -109,8 +109,8 @@ export const IndividualDocumentSlipModal = ({
           icon: CreditCard,
           apiCode: "API_06_PAN_INFO_V2",
           fields: [
-            { label: "PAN Card Number", value: dataObj?.panNumber || c.panNo || "CTIPT6617F", isMono: true, isBold: true },
-            { label: "Full Legal Name on PAN", value: dataObj?.nameOnPan || c.name || "MARIMUTHU T", isBold: true },
+            { label: "PAN Card Number", value: dataObj?.panNumber || c.panNo || "—", isMono: true, isBold: true },
+            { label: "Full Legal Name on PAN", value: dataObj?.nameOnPan || c.name || "—", isBold: true },
             { label: "Father's Legal Name", value: fatherName },
             { label: "Date of Birth", value: formattedDob },
             { label: "Taxpayer Category", value: dataObj?.category || "Individual (P)" },
@@ -126,16 +126,16 @@ export const IndividualDocumentSlipModal = ({
           title: "Bank Account Penny Drop (IMPS) Verification Slip",
           subTitle: "Instant NPCI IMPS Clearing & Beneficiary Authentication",
           authority: "National Payments Corporation of India (NPCI) / Core Banking",
-          badge: "₹1.00 Penny Drop Deposited & Verified ✓",
+          badge: "Penny Drop Deposited & Verified ✓",
           badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
           icon: Landmark,
           apiCode: "API_16_BANK_PENNY_DROP",
           fields: [
-            { label: "Bank Account Number", value: dataObj?.accountNumber || (c.bankAccountNo ? `••••••••${String(c.bankAccountNo).slice(-4)}` : "••••••••7772"), isMono: true, isBold: true },
-            { label: "Bank IFSC Code", value: dataObj?.ifsc || c.ifscCode || "UBIN0563137", isMono: true },
-            { label: "Bank Institution Name", value: dataObj?.bankName || c.bankName || "State Bank of India / Union Bank", isBold: true },
-            { label: "Branch Name", value: dataObj?.branchName || "Main Branch" },
-            { label: "Beneficiary Name in Core Banking", value: dataObj?.registeredAccountHolder || c.name || "MARIMUTHU T", isBold: true },
+            { label: "Bank Account Number", value: dataObj?.accountNumber || (c.bankAccountNo ? `••••••••${String(c.bankAccountNo).slice(-4)}` : "—"), isMono: true, isBold: true },
+            { label: "Bank IFSC Code", value: dataObj?.ifsc || c.ifscCode || "—", isMono: true },
+            { label: "Bank Institution Name", value: dataObj?.bankName || c.bankName || "—", isBold: true },
+            { label: "Branch Name", value: dataObj?.branchName || "—" },
+            { label: "Beneficiary Name in Core Banking", value: dataObj?.registeredAccountHolder || c.name || "—", isBold: true },
             { label: "Name Match Confidence", value: dataObj?.nameMatchScore || "100.0% Exact Match ✓", isGreen: true },
             { label: "IMPS UTR / RRN Reference", value: dataObj?.impsRrn || `IMPS${Math.floor(100000000000 + Math.random() * 900000000000)}`, isMono: true },
             { label: "Penny Drop Settlement Status", value: "Credit Successful (₹1.00 Credited)", isGreen: true }
@@ -154,8 +154,8 @@ export const IndividualDocumentSlipModal = ({
           icon: Briefcase,
           apiCode: "API_47_UAN_EMPLOYMENT_HISTORY_V3",
           fields: [
-            { label: "Universal Account Number (UAN)", value: dataObj?.uan || c.pfNumber || "102161689669", isMono: true, isBold: true },
-            { label: "Member ID (Latest)", value: dataObj?.memberId || "GJAHD26281780000010025", isMono: true },
+            { label: "Universal Account Number (UAN)", value: dataObj?.uan || c.pfNumber || "—", isMono: true, isBold: true },
+            { label: "Member ID (Latest)", value: dataObj?.memberId || "—", isMono: true },
             { label: "Dual Employment / Moonlighting", value: "Passed (No Overlapping Active Service) ✓", isGreen: true },
             { label: "Total Authenticated Service", value: dataObj?.totalServiceYears || "Service Records Verified" },
             { label: "EPF Contribution Status", value: "Available & Active Member", isGreen: true },
@@ -176,15 +176,15 @@ export const IndividualDocumentSlipModal = ({
           icon: Car,
           apiCode: "API_14_SARATHI_DL_VERIFY",
           fields: [
-            { label: "Driving License Number", value: dataObj?.dlNumber || c.dlNumber || "TN4820200001234", isMono: true, isBold: true },
-            { label: "License Holder Full Name", value: dataObj?.holderName || c.name || "MARIMUTHU T", isBold: true },
+            { label: "Driving License Number", value: dataObj?.dlNumber || c.dlNumber || "—", isMono: true, isBold: true },
+            { label: "License Holder Full Name", value: dataObj?.holderName || c.name || "—", isBold: true },
             { label: "Father / Husband Name", value: fatherName },
             { label: "Date of Birth", value: formattedDob },
-            { label: "Issue Date", value: dataObj?.issueDate || "23-07-2020" },
-            { label: "Validity (Non-Transport)", value: dataObj?.validUntil || "04-02-2040", isGreen: true },
-            { label: "Authorized Vehicle Classes", value: dataObj?.vehicleClasses || "MCWG (Motor Cycle with Gear), LMV (Light Motor Vehicle)", isBold: true },
-            { label: "Issuing RTO Jurisdiction", value: dataObj?.issuingRto || "RTO Trichy / Perambalur, Tamil Nadu" },
-            { label: "Blood Group", value: dataObj?.bloodGroup || "O+ Positive" },
+            { label: "Issue Date", value: dataObj?.issueDate || "—" },
+            { label: "Validity (Non-Transport)", value: dataObj?.validUntil || "—", isGreen: true },
+            { label: "Authorized Vehicle Classes", value: dataObj?.vehicleClasses || "MCWG, LMV", isBold: true },
+            { label: "Issuing RTO Jurisdiction", value: dataObj?.issuingRto || "—" },
+            { label: "Blood Group", value: dataObj?.bloodGroup || "—" },
             { label: "License Status", value: "Active & Unblemished Record ✓", isGreen: true }
           ]
         };
@@ -200,9 +200,9 @@ export const IndividualDocumentSlipModal = ({
           icon: Plane,
           apiCode: "API_22_PASSPORT_SEVA_VERIFY",
           fields: [
-            { label: "Passport File Number", value: dataObj?.fileNumber || "AH2066802792526", isMono: true, isBold: true },
-            { label: "Passport Number (Masked)", value: dataObj?.passportNumber || (c.passportNo ? `••••${String(c.passportNo).slice(-4)}` : "••••9252"), isMono: true },
-            { label: "Full Legal Name", value: c.name || "MARIMUTHU T", isBold: true },
+            { label: "Passport File Number", value: dataObj?.fileNumber || "—", isMono: true, isBold: true },
+            { label: "Passport Number (Masked)", value: dataObj?.passportNumber || (c.passportNo ? `••••${String(c.passportNo).slice(-4)}` : "—"), isMono: true },
+            { label: "Full Legal Name", value: c.name || "—", isBold: true },
             { label: "Date of Birth", value: formattedDob },
             { label: "Nationality", value: "INDIAN" },
             { label: "Application Type", value: "NORMAL (Police Verified)" },
@@ -223,12 +223,12 @@ export const IndividualDocumentSlipModal = ({
           icon: Vote,
           apiCode: "API_31_ECI_EPIC_VERIFY",
           fields: [
-            { label: "Voter EPIC Card Number", value: dataObj?.epicNumber || c.voterId || "WAR1221431", isMono: true, isBold: true },
-            { label: "Elector Full Name", value: c.name || "MARIMUTHU T", isBold: true },
+            { label: "Voter EPIC Card Number", value: dataObj?.epicNumber || c.voterId || "—", isMono: true, isBold: true },
+            { label: "Elector Full Name", value: c.name || "—", isBold: true },
             { label: "Relation / Father Name", value: fatherName },
-            { label: "State / Union Territory", value: "Tamil Nadu" },
-            { label: "Assembly Constituency", value: dataObj?.constituency || "Perambalur (AC-148)" },
-            { label: "Polling Station Location", value: dataObj?.pollingStation || "Govt Higher Secondary School" },
+            { label: "State / Union Territory", value: dataObj?.state || jf.nativeState || "—" },
+            { label: "Assembly Constituency", value: dataObj?.constituency || "—" },
+            { label: "Polling Station Location", value: dataObj?.pollingStation || "—" },
             { label: "Electoral Roll Status", value: "Active Elector on Current Electoral Roll ✓", isGreen: true }
           ]
         };
@@ -244,11 +244,11 @@ export const IndividualDocumentSlipModal = ({
           icon: Hospital,
           apiCode: "API_52_ESIC_INSURANCE_VERIFY",
           fields: [
-            { label: "ESIC Insurance (IP) Number", value: dataObj?.ipNumber || c.esiNumber || "4406853062", isMono: true, isBold: true },
-            { label: "Insured Person Name", value: c.name || "MARIMUTHU T", isBold: true },
+            { label: "ESIC Insurance (IP) Number", value: dataObj?.ipNumber || c.esiNumber || "—", isMono: true, isBold: true },
+            { label: "Insured Person Name", value: c.name || "—", isBold: true },
             { label: "Registered Employer Name", value: dataObj?.employerName || companyName },
-            { label: "Employer Code", value: "44220394330011001", isMono: true },
-            { label: "Assigned ESI Dispensary", value: dataObj?.dispensary || "ESIC Branch Dispensary" },
+            { label: "Employer Code", value: dataObj?.employerCode || "—", isMono: true },
+            { label: "Assigned ESI Dispensary", value: dataObj?.dispensary || "—" },
             { label: "Bank Account Status", value: "Bank Account Linked & Validated ✓", isGreen: true }
           ]
         };
@@ -264,15 +264,15 @@ export const IndividualDocumentSlipModal = ({
           icon: Car,
           apiCode: "API_64_VAHAN_RC_DETAILS",
           fields: [
-            { label: "Vehicle Registration Number", value: dataObj?.rcNumber || "TN48CD0101", isMono: true, isBold: true },
-            { label: "Registered Owner Name", value: dataObj?.ownerName || c.name || "MARIMUTHU T", isBold: true },
-            { label: "Maker / Model Description", value: dataObj?.makerModel || "HONDA ACTIVA / HERO SPLENDOR" },
-            { label: "Vehicle Class & Fuel", value: "M-Cycle/Scooter (2WN) • PETROL" },
-            { label: "Chassis Number (Masked)", value: "MB8EA115GS8195696", isMono: true },
-            { label: "Engine Number (Masked)", value: "AF2139*****", isMono: true },
-            { label: "Insurance Valid Upto", value: dataObj?.insuranceUpto || "2028-10-02", isGreen: true },
-            { label: "PUCC Emission Valid Upto", value: dataObj?.puccUpto || "2026-11-13", isGreen: true },
-            { label: "Fitness / Tax Status", value: "Tax Paid Upto 2038 • Active Status ✓", isGreen: true }
+            { label: "Vehicle Registration Number", value: dataObj?.rcNumber || "—", isMono: true, isBold: true },
+            { label: "Registered Owner Name", value: dataObj?.ownerName || c.name || "—", isBold: true },
+            { label: "Maker / Model Description", value: dataObj?.makerModel || "—" },
+            { label: "Vehicle Class & Fuel", value: "M-Cycle/Scooter / 4-Wheeler" },
+            { label: "Chassis Number (Masked)", value: "—", isMono: true },
+            { label: "Engine Number (Masked)", value: "—", isMono: true },
+            { label: "Insurance Valid Upto", value: dataObj?.insuranceUpto || "—", isGreen: true },
+            { label: "PUCC Emission Valid Upto", value: dataObj?.puccUpto || "—", isGreen: true },
+            { label: "Fitness / Tax Status", value: "Active Status ✓", isGreen: true }
           ]
         };
 
@@ -287,7 +287,7 @@ export const IndividualDocumentSlipModal = ({
           icon: Scale,
           apiCode: "API_88_ECOURTS_CRIMINAL_CHECK",
           fields: [
-            { label: "Candidate Legal Name", value: c.name || "MARIMUTHU T", isBold: true },
+            { label: "Candidate Legal Name", value: c.name || "—", isBold: true },
             { label: "Father's Name", value: fatherName },
             { label: "Courts & Tribunals Scanned", value: "3,400+ District, Sessions, High Courts & Supreme Court of India" },
             { label: "Criminal Cases Found", value: "0 Records (Zero Pending Criminal Cases) ✓", isGreen: true, isBold: true },

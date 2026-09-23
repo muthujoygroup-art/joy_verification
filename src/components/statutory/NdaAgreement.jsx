@@ -3,11 +3,11 @@ import React from 'react';
 export const NdaAgreement = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
+  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : '-');
   const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const designation = c.designation || jf.designation || 'Software Specialist';
-  const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
+  const doj = c.doj || jf.doj || '-';
+  const designation = c.designation || jf.designation || '-';
+  const empId = c.employeeNumber || c.empId || jf.empId || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -42,7 +42,7 @@ export const NdaAgreement = ({ candidate, jf = {}, companyName = "JOY CORPORATE 
       <div className="flex items-end justify-between pt-3 text-[11px] border-t border-slate-300">
         <div>
           <div>Date: <strong className="font-mono">{doj}</strong></div>
-          <div>Place: <strong>Bengaluru / India</strong></div>
+          <div>Place: <strong>{jf.currentCity || jf.city || c.city || c.nativeDistrict || '-'}</strong></div>
           <div className="text-[9px] text-slate-500 font-mono mt-0.5">Agreement UUID: NDA-2026-{(name || 'EMP').replace(/\s+/g, '-').toUpperCase()}</div>
         </div>
         <div className="text-right min-w-[140px]">

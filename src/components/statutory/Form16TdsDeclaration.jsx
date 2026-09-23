@@ -3,14 +3,14 @@ import React from 'react';
 export const Form16TdsDeclaration = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const designation = c.designation || jf.designation || 'Specialist';
-  const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
+  const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : '-');
+  const doj = c.doj || jf.doj || '-';
+  const designation = c.designation || jf.designation || '-';
+  const empId = c.employeeNumber || c.empId || jf.empId || '-';
   const email = c.email || jf.email || '-';
-  const mobile = c.mobile || jf.mobile || '9876543210';
-  const prevOrg = jf.previousEmployer || 'Previous Organization Pvt Ltd';
-  const regime = jf.taxRegime || 'New Tax Regime (u/s 115BAC - Default)';
+  const mobile = c.mobile || jf.mobile || '-';
+  const prevOrg = jf.previousEmployer || '-';
+  const regime = jf.taxRegime || 'New Tax Regime (u/s 115BAC)';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -103,7 +103,7 @@ export const Form16TdsDeclaration = ({ candidate, jf = {}, companyName = "JOY CO
         <div className="flex items-end justify-between pt-3 text-[11px]">
           <div>
             <div>Date: <strong className="font-mono">{doj}</strong></div>
-            <div>Place: <strong>Bengaluru / Corporate Station</strong></div>
+            <div>Place: <strong>{jf.currentCity || jf.city || c.city || c.nativeDistrict || '-'}</strong></div>
             <div className="text-[9px] text-slate-500 font-mono mt-0.5">PAN: {pan}</div>
           </div>
           <div className="text-right min-w-[140px]">

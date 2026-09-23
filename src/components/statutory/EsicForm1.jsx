@@ -6,15 +6,15 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const name = c.name || jf.fullName || 'Candidate Name';
   const fatherOrHusband = c.spouseName || jf.spouseName || c.fatherName || jf.fatherName || '-';
   const dob = c.dob || jf.dob || '-';
-  const gender = c.gender || jf.gender || 'Female';
-  const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
+  const gender = c.gender || jf.gender || '-';
+  const maritalStatus = c.maritalStatus || jf.maritalStatus || '-';
   const mobile = c.mobile || jf.mobile || '-';
   const presentAddr = jf.presentAddress || c.presentAddress || '-';
   const permAddr = jf.permanentAddress || c.permanentAddress || presentAddr || '-';
   
   // Nominee & family particulars
   const nomineeName = jf.nomineeName || c.nomineeName || (c.maritalStatus === 'Married' ? (c.spouseName || jf.spouseName) : (c.fatherName || jf.fatherName)) || '-';
-  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : (c.maritalStatus === 'Single' ? 'Father' : '-'));
   const nomineeAddr = jf.nomineeAddress || permAddr;
   const rawNomineeDob = jf.nomineeDob || (c.maritalStatus === 'Married' ? jf.spouseDob : '') || '';
   const calculatedNomineeAge = (rawNomineeDob ? calculateAccurateAge(rawNomineeDob) : null) || (c.maritalStatus === 'Married' ? (calculateAccurateAge(jf.spouseDob) || jf.spouseAge) : null);
@@ -24,11 +24,11 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const ifsc = jf.ifscCode || c.ifscCode || '-';
   const branch = jf.branchName || jf.bankBranch || '-';
   const insNo = c.esiNumber || jf.esiNumber || jf.esicNo || '-';
-  const employerCode = jf.factoryEmployerCode || jf.esicEmployerCode || c.companyCode || '3251';
-  const dispensary = jf.esicDispensary || (jf.city ? `ESI Dispensary ${jf.city}` : 'ESI Branch Dispensary');
-  const doj = c.doj || jf.doj || '2026-04-13';
-  const dept = c.dept || jf.dept || 'Operations';
-  const designation = c.designation || jf.designation || 'Staff';
+  const employerCode = jf.factoryEmployerCode || jf.esicEmployerCode || c.companyCode || '-';
+  const dispensary = jf.esicDispensary || (jf.city ? `ESI Dispensary ${jf.city}` : '-');
+  const doj = c.doj || jf.doj || '-';
+  const dept = c.dept || jf.dept || '-';
+  const designation = c.designation || jf.designation || '-';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (

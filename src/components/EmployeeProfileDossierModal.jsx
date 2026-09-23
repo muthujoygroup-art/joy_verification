@@ -720,12 +720,12 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs p-4 bg-slate-50 border border-slate-200 rounded-lg">
                   <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Designation:</span><div className="text-slate-900 font-bold text-xs mt-0.5">{c.designation || jf.designation || '-'}</div></div>
                   <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Department:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{c.dept || jf.dept || '-'}</div></div>
-                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Employment Type:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{c.jobType || jf.jobType || 'Full Time Permanent'}</div></div>
-                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Work Location:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{c.workLocation || jf.workLocation || 'Corporate HQ'}</div></div>
+                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Employment Type:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{c.jobType || jf.jobType || '-'}</div></div>
+                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Work Location:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{c.workLocation || jf.workLocation || '-'}</div></div>
                   <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Previous Employer:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.previousEmployer || c.previousEmployer || '-'}</div></div>
-                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Total Experience:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.experienceYears || c.experienceYears || (expList.length > 0 ? `${expList.length} Years` : 'Fresher')}</div></div>
-                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Probation Period:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.probationPeriod || '6 Months'}</div></div>
-                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Notice Period:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.noticePeriod || '60 Days'}</div></div>
+                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Total Experience:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.experienceYears || c.experienceYears || (expList.length > 0 ? `${expList.length} Years` : '-')}</div></div>
+                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Probation Period:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.probationPeriod || '-'}</div></div>
+                  <div className="py-0.5"><span className="text-slate-500 block text-[10px]">Notice Period:</span><div className="text-slate-900 font-semibold text-xs mt-0.5">{jf.noticePeriod || '-'}</div></div>
                 </div>
 
                 {/* Family Nominee & Health Fitness Disclosures */}
@@ -735,7 +735,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
                       <div><span className="text-slate-500 text-[10px] block">Nominee Name:</span><strong className="text-slate-900">{nomineeName}</strong></div>
                       <div><span className="text-slate-500 text-[10px] block">Relationship:</span><strong className="text-slate-900">{nomineeRelation}</strong></div>
-                      <div><span className="text-slate-500 text-[10px] block">EPF Share Allocation:</span><strong className="text-emerald-800 font-mono">100% Share</strong></div>
+                      <div><span className="text-slate-500 text-[10px] block">EPF Share Allocation:</span><strong className="text-emerald-800 font-mono">{nomineeName !== '-' ? '100% Share' : '-'}</strong></div>
                       <div><span className="text-slate-500 text-[10px] block">Nominee Mobile:</span><strong className="font-mono text-slate-800">{nomineePhone}</strong></div>
                     </div>
                   </div>
@@ -743,10 +743,10 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1 text-xs">
                     <span className="font-bold text-slate-900 text-[11px] block">Health & Pre-Employment Medical Fitness:</span>
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
-                      <div><span className="text-slate-500 text-[10px] block">Covid-19 Vaccination:</span><strong className="text-emerald-800">{jf.covidVaccineDoses ? `${jf.covidVaccineDoses} Doses ✓` : 'Declared Vaccinated ✓'}</strong></div>
-                      <div><span className="text-slate-500 text-[10px] block">Medical Fitness:</span><strong className="text-emerald-800">Certified Fit (Grade A)</strong></div>
-                      <div><span className="text-slate-500 text-[10px] block">Pre-existing Illness:</span><strong>{jf.hasPreExistingIllness === 'Yes' ? (jf.preExistingDetails || 'Declared') : 'None Declared'}</strong></div>
-                      <div><span className="text-slate-500 text-[10px] block">Major Surgery:</span><strong>{jf.hasMajorSurgery === 'Yes' ? (jf.surgeryDetails || 'Declared') : 'None in past 5 years'}</strong></div>
+                      <div><span className="text-slate-500 text-[10px] block">Covid-19 Vaccination:</span><strong className="text-emerald-800">{jf.covidVaccineDoses ? `${jf.covidVaccineDoses} Doses ✓` : (jf.isCovidVaccinated === 'Yes' || jf.covidVaccinated ? 'Declared Vaccinated ✓' : '-')}</strong></div>
+                      <div><span className="text-slate-500 text-[10px] block">Medical Fitness:</span><strong className="text-emerald-800">{jf.medicalFitness || (jf.isMedicallyFit === 'Yes' ? 'Declared Fit' : '-')}</strong></div>
+                      <div><span className="text-slate-500 text-[10px] block">Pre-existing Illness:</span><strong>{jf.hasPreExistingIllness === 'Yes' ? (jf.preExistingDetails || 'Declared') : (jf.hasPreExistingIllness === 'No' ? 'None Declared' : '-')}</strong></div>
+                      <div><span className="text-slate-500 text-[10px] block">Major Surgery:</span><strong>{jf.hasMajorSurgery === 'Yes' ? (jf.surgeryDetails || 'Declared') : (jf.hasMajorSurgery === 'No' ? 'None' : '-')}</strong></div>
                     </div>
                   </div>
                 </div>
@@ -914,12 +914,12 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     <span>Health, Lifestyle & Integrity Disclosures:</span>
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
-                    <div><span className="text-slate-500 block">General Medical Fitness:</span><strong className="text-emerald-900">Declared Medically Fit</strong></div>
-                    <div><span className="text-slate-500 block">Smoking Habits:</span><strong>{jf.isSmoker === 'Yes' ? `Smoker (${jf.cigarettesPerDay || '1-5'}/day)` : 'Non-Smoker (Zero Tobacco)'}</strong></div>
-                    <div><span className="text-slate-500 block">Major Surgeries / Hospitalization:</span><strong>{jf.hasMajorSurgery === 'Yes' ? (jf.surgeryDetails || 'Declared') : 'None in past 5 years'}</strong></div>
-                    <div><span className="text-slate-500 block">Criminal Conviction / Court Case:</span><strong className="text-emerald-800">{jf.hasCriminalConviction === 'Yes' ? 'Under Review' : 'Clean Record (Zero Pending Cases)'}</strong></div>
-                    <div><span className="text-slate-500 block">Residential Property:</span><strong>{jf.ownsHouse === 'Yes' ? `Owns House (${jf.houseCityTown || 'Native'})` : 'Rented / Family Accommodation'}</strong></div>
-                    <div><span className="text-slate-500 block">Group Company Relations:</span><strong>{jf.relatedToGroupEmployee === 'Yes' ? (jf.relatedEmployeeDetails || 'Declared') : 'No Relative in Organization'}</strong></div>
+                    <div><span className="text-slate-500 block">General Medical Fitness:</span><strong className="text-emerald-900">{jf.medicalFitness || (jf.isMedicallyFit === 'Yes' ? 'Declared Fit' : (jf.isMedicallyFit === 'No' ? 'Not Fit' : '-'))}</strong></div>
+                    <div><span className="text-slate-500 block">Smoking Habits:</span><strong>{jf.isSmoker === 'Yes' ? `Smoker (${jf.cigarettesPerDay || '1-5'}/day)` : (jf.isSmoker === 'No' ? 'Non-Smoker' : '-')}</strong></div>
+                    <div><span className="text-slate-500 block">Major Surgeries / Hospitalization:</span><strong>{jf.hasMajorSurgery === 'Yes' ? (jf.surgeryDetails || 'Declared') : (jf.hasMajorSurgery === 'No' ? 'None' : '-')}</strong></div>
+                    <div><span className="text-slate-500 block">Criminal Conviction / Court Case:</span><strong className="text-emerald-800">{jf.hasCriminalConviction === 'Yes' ? 'Under Review' : (jf.hasCriminalConviction === 'No' ? 'Clean Record (No Pending Cases)' : '-')}</strong></div>
+                    <div><span className="text-slate-500 block">Residential Property:</span><strong>{jf.ownsHouse === 'Yes' ? `Owns House (${jf.houseCityTown || 'Native'})` : (jf.ownsHouse === 'No' ? 'Rented / Leased' : '-')}</strong></div>
+                    <div><span className="text-slate-500 block">Group Company Relations:</span><strong>{jf.relatedToGroupEmployee === 'Yes' ? (jf.relatedEmployeeDetails || 'Declared') : (jf.relatedToGroupEmployee === 'No' ? 'No Relative in Organization' : '-')}</strong></div>
                   </div>
                 </div>
 
@@ -938,7 +938,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     </div>
                     <div>
                       <div className="h-10 border-b border-dashed border-slate-500 flex items-end justify-center pb-1">
-                        <span className="font-serif italic text-sky-300">Vikramaditya Rao (CCO)</span>
+                        <span className="font-serif italic text-sky-300">HR Compliance Signatory</span>
                       </div>
                       <span className="text-[10px] text-slate-400 mt-1 block">Authorized HR Compliance Seal ({companyName})</span>
                     </div>

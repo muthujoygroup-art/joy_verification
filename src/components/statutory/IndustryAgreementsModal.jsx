@@ -50,7 +50,7 @@ export default function IndustryAgreementsModal({ isOpen, onClose, candidate, ca
                 </span>
               </div>
               <p className="text-xs text-slate-300">
-                Official Legal Statutory Paperwork for <span className="text-white font-medium">{candidate?.name || 'Employee Candidate'}</span> ({candidate?.emp_id || 'EMP-2026'})
+                Official Legal Statutory Paperwork for <span className="text-white font-medium">{candidate?.name || 'Employee Candidate'}</span> ({candidate?.employeeNumber || candidate?.emp_id || candidate?.empId || '-'})
               </p>
             </div>
           </div>
@@ -127,9 +127,9 @@ export default function IndustryAgreementsModal({ isOpen, onClose, candidate, ca
                   This Statutory Agreement is executed between <strong className="text-slate-900">JOY CORPORATE SOLUTIONS PVT LTD</strong> (hereinafter referred to as the <em>"Employer / Company"</em>) and the employee candidate whose details are set forth below (hereinafter referred to as the <em>"Employee / Contractor"</em>).
                 </p>
                 <div className="grid grid-cols-2 gap-3 pt-2 text-xs bg-slate-50 p-3 rounded border border-slate-100">
-                  <div><strong>Employee Name:</strong> {candidate?.name || '______________________'}</div>
-                  <div><strong>Employee ID:</strong> {candidate?.emp_id || 'EMP-2026-XXXX'}</div>
-                  <div><strong>Designation:</strong> {candidate?.designation || 'Software Professional'}</div>
+                  <div><strong>Employee Name:</strong> {candidate?.name || '—'}</div>
+                  <div><strong>Employee ID:</strong> {candidate?.employeeNumber || candidate?.emp_id || candidate?.empId || '—'}</div>
+                  <div><strong>Designation:</strong> {candidate?.designation || '—'}</div>
                   <div><strong>Industry Vertical:</strong> {categoryConfig.title}</div>
                 </div>
               </div>
