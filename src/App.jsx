@@ -53,6 +53,18 @@ const GlobalPageReloadPreloader = () => {
   const location = useLocation();
   const [showPreloader, setShowPreloader] = useState(false);
   const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
+  const prevPortalRootRef = React.useRef(null);
+
+  const getPortalRoot = (pathname) => {
+    const p = (pathname || '').toLowerCase();
+    if (p.startsWith('/superadmin')) return 'superadmin';
+    if (p.includes('/company') || p.startsWith('/company')) return 'company';
+    if (p.includes('/hr') || p.startsWith('/hr')) return 'hr';
+    if (p.startsWith('/verify') || p.startsWith('/candidate') || p.startsWith('/employee') || p.includes('/verify') || p.includes('/candidate')) return 'candidate';
+    if (p.startsWith('/login')) return 'login';
+    if (p.includes('activate')) return 'activate';
+    return p;
+  };
 
   const getSubtitleForPath = (pathname) => {
     const p = (pathname || '').toLowerCase();
@@ -71,14 +83,19 @@ const GlobalPageReloadPreloader = () => {
     return 'INSTANT WORKFORCE VERIFICATION';
   };
 
-  // Trigger full loading animation on route change or initial load (except landing page "/" which has its own preloader)
+  // Trigger full loading animation on initial page load / reload or major portal transition
   useEffect(() => {
     if (location.pathname === '/') {
       setShowPreloader(false);
+      prevPortalRootRef.current = '/';
       return;
     }
-    setSubtitle(getSubtitleForPath(location.pathname));
-    setShowPreloader(true);
+    const currentRoot = getPortalRoot(location.pathname);
+    if (prevPortalRootRef.current !== currentRoot) {
+      prevPortalRootRef.current = currentRoot;
+      setSubtitle(getSubtitleForPath(location.pathname));
+      setShowPreloader(true);
+    }
   }, [location.pathname]);
 
   // Listen to custom window events for long-running processes / manual triggers
@@ -100,7 +117,7 @@ const GlobalPageReloadPreloader = () => {
       onFinish={() => setShowPreloader(false)}
       subtitleText={subtitle}
       isFullScreen={true}
-      autoDismissMs={1200}
+      autoDismissMs={1100}
     />
   );
 };

@@ -9,10 +9,10 @@ export const GlobalPlatformPreloader = ({
   onFinish, 
   subtitleText = "INSTANT WORKFORCE VERIFICATION",
   isFullScreen = true,
-  autoDismissMs = 1200 
+  autoDismissMs = 1100 
 }) => {
   const { platformLogoEmblem } = useApp() || {};
-  const [stage, setStage] = useState(0);
+  const [stage, setStage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
   const onFinishRef = useRef(onFinish);
   onFinishRef.current = onFinish;
@@ -20,17 +20,17 @@ export const GlobalPlatformPreloader = ({
   // Split "TRUE PROFILE" for individual 3D letter flip choreography
   const trueProfileLetters = [
     { char: 'T', delay: 0 },
-    { char: 'R', delay: 30 },
-    { char: 'U', delay: 60 },
-    { char: 'E', delay: 90 },
-    { char: ' ', delay: 120, isSpace: true },
-    { char: 'P', delay: 150 },
-    { char: 'R', delay: 180 },
-    { char: 'O', delay: 210 },
-    { char: 'F', delay: 240 },
-    { char: 'I', delay: 270 },
-    { char: 'L', delay: 300 },
-    { char: 'E', delay: 330 }
+    { char: 'R', delay: 25 },
+    { char: 'U', delay: 50 },
+    { char: 'E', delay: 75 },
+    { char: ' ', delay: 100, isSpace: true },
+    { char: 'P', delay: 125 },
+    { char: 'R', delay: 150 },
+    { char: 'O', delay: 175 },
+    { char: 'F', delay: 200 },
+    { char: 'I', delay: 225 },
+    { char: 'L', delay: 250 },
+    { char: 'E', delay: 275 }
   ];
 
   const taglineWords = (subtitleText || 'INSTANT WORKFORCE VERIFICATION').split(' ');
@@ -42,16 +42,15 @@ export const GlobalPlatformPreloader = ({
       staticPreloader.style.display = 'none';
     }
 
-    const t0 = setTimeout(() => setStage(1), 50);   // Shield appearance
     const t1 = setTimeout(() => {
       setStage(2);                                  // 3D checkmark bloom
       try { soundEngine.playBeep && soundEngine.playBeep(); } catch (e) {}
-    }, 250);
-    const t2 = setTimeout(() => setStage(3), 450);   // Kinetic typography reveal
+    }, 150);
+    const t2 = setTimeout(() => setStage(3), 300);   // Kinetic typography reveal
     const t3 = setTimeout(() => {
       setStage(4);                                  // Tagline lock
       try { soundEngine.playSuccess && soundEngine.playSuccess(); } catch (e) {}
-    }, 700);
+    }, 500);
 
     const t4 = setTimeout(() => {
       if (typeof onFinishRef.current === 'function') {
@@ -60,7 +59,7 @@ export const GlobalPlatformPreloader = ({
           if (typeof onFinishRef.current === 'function') onFinishRef.current();
         }, 200);
       }
-    }, autoDismissMs || 1200);
+    }, autoDismissMs || 1100);
 
     const handleDismiss = () => {
       setIsExiting(true);

@@ -97,6 +97,28 @@ export class ErrorBoundary extends React.Component {
       if (this.props.fallback) {
         return this.props.fallback;
       }
+
+      return (
+        <div className="min-h-screen bg-[#070B14] text-white flex flex-col items-center justify-center p-6 text-center select-none">
+          <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+              <RefreshCw className="w-7 h-7" />
+            </div>
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-100">Connecting Secure Session</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Synchronizing workforce verification rails. Click below to refresh your portal session.
+            </p>
+            <button
+              type="button"
+              onClick={this.handleClearAndReload}
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Reload Workspace 🔄</span>
+            </button>
+          </div>
+        </div>
+      );
     }
 
     return this.props.children;
