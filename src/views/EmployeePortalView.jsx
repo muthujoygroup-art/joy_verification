@@ -1,6 +1,6 @@
 import { logPortalError } from '../utils/errorLogger';
 import { SignaturePadModal } from '../components/SignaturePadModal';
-import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict } from '../utils/validationRules';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
@@ -1426,7 +1426,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
                     <span className="text-[10px] text-slate-500 block font-bold">Date of Birth & Gender</span>
-                    <strong className="text-slate-900 font-bold">{fetchedAadhaarProfile?.dob || '1996-05-15'} ({fetchedAadhaarProfile?.gender || 'Male'})</strong>
+                    <strong className="text-slate-900 font-bold">{formatDisplayDate(fetchedAadhaarProfile?.dob || candidate.dob || '1996-05-15')} ({fetchedAadhaarProfile?.gender || 'Male'})</strong>
                   </div>
                 </div>
 
@@ -2299,7 +2299,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
           liveCaptureTimestamp={candidate.faceImages?.capturedAt}
           aadhaarPhotoUrl={fetchedAadhaarProfile?.photo || candidate.faceImages?.aadhaarRef || null}
           aadhaarUpdateDate={fetchedAadhaarProfile?.lastUpdated || "2019-03-12"}
-          candidateDob={fetchedAadhaarProfile?.dob || candidate.dob || "1996-05-15"}
+          candidateDob={toIsoDateString(fetchedAadhaarProfile?.dob || candidate.dob || "1996-05-15")}
           candidateName={candidate.name}
           onConfirmMatch={(matchResult) => {
             setAiFaceMatchData(matchResult);

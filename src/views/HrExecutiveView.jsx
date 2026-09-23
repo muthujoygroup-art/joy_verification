@@ -1,5 +1,5 @@
 import { logPortalError } from '../utils/errorLogger';
-import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict } from '../utils/validationRules';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
 import { EpfoForm11 } from '../components/statutory/EpfoForm11';
 import { EpfoForm2 } from '../components/statutory/EpfoForm2';
 import { EsicForm1 } from '../components/statutory/EsicForm1';
@@ -1234,9 +1234,9 @@ export const HrExecutiveView = () => {
       name: cand.name || jf.name || '',
       empId: cand.empId || cand.employeeNumber || jf.empId || '',
       employeeNumber: cand.employeeNumber || cand.empId || jf.employeeNumber || '',
-      dob: cand.dob || jf.dob || '',
-      age: cand.age || jf.age || '',
-      doj: cand.doj || jf.doj || '',
+      dob: toIsoDateString(cand.dob || jf.dob || '') || '',
+      age: calculateAccurateAge(cand.dob || jf.dob) ?? (cand.age || jf.age || ''),
+      doj: toIsoDateString(cand.doj || jf.doj || '') || '',
       motherTongue: cand.motherTongue || jf.motherTongue || '',
       religion: cand.religion || jf.religion || '',
       caste: cand.caste || jf.caste || '',
@@ -3225,8 +3225,16 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Date of Birth (DOB)', 'dob')}
                   <input 
                     type="date" 
-                    value={formData.dob}
-                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                    value={toIsoDateString(formData.dob) || formData.dob || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const calcAge = calculateAccurateAge(val);
+                      setFormData({ 
+                        ...formData, 
+                        dob: val,
+                        age: calcAge !== null ? calcAge : formData.age
+                      });
+                    }}
                     className={getFieldInputClass('dob')}
                   />
                 </div>
@@ -3234,8 +3242,10 @@ export const HrExecutiveView = () => {
                   {renderFieldLabel('Age (Years)', 'age')}
                   <input 
                     type="number" 
+                    min="18"
+                    max="80"
                     placeholder="e.g. 28"
-                    value={formData.age}
+                    value={formData.age || ''}
                     onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                     className={getFieldInputClass('age', 'form-input font-bold')}
                   />
@@ -6173,8 +6183,13 @@ export const HrExecutiveView = () => {
                     <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.fatherName || reviewingCandidate.fatherName || '—'}</strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
-                    <span className="text-slate-500 block text-[10px] font-bold">Date of Birth</span>
-                    <strong className="text-slate-900">{reviewingCandidate.submittedFormData?.dob || reviewingCandidate.dob || '—'}</strong>
+                    <span className="text-slate-500 block text-[10px] font-bold">Date of Birth & Age</span>
+                    <strong className="text-slate-900">
+                      {formatDobAndAge(
+                        reviewingCandidate.submittedFormData?.dob || reviewingCandidate.dob,
+                        reviewingCandidate.submittedFormData?.age || reviewingCandidate.age
+                      )}
+                    </strong>
                   </div>
                   <div className="p-2.5 bg-slate-50 rounded-lg border">
                     <span className="text-slate-500 block text-[10px] font-bold">Mobile Number</span>

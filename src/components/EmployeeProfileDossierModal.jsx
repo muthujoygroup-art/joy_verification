@@ -41,6 +41,7 @@ import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
+import { formatDobAndAge, formatDisplayDate, parseAnyDate } from '../utils/validationRules';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const { companies = [], platformLogo, platformLogoEmblem } = useApp() || {};
@@ -118,9 +119,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const spouseName = maritalStatus === 'Married' 
     ? (jf.spouseName || jf.spouse_name || c.spouseName || c.spouse_name || '-') 
     : 'N/A (Single)';
-  const dob = jf.dob || c.dob || aadhData.dob || panData.dob || epfoData.dob || dlData.dob || '-';
-  const doj = jf.doj || c.doj || '-';
-  const age = String(jf.age || c.age || (dob && dob !== '-' && dob.length >= 4 ? (new Date().getFullYear() - parseInt(dob.substring(0, 4))) : '-'));
+  const rawDob = jf.dob || c.dob || aadhData.dob || panData.dob || epfoData.dob || dlData.dob || '';
+  const dob = formatDobAndAge(rawDob, jf.age || c.age);
+  const rawDoj = jf.doj || c.doj || '';
+  const doj = formatDisplayDate(rawDoj);
+  const age = calculateAccurateAge(rawDob) || jf.age || c.age || '-';
   const bloodGroup = jf.bloodGroup || jf.blood_group || c.bloodGroup || c.blood_group || dlData.blood_group || '-';
   const gender = jf.gender || c.gender || '-';
   const motherTongue = jf.motherTongue || jf.mother_tongue || c.motherTongue || c.mother_tongue || '-';
@@ -584,7 +587,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     
                     <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Date of Birth (DOB):</span>
-                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{dob} (Age: {age} Years)</div>
+                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{dob}</div>
                     </div>
                     <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Father's Full Name:</span>

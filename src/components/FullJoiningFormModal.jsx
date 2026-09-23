@@ -14,7 +14,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
-import { checkProfileDocumentConflict } from '../utils/validationRules';
+import { checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
 import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
 import { 
   GENDER_OPTIONS, 
@@ -133,6 +133,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   const jfd = candidate?.joiningFormData || {};
   const candSpec = candidate?.industrySpecialization || jfd.industrySpecialization || {};
 
+  const rawCandDob = candidate?.dob || jfd.dob || '';
+  const cleanInitialDob = toIsoDateString(rawCandDob) || '';
+  const cleanInitialAge = calculateAccurateAge(cleanInitialDob) ?? (candidate?.age || jfd.age || '');
+  const cleanInitialDoj = toIsoDateString(candidate?.doj || jfd.doj || '') || '';
+
   const [formData, setFormData] = useState(() => {
     const defaults = {
       // Section 1: Basic Personal & Profile Identity
@@ -144,9 +149,9 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       dept: candidate?.dept || jfd.dept || '',
       designation: candidate?.designation || jfd.designation || '',
       mobile: candidate?.mobile || jfd.mobile || '',
-      dob: candidate?.dob || jfd.dob || '',
-      age: candidate?.age || jfd.age || '',
-      doj: candidate?.doj || jfd.doj || '',
+      dob: cleanInitialDob,
+      age: cleanInitialAge,
+      doj: cleanInitialDoj,
       motherTongue: candidate?.mother_tongue || jfd.motherTongue || '',
       languagesKnown: candidate?.languages_known || jfd.languagesKnown || '',
       gender: candidate?.gender || jfd.gender || '',
@@ -1009,8 +1014,16 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <input 
                     type="date" 
                     required 
-                    value={formData.dob} 
-                    onChange={e => setFormData({ ...formData, dob: e.target.value })}
+                    value={toIsoDateString(formData.dob) || formData.dob || ''} 
+                    onChange={e => {
+                      const newDob = e.target.value;
+                      const autoAge = calculateAccurateAge(newDob);
+                      setFormData({ 
+                        ...formData, 
+                        dob: newDob,
+                        age: autoAge !== null ? autoAge : formData.age
+                      });
+                    }}
                     className={getCandidateFieldInputClass('dob')} 
                   />
                 </div>
@@ -1021,7 +1034,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     required 
                     min="18"
                     max="80"
-                    value={formData.age} 
+                    value={formData.age || ''} 
                     onChange={e => setFormData({ ...formData, age: e.target.value })}
                     className={getCandidateFieldInputClass('age', 'form-input font-bold')} 
                   />
@@ -1776,7 +1789,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     {renderCandidateFieldLabel('Nominee Date of Birth', 'nomineeDob')}
                     <input 
                       type="date" 
-                      value={formData.nomineeDob} 
+                      value={toIsoDateString(formData.nomineeDob) || formData.nomineeDob || ''} 
                       onChange={e => setFormData({ ...formData, nomineeDob: e.target.value })}
                       className={getCandidateFieldInputClass('nomineeDob')} 
                     />

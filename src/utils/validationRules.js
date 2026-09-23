@@ -212,63 +212,213 @@ export const maskPassword = (val) => {
 };
 
 /**
- * 📅 Excel Serial Date & Universal Date Formatter
- * Converts raw Excel date numbers (e.g., 37824) to formatted DD-MM-YYYY dates.
- * Also standardizes ISO strings, DD/MM/YYYY, etc.
+ * 📅 Universal Date Parser & Normalizer
+ * Robustly parses Excel date serials (e.g., 37824 -> 2003-07-22), ISO strings, DD/MM/YYYY, DD-MM-YYYY, etc.
  */
-export const excelSerialToDate = (val) => {
-  if (val === null || val === undefined || val === '') return '';
-  let numVal = val;
-  if (typeof val === 'string') {
-    const trimmed = val.trim();
-    // Check if it is a pure integer string of 4-5 digits (Excel serial)
-    if (/^\d{4,5}$/.test(trimmed)) {
-      numVal = parseInt(trimmed, 10);
-    } else {
-      // Check if string contains serial with trailing text e.g. "37824 (MALE)"
-      const serialMatch = trimmed.match(/^(\d{4,5})\s*(.*)$/);
-      if (serialMatch) {
-        numVal = parseInt(serialMatch[1], 10);
-        const suffix = serialMatch[2];
-        if (numVal > 1000 && numVal < 70000) {
-          const utc_days = Math.floor(numVal - 25569);
-          const date = new Date(utc_days * 86400 * 1000);
-          const y = date.getUTCFullYear();
-          const m = String(date.getUTCMonth() + 1).padStart(2, '0');
-          const d = String(date.getUTCDate()).padStart(2, '0');
-          const formatted = `${d}-${m}-${y}`;
-          return suffix ? `${formatted} ${suffix}` : formatted;
-        }
+export const parseAnyDate = (val) => {
+  if (val === null || val === undefined || val === '' || val === '-' || val === '—') {
+    return { valid: false, raw: val, isoDate: '', displayDate: '-' };
+  }
+
+  // 1. If Date object
+  if (val instanceof Date && !isNaN(val.getTime())) {
+    const y = val.getFullYear();
+    const m = String(val.getMonth() + 1).padStart(2, '0');
+    const d = String(val.getDate()).padStart(2, '0');
+    return {
+      valid: true,
+      year: y,
+      month: parseInt(m, 10),
+      day: parseInt(d, 10),
+      isoDate: `${y}-${m}-${d}`,
+      displayDate: `${d}-${m}-${y}`,
+      dateObj: val
+    };
+  }
+
+  const strVal = String(val).trim();
+
+  // 2. Check if Excel serial integer (e.g. 37824, "37824", "42500")
+  let numVal = null;
+  if (/^\d{4,5}$/.test(strVal)) {
+    numVal = parseInt(strVal, 10);
+  } else if (typeof val === 'number' && val >= 1000 && val <= 70000) {
+    numVal = Math.floor(val);
+  } else {
+    // String starting with serial e.g. "37824 (MALE)"
+    const matchSerial = strVal.match(/^(\d{4,5})\b/);
+    if (matchSerial) {
+      const candidateNum = parseInt(matchSerial[1], 10);
+      if (candidateNum >= 1000 && candidateNum <= 70000) {
+        numVal = candidateNum;
       }
     }
   }
 
-  if (typeof numVal === 'number' && numVal > 1000 && numVal < 70000) {
+  if (numVal !== null && numVal >= 1000 && numVal <= 70000) {
     const utc_days = Math.floor(numVal - 25569);
     const date = new Date(utc_days * 86400 * 1000);
-    const y = date.getUTCFullYear();
-    const m = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const d = String(date.getUTCDate()).padStart(2, '0');
-    return `${d}-${m}-${y}`;
+    if (!isNaN(date.getTime())) {
+      const y = date.getUTCFullYear();
+      const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(date.getUTCDate()).padStart(2, '0');
+      return {
+        valid: true,
+        year: y,
+        month: parseInt(m, 10),
+        day: parseInt(d, 10),
+        isoDate: `${y}-${m}-${d}`,
+        displayDate: `${d}-${m}-${y}`,
+        dateObj: date
+      };
+    }
   }
 
-  return String(val);
+  // 3. Format YYYY-MM-DD or YYYY/MM/DD
+  const ymdMatch = strVal.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (ymdMatch) {
+    const y = parseInt(ymdMatch[1], 10);
+    const m = parseInt(ymdMatch[2], 10);
+    const d = parseInt(ymdMatch[3], 10);
+    if (y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      const padM = String(m).padStart(2, '0');
+      const padD = String(d).padStart(2, '0');
+      return {
+        valid: true,
+        year: y,
+        month: m,
+        day: d,
+        isoDate: `${y}-${padM}-${padD}`,
+        displayDate: `${padD}-${padM}-${y}`,
+        dateObj: new Date(y, m - 1, d)
+      };
+    }
+  }
+
+  // 4. Format DD-MM-YYYY or DD/MM/YYYY
+  const dmyMatch = strVal.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if (dmyMatch) {
+    const d = parseInt(dmyMatch[1], 10);
+    const m = parseInt(dmyMatch[2], 10);
+    const y = parseInt(dmyMatch[3], 10);
+    if (y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      const padM = String(m).padStart(2, '0');
+      const padD = String(d).padStart(2, '0');
+      return {
+        valid: true,
+        year: y,
+        month: m,
+        day: d,
+        isoDate: `${y}-${padM}-${padD}`,
+        displayDate: `${padD}-${padM}-${y}`,
+        dateObj: new Date(y, m - 1, d)
+      };
+    }
+  }
+
+  // 5. Standard Date.parse fallback (e.g. "12 Jul 2003", ISO 8601)
+  const parsedTs = Date.parse(strVal);
+  if (!isNaN(parsedTs)) {
+    const dObj = new Date(parsedTs);
+    const y = dObj.getFullYear();
+    if (y >= 1900 && y <= 2100) {
+      const m = String(dObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dObj.getDate()).padStart(2, '0');
+      return {
+        valid: true,
+        year: y,
+        month: parseInt(m, 10),
+        day: parseInt(d, 10),
+        isoDate: `${y}-${m}-${d}`,
+        displayDate: `${d}-${m}-${y}`,
+        dateObj: dObj
+      };
+    }
+  }
+
+  return {
+    valid: false,
+    raw: strVal,
+    isoDate: '',
+    displayDate: strVal
+  };
+};
+
+/**
+ * 🧮 Accurately Calculates Human Age from Date of Birth
+ * Returns integer (e.g. 23) or null if impossible/invalid.
+ */
+export const calculateAccurateAge = (dobVal) => {
+  if (!dobVal) return null;
+  const parsed = parseAnyDate(dobVal);
+  if (!parsed.valid) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - parsed.year;
+  const monthDiff = (today.getMonth() + 1) - parsed.month;
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < parsed.day)) {
+    age--;
+  }
+
+  // Human sanity boundaries
+  if (age >= 14 && age <= 100) {
+    return age;
+  }
+  return null;
+};
+
+/**
+ * 📅 Formats Date of Birth & Age for Display
+ * Example outputs:
+ *   - "22-07-2003 (Age: 23 Years)"
+ *   - "15-05-1996 (Age: 30 Years)"
+ *   - "22-07-2003" (if age calculation not possible)
+ *   - "-"
+ * GUARDS AGAINST IMPOSSIBLE DATES (e.g., negative ages, year 37824)
+ */
+export const formatDobAndAge = (dobVal, explicitAge = null) => {
+  if (!dobVal || dobVal === '-' || dobVal === '—') return '-';
+  const parsed = parseAnyDate(dobVal);
+
+  if (parsed.valid) {
+    const calcAge = calculateAccurateAge(dobVal);
+    const finalAge = calcAge !== null ? calcAge : (
+      (typeof explicitAge === 'number' && explicitAge >= 14 && explicitAge <= 100)
+        ? explicitAge
+        : (typeof explicitAge === 'string' && /^\d{2}$/.test(explicitAge.trim()) && parseInt(explicitAge, 10) >= 14 && parseInt(explicitAge, 10) <= 100)
+          ? parseInt(explicitAge, 10)
+          : null
+    );
+
+    if (finalAge !== null) {
+      return `${parsed.displayDate} (Age: ${finalAge} Years)`;
+    }
+    return parsed.displayDate;
+  }
+
+  // If parsed is not a standard date format, check if explicit age is valid
+  if (typeof explicitAge === 'number' && explicitAge >= 14 && explicitAge <= 100) {
+    return `${dobVal} (Age: ${explicitAge} Years)`;
+  }
+  return String(dobVal);
+};
+
+export const excelSerialToDate = (val) => {
+  if (!val) return '';
+  const parsed = parseAnyDate(val);
+  return parsed.valid ? parsed.displayDate : String(val);
+};
+
+export const toIsoDateString = (val) => {
+  if (!val) return '';
+  const parsed = parseAnyDate(val);
+  return parsed.valid ? parsed.isoDate : String(val);
 };
 
 export const formatDisplayDate = (val) => {
-  if (!val) return '—';
-  const converted = excelSerialToDate(val);
-  if (!converted || converted === '—') return '—';
-  
-  // If in YYYY-MM-DD format, format nicely as DD-MM-YYYY
-  const isoMatch = converted.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-  if (isoMatch) {
-    const y = isoMatch[1];
-    const m = isoMatch[2].padStart(2, '0');
-    const d = isoMatch[3].padStart(2, '0');
-    return `${d}-${m}-${y}`;
-  }
-  return converted;
+  if (!val || val === '-' || val === '—') return '—';
+  const parsed = parseAnyDate(val);
+  return parsed.valid ? parsed.displayDate : String(val);
 };
 
 /**

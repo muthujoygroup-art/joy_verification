@@ -2,6 +2,7 @@ import { initGlobalErrorListeners } from '../utils/errorLogger';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { getUserFriendlyErrorMessage } from '../utils/diagnosticPlaybooks';
+import { parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate } from '../utils/validationRules';
 
 const AppContext = createContext();
 
@@ -426,6 +427,19 @@ const mapCandidateDto = (c) => {
   const blood = c.blood_group || c.bloodGroup || jfd.bloodGroup || cf.blood_group || '';
   const aadhaar = c.aadhaar_no || c.aadhaarNo || jfd.aadhaarNo || cf.aadhaar_no || '';
   
+  const rawDob = c.dob || jfd.dob || cf.dob || '';
+  const parsedDob = parseAnyDate(rawDob);
+  const cleanDob = parsedDob.valid ? parsedDob.isoDate : rawDob;
+  const cleanAge = calculateAccurateAge(cleanDob) ?? (c.age || jfd.age || null);
+
+  const rawDoj = c.doj || jfd.doj || cf.doj || '';
+  const parsedDoj = parseAnyDate(rawDoj);
+  const cleanDoj = parsedDoj.valid ? parsedDoj.isoDate : rawDoj;
+
+  jfd.dob = cleanDob;
+  jfd.doj = cleanDoj;
+  if (cleanAge !== null) jfd.age = cleanAge;
+
   return {
     id: c.id,
     token: c.token,
@@ -479,9 +493,9 @@ const mapCandidateDto = (c) => {
     portal_password: c.portal_password || c.portalPassword || '1234',
     employeeType: c.employee_type || c.employeeType || 'it_tech',
     employee_type: c.employee_type || c.employeeType || 'it_tech',
-    dob: c.dob || jfd.dob,
-    doj: c.doj || jfd.doj,
-    age: c.age || jfd.age,
+    dob: cleanDob,
+    doj: cleanDoj,
+    age: cleanAge,
     gender: c.gender || jfd.gender || 'Male',
     maritalStatus: c.marital_status || c.maritalStatus || jfd.maritalStatus || 'Single',
     marital_status: c.marital_status || c.maritalStatus || jfd.maritalStatus || 'Single',

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
 import api from '../services/api';
 import { useApp } from '../context/AppContext';
-import { excelSerialToDate } from '../utils/validationRules';
+import { excelSerialToDate, toIsoDateString, calculateAccurateAge, formatDisplayDate } from '../utils/validationRules';
 import { 
   Upload, 
   Download, 
@@ -779,9 +779,10 @@ export const BulkEmployeeImportModal = ({
           // 1. Personal Fields
           const name = findVal(['fullname', 'candidatename', 'employeename', 'name']) || `Candidate #${idx + 1}`;
           const fatherSpouseName = findVal(['fatherspousename', 'fathername', 'father', 'spouse', 'husband']);
-          const motherName = findVal(['mothername', 'mother']);
-          const dob = excelSerialToDate(findVal(['dateofbirth', 'dob', 'birthdate', 'birth']));
-          const age = findVal(['age', 'yearsold']);
+          const rawDob = findVal(['dateofbirth', 'dob', 'birthdate', 'birth']);
+          const dob = toIsoDateString(rawDob) || excelSerialToDate(rawDob);
+          const rawAge = findVal(['age', 'yearsold']);
+          const age = calculateAccurateAge(dob) ?? (rawAge && !isNaN(parseInt(rawAge, 10)) && parseInt(rawAge, 10) >= 14 && parseInt(rawAge, 10) <= 100 ? parseInt(rawAge, 10) : '');
           const gender = findVal(['gender', 'sex']) || 'Male';
           const bloodGroup = findVal(['bloodgroup', 'blood']);
           const maritalStatus = findVal(['maritalstatus', 'marital', 'married']) || 'Single';
@@ -883,7 +884,8 @@ export const BulkEmployeeImportModal = ({
           const designation = findVal(['designation', 'jobrole', 'role', 'title', 'position']) || '';
           const dept = findVal(['department', 'dept', 'function', 'division']) || '';
           const empId = findVal(['employeeid', 'staffcode', 'empid', 'id']) || `${currentCompany?.code || 'COMP002'}EMP${String(Date.now()).slice(-4)}${idx + 1}`;
-          const doj = findVal(['proposedjoiningdate', 'joiningdate', 'doj', 'dateofjoining']) || '';
+          const rawDoj = findVal(['proposedjoiningdate', 'joiningdate', 'doj', 'dateofjoining']);
+          const doj = toIsoDateString(rawDoj) || excelSerialToDate(rawDoj) || '';
           const workLocation = findVal(['worklocation', 'plantlocation', 'factorylocation', 'branch', 'hub', 'location']) || '';
           const workShift = findVal(['workshift', 'shift', 'shifttype']) || '';
           const offeredCtc = findVal(['offeredannualctc', 'offeredctc', 'annualctc', 'ctc', 'salary']);
@@ -908,7 +910,8 @@ export const BulkEmployeeImportModal = ({
           const totalExperience = findVal(['totalexperience', 'priorexperience', 'workexperience', 'experienceyears', 'experience']);
           const previousCompany = findVal(['previouscompanyname', 'previouscompany', 'lastcompany', 'previousemployer', 'employer']);
           const previousDesignation = findVal(['previousdesignation', 'lastdesignation', 'priorrole']);
-          const previousRelievingDate = findVal(['previousrelievingdate', 'relievingdate', 'relieveddate']);
+          const rawRelieving = findVal(['previousrelievingdate', 'relievingdate', 'relieveddate']);
+          const previousRelievingDate = toIsoDateString(rawRelieving) || excelSerialToDate(rawRelieving) || '';
           const lastDrawnCtc = findVal(['lastdrawnannualctc', 'lastdrawnctc', 'previousctc', 'lastctc']);
 
           // 8. Bank Details
