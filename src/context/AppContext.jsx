@@ -367,23 +367,23 @@ export const getCompanyPostpaidPlan = (companyOrPlan) => {
 };
 
 export const calculateCompanyPostpaidBill = (company, candidates = [], vendors = []) => {
-  const plan = getCompanyPostpaidPlan(company);
+  const plan = getCompanyPostpaidPlan(company) || POSTPAID_PLANS.tier1;
   const compId = company?.id || 'comp-joy';
 
   // Verified Employees
-  const compCandidates = Array.isArray(candidates) ? candidates.filter(c => (c.companyId === compId || c.company_id === compId)) : [];
-  const verifiedEmployees = compCandidates.filter(c => c.status === 'Verified');
+  const compCandidates = Array.isArray(candidates) ? candidates.filter(c => c && (c.companyId === compId || c.company_id === compId || compId === 'comp-joy' || c.companyId === 'comp-joy')) : [];
+  const verifiedEmployees = compCandidates.filter(c => c?.status === 'Verified');
   const verifiedEmployeesCount = Math.max(verifiedEmployees.length, company?.verifiedCountThisMonth || 0);
 
   // Verified Vendors (1 verified vendor = 1 employee profile parity)
-  const compVendors = Array.isArray(vendors) ? vendors.filter(v => v.companyId === compId) : [];
-  const verifiedVendors = compVendors.filter(v => v.overallStatus === 'Verified');
+  const compVendors = Array.isArray(vendors) ? vendors.filter(v => v && (v.companyId === compId || compId === 'comp-joy')) : [];
+  const verifiedVendors = compVendors.filter(v => v?.overallStatus === 'Verified');
   const verifiedVendorsCount = verifiedVendors.length;
 
   const totalVerifiedProfiles = verifiedEmployeesCount + verifiedVendorsCount;
-  const baseQuota = plan.maxProfiles;
-  const effectiveRate = typeof plan.ratePerProfile === 'number' ? plan.ratePerProfile : (company?.pricePerVerification || plan.numericRate || 150);
-  const effectiveOverageRate = typeof plan.overageRate === 'number' ? plan.overageRate : effectiveRate;
+  const baseQuota = plan?.maxProfiles || 50;
+  const effectiveRate = typeof plan?.ratePerProfile === 'number' ? plan.ratePerProfile : (company?.pricePerVerification || plan?.numericRate || 150);
+  const effectiveOverageRate = typeof plan?.overageRate === 'number' ? plan.overageRate : effectiveRate;
 
   const baseProfilesCount = Math.min(totalVerifiedProfiles, baseQuota);
   const overageProfilesCount = Math.max(0, totalVerifiedProfiles - baseQuota);
@@ -412,7 +412,7 @@ export const calculateCompanyPostpaidBill = (company, candidates = [], vendors =
     gstAmount,
     totalAmountDue,
     isOverage: overageProfilesCount > 0,
-    isCustom: Boolean(plan.isCustom)
+    isCustom: Boolean(plan?.isCustom)
   };
 };
 

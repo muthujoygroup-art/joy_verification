@@ -450,6 +450,38 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           </p>
         </div>
 
+        {/* Intuitive Role Switcher Tabs */}
+        <div className="flex items-center justify-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 shadow-inner max-w-xl mx-auto gap-1">
+          {[
+            { id: 'superadmin', label: 'Super Admin', icon: Crown, color: 'text-indigo-600' },
+            { id: 'company', label: 'Company Admin', icon: Building2, color: 'text-sky-600' },
+            { id: 'hrexecutive', label: 'HR Executive', icon: UserCheck, color: 'text-emerald-600' },
+            { id: 'employee_link', label: 'Candidate', icon: Smartphone, color: 'text-amber-600' }
+          ].map(tab => {
+            const TabIcon = tab.icon;
+            const isActive = selectedRoleTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setSelectedRoleTab(tab.id);
+                  setLoginError('');
+                  setIsForgotMode(false);
+                }}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  isActive 
+                    ? 'bg-white text-slate-900 shadow-md font-extrabold scale-[1.02]' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                }`}
+              >
+                <TabIcon className={`w-3.5 h-3.5 ${isActive ? tab.color : 'text-slate-400'}`} />
+                <span className="truncate">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Selected Portal Login Card Form (Isolated strictly to this role) */}
         <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl animate-tab-switch">
           

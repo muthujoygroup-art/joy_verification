@@ -93,48 +93,10 @@ export class ErrorBoundary extends React.Component {
         }
       }
 
-      // If fallback provided by parent component, render that
+      // If custom fallback provided by parent component, render that
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
-      // Non-intrusive recovery banner instead of blocking full-screen takeover
-      return (
-        <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-4 sm:p-6 font-sans">
-          <div className="max-w-md w-full bg-slate-800/90 border border-slate-700/80 rounded-2xl p-6 shadow-xl space-y-4 text-center">
-            <div className="w-12 h-12 mx-auto rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <RefreshCw className="w-6 h-6 animate-spin" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white">Application Refreshing</h3>
-              <p className="text-xs text-slate-300 mt-1">
-                A component update occurred. Click below to continue smoothly.
-              </p>
-            </div>
-            <div className="flex gap-2 justify-center pt-2">
-              <button
-                type="button"
-                onClick={this.handleClearAndReload}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reload Page</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  this.setState({ hasError: false, error: null, errorInfo: null });
-                  window.location.href = '/login';
-                }}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer"
-              >
-                <Home className="w-3.5 h-3.5" />
-                <span>Back to Login</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      );
     }
 
     return this.props.children;
