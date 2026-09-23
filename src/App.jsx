@@ -56,46 +56,18 @@ const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalVie
 const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
 const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
 
-// Seamless Innovative Brand Loading Component for Suspense Fallback
+// Seamless Loading Component for Suspense Fallback
 const RouteLoadingSpinner = () => (
-  <GlobalPlatformPreloader 
-    isFullScreen={true}
-    autoDismissMs={1800}
-    subtitleText="AUTHENTICATING SECURE SESSION"
-  />
+  <div className="min-h-screen bg-[#070A11] flex flex-col items-center justify-center gap-3 select-none">
+    <div className="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+    <span className="text-xs font-mono font-bold text-slate-400 tracking-wider">INITIALIZING SESSION...</span>
+  </div>
 );
 
-// Global Route & Action Cinematic Preloader (Matches main landing page branding across all pages)
+// Global Route & Action Cinematic Preloader (Triggered on manual events)
 const GlobalPageReloadPreloader = () => {
-  const location = useLocation();
   const [showPreloader, setShowPreloader] = useState(false);
   const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
-
-  const getSubtitleForPath = (pathname) => {
-    if (pathname.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
-    if (pathname.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
-    if (pathname.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
-    if (pathname.startsWith('/verify') || pathname.startsWith('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
-    if (pathname.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
-    if (pathname.includes('activate')) return 'VERIFYING ONBOARDING ACTIVATION';
-    if (pathname.startsWith('/features')) return 'EXPLORING PLATFORM CAPABILITIES';
-    if (pathname.startsWith('/solutions')) return 'ENTERPRISE VERIFICATION SOLUTIONS';
-    if (pathname.startsWith('/how-it-works')) return 'INSTANT VERIFICATION WORKFLOWS';
-    if (pathname.startsWith('/pricing')) return 'TRANSPARENT POSTPAID BILLING';
-    if (pathname.startsWith('/contact')) return 'CONNECT WITH JOY VERIFICATION';
-    if (pathname.startsWith('/about')) return 'ABOUT JOY CORPORATE SOLUTIONS';
-    return 'INSTANT WORKFORCE VERIFICATION';
-  };
-
-  // Trigger full loading animation on route change or initial load (except landing page "/" which has its own preloader)
-  useEffect(() => {
-    if (location.pathname === '/') {
-      setShowPreloader(false);
-      return;
-    }
-    setSubtitle(getSubtitleForPath(location.pathname));
-    setShowPreloader(true);
-  }, [location.pathname]);
 
   // Listen to custom window events for long-running processes / manual triggers
   useEffect(() => {
@@ -116,7 +88,7 @@ const GlobalPageReloadPreloader = () => {
       onFinish={() => setShowPreloader(false)}
       subtitleText={subtitle}
       isFullScreen={true}
-      autoDismissMs={1800}
+      autoDismissMs={1200}
     />
   );
 };
