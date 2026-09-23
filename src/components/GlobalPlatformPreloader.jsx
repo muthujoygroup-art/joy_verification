@@ -53,12 +53,12 @@ export const GlobalPlatformPreloader = ({
     }, 500);
 
     const t4 = setTimeout(() => {
-      if (typeof onFinishRef.current === 'function') {
-        setIsExiting(true);
-        setTimeout(() => {
-          if (typeof onFinishRef.current === 'function') onFinishRef.current();
-        }, 200);
-      }
+      setIsExiting(true);
+      setTimeout(() => {
+        if (typeof onFinishRef.current === 'function') {
+          onFinishRef.current();
+        }
+      }, 200);
     }, autoDismissMs || 1100);
 
     const handleDismiss = () => {

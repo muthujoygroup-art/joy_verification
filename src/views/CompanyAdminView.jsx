@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';

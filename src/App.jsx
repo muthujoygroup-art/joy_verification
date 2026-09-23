@@ -7,37 +7,16 @@ import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { GlobalPlatformPreloader } from './components/GlobalPlatformPreloader';
 
-// Resilient Lazy Loader with Automatic Module Retry
-function lazyWithRetry(componentImport) {
-  return lazy(async () => {
-    try {
-      return await componentImport();
-    } catch (error) {
-      console.warn('Initial chunk load failed, retrying module import...', error);
-      try {
-        return await componentImport();
-      } catch (retryErr) {
-        console.error('Dynamic module import failed:', retryErr);
-        throw retryErr;
-      }
-    }
-  });
-}
-
-// Statically import LandingPageView and LoginView for instantaneous zero-latency access
+// Statically import all views for instantaneous zero-latency access and complete resilience against chunk mismatch
 import { LandingPageView } from './views/LandingPageView';
 import { LoginView } from './views/LoginView';
-
-// Public Specialized Pages
-const PublicPagesView = lazyWithRetry(() => import('./views/PublicPagesView').then(m => ({ default: m.PublicPagesView })));
-
-// Route-Level Code Splitting for Authenticated Portals
-const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })));
-const CompanyAdminView = lazyWithRetry(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })));
-const HrExecutiveView = lazyWithRetry(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })));
-const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })));
-const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })));
-const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })));
+import { PublicPagesView } from './views/PublicPagesView';
+import { SuperAdminView } from './views/SuperAdminView';
+import { CompanyAdminView } from './views/CompanyAdminView';
+import { HrExecutiveView } from './views/HrExecutiveView';
+import { EmployeePortalView } from './views/EmployeePortalView';
+import { CompanyActivationView } from './views/CompanyActivationView';
+import { HrActivationView } from './views/HrActivationView';
 
 // Authentic Brand Loading Animation for Suspense Fallback
 const RouteLoadingSpinner = () => (
