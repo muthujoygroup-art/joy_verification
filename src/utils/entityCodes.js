@@ -17,7 +17,7 @@ export const formatCompanyCode = (indexOrCode) => {
 
 export const formatHrCode = (companyCode, hrIndexOrCode) => {
   const compCode = formatCompanyCode(companyCode || 'COMP001');
-  if (typeof hrIndexOrCode === 'string' && hrIndexOrCode.includes('HR')) {
+  if (typeof hrIndexOrCode === 'string' && hrIndexOrCode.startsWith(compCode + 'HR')) {
     return hrIndexOrCode.toUpperCase();
   }
   const num = parseInt(String(hrIndexOrCode).replace(/\D/g, ''), 10) || 1;
@@ -26,7 +26,7 @@ export const formatHrCode = (companyCode, hrIndexOrCode) => {
 
 export const formatEmployeeCode = (companyCode, empIndexOrCode) => {
   const compCode = formatCompanyCode(companyCode || 'COMP001');
-  if (typeof empIndexOrCode === 'string' && empIndexOrCode.includes('EMP')) {
+  if (typeof empIndexOrCode === 'string' && empIndexOrCode.startsWith(compCode + 'EMP')) {
     return empIndexOrCode.toUpperCase();
   }
   const num = parseInt(String(empIndexOrCode).replace(/\D/g, ''), 10) || 1;
@@ -75,7 +75,16 @@ export const enrichEntitiesWithHierarchy = (companies = [], hrUsers = [], candid
     const currentCount = (hrCountByCompany.get(compCode) || 0) + 1;
     hrCountByCompany.set(compCode, currentCount);
 
-    const hrCode = (hr.hrCode && hr.hrCode.includes('HR')) ? hr.hrCode.toUpperCase() : `${compCode}HR${String(currentCount).padStart(3, '0')}`;
+    const rawHrCode = String(hr.hrCode || hr.hr_code || hr.id || '').toUpperCase().trim();
+    let hrCode = '';
+    if (rawHrCode.startsWith(compCode + 'HR')) {
+      hrCode = rawHrCode;
+    } else if (rawHrCode.startsWith('COMP') && rawHrCode.includes('HR')) {
+      hrCode = rawHrCode;
+    } else {
+      hrCode = `${compCode}HR${String(currentCount).padStart(3, '0')}`;
+    }
+
     enrichedHrUsers.push({
       ...hr,
       companyCode: compCode,
@@ -96,12 +105,15 @@ export const enrichEntitiesWithHierarchy = (companies = [], hrUsers = [], candid
     const emailKey = (cand.email || '').toLowerCase().trim();
     const mobileDigits = (cand.mobile || '').replace(/\D/g, '');
     const mobileKey = mobileDigits.length === 10 && !['9876543210', '1234567890', '0000000000'].includes(mobileDigits) ? mobileDigits : '';
+    const aadhaarDigits = (cand.aadhaarNo || cand.aadhaar_no || '').replace(/\D/g, '');
+    const aadhaarKey = aadhaarDigits.length === 12 ? aadhaarDigits : '';
 
-    // Check if duplicate
+    // Check if duplicate across multiple dimensions
     const isDup = (idKey && seenCandidateKeys.has(`ID:${idKey}`)) ||
                   (tokenKey && seenCandidateKeys.has(`TOK:${tokenKey}`)) ||
                   (emailKey && emailKey.includes('@') && seenCandidateKeys.has(`EML:${emailKey}`)) ||
-                  (mobileKey && seenCandidateKeys.has(`MOB:${mobileKey}`));
+                  (mobileKey && seenCandidateKeys.has(`MOB:${mobileKey}`)) ||
+                  (aadhaarKey && seenCandidateKeys.has(`ADH:${aadhaarKey}`));
 
     if (isDup) return;
 
@@ -109,16 +121,21 @@ export const enrichEntitiesWithHierarchy = (companies = [], hrUsers = [], candid
     if (tokenKey) seenCandidateKeys.add(`TOK:${tokenKey}`);
     if (emailKey && emailKey.includes('@')) seenCandidateKeys.add(`EML:${emailKey}`);
     if (mobileKey) seenCandidateKeys.add(`MOB:${mobileKey}`);
+    if (aadhaarKey) seenCandidateKeys.add(`ADH:${aadhaarKey}`);
 
     const compCode = companyCodeMap.get(cand.companyId) || companyCodeMap.get(cand.company_id) || 'COMP001';
     const currentCount = (empCountByCompany.get(compCode) || 0) + 1;
     empCountByCompany.set(compCode, currentCount);
 
-    const empCode = (cand.employeeCode && cand.employeeCode.includes('EMP'))
-      ? cand.employeeCode.toUpperCase()
-      : (cand.employeeNumber && cand.employeeNumber.includes('EMP'))
-        ? cand.employeeNumber.toUpperCase()
-        : `${compCode}EMP${String(currentCount).padStart(3, '0')}`;
+    const rawEmpCode = String(cand.employeeNumber || cand.employeeCode || cand.empId || '').toUpperCase().trim();
+    let empCode = '';
+    if (rawEmpCode.startsWith(compCode + 'EMP')) {
+      empCode = rawEmpCode;
+    } else if (rawEmpCode.startsWith('COMP') && rawEmpCode.includes('EMP')) {
+      empCode = rawEmpCode;
+    } else {
+      empCode = `${compCode}EMP${String(currentCount).padStart(3, '0')}`;
+    }
 
     enrichedCandidates.push({
       ...cand,

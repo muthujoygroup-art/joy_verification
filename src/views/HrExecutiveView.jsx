@@ -496,17 +496,25 @@ export const HrExecutiveView = () => {
       const tok = (c.token || c.id || '').toString().toLowerCase().trim();
       const empKey = (c.empId || c.employeeNumber || '').toString().toUpperCase().trim();
       const emailKey = (c.email || '').toString().toLowerCase().trim();
+      const mobDigits = (c.mobile || '').replace(/\D/g, '');
+      const mobKey = mobDigits.length === 10 && !['9876543210', '1234567890', '0000000000'].includes(mobDigits) ? mobDigits : '';
+      const aadhaarDigits = (c.aadhaarNo || c.aadhaar_no || '').replace(/\D/g, '');
+      const aadhaarKey = aadhaarDigits.length === 12 ? aadhaarDigits : '';
       const isGenericEmp = !empKey || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(empKey);
       
       const isDup = (tok && seen.has(`TOK::${tok}`)) || 
                     (!isGenericEmp && seen.has(`EMP::${empKey}`)) ||
-                    (emailKey && emailKey.includes('@') && seen.has(`EML::${emailKey}`));
+                    (emailKey && emailKey.includes('@') && seen.has(`EML::${emailKey}`)) ||
+                    (mobKey && seen.has(`MOB::${mobKey}`)) ||
+                    (aadhaarKey && seen.has(`ADH::${aadhaarKey}`));
       
       if (isDup) return false;
       
       if (tok) seen.add(`TOK::${tok}`);
       if (!isGenericEmp) seen.add(`EMP::${empKey}`);
       if (emailKey && emailKey.includes('@')) seen.add(`EML::${emailKey}`);
+      if (mobKey) seen.add(`MOB::${mobKey}`);
+      if (aadhaarKey) seen.add(`ADH::${aadhaarKey}`);
       return true;
     });
   }, [candidates, currentCompany?.id, currentCompany?.code, currentCompany?.name, activeHr?.companyId, activeHr?.id, resolvedUserCompanyId]);

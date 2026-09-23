@@ -1094,9 +1094,10 @@ export const BulkEmployeeImportModal = ({
       .map(([k, _]) => k);
 
     const existingCandidateCount = (candidates && candidates.length) || 0;
+    const currentCompCode = targetCompany?.code || currentCompany?.code || 'COMP001';
     const candidatePayloads = candidatesToImport.map((row, idx) => {
       const candidatePin = '1234';
-      const autoEmpId = `JOY-EMP-${String(existingCandidateCount + idx + 1).padStart(3, '0')}`;
+      const autoEmpId = `${currentCompCode}EMP${String(existingCandidateCount + idx + 1).padStart(3, '0')}`;
       const resolvedEmpId = (row.empId && row.empId.trim()) ? row.empId.trim() : autoEmpId;
 
       const verificationConfig = {

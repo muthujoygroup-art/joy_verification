@@ -128,7 +128,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           const rawName = nameInTokenMatch ? nameInTokenMatch[1].replace(/_/g, ' ') : 'Candidate';
           const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
           const candidateSeqCount = (candidates?.length || 1) + 1;
-          const assignedEmpCode = `JOY-EMP-${String(candidateSeqCount).padStart(3, '0')}`;
+          const assignedEmpCode = `COMP001EMP${String(candidateSeqCount).padStart(3, '0')}`;
           return {
             name: formattedName,
             empId: assignedEmpCode,

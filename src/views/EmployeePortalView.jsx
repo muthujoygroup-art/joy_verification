@@ -404,7 +404,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
             const tokenNameMatch = cleanToken.match(/tok_([^_]+)_/);
             const extractedName = tokenNameMatch ? tokenNameMatch[1].replace(/_/g, ' ') : 'Candidate';
             const candidateSeqCount = (candidates?.length || 1) + 1;
-            const assignedEmpId = `JOY-EMP-${String(candidateSeqCount).padStart(3, '0')}`;
+            const assignedEmpId = `COMP001EMP${String(candidateSeqCount).padStart(3, '0')}`;
             const fallbackCand = {
               id: `emp-${cleanToken}`,
               token: cleanToken,

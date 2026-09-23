@@ -55,10 +55,11 @@ export const QrCodeModal = ({
       if (candidate.token) {
         api.getCandidateByToken(candidate.token).catch(() => {
           const compId = candidate.companyId || candidate.company_id || (company && company.id) || 'comp-joy';
+          const fallbackEmpCode = candidate.employeeCode || candidate.empId || candidate.employeeNumber || 'COMP001EMP001';
           api.createCandidate({
             name: candidate.name || 'Candidate',
-            emp_id: candidate.empId || candidate.employeeNumber || 'JOY-EMP-001',
-            employee_number: candidate.employeeNumber || candidate.empId || 'JOY-EMP-001',
+            emp_id: fallbackEmpCode,
+            employee_number: fallbackEmpCode,
             email: candidate.email || 'candidate@gmail.com',
             mobile: candidate.mobile || '+91 9876543210',
             designation: candidate.designation || 'Associate',
@@ -156,7 +157,7 @@ export const QrCodeModal = ({
         token: candidate.token,
         candidate_email: destEmail,
         candidate_name: candidate.name,
-        candidate_code: candidate.empId || candidate.employeeNumber || candidate.emp_id || 'JOY-EMP-001',
+        candidate_code: candidate.employeeCode || candidate.empId || candidate.employeeNumber || candidate.emp_id || 'COMP001EMP001',
         security_pin: clean,
         company_id: candidate.companyId || (company && company.id),
         company_name: company?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',

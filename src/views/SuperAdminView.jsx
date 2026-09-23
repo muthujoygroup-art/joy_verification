@@ -1001,12 +1001,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
   // Dynamic Report Data Generator
   const generateInteractiveReportData = () => {
-    let filteredCands = candidates.filter(c => {
-      if (reportCompanyFilter !== 'all' && c.companyId !== reportCompanyFilter) return false;
+    let filteredCands = enrichedDirectory.candidates.filter(c => {
+      if (reportCompanyFilter !== 'all' && c.companyId !== reportCompanyFilter && c.companyCode !== reportCompanyFilter) return false;
       if (reportStatusFilter !== 'all' && c.status !== reportStatusFilter) return false;
       if (reportSearchQuery.trim()) {
         const q = reportSearchQuery.toLowerCase();
-        const m = c.name?.toLowerCase().includes(q) || c.empId?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q);
+        const m = c.name?.toLowerCase().includes(q) || c.empId?.toLowerCase().includes(q) || c.employeeCode?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q);
         if (!m) return false;
       }
       return true;
@@ -1175,11 +1175,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   const getDbTableData = (tableName) => {
     switch (tableName) {
       case 'companies':
-        return companies.map(c => ({ id: c.id, name: c.name, code: c.code, plan: c.plan, price_per_check: c.pricePerVerification, verified_this_month: c.verifiedCountThisMonth, status: c.status }));
+        return enrichedDirectory.companies.map(c => ({ id: c.id, name: c.name, code: c.code, plan: c.plan, price_per_check: c.pricePerVerification, verified_this_month: c.verifiedCountThisMonth, status: c.status }));
       case 'candidates':
-        return candidates.map(c => ({ id: c.id, token: c.token, name: c.name, emp_id: c.empId, email: c.email, mobile: c.mobile, designation: c.designation, status: c.status, verification_date: c.verificationDate || 'N/A' }));
+        return enrichedDirectory.candidates.map(c => ({ id: c.id, token: c.token, name: c.name, emp_id: c.employeeCode || c.empId, email: c.email, mobile: c.mobile, designation: c.designation, status: c.status, verification_date: c.verificationDate || 'N/A' }));
       case 'hr_users':
-        return hrUsers.map(h => ({ id: h.id, company_id: h.companyId, name: h.name, email: h.email, dept: h.dept, active_links: h.activeLinks || 0 }));
+        return enrichedDirectory.hrUsers.map(h => ({ id: h.id, company_id: h.companyId, name: h.name, email: h.email, dept: h.dept, active_links: h.activeLinks || 0 }));
       case 'invoices':
         return companies.map((c, i) => ({ invoice_id: `INV-2026-0${i + 1}`, company: c.name, verified_volume: c.verifiedCountThisMonth, subtotal: `₹${(c.verifiedCountThisMonth * c.pricePerVerification).toLocaleString()}`, gst_18: `₹${Math.round(c.verifiedCountThisMonth * c.pricePerVerification * 0.18).toLocaleString()}`, status: companyPaymentLedger[c.id]?.status || 'PENDING ⏳' }));
       case 'support_tickets':
@@ -1189,7 +1189,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       case 'sessions':
         return multiRoleSessions.map(s => ({ session_id: s.id, role: s.roleLabel, user_name: s.userName, email: s.email, ip_address: s.ipAddress, device: s.device, status: s.status }));
       default:
-        return candidates;
+        return enrichedDirectory.candidates;
     }
   };
 
@@ -1330,7 +1330,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     },
     ledger: {
       pillarBadge: '🏛️ 1. Core Operations',
-      badgeText: `${candidates.length} Profiles Recorded`,
+      badgeText: `${enrichedDirectory.candidates.length} Profiles Recorded`,
       title: 'Candidate Verification Ledger & Global Employee Registry',
       subtitle: 'Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits',
       icon: Users,
@@ -1627,7 +1627,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-emerald-600" />
-                <span>Enterprise Candidate Verification Ledger ({candidates.length})</span>
+                <span>Enterprise Candidate Verification Ledger ({enrichedDirectory.candidates.length})</span>
               </h3>
               <p className="text-xs text-slate-500 font-medium">Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits</p>
             </div>
@@ -1656,13 +1656,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
-                {candidates.map(c => {
+                {enrichedDirectory.candidates.map(c => {
                   const companyObj = companies.find(comp => comp.id === c.companyId);
                   return (
-                    <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={c.id || c.token} className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4">
                         <div className="font-bold text-slate-900 text-sm">{c.name}</div>
-                        <div className="text-slate-500 font-mono text-[10px]">ID: {c.empId || c.token}</div>
+                        <div className="text-slate-500 font-mono text-[10px]">ID: {c.employeeCode || c.empId || c.token}</div>
                       </td>
                       <td className="py-3 px-4">
                         <span className="font-bold text-indigo-950">{companyObj?.name || c.companyName || 'Enterprise Client'}</span>
@@ -1787,13 +1787,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800 font-mono">
-                {candidates.slice(0, 15).map((c, i) => (
-                  <tr key={c.id || i} className="hover:bg-slate-50 transition-colors">
+                {enrichedDirectory.candidates.slice(0, 15).map((c, i) => (
+                  <tr key={c.id || c.token || i} className="hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-4 font-bold text-indigo-950">AUD-2026-{(1000 + i).toString(16).toUpperCase()}</td>
                     <td className="py-3 px-4 text-slate-600">{c.verificationDate || '2026-09-09 14:32:10'}</td>
                     <td className="py-3 px-4 font-sans font-bold text-slate-900">Candidate BGV Verification Executed</td>
                     <td className="py-3 px-4 font-sans text-slate-700">COMP001HR001 (Recruiter)</td>
-                    <td className="py-3 px-4 font-sans text-slate-900 font-bold">{c.name} ({c.empId || c.token})</td>
+                    <td className="py-3 px-4 font-sans text-slate-900 font-bold">{c.name} ({c.employeeCode || c.empId || c.token})</td>
                     <td className="py-3 px-4 text-right">
                       <span className="badge badge-emerald text-[9px] font-black">SHA-256 HASHED 🔒</span>
                     </td>
@@ -2039,20 +2039,25 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-sky-100 text-[10px]">
-                      <span className="badge badge-emerald text-[9px] font-bold">
-                        {cand.status || 'Verified ✓'}
+                      <span className="text-slate-500 font-medium">
+                        Company: <strong className="text-purple-800">{cand.companyCode || 'COMP001'}</strong>
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedTrackedEntity(cand);
-                          setSelectedTrackedEntityType('candidate');
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
-                      >
-                        <Eye className="w-3 h-3" />
-                        <span>Track 360°</span>
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <span className="badge badge-emerald text-[9px] font-bold">
+                          {cand.status || 'Verified ✓'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedTrackedEntity(cand);
+                            setSelectedTrackedEntityType('candidate');
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>Track 360°</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

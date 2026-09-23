@@ -1298,39 +1298,34 @@ export const AppProvider = ({ children }) => {
 
         if (cands && Array.isArray(cands)) {
           const cleanFetched = cands.map(mapCandidateDto).filter(Boolean);
-          setCandidates(prev => {
-            const fetchedKeys = new Set(cleanFetched.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
-            const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => {
-              if (!p) return false;
-              const pid = (p.id || '').toLowerCase();
-              const ptok = (p.token || '').toLowerCase();
-              const pem = (p.email || '').toLowerCase();
-              const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
-              return !fetchedKeys.has(pid) && !fetchedKeys.has(ptok) && (!pem || !fetchedKeys.has(pem)) && (!pemp || !fetchedKeys.has(pemp));
-            }).map(mapCandidateDto).filter(Boolean);
-            const merged = [...cleanFetched, ...preservedLocal];
-            const seen = new Set();
-            const uniqueMerged = merged.filter(item => {
-              if (!item) return false;
-              const k1 = (item.token || item.id || '').toLowerCase();
-              const k2 = (item.email || '').toLowerCase();
-              const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
-              const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
-              const uniqueKey = `${k1}::${k2}::${k3}`;
-              if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (!isGenericEmp && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
-                return false;
-              }
-              if (k1) seen.add(`TOK::${k1}`);
-              if (!isGenericEmp) seen.add(`EMP::${k3}`);
-              if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
-              seen.add(uniqueKey);
-              return true;
-            });
-            try {
-              localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
-            } catch (e) {}
-            return uniqueMerged;
+          const seen = new Set();
+          const uniqueMerged = cleanFetched.filter(item => {
+            if (!item) return false;
+            const k1 = (item.token || item.id || '').toLowerCase().trim();
+            const k2 = (item.email || '').toLowerCase().trim();
+            const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
+            const mobDigits = (item.mobile || '').replace(/\D/g, '');
+            const mobKey = mobDigits.length === 10 && !['9876543210', '1234567890', '0000000000'].includes(mobDigits) ? mobDigits : '';
+            const aadhaarDigits = (item.aadhaarNo || item.aadhaar_no || '').replace(/\D/g, '');
+            const aadhaarKey = aadhaarDigits.length === 12 ? aadhaarDigits : '';
+            const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
+            const isDup = (k1 && seen.has(`TOK::${k1}`)) ||
+                          (!isGenericEmp && seen.has(`EMP::${k3}`)) ||
+                          (k2 && k2.includes('@') && seen.has(`EML::${k2}`)) ||
+                          (mobKey && seen.has(`MOB::${mobKey}`)) ||
+                          (aadhaarKey && seen.has(`ADH::${aadhaarKey}`));
+            if (isDup) return false;
+            if (k1) seen.add(`TOK::${k1}`);
+            if (!isGenericEmp) seen.add(`EMP::${k3}`);
+            if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
+            if (mobKey) seen.add(`MOB::${mobKey}`);
+            if (aadhaarKey) seen.add(`ADH::${aadhaarKey}`);
+            return true;
           });
+          setCandidates(uniqueMerged);
+          try {
+            localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
+          } catch (e) {}
         }
 
         if (dropdowns && typeof dropdowns === 'object') {
@@ -1754,16 +1749,19 @@ export const AppProvider = ({ children }) => {
     const candidatePin = candidateData.portalPassword || candidateData.securityPin || candidateData.portal_password || '1234';
     const cleanEmail = (candidateData.email || '').trim().toLowerCase();
     const cleanMobile = (candidateData.mobile || '').replace(/\s+/g, '');
+    const cleanAadhaar = (candidateData.aadhaarNo || candidateData.aadhaar_no || '').replace(/\D/g, '');
     const cleanEmpId = (candidateData.empId || candidateData.employeeNumber || '').trim().toUpperCase();
     const isGenericEmp = !cleanEmpId || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(cleanEmpId);
 
     const existingDuplicate = candidates.find(c => {
       const cEmail = (c.email || '').trim().toLowerCase();
       const cMobile = (c.mobile || '').replace(/\s+/g, '');
+      const cAadhaar = (c.aadhaarNo || c.aadhaar_no || '').replace(/\D/g, '');
       const cEmpId = (c.empId || c.employeeNumber || '').trim().toUpperCase();
 
       return (cleanEmail && cEmail === cleanEmail) ||
              (cleanMobile && cleanMobile.length === 10 && cMobile === cleanMobile) ||
+             (cleanAadhaar && cleanAadhaar.length === 12 && cAadhaar === cleanAadhaar) ||
              (!isGenericEmp && cleanEmpId && cEmpId === cleanEmpId);
     });
 
@@ -2323,40 +2321,35 @@ export const AppProvider = ({ children }) => {
       const cands = await api.getCandidates({});
       if (cands && Array.isArray(cands)) {
         const cleanFetched = cands.map(mapCandidateDto).filter(Boolean);
-        setCandidates(prev => {
-          const fetchedKeys = new Set(cleanFetched.map(f => (f.id || f.token || f.email || f.empId || '').toLowerCase()));
-          const preservedLocal = (Array.isArray(prev) ? prev : []).filter(p => {
-            if (!p) return false;
-            const pid = (p.id || '').toLowerCase();
-            const ptok = (p.token || '').toLowerCase();
-            const pem = (p.email || '').toLowerCase();
-            const pemp = (p.empId || p.employeeNumber || '').toLowerCase();
-            return !fetchedKeys.has(pid) && !fetchedKeys.has(ptok) && (!pem || !fetchedKeys.has(pem)) && (!pemp || !fetchedKeys.has(pemp));
-          }).map(mapCandidateDto).filter(Boolean);
-          const merged = [...cleanFetched, ...preservedLocal];
-          const seen = new Set();
-          const uniqueMerged = merged.filter(item => {
-            if (!item) return false;
-            const k1 = (item.token || item.id || '').toLowerCase();
-            const k2 = (item.email || '').toLowerCase();
-            const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
-            const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
-            const uniqueKey = `${k1}::${k2}::${k3}`;
-            if (seen.has(uniqueKey) || (k1 && seen.has(`TOK::${k1}`)) || (!isGenericEmp && seen.has(`EMP::${k3}`)) || (k2 && k2.includes('@') && seen.has(`EML::${k2}`))) {
-              return false;
-            }
-            if (k1) seen.add(`TOK::${k1}`);
-            if (!isGenericEmp) seen.add(`EMP::${k3}`);
-            if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
-            seen.add(uniqueKey);
-            return true;
-          });
-          try {
-            localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
-          } catch (e) {}
-          return uniqueMerged;
+        const seen = new Set();
+        const uniqueMerged = cleanFetched.filter(item => {
+          if (!item) return false;
+          const k1 = (item.token || item.id || '').toLowerCase().trim();
+          const k2 = (item.email || '').toLowerCase().trim();
+          const k3 = (item.empId || item.employeeNumber || '').toUpperCase().trim();
+          const mobDigits = (item.mobile || '').replace(/\D/g, '');
+          const mobKey = mobDigits.length === 10 && !['9876543210', '1234567890', '0000000000'].includes(mobDigits) ? mobDigits : '';
+          const aadhaarDigits = (item.aadhaarNo || item.aadhaar_no || '').replace(/\D/g, '');
+          const aadhaarKey = aadhaarDigits.length === 12 ? aadhaarDigits : '';
+          const isGenericEmp = !k3 || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(k3);
+          const isDup = (k1 && seen.has(`TOK::${k1}`)) ||
+                        (!isGenericEmp && seen.has(`EMP::${k3}`)) ||
+                        (k2 && k2.includes('@') && seen.has(`EML::${k2}`)) ||
+                        (mobKey && seen.has(`MOB::${mobKey}`)) ||
+                        (aadhaarKey && seen.has(`ADH::${aadhaarKey}`));
+          if (isDup) return false;
+          if (k1) seen.add(`TOK::${k1}`);
+          if (!isGenericEmp) seen.add(`EMP::${k3}`);
+          if (k2 && k2.includes('@')) seen.add(`EML::${k2}`);
+          if (mobKey) seen.add(`MOB::${mobKey}`);
+          if (aadhaarKey) seen.add(`ADH::${aadhaarKey}`);
+          return true;
         });
-        return cleanFetched;
+        setCandidates(uniqueMerged);
+        try {
+          localStorage.setItem('joy_candidates_v1', JSON.stringify(uniqueMerged));
+        } catch (e) {}
+        return uniqueMerged;
       }
     } catch (err) {
       console.warn('Candidate refresh error:', err);
