@@ -127,15 +127,15 @@ export const ComprehensiveBgvReportModal = ({
   const candidateFatherName = panData.father_name || panData.fatherName || aadhData.care_of || aadhData.careOf || c.father_name || c.fatherName || c.fatherSpouseName || jf.father_name || jf.fatherName || jf.fatherSpouseName || "—";
 
   const isEmailVerified = !!(c.verificationsCompleted?.email || c.verifications_completed?.email || c.emailVerified);
-  const isAadhaarVerified = !!(c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar || aadhData.full_name || aadhData.masked_aadhaar);
-  const isPanVerified = !!(c.verificationsCompleted?.pan || c.verifications_completed?.pan || panData.pan_number || (c.panNo && c.panNo !== 'ABCDE1234F'));
-  const isEpfoVerified = !!(c.verificationsCompleted?.epfo || c.verifications_completed?.epfo || epfoData.uan || c.pf_number || jf.uanEpf);
-  const isBankVerified = !!(c.verificationsCompleted?.bank || c.verifications_completed?.bank || bankData.account_number || c.bank_account_no || jf.bankAccountNo);
-  const isDlVerified = !!(c.verificationsCompleted?.dl || c.verifications_completed?.dl || dlData.dl_number || c.dl_no || jf.drivingLicense);
-  const isPassportVerified = !!(c.verificationsCompleted?.passport || c.verifications_completed?.passport || passportData.passport_number || jf.passportNo || c.passport_no);
-  const isVoterVerified = !!(c.verificationsCompleted?.voter || c.verifications_completed?.voter || voterData.epic_number || jf.voterId);
-  const isEsicVerified = !!(c.verificationsCompleted?.esic || c.verifications_completed?.esic || esicData.esic_number || c.esiNumber || jf.esiNumber);
-  const isFaceVerified = !!(c.verificationsCompleted?.face || c.verifications_completed?.face || faceData.match_score || facePhoto);
+  const isAadhaarVerified = !!(c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar || aadhData.full_name || aadhData.masked_aadhaar || (c.status === 'Verified' && (c.aadhaarNo || c.aadhaar_no)));
+  const isPanVerified = !!(c.verificationsCompleted?.pan || c.verifications_completed?.pan || panData.pan_number || (c.status === 'Verified' && c.panNo && c.panNo !== 'ABCDE1234F'));
+  const isEpfoVerified = !!(c.verificationsCompleted?.epfo || c.verificationsCompleted?.uan || c.verificationsCompleted?.epfoUan || c.verifications_completed?.epfo || c.verifications_completed?.uan || epfoData.uan || (c.status === 'Verified' && (c.pf_number || c.pfNumber || c.uan_no)));
+  const isBankVerified = !!(c.verificationsCompleted?.bank || c.verificationsCompleted?.bankCheck || c.verifications_completed?.bank || bankData.account_number || bankData.beneficiary_name || (c.status === 'Verified' && (c.bank_account_no || c.bankAccountNo)));
+  const isDlVerified = !!(c.verificationsCompleted?.dl || c.verificationsCompleted?.drivingLicense || c.verifications_completed?.dl || c.verifications_completed?.driving_license || dlData.dl_number || dlData.license_number || (c.status === 'Verified' && (c.dl_no || c.dlNumber)));
+  const isPassportVerified = !!(c.verificationsCompleted?.passport || c.verifications_completed?.passport || passportData.passport_number || (c.status === 'Verified' && (c.passport_no || c.passportNo)));
+  const isVoterVerified = !!(c.verificationsCompleted?.voter || c.verificationsCompleted?.voterId || c.verifications_completed?.voter || c.verifications_completed?.voter_id || voterData.epic_number || (c.status === 'Verified' && (c.voter_id || c.voterId)));
+  const isEsicVerified = !!(c.verificationsCompleted?.esic || c.verifications_completed?.esic || esicData.esic_number || esicData.ip_number || (c.status === 'Verified' && (c.esiNumber || c.esi_number)));
+  const isFaceVerified = !!(c.verificationsCompleted?.face || c.verifications_completed?.face || faceData.match_score || (c.status === 'Verified' && facePhoto));
 
   const totalModules = 10;
   const verifiedModulesCount = [

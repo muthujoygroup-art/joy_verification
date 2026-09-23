@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { formatDisplayDate, parseAnyDate } from '../utils/validationRules';
 
 export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
   const reportRef = useRef(null);
@@ -42,88 +43,259 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
     ? `${aadh.address.house || ''} ${aadh.address.street || ''} ${aadh.address.city || ''} ${aadh.address.state || ''} ${aadh.address.pincode || ''}`.trim()
     : (aadh.address || candidate.permanentAddress || jData.permanentAddress || 'Not Uploaded');
 
-  const isAadhaarDone = !!(candidate.verificationsCompleted?.aadhaar || candidate.verifications_completed?.aadhaar || aadh.full_name || aadh.name);
-  const isPanDone = !!(candidate.verificationsCompleted?.pan || candidate.verifications_completed?.pan || pan.pan_number || pan.pan);
-  const isDlDone = !!(candidate.verificationsCompleted?.drivingLicense || candidate.verifications_completed?.driving_license || dl.dl_number);
-  const isPassportDone = !!(candidate.verificationsCompleted?.passport || candidate.verifications_completed?.passport || passport.passport_number);
-  const isEpfoDone = !!(candidate.verificationsCompleted?.epfoUan || candidate.verifications_completed?.epfo || epfo.uan);
-  const isEsicDone = !!(candidate.verificationsCompleted?.esic || candidate.verifications_completed?.esic || esic.esic_number);
-  const isBankDone = !!(candidate.verificationsCompleted?.bankCheck || candidate.verifications_completed?.bank || bank.account_number);
-  const isVoterDone = !!(candidate.verificationsCompleted?.voterId || candidate.verifications_completed?.voter_id || voter.epic_number);
+  const isAadhaarDone = !!(candidate.verificationsCompleted?.aadhaar || candidate.verifications_completed?.aadhaar || aadh.full_name || aadh.name || (candidate.status === 'Verified' && (candidate.aadhaarNo || candidate.aadhaar_no || aadh.masked_aadhaar)));
+  const isPanDone = !!(candidate.verificationsCompleted?.pan || candidate.verifications_completed?.pan || pan.pan_number || pan.pan || (candidate.status === 'Verified' && (candidate.panNo || candidate.pan_no)));
+  const isDlDone = !!(candidate.verificationsCompleted?.drivingLicense || candidate.verificationsCompleted?.dl || candidate.verifications_completed?.driving_license || candidate.verifications_completed?.dl || dl.dl_number || dl.license_number || (candidate.status === 'Verified' && (candidate.dlNumber || candidate.dl_no || candidate.drivingLicense)));
+  const isPassportDone = !!(candidate.verificationsCompleted?.passport || candidate.verifications_completed?.passport || passport.passport_number || (candidate.status === 'Verified' && (candidate.passportNo || candidate.passport_no)));
+  const isEpfoDone = !!(candidate.verificationsCompleted?.epfoUan || candidate.verificationsCompleted?.uan || candidate.verificationsCompleted?.epfo || candidate.verifications_completed?.epfo || candidate.verifications_completed?.uan || epfo.uan || (candidate.status === 'Verified' && (candidate.uanEpf || candidate.pfNumber)));
+  const isEsicDone = !!(candidate.verificationsCompleted?.esic || candidate.verifications_completed?.esic || esic.esic_number || esic.ip_number || (candidate.status === 'Verified' && (candidate.esiNumber || candidate.esi_number)));
+  const isBankDone = !!(candidate.verificationsCompleted?.bankCheck || candidate.verificationsCompleted?.bank || candidate.verifications_completed?.bank || candidate.verifications_completed?.bank_check || bank.account_number || bank.beneficiary_name || (candidate.status === 'Verified' && (candidate.bankAccountNo || candidate.bank_account_no)));
+  const isVoterDone = !!(candidate.verificationsCompleted?.voterId || candidate.verificationsCompleted?.voter_id || candidate.verifications_completed?.voter_id || candidate.verifications_completed?.voterId || voter.epic_number || (candidate.status === 'Verified' && candidate.voterId));
+
+  const hasDocFile = (docType) => {
+    if (!candidate.documents) return false;
+    if (Array.isArray(candidate.documents)) {
+      return candidate.documents.some(d => d && (d.type === docType || d.docType === docType || d.name?.toLowerCase()?.includes(docType.toLowerCase())));
+    }
+    return !!candidate.documents[docType];
+  };
+
+  const isAadhaarUploaded = !!(isAadhaarDone || candidate.aadhaarNo || candidate.aadhaar_no || aadh.masked_aadhaar || aadh.aadhaar_number || jData.aadhaarNo || hasDocFile('aadhaar'));
+  const isPanUploaded = !!(isPanDone || (candidate.panNo && candidate.panNo !== 'ABCDE1234F') || (candidate.pan_no && candidate.pan_no !== 'ABCDE1234F') || (jData.panNo && jData.panNo !== 'ABCDE1234F') || hasDocFile('pan'));
+  const isDlUploaded = !!(isDlDone || candidate.dlNumber || candidate.dl_no || candidate.drivingLicense || jData.drivingLicense || hasDocFile('dl') || hasDocFile('drivingLicense') || hasDocFile('driving_license'));
+  const isPassportUploaded = !!(isPassportDone || candidate.passportNo || candidate.passport_no || jData.passportNo || hasDocFile('passport'));
+  const isEpfoUploaded = !!(isEpfoDone || candidate.uanEpf || candidate.uan_no || candidate.pfNumber || candidate.pf_number || jData.uanEpf || jData.pfNumber || hasDocFile('epfo') || hasDocFile('uan'));
+  const isEsicUploaded = !!(isEsicDone || candidate.esiNumber || candidate.esi_number || candidate.esi_no || jData.esiNumber || hasDocFile('esic'));
+  const isBankUploaded = !!(isBankDone || candidate.bankAccountNo || candidate.bank_account_no || bank.account_number || jData.bankAccountNo || hasDocFile('bank'));
+  const isVoterUploaded = !!(isVoterDone || candidate.voterId || candidate.voter_id || jData.voterId || hasDocFile('voter') || hasDocFile('voterId'));
 
   // Resolve extracted identity data for each document source
   const docDataMap = {
     aadhaar: {
       label: 'AADHAAR CARD (UIDAI)',
-      name: aadh.full_name || aadh.name || (isAadhaarDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded')),
-      dob: aadh.dob || (isAadhaarDone ? (candidate.dob || jData.dob) : 'Not Uploaded'),
-      address: aadhAddressStr,
-      fatherName: aadh.care_of || aadh.careOf || aadh.father_name || candidate.fatherName || jData.fatherName || 'Not Uploaded',
-      docNo: maskAadhaarNo(candidate.aadhaarNo || candidate.aadhaar_no || aadh.masked_aadhaar || aadh.aadhaar_number),
-      status: isAadhaarDone ? 'Verified 🟢' : (candidate.aadhaarNo || candidate.aadhaar_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isAadhaarUploaded,
+      isVerified: isAadhaarDone,
+      name: isAadhaarDone
+        ? (aadh.full_name || aadh.name || candidate.name || jData.fullName || 'Not Uploaded').toUpperCase()
+        : isAadhaarUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isAadhaarDone
+        ? formatDisplayDate(aadh.dob || candidate.dob || jData.dob)
+        : isAadhaarUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isAadhaarDone
+        ? aadhAddressStr
+        : isAadhaarUploaded
+          ? (candidate.permanentAddress || jData.permanentAddress || 'Not Uploaded')
+          : 'Not Uploaded',
+      fatherName: isAadhaarDone
+        ? (aadh.care_of || aadh.careOf || aadh.father_name || candidate.fatherName || jData.fatherName || 'Not Uploaded')
+        : isAadhaarUploaded
+          ? (candidate.fatherName || jData.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isAadhaarUploaded
+        ? maskAadhaarNo(candidate.aadhaarNo || candidate.aadhaar_no || aadh.masked_aadhaar || aadh.aadhaar_number || jData.aadhaarNo)
+        : 'Not Uploaded',
+      status: isAadhaarDone ? 'Verified 🟢' : (isAadhaarUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     pan: {
       label: 'PAN CARD (NSDL / ITD)',
-      name: (pan.full_name || pan.name || (isPanDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded'))).toUpperCase(),
-      dob: pan.dob || candidate.dob || jData.dob || 'Not Uploaded',
-      address: pan.address || candidate.presentAddress || 'N/A (ITD Records)',
-      fatherName: pan.father_name || pan.fatherName || aadh.care_of || candidate.fatherName || jData.fatherName || 'Not Uploaded',
-      docNo: pan.pan_number || pan.pan || candidate.panNo || candidate.pan_no || 'Not Uploaded',
-      status: isPanDone ? 'Verified 🟢' : (candidate.panNo || candidate.pan_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isPanUploaded,
+      isVerified: isPanDone,
+      name: isPanDone
+        ? (pan.full_name || pan.name || candidate.name || jData.fullName || 'Not Uploaded').toUpperCase()
+        : isPanUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isPanDone
+        ? formatDisplayDate(pan.dob || candidate.dob || jData.dob)
+        : isPanUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isPanDone
+        ? (pan.address || 'N/A (ITD Records)')
+        : isPanUploaded
+          ? 'N/A (ITD Records)'
+          : 'Not Uploaded',
+      fatherName: isPanDone
+        ? (pan.father_name || pan.fatherName || candidate.fatherName || jData.fatherName || 'Not Uploaded')
+        : isPanUploaded
+          ? (candidate.fatherName || jData.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isPanUploaded
+        ? (pan.pan_number || pan.pan || candidate.panNo || candidate.pan_no || jData.panNo || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isPanDone ? 'Verified 🟢' : (isPanUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     drivingLicense: {
       label: 'DRIVING LICENSE (MoRTH)',
-      name: (dl.holder_name || dl.name || (isDlDone ? candidate.name : (jData.fullName || candidate.name || 'Not Uploaded'))).toUpperCase(),
-      dob: dl.dob || candidate.dob || 'Not Uploaded',
-      address: dl.address || candidate.presentAddress || 'Not Uploaded',
-      fatherName: dl.father_name || candidate.fatherName || 'Not Uploaded',
-      docNo: dl.dl_number || dl.license_number || candidate.dlNumber || candidate.dl_no || 'Not Uploaded',
-      status: isDlDone ? 'Verified 🟢' : (candidate.dlNumber || candidate.dl_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isDlUploaded,
+      isVerified: isDlDone,
+      name: isDlDone
+        ? (dl.holder_name || dl.name || dl.user_full_name || candidate.name || 'Not Uploaded').toUpperCase()
+        : isDlUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isDlDone
+        ? formatDisplayDate(dl.dob || dl.date_of_birth || candidate.dob)
+        : isDlUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isDlDone
+        ? (dl.address || candidate.presentAddress || 'Not Uploaded')
+        : isDlUploaded
+          ? (candidate.presentAddress || 'Not Uploaded')
+          : 'Not Uploaded',
+      fatherName: isDlDone
+        ? (dl.father_name || dl.fatherName || candidate.fatherName || 'Not Uploaded')
+        : isDlUploaded
+          ? (candidate.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isDlUploaded
+        ? (dl.dl_number || dl.license_number || candidate.dlNumber || candidate.dl_no || candidate.drivingLicense || jData.drivingLicense || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isDlDone ? 'Verified 🟢' : (isDlUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     passport: {
       label: 'PASSPORT (MEA)',
-      name: (passport.full_name || (passport.given_name ? `${passport.given_name} ${passport.surname || ''}` : (isPassportDone ? candidate.name : 'Not Uploaded'))).toUpperCase(),
-      dob: passport.dob || candidate.dob || 'Not Uploaded',
-      address: passport.address || candidate.permanentAddress || 'Not Uploaded',
-      fatherName: passport.father_name || candidate.fatherName || 'Not Uploaded',
-      docNo: passport.passport_number || candidate.passportNo || candidate.passport_no || 'Not Uploaded',
-      status: isPassportDone ? 'Verified 🟢' : (candidate.passportNo || candidate.passport_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isPassportUploaded,
+      isVerified: isPassportDone,
+      name: isPassportDone
+        ? (passport.full_name || (passport.given_name ? `${passport.given_name} ${passport.surname || ''}`.trim() : '') || candidate.name || 'Not Uploaded').toUpperCase()
+        : isPassportUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isPassportDone
+        ? formatDisplayDate(passport.dob || candidate.dob)
+        : isPassportUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isPassportDone
+        ? (passport.address || candidate.permanentAddress || 'Not Uploaded')
+        : isPassportUploaded
+          ? (candidate.permanentAddress || 'Not Uploaded')
+          : 'Not Uploaded',
+      fatherName: isPassportDone
+        ? (passport.father_name || passport.fatherName || candidate.fatherName || 'Not Uploaded')
+        : isPassportUploaded
+          ? (candidate.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isPassportUploaded
+        ? (passport.passport_number || candidate.passportNo || candidate.passport_no || jData.passportNo || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isPassportDone ? 'Verified 🟢' : (isPassportUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     uan: {
       label: 'EPFO UAN (MEMBER SERVICE)',
-      name: (epfo.member_name || epfo.full_name || (isEpfoDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
-      dob: epfo.dob || candidate.dob || 'Not Uploaded',
-      address: epfo.establishment_address || candidate.presentAddress || 'N/A (EPFO Records)',
-      fatherName: epfo.father_name || candidate.fatherName || 'Not Uploaded',
-      docNo: epfo.uan || candidate.uanEpf || candidate.uan_no || candidate.pfNumber || candidate.pf_number || 'Not Uploaded',
-      status: isEpfoDone ? 'Verified 🟢' : (candidate.uanEpf || candidate.pfNumber ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isEpfoUploaded,
+      isVerified: isEpfoDone,
+      name: isEpfoDone
+        ? (epfo.member_name || epfo.full_name || epfo.name || candidate.name || 'Not Uploaded').toUpperCase()
+        : isEpfoUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isEpfoDone
+        ? formatDisplayDate(epfo.dob || candidate.dob)
+        : isEpfoUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isEpfoDone
+        ? (epfo.establishment_address || 'N/A (EPFO Records)')
+        : isEpfoUploaded
+          ? 'N/A (EPFO Records)'
+          : 'Not Uploaded',
+      fatherName: isEpfoDone
+        ? (epfo.father_name || epfo.fatherName || candidate.fatherName || 'Not Uploaded')
+        : isEpfoUploaded
+          ? (candidate.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isEpfoUploaded
+        ? (epfo.uan || candidate.uanEpf || candidate.uan_no || candidate.pfNumber || candidate.pf_number || jData.uanEpf || jData.pfNumber || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isEpfoDone ? 'Verified 🟢' : (isEpfoUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     esic: {
       label: 'ESIC (INSURED PERSON)',
-      name: (esic.insured_person_name || esic.ipName || (isEsicDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
-      dob: esic.dob || candidate.dob || 'Not Uploaded',
-      address: esic.address || candidate.presentAddress || 'N/A (ESIC Portal)',
-      fatherName: esic.father_name || candidate.fatherName || 'Not Uploaded',
-      docNo: esic.esic_number || candidate.esiNumber || candidate.esi_number || 'Not Uploaded',
-      status: isEsicDone ? 'Verified 🟢' : (candidate.esiNumber || candidate.esi_number ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isEsicUploaded,
+      isVerified: isEsicDone,
+      name: isEsicDone
+        ? (esic.insured_person_name || esic.ipName || esic.name || candidate.name || 'Not Uploaded').toUpperCase()
+        : isEsicUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isEsicDone
+        ? formatDisplayDate(esic.dob || candidate.dob)
+        : isEsicUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isEsicDone
+        ? (esic.address || 'N/A (ESIC Portal)')
+        : isEsicUploaded
+          ? 'N/A (ESIC Portal)'
+          : 'Not Uploaded',
+      fatherName: isEsicDone
+        ? (esic.father_name || esic.fatherName || candidate.fatherName || 'Not Uploaded')
+        : isEsicUploaded
+          ? (candidate.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isEsicUploaded
+        ? (esic.esic_number || esic.ip_number || candidate.esiNumber || candidate.esi_number || jData.esiNumber || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isEsicDone ? 'Verified 🟢' : (isEsicUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     bank: {
       label: 'BANK ACCOUNT (IMPS PENNY DROP)',
-      name: (bank.beneficiary_name || bank.beneficiaryName || (isBankDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
+      isUploaded: isBankUploaded,
+      isVerified: isBankDone,
+      name: isBankDone
+        ? (bank.beneficiary_name || bank.beneficiaryName || bank.name || candidate.name || 'Not Uploaded').toUpperCase()
+        : isBankUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
       dob: 'N/A (Bank Privacy Policy)',
-      address: bank.branch || 'N/A (CBS Branch Records)',
+      address: isBankDone
+        ? (bank.branch || bank.branch_name || 'N/A (CBS Branch Records)')
+        : isBankUploaded
+          ? 'N/A (CBS Branch Records)'
+          : 'Not Uploaded',
       fatherName: 'N/A (Bank CBS)',
-      docNo: (candidate.bankAccountNo || candidate.bank_account_no || bank.account_number) ? `A/C: ••••••${String(candidate.bankAccountNo || candidate.bank_account_no || bank.account_number).slice(-4)} (${candidate.bankName || bank.bank_name || 'Bank'})` : 'Not Uploaded',
-      status: isBankDone ? 'Verified 🟢' : (candidate.bankAccountNo || candidate.bank_account_no ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      docNo: isBankUploaded
+        ? ((candidate.bankAccountNo || candidate.bank_account_no || bank.account_number || jData.bankAccountNo)
+          ? `A/C: ••••••${String(candidate.bankAccountNo || candidate.bank_account_no || bank.account_number || jData.bankAccountNo).slice(-4)} (${candidate.bankName || bank.bank_name || jData.bankName || 'Bank'})`
+          : 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isBankDone ? 'Verified 🟢' : (isBankUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     },
     voterId: {
       label: 'VOTER ID (EPIC / ECI)',
-      name: (voter.name || (isVoterDone ? candidate.name : 'Not Uploaded')).toUpperCase(),
-      dob: voter.dob || candidate.dob || 'Not Uploaded',
-      address: voter.address || candidate.permanentAddress || 'Not Uploaded',
-      fatherName: voter.relative_name || voter.relativeName || candidate.fatherName || 'Not Uploaded',
-      docNo: voter.epic_number || candidate.voterId || 'Not Uploaded',
-      status: isVoterDone ? 'Verified 🟢' : (candidate.voterId ? 'Submitted 🟡' : 'Not Uploaded ⚪')
+      isUploaded: isVoterUploaded,
+      isVerified: isVoterDone,
+      name: isVoterDone
+        ? (voter.name || voter.epic_name || candidate.name || 'Not Uploaded').toUpperCase()
+        : isVoterUploaded
+          ? (jData.fullName || candidate.name || 'Not Uploaded').toUpperCase()
+          : 'Not Uploaded',
+      dob: isVoterDone
+        ? formatDisplayDate(voter.dob || candidate.dob)
+        : isVoterUploaded
+          ? formatDisplayDate(candidate.dob || jData.dob)
+          : 'Not Uploaded',
+      address: isVoterDone
+        ? (voter.address || candidate.permanentAddress || 'Not Uploaded')
+        : isVoterUploaded
+          ? (candidate.permanentAddress || 'Not Uploaded')
+          : 'Not Uploaded',
+      fatherName: isVoterDone
+        ? (voter.relative_name || voter.relativeName || voter.father_name || candidate.fatherName || 'Not Uploaded')
+        : isVoterUploaded
+          ? (candidate.fatherName || 'Not Uploaded')
+          : 'Not Uploaded',
+      docNo: isVoterUploaded
+        ? (voter.epic_number || candidate.voterId || candidate.voter_id || jData.voterId || 'Not Uploaded')
+        : 'Not Uploaded',
+      status: isVoterDone ? 'Verified 🟢' : (isVoterUploaded ? 'Submitted 🟡' : 'Not Uploaded ⚪')
     }
   };
 
@@ -309,11 +481,16 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                   <tbody>
                     {docKeys.map((key, idx) => {
                       const d = docDataMap[key];
-                      const isMatch = d.name !== 'Not Uploaded' && d.name.toLowerCase().includes(candName.split(' ')[0].toLowerCase());
+                      const isNotUploaded = !d.isUploaded || d.name === 'Not Uploaded' || d.name.toUpperCase() === 'NOT UPLOADED';
+                      const isPending = d.isUploaded && !d.isVerified;
+                      const isMatch = d.isVerified && !isNotUploaded && (
+                        candName.toLowerCase().split(' ').some(part => part && part.length > 1 && d.name.toLowerCase().includes(part)) ||
+                        d.name.toLowerCase().split(' ').some(part => part && part.length > 1 && candName.toLowerCase().includes(part))
+                      );
                       return (
                         <tr key={key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
                           {idx === 0 && (
-                            <td rowSpan={8} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
+                            <td rowSpan={docKeys.length} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
                               Full Candidate Name
                             </td>
                           )}
@@ -324,9 +501,23 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                             {d.name}
                           </td>
                           <td className="p-2.5 border border-slate-300 text-center font-bold">
-                            <span className={`px-2 py-0.5 rounded text-[10px] ${d.name === 'Not Uploaded' ? 'bg-slate-200 text-slate-600' : isMatch ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                              {d.name === 'Not Uploaded' ? 'Not Uploaded' : isMatch ? 'Matched ✓' : 'Variant ⚠️'}
-                            </span>
+                            {isNotUploaded ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600">
+                                Not Uploaded
+                              </span>
+                            ) : isPending ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800">
+                                Pending 🟡
+                              </span>
+                            ) : isMatch ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">
+                                Matched ✓
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800">
+                                Variant ⚠️
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -357,10 +548,13 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                   <tbody>
                     {docKeys.map((key, idx) => {
                       const d = docDataMap[key];
+                      const isNotUploaded = !d.isUploaded || d.dob === 'Not Uploaded' || d.dob.toUpperCase() === 'NOT UPLOADED' || d.dob === '—';
+                      const isNA = d.dob.includes('N/A') || d.dob.toUpperCase().includes('PRIVACY');
+                      const isPending = d.isUploaded && !d.isVerified && !isNA;
                       return (
                         <tr key={key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
                           {idx === 0 && (
-                            <td rowSpan={8} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
+                            <td rowSpan={docKeys.length} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
                               Date of Birth (DOB)
                             </td>
                           )}
@@ -371,9 +565,19 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                             {d.dob}
                           </td>
                           <td className="p-2.5 border border-slate-300 text-center font-bold">
-                            <span className={`px-2 py-0.5 rounded text-[10px] ${d.dob.includes('Not') || d.dob.includes('N/A') ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
-                              {d.dob.includes('Not') || d.dob.includes('N/A') ? 'N/A' : 'Verified ✓'}
-                            </span>
+                            {isNotUploaded || isNA ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600">
+                                N/A
+                              </span>
+                            ) : isPending ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800">
+                                Pending 🟡
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">
+                                Verified ✓
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -404,10 +608,13 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                   <tbody>
                     {docKeys.map((key, idx) => {
                       const d = docDataMap[key];
+                      const isNotUploaded = !d.isUploaded || d.address === 'Not Uploaded' || d.address.toUpperCase() === 'NOT UPLOADED' || d.address === '—';
+                      const isNA = d.address.includes('N/A');
+                      const isPending = d.isUploaded && !d.isVerified && !isNA;
                       return (
                         <tr key={key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
                           {idx === 0 && (
-                            <td rowSpan={8} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
+                            <td rowSpan={docKeys.length} className="p-3 border border-slate-300 font-black text-slate-900 bg-slate-100 align-top">
                               Residential Address
                             </td>
                           )}
@@ -418,9 +625,23 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                             {d.address}
                           </td>
                           <td className="p-2.5 border border-slate-300 text-center font-bold">
-                            <span className={`px-2 py-0.5 rounded text-[10px] ${d.address.includes('Not') || d.address.includes('N/A') ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
-                              {d.address.includes('Not') || d.address.includes('N/A') ? 'N/A' : 'Recorded ✓'}
-                            </span>
+                            {isNotUploaded ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600">
+                                Not Uploaded
+                              </span>
+                            ) : isNA ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600">
+                                N/A
+                              </span>
+                            ) : isPending ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800">
+                                Pending 🟡
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">
+                                Recorded ✓
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -451,6 +672,8 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                   <tbody>
                     {docKeys.map((key, idx) => {
                       const d = docDataMap[key];
+                      const isNotUploaded = !d.isUploaded || d.docNo === 'Not Uploaded' || d.docNo.toUpperCase() === 'NOT UPLOADED';
+                      const isPending = d.isUploaded && !d.isVerified;
                       return (
                         <tr key={key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
                           <td className="p-2.5 border border-slate-300 font-bold text-slate-800">
@@ -463,7 +686,19 @@ export const DocumentComparisonPdfModal = ({ isOpen, onClose, candidate }) => {
                             {d.fatherName}
                           </td>
                           <td className="p-2.5 border border-slate-300 text-center font-bold">
-                            <span className="text-[11px]">{d.status}</span>
+                            {isNotUploaded ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600">
+                                Not Uploaded ⚪
+                              </span>
+                            ) : isPending ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800">
+                                Submitted 🟡
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">
+                                Verified 🟢
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
