@@ -1,4 +1,5 @@
 import React from 'react';
+import { calculateAccurateAge } from '../../utils/validationRules';
 
 export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
@@ -8,15 +9,26 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
   const gender = c.gender || jf.gender || 'Female';
   const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
   const mobile = c.mobile || jf.mobile || '-';
-  const presentAddr = jf.presentAddress || '-';
-  const permAddr = jf.permanentAddress || '-';
-  const nomineeName = jf.nomineeName || c.spouseName || '-';
-  const nomineeRel = jf.nomineeRelation || 'Spouse';
-  const bankAcc = jf.accountNumber || jf.bankAccountNo || '-';
-  const ifsc = jf.ifscCode || '-';
-  const branch = jf.branchName || 'Rajadhani';
-  const insNo = c.esiNumber || jf.esiNumber || '-';
+  const presentAddr = jf.presentAddress || c.presentAddress || '-';
+  const permAddr = jf.permanentAddress || c.permanentAddress || presentAddr || '-';
+  
+  // Nominee & family particulars
+  const nomineeName = jf.nomineeName || c.nomineeName || (c.maritalStatus === 'Married' ? (c.spouseName || jf.spouseName) : (c.fatherName || jf.fatherName)) || '-';
+  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeAddr = jf.nomineeAddress || permAddr;
+  const rawNomineeDob = jf.nomineeDob || (c.maritalStatus === 'Married' ? jf.spouseDob : '') || '';
+  const calculatedNomineeAge = (rawNomineeDob ? calculateAccurateAge(rawNomineeDob) : null) || (c.maritalStatus === 'Married' ? (calculateAccurateAge(jf.spouseDob) || jf.spouseAge) : null);
+  const nomineeAgeDisplay = jf.nomineeAge ? `${jf.nomineeAge} Yrs` : (calculatedNomineeAge ? `${calculatedNomineeAge} Yrs` : '-');
+
+  const bankAcc = jf.accountNumber || jf.bankAccountNo || c.bankAccountNo || '-';
+  const ifsc = jf.ifscCode || c.ifscCode || '-';
+  const branch = jf.branchName || jf.bankBranch || '-';
+  const insNo = c.esiNumber || jf.esiNumber || jf.esicNo || '-';
+  const employerCode = jf.factoryEmployerCode || jf.esicEmployerCode || c.companyCode || '3251';
+  const dispensary = jf.esicDispensary || (jf.city ? `ESI Dispensary ${jf.city}` : 'ESI Branch Dispensary');
   const doj = c.doj || jf.doj || '2026-04-13';
+  const dept = c.dept || jf.dept || 'Operations';
+  const designation = c.designation || jf.designation || 'Staff';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -32,7 +44,7 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
         </div>
         <div className="border-2 border-slate-800 p-1.5 text-center font-mono">
           <span className="text-[9px] block text-slate-500">Employer's Code No.</span>
-          <strong className="text-xs font-black">3251</strong>
+          <strong className="text-xs font-black">{employerCode}</strong>
         </div>
       </div>
 
@@ -56,8 +68,8 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
         <div className="space-y-1 pl-2 pt-2 sm:pt-0">
           <strong className="block font-black text-slate-900 underline uppercase text-[10px]">(B) Employer's Particulars</strong>
           <div>10. Date of Appointment: <strong className="font-mono">{doj}</strong></div>
-          <div>11. Name & Address of Employer: <strong className="block">{companyName} (Joy Manpower Service)</strong></div>
-          <div>Department: <strong>Production</strong> | Nature: <strong>Helper / Operator</strong></div>
+          <div>11. Name & Address of Employer: <strong className="block">{companyName}</strong></div>
+          <div>Department: <strong>{dept}</strong> | Nature: <strong>{designation}</strong></div>
           <div className="pt-1 border-t border-slate-300">
             <span className="text-[10px] text-slate-500 block">Bank Account for Benefit Disbursals:</span>
             <div>Acc: <strong className="font-mono">{bankAcc}</strong> | IFSC: <strong className="font-mono">{ifsc}</strong></div>
@@ -73,7 +85,7 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div>Name of Nominee: <strong className="font-mono font-bold">{nomineeName}</strong></div>
           <div>Relationship: <strong>{nomineeRel}</strong></div>
-          <div>Address: <strong>Kurumbapalayam, Cbe, TN</strong></div>
+          <div>Address: <strong>{nomineeAddr}</strong></div>
         </div>
       </div>
 
@@ -95,10 +107,10 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
             <tr className="divide-x divide-slate-800">
               <td className="p-1.5 text-center font-mono">1</td>
               <td className="p-1.5 font-bold font-mono">{nomineeName}</td>
-              <td className="p-1.5 text-center font-mono">26 Yrs</td>
+              <td className="p-1.5 text-center font-mono">{nomineeAgeDisplay}</td>
               <td className="p-1.5 font-bold">{nomineeRel}</td>
               <td className="p-1.5 text-center font-bold text-emerald-800">YES ✓</td>
-              <td className="p-1.5 text-slate-600">Coimbatore, TN</td>
+              <td className="p-1.5 text-slate-600">{nomineeAddr}</td>
             </tr>
           </tbody>
         </table>
@@ -115,8 +127,8 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
           <div className="col-span-9 space-y-1">
             <div>Name: <strong className="font-mono uppercase font-bold">{name}</strong> | Ins No: <strong className="font-mono">{insNo}</strong></div>
             <div>Father's/Husband's: <strong className="font-mono">{fatherOrHusband}</strong> | DOB: <strong className="font-mono">{dob}</strong></div>
-            <div>Dispensary: <strong>ESI Dispensary Coimbatore</strong></div>
-            <div>Employer: <strong>{companyName} (Code: 3251)</strong></div>
+            <div>Dispensary: <strong>{dispensary}</strong></div>
+            <div>Employer: <strong>{companyName} (Code: {employerCode})</strong></div>
           </div>
           <div className="col-span-3 border-2 border-dashed border-slate-400 h-20 rounded flex items-center justify-center text-center p-1 text-[8.5px] text-slate-400 font-bold">
             Affix Passport Photo Here
@@ -136,7 +148,7 @@ export const EsicForm1 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOL
             <div className="border-t border-slate-800 pt-0.5">Signature / T.I. of IP</div>
           </div>
           <div className="text-right">
-            <div className="font-bold text-slate-800">Joy Manpower Service</div>
+            <div className="font-bold text-slate-800">{companyName}</div>
             <div className="border-t border-slate-800 pt-0.5">Signature of Employer with Seal</div>
           </div>
         </div>

@@ -10,13 +10,20 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
   const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
   const mobile = c.mobile || jf.mobile || '-';
   const email = c.email || jf.email || '-';
-  const uan = c.uanEpf || jf.uanEpf || c.pfNumber || '-';
+  const uan = c.uanEpf || jf.uanEpf || c.pfNumber || jf.pfNumber || '-';
   const prevPf = jf.previousPfNumber || '-';
-  const bankAcc = jf.accountNumber || jf.bankAccountNo || '-';
-  const ifsc = jf.ifscCode || '-';
+  const prevExitDate = jf.prevEmploymentExitDate || jf.previousExitDate || '-';
+  const schemeCert = jf.schemeCertNo || '-';
+  const ppoNumber = jf.ppoNo || '-';
+  const isEpfMember = (jf.isPreviousEpfMember === 'Yes' || jf.isPreviousEpfMember === true || (prevPf && prevPf !== '-'));
+  const isEpsMember = (jf.isPreviousEpsMember === 'Yes' || jf.isPreviousEpsMember === true || (prevPf && prevPf !== '-'));
+  const isIntl = jf.isInternationalWorker === 'Yes' || jf.isInternationalWorker === true;
+  const bankAcc = jf.accountNumber || jf.bankAccountNo || c.bankAccountNo || '-';
+  const ifsc = jf.ifscCode || c.ifscCode || '-';
   const aadhaar = c.aadhaarNo || jf.aadhaarNo || '-';
   const pan = (c.panNo && c.panNo !== 'ABCDE1234F') ? c.panNo : ((jf.panNo && jf.panNo !== 'ABCDE1234F') ? jf.panNo : 'Pending Verification');
   const doj = c.doj || jf.doj || '2026-04-13';
+  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || 'Corporate Station';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -87,13 +94,13 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
         <div className="grid grid-cols-12">
           <div className="col-span-1 p-2 font-bold border-r border-slate-800 text-center">7.</div>
           <div className="col-span-8 p-2 font-semibold border-r border-slate-800">Whether earlier a member of Employees' Provident Fund Scheme 1952</div>
-          <div className="col-span-3 p-2 font-bold text-center bg-slate-50">YES ✓ / NO</div>
+          <div className="col-span-3 p-2 font-bold text-center bg-slate-50">{isEpfMember ? 'YES ✓ / NO' : 'YES / NO ✓'}</div>
         </div>
 
         <div className="grid grid-cols-12">
           <div className="col-span-1 p-2 font-bold border-r border-slate-800 text-center">8.</div>
           <div className="col-span-8 p-2 font-semibold border-r border-slate-800">Whether earlier a member of Employees' Pension Scheme, 1995</div>
-          <div className="col-span-3 p-2 font-bold text-center bg-slate-50">YES ✓ / NO</div>
+          <div className="col-span-3 p-2 font-bold text-center bg-slate-50">{isEpsMember ? 'YES ✓ / NO' : 'YES / NO ✓'}</div>
         </div>
 
         {/* Row 9: Previous Employment */}
@@ -104,9 +111,9 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
               <div><span className="text-slate-500">a) Universal Account Number (UAN):</span> <strong className="font-mono">{uan}</strong></div>
               <div><span className="text-slate-500">b) Previous PF Account Number:</span> <strong className="font-mono">{prevPf}</strong></div>
-              <div><span className="text-slate-500">c) Date of exit from previous employment:</span> <strong className="font-mono">31/03/2026</strong></div>
-              <div><span className="text-slate-500">d) Scheme Certificate No. (if issued):</span> <strong className="font-mono">N/A</strong></div>
-              <div><span className="text-slate-500">e) Pension Payment Order (PPO) No:</span> <strong className="font-mono">N/A</strong></div>
+              <div><span className="text-slate-500">c) Date of exit from previous employment:</span> <strong className="font-mono">{prevExitDate}</strong></div>
+              <div><span className="text-slate-500">d) Scheme Certificate No. (if issued):</span> <strong className="font-mono">{schemeCert}</strong></div>
+              <div><span className="text-slate-500">e) Pension Payment Order (PPO) No:</span> <strong className="font-mono">{ppoNumber}</strong></div>
             </div>
           </div>
         </div>
@@ -115,7 +122,13 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
         <div className="grid grid-cols-12">
           <div className="col-span-1 p-2 font-bold border-r border-slate-800 text-center">10.</div>
           <div className="col-span-5 p-2 font-semibold border-r border-slate-800">a) International Worker:</div>
-          <div className="col-span-6 p-2 bg-slate-50"><strong>NO</strong> (Indian Resident)</div>
+          <div className="col-span-6 p-2 bg-slate-50">
+            {isIntl ? (
+              <strong>YES (Country: {jf.countryOfOrigin || '-'}, Passport: {jf.passportNo || '-'})</strong>
+            ) : (
+              <strong>NO (Indian Resident)</strong>
+            )}
+          </div>
         </div>
 
         {/* Row 11: KYC Details */}
@@ -144,7 +157,7 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
         <div className="flex items-end justify-between pt-3 text-[11px]">
           <div>
             <div>Date: <strong className="font-mono">{doj}</strong></div>
-            <div>Place: <strong>Coimbatore / Bengaluru</strong></div>
+            <div>Place: <strong>{place}</strong></div>
           </div>
           <div className="text-right min-w-[140px]">
             {specimenSig ? (
@@ -160,7 +173,7 @@ export const EpfoForm11 = ({ candidate, jf = {}, companyName = "JOY CORPORATE SO
       {/* Declaration by Present Employer */}
       <div className="p-3 border-2 border-dashed border-slate-400 rounded-lg text-[10px] space-y-1.5 bg-slate-50/50">
         <strong className="block uppercase font-black text-slate-900 underline">DECLARATION BY PRESENT EMPLOYER</strong>
-        <p>A. The member Mr./Ms./Mrs. <strong>{name}</strong> has joined on <strong className="font-mono">{doj}</strong> and has been allotted PF Number <strong className="font-mono">{c.employeeNumber || 'COMP001EMP001'}</strong>.</p>
+        <p>A. The member Mr./Ms./Mrs. <strong>{name}</strong> has joined on <strong className="font-mono">{doj}</strong> and has been allotted PF Number <strong className="font-mono">{c.employeeNumber || c.empId || 'COMP001EMP001'}</strong>.</p>
         <p>B. In case the person was earlier not a member of EPF Scheme: The UAN allotted is <strong className="font-mono">{uan}</strong>.</p>
         <p>C. In case the person was earlier a member of EPF Scheme: The above PF Account number has been tagged with his/her UAN/Previous Member ID.</p>
         

@@ -1420,6 +1420,227 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
               </div>
 
+              {/* Extended EPFO Form 11 Social Security */}
+              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-purple-950 uppercase tracking-wider block">
+                    🏛️ EPFO Form 11 (Provident Fund & Pension Declaration):
+                  </span>
+                  <span className="text-[9px] bg-purple-100 text-purple-900 font-mono font-bold px-2 py-0.5 rounded">
+                    EPF Act 1952
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Previous PF Number / Member ID', 'previousPfNumber')}
+                    <input 
+                      type="text" 
+                      value={formData.previousPfNumber || ''} 
+                      onChange={e => setFormData({ ...formData, previousPfNumber: e.target.value })}
+                      placeholder="e.g. MH/BAN/0012345/0001"
+                      className={getCandidateFieldInputClass('previousPfNumber', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Prev Employment Exit Date', 'prevEmploymentExitDate')}
+                    <input 
+                      type="date" 
+                      value={toIsoDateString(formData.prevEmploymentExitDate) || formData.prevEmploymentExitDate || ''} 
+                      onChange={e => setFormData({ ...formData, prevEmploymentExitDate: e.target.value })}
+                      className={getCandidateFieldInputClass('prevEmploymentExitDate', 'form-input')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Scheme Certificate No. (if any)', 'schemeCertNo')}
+                    <input 
+                      type="text" 
+                      value={formData.schemeCertNo || ''} 
+                      onChange={e => setFormData({ ...formData, schemeCertNo: e.target.value })}
+                      placeholder="e.g. SC-1029348"
+                      className={getCandidateFieldInputClass('schemeCertNo', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Pension Payment Order (PPO No)', 'ppoNo')}
+                    <input 
+                      type="text" 
+                      value={formData.ppoNo || ''} 
+                      onChange={e => setFormData({ ...formData, ppoNo: e.target.value })}
+                      placeholder="e.g. PPO-984210"
+                      className={getCandidateFieldInputClass('ppoNo', 'form-input font-mono')} 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Previous EPF Scheme Member?', 'isPreviousEpfMember')}
+                    <select
+                      value={formData.isPreviousEpfMember || 'No'}
+                      onChange={e => setFormData({ ...formData, isPreviousEpfMember: e.target.value })}
+                      className={getCandidateFieldInputClass('isPreviousEpfMember', 'form-select font-bold')}
+                    >
+                      <option value="Yes">Yes (Existing EPF Member)</option>
+                      <option value="No">No (First Time Member)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Previous EPS Pension Member?', 'isPreviousEpsMember')}
+                    <select
+                      value={formData.isPreviousEpsMember || 'No'}
+                      onChange={e => setFormData({ ...formData, isPreviousEpsMember: e.target.value })}
+                      className={getCandidateFieldInputClass('isPreviousEpsMember', 'form-select font-bold')}
+                    >
+                      <option value="Yes">Yes (Existing EPS Member)</option>
+                      <option value="No">No (Not Enrolled)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('International Worker?', 'isInternationalWorker')}
+                    <select
+                      value={formData.isInternationalWorker || 'No'}
+                      onChange={e => setFormData({ ...formData, isInternationalWorker: e.target.value })}
+                      className={getCandidateFieldInputClass('isInternationalWorker', 'form-select font-bold')}
+                    >
+                      <option value="No">No (Indian Citizen)</option>
+                      <option value="Yes">Yes (International Worker)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Extended ESIC Form 1 Details */}
+              <div className="p-3.5 bg-sky-50/70 border border-sky-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-sky-950 uppercase tracking-wider block">
+                    🏥 ESIC Form 1 (Employees' State Insurance Corporation):
+                  </span>
+                  <span className="text-[9px] bg-sky-100 text-sky-900 font-mono font-bold px-2 py-0.5 rounded">
+                    ESI Act 1948
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Previous ESIC Ins No (if any)', 'esicPrevInsNo')}
+                    <input 
+                      type="text" 
+                      value={formData.esicPrevInsNo || ''} 
+                      onChange={e => setFormData({ ...formData, esicPrevInsNo: e.target.value })}
+                      placeholder="e.g. 3199887766"
+                      className={getCandidateFieldInputClass('esicPrevInsNo', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Preferred ESIC Dispensary', 'esicDispensary')}
+                    <input 
+                      type="text" 
+                      value={formData.esicDispensary || ''} 
+                      onChange={e => setFormData({ ...formData, esicDispensary: e.target.value })}
+                      placeholder="e.g. ESIC Dispensary Koramangala"
+                      className={getCandidateFieldInputClass('esicDispensary', 'form-input')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('ESIC Branch Office', 'esicBranchOffice')}
+                    <input 
+                      type="text" 
+                      value={formData.esicBranchOffice || ''} 
+                      onChange={e => setFormData({ ...formData, esicBranchOffice: e.target.value })}
+                      placeholder="e.g. SRO Bommasandra"
+                      className={getCandidateFieldInputClass('esicBranchOffice', 'form-input')} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Extended Income Tax Form 16 / TDS Form 12B */}
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-amber-950 uppercase tracking-wider block">
+                    📑 Form 16 / TDS Form 12B Income Tax Declaration:
+                  </span>
+                  <span className="text-[9px] bg-amber-100 text-amber-900 font-mono font-bold px-2 py-0.5 rounded">
+                    IT Sec 192 / 12B
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Income Tax Regime', 'taxRegime')}
+                    <select
+                      value={formData.taxRegime || 'New Tax Regime (Section 115BAC)'}
+                      onChange={e => setFormData({ ...formData, taxRegime: e.target.value })}
+                      className={getCandidateFieldInputClass('taxRegime', 'form-select font-bold text-indigo-900')}
+                    >
+                      <option value="New Tax Regime (Section 115BAC)">New Tax Regime (Section 115BAC)</option>
+                      <option value="Old Tax Regime (With Deductions)">Old Tax Regime (With Deductions)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Prev Employer Gross Salary (₹)', 'previousGrossSalary')}
+                    <input 
+                      type="number" 
+                      value={formData.previousGrossSalary || ''} 
+                      onChange={e => setFormData({ ...formData, previousGrossSalary: e.target.value })}
+                      placeholder="e.g. 450000"
+                      className={getCandidateFieldInputClass('previousGrossSalary', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Prev Employer TDS Deducted (₹)', 'previousTdsDeducted')}
+                    <input 
+                      type="number" 
+                      value={formData.previousTdsDeducted || ''} 
+                      onChange={e => setFormData({ ...formData, previousTdsDeducted: e.target.value })}
+                      placeholder="e.g. 15000"
+                      className={getCandidateFieldInputClass('previousTdsDeducted', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Prev Employer PF Deducted (₹)', 'previousPfDeducted')}
+                    <input 
+                      type="number" 
+                      value={formData.previousPfDeducted || ''} 
+                      onChange={e => setFormData({ ...formData, previousPfDeducted: e.target.value })}
+                      placeholder="e.g. 21600"
+                      className={getCandidateFieldInputClass('previousPfDeducted', 'form-input font-mono')} 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Sec 24b Housing Loan Interest (₹)', 'housingLoanInterest')}
+                    <input 
+                      type="number" 
+                      value={formData.housingLoanInterest || ''} 
+                      onChange={e => setFormData({ ...formData, housingLoanInterest: e.target.value })}
+                      placeholder="e.g. 200000"
+                      className={getCandidateFieldInputClass('housingLoanInterest', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Sec 80C Investment (PPF/LIC/ELSS) (₹)', 'sec80cInvestment')}
+                    <input 
+                      type="number" 
+                      value={formData.sec80cInvestment || ''} 
+                      onChange={e => setFormData({ ...formData, sec80cInvestment: e.target.value })}
+                      placeholder="e.g. 150000"
+                      className={getCandidateFieldInputClass('sec80cInvestment', 'form-input font-mono')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Sec 80D Mediclaim Premium (₹)', 'sec80dMediclaim')}
+                    <input 
+                      type="number" 
+                      value={formData.sec80dMediclaim || ''} 
+                      onChange={e => setFormData({ ...formData, sec80dMediclaim: e.target.value })}
+                      placeholder="e.g. 25000"
+                      className={getCandidateFieldInputClass('sec80dMediclaim', 'form-input font-mono')} 
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   {renderCandidateFieldLabel('Driving License (DL) Number', 'drivingLicense')}
@@ -1759,9 +1980,9 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               </div>
 
               {/* Gratuity & PF Nominee */}
-              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-2xl space-y-2">
+              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-2xl space-y-3">
                 <span className="text-xs font-black text-purple-900 uppercase tracking-wider block">
-                  🛡️ Primary Statutory PF & Gratuity Nominee:
+                  🛡️ Primary Statutory PF & Gratuity Nominee (EPFO Form 2 & Gratuity Form F):
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                   <div>
@@ -1781,7 +2002,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       required 
                       value={formData.nomineeRelation} 
                       onChange={e => setFormData({ ...formData, nomineeRelation: e.target.value })}
-                      placeholder="e.g. Mother (100% Share)"
+                      placeholder="e.g. Spouse (100% Share)"
                       className={getCandidateFieldInputClass('nomineeRelation')} 
                     />
                   </div>
@@ -1790,18 +2011,49 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     <input 
                       type="date" 
                       value={toIsoDateString(formData.nomineeDob) || formData.nomineeDob || ''} 
-                      onChange={e => setFormData({ ...formData, nomineeDob: e.target.value })}
+                      onChange={e => {
+                        const nDob = e.target.value;
+                        const calcAge = calculateAccurateAge(nDob);
+                        setFormData({ 
+                          ...formData, 
+                          nomineeDob: nDob,
+                          nomineeAge: calcAge !== null ? String(calcAge) : formData.nomineeAge
+                        });
+                      }}
                       className={getCandidateFieldInputClass('nomineeDob')} 
                     />
                   </div>
                   <div>
-                    {renderCandidateFieldLabel('Nominee Aadhaar Number', 'nomineeAadhaar')}
+                    {renderCandidateFieldLabel('Nominee Age (Years)', 'nomineeAge')}
                     <input 
                       type="text" 
-                      value={formData.nomineeAadhaar} 
-                      onChange={e => setFormData({ ...formData, nomineeAadhaar: e.target.value })}
-                      placeholder="12-digit Aadhaar"
-                      className={getCandidateFieldInputClass('nomineeAadhaar', 'form-input font-mono')} 
+                      value={formData.nomineeAge || ''} 
+                      onChange={e => setFormData({ ...formData, nomineeAge: e.target.value })}
+                      placeholder="e.g. 26"
+                      className={getCandidateFieldInputClass('nomineeAge', 'form-input font-mono')} 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    {renderCandidateFieldLabel('Nominee Residential Address', 'nomineeAddress')}
+                    <input 
+                      type="text" 
+                      value={formData.nomineeAddress || ''} 
+                      onChange={e => setFormData({ ...formData, nomineeAddress: e.target.value })}
+                      placeholder="e.g. 12/4, 2nd Cross, Gandhi Nagar, Bengaluru, Karnataka"
+                      className={getCandidateFieldInputClass('nomineeAddress')} 
+                    />
+                  </div>
+                  <div>
+                    {renderCandidateFieldLabel('Minor Nominee Guardian (if under 18 yrs)', 'nomineeGuardian')}
+                    <input 
+                      type="text" 
+                      value={formData.nomineeGuardian || ''} 
+                      onChange={e => setFormData({ ...formData, nomineeGuardian: e.target.value })}
+                      placeholder="e.g. Ramesh Ramanathan (Father & Natural Guardian)"
+                      className={getCandidateFieldInputClass('nomineeGuardian')} 
                     />
                   </div>
                 </div>

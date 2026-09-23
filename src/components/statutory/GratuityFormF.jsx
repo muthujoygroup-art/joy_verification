@@ -1,4 +1,5 @@
 import React from 'react';
+import { calculateAccurateAge } from '../../utils/validationRules';
 
 export const GratuityFormF = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
@@ -7,12 +8,21 @@ export const GratuityFormF = ({ candidate, jf = {}, companyName = "JOY CORPORATE
   const dob = c.dob || jf.dob || '-';
   const gender = c.gender || jf.gender || 'Female';
   const maritalStatus = c.maritalStatus || jf.maritalStatus || 'Married';
-  const address = jf.permanentAddress || '-';
-  const nomineeName = jf.nomineeName || c.spouseName || '-';
-  const nomineeRel = jf.nomineeRelation || 'Husband';
+  const address = jf.permanentAddress || c.permanentAddress || '-';
+  
+  // Nominee Details
+  const nomineeName = jf.nomineeName || c.nomineeName || (c.maritalStatus === 'Married' ? (c.spouseName || jf.spouseName) : (c.fatherName || jf.fatherName)) || '-';
+  const nomineeRel = jf.nomineeRelation || c.nomineeRelation || (c.maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeAddr = jf.nomineeAddress || address;
+  const rawNomineeDob = jf.nomineeDob || (c.maritalStatus === 'Married' ? jf.spouseDob : '') || '';
+  const calculatedNomineeAge = (rawNomineeDob ? calculateAccurateAge(rawNomineeDob) : null) || (c.maritalStatus === 'Married' ? (calculateAccurateAge(jf.spouseDob) || jf.spouseAge) : null);
+  const nomineeAgeDisplay = jf.nomineeAge ? `${jf.nomineeAge} Yrs` : (calculatedNomineeAge ? `${calculatedNomineeAge} Yrs` : (rawNomineeDob || '-'));
+  const nomineeShare = jf.nomineeShare || '100%';
+
   const doj = c.doj || jf.doj || '2026-04-13';
+  const place = jf.currentCity || jf.city || c.city || c.nativeDistrict || 'Corporate Station';
   const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-EMP-2026-001';
-  const dept = c.designation || jf.designation || 'Engineering';
+  const dept = c.dept || jf.dept || c.designation || jf.designation || 'Operations';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -44,15 +54,15 @@ export const GratuityFormF = ({ candidate, jf = {}, companyName = "JOY CORPORATE
               <th className="p-1.5">Name in Full with Address of Nominee(s)</th>
               <th className="p-1.5">Relationship with Employee</th>
               <th className="p-1.5">Age / DOB</th>
-              <th className="p-1.5">Proportion of Gratuity (100%)</th>
+              <th className="p-1.5">Proportion of Gratuity ({nomineeShare})</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
             <tr>
-              <td className="p-1.5 font-bold uppercase">{nomineeName} ({address})</td>
+              <td className="p-1.5 font-bold uppercase">{nomineeName} ({nomineeAddr})</td>
               <td className="p-1.5">{nomineeRel}</td>
-              <td className="p-1.5 font-mono">{dob}</td>
-              <td className="p-1.5 font-mono font-black text-emerald-800">100%</td>
+              <td className="p-1.5 font-mono">{nomineeAgeDisplay}</td>
+              <td className="p-1.5 font-mono font-black text-emerald-800">{nomineeShare}</td>
             </tr>
           </tbody>
         </table>
@@ -75,7 +85,7 @@ export const GratuityFormF = ({ candidate, jf = {}, companyName = "JOY CORPORATE
       <div className="flex items-end justify-between pt-3 text-[11px] border-t border-slate-300">
         <div>
           <div>Date: <strong className="font-mono">{doj}</strong></div>
-          <div>Place: <strong>Coimbatore / Bengaluru</strong></div>
+          <div>Place: <strong>{place}</strong></div>
         </div>
         <div className="text-right min-w-[140px]">
           {specimenSig ? (

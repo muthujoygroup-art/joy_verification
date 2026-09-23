@@ -173,14 +173,62 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   panNo: '',
   drivingLicense: '',
   passportNo: '',
+  passportValidFrom: '',
+  passportValidTo: '',
   voterId: '',
   uanEpf: '',
   esicNo: '',
   bankName: '',
   bankAccountNo: '',
   ifscCode: '',
+  branchName: '',
+  accountType: 'Savings Account',
+
+  // EPFO Form 11 Particulars
+  isPreviousEpfMember: 'No',
+  isPreviousEpsMember: 'No',
+  previousPfNumber: '',
+  prevEmploymentExitDate: '',
+  schemeCertNo: '',
+  ppoNo: '',
+  isInternationalWorker: 'No',
+  countryOfOrigin: 'India',
+
+  // Nominee & Gratuity Particulars (EPFO Form 2 & Gratuity Form F)
   nomineeName: '',
   nomineeRelation: '',
+  nomineeDob: '',
+  nomineeAge: '',
+  nomineeAddress: '',
+  nomineeShare: '100%',
+  nomineeGuardian: '',
+  insuranceDependents: '',
+
+  // ESIC Form 1 Particulars
+  esicPrevInsNo: '',
+  esicDispensary: '',
+  esicBranchOffice: '',
+  factoryEmployerCode: '',
+
+  // Income Tax Form 16 / TDS Form 12B Particulars
+  taxRegime: 'New Tax Regime (Section 115BAC)',
+  previousGrossSalary: '',
+  previousPfDeducted: '',
+  previousPtDeducted: '',
+  previousTdsDeducted: '',
+  housingLoanInterest: '',
+  sec80cInvestment: '',
+  sec80dMediclaim: '',
+
+  // Contract Labour Form XIII Particulars
+  contractorAgencyName: '',
+  clraLicenseNo: '',
+  employeeTicketNo: '',
+  wageRate: '',
+  contractDeploymentLocation: '',
+  contractPeriodFrom: '',
+  contractPeriodTo: '',
+
   companyId: currentCompany?.id || 'comp-joy',
   hrId: activeHr?.id || 'hr-1',
   employeeCategory: 'it_tech',
@@ -1286,14 +1334,62 @@ export const HrExecutiveView = () => {
       panNo: cand.panNo || cand.panNumber || jf.panNo || '',
       drivingLicense: cand.drivingLicense || jf.drivingLicense || '',
       passportNo: cand.passportNo || jf.passportNo || '',
+      passportValidFrom: cand.passportValidFrom || jf.passportValidFrom || '',
+      passportValidTo: cand.passportValidTo || jf.passportValidTo || '',
       voterId: cand.voterId || jf.voterId || '',
       uanEpf: cand.uanEpf || cand.pfNumber || jf.uanEpf || '',
       esicNo: cand.esicNo || cand.esiNumber || jf.esicNo || '',
       bankName: cand.bankName || jf.bankName || '',
       bankAccountNo: cand.bankAccountNo || jf.bankAccountNo || '',
       ifscCode: cand.ifscCode || jf.ifscCode || '',
+      branchName: cand.branchName || jf.branchName || jf.bankBranch || '',
+      accountType: cand.accountType || jf.accountType || 'Savings Account',
+
+      // EPFO Form 11 Particulars
+      isPreviousEpfMember: cand.isPreviousEpfMember || jf.isPreviousEpfMember || 'No',
+      isPreviousEpsMember: cand.isPreviousEpsMember || jf.isPreviousEpsMember || 'No',
+      previousPfNumber: cand.previousPfNumber || jf.previousPfNumber || '',
+      prevEmploymentExitDate: toIsoDateString(cand.prevEmploymentExitDate || jf.prevEmploymentExitDate || '') || '',
+      schemeCertNo: cand.schemeCertNo || jf.schemeCertNo || '',
+      ppoNo: cand.ppoNo || jf.ppoNo || '',
+      isInternationalWorker: cand.isInternationalWorker || jf.isInternationalWorker || 'No',
+      countryOfOrigin: cand.countryOfOrigin || jf.countryOfOrigin || 'India',
+
+      // Nominee & Gratuity Particulars (EPFO Form 2 & Gratuity Form F)
       nomineeName: cand.nomineeName || jf.nomineeName || '',
       nomineeRelation: cand.nomineeRelation || jf.nomineeRelation || '',
+      nomineeDob: toIsoDateString(cand.nomineeDob || jf.nomineeDob || '') || '',
+      nomineeAge: cand.nomineeAge || jf.nomineeAge || '',
+      nomineeAddress: cand.nomineeAddress || jf.nomineeAddress || '',
+      nomineeShare: cand.nomineeShare || jf.nomineeShare || '100%',
+      nomineeGuardian: cand.nomineeGuardian || jf.nomineeGuardian || '',
+      insuranceDependents: cand.insuranceDependents || jf.insuranceDependents || '',
+
+      // ESIC Form 1 Particulars
+      esicPrevInsNo: cand.esicPrevInsNo || jf.esicPrevInsNo || '',
+      esicDispensary: cand.esicDispensary || jf.esicDispensary || '',
+      esicBranchOffice: cand.esicBranchOffice || jf.esicBranchOffice || '',
+      factoryEmployerCode: cand.factoryEmployerCode || jf.factoryEmployerCode || '',
+
+      // Income Tax Form 16 / TDS Form 12B Particulars
+      taxRegime: cand.taxRegime || jf.taxRegime || 'New Tax Regime (Section 115BAC)',
+      previousGrossSalary: cand.previousGrossSalary || jf.previousGrossSalary || '',
+      previousPfDeducted: cand.previousPfDeducted || jf.previousPfDeducted || '',
+      previousPtDeducted: cand.previousPtDeducted || jf.previousPtDeducted || '',
+      previousTdsDeducted: cand.previousTdsDeducted || jf.previousTdsDeducted || '',
+      housingLoanInterest: cand.housingLoanInterest || jf.housingLoanInterest || '',
+      sec80cInvestment: cand.sec80cInvestment || jf.sec80cInvestment || '',
+      sec80dMediclaim: cand.sec80dMediclaim || jf.sec80dMediclaim || '',
+
+      // Contract Labour Form XIII Particulars
+      contractorAgencyName: cand.contractorAgencyName || jf.contractorAgencyName || '',
+      clraLicenseNo: cand.clraLicenseNo || jf.clraLicenseNo || '',
+      employeeTicketNo: cand.employeeTicketNo || jf.employeeTicketNo || '',
+      wageRate: cand.wageRate || jf.wageRate || '',
+      contractDeploymentLocation: cand.contractDeploymentLocation || jf.contractDeploymentLocation || '',
+      contractPeriodFrom: toIsoDateString(cand.contractPeriodFrom || jf.contractPeriodFrom || '') || '',
+      contractPeriodTo: toIsoDateString(cand.contractPeriodTo || jf.contractPeriodTo || '') || '',
+
       companyId: cand.companyId || currentCompany?.id || 'comp-joy',
       hrId: cand.hrId || activeHr?.id || 'hr-1',
       employeeCategory: cand.employeeType || cand.employeeCategory || jf.employeeCategory || 'it_tech',
@@ -4009,112 +4105,556 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* SECTION 5: Statutory IDs & Banking Settlement */}
-            <div className="space-y-3 pt-3 border-t border-slate-100">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-emerald-600" />
-                <span>5. Statutory Government IDs & Direct Salary Bank Settlement</span>
-              </h4>
+            <div className="space-y-4 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-emerald-600" />
+                  <span>5. Statutory Government IDs, Social Security, Tax (Form 12B) & Direct Banking Settlement</span>
+                </h4>
+                <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-200">
+                  EPFO Form 11 • ESIC Form 1 • TDS Form 12B • Form XIII
+                </span>
+              </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
-                <div>
-                  {renderFieldLabel('PAN Card Number', 'panNo')}
-                  <input 
-                    type="text" 
-                    placeholder="ABCDE1234F"
-                    value={formData.panNo}
-                    onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
-                    className={getFieldInputClass('panNo', 'form-input font-mono')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Passport Number', 'passportNo')}
-                  <input 
-                    type="text" 
-                    placeholder="J8912401"
-                    value={formData.passportNo || ''}
-                    onChange={(e) => setFormData({ ...formData, passportNo: e.target.value.toUpperCase() })}
-                    className={getFieldInputClass('passportNo', 'form-input font-mono')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('EPFO UAN Number', 'uanEpf')}
-                  <input 
-                    type="text" 
-                    placeholder="100982341209"
-                    value={formData.uanEpf}
-                    onChange={(e) => setFormData({ ...formData, uanEpf: e.target.value })}
-                    className={getFieldInputClass('uanEpf', 'form-input font-mono')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Driving License (DL)', 'drivingLicense')}
-                  <input 
-                    type="text" 
-                    placeholder="KA-01201900124"
-                    value={formData.drivingLicense}
-                    onChange={(e) => setFormData({ ...formData, drivingLicense: e.target.value })}
-                    className={getFieldInputClass('drivingLicense', 'form-input font-mono')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Bank Name', 'bankName')}
-                  <input 
-                    type="text" 
-                    placeholder="HDFC Bank"
-                    value={formData.bankName}
-                    onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                    className={getFieldInputClass('bankName')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Bank Account No', 'bankAccountNo')}
-                  <input 
-                    type="text" 
-                    placeholder="50100234129845"
-                    value={formData.bankAccountNo}
-                    onChange={(e) => setFormData({ ...formData, bankAccountNo: e.target.value })}
-                    className={getFieldInputClass('bankAccountNo', 'form-input font-mono')}
-                  />
+              {/* SUB-SECTION 5A: Core Government IDs */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
+                  🪪 Core Government Identity Credentials:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Income Tax PAN Number', 'panNo')}
+                    <input 
+                      type="text" 
+                      placeholder="ABCDE1234F"
+                      value={formData.panNo}
+                      onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
+                      className={getFieldInputClass('panNo', 'form-input font-mono font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Passport Number', 'passportNo')}
+                    <input 
+                      type="text" 
+                      placeholder="J8912401"
+                      value={formData.passportNo || ''}
+                      onChange={(e) => setFormData({ ...formData, passportNo: e.target.value.toUpperCase() })}
+                      className={getFieldInputClass('passportNo', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Driving License (DL)', 'drivingLicense')}
+                    <input 
+                      type="text" 
+                      placeholder="KA-01201900124"
+                      value={formData.drivingLicense}
+                      onChange={(e) => setFormData({ ...formData, drivingLicense: e.target.value })}
+                      className={getFieldInputClass('drivingLicense', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Voter ID (EPIC Number)', 'voterId')}
+                    <input 
+                      type="text" 
+                      placeholder="ABC1234567"
+                      value={formData.voterId || ''}
+                      onChange={(e) => setFormData({ ...formData, voterId: e.target.value.toUpperCase() })}
+                      className={getFieldInputClass('voterId', 'form-input font-mono')}
+                    />
+                  </div>
                 </div>
               </div>
+
+              {/* SUB-SECTION 5B: EPFO Form 11 Social Security Particulars */}
+              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-purple-950 uppercase tracking-wider block">
+                    🏛️ EPFO Form No. 11 Particulars (Provident Fund & Pension):
+                  </span>
+                  <span className="text-[9px] bg-purple-100 text-purple-900 font-mono font-bold px-2 py-0.5 rounded">
+                    EPF 1952 & EPS 1995
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Universal Account Number (UAN)', 'uanEpf')}
+                    <input 
+                      type="text" 
+                      placeholder="100982341209"
+                      value={formData.uanEpf}
+                      onChange={(e) => setFormData({ ...formData, uanEpf: e.target.value, pfNumber: e.target.value })}
+                      className={getFieldInputClass('uanEpf', 'form-input font-mono font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Previous PF Member ID', 'previousPfNumber')}
+                    <input 
+                      type="text" 
+                      placeholder="MH/BAN/0012345/000/0001234"
+                      value={formData.previousPfNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, previousPfNumber: e.target.value })}
+                      className={getFieldInputClass('previousPfNumber', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Previous Employment Exit Date', 'prevEmploymentExitDate')}
+                    <input 
+                      type="date" 
+                      value={formData.prevEmploymentExitDate || ''}
+                      onChange={(e) => setFormData({ ...formData, prevEmploymentExitDate: e.target.value })}
+                      className={getFieldInputClass('prevEmploymentExitDate', 'form-input')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Scheme Certificate No. (if any)', 'schemeCertNo')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. SC-1029348"
+                      value={formData.schemeCertNo || ''}
+                      onChange={(e) => setFormData({ ...formData, schemeCertNo: e.target.value })}
+                      className={getFieldInputClass('schemeCertNo', 'form-input font-mono')}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-1">
+                  <div>
+                    {renderFieldLabel('Pension Payment Order (PPO No)', 'ppoNo')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. PPO-984210"
+                      value={formData.ppoNo || ''}
+                      onChange={(e) => setFormData({ ...formData, ppoNo: e.target.value })}
+                      className={getFieldInputClass('ppoNo', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Previous EPF Member?', 'isPreviousEpfMember')}
+                    <select
+                      value={formData.isPreviousEpfMember || 'No'}
+                      onChange={(e) => setFormData({ ...formData, isPreviousEpfMember: e.target.value })}
+                      className={getFieldInputClass('isPreviousEpfMember', 'form-select font-bold')}
+                    >
+                      <option value="Yes">Yes (Existing EPF Member)</option>
+                      <option value="No">No (First Time Member)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderFieldLabel('Previous EPS Pension Member?', 'isPreviousEpsMember')}
+                    <select
+                      value={formData.isPreviousEpsMember || 'No'}
+                      onChange={(e) => setFormData({ ...formData, isPreviousEpsMember: e.target.value })}
+                      className={getFieldInputClass('isPreviousEpsMember', 'form-select font-bold')}
+                    >
+                      <option value="Yes">Yes (Existing EPS Member)</option>
+                      <option value="No">No (Not Enrolled)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderFieldLabel('International Worker?', 'isInternationalWorker')}
+                    <select
+                      value={formData.isInternationalWorker || 'No'}
+                      onChange={(e) => setFormData({ ...formData, isInternationalWorker: e.target.value })}
+                      className={getFieldInputClass('isInternationalWorker', 'form-select font-bold')}
+                    >
+                      <option value="No">No (Indian Citizen)</option>
+                      <option value="Yes">Yes (International Worker)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* SUB-SECTION 5C: ESIC Form 1 Particulars */}
+              <div className="p-3.5 bg-sky-50/70 border border-sky-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-sky-950 uppercase tracking-wider block">
+                    🏥 ESIC Form 1 Particulars (Employees' State Insurance):
+                  </span>
+                  <span className="text-[9px] bg-sky-100 text-sky-900 font-mono font-bold px-2 py-0.5 rounded">
+                    ESI Act 1948
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('ESI Insurance (IP Number)', 'esiNumber')}
+                    <input 
+                      type="text" 
+                      placeholder="3100123456"
+                      value={formData.esiNumber || formData.esicNo || ''}
+                      onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value, esicNo: e.target.value })}
+                      className={getFieldInputClass('esiNumber', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Previous ESIC Ins No (if any)', 'esicPrevInsNo')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 3199887766"
+                      value={formData.esicPrevInsNo || ''}
+                      onChange={(e) => setFormData({ ...formData, esicPrevInsNo: e.target.value })}
+                      className={getFieldInputClass('esicPrevInsNo', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Preferred ESIC Dispensary', 'esicDispensary')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. ESIC Dispensary Peenya / Koramangala"
+                      value={formData.esicDispensary || ''}
+                      onChange={(e) => setFormData({ ...formData, esicDispensary: e.target.value })}
+                      className={getFieldInputClass('esicDispensary', 'form-input')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('ESIC Branch Office', 'esicBranchOffice')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. SRO Peenya / Bommasandra"
+                      value={formData.esicBranchOffice || ''}
+                      onChange={(e) => setFormData({ ...formData, esicBranchOffice: e.target.value })}
+                      className={getFieldInputClass('esicBranchOffice', 'form-input')}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SUB-SECTION 5D: Form 16 / TDS Form 12B Tax Regime & Previous Salary */}
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-amber-950 uppercase tracking-wider block">
+                    📑 Form 16 / Form 12B TDS & Tax Regime Declaration:
+                  </span>
+                  <span className="text-[9px] bg-amber-100 text-amber-900 font-mono font-bold px-2 py-0.5 rounded">
+                    Income Tax Sec 192 / Form 12B
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Income Tax Regime', 'taxRegime')}
+                    <select
+                      value={formData.taxRegime || 'New Tax Regime (Section 115BAC)'}
+                      onChange={(e) => setFormData({ ...formData, taxRegime: e.target.value })}
+                      className={getFieldInputClass('taxRegime', 'form-select font-bold text-indigo-900')}
+                    >
+                      <option value="New Tax Regime (Section 115BAC)">New Tax Regime (Section 115BAC - Default)</option>
+                      <option value="Old Tax Regime (With Chapter VI-A Exemptions)">Old Tax Regime (With Deductions)</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderFieldLabel('Prev Employer Gross Salary (₹)', 'previousGrossSalary')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 450000"
+                      value={formData.previousGrossSalary || ''}
+                      onChange={(e) => setFormData({ ...formData, previousGrossSalary: e.target.value })}
+                      className={getFieldInputClass('previousGrossSalary', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Prev Employer TDS Deducted (₹)', 'previousTdsDeducted')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 15000"
+                      value={formData.previousTdsDeducted || ''}
+                      onChange={(e) => setFormData({ ...formData, previousTdsDeducted: e.target.value })}
+                      className={getFieldInputClass('previousTdsDeducted', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Prev Employer PF Deducted (₹)', 'previousPfDeducted')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 21600"
+                      value={formData.previousPfDeducted || ''}
+                      onChange={(e) => setFormData({ ...formData, previousPfDeducted: e.target.value })}
+                      className={getFieldInputClass('previousPfDeducted', 'form-input font-mono')}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+                  <div>
+                    {renderFieldLabel('Sec 24b Housing Loan Interest (₹)', 'housingLoanInterest')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 200000 (Max ₹2 Lakh)"
+                      value={formData.housingLoanInterest || ''}
+                      onChange={(e) => setFormData({ ...formData, housingLoanInterest: e.target.value })}
+                      className={getFieldInputClass('housingLoanInterest', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Sec 80C Investments (PPF/LIC/ELSS) (₹)', 'sec80cInvestment')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 150000 (Max ₹1.5 Lakh)"
+                      value={formData.sec80cInvestment || ''}
+                      onChange={(e) => setFormData({ ...formData, sec80cInvestment: e.target.value })}
+                      className={getFieldInputClass('sec80cInvestment', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Sec 80D Health Insurance Mediclaim (₹)', 'sec80dMediclaim')}
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 25000"
+                      value={formData.sec80dMediclaim || ''}
+                      onChange={(e) => setFormData({ ...formData, sec80dMediclaim: e.target.value })}
+                      className={getFieldInputClass('sec80dMediclaim', 'form-input font-mono')}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SUB-SECTION 5E: Direct Salary Deposit & Banking Settlement */}
+              <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-emerald-950 uppercase tracking-wider block">
+                    🏦 Direct Salary Deposit & Banking Settlement Details:
+                  </span>
+                  <span className="text-[9px] bg-emerald-100 text-emerald-900 font-mono font-bold px-2 py-0.5 rounded">
+                    NPCI IMPS Penny Drop
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Primary Bank Name', 'bankName')}
+                    <input 
+                      type="text" 
+                      placeholder="HDFC Bank Limited"
+                      value={formData.bankName}
+                      onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                      className={getFieldInputClass('bankName', 'form-input font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Bank Account Number', 'bankAccountNo')}
+                    <input 
+                      type="text" 
+                      placeholder="50100234129845"
+                      value={formData.bankAccountNo}
+                      onChange={(e) => setFormData({ ...formData, bankAccountNo: e.target.value })}
+                      className={getFieldInputClass('bankAccountNo', 'form-input font-mono font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Bank IFSC Code', 'ifscCode')}
+                    <input 
+                      type="text" 
+                      placeholder="HDFC0001234"
+                      value={formData.ifscCode || ''}
+                      onChange={(e) => setFormData({ ...formData, ifscCode: e.target.value.toUpperCase() })}
+                      className={getFieldInputClass('ifscCode', 'form-input font-mono font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Bank Branch & City', 'branchName')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Koramangala 4th Block, Bengaluru"
+                      value={formData.branchName || ''}
+                      onChange={(e) => setFormData({ ...formData, branchName: e.target.value })}
+                      className={getFieldInputClass('branchName', 'form-input')}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SUB-SECTION 5F: Contract Labour Form XIII Particulars (Conditional / General) */}
+              {(formData.employeeCategory === 'contractual' || formData.statutoryFormsConfig?.contractFormXIII) && (
+                <div className="p-3.5 bg-slate-100 border border-slate-300 rounded-xl space-y-2 animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-slate-900 uppercase tracking-wider block">
+                      🏗️ Contract Labour Act Form XIII (Rule 76 Employment Card):
+                    </span>
+                    <span className="text-[9px] bg-slate-200 text-slate-800 font-mono font-bold px-2 py-0.5 rounded">
+                      CLRA Act 1970
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      {renderFieldLabel('Contractor / Staffing Agency Name', 'contractorAgencyName')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Joy Manpower Services Private Limited"
+                        value={formData.contractorAgencyName || ''}
+                        onChange={(e) => setFormData({ ...formData, contractorAgencyName: e.target.value })}
+                        className={getFieldInputClass('contractorAgencyName', 'form-input font-bold')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel('CLRA License Number', 'clraLicenseNo')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. CLRA/KA/2026/0921"
+                        value={formData.clraLicenseNo || ''}
+                        onChange={(e) => setFormData({ ...formData, clraLicenseNo: e.target.value })}
+                        className={getFieldInputClass('clraLicenseNo', 'form-input font-mono')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel('Workman Ticket / Token No', 'employeeTicketNo')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. TICKET-4029"
+                        value={formData.employeeTicketNo || ''}
+                        onChange={(e) => setFormData({ ...formData, employeeTicketNo: e.target.value })}
+                        className={getFieldInputClass('employeeTicketNo', 'form-input font-mono')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel('Wage Rate & Period', 'wageRate')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. ₹750 / Day or ₹19,500 / Month"
+                        value={formData.wageRate || ''}
+                        onChange={(e) => setFormData({ ...formData, wageRate: e.target.value })}
+                        className={getFieldInputClass('wageRate', 'form-input')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel('Deployment Location / Site', 'contractDeploymentLocation')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Plant Unit 2, Hosur Industrial Complex"
+                        value={formData.contractDeploymentLocation || ''}
+                        onChange={(e) => setFormData({ ...formData, contractDeploymentLocation: e.target.value })}
+                        className={getFieldInputClass('contractDeploymentLocation', 'form-input')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel('Deployment Period From - To', 'contractPeriodFrom')}
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <input 
+                          type="date" 
+                          value={formData.contractPeriodFrom || ''}
+                          onChange={(e) => setFormData({ ...formData, contractPeriodFrom: e.target.value })}
+                          className={getFieldInputClass('contractPeriodFrom', 'form-input text-xs')}
+                        />
+                        <input 
+                          type="date" 
+                          value={formData.contractPeriodTo || ''}
+                          onChange={(e) => setFormData({ ...formData, contractPeriodTo: e.target.value })}
+                          className={getFieldInputClass('contractPeriodTo', 'form-input text-xs')}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* SECTION 6: Family Particulars & Gratuity / PF Nominees */}
             <div className="space-y-3 pt-3 border-t border-slate-100">
-              <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-600" />
-                <span>6. Family Particulars & Gratuity / PF Nominees</span>
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs uppercase font-extrabold text-emerald-700 tracking-wider flex items-center gap-2">
+                  <Users className="w-4 h-4 text-emerald-600" />
+                  <span>6. Family Particulars & Gratuity / EPFO Form 2 Statutory Nominees</span>
+                </h4>
+                <span className="text-[10px] bg-purple-50 text-purple-800 font-bold px-2 py-0.5 rounded border border-purple-200">
+                  Form 'F' Gratuity & Form 2 Revised
+                </span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div>
-                  {renderFieldLabel('Primary Nominee Full Name', 'nomineeName')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Sunita Ramanathan"
-                    value={formData.nomineeName}
-                    onChange={(e) => setFormData({ ...formData, nomineeName: e.target.value })}
-                    className={getFieldInputClass('nomineeName', 'form-input font-bold')}
-                  />
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Primary Nominee Full Name', 'nomineeName')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Sunita Ramanathan"
+                      value={formData.nomineeName}
+                      onChange={(e) => setFormData({ ...formData, nomineeName: e.target.value })}
+                      className={getFieldInputClass('nomineeName', 'form-input font-bold')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Nominee Relationship', 'nomineeRelation')}
+                    <select
+                      value={formData.nomineeRelation || ''}
+                      onChange={(e) => setFormData({ ...formData, nomineeRelation: e.target.value })}
+                      className={getFieldInputClass('nomineeRelation', 'form-select font-bold')}
+                    >
+                      <option value="">Select Relationship</option>
+                      <option value="Spouse">Spouse (Husband / Wife)</option>
+                      <option value="Father">Father</option>
+                      <option value="Mother">Mother</option>
+                      <option value="Son">Son</option>
+                      <option value="Daughter">Daughter</option>
+                      <option value="Brother">Brother</option>
+                      <option value="Sister">Sister</option>
+                      <option value="Other Dependent">Other Dependent</option>
+                    </select>
+                  </div>
+                  <div>
+                    {renderFieldLabel('Nominee Date of Birth', 'nomineeDob')}
+                    <input 
+                      type="date" 
+                      value={formData.nomineeDob || ''}
+                      onChange={(e) => {
+                        const nDob = e.target.value;
+                        const calcAge = calculateAccurateAge(nDob);
+                        setFormData({ 
+                          ...formData, 
+                          nomineeDob: nDob, 
+                          nomineeAge: calcAge !== null ? String(calcAge) : formData.nomineeAge 
+                        });
+                      }}
+                      className={getFieldInputClass('nomineeDob', 'form-input')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Nominee Age & Share %', 'nomineeShare')}
+                    <div className="grid grid-cols-2 gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Age (Yrs)"
+                        value={formData.nomineeAge || ''}
+                        onChange={(e) => setFormData({ ...formData, nomineeAge: e.target.value })}
+                        className={getFieldInputClass('nomineeAge', 'form-input font-mono')}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="100%"
+                        value={formData.nomineeShare || '100%'}
+                        onChange={(e) => setFormData({ ...formData, nomineeShare: e.target.value })}
+                        className={getFieldInputClass('nomineeShare', 'form-input font-mono font-bold text-emerald-800')}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  {renderFieldLabel('Nominee Relationship & Share', 'nomineeRelation')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Spouse (100% Gratuity & PF Share)"
-                    value={formData.nomineeRelation}
-                    onChange={(e) => setFormData({ ...formData, nomineeRelation: e.target.value })}
-                    className={getFieldInputClass('nomineeRelation')}
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel('Nominee Residential Address', 'nomineeAddress')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 12/4, 2nd Cross, Gandhi Nagar, Bengaluru, Karnataka - 560034"
+                      value={formData.nomineeAddress || ''}
+                      onChange={(e) => setFormData({ ...formData, nomineeAddress: e.target.value })}
+                      className={getFieldInputClass('nomineeAddress', 'form-input')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Minor Nominee Guardian (if nominee is under 18 yrs)', 'nomineeGuardian')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Ramesh Ramanathan (Father & Natural Guardian)"
+                      value={formData.nomineeGuardian || ''}
+                      onChange={(e) => setFormData({ ...formData, nomineeGuardian: e.target.value })}
+                      className={getFieldInputClass('nomineeGuardian', 'form-input')}
+                    />
+                  </div>
                 </div>
+
                 <div>
-                  {renderFieldLabel('Mediclaim Dependents', 'insuranceDependents')}
+                  {renderFieldLabel('Group Health Insurance & Mediclaim Dependents', 'insuranceDependents')}
                   <input 
                     type="text" 
                     placeholder="e.g. Spouse + 2 Children + Dependent Parents"
-                    value={formData.insuranceDependents || 'Spouse + Dependent Parents'}
+                    value={formData.insuranceDependents || ''}
                     onChange={(e) => setFormData({ ...formData, insuranceDependents: e.target.value })}
-                    className={getFieldInputClass('insuranceDependents')}
+                    className={getFieldInputClass('insuranceDependents', 'form-input')}
                   />
                 </div>
               </div>

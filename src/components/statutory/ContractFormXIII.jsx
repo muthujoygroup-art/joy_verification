@@ -3,13 +3,15 @@ import React from 'react';
 export const ContractFormXIII = ({ candidate, jf = {}, companyName = "JOY CORPORATE SOLUTIONS PRIVATE LIMITED" }) => {
   const c = candidate || {};
   const name = c.name || jf.fullName || 'Candidate Name';
-  const fatherName = c.fatherName || jf.fatherName || 'Father Name';
+  const fatherName = c.fatherName || jf.fatherName || c.spouseName || jf.spouseName || '-';
   const doj = c.doj || jf.doj || '2026-04-13';
   const designation = c.designation || jf.designation || 'Field Specialist / Operator';
   const empId = c.employeeNumber || c.empId || jf.empId || 'JOY-CONTR-2026-001';
-  const mobile = c.mobile || jf.mobile || '9876543210';
-  const wages = jf.monthlyCtc || '₹ 24,500 / Month';
-  const address = jf.permanentAddress || 'Tamil Nadu, India';
+  const mobile = c.mobile || jf.mobile || '-';
+  const wages = jf.wageRate || jf.monthlyCtc || '₹ 24,500 / Month';
+  const address = jf.permanentAddress || c.permanentAddress || '-';
+  const contractor = jf.contractorAgencyName || companyName;
+  const licenseNo = jf.clraLicenseNo || 'CLRA/TN/2026/0498';
   const specimenSig = c.specimenSignature || jf.specimenSignature || jf.uploadedDocuments?.docSpecimenSignature?.file_path || null;
 
   return (
@@ -30,7 +32,7 @@ export const ContractFormXIII = ({ candidate, jf = {}, companyName = "JOY CORPOR
         <div className="grid grid-cols-12">
           <div className="col-span-1 p-2 font-bold border-r border-slate-800 text-center">1.</div>
           <div className="col-span-5 p-2 font-semibold border-r border-slate-800">Name of the Contractor</div>
-          <div className="col-span-6 p-2 font-bold text-slate-900 bg-slate-50">{companyName}</div>
+          <div className="col-span-6 p-2 font-bold text-slate-900 bg-slate-50">{contractor}</div>
         </div>
 
         <div className="grid grid-cols-12">
@@ -74,10 +76,10 @@ export const ContractFormXIII = ({ candidate, jf = {}, companyName = "JOY CORPOR
       <div className="flex items-end justify-between pt-3 text-[11px] border-t border-slate-300">
         <div>
           <div>Date of Issue: <strong className="font-mono">{doj}</strong></div>
-          <div className="text-[10px] text-slate-500">Contractor License No: CLRA/TN/2026/0498</div>
+          <div className="text-[10px] text-slate-500">Contractor License No: {licenseNo}</div>
         </div>
         <div className="text-right">
-          <div className="font-bold text-slate-900">{companyName}</div>
+          <div className="font-bold text-slate-900">{contractor}</div>
           <div className="text-[10px] text-slate-600 border-t border-slate-800 pt-0.5">Signature of Contractor / Authorized Rep</div>
         </div>
       </div>
