@@ -98,7 +98,10 @@ import {
   UserCheck,
   Users,
   X,
-  Zap
+  Zap,
+  Paperclip,
+  Image as ImageIcon,
+  File
 } from 'lucide-react';
 
 export const SuperAdminView = () => {
@@ -170,6 +173,7 @@ export const SuperAdminView = () => {
   const navigate = useNavigate();
 
   const [ticketReplyText, setTicketReplyText] = useState({});
+  const [activeTicketLightbox, setActiveTicketLightbox] = useState(null);
   const [showSuperAdminRazorpayModal, setShowSuperAdminRazorpayModal] = useState(false);
   const [selectedRechargeCompanyId, setSelectedRechargeCompanyId] = useState('comp-1');
   const [gatewayForm, setGatewayForm] = useState({
@@ -4923,14 +4927,83 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
           <div className="space-y-4 text-xs">
             {supportTickets.map(ticket => (
-              <div key={ticket.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+              <div key={ticket.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3 shadow-2xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-extrabold text-slate-900 text-sm">#{ticket.id} • {ticket.subject}</span>
                     <span className={`badge text-[9px] ${ticket.status === 'Resolved' ? 'badge-emerald' : 'badge-amber'}`}>{ticket.status}</span>
+                    {ticket.priority && (
+                      <span className={`badge text-[9px] ${ticket.priority === 'High' ? 'badge-rose' : 'badge-amber'}`}>
+                        {ticket.priority} Priority
+                      </span>
+                    )}
+                    {ticket.category && <span className="badge badge-purple text-[9px]">{ticket.category}</span>}
                   </div>
                   <span className="text-[10px] text-slate-400 font-mono">Raised: {ticket.createdAt} • by {ticket.reporterName} ({ticket.companyName})</span>
                 </div>
+
+                {/* 📎 ATTACHED DOCUMENTS & SCREENSHOTS (SUPER ADMIN VIEW) */}
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200 space-y-1.5">
+                    <span className="font-bold text-[10.5px] text-slate-700 flex items-center gap-1">
+                      <Paperclip className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Attached Evidence & Files ({ticket.attachments.length}):</span>
+                    </span>
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      {ticket.attachments.map((att, idx) => (
+                        <div key={idx} className="p-1.5 rounded-md border border-slate-200 bg-slate-50 flex items-center gap-2 text-[11px]">
+                          {att.isImage ? (
+                            <div 
+                              className="w-7 h-7 rounded bg-slate-200 overflow-hidden cursor-pointer hover:opacity-80 shrink-0"
+                              onClick={() => setActiveTicketLightbox(att)}
+                              title="Click to zoom image"
+                            >
+                              <img src={att.dataUrl} alt={att.name} className="w-full h-full object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-7 h-7 rounded bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
+                              <File className="w-3.5 h-3.5" />
+                            </div>
+                          )}
+                          <span className="font-bold text-slate-800 text-[10.5px] truncate max-w-[140px]" title={att.name}>{att.name}</span>
+                          <span className="text-[9px] text-slate-400 font-mono">{att.formattedSize || `${Math.round(att.size / 1024)} KB`}</span>
+                          {att.isImage ? (
+                            <button
+                              type="button"
+                              onClick={() => setActiveTicketLightbox(att)}
+                              className="p-1 rounded text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                              title="Zoom image"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          ) : (
+                            <a
+                              href={att.dataUrl}
+                              download={att.name}
+                              className="p-1 rounded text-emerald-600 hover:text-emerald-900 cursor-pointer"
+                              title="Download document"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ✉️ EMAIL NOTIFICATIONS DISPATCHED */}
+                {ticket.notifiedEmails && ticket.notifiedEmails.length > 0 && (
+                  <div className="p-2 bg-emerald-50/70 border border-emerald-200 rounded-lg flex flex-wrap items-center gap-1.5 text-[10.5px] text-emerald-900">
+                    <Mail className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    <strong className="text-emerald-950">Notified Portal Inboxes:</strong>
+                    {ticket.notifiedEmails.map((email, idx) => (
+                      <span key={idx} className="px-1.5 py-0.2 rounded bg-white border border-emerald-300 font-mono text-[9.5px] text-emerald-800 font-bold">
+                        {email}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {/* Message Thread */}
                 <div className="space-y-2 max-h-48 overflow-y-auto p-2 bg-white rounded-lg border border-slate-200">
@@ -4961,7 +5034,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         setTicketReplyText({ ...ticketReplyText, [ticket.id]: '' });
                       }
                     }}
-                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold flex items-center gap-1 shrink-0"
+                    className="btn btn-superadmin text-xs py-1.5 px-4 font-bold flex items-center gap-1 shrink-0 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Reply</span>
@@ -4970,6 +5043,41 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             ))}
           </div>
+
+          {/* 🖼️ TICKET ATTACHMENT LIGHTBOX */}
+          {activeTicketLightbox && (
+            <div 
+              className="fixed inset-0 z-[10000] bg-slate-950/90 flex flex-col items-center justify-center p-4 animate-fadeIn"
+              onClick={() => setActiveTicketLightbox(null)}
+            >
+              <div className="max-w-4xl max-h-[85vh] flex flex-col items-center space-y-3" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between w-full text-white px-2">
+                  <span className="font-bold text-xs truncate max-w-md">{activeTicketLightbox.name}</span>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={activeTicketLightbox.dataUrl}
+                      download={activeTicketLightbox.name}
+                      className="p-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 text-xs font-bold flex items-center gap-1"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
+                    </a>
+                    <button
+                      onClick={() => setActiveTicketLightbox(null)}
+                      className="p-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 text-xs font-bold cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <img 
+                  src={activeTicketLightbox.dataUrl} 
+                  alt={activeTicketLightbox.name} 
+                  className="max-h-[75vh] max-w-full rounded-xl object-contain border border-slate-700 shadow-2xl" 
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
 

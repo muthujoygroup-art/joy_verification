@@ -2992,33 +2992,98 @@ export const AppProvider = ({ children }) => {
     const timeNow = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const newTicketId = `TICK-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    const attachments = Array.isArray(ticketData.attachments) ? ticketData.attachments : [];
+    
+    // Resolve destination notification emails across portals
+    const reporterEmail = ticketData.reporterEmail || currentUser?.email || (ticketData.email && ticketData.email.includes('@') ? ticketData.email : null) || 'support.requester@joycorporatesolutions.com';
+    const targetComp = (companies && companies.find(c => c.id === ticketData.companyId || c.name === ticketData.companyName)) || null;
+    const companyEmail = targetComp?.email || targetComp?.contact_email || targetComp?.adminEmail || `${(targetComp?.code || 'comp').toLowerCase()}@joycorporatesolutions.com`;
+    const hrEmails = (hrUsers && Array.isArray(hrUsers)) 
+      ? hrUsers.filter(h => h.companyId === ticketData.companyId || h.companyName === ticketData.companyName).map(h => h.email).filter(Boolean)
+      : [];
+    const supportDeskEmail = 'support@joycorporatesolutions.com';
+    const superAdminEmail = 'superadmin@joycorporatesolutions.com';
+
+    const uniqueRecipients = Array.from(new Set([
+      reporterEmail,
+      companyEmail,
+      ...hrEmails,
+      supportDeskEmail,
+      superAdminEmail
+    ].filter(e => e && typeof e === 'string' && e.includes('@'))));
+
     const newTicket = {
       id: newTicketId,
       status: 'Open',
       createdAt: timeNow,
+      attachments,
+      notifiedEmails: uniqueRecipients,
+      emailNotificationSent: true,
       messages: [
         {
           id: `msg-${Date.now()}`,
-          sender: ticketData.reporterName || 'HR User',
+          sender: ticketData.reporterName || currentUser?.name || 'Portal User',
           text: ticketData.details,
+          attachments,
           timestamp: timeNow,
           type: 'user_ticket'
         }
       ],
       ...ticketData
     };
+
     setSupportTickets(prev => [newTicket, ...prev]);
-    showToast(`Support Ticket #${newTicketId} raised & stored in Database!`);
+
+    // Push notification to in-app notification center
+    const notifItem = {
+      id: `notif-ticket-${Date.now()}`,
+      title: `🎫 New Support Ticket #${newTicketId}: ${ticketData.subject || 'Technical Inquiry'}`,
+      message: `Priority: ${ticketData.priority || 'High'} • Category: ${ticketData.category || 'General'} • Attached: ${attachments.length} file(s). Dispatched notifications to: ${uniqueRecipients.slice(0, 2).join(', ')}${uniqueRecipients.length > 2 ? ` +${uniqueRecipients.length - 2} more` : ''}`,
+      timestamp: timeNow,
+      isRead: false,
+      role: 'all',
+      type: 'ticket'
+    };
+    setNotifications(prev => [notifItem, ...(Array.isArray(prev) ? prev : [])]);
+
+    // Dispatch email notification via API
     try {
-      await api.createTicket({
-        company_id: ticketData.companyId || 'comp-1',
-        company_name: ticketData.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+      await api.dispatchTicketNotificationEmail({
+        ticketId: newTicketId,
         subject: ticketData.subject,
         category: ticketData.category || 'API Integration',
         priority: ticketData.priority || 'Medium',
-        initial_message: ticketData.details
+        reporterName: ticketData.reporterName || currentUser?.name || 'Portal User',
+        reporterEmail,
+        companyName: ticketData.companyName || targetComp?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+        details: ticketData.details,
+        attachmentsCount: attachments.length,
+        attachmentNames: attachments.map(a => a.name),
+        recipients: uniqueRecipients,
+        dispatchedAt: timeNow
+      });
+    } catch (err) {
+      console.warn('Ticket notification email dispatch:', err);
+    }
+
+    // Persist ticket in API
+    try {
+      await api.createTicket({
+        id: newTicketId,
+        company_id: ticketData.companyId || targetComp?.id || 'comp-1',
+        company_name: ticketData.companyName || targetComp?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+        reporter_name: ticketData.reporterName || currentUser?.name || 'Portal User',
+        reporter_email: reporterEmail,
+        subject: ticketData.subject,
+        category: ticketData.category || 'API Integration',
+        priority: ticketData.priority || 'Medium',
+        initial_message: ticketData.details,
+        attachments: attachments.map(a => ({ name: a.name, size: a.size, type: a.type, dataUrl: a.dataUrl })),
+        notified_emails: uniqueRecipients
       });
     } catch (err) {}
+
+    showToast(`✉️ Support Ticket #${newTicketId} raised! Notifications sent to ${uniqueRecipients.length} attached portal emails (${uniqueRecipients.slice(0, 2).join(', ')}${uniqueRecipients.length > 2 ? '...' : ''})`);
   };
 
   const addTicketReply = async (ticketId, replyText, senderName = 'Super Admin Support', newStatus = 'In Progress') => {

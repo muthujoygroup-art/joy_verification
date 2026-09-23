@@ -18,7 +18,9 @@ import { SecurityCaptchaGate } from '../components/SecurityCaptchaGate';
 import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfModal';
 import { TermsAndPrivacyPolicyModal } from '../components/TermsAndPrivacyPolicyModal';
 import { DpdpComplianceModal } from '../components/DpdpComplianceModal';
+import { SupportTicketModal } from '../components/SupportTicketModal';
 import { 
+  LifeBuoy,
   ShieldCheck, 
   Smartphone, 
   KeyRound, 
@@ -89,6 +91,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [showPreVerificationAdvisory, setShowPreVerificationAdvisory] = useState(true);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showDpdpModal, setShowDpdpModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const [dynamicFieldValues, setDynamicFieldValues] = useState({});
 
@@ -992,6 +995,14 @@ export const EmployeePortalView = ({ directToken = null }) => {
               className="font-bold text-emerald-800 underline hover:text-emerald-950 cursor-pointer flex items-center gap-1"
             >
               <span>DPDP Candidate Privacy Rights 🛡️</span>
+            </button>
+            <span className="text-emerald-300">•</span>
+            <button
+              onClick={() => setShowSupportModal(true)}
+              className="font-bold text-indigo-700 underline hover:text-indigo-950 cursor-pointer flex items-center gap-1"
+            >
+              <LifeBuoy className="w-3.5 h-3.5" />
+              <span>Need Help? Raise Support Ticket 🛟</span>
             </button>
           </div>
         </div>
@@ -2378,6 +2389,21 @@ export const EmployeePortalView = ({ directToken = null }) => {
         candidate={candidate}
         companyName={candidate?.companyName || company?.name}
       />
+
+      {/* Support & Incident Ticket Modal for Candidate Assistance */}
+      {showSupportModal && (
+        <SupportTicketModal
+          onClose={() => setShowSupportModal(false)}
+          prefillData={{
+            name: candidate?.name,
+            email: candidate?.email,
+            companyId: candidate?.companyId || 'comp-1',
+            category: 'Aadhaar / PAN KYC',
+            priority: 'High',
+            subject: `Candidate Verification Support - ${candidate?.name || 'Candidate'} (${candidate?.empId || 'ID Pending'})`
+          }}
+        />
+      )}
 
     </div>
   );

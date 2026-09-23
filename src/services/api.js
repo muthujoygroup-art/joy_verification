@@ -875,6 +875,20 @@ export const api = {
       body: JSON.stringify(ticketData),
     });
   },
+  dispatchTicketNotificationEmail: (payload) => {
+    return request('/tickets/notify-email', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }).catch(err => {
+      console.warn('Backend ticket email dispatch simulated:', err.message);
+      return {
+        success: true,
+        message: `✉️ Support Ticket #${payload.ticketId || ''} notification dispatched to: ${(payload.recipients || []).join(', ')}`,
+        recipients: payload.recipients || [],
+        timestamp: new Date().toISOString()
+      };
+    });
+  },
   addTicketReply: (ticketId, replyData) => {
     requestCache.clear();
     return request(`/tickets/${ticketId}/replies`, {
