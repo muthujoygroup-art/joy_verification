@@ -215,11 +215,21 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   };
 
   if (isLoading) {
+    const activeSub = selectedRoleTab === 'company'
+      ? 'AUTHENTICATING COMPANY PORTAL'
+      : selectedRoleTab === 'superadmin'
+      ? 'AUTHENTICATING SUPERADMIN CONSOLE'
+      : selectedRoleTab === 'hrexecutive'
+      ? 'AUTHENTICATING HR WORKSTATION'
+      : selectedRoleTab === 'employee_link'
+      ? 'INITIALIZING CANDIDATE VERIFICATION'
+      : 'AUTHENTICATING AUTHORIZED SESSION';
+
     return (
       <GlobalPlatformPreloader 
         isFullScreen={true} 
-        autoDismissMs={2200} 
-        subtitleText="AUTHENTICATING AUTHORIZED SESSION" 
+        autoDismissMs={1800} 
+        subtitleText={activeSub} 
       />
     );
   }

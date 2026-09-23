@@ -48,10 +48,38 @@ const RouteLoadingSpinner = () => (
   />
 );
 
-// Global Route & Action Cinematic Preloader (Triggered on manual events)
+// Global Route & Action Cinematic Preloader (Matches main landing page branding across all pages)
 const GlobalPageReloadPreloader = () => {
+  const location = useLocation();
   const [showPreloader, setShowPreloader] = useState(false);
   const [subtitle, setSubtitle] = useState('INSTANT WORKFORCE VERIFICATION');
+
+  const getSubtitleForPath = (pathname) => {
+    const p = (pathname || '').toLowerCase();
+    if (p.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
+    if (p.includes('/company') || p.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
+    if (p.includes('/hr') || p.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
+    if (p.startsWith('/verify') || p.startsWith('/candidate') || p.startsWith('/employee') || p.includes('/verify') || p.includes('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
+    if (p.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
+    if (p.includes('activate')) return 'VERIFYING ONBOARDING ACTIVATION';
+    if (p.startsWith('/features')) return 'EXPLORING PLATFORM CAPABILITIES';
+    if (p.startsWith('/solutions')) return 'ENTERPRISE VERIFICATION SOLUTIONS';
+    if (p.startsWith('/how-it-works')) return 'INSTANT VERIFICATION WORKFLOWS';
+    if (p.startsWith('/pricing')) return 'TRANSPARENT POSTPAID BILLING';
+    if (p.startsWith('/contact')) return 'CONNECT WITH JOY VERIFICATION';
+    if (p.startsWith('/about')) return 'ABOUT JOY CORPORATE SOLUTIONS';
+    return 'INSTANT WORKFORCE VERIFICATION';
+  };
+
+  // Trigger full loading animation on route change or initial load (except landing page "/" which has its own preloader)
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setShowPreloader(false);
+      return;
+    }
+    setSubtitle(getSubtitleForPath(location.pathname));
+    setShowPreloader(true);
+  }, [location.pathname]);
 
   // Listen to custom window events for long-running processes / manual triggers
   useEffect(() => {
@@ -176,19 +204,29 @@ export const App = () => {
 
                 {/* 3. Authenticated & Role-Gated Portal Dashboards with Hierarchical Slugs */}
                 <Route path="/superadmin/*" element={<SuperAdminRoute />} />
+                <Route path="/superadmin" element={<SuperAdminRoute />} />
                 
                 {/* Company Admin Routes */}
                 <Route path="/:companySlug/company/admin/*" element={<CompanyRoute />} />
+                <Route path="/:companySlug/company/admin" element={<CompanyRoute />} />
                 <Route path="/:companySlug/company/*" element={<CompanyRoute />} />
+                <Route path="/:companySlug/company" element={<CompanyRoute />} />
                 <Route path="/company/:companySlug/*" element={<CompanyRoute />} />
+                <Route path="/company/:companySlug" element={<CompanyRoute />} />
                 <Route path="/company/*" element={<CompanyRoute />} />
+                <Route path="/company" element={<CompanyRoute />} />
 
                 {/* HR Executive Routes (Domain/company-name/hr/hr-name/tab) */}
                 <Route path="/:companySlug/hr/:hrSlug/*" element={<HrRoute />} />
+                <Route path="/:companySlug/hr/:hrSlug" element={<HrRoute />} />
                 <Route path="/:companySlug/hr/*" element={<HrRoute />} />
+                <Route path="/:companySlug/hr" element={<HrRoute />} />
                 <Route path="/hr/:companySlug/:hrSlug/*" element={<HrRoute />} />
+                <Route path="/hr/:companySlug/:hrSlug" element={<HrRoute />} />
                 <Route path="/hr/:companySlug/*" element={<HrRoute />} />
+                <Route path="/hr/:companySlug" element={<HrRoute />} />
                 <Route path="/hr/*" element={<HrRoute />} />
+                <Route path="/hr" element={<HrRoute />} />
 
                 {/* 4. Candidate & Employee Verification Magic Links */}
                 <Route path="/:companySlug/verify/:token" element={<CandidateRoute />} />
