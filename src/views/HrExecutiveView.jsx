@@ -36,6 +36,7 @@ import {
   MARITAL_STATUS_OPTIONS, 
   BLOOD_GROUP_OPTIONS, 
   RELIGION_OPTIONS, 
+  CASTE_OPTIONS,
   COMMUNITY_CATEGORY_OPTIONS, 
   EDUCATION_LEVEL_OPTIONS, 
   DEPARTMENT_OPTIONS, 
@@ -44,9 +45,12 @@ import {
   JOB_CATEGORY_OPTIONS, 
   DESIGNATION_OPTIONS, 
   LANGUAGES_OPTIONS, 
+  MOTHER_TONGUE_OPTIONS,
+  RELATIONSHIP_OPTIONS,
+  FAMILY_MEMBER_RELATION_OPTIONS,
   isOtherValue 
 } from '../data/masterDropdownOptions';
-import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
+import { getIndianStates, getDistrictsByState, getCitiesByDistrict, isOtherLocation, isOtherCity } from '../data/indiaLocations';
 import { exportIndividualCandidateToExcel, exportAllCandidatesToExcel } from '../utils/employeeExcelExport';
 import {
   AlertCircle,
@@ -126,9 +130,11 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   motherTongue: '',
   religion: '',
   caste: '',
+  customCaste: '',
   category: '',
   nativeState: '',
   nativeDistrict: '',
+  nativeCity: '',
   identificationMarks: '',
   pfNumber: '',
   esiNumber: '',
@@ -197,6 +203,7 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   // Nominee & Gratuity Particulars (EPFO Form 2 & Gratuity Form F)
   nomineeName: '',
   nomineeRelation: '',
+  customNomineeRelation: '',
   nomineeDob: '',
   nomineeAge: '',
   nomineeAddress: '',
@@ -1358,6 +1365,7 @@ export const HrExecutiveView = () => {
       // Nominee & Gratuity Particulars (EPFO Form 2 & Gratuity Form F)
       nomineeName: cand.nomineeName || jf.nomineeName || '',
       nomineeRelation: cand.nomineeRelation || jf.nomineeRelation || '',
+      customNomineeRelation: (cand.nomineeRelation || jf.nomineeRelation) && !RELATIONSHIP_OPTIONS.includes(cand.nomineeRelation || jf.nomineeRelation) ? (cand.nomineeRelation || jf.nomineeRelation) : '',
       nomineeDob: toIsoDateString(cand.nomineeDob || jf.nomineeDob || '') || '',
       nomineeAge: cand.nomineeAge || jf.nomineeAge || '',
       nomineeAddress: cand.nomineeAddress || jf.nomineeAddress || '',
@@ -3472,14 +3480,33 @@ export const HrExecutiveView = () => {
                   )}
                 </div>
                 <div>
-                  {renderFieldLabel('Caste', 'caste')}
-                  <input 
-                    type="text" 
-                    placeholder="Optional Caste / Community"
-                    value={formData.caste}
-                    onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
-                    className={getFieldInputClass('caste')}
-                  />
+                  {renderFieldLabel('Caste / Community', 'caste')}
+                  <select 
+                    value={CASTE_OPTIONS.includes(formData.caste) ? formData.caste : (formData.caste ? 'Others' : '')}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === 'Others') {
+                        setFormData({ ...formData, caste: 'Others' });
+                      } else {
+                        setFormData({ ...formData, caste: v });
+                      }
+                    }}
+                    className={getFieldInputClass('caste', 'form-select font-medium')}
+                  >
+                    <option value="">-- Select Caste / Community --</option>
+                    {CASTE_OPTIONS.map(cst => (
+                      <option key={cst} value={cst}>{cst}</option>
+                    ))}
+                  </select>
+                  {(isOtherValue(formData.caste) || (formData.caste && !CASTE_OPTIONS.includes(formData.caste))) && (
+                    <input 
+                      type="text" 
+                      placeholder="Specify custom caste / community..."
+                      value={formData.customCaste || (formData.caste !== 'Others' ? formData.caste : '')}
+                      onChange={(e) => setFormData({ ...formData, customCaste: e.target.value, caste: e.target.value || 'Others' })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderFieldLabel('Category', 'category')}
@@ -3600,22 +3627,25 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              {/* Native Geographic Location (Cascading 28 States + 8 UTs + All Districts) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-emerald-50/50 p-3 rounded-2xl border border-emerald-200/80 mb-3 shadow-2xs">
+              {/* Native Geographic Location (Cascading 28 States + 8 UTs + All Districts + Respective Cities) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-200/80 mb-3 shadow-2xs">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    {renderFieldLabel('Native Hometown State (28 States + 8 UTs)', 'nativeState')}
-                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">Cascading</span>
+                    {renderFieldLabel('Native Hometown State', 'nativeState')}
+                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">Tier 1: State</span>
                   </div>
                   <select 
                     value={formData.nativeState}
                     onChange={(e) => {
                       const selState = e.target.value;
                       const dists = getDistrictsByState(selState);
+                      const initialDist = dists[0] || '';
+                      const cities = getCitiesByDistrict(selState, initialDist);
                       setFormData({ 
                         ...formData, 
                         nativeState: selState, 
-                        nativeDistrict: dists[0] || '' 
+                        nativeDistrict: initialDist,
+                        nativeCity: cities[0] || ''
                       });
                     }}
                     className={getFieldInputClass('nativeState', 'form-select font-bold text-emerald-950')}
@@ -3639,12 +3669,20 @@ export const HrExecutiveView = () => {
                   <div className="flex items-center justify-between mb-1">
                     {renderFieldLabel('Native Hometown District', 'nativeDistrict')}
                     <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">
-                      {formData.nativeState ? `${getDistrictsByState(formData.nativeState).length} Districts` : 'Select State First'}
+                      {formData.nativeState ? `${getDistrictsByState(formData.nativeState).length} Districts` : 'Tier 2: District'}
                     </span>
                   </div>
                   <select 
                     value={formData.nativeDistrict}
-                    onChange={(e) => setFormData({ ...formData, nativeDistrict: e.target.value })}
+                    onChange={(e) => {
+                      const selDist = e.target.value;
+                      const cities = getCitiesByDistrict(formData.nativeState, selDist);
+                      setFormData({ 
+                        ...formData, 
+                        nativeDistrict: selDist,
+                        nativeCity: cities[0] || ''
+                      });
+                    }}
                     className={getFieldInputClass('nativeDistrict', 'form-select font-bold text-emerald-950')}
                   >
                     <option value="">-- Select Native District --</option>
@@ -3662,26 +3700,55 @@ export const HrExecutiveView = () => {
                     />
                   )}
                 </div>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    {renderFieldLabel('Native Hometown City / Taluk', 'nativeCity')}
+                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded">
+                      {formData.nativeDistrict ? `${getCitiesByDistrict(formData.nativeState, formData.nativeDistrict).length} Cities/Taluks` : 'Tier 3: City'}
+                    </span>
+                  </div>
+                  <select 
+                    value={formData.nativeCity || ''}
+                    onChange={(e) => setFormData({ ...formData, nativeCity: e.target.value })}
+                    className={getFieldInputClass('nativeCity', 'form-select font-bold text-emerald-950')}
+                  >
+                    <option value="">-- Select Native City / Taluk --</option>
+                    {getCitiesByDistrict(formData.nativeState, formData.nativeDistrict).map(cty => (
+                      <option key={cty} value={cty}>{cty}</option>
+                    ))}
+                  </select>
+                  {isOtherCity(formData.nativeCity) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom native city / taluk / village..."
+                      value={formData.customNativeCity || ''}
+                      onChange={(e) => setFormData({ ...formData, customNativeCity: e.target.value })}
+                      className="form-input text-xs mt-1.5 font-bold text-emerald-900 bg-white"
+                    />
+                  )}
+                </div>
               </div>
 
-              {/* Present Residential Geographic Location (Cascading 28 States + 8 UTs + All Districts) */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+              {/* Present Residential Geographic Location (Cascading 28 States + 8 UTs + All Districts + Respective Cities) */}
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
                 <div>
-                  {renderFieldLabel('Present State (28 States + 8 UTs)', 'state')}
+                  {renderFieldLabel('Present State', 'state')}
                   <select 
                     value={formData.state}
                     onChange={(e) => {
                       const selState = e.target.value;
                       const dists = getDistrictsByState(selState);
+                      const initialDist = dists[0] || '';
                       setFormData({ 
                         ...formData, 
                         state: selState, 
-                        city: dists[0] || '' 
+                        city: initialDist,
+                        area: ''
                       });
                     }}
                     className={getFieldInputClass('state', 'form-select font-medium')}
                   >
-                    <option value="">-- Select Present State / UT --</option>
+                    <option value="">-- Select State / UT --</option>
                     {getIndianStates().map(st => (
                       <option key={st} value={st}>{st}</option>
                     ))}
@@ -3697,13 +3764,13 @@ export const HrExecutiveView = () => {
                   )}
                 </div>
                 <div>
-                  {renderFieldLabel('Present District / City', 'city')}
+                  {renderFieldLabel('Present District', 'city')}
                   <select 
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className={getFieldInputClass('city', 'form-select font-medium')}
                   >
-                    <option value="">-- Select City / District --</option>
+                    <option value="">-- Select District --</option>
                     {getDistrictsByState(formData.state).map(ct => (
                       <option key={ct} value={ct}>{ct}</option>
                     ))}
@@ -3711,7 +3778,7 @@ export const HrExecutiveView = () => {
                   {isOtherLocation(formData.city) && (
                     <input
                       type="text"
-                      placeholder="Specify present district / city..."
+                      placeholder="Specify present district..."
                       value={formData.customPresentCity || ''}
                       onChange={(e) => setFormData({ ...formData, customPresentCity: e.target.value })}
                       className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
@@ -3719,13 +3786,35 @@ export const HrExecutiveView = () => {
                   )}
                 </div>
                 <div>
-                  {renderFieldLabel('Area / Locality / Tehsil', 'area')}
-                  <input 
-                    type="text"
-                    placeholder="e.g. Guindy Industrial / Koramangala"
+                  {renderFieldLabel('City / Taluk / Zone', 'area')}
+                  <select
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                    className={getFieldInputClass('area')}
+                    className={getFieldInputClass('area', 'form-select font-medium')}
+                  >
+                    <option value="">-- Select City / Taluk --</option>
+                    {getCitiesByDistrict(formData.state, formData.city).map(cty => (
+                      <option key={cty} value={cty}>{cty}</option>
+                    ))}
+                  </select>
+                  {isOtherCity(formData.area) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom locality / street..."
+                      value={formData.customPresentArea || ''}
+                      onChange={(e) => setFormData({ ...formData, customPresentArea: e.target.value, area: e.target.value || 'Other Area' })}
+                      className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                    />
+                  )}
+                </div>
+                <div>
+                  {renderFieldLabel('Locality / Street / Landmark', 'presentAddressLine')}
+                  <input 
+                    type="text"
+                    placeholder="e.g. 4th Cross, Guindy Industrial"
+                    value={formData.presentAddressLine || ''}
+                    onChange={(e) => setFormData({ ...formData, presentAddressLine: e.target.value })}
+                    className={getFieldInputClass('presentAddressLine')}
                   />
                 </div>
                 <div>
@@ -4571,20 +4660,31 @@ export const HrExecutiveView = () => {
                   <div>
                     {renderFieldLabel('Nominee Relationship', 'nomineeRelation')}
                     <select
-                      value={formData.nomineeRelation || ''}
-                      onChange={(e) => setFormData({ ...formData, nomineeRelation: e.target.value })}
+                      value={RELATIONSHIP_OPTIONS.includes(formData.nomineeRelation) ? formData.nomineeRelation : (formData.nomineeRelation ? 'Others' : '')}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === 'Others') {
+                          setFormData({ ...formData, nomineeRelation: 'Others', customNomineeRelation: formData.customNomineeRelation || '' });
+                        } else {
+                          setFormData({ ...formData, nomineeRelation: val, customNomineeRelation: '' });
+                        }
+                      }}
                       className={getFieldInputClass('nomineeRelation', 'form-select font-bold')}
                     >
-                      <option value="">Select Relationship</option>
-                      <option value="Spouse">Spouse (Husband / Wife)</option>
-                      <option value="Father">Father</option>
-                      <option value="Mother">Mother</option>
-                      <option value="Son">Son</option>
-                      <option value="Daughter">Daughter</option>
-                      <option value="Brother">Brother</option>
-                      <option value="Sister">Sister</option>
-                      <option value="Other Dependent">Other Dependent</option>
+                      <option value="">Select Statutory Relationship</option>
+                      {RELATIONSHIP_OPTIONS.map(rel => (
+                        <option key={rel} value={rel}>{rel}</option>
+                      ))}
                     </select>
+                    {(isOtherValue(formData.nomineeRelation) || (formData.nomineeRelation && !RELATIONSHIP_OPTIONS.includes(formData.nomineeRelation))) && (
+                      <input 
+                        type="text" 
+                        placeholder="Specify custom relationship..."
+                        value={formData.customNomineeRelation || (formData.nomineeRelation !== 'Others' ? formData.nomineeRelation : '')}
+                        onChange={(e) => setFormData({ ...formData, customNomineeRelation: e.target.value, nomineeRelation: e.target.value || 'Others' })}
+                        className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                      />
+                    )}
                   </div>
                   <div>
                     {renderFieldLabel('Nominee Date of Birth', 'nomineeDob')}

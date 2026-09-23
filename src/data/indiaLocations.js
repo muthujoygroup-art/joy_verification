@@ -1,6 +1,7 @@
 /**
- * Comprehensive Geographic Directory for Indian States, Union Territories & Districts
- * Covers all 28 States and 8 Union Territories with dynamic cascading resolution and 'Others' fallback.
+ * Comprehensive Geographic Directory for Indian States, Union Territories, Districts & Cities
+ * Covers all 28 States and 8 Union Territories with dynamic 3-tier cascading resolution:
+ * State -> District -> City / Taluk / Town with 'Others' support.
  */
 
 export const INDIA_STATES_AND_DISTRICTS = {
@@ -292,12 +293,12 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Bengaluru Urban",
     "Bidar",
     "Chamarajanagar",
-    "Chikkaballapura",
+    "Chikkaballapur",
     "Chikkamagaluru",
     "Chitradurga",
     "Dakshina Kannada (Mangaluru)",
     "Davanagere",
-    "Dharwad (Hubballi)",
+    "Dharwad",
     "Gadag",
     "Hassan",
     "Haveri",
@@ -313,9 +314,9 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Tumakuru (Tumkur)",
     "Udupi",
     "Uttara Kannada (Karwar)",
+    "Vijayanagara",
     "Vijayapura (Bijapur)",
     "Yadgir",
-    "Vijayanagara",
     "Other District"
   ],
   "Kerala": [
@@ -361,12 +362,11 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Jabalpur",
     "Jhabua",
     "Katni",
-    "Khandwa",
-    "Khargone",
+    "Khandwa (East Nimar)",
+    "Khargone (West Nimar)",
     "Maihar",
     "Mandla",
     "Mandsaur",
-    "Mauganj",
     "Morena",
     "Narsinghpur",
     "Neemuch",
@@ -391,6 +391,7 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Ujjain",
     "Umaria",
     "Vidisha",
+    "Mauganj",
     "Other District"
   ],
   "Maharashtra": [
@@ -416,7 +417,6 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Nanded",
     "Nandurbar",
     "Nashik",
-    "Navi Mumbai (Thane/Raigad)",
     "Osmanabad (Dharashiv)",
     "Palghar",
     "Parbhani",
@@ -453,16 +453,16 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Other District"
   ],
   "Meghalaya": [
+    "Eastern West Khasi Hills",
     "East Garo Hills",
     "East Jaintia Hills",
     "East Khasi Hills (Shillong)",
-    "Eastern West Khasi Hills",
     "North Garo Hills",
     "Ri-Bhoi",
     "South Garo Hills",
     "South West Garo Hills",
     "South West Khasi Hills",
-    "West Garo Hills",
+    "West Garo Hills (Tura)",
     "West Jaintia Hills",
     "West Khasi Hills",
     "Other District"
@@ -482,7 +482,7 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Other District"
   ],
   "Nagaland": [
-    "Chumoukedima",
+    "Chümoukedima",
     "Dimapur",
     "Kiphire",
     "Kohima",
@@ -494,16 +494,16 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Peren",
     "Phek",
     "Shamator",
-    "Tseminyu",
+    "Tseminyü",
     "Tuensang",
     "Wokha",
-    "Zunheboto",
+    "Zünheboto",
     "Other District"
   ],
   "Odisha": [
     "Angul",
     "Balangir",
-    "Balasore (Baleswar)",
+    "Balasore",
     "Bargarh",
     "Bhadrak",
     "Boudh",
@@ -549,11 +549,11 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Malerkotla",
     "Mansa",
     "Moga",
+    "Mohali (SAS Nagar)",
     "Muktsar",
     "Pathankot",
     "Patiala",
     "Rupnagar (Ropar)",
-    "Sahibzada Ajit Singh Nagar (Mohali)",
     "Sangrur",
     "Shahid Bhagat Singh Nagar (Nawanshahr)",
     "Tarn Taran",
@@ -576,20 +576,20 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Churu",
     "Dausa",
     "Deeg",
-    "Didwana-Kuchaman",
     "Dholpur",
+    "Didwana-Kuchaman",
     "Dudu",
     "Dungarpur",
     "Ganganagar",
     "Gangapur City",
     "Hanumangarh",
-    "Jaipur",
+    "Jaipur Central & Urban",
     "Jaipur Rural",
     "Jaisalmer",
     "Jalore",
     "Jhalawar",
     "Jhunjhunu",
-    "Jodhpur",
+    "Jodhpur Central & Urban",
     "Jodhpur Rural",
     "Karauli",
     "Kekri",
@@ -836,7 +836,8 @@ export const INDIA_STATES_AND_DISTRICTS = {
     "Other District"
   ],
   "Chandigarh": [
-    "Chandigarh City",
+    "Chandigarh Central & North",
+    "Chandigarh South & East",
     "Manimajra",
     "Industrial Area Phase 1 & 2",
     "Other District"
@@ -909,6 +910,106 @@ export const INDIA_STATES_AND_DISTRICTS = {
   ]
 };
 
+/**
+ * Detailed District to Cities / Taluks / Major Municipalities Directory
+ */
+export const DISTRICT_CITIES_MAP = {
+  // --- TAMIL NADU ---
+  "Chennai": ["Chennai Central", "T. Nagar", "Guindy", "Anna Nagar", "Adyar", "Velachery", "Mylapore", "Tambaram", "Chromepet", "Ambattur", "Porur", "Sholinganallur", "Perambur", "Egmore", "Saidapet", "Royapettah", "Nungambakkam", "Thiruvanmiyur", "Other Area / Hub"],
+  "Coimbatore": ["Coimbatore City", "Gandhipuram", "RS Puram", "Peelamedu", "Saravanampatti", "Pollachi", "Mettupalayam", "Sulur", "Thudiyalur", "Singanallur", "Annur", "Valparai", "Other Area / Hub"],
+  "Madurai": ["Madurai City", "Mattuthavani", "KK Nagar", "Anna Nagar", "Thirumangalam", "Melur", "Usilampatti", "Sholavandan", "Vadipatti", "Peraiyur", "Other Area / Hub"],
+  "Tiruchirappalli (Trichy)": ["Trichy City", "Thillai Nagar", "Srirangam", "K.K. Nagar", "Ponmalai (Golden Rock)", "Manapparai", "Thuvakudi", "Lalgudi", "Musiri", "Thuraiyur", "Other Area / Hub"],
+  "Salem": ["Salem City", "Suramangalam", "Hasthampatti", "Attur", "Mettur", "Edappadi", "Omalur", "Sankagiri", "Yercaud", "Other Area / Hub"],
+  "Tiruppur": ["Tiruppur City", "Avinashi", "Dharapuram", "Kangeyam", "Palladam", "Udumalaipettai", "Vellakoil", "Madathukulam", "Other Area / Hub"],
+  "Erode": ["Erode City", "Perundurai", "Bhavani", "Gobichettipalayam", "Sathyamangalam", "Anthiyur", "Kodumudi", "Modakkurichi", "Other Area / Hub"],
+  "Kanchipuram": ["Kanchipuram Town", "Sriperumbudur", "Walajabad", "Uthiramerur", "Kundrathur", "Other Area / Hub"],
+  "Chengalpattu": ["Chengalpattu Town", "Tambaram South", "Pallavaram", "Mahabalipuram", "Maraimalai Nagar", "Kelambakkam", "Maduranthakam", "Vandalur", "Thiruporur", "Other Area / Hub"],
+  "Tiruvallur": ["Tiruvallur Town", "Avadi", "Poonamallee", "Gummidipoondi", "Ponneri", "Tiruttani", "Minjur", "Uthukottai", "Other Area / Hub"],
+  "Tirunelveli": ["Tirunelveli City", "Palayamkottai", "Ambasamudram", "Nanguneri", "Radhapuram", "Cheranmahadevi", "Manur", "Other Area / Hub"],
+  "Thoothukudi (Tuticorin)": ["Thoothukudi City", "Kovilpatti", "Tiruchendur", "Srivaikuntam", "Ettayapuram", "Kayalpattinam", "Vilathikulam", "Sathankulam", "Other Area / Hub"],
+  "Kanyakumari (Nagercoil)": ["Nagercoil", "Kanyakumari Town", "Padmanabhapuram", "Colachel", "Kuzhithurai", "Marthandam", "Thuckalay", "Killiyoor", "Other Area / Hub"],
+  "Vellore": ["Vellore City", "Katpadi", "Gudiyatham", "Anaicut", "Kaniyambadi", "Pernambut", "Other Area / Hub"],
+  "Ranipet": ["Ranipet Town", "Arcot", "Walajah", "Arakkonam", "Nemili", "Sholinghur", "Kaveripakkam", "Other Area / Hub"],
+  "Tirupathur": ["Tirupathur Town", "Vaniyambadi", "Ambur", "Natrampalli", "Jolarpet", "Other Area / Hub"],
+  "Dindigul": ["Dindigul City", "Palani", "Kodaikanal", "Natham", "Oddanchatram", "Nilakottai", "Batlagundu", "Vedasandur", "Other Area / Hub"],
+  "Thanjavur": ["Thanjavur City", "Kumbakonam", "Pattukkottai", "Peravurani", "Orathanadu", "Thiruvaiyaru", "Papanasam", "Budalur", "Other Area / Hub"],
+  "Cuddalore": ["Cuddalore Town", "Chidambaram", "Neyveli", "Panruti", "Virudhachalam", "Vadalur", "Tittakudi", "Kattumannarkoil", "Other Area / Hub"],
+  "Viluppuram": ["Viluppuram Town", "Tindivanam", "Gingee", "Marakkanam", "Vanur", "Vikravandi", "Kandachipuram", "Other Area / Hub"],
+  "Kallakurichi": ["Kallakurichi Town", "Sankarapuram", "Chinnasalem", "Ulundurpet", "Tirukkoyilur", "Kalvarayan Hills", "Other Area / Hub"],
+  "Dharmapuri": ["Dharmapuri Town", "Harur", "Palacode", "Pennagaram", "Pappireddipatti", "Karimangalam", "Nallampalli", "Other Area / Hub"],
+  "Krishnagiri": ["Krishnagiri Town", "Hosur", "Pochampalli", "Uthangarai", "Denkanikottai", "Bargur", "Shoolagiri", "Kelamangalam", "Other Area / Hub"],
+  "Namakkal": ["Namakkal Town", "Rasipuram", "Tiruchengode", "Paramathi Velur", "Kolli Hills", "Komarapalayam", "Sendamangalam", "Other Area / Hub"],
+  "Nilgiris (Ooty)": ["Udhagamandalam (Ooty)", "Coonoor", "Kotagiri", "Gudalur", "Wellington", "Pandalur", "Other Area / Hub"],
+  "Karur": ["Karur City", "Kulithalai", "Aravakurichi", "Pugalur", "Krishnarayapuram", "Kadavur", "Other Area / Hub"],
+  "Theni": ["Theni Town", "Periyakulam", "Bodinayakanur", "Cumbum", "Uthamapalayam", "Andipatti", "Chinnamanur", "Other Area / Hub"],
+  "Virudhunagar": ["Virudhunagar Town", "Sivakasi", "Rajapalayam", "Aruppukkottai", "Srivilliputhur", "Sattur", "Watrap", "Kariapatti", "Other Area / Hub"],
+  "Ramanathapuram": ["Ramanathapuram Town", "Rameswaram", "Paramakudi", "Kilakarai", "Mudukulathur", "Tiruvadanai", "Kamuthi", "Kadaladi", "Other Area / Hub"],
+  "Sivaganga": ["Sivaganga Town", "Karaikudi", "Devakottai", "Manamadurai", "Tiruppattur", "Kalaiyarkovil", "Ilayangudi", "Singampunari", "Other Area / Hub"],
+  "Pudukkottai": ["Pudukkottai Town", "Aranthangi", "Gandarvakottai", "Viralimalai", "Alangudi", "Illuppur", "Ponnamaravathi", "Avudaiyarkoil", "Other Area / Hub"],
+  "Ariyalur": ["Ariyalur Town", "Jayankondam", "Udayarpalayam", "Sendurai", "Andimadam", "Other Area / Hub"],
+  "Perambalur": ["Perambalur Town", "Kunnam", "Veppanthattai", "Alathur", "Other Area / Hub"],
+  "Nagapattinam": ["Nagapattinam Town", "Velankanni", "Vedaranyam", "Kilvelur", "Thirukkuvalai", "Other Area / Hub"],
+  "Mayiladuthurai": ["Mayiladuthurai Town", "Sirkazhi", "Tharangambadi", "Kuthalam", "Other Area / Hub"],
+  "Tiruvarur": ["Tiruvarur Town", "Mannargudi", "Thiruthuraipoondi", "Nannilam", "Kudavasal", "Valangaiman", "Needamangalam", "Other Area / Hub"],
+  "Tenkasi": ["Tenkasi Town", "Sankarankovil", "Kadayanallur", "Courtallam", "Shenkottai", "Alangulam", "Vaikalipatti", "Thiruvengadam", "Other Area / Hub"],
+  "Tiruvannamalai": ["Tiruvannamalai Town", "Arani", "Polur", "Chengam", "Cheyyar", "Vandavasi", "Kalasapakkam", "Kilpennathur", "Other Area / Hub"],
+
+  // --- KARNATAKA ---
+  "Bengaluru Urban": ["Koramangala", "Indiranagar", "Whitefield", "Electronic City", "HSR Layout", "Jayanagar", "Yelahanka", "Marathahalli", "Bellandur", "Hebbal", "Rajajinagar", "Malleshwaram", "Banashankari", "BTM Layout", "K.R. Puram", "Other City / Hub"],
+  "Bengaluru Rural": ["Doddaballapura", "Devanahalli (Airport)", "Nelamangala", "Hosakote", "Other City / Hub"],
+  "Mysuru (Mysore)": ["Mysuru City", "Nanjangud", "Hunsur", "T. Narasipura", "K.R. Nagar", "Periyapatna", "H.D. Kote", "Saragur", "Other City / Hub"],
+  "Dakshina Kannada (Mangaluru)": ["Mangaluru City", "Bantwal", "Puttur", "Belthangady", "Sullia", "Moodabidri", "Kadaba", "Other City / Hub"],
+  "Belagavi (Belgaum)": ["Belagavi City", "Gokak", "Chikkodi", "Athani", "Bailhongal", "Saundatti", "Khanapur", "Hukkeri", "Ramdurg", "Raybag", "Other City / Hub"],
+  "Dharwad": ["Hubballi City", "Dharwad City", "Navalgund", "Kundgol", "Kalghatgi", "Alnavar", "Other City / Hub"],
+  "Kalaburagi (Gulbarga)": ["Kalaburagi City", "Sedam", "Afzalpur", "Aland", "Chincholi", "Chittapur", "Jevargi", "Shahabad", "Other City / Hub"],
+  "Tumakuru (Tumkur)": ["Tumakuru City", "Tiptur", "Kunigal", "Sira", "Madhugiri", "Chikkanayakanahalli", "Gubbi", "Pavagada", "Turuvekere", "Koratagere", "Other City / Hub"],
+  "Ballari (Bellary)": ["Ballari City", "Sandur", "Siruguppa", "Kampli", "Kurugodu", "Other City / Hub"],
+  "Vijayanagara": ["Hosapete", "Hampi", "Kudligi", "Hagaribommanahalli", "Harapanahalli", "Kotturu", "Hoovina Hadagali", "Other City / Hub"],
+  "Udupi": ["Udupi City", "Manipal", "Kundapura", "Karkala", "Brahmavara", "Kaup", "Byndoor", "Hebri", "Other City / Hub"],
+  "Shivamogga (Shimoga)": ["Shivamogga City", "Bhadravati", "Sagar", "Shikaripura", "Soraba", "Thirthahalli", "Hosanagara", "Other City / Hub"],
+  "Hassan": ["Hassan City", "Arsikere", "Channarayapatna", "Belur", "Holenarasipura", "Sakleshpur", "Alur", "Arkalgud", "Other City / Hub"],
+  "Davanagere": ["Davanagere City", "Harihar", "Honnali", "Channagiri", "Jagalur", "Nyamathi", "Other City / Hub"],
+  "Mandya": ["Mandya City", "Maddur", "Malavalli", "Srirangapatna", "Pandavapura", "Nagamangala", "Krishnarajpet", "Other City / Hub"],
+
+  // --- MAHARASHTRA ---
+  "Mumbai City": ["Nariman Point", "Colaba", "Fort", "Marine Drive", "Byculla", "Dadar", "Worli", "Parel", "Mahalaxmi", "Malabar Hill", "Other City / Hub"],
+  "Mumbai Suburban": ["Bandra", "Andheri", "Borivali", "Goregaon", "Juhu", "Kurla", "Ghatkopar", "Powai", "Malad", "Kandivali", "Vile Parle", "Chembur", "Mulund", "Santacruz", "Other City / Hub"],
+  "Pune": ["Pune City", "Kothrud", "Hinjawadi", "Kalyani Nagar", "Viman Nagar", "Hadapsar", "Baner", "Pimpri-Chinchwad", "Wakad", "Magarpatta", "Baramati", "Talegaon", "Lonavala", "Chakan", "Other City / Hub"],
+  "Thane": ["Thane City", "Kalyan", "Dombivli", "Mira-Bhayandar", "Ulhasnagar", "Bhiwandi", "Badlapur", "Ambernath", "Shahapur", "Murbad", "Other City / Hub"],
+  "Nagpur": ["Nagpur City", "Sitabuldi", "Dharampeth", "Kamptee", "Hingna", "Katol", "Umred", "Ramtek", "Saoner", "Narkhed", "Other City / Hub"],
+  "Nashik": ["Nashik City", "Panchavati", "Satpur", "Ambad", "Deolali", "Malegaon", "Sinnar", "Igatpuri", "Yeola", "Niphad", "Trimbakeshwar", "Other City / Hub"],
+  "Aurangabad (Chhatrapati Sambhajinagar)": ["Chhatrapati Sambhajinagar City", "Waluj", "Chikalthana", "Paithan", "Vaijapur", "Gangapur", "Kannad", "Sillod", "Other City / Hub"],
+  "Kolhapur": ["Kolhapur City", "Ichalkaranji", "Jaysingpur", "Kagal", "Hatkanangle", "Gadhinglaj", "Panhala", "Shirol", "Shahuwadi", "Other City / Hub"],
+
+  // --- TELANGANA ---
+  "Hyderabad": ["Hitec City", "Gachibowli", "Madhapur", "Banjara Hills", "Jubilee Hills", "Kondapur", "Secunderabad", "Begumpet", "Ameerpet", "Kukatpally", "Dilsukhnagar", "Charminar", "Miyapur", "Other City / Hub"],
+  "Ranga Reddy": ["Shamshabad (Airport)", "Rajendranagar", "Manikonda", "Ibrahimpatnam", "Maheshwaram", "Shadnagar", "Chevella", "Other City / Hub"],
+  "Medchal-Malkajgiri": ["Kompally", "Medchal", "Malkajgiri", "Quthbullapur", "Alwal", "Ghatkesar", "Keesara", "Other City / Hub"],
+  "Hanumakonda": ["Hanumakonda Town", "Kazipet", "Hasanparthy", "Kamalapur", "Parkal", "Other City / Hub"],
+  "Warangal": ["Warangal City", "Narsampet", "Wardhannapet", "Geesugonda", "Rayaparthy", "Other City / Hub"],
+
+  // --- ANDHRA PRADESH ---
+  "Visakhapatnam": ["Visakhapatnam City", "Gajuwaka", "Madhurawada", "MVP Colony", "Bheemunipatnam", "Anakapalle Hub", "Pendurthi", "Simhachalam", "Other City / Hub"],
+  "NTR": ["Vijayawada City", "Benz Circle", "Governorpet", "Gunadala", "Ibrahimpatnam", "Mylavaram", "Tiruvuru", "Nandigama", "Jaggayyapeta", "Other City / Hub"],
+  "Guntur": ["Guntur City", "Brodipet", "Arundelpet", "Mangalagiri", "Tenali", "Ponnur", "Tadikonda", "Chebrolu", "Other City / Hub"],
+  "Tirupati": ["Tirupati City", "Renigunta", "Srikalahasti", "Chandragiri", "Puttur", "Venkatagiri", "Gudur", "Other City / Hub"],
+
+  // --- KERALA ---
+  "Ernakulam (Kochi)": ["Kochi City", "Edappally", "Kakkanad (Infopark)", "Marine Drive", "Aluva", "Angamaly", "Perumbavoor", "Muvattupuzha", "Kothamangalam", "North Paravur", "Tripunithura", "Other City / Hub"],
+  "Thiruvananthapuram": ["Thiruvananthapuram City", "Technopark (Kazhakkoottam)", "Kowdiar", "Pattom", "Neyyattinkara", "Attingal", "Nedumangad", "Varkala", "Kattakada", "Other City / Hub"],
+  "Kozhikode (Calicut)": ["Kozhikode City", "Mavoor Road", "Cyberpark", "Vadakara", "Koyilandy", "Feroke", "Ramanattukara", "Thamarassery", "Other City / Hub"],
+
+  // --- DELHI (NCT) ---
+  "New Delhi": ["Connaught Place", "Chanakyapuri", "Barakhamba", "Gole Market", "Lutyens Delhi", "Other Area / Hub"],
+  "Central Delhi": ["Karol Bagh", "Daryaganj", "Paharganj", "Pusa Road", "Rajinder Nagar", "Other Area / Hub"],
+  "South Delhi": ["Saket", "Hauz Khas", "Vasant Kunj", "Greater Kailash", "Malviya Nagar", "South Extension", "Green Park", "Other Area / Hub"],
+  "South East Delhi": ["Nehru Place", "Lajpat Nagar", "Okhla Industrial", "Kalkaji", "Sarita Vihar", "New Friends Colony", "Other Area / Hub"],
+  "South West Delhi": ["Dwarka (All Sectors)", "Vasant Vihar", "Delhi Cantt", "Najafgarh", "Palam", "Other Area / Hub"],
+  "North West Delhi": ["Rohini (All Sectors)", "Pitampura", "Shalimar Bagh", "Saraswati Vihar", "Model Town", "Other Area / Hub"],
+  "West Delhi": ["Janakpuri", "Rajouri Garden", "Punjabi Bagh", "Patel Nagar", "Tilak Nagar", "Paschim Vihar", "Other Area / Hub"],
+  "East Delhi": ["Laxmi Nagar", "Mayur Vihar (Ph 1,2,3)", "Preet Vihar", "Patparganj", "Gandhi Nagar", "Other Area / Hub"]
+};
+
 export const ALL_INDIAN_STATES = Object.keys(INDIA_STATES_AND_DISTRICTS);
 export const INDIA_STATES_DISTRICTS = INDIA_STATES_AND_DISTRICTS;
 export const ALL_INDIA_STATES = ALL_INDIAN_STATES;
@@ -958,6 +1059,30 @@ export const getDistrictsByState = (stateName) => {
   if (normalized.includes('uttar pradesh') || normalized === 'up') {
     return INDIA_STATES_AND_DISTRICTS["Uttar Pradesh"] || ['Other District'];
   }
+  if (normalized.includes('gujarat') || normalized === 'gj') {
+    return INDIA_STATES_AND_DISTRICTS["Gujarat"] || ['Other District'];
+  }
+  if (normalized.includes('west bengal') || normalized === 'wb') {
+    return INDIA_STATES_AND_DISTRICTS["West Bengal"] || ['Other District'];
+  }
+  if (normalized.includes('rajasthan') || normalized === 'rj') {
+    return INDIA_STATES_AND_DISTRICTS["Rajasthan"] || ['Other District'];
+  }
+  if (normalized.includes('punjab') || normalized === 'pb') {
+    return INDIA_STATES_AND_DISTRICTS["Punjab"] || ['Other District'];
+  }
+  if (normalized.includes('haryana') || normalized === 'hr') {
+    return INDIA_STATES_AND_DISTRICTS["Haryana"] || ['Other District'];
+  }
+  if (normalized.includes('madhya pradesh') || normalized === 'mp') {
+    return INDIA_STATES_AND_DISTRICTS["Madhya Pradesh"] || ['Other District'];
+  }
+  if (normalized.includes('bihar') || normalized === 'br') {
+    return INDIA_STATES_AND_DISTRICTS["Bihar"] || ['Other District'];
+  }
+  if (normalized.includes('odisha') || normalized === 'or') {
+    return INDIA_STATES_AND_DISTRICTS["Odisha"] || ['Other District'];
+  }
 
   const matchedKey = Object.keys(INDIA_STATES_AND_DISTRICTS).find(k => k.toLowerCase() === normalized);
   if (matchedKey) {
@@ -965,6 +1090,44 @@ export const getDistrictsByState = (stateName) => {
   }
 
   return ['Other District'];
+};
+
+/**
+ * Get list of cities / taluks / towns for a selected state & district
+ * @param {string} stateName 
+ * @param {string} districtName 
+ * @returns {string[]}
+ */
+export const getCitiesByDistrict = (stateName, districtName) => {
+  if (!districtName || districtName === 'Other District' || districtName.startsWith('Other')) {
+    return ['Headquarters City / Central', 'Industrial Zone', 'Rural / Taluk Hub', 'Other City / Town'];
+  }
+
+  // Exact lookup in mapped directory
+  if (DISTRICT_CITIES_MAP[districtName]) {
+    return DISTRICT_CITIES_MAP[districtName];
+  }
+
+  // Fuzzy search in mapping
+  const normalizedDist = String(districtName).toLowerCase().replace(/\(.*?\)/g, '').trim();
+  const matchedKey = Object.keys(DISTRICT_CITIES_MAP).find(k => {
+    const cleanK = k.toLowerCase().replace(/\(.*?\)/g, '').trim();
+    return cleanK === normalizedDist || cleanK.includes(normalizedDist) || normalizedDist.includes(cleanK);
+  });
+
+  if (matchedKey && DISTRICT_CITIES_MAP[matchedKey]) {
+    return DISTRICT_CITIES_MAP[matchedKey];
+  }
+
+  // Generative default list based on district name
+  const cleanName = districtName.replace(/\(.*?\)/g, '').trim();
+  return [
+    `${cleanName} City / Town Central`,
+    `${cleanName} North / East Taluk`,
+    `${cleanName} South / West Taluk`,
+    `${cleanName} Industrial Area / SIPCOT / GIDC / KIADB`,
+    'Other City / Town / Taluk'
+  ];
 };
 
 /**
@@ -980,6 +1143,10 @@ export const isOtherLocation = (val) => {
     s === 'other' || 
     s.startsWith('other ') || 
     s === 'other state / union territory' || 
-    s === 'other district'
+    s === 'other district' ||
+    s.includes('other city') ||
+    s.includes('other area')
   );
 };
+
+export const isOtherCity = isOtherLocation;

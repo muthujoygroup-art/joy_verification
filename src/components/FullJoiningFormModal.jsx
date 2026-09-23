@@ -16,12 +16,13 @@ import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
 import { checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
 import { convertPdfToImages } from '../utils/pdfToImage';
-import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
+import { getIndianStates, getDistrictsByState, getCitiesByDistrict, isOtherLocation, isOtherCity } from '../data/indiaLocations';
 import { 
   GENDER_OPTIONS, 
   MARITAL_STATUS_OPTIONS, 
   BLOOD_GROUP_OPTIONS, 
   RELIGION_OPTIONS, 
+  CASTE_OPTIONS,
   COMMUNITY_CATEGORY_OPTIONS, 
   EDUCATION_LEVEL_OPTIONS, 
   DEPARTMENT_OPTIONS, 
@@ -30,6 +31,8 @@ import {
   JOB_CATEGORY_OPTIONS, 
   DESIGNATION_OPTIONS, 
   LANGUAGES_OPTIONS, 
+  MOTHER_TONGUE_OPTIONS,
+  RELATIONSHIP_OPTIONS,
   isOtherValue 
 } from '../data/masterDropdownOptions';
 import { 
@@ -153,13 +156,17 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       dob: cleanInitialDob,
       age: cleanInitialAge,
       doj: cleanInitialDoj,
-      motherTongue: candidate?.mother_tongue || jfd.motherTongue || '',
-      languagesKnown: candidate?.languages_known || jfd.languagesKnown || '',
+      motherTongue: candidate?.mother_tongue || candidate?.motherTongue || jfd.motherTongue || '',
+      otherMotherTongue: '',
+      languagesKnown: candidate?.languages_known || candidate?.languagesKnown || jfd.languagesKnown || '',
       gender: candidate?.gender || jfd.gender || '',
       maritalStatus: candidate?.marital_status || jfd.maritalStatus || '',
       religion: candidate?.religion || jfd.religion || '',
+      otherReligion: '',
       caste: candidate?.caste || jfd.caste || '',
+      otherCaste: (candidate?.caste || jfd.caste) && !CASTE_OPTIONS.includes(candidate?.caste || jfd.caste) ? (candidate?.caste || jfd.caste) : '',
       category: candidate?.category || jfd.category || '',
+      otherCategory: '',
       identificationMarks: candidate?.identification_marks || jfd.identificationMarks || '',
       employeeCategory: candidate?.employee_type || candidate?.employeeCategory || jfd.employeeCategory || 'it_tech',
 
@@ -173,7 +180,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       presentAddress: candidate?.presentAddress || jfd.presentAddress || '',
       permanentAddress: candidate?.permanentAddress || jfd.permanentAddress || '',
       nativeState: candidate?.native_state || jfd.nativeState || '',
+      otherNativeState: '',
       nativeDistrict: candidate?.native_district || jfd.nativeDistrict || '',
+      otherNativeDistrict: '',
+      nativeCity: candidate?.native_city || jfd.nativeCity || candidate?.city || jfd.city || '',
+      otherNativeCity: '',
       emergencyContactName: candidate?.emergencyContactName || jfd.emergencyContactName || '',
       emergencyContactPhone: candidate?.emergencyContactPhone || jfd.emergencyContactPhone || '',
 
@@ -256,6 +267,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       childrenDetails: jfd.childrenDetails || '',
       nomineeName: candidate?.nomineeName || jfd.nomineeName || '',
       nomineeRelation: candidate?.nomineeRelation || jfd.nomineeRelation || '',
+      otherNomineeRelation: (candidate?.nomineeRelation || jfd.nomineeRelation) && !RELATIONSHIP_OPTIONS.includes(candidate?.nomineeRelation || jfd.nomineeRelation) ? (candidate?.nomineeRelation || jfd.nomineeRelation) : '',
       nomineeDob: jfd.nomineeDob || '',
       nomineeAadhaar: jfd.nomineeAadhaar || '',
       insuranceDependents: candidate?.insuranceDependents || jfd.insuranceDependents || '',
@@ -1104,25 +1116,50 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                 <div>
                   {renderCandidateFieldLabel('Mother Language', 'motherTongue', true)}
-                  <input 
-                    type="text" 
+                  <select
                     required
-                    value={formData.motherTongue} 
-                    onChange={e => setFormData({ ...formData, motherTongue: e.target.value })}
-                    placeholder="e.g. Tamil, Hindi, Telugu"
-                    className={getCandidateFieldInputClass('motherTongue')} 
-                  />
+                    value={MOTHER_TONGUE_OPTIONS.includes(formData.motherTongue) ? formData.motherTongue : (formData.motherTongue ? 'Others' : '')}
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (val === 'Others') {
+                        setFormData({ ...formData, motherTongue: 'Others', otherMotherTongue: formData.otherMotherTongue || '' });
+                      } else {
+                        setFormData({ ...formData, motherTongue: val, otherMotherTongue: '' });
+                      }
+                    }}
+                    className={getCandidateFieldInputClass('motherTongue', 'form-select text-xs font-bold')}
+                  >
+                    <option value="">-- Select Mother Language --</option>
+                    {MOTHER_TONGUE_OPTIONS.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                  {(isOtherValue(formData.motherTongue) || (formData.motherTongue && !MOTHER_TONGUE_OPTIONS.includes(formData.motherTongue))) && (
+                    <input
+                      type="text"
+                      placeholder="Specify mother language..."
+                      value={formData.otherMotherTongue || (formData.motherTongue !== 'Others' ? formData.motherTongue : '')}
+                      onChange={e => setFormData({ ...formData, otherMotherTongue: e.target.value, motherTongue: e.target.value || 'Others' })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Known Languages', 'languagesKnown', true)}
                   <input 
                     type="text" 
                     required
+                    list="candidateLanguagesList"
                     value={formData.languagesKnown} 
                     onChange={e => setFormData({ ...formData, languagesKnown: e.target.value })}
-                    placeholder="e.g. English, Tamil, Hindi"
+                    placeholder="e.g. English, Tamil, Hindi, Telugu"
                     className={getCandidateFieldInputClass('languagesKnown')} 
                   />
+                  <datalist id="candidateLanguagesList">
+                    {LANGUAGES_OPTIONS.map(l => (
+                      <option key={l} value={l} />
+                    ))}
+                  </datalist>
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Religion', 'religion')}
@@ -1146,14 +1183,33 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   )}
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Caste', 'caste')}
-                  <input 
-                    type="text" 
-                    value={formData.caste} 
-                    onChange={e => setFormData({ ...formData, caste: e.target.value })}
-                    placeholder="Optional Caste"
-                    className={getCandidateFieldInputClass('caste')} 
-                  />
+                  {renderCandidateFieldLabel('Caste / Sub-Caste', 'caste')}
+                  <select 
+                    value={CASTE_OPTIONS.includes(formData.caste) ? formData.caste : (formData.caste ? 'Others' : '')} 
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (val === 'Others') {
+                        setFormData({ ...formData, caste: 'Others', otherCaste: formData.otherCaste || '' });
+                      } else {
+                        setFormData({ ...formData, caste: val, otherCaste: '' });
+                      }
+                    }}
+                    className={getCandidateFieldInputClass('caste', 'form-select text-xs')}
+                  >
+                    <option value="">-- Select Caste / Community --</option>
+                    {CASTE_OPTIONS.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  {(isOtherValue(formData.caste) || (formData.caste && !CASTE_OPTIONS.includes(formData.caste))) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom caste / community..."
+                      value={formData.otherCaste || (formData.caste !== 'Others' ? formData.caste : '')}
+                      onChange={e => setFormData({ ...formData, otherCaste: e.target.value, caste: e.target.value || 'Others' })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Category', 'category', true)}
@@ -1274,7 +1330,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   {renderCandidateFieldLabel('Native State (28 States & 8 UTs)', 'nativeState', true)}
                   <select 
@@ -1283,10 +1339,16 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => {
                       const st = e.target.value;
                       const dists = getDistrictsByState(st);
+                      const initialDist = dists.length > 0 ? dists[0] : '';
+                      const initialCities = initialDist ? getCitiesByDistrict(st, initialDist) : [];
                       setFormData({ 
                         ...formData, 
                         nativeState: st,
-                        nativeDistrict: dists.length > 0 ? dists[0] : ''
+                        nativeDistrict: initialDist,
+                        nativeCity: initialCities.length > 0 ? initialCities[0] : '',
+                        otherNativeState: '',
+                        otherNativeDistrict: '',
+                        otherNativeCity: ''
                       });
                     }}
                     className={getCandidateFieldInputClass('nativeState', 'form-select text-xs font-bold')} 
@@ -1301,7 +1363,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       type="text"
                       placeholder="Specify custom state..."
                       value={formData.otherNativeState || ''}
-                      onChange={e => setFormData({ ...formData, otherNativeState: e.target.value })}
+                      onChange={e => setFormData({ ...formData, otherNativeState: e.target.value, nativeState: e.target.value || 'Others' })}
                       className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
                     />
                   )}
@@ -1311,7 +1373,17 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   <select 
                     required 
                     value={formData.nativeDistrict} 
-                    onChange={e => setFormData({ ...formData, nativeDistrict: e.target.value })}
+                    onChange={e => {
+                      const dist = e.target.value;
+                      const cities = getCitiesByDistrict(formData.nativeState, dist);
+                      setFormData({ 
+                        ...formData, 
+                        nativeDistrict: dist,
+                        nativeCity: cities.length > 0 ? cities[0] : '',
+                        otherNativeDistrict: '',
+                        otherNativeCity: ''
+                      });
+                    }}
                     className={getCandidateFieldInputClass('nativeDistrict', 'form-select text-xs font-bold')} 
                   >
                     <option value="">-- Select District --</option>
@@ -1324,13 +1396,46 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       type="text"
                       placeholder="Specify custom district..."
                       value={formData.otherNativeDistrict || ''}
-                      onChange={e => setFormData({ ...formData, otherNativeDistrict: e.target.value })}
+                      onChange={e => setFormData({ ...formData, otherNativeDistrict: e.target.value, nativeDistrict: e.target.value || 'Others' })}
                       className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
                     />
                   )}
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Current City & State', 'city', true)}
+                  {renderCandidateFieldLabel('Native City / Taluk / Town', 'nativeCity', true)}
+                  <select 
+                    required 
+                    value={formData.nativeCity} 
+                    onChange={e => {
+                      const ct = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        nativeCity: ct,
+                        otherNativeCity: isOtherCity(ct) ? (formData.otherNativeCity || '') : ''
+                      });
+                    }}
+                    className={getCandidateFieldInputClass('nativeCity', 'form-select text-xs font-bold')} 
+                  >
+                    <option value="">-- Select City / Taluk --</option>
+                    {getCitiesByDistrict(formData.nativeState, formData.nativeDistrict).map(ct => (
+                      <option key={ct} value={ct}>{ct}</option>
+                    ))}
+                  </select>
+                  {(isOtherCity(formData.nativeCity) || (formData.nativeCity && !getCitiesByDistrict(formData.nativeState, formData.nativeDistrict).includes(formData.nativeCity))) && (
+                    <input
+                      type="text"
+                      placeholder="Specify custom city / taluk..."
+                      value={formData.otherNativeCity || (formData.nativeCity !== 'Other City / Town / Taluk' ? formData.nativeCity : '')}
+                      onChange={e => setFormData({ ...formData, otherNativeCity: e.target.value, nativeCity: e.target.value || 'Other City / Town / Taluk' })}
+                      className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  {renderCandidateFieldLabel('Current City & State (Present Stay)', 'city', true)}
                   <input 
                     type="text" 
                     required 
@@ -2013,15 +2118,34 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     />
                   </div>
                   <div>
-                    {renderCandidateFieldLabel('Relationship & % Share', 'nomineeRelation', true)}
-                    <input 
-                      type="text" 
-                      required 
-                      value={formData.nomineeRelation} 
-                      onChange={e => setFormData({ ...formData, nomineeRelation: e.target.value })}
-                      placeholder="e.g. Spouse (100% Share)"
-                      className={getCandidateFieldInputClass('nomineeRelation')} 
-                    />
+                    {renderCandidateFieldLabel('Statutory Nominee Relationship', 'nomineeRelation', true)}
+                    <select
+                      required
+                      value={RELATIONSHIP_OPTIONS.includes(formData.nomineeRelation) ? formData.nomineeRelation : (formData.nomineeRelation ? 'Others' : '')}
+                      onChange={e => {
+                        const val = e.target.value;
+                        if (val === 'Others') {
+                          setFormData({ ...formData, nomineeRelation: 'Others', otherNomineeRelation: formData.otherNomineeRelation || '' });
+                        } else {
+                          setFormData({ ...formData, nomineeRelation: val, otherNomineeRelation: '' });
+                        }
+                      }}
+                      className={getCandidateFieldInputClass('nomineeRelation', 'form-select text-xs font-bold')}
+                    >
+                      <option value="">-- Select Statutory Relationship --</option>
+                      {RELATIONSHIP_OPTIONS.map(rel => (
+                        <option key={rel} value={rel}>{rel}</option>
+                      ))}
+                    </select>
+                    {(isOtherValue(formData.nomineeRelation) || (formData.nomineeRelation && !RELATIONSHIP_OPTIONS.includes(formData.nomineeRelation))) && (
+                      <input 
+                        type="text" 
+                        placeholder="Specify custom relationship..."
+                        value={formData.otherNomineeRelation || (formData.nomineeRelation !== 'Others' ? formData.nomineeRelation : '')}
+                        onChange={e => setFormData({ ...formData, otherNomineeRelation: e.target.value, nomineeRelation: e.target.value || 'Others' })}
+                        className="mt-1.5 form-input text-xs border-amber-300 bg-amber-50/50"
+                      />
+                    )}
                   </div>
                   <div>
                     {renderCandidateFieldLabel('Nominee Date of Birth', 'nomineeDob')}

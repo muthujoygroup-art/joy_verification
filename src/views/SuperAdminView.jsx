@@ -3608,7 +3608,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           { key: 'departments', label: 'Manage Departments' },
           { key: 'designations', label: 'Manage Designations' },
           { key: 'workLocations', label: 'Manage Work Locations' },
-          { key: 'employmentTypes', label: 'Manage Employment Types' }
+          { key: 'employmentTypes', label: 'Manage Employment Types' },
+          { key: 'bloodGroups', label: 'Manage Blood Groups' },
+          { key: 'religions', label: 'Manage Religions' },
+          { key: 'castes', label: 'Manage Castes & Communities' },
+          { key: 'categories', label: 'Manage Community Categories' },
+          { key: 'relationships', label: 'Manage Statutory Relationships' }
         ];
 
         const currentMasterCategoryObj = MASTER_CATEGORIES.find(c => c.key === activeMasterMenu) || MASTER_CATEGORIES[0];

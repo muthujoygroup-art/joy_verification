@@ -3,6 +3,21 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { getUserFriendlyErrorMessage } from '../utils/diagnosticPlaybooks';
 import { parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate } from '../utils/validationRules';
+import { 
+  BLOOD_GROUP_OPTIONS, 
+  RELIGION_OPTIONS, 
+  CASTE_OPTIONS, 
+  COMMUNITY_CATEGORY_OPTIONS, 
+  LANGUAGES_OPTIONS, 
+  RELATIONSHIP_OPTIONS,
+  DEPARTMENT_OPTIONS,
+  DESIGNATION_OPTIONS,
+  EDUCATION_LEVEL_OPTIONS,
+  JOB_CATEGORY_OPTIONS,
+  JOB_TYPE_OPTIONS,
+  DOCUMENT_TYPE_OPTIONS
+} from '../data/masterDropdownOptions';
+import { getIndianStates } from '../data/indiaLocations';
 
 const AppContext = createContext();
 
@@ -895,57 +910,10 @@ export const AppProvider = ({ children }) => {
       'Higher Secondary (10+2 CBSE / State)',
       'Secondary School (10th SSLC)'
     ],
-    languages: [
-      'English (Fluent)',
-      'Hindi (National)',
-      'Tamil (Regional)',
-      'Telugu (Regional)',
-      'Kannada (Regional)',
-      'Malayalam (Regional)',
-      'Marathi (Regional)',
-      'Bengali (Regional)',
-      'Gujarati (Regional)',
-      'Punjabi (Regional)',
-      'Odia (Regional)',
-      'French (Foreign)',
-      'German (Foreign)'
-    ],
-    jobCategories: [
-      'Information Technology & Software Services',
-      'Manufacturing & Heavy Industrial Engineering',
-      'Banking, Financial Services & Insurance (BFSI)',
-      'Logistics, Warehousing & Fleet Operations',
-      'Healthcare, Clinical & Pharmaceuticals',
-      'Corporate Sales, Retail & Marketing',
-      'Construction, Infrastructure & Real Estate',
-      'Hospitality, Facility & Security Services',
-      'Human Resources & Talent Acquisition'
-    ],
-    jobTypes: [
-      'Full Time Permanent',
-      'Contractual (Fixed Term 1-3 Yrs)',
-      'Third-Party Payroll Staff',
-      'Apprentice / National Apprenticeship (NATS)',
-      'Internship / Graduate Trainee',
-      'Part Time / Shift Consultant',
-      'Daily Wage / Contract Field Operative'
-    ],
-    states: [
-      'Tamil Nadu',
-      'Karnataka',
-      'Maharashtra',
-      'Delhi NCR',
-      'Telangana',
-      'Gujarat',
-      'Kerala',
-      'Uttar Pradesh',
-      'West Bengal',
-      'Andhra Pradesh',
-      'Rajasthan',
-      'Haryana',
-      'Punjab',
-      'Madhya Pradesh'
-    ],
+    languages: LANGUAGES_OPTIONS,
+    jobCategories: JOB_CATEGORY_OPTIONS,
+    jobTypes: JOB_TYPE_OPTIONS,
+    states: getIndianStates(),
     cities: [
       'Chennai',
       'Bengaluru',
@@ -990,44 +958,9 @@ export const AppProvider = ({ children }) => {
       'Contract Labor (R&A) Act Form XIII Register',
       'Background Verification Authorization & DPDP Consent'
     ],
-    documentTypes: [
-      'Government Aadhaar Card (Front & Back)',
-      'Income Tax PAN Card',
-      'Passport (Front, Back & Visa pages)',
-      'Driving License (MoRTH Sarathi)',
-      'Voter Identity Card (ECI EPIC)',
-      'Bank Passbook / Cancelled Cheque Leaf',
-      'Highest Educational Degree Certificate / Marksheet',
-      'Previous Employer Relieving & Service Letter',
-      'Last 3 Months Salary / Pay Slips',
-      'Signed Non-Disclosure Agreement (NDA)',
-      'Statutory Form 11 / Gratuity Nomination Signed Copy'
-    ],
-    departments: [
-      'Engineering & Software Architecture',
-      'Manufacturing, Plant & Assembly',
-      'Logistics, Warehousing & Fleet Fleet',
-      'Finance, Taxation & Payroll',
-      'Human Resources & Talent Acquisition',
-      'Sales, Enterprise & Marketing',
-      'Quality Assurance & Compliance',
-      'Customer Support & Helpdesk',
-      'Executive Leadership & Strategy'
-    ],
-    designations: [
-      'Vice President / Managing Director',
-      'Principal Software Architect',
-      'Senior Software Engineer',
-      'Full Stack Developer',
-      'Plant Operations Supervisor',
-      'CNC Machine Operator',
-      'Quality Control Engineer',
-      'Fleet Logistics Driver',
-      'Senior HR Talent Partner',
-      'Finance & Payroll Manager',
-      'Corporate Account Executive',
-      'Facility & Logistics Associate'
-    ],
+    documentTypes: DOCUMENT_TYPE_OPTIONS,
+    departments: DEPARTMENT_OPTIONS,
+    designations: DESIGNATION_OPTIONS,
     workLocations: [
       'Bengaluru Global Tech Hub (HQ)',
       'Chennai Regional Operations Center',
@@ -1045,7 +978,11 @@ export const AppProvider = ({ children }) => {
       'Industrial Plant Worker',
       'Internship / Fellowship'
     ],
-    bloodGroups: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+    bloodGroups: BLOOD_GROUP_OPTIONS,
+    religions: RELIGION_OPTIONS,
+    castes: CASTE_OPTIONS,
+    categories: COMMUNITY_CATEGORY_OPTIONS,
+    relationships: RELATIONSHIP_OPTIONS
   });
 
   // SUPER ADMIN MASTER DEFAULT FORM FIELDS STATE

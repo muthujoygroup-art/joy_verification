@@ -1,7 +1,7 @@
 /**
  * Master Dropdown Options Directory
- * Provides standardized, comprehensive option matrices for all employee creation forms,
- * statutory filings, and onboarding dossiers with built-in 'Others' support.
+ * Standardized, comprehensive option matrices for all employee creation forms,
+ * statutory filings (EPFO, ESIC, Gratuity, Mediclaim), and onboarding dossiers.
  */
 
 export const GENDER_OPTIONS = [
@@ -31,7 +31,17 @@ export const BLOOD_GROUP_OPTIONS = [
   'AB-',
   'O+',
   'O-',
+  'A1+',
+  'A1-',
+  'A2+',
+  'A2-',
+  'A1B+',
+  'A1B-',
+  'A2B+',
+  'A2B-',
   'Bombay Blood Group (hh)',
+  'Rh-null (Golden Blood)',
+  'Unknown / Unspecified',
   'Others'
 ];
 
@@ -44,6 +54,53 @@ export const RELIGION_OPTIONS = [
   'Jain',
   'Parsi / Zoroastrian',
   'Jewish',
+  'Sanamahism',
+  'Bahá\'í',
+  'Tribal / Sarna / Donyi-Polo',
+  'Atheist / Agnostic / Secular',
+  'Prefer Not to Disclose',
+  'Others'
+];
+
+export const CASTE_OPTIONS = [
+  'General / Forward Caste (FC / OC / UR)',
+  'Brahmin (All Sub-sects / Iyer / Iyengar / Smartha / Deshastha / Kanyakubja / Saraswat / Nagar / Gaur)',
+  'Kshatriya / Rajput / Thakur / Varma',
+  'Vaishya / Arya Vysya / Baniya / Agarwal / Gupta / Maheshwari / Oswal / Khandelwal / Mahajan',
+  'Kayastha / Prabhu / Karan',
+  'Vellalar (Pillai / Mudaliar / Saiva Vellalar / Karkatha / Thuluva)',
+  'Kongu Vellala Gounder',
+  'Thevar / Mukkulathor (Kallar / Maravar / Agamudayar)',
+  'Vanniyar / Padayachi / Gounder (North TN)',
+  'Nadar (All Sub-sects)',
+  'Naidu / Balija / Kamma / Reddy / Kapu / Velama / Telaga',
+  'Maratha / Kunbi / Deshmukh / Patil',
+  'Lingayat / Veerashaiva',
+  'Vokkaliga / Gowda',
+  'Nair / Menon / Kurup / Pillai',
+  'Ezhava / Thiyya / Billava / Poojary',
+  'Jat / Jaat',
+  'Gurjar / Gujjar',
+  'Yadav / Ahir / Gwala / Konar / Idaiyar',
+  'Kurmi / Patel / Patidar / Kanbi',
+  'Bunt / Shetty',
+  'Khatri / Arora / Sood',
+  'Saini / Mali / Maurya / Kushwaha / Shakya',
+  'Vishwakarma / Achari / Kammalar / Panchal / Suthar / Sonar / Badhai / Lohar',
+  'Devanga / Padmashali / Saliyar / Sengunthar / Kaikolar / Weaver',
+  'Chettiar (Nattukottai / Devanga / Vaniya / Beri)',
+  'Meena / Mina',
+  'Scheduled Caste (SC - Adi Dravidar / Pallar / Devendra Kula Vellalar / Paraiyar / Arunthathiyar)',
+  'Scheduled Caste (SC - Chamar / Jatav / Mahar / Madiga / Mala / Valmiki / Paswan / Meghwal)',
+  'Scheduled Tribe (ST - Bhil / Gond / Santhal / Munda / Oraon / Bodo / Khasi / Garo / Naga / Mizo / Toda / Irula)',
+  'Muslim Community (Sheikh / Sayyid / Mughal / Pathan / Ansari / Qureshi / Memon / Bohra)',
+  'Muslim Community (Lebbai / Rowther / Marakkayar / Mappila / Dakhni)',
+  'Christian Community (Roman Catholic / CSI / CNI / Syrian Christian / Jacobite / Mar Thoma / Protestant / Pentecostal)',
+  'Sikh Community (Jat Sikh / Khatri Sikh / Ramgarhia / Mazhabi / Ahluwalia)',
+  'Jain Community (Digambar / Shwetambar / Oswal / Porwal / Khandelwal / Shrimal)',
+  'Parsi / Irani Community',
+  'De-Notified Tribe / Nomadic Community (DNC / DNT)',
+  'Prefer Not to Disclose',
   'Others'
 ];
 
@@ -55,21 +112,25 @@ export const COMMUNITY_CATEGORY_OPTIONS = [
   'ST (Scheduled Tribe)',
   'EWS (Economically Weaker Section)',
   'MBC (Most Backward Class)',
-  'BC-Muslim',
-  'DNC / DNT (De-Notified Community)',
+  'BC / BC-A / BC-B / BC-C / BC-D / BC-E',
+  'BC-Muslim (BCM)',
+  'DNC / DNT (De-Notified Community / Nomadic Tribe)',
+  'PwD (Persons with Disabilities / Divyangjan)',
+  'Ex-Servicemen (ESM / Defense Quota)',
+  'Minority Community (Religious / Linguistic)',
   'Others'
 ];
 
 export const EDUCATION_LEVEL_OPTIONS = [
   'Doctorate / Ph.D / Post-Doctoral',
-  'Post Graduate (Master Degree - M.E / M.Tech / MBA / MCA / M.Sc / M.Com / M.A / MS)',
-  'Under Graduate (Bachelor Degree - B.E / B.Tech / B.Sc / B.Com / B.A / BBA / BCA / MBBS / LLB)',
+  'Post Graduate (Master Degree - M.E / M.Tech / MBA / MCA / M.Sc / M.Com / M.A / MS / MD / MS)',
+  'Under Graduate (Bachelor Degree - B.E / B.Tech / B.Sc / B.Com / B.A / BBA / BCA / MBBS / LLB / B.Des / B.Arch)',
   'Polytechnic / Engineering Diploma (3-Year)',
   'Vocational / ITI Trade Certificate',
-  'Higher Secondary Certificate (12th Standard / HSC / +2)',
-  'Secondary School Leaving Certificate (10th Standard / SSLC / Matriculation)',
-  'Post Graduate Diploma (PGD)',
-  'Professional Certification (CA / CMA / CS / CFA / PMP / AWS / Cisco)',
+  'Higher Secondary Certificate (12th Standard / HSC / +2 / CBSE / ICSE / State Board)',
+  'Secondary School Leaving Certificate (10th Standard / SSLC / Matriculation / CBSE / ICSE)',
+  'Post Graduate Diploma (PGD / PGDM)',
+  'Professional Certification (CA / CMA / CS / CFA / PMP / AWS / Azure / Cisco / ITIL)',
   'Others'
 ];
 
@@ -187,27 +248,99 @@ export const DOCUMENT_TYPE_OPTIONS = [
 
 export const LANGUAGES_OPTIONS = [
   'English',
-  'Tamil',
-  'Hindi',
-  'Telugu',
-  'Kannada',
-  'Malayalam',
-  'Marathi',
-  'Bengali',
-  'Gujarati',
-  'Punjabi',
-  'Odia',
-  'Assamese',
-  'Urdu',
-  'Sanskrit',
-  'Konkani',
-  'French',
-  'German',
-  'Spanish',
-  'Japanese',
-  'Mandarin',
+  'Tamil (தமிழ்)',
+  'Telugu (తెలుగు)',
+  'Hindi (हिन्दी)',
+  'Kannada (ಕನ್ನಡ)',
+  'Malayalam (മലയാളം)',
+  'Marathi (मराठी)',
+  'Bengali (বাংলা)',
+  'Gujarati (ગુજરાતી)',
+  'Odia (ଓଡ଼ିଆ)',
+  'Punjabi (ਪੰਜਾਬੀ)',
+  'Assamese (অসমীয়া)',
+  'Urdu (اردو)',
+  'Sanskrit (संस्कृतम्)',
+  'Konkani (कोंकणी)',
+  'Sindhi (सिन्धी)',
+  'Nepali (नेपाली)',
+  'Kashmiri (कश्मीरी)',
+  'Maithili (मैथिली)',
+  'Dogri (डोगरी)',
+  'Santali (संथाली)',
+  'Bodo (बड़ो)',
+  'Manipuri / Meitei (মৈতৈলোন্)',
+  'Tulu (ತುಳು)',
+  'Sourashtra (சௌராஷ்டிரா)',
+  'Badaga (படகா)',
+  'Kodava (ಕೊಡವ)',
+  'Marwari (मारवाड़ी)',
+  'Bhojpuri (भोजपुरी)',
+  'Rajasthani (राजस्थानी)',
+  'Chhattisgarhi (छत्तीसगढ़ी)',
+  'Haryanvi (हरियाणवी)',
+  'Magahi (मगही)',
+  'Kumaoni (कुमाऊँनी)',
+  'Garhwali (गढ़वाली)',
+  'Khasi (Khasi)',
+  'Garo (Garo)',
+  'Mizo (Mizo)',
+  'Kokborok (Kokborok)',
+  'Ladakhi (ལ་དྭགས་སྐད་)',
+  'French (Français)',
+  'German (Deutsch)',
+  'Spanish (Español)',
+  'Arabic (العربية)',
+  'Japanese (日本語)',
+  'Mandarin Chinese (中文)',
+  'Russian (Русский)',
   'Others'
 ];
+
+export const MOTHER_TONGUE_OPTIONS = LANGUAGES_OPTIONS;
+
+/**
+ * Statutory Nomination & Family Relationship Matrix
+ * Tailored for EPF Form 2, EPS 1995, ESIC Form 1, Payment of Gratuity Act Form F,
+ * Group Mediclaim & Term Insurance policies.
+ */
+export const RELATIONSHIP_OPTIONS = [
+  'Spouse (Husband / Wife)',
+  'Father',
+  'Mother',
+  'Son',
+  'Daughter',
+  'Brother',
+  'Sister',
+  'Dependent Father',
+  'Dependent Mother',
+  'Dependent Brother (Minor / Unemployed)',
+  'Dependent Sister (Unmarried / Widowed)',
+  'Grandfather (Paternal)',
+  'Grandmother (Paternal)',
+  'Grandfather (Maternal)',
+  'Grandmother (Maternal)',
+  'Grandson',
+  'Granddaughter',
+  'Father-in-law',
+  'Mother-in-law',
+  'Son-in-law',
+  'Daughter-in-law',
+  'Brother-in-law',
+  'Sister-in-law',
+  'Uncle (Paternal / Maternal)',
+  'Aunt (Paternal / Maternal)',
+  'Nephew',
+  'Niece',
+  'First Cousin',
+  'Legally Adopted Son',
+  'Legally Adopted Daughter',
+  'Legal Guardian / Ward',
+  'Nominee / Non-Family Dependent (As Permitted by Law)',
+  'Others'
+];
+
+export const FAMILY_MEMBER_RELATION_OPTIONS = RELATIONSHIP_OPTIONS;
 
 /**
  * Utility helper to test if a selected value requires an 'Other (Specify)' input field
@@ -217,5 +350,11 @@ export const LANGUAGES_OPTIONS = [
 export const isOtherValue = (value) => {
   if (!value) return false;
   const s = String(value).toLowerCase().trim();
-  return s === 'others' || s === 'other' || s.startsWith('other ');
+  return (
+    s === 'others' || 
+    s === 'other' || 
+    s.startsWith('other ') || 
+    s.includes('(custom)') ||
+    s.includes('specify')
+  );
 };
