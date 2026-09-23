@@ -65,6 +65,9 @@ export class ErrorBoundary extends React.Component {
     try {
       sessionStorage.clear();
       localStorage.removeItem('joy_active_tour');
+      localStorage.removeItem('joy_auth_user');
+      localStorage.removeItem('joy_auth_role');
+      localStorage.removeItem('joy_auth_token');
       if ('caches' in window) {
         const cacheNames = await caches.keys();
         await Promise.all(cacheNames.map(name => caches.delete(name)));
@@ -108,14 +111,29 @@ export class ErrorBoundary extends React.Component {
             <p className="text-xs text-slate-400 leading-relaxed">
               Synchronizing workforce verification rails. Click below to refresh your portal session.
             </p>
-            <button
-              type="button"
-              onClick={this.handleClearAndReload}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Reload Workspace 🔄</span>
-            </button>
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={this.handleClearAndReload}
+                className="flex-1 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Reload Workspace 🔄</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem('joy_auth_user');
+                    localStorage.removeItem('joy_auth_role');
+                  } catch (e) {}
+                  window.location.href = window.location.pathname;
+                }}
+                className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all border border-slate-700 cursor-pointer"
+              >
+                Reset & Login 🔐
+              </button>
+            </div>
           </div>
         </div>
       );

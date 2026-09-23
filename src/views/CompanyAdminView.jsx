@@ -755,7 +755,7 @@ export const CompanyAdminView = () => {
 
 
 
-  const companyHrUsers = (hrUsers || []).filter(h => h.companyId === company.id);
+  const companyHrUsers = (hrUsers || []).filter(h => h && (!h.companyId || h.companyId === company?.id || h.company_id === company?.id || company?.id === 'comp-joy'));
 
   // Fetch Company SMTP Settings and HR Recruiters from PostgreSQL
   useEffect(() => {
@@ -788,11 +788,11 @@ export const CompanyAdminView = () => {
   }, [company?.id]);
 
   // Combine DB HR users with context HR users
-  const allCompanyHrUsers = dbHrUsers.length > 0 ? dbHrUsers : companyHrUsers;
+  const allCompanyHrUsers = (dbHrUsers && dbHrUsers.length > 0) ? dbHrUsers : (companyHrUsers || []);
 
   const companyCandidates = useMemo(() => {
     const rawList = (candidates || []).filter(c => 
-      !c.companyId || c.companyId === company.id || c.company_id === company.id || company.id === 'comp-joy' || c.companyId === 'comp-joy'
+      c && (!c.companyId || c.companyId === company?.id || c.company_id === company?.id || company?.id === 'comp-joy' || c.companyId === 'comp-joy')
     );
     const seen = new Set();
     return rawList.filter(c => {
@@ -943,7 +943,7 @@ export const CompanyAdminView = () => {
   const companyDivisionMetaMap = {
     registry: {
       pillarBadge: '🏛️ 1. Analytics & Candidates',
-      badgeText: `${candidates.length} Candidates Enrolled`,
+      badgeText: `${(candidates || []).length} Candidates Enrolled`,
       title: 'Candidate Verification Directory & Onboarding Records',
       subtitle: 'Comprehensive registry of company candidate profiles, real-time verification progress, and point-in-time dossiers',
       icon: Users,
@@ -959,7 +959,7 @@ export const CompanyAdminView = () => {
     },
     hrteam: {
       pillarBadge: '👥 2. HR Team & Access',
-      badgeText: `${companyHrUsers.length} Active Recruiters`,
+      badgeText: `${(companyHrUsers || []).length} Active Recruiters`,
       title: 'Recruiter Team Directory & Department Management',
       subtitle: 'Manage recruiter accounts, department roles, active candidate link allotments, and credentials',
       icon: Users,
@@ -1102,9 +1102,9 @@ export const CompanyAdminView = () => {
               title="Click to view subscribed employee plan, usage, and invoices"
             >
               <Users className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="font-extrabold text-indigo-950">{currentPlan.name}</span>
+              <span className="font-extrabold text-indigo-950">{currentPlan?.name || 'Tier 1 (< 50 Employees)'}</span>
               <span className="text-slate-300">•</span>
-              <span className="font-mono text-slate-700 font-semibold">{companyCandidates.length} / {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles} Employees</span>
+              <span className="font-mono text-slate-700 font-semibold">{(companyCandidates || []).length} / {(currentPlan?.maxProfiles || 50) === 999999 ? '∞' : (currentPlan?.maxProfiles || 50)} Employees</span>
             </div>
 
             <button
@@ -1231,14 +1231,14 @@ export const CompanyAdminView = () => {
           <>
             <MetricCard 
               title="Active HR Executives" 
-              value={companyHrUsers.length} 
+              value={(companyHrUsers || []).length} 
               subtext="Managing Onboarding" 
               icon={Users} 
               color="cyan" 
               onClick={() => setActiveDrilldown({
                 title: 'Active HR Executives Team',
                 subtitle: `Recruiting & Onboarding staff assigned to ${company.name}`,
-                metricValue: `${companyHrUsers.length} HR Staff`,
+                metricValue: `${(companyHrUsers || []).length} HR Staff`,
                 metricType: 'company_hr',
                 data: (companyHrUsers || []).map(h => ({
                   name: h.name,
@@ -1253,9 +1253,9 @@ export const CompanyAdminView = () => {
             <MetricCard 
               title="Verified Profiles" 
               value={verifiedCount} 
-              subtext={`Out of ${companyCandidates.length} profiles`} 
+              subtext={`Out of ${(companyCandidates || []).length} profiles`} 
               icon={CheckCircle2} 
-              trend={`${Math.round((verifiedCount / (companyCandidates.length || 1)) * 100)}% Pass`}
+              trend={`${Math.round((verifiedCount / ((companyCandidates || []).length || 1)) * 100)}% Pass`}
               color="emerald" 
               onClick={() => setActiveDrilldown({
                 title: 'Verified Employee Profiles Audit',
@@ -1711,7 +1711,7 @@ export const CompanyAdminView = () => {
                 <Users className="w-5 h-5 text-indigo-600" />
                 <h3 className="text-lg font-black text-slate-900">HR Recruiter Directory & Governance Hub</h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  {allCompanyHrUsers.length} Appointed Staff
+                  {(allCompanyHrUsers || []).length} Appointed Staff
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -1742,7 +1742,7 @@ export const CompanyAdminView = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
-                {allCompanyHrUsers.length === 0 ? (
+                {(allCompanyHrUsers || []).length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-slate-400 font-semibold">
                       No HR recruiters onboarded yet. Click "+ Onboard HR Recruiter" to invite your first team member!
