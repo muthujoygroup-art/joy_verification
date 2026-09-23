@@ -223,34 +223,7 @@ export const api = {
     success: true,
     message: `🔑 Account login credentials & onboarding guide sent to company admin via email!`
   })),
-  verifyCompanyGstLive: (gstin) => request(`/superadmin/company-onboarding/verify-gst`, {
-    method: 'POST',
-    body: JSON.stringify({ gstin }),
-  }).catch(() => ({
-    status: 'Active',
-    legal_name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    gstin: gstin || '29AAACJ1234F1Z5',
-    address: 'Bangalore, Karnataka, India',
-    status_code: '200 OK'
-  })),
-  verifyCompanyCinLive: (cin) => request(`/superadmin/company-onboarding/verify-cin`, {
-    method: 'POST',
-    body: JSON.stringify({ cin }),
-  }).catch(() => ({
-    status: 'Active (Compliant)',
-    company_name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
-    cin: cin || 'U72200KA2021PTC146521',
-    mca_status: 'Active'
-  })),
-  verifyCompanyBankLive: (accountNo, ifsc, holderName) => request(`/superadmin/company-onboarding/verify-bank`, {
-    method: 'POST',
-    body: JSON.stringify({ account_number: accountNo, ifsc, holder_name: holderName }),
-  }).catch(() => ({
-    status: 'SUCCESS',
-    name_match: true,
-    account_status: 'ACTIVE',
-    penny_drop_utr: `IMPS${Date.now().toString().slice(-9)}`
-  })),
+
   setCompanyActivationPassword: (companyId, password) => request(`/superadmin/companies/${companyId}/set-activation-password`, {
     method: 'POST',
     body: JSON.stringify({ password }),
@@ -782,39 +755,6 @@ export const api = {
     }
   },
 
-  dispatchCompanyOnboardingPackage: async (inquiryId, payload) => {
-    try {
-      return await request(`/superadmin/inquiries/${inquiryId}/dispatch-onboarding`, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch (e) {
-      return { success: true, dispatchedAt: new Date().toISOString(), ...payload };
-    }
-  },
-
-  dispatchCompanyPaymentLink: async (inquiryId, payload) => {
-    try {
-      return await request(`/superadmin/inquiries/${inquiryId}/dispatch-payment`, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch (e) {
-      return { success: true, dispatchedAt: new Date().toISOString(), ...payload };
-    }
-  },
-
-  dispatchCompanyCredentials: async (inquiryId, payload) => {
-    try {
-      return await request(`/superadmin/inquiries/${inquiryId}/dispatch-credentials`, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch (e) {
-      return { success: true, dispatchedAt: new Date().toISOString(), ...payload };
-    }
-  },
-
   verifyVendorDocumentLive: async (vendorId, checkType, payload) => {
     try {
       return await request('/verification/vendor-document', {
@@ -831,14 +771,6 @@ export const api = {
       };
     }
   },
-  getApiGatewayCatalogue: () => request('/superadmin/api-gateway/catalogue', {}, true),
-  testApiGatewayEndpoint: (endpointSlug, payload) => request('/superadmin/api-gateway/test-endpoint', {
-    method: 'POST',
-    body: JSON.stringify({ endpoint_slug: endpointSlug, payload }),
-  }),
-  testApiGatewayConnection: () => request('/superadmin/api-gateway/test-connection', {
-    method: 'POST'
-  }),
   getApiAnalyticsStatistics: (timeframe = 'all') => request(`/superadmin/api-analytics/statistics?timeframe=${timeframe}`, {}, false),
   getVerificationRecords: (token) => request(`/verification/candidate/${token}/records`),
 
@@ -1170,26 +1102,6 @@ export const api = {
       body: JSON.stringify({ resolved_by }),
     });
   },
-  // Enterprise Company Requests & Approvals
-  getCompanyRequests: () => request('/superadmin/company-requests'),
-  submitCompanyRequest: (payload) => request('/superadmin/company-requests', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-  approveCompanyRequest: (requestId) => {
-    requestCache.clear();
-    return request(`/superadmin/company-requests/${requestId}/approve`, {
-      method: 'PUT',
-    });
-  },
-  rejectCompanyRequest: (requestId, payload = {}) => {
-    requestCache.clear();
-    return request(`/superadmin/company-requests/${requestId}/reject`, {
-      method: 'PUT',
-      body: JSON.stringify(payload),
-    });
-  },
-
   // Public Landing Page & Enterprise Inquiries
   getPublicArticles: async () => {
     try {
@@ -1205,24 +1117,6 @@ export const api = {
       return { success: true, data: [] };
     }
   },
-  submitInquiry: async (inquiryData) => {
-    return await request('/inquiries', {
-      method: 'POST',
-      body: JSON.stringify(inquiryData),
-    });
-  },
-  updateInquiryStatus: async (inquiryId, status) => {
-    return await request(`/inquiries/${inquiryId}/status`, {
-      method: 'PUT',
-      body: JSON.stringify({ status }),
-    });
-  },
-  replyToInquiry: async (inquiryId, payload) => {
-    return await request(`/inquiries/${inquiryId}/reply`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-  },
   submitDemoRequest: async (demoData) => {
     try {
       return await request('/public/demo-requests', {
@@ -1231,16 +1125,6 @@ export const api = {
       });
     } catch {
       return { success: true, message: 'Demo request recorded in simulation mode' };
-    }
-  },
-  submitReview: async (reviewData) => {
-    try {
-      return await request('/public/client-reviews', {
-        method: 'POST',
-        body: JSON.stringify(reviewData),
-      });
-    } catch {
-      return { success: true, message: 'Review recorded in simulation mode' };
     }
   },
 
@@ -1285,19 +1169,9 @@ export const api = {
     method: 'PUT',
     body: JSON.stringify(payload)
   }),
-  getEmailConfig: () => request('/settings/email-config', {}, true),
-  saveEmailConfig: (payload) => request('/settings/email-config', {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  }),
   testEmailDispatch: (payload) => request('/settings/test-email', {
     method: 'POST',
     body: JSON.stringify(payload)
-  }),
-  getRoleSettings: (role) => request(`/settings/role/${role}`, {}, true),
-  updateRoleSettings: (role, settings) => request('/settings/role', {
-    method: 'PUT',
-    body: JSON.stringify({ role, settings })
   })
 };
 

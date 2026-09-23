@@ -24,10 +24,16 @@ import {
 } from 'lucide-react';
 
 export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
-  const { roleView, platformGuidelines } = useApp();
+  const { roleView, currentRole, platformGuidelines } = useApp();
+
+  const effectiveRole = currentRole || roleView || 'superadmin';
+  const canViewSuperAdmin = effectiveRole === 'superadmin';
+  const canViewCompany = ['superadmin', 'company'].includes(effectiveRole);
+  const canViewHr = ['superadmin', 'company', 'hrexecutive'].includes(effectiveRole);
+  const canViewCandidate = true;
 
   // Determine initial guide tab based on logged-in role context
-  const defaultTab = initialRole || (roleView === 'employee_link' ? 'candidate' : roleView === 'hrexecutive' ? 'hr' : roleView === 'company' ? 'company' : 'superadmin');
+  const defaultTab = initialRole || (effectiveRole === 'employee_link' ? 'candidate' : effectiveRole === 'hrexecutive' ? 'hr' : effectiveRole === 'company' ? 'company' : 'superadmin');
   
   const [activeGuideTab, setActiveGuideTab] = useState(defaultTab);
 
@@ -66,7 +72,7 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
             </div>
             <div>
               <h2 className="text-xl font-black text-slate-900">Role-Specific Operational Guidelines & How-To Manual</h2>
-              <p className="text-xs text-slate-500 font-medium">Tailored step-by-step procedures for Super Admin, Company Admin, HR Executive, and Candidate portals</p>
+              <p className="text-xs text-slate-500 font-medium">Tailored step-by-step procedures for your authorized platform role</p>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-lg">✕</button>
@@ -75,45 +81,53 @@ export const HelpGuidelinesModal = ({ initialRole, onClose }) => {
         {/* Role Guide Selector Tabs */}
         <div className="flex items-center justify-between gap-3 flex-col sm:flex-row">
           <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto text-xs font-bold w-full sm:w-auto">
-            <button
-              onClick={() => setActiveGuideTab('superadmin')}
-              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeGuideTab === 'superadmin' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Super Admin Manual</span>
-            </button>
+            {canViewSuperAdmin && (
+              <button
+                onClick={() => setActiveGuideTab('superadmin')}
+                className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeGuideTab === 'superadmin' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Super Admin Manual</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveGuideTab('company')}
-              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeGuideTab === 'company' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Company Admin Manual</span>
-            </button>
+            {canViewCompany && (
+              <button
+                onClick={() => setActiveGuideTab('company')}
+                className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeGuideTab === 'company' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Company Admin Manual</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveGuideTab('hr')}
-              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeGuideTab === 'hr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>HR Executive Manual</span>
-            </button>
+            {canViewHr && (
+              <button
+                onClick={() => setActiveGuideTab('hr')}
+                className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeGuideTab === 'hr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>HR Executive Manual</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveGuideTab('candidate')}
-              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeGuideTab === 'candidate' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>Candidate Manual</span>
-            </button>
+            {canViewCandidate && (
+              <button
+                onClick={() => setActiveGuideTab('candidate')}
+                className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeGuideTab === 'candidate' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>Candidate Manual</span>
+              </button>
+            )}
           </div>
 
           <div className="relative w-full sm:w-56">

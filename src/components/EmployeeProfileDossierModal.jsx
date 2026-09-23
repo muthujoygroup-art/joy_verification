@@ -41,7 +41,7 @@ import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
-import { formatDobAndAge, formatDisplayDate, parseAnyDate } from '../utils/validationRules';
+import { formatDobAndAge, formatDisplayDate, parseAnyDate, calculateAccurateAge } from '../utils/validationRules';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const { companies = [], platformLogo, platformLogoEmblem } = useApp() || {};
