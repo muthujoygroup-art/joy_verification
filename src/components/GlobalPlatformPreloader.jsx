@@ -77,7 +77,6 @@ export const GlobalPlatformPreloader = ({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      clearTimeout(t0);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
