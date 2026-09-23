@@ -17,11 +17,16 @@ import {
   File,
   Layers,
   Sparkles,
-  X
+  X,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Loader2
 } from 'lucide-react';
 import { api } from '../services/api';
 import { OfficialVerificationCertificateModal } from './OfficialVerificationCertificateModal';
 import { EmployeeProfileDossierModal } from './EmployeeProfileDossierModal';
+import { convertPdfToImages, isPdfSource } from '../utils/pdfToImage';
 
 export const DocumentDownloader = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState('attached');
@@ -30,6 +35,49 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
   const [showDossierPreview, setShowDossierPreview] = useState(false);
   const [selectedDocPreview, setSelectedDocPreview] = useState(null);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
+  const [docPreviewImages, setDocPreviewImages] = useState([]);
+  const [isRenderingPreviewPdf, setIsRenderingPreviewPdf] = useState(false);
+  const [previewZoom, setPreviewZoom] = useState(1);
+  const [previewFitMode, setPreviewFitMode] = useState('width');
+
+  useEffect(() => {
+    if (!selectedDocPreview) {
+      setDocPreviewImages([]);
+      setIsRenderingPreviewPdf(false);
+      setPreviewZoom(1);
+      return;
+    }
+
+    if (Array.isArray(selectedDocPreview.page_images) && selectedDocPreview.page_images.length > 0) {
+      setDocPreviewImages(selectedDocPreview.page_images);
+      return;
+    }
+    if (selectedDocPreview.preview_image) {
+      setDocPreviewImages([selectedDocPreview.preview_image]);
+      return;
+    }
+    if (selectedDocPreview.file_path && selectedDocPreview.file_path.startsWith('data:image')) {
+      setDocPreviewImages([selectedDocPreview.file_path]);
+      return;
+    }
+
+    const isPdf = isPdfSource(selectedDocPreview.file_path, selectedDocPreview.name, selectedDocPreview.file_format || selectedDocPreview.type);
+    if (isPdf && selectedDocPreview.file_path) {
+      setIsRenderingPreviewPdf(true);
+      convertPdfToImages(selectedDocPreview.file_path, { maxPages: 5, scale: 2.0 })
+        .then(res => {
+          if (res.pages && res.pages.length > 0) {
+            setDocPreviewImages(res.pages);
+          }
+        })
+        .catch(err => {
+          console.warn('PDF render error in preview:', err);
+        })
+        .finally(() => {
+          setIsRenderingPreviewPdf(false);
+        });
+    }
+  }, [selectedDocPreview]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -558,30 +606,128 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
             if (e.target === e.currentTarget) setSelectedDocPreview(null);
           }}
         >
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-full max-h-[calc(100vh-4rem)] animate-scaleIn shrink-0">
-            <div className="flex items-center justify-between p-4 bg-slate-900 text-white border-b border-slate-800">
+          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-full max-h-[calc(100vh-4rem)] animate-scaleIn shrink-0">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 bg-slate-900 text-white border-b border-slate-800 shrink-0">
               <div className="flex items-center gap-2.5">
                 <FileText className="w-5 h-5 text-sky-400" />
                 <div>
                   <h4 className="font-bold text-sm text-white">{selectedDocPreview.title}</h4>
-                  <p className="text-[10px] text-slate-400 font-mono">📄 {selectedDocPreview.name} • {selectedDocPreview.file_size_kb} KB</p>
+                  <p className="text-[10px] text-slate-400 font-mono">📄 {selectedDocPreview.name} • {selectedDocPreview.file_size_kb} KB • {selectedDocPreview.file_format?.toUpperCase() || 'DOCUMENT'}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedDocPreview(null)}
-                className="text-slate-400 hover:text-white p-1 cursor-pointer"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-100 space-y-3">
-              {selectedDocPreview.file_path && selectedDocPreview.file_path.startsWith('data:image') ? (
-                <img 
-                  src={selectedDocPreview.file_path} 
-                  alt={selectedDocPreview.title} 
-                  className="max-h-[60vh] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain"
-                />
+            {/* Fit View & Zoom Toolbar (when image preview available) */}
+            {docPreviewImages.length > 0 && (
+              <div className="flex items-center justify-between bg-slate-100 px-4 py-2 border-b border-slate-200 text-xs font-bold shrink-0 flex-wrap gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] uppercase text-slate-500 font-extrabold tracking-wider mr-1">Display:</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPreviewFitMode('width'); setPreviewZoom(1); }}
+                    className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                      previewFitMode === 'width' && previewZoom === 1
+                        ? 'bg-sky-600 text-white shadow-2xs font-bold'
+                        : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    Fit Width ↔
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setPreviewFitMode('page'); setPreviewZoom(1); }}
+                    className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                      previewFitMode === 'page' && previewZoom === 1
+                        ? 'bg-sky-600 text-white shadow-2xs font-bold'
+                        : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    Fit Page ↕
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZoom(prev => Math.max(0.75, Number((prev - 0.2).toFixed(2))))}
+                    disabled={previewZoom <= 0.75}
+                    className="p-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
+                    title="Zoom Out"
+                  >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-mono text-[11px] text-slate-700 px-1 font-bold min-w-[38px] text-center">
+                    {Math.round(previewZoom * 100)}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZoom(prev => Math.min(2.0, Number((prev + 0.2).toFixed(2))))}
+                    disabled={previewZoom >= 2.0}
+                    className="p-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
+                    title="Zoom In"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const win = window.open();
+                      if (win) {
+                        win.document.write(
+                          `<html style="background:#0f172a;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;">` +
+                          docPreviewImages.map((img, i) => `<img src="${img}" style="max-width:96%;height:auto;margin:15px auto;display:block;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);" />`).join('') +
+                          `</html>`
+                        );
+                      }
+                    }}
+                    className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold cursor-pointer ml-1"
+                    title="Open Full Resolution"
+                  >
+                    <Maximize2 className="w-3 h-3 text-slate-600" />
+                    <span>Full Resolution</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Preview Scrollable Body */}
+            <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center bg-slate-50 space-y-4">
+              {docPreviewImages.length > 0 ? (
+                <div className="w-full flex flex-col items-center space-y-4">
+                  {docPreviewImages.map((pageImg, pageIdx) => (
+                    <div key={pageIdx} className="w-full flex flex-col items-center space-y-1.5">
+                      {docPreviewImages.length > 1 && (
+                        <span className="badge badge-purple text-[10px]">Page {pageIdx + 1} of {docPreviewImages.length}</span>
+                      )}
+                      <div className="w-full overflow-hidden flex justify-center bg-white p-2 rounded-xl shadow-md border border-slate-200">
+                        <img 
+                          src={pageImg} 
+                          alt={`${selectedDocPreview.title} - Page ${pageIdx + 1}`} 
+                          className="w-full max-w-full h-auto object-contain rounded-lg transition-transform duration-200 bg-white"
+                          style={{
+                            maxHeight: previewFitMode === 'page' ? '700px' : 'none',
+                            transform: previewZoom !== 1 ? `scale(${previewZoom})` : undefined,
+                            transformOrigin: 'top center'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : isRenderingPreviewPdf ? (
+                <div className="p-10 flex flex-col items-center justify-center space-y-3 bg-white rounded-2xl border border-sky-200 shadow-sm my-auto">
+                  <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                  <p className="text-xs font-bold text-slate-800">Rendering Document Exhibit in High-Resolution...</p>
+                  <p className="text-[10px] text-slate-500 font-mono">Converting original PDF pages into image format</p>
+                </div>
               ) : (selectedDocPreview.file_path && (selectedDocPreview.file_path.includes('application/pdf') || selectedDocPreview.file_path.endsWith('.pdf') || selectedDocPreview.file_path.startsWith('data:application/pdf') || selectedDocPreview.file_format === 'pdf')) ? (
                 <div className="w-full h-full min-h-[480px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-lg flex flex-col">
                   <iframe 
@@ -591,14 +737,14 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
                   />
                 </div>
               ) : (
-                <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-md border-2 border-dashed border-sky-300 text-center space-y-3">
+                <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-md border-2 border-dashed border-sky-300 text-center space-y-3 my-auto">
                   <div className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center mx-auto shadow-xs">
                     <FileText className="w-8 h-8" />
                   </div>
                   <div>
                     <h4 className="font-black text-slate-900 text-sm">{selectedDocPreview.title}</h4>
                     <p className="text-xs text-slate-500 font-mono mt-0.5">📄 {selectedDocPreview.name}</p>
-                    <span className="badge badge-emerald text-[10px] mt-2">Verified & Stored in PostgreSQL Encrypted Storage ✓</span>
+                    <span className="badge badge-emerald text-[10px] mt-2">Verified & Stored in JOY Encrypted Storage ✓</span>
                   </div>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
                     Official digital verification document stored in JOY Compliance Vault with SHA-256 integrity hashing.
@@ -607,7 +753,8 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
               )}
             </div>
 
-            <div className="flex items-center justify-between p-3.5 bg-white border-t border-slate-100 text-xs">
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between p-3.5 bg-white border-t border-slate-200 text-xs shrink-0">
               <span className="text-slate-500 font-mono text-[10px]">Candidate: {candidate.name}</span>
               <div className="flex items-center gap-2">
                 <button
@@ -621,7 +768,7 @@ export const DocumentDownloader = ({ candidate, onClose }) => {
                   className="btn btn-primary text-xs py-1.5 px-3.5 font-bold flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white shadow-xs cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download File</span>
+                  <span>Download Original Document</span>
                 </button>
               </div>
             </div>

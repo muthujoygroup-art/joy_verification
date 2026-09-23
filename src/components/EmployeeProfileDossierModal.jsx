@@ -35,13 +35,17 @@ import {
   HeartPulse,
   Scale,
   Loader2,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ZoomIn,
+  ZoomOut,
+  Maximize2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 import { exportIndividualCandidateToExcel } from '../utils/employeeExcelExport';
 import { formatDobAndAge, formatDisplayDate, parseAnyDate, calculateAccurateAge } from '../utils/validationRules';
+import { convertPdfToImages, isPdfSource } from '../utils/pdfToImage';
 
 export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const { companies = [], platformLogo, platformLogoEmblem } = useApp() || {};
@@ -50,6 +54,10 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const [selectedAnnexureIdx, setSelectedAnnexureIdx] = useState(0);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [renderedPdfMap, setRenderedPdfMap] = useState({});
+  const [isConvertingPdfs, setIsConvertingPdfs] = useState(false);
+  const [fitMode, setFitMode] = useState('width'); // 'width' | 'page'
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -237,7 +245,9 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
           doc_type: d.document_type || d.doc_type || d.type,
           file_format: (d.file_format || (d.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : d.file_name?.toLowerCase().endsWith('.png') ? 'PNG' : 'JPG')).toUpperCase(),
           file_size_kb: d.file_size_kb || 450,
-          file_path: d.file_path || d.dataUrl || d.data || ''
+          file_path: d.file_path || d.dataUrl || d.data || '',
+          preview_image: d.preview_image || d.previewImage || (Array.isArray(d.page_images) ? d.page_images[0] : ''),
+          page_images: Array.isArray(d.page_images) ? d.page_images : (Array.isArray(d.pageImages) ? d.pageImages : [])
         });
       }
     });
@@ -256,7 +266,9 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
         doc_type: isObj && val.doc_type ? val.doc_type : key,
         file_format: format,
         file_size_kb: isObj && val.file_size_kb ? val.file_size_kb : 450,
-        file_path: fileData
+        file_path: fileData,
+        preview_image: isObj ? (val.preview_image || val.previewImage || (Array.isArray(val.page_images) ? val.page_images[0] : '')) : '',
+        page_images: isObj ? (Array.isArray(val.page_images) ? val.page_images : (Array.isArray(val.pageImages) ? val.pageImages : [])) : []
       });
     });
   }
@@ -271,6 +283,84 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
       attachedExhibits.push(ex);
     }
   }
+
+  const isImageDoc = (doc) => {
+    return (
+      (doc?.file_path && doc.file_path.startsWith('data:image')) ||
+      ['PNG', 'JPG', 'JPEG', 'WEBP'].includes(doc?.file_format?.toUpperCase())
+    );
+  };
+
+  const isPdfDoc = (doc) => {
+    return (
+      (doc?.file_path && (doc.file_path.startsWith('data:application/pdf') || doc.file_path.includes('.pdf'))) ||
+      doc?.file_format?.toUpperCase() === 'PDF' ||
+      doc?.name?.toLowerCase().endsWith('.pdf') ||
+      isPdfSource(doc?.file_path, doc?.name, doc?.file_format)
+    );
+  };
+
+  // Convert any PDF documents into high-resolution image data URLs for flawless profile PDF display
+  useEffect(() => {
+    let isCancelled = false;
+
+    const convertAllPdfExhibits = async () => {
+      const pdfsToConvert = attachedExhibits.filter(ex => {
+        const isPdf = isPdfDoc(ex);
+        const hasExistingImages = (Array.isArray(ex.page_images) && ex.page_images.length > 0) || !!ex.preview_image;
+        const alreadyConverted = !!renderedPdfMap[ex.id || ex.name];
+        return isPdf && ex.file_path && !hasExistingImages && !alreadyConverted;
+      });
+
+      if (pdfsToConvert.length === 0) return;
+
+      setIsConvertingPdfs(true);
+      const newMap = {};
+
+      for (const doc of pdfsToConvert) {
+        if (isCancelled) break;
+        try {
+          const res = await convertPdfToImages(doc.file_path, { maxPages: 5, scale: 2.0 });
+          if (res.pages && res.pages.length > 0) {
+            newMap[doc.id || doc.name] = res.pages;
+          }
+        } catch (e) {
+          console.warn(`Failed to convert PDF exhibit ${doc.name} to images:`, e);
+        }
+      }
+
+      if (!isCancelled && Object.keys(newMap).length > 0) {
+        setRenderedPdfMap(prev => ({ ...prev, ...newMap }));
+      }
+      if (!isCancelled) {
+        setIsConvertingPdfs(false);
+      }
+    };
+
+    convertAllPdfExhibits();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [attachedExhibits]);
+
+  const getDocImages = (doc) => {
+    if (!doc) return [];
+    if (Array.isArray(doc.page_images) && doc.page_images.length > 0) {
+      return doc.page_images;
+    }
+    const converted = renderedPdfMap[doc.id || doc.name];
+    if (Array.isArray(converted) && converted.length > 0) {
+      return converted;
+    }
+    if (doc.preview_image) {
+      return [doc.preview_image];
+    }
+    if (isImageDoc(doc) && doc.file_path) {
+      return [doc.file_path];
+    }
+    return [];
+  };
 
   const handleDownloadExhibit = (doc) => {
     if (doc.file_path && doc.file_path.startsWith('data:')) {
@@ -289,21 +379,6 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
       link.click();
       document.body.removeChild(link);
     }
-  };
-
-  const isImageDoc = (doc) => {
-    return (
-      (doc.file_path && doc.file_path.startsWith('data:image')) ||
-      ['PNG', 'JPG', 'JPEG', 'WEBP'].includes(doc.file_format?.toUpperCase())
-    );
-  };
-
-  const isPdfDoc = (doc) => {
-    return (
-      (doc.file_path && doc.file_path.startsWith('data:application/pdf')) ||
-      doc.file_format?.toUpperCase() === 'PDF' ||
-      doc.name?.toLowerCase().endsWith('.pdf')
-    );
   };
 
   const handleDownloadPdf = async () => {
@@ -1243,93 +1318,150 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                           </div>
                         </div>
 
-                        {/* High-Resolution Document Display Frame (Images & PDFs) */}
-                        <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-sky-50/60 via-slate-50 to-indigo-50/50 border-2 border-dashed border-sky-300 flex flex-col items-center justify-center text-center space-y-4 min-h-[360px]">
-                          {isImageDoc(doc) && doc.file_path ? (
-                            <div className="space-y-3 w-full flex flex-col items-center">
-                              <img 
-                                src={doc.file_path} 
-                                alt={doc.title} 
-                                className="max-h-[520px] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain bg-white p-1"
-                              />
-                              <div className="flex items-center gap-2 print:hidden">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const win = window.open();
-                                    if (win) {
-                                      win.document.write(`<img src="${doc.file_path}" style="max-width:100%;height:auto;margin:20px auto;display:block;" />`);
-                                    }
-                                  }}
-                                  className="btn btn-secondary text-xs py-1 px-3 flex items-center gap-1 font-bold cursor-pointer"
-                                >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  <span>View Full Size Image</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDownloadExhibit(doc)}
-                                  className="btn btn-company text-xs py-1 px-3 flex items-center gap-1 font-bold cursor-pointer"
-                                >
-                                  <Download className="w-3.5 h-3.5" />
-                                  <span>Download Image</span>
-                                </button>
-                              </div>
+                        {/* High-Resolution Document Display Frame (Images & Rendered PDFs) with Fit View */}
+                        {(() => {
+                          const docImages = getDocImages(doc);
+                          const hasImages = docImages.length > 0;
+                          const isConvertingThis = isConvertingPdfs && !hasImages && isPdfDoc(doc);
+
+                          return (
+                            <div className="rounded-2xl bg-slate-50/70 border border-slate-200 p-2 sm:p-4 flex flex-col items-center justify-center text-center space-y-3 print:bg-white print:border-none print:p-0 print:m-0">
+                              {/* Interactive Fit View & Zoom Toolbar (Hidden on Print & PDF Export) */}
+                              {hasImages && (
+                                <div className="flex items-center justify-between w-full bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs text-xs font-bold print:hidden flex-wrap gap-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-extrabold mr-1">Display:</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setFitMode('width'); setZoomLevel(1); }}
+                                      className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                                        fitMode === 'width' && zoomLevel === 1 
+                                          ? 'bg-sky-600 text-white shadow-2xs font-bold' 
+                                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                      }`}
+                                      title="Fit to Full Container Width (Optimal Reading View)"
+                                    >
+                                      Fit Width ↔
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => { setFitMode('page'); setZoomLevel(1); }}
+                                      className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                                        fitMode === 'page' && zoomLevel === 1 
+                                          ? 'bg-sky-600 text-white shadow-2xs font-bold' 
+                                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                      }`}
+                                      title="Fit to Page Height"
+                                    >
+                                      Fit Page ↕
+                                    </button>
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => setZoomLevel(prev => Math.max(0.75, Number((prev - 0.2).toFixed(2))))}
+                                      disabled={zoomLevel <= 0.75}
+                                      className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 cursor-pointer"
+                                      title="Zoom Out (-20%)"
+                                    >
+                                      <ZoomOut className="w-3.5 h-3.5" />
+                                    </button>
+                                    <span className="font-mono text-[11px] text-slate-700 px-1 font-bold min-w-[38px] text-center">
+                                      {Math.round(zoomLevel * 100)}%
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setZoomLevel(prev => Math.min(2.0, Number((prev + 0.2).toFixed(2))))}
+                                      disabled={zoomLevel >= 2.0}
+                                      className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 cursor-pointer"
+                                      title="Zoom In (+20%)"
+                                    >
+                                      <ZoomIn className="w-3.5 h-3.5" />
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const win = window.open();
+                                        if (win) {
+                                          win.document.write(
+                                            `<html style="background:#0f172a;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;">` +
+                                            docImages.map((img, i) => `<img src="${img}" style="max-width:96%;height:auto;margin:15px auto;display:block;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);" />`).join('') +
+                                            `</html>`
+                                          );
+                                        }
+                                      }}
+                                      className="btn btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold cursor-pointer ml-1"
+                                      title="Open full resolution in new window"
+                                    >
+                                      <Maximize2 className="w-3 h-3 text-slate-600" />
+                                      <span>Full Resolution</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Document Display / Render Container */}
+                              {hasImages ? (
+                                <div className="w-full flex flex-col items-center space-y-4">
+                                  {docImages.map((pageImg, pageIdx) => (
+                                    <div key={pageIdx} className="w-full flex flex-col items-center space-y-1.5">
+                                      {docImages.length > 1 && (
+                                        <div className="flex items-center justify-between w-full px-2 text-[11px] font-bold text-slate-600 print:text-[10px]">
+                                          <span className="badge badge-purple text-[10px] py-0.5">PAGE {pageIdx + 1} OF {docImages.length}</span>
+                                          <span className="text-slate-400 font-mono text-[10px]">OFFICIAL GOVERNMENT / VERIFIED EXHIBIT</span>
+                                        </div>
+                                      )}
+                                      <div className="w-full overflow-hidden flex justify-center rounded-xl bg-white border border-slate-200 shadow-sm p-1.5 sm:p-2.5 print:p-0 print:border-none print:shadow-none">
+                                        <img 
+                                          src={pageImg} 
+                                          alt={`${doc.title} - Page ${pageIdx + 1}`} 
+                                          className="w-full max-w-full h-auto object-contain rounded-lg transition-transform duration-200 bg-white"
+                                          style={{
+                                            maxHeight: fitMode === 'page' ? '700px' : 'none',
+                                            transform: zoomLevel !== 1 ? `scale(${zoomLevel})` : undefined,
+                                            transformOrigin: 'top center'
+                                          }}
+                                          loading="eager"
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : isConvertingThis ? (
+                                <div className="p-8 flex flex-col items-center justify-center space-y-3 bg-white rounded-xl border border-sky-200 shadow-sm w-full max-w-md my-4">
+                                  <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                                  <p className="text-xs font-bold text-slate-800">Converting Original PDF to High-Resolution Image...</p>
+                                  <p className="text-[10px] text-slate-500 font-mono">Rendering DPDP-compliant exhibit pages for profile dossier</p>
+                                </div>
+                              ) : (
+                                <div className="w-full max-w-md bg-white p-6 rounded-2xl border-2 border-sky-200 shadow-md space-y-3 text-center my-2">
+                                  <div className="w-14 h-14 mx-auto rounded-2xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center shadow-2xs">
+                                    <FileText className="w-7 h-7" />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <h3 className="text-base font-bold text-slate-900">{doc.title}</h3>
+                                    <p className="text-xs text-slate-600 font-mono">📄 {doc.name} ({doc.file_size_kb || 450} KB • {doc.file_format || 'PDF'})</p>
+                                    <span className="badge badge-emerald text-[10px] mt-1">DPDP 2023 & ISO 27001 Encrypted Exhibit ✓</span>
+                                  </div>
+                                  {doc.file_path ? (
+                                    <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 print:hidden">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDownloadExhibit(doc)}
+                                        className="btn btn-company text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
+                                      >
+                                        <Download className="w-3.5 h-3.5" />
+                                        <span>Download Original Document</span>
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              )}
                             </div>
-                          ) : isPdfDoc(doc) && doc.file_path ? (
-                            <div className="w-full max-w-md bg-white p-6 rounded-2xl border-2 border-sky-200 shadow-md space-y-4 text-center">
-                              <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center shadow-sm">
-                                <FileText className="w-8 h-8" />
-                              </div>
-                              <div className="space-y-1">
-                                <h3 className="text-base font-bold text-slate-900">{doc.title}</h3>
-                                <p className="text-xs text-slate-600 font-mono">📄 {doc.name} ({doc.file_size_kb || 450} KB • PDF Document)</p>
-                                <span className="badge badge-emerald text-[10px] mt-1">DPDP 2023 & ISO 27001 Encrypted Exhibit ✓</span>
-                              </div>
-                              <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 print:hidden">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (doc.file_path.startsWith('data:')) {
-                                      const win = window.open('');
-                                      if (win) {
-                                        win.document.write(`<iframe src="${doc.file_path}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-                                      }
-                                    } else {
-                                      window.open(doc.file_path, '_blank');
-                                    }
-                                  }}
-                                  className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer"
-                                >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  <span>Open PDF in Tab</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDownloadExhibit(doc)}
-                                  className="btn btn-company text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer"
-                                >
-                                  <Download className="w-3.5 h-3.5" />
-                                  <span>Download PDF</span>
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="w-20 h-20 rounded-3xl bg-white border-2 border-sky-300 text-sky-700 flex items-center justify-center shadow-md">
-                                <FileText className="w-10 h-10" />
-                              </div>
-                              <div className="space-y-1">
-                                <h3 className="text-base font-bold text-slate-900">{doc.title}</h3>
-                                <p className="text-xs text-slate-600 font-mono">📄 {doc.name} ({doc.file_size_kb || 450} KB)</p>
-                                <span className="badge badge-emerald text-[10px] mt-1">Stored in ISO 27001 Encrypted Storage ✓</span>
-                              </div>
-                              <p className="text-xs text-slate-500 max-w-md leading-relaxed">
-                                This document exhibit has been permanently bound into the Master Employee Dossier and verified under the DPDP Act 2023 with SHA-256 digital integrity.
-                              </p>
-                            </>
-                          )}
-                        </div>
+                          );
+                        })()}
 
                         {/* Footer Verification Seal */}
                         <div className="flex flex-col sm:flex-row items-center justify-between text-[10px] text-slate-400 pt-2 border-t border-slate-200 gap-1">

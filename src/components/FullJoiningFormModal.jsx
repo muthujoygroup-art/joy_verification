@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
 import { checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
+import { convertPdfToImages } from '../utils/pdfToImage';
 import { getIndianStates, getDistrictsByState, isOtherLocation } from '../data/indiaLocations';
 import { 
   GENDER_OPTIONS, 
@@ -404,16 +405,30 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     return () => clearTimeout(timer);
   }, [formData, draftKey]);
 
-  // Universal Document File Upload Handler (Image & PDF Support)
-  const handleFileUpload = (docKey, file, customTitle = '') => {
+  // Universal Document File Upload Handler (Image & PDF Support with High-Res Image Generation)
+  const handleFileUpload = async (docKey, file, customTitle = '') => {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
       const isPng = file.type.includes('png') || file.name.toLowerCase().endsWith('.png');
       const isWebp = file.type.includes('webp') || file.name.toLowerCase().endsWith('.webp');
       const mimeType = isPdf ? 'application/pdf' : isPng ? 'image/png' : isWebp ? 'image/webp' : 'image/jpeg';
       const fileExt = isPdf ? 'pdf' : isPng ? 'png' : isWebp ? 'webp' : 'jpg';
+
+      let pageImages = [];
+      let previewImage = e.target.result;
+      if (isPdf) {
+        try {
+          const pdfConv = await convertPdfToImages(e.target.result, { maxPages: 5, scale: 2.0 });
+          if (pdfConv.pages && pdfConv.pages.length > 0) {
+            pageImages = pdfConv.pages;
+            previewImage = pdfConv.firstPageImage;
+          }
+        } catch (err) {
+          console.warn('PDF to image conversion failed:', err);
+        }
+      }
 
       const fileData = {
         name: file.name,
@@ -424,6 +439,8 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
         dataUrl: e.target.result,
         file_path: e.target.result,
         data: e.target.result,
+        preview_image: previewImage,
+        page_images: pageImages,
         title: customTitle || file.name,
         uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
         verified: true,
@@ -3327,76 +3344,92 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
         </div>
 
         {/* 👁️ CANDIDATE DOCUMENT PREVIEW MODAL */}
-        {previewDoc && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 overflow-hidden bg-slate-950/85 backdrop-blur-md animate-fadeIn">
-            <div className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-4rem)] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0">
-              <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2.5">
-                  <FileText className="w-5 h-5 text-indigo-400" />
-                  <div>
-                    <h4 className="font-extrabold text-sm text-white">{previewDoc.name || previewDoc.title}</h4>
-                    <p className="text-[10px] text-slate-400 font-mono">{previewDoc.type || 'Document'} • {previewDoc.size || `${previewDoc.file_size_kb || 250} KB`}</p>
-                  </div>
-                </div>
-                <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+        {previewDoc && (() => {
+          const previewImg = previewDoc.preview_image || (Array.isArray(previewDoc.page_images) && previewDoc.page_images[0]) || (previewDoc.file_path && previewDoc.file_path.startsWith('data:image') ? previewDoc.file_path : null);
+          const allImages = Array.isArray(previewDoc.page_images) && previewDoc.page_images.length > 0 ? previewDoc.page_images : (previewImg ? [previewImg] : []);
 
-              <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-100 space-y-3">
-                {previewDoc.file_path && previewDoc.file_path.startsWith('data:image') ? (
-                  <img 
-                    src={previewDoc.file_path} 
-                    alt={previewDoc.name || previewDoc.title} 
-                    className="max-h-[60vh] max-w-full rounded-xl shadow-lg border border-slate-300 object-contain"
-                  />
-                ) : (previewDoc.file_path && (previewDoc.file_path.includes('application/pdf') || previewDoc.file_path.endsWith('.pdf') || previewDoc.file_path.startsWith('data:application/pdf') || previewDoc.type?.includes('pdf') || previewDoc.file_format === 'pdf')) ? (
-                  <div className="w-full h-full min-h-[480px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-lg flex flex-col">
-                    <iframe 
-                      src={previewDoc.file_path || previewDoc.dataUrl || previewDoc.data} 
-                      title={previewDoc.name || 'Document PDF Preview'}
-                      className="w-full flex-1 min-h-[480px] border-0 bg-white"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-md border-2 border-dashed border-indigo-300 text-center space-y-3">
-                    <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center mx-auto shadow-xs">
-                      <FileText className="w-8 h-8" />
-                    </div>
+          return (
+            <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 overflow-hidden bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+              <div className="bg-white w-full max-w-4xl h-full max-h-[calc(100vh-4rem)] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0">
+                <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="w-5 h-5 text-indigo-400" />
                     <div>
-                      <h4 className="font-black text-slate-900 text-sm">{previewDoc.name || previewDoc.title}</h4>
-                      <p className="text-xs text-slate-500 font-mono mt-0.5">Proof: {previewDoc.masked || 'Verified ID Exhibit'}</p>
-                      <span className="badge badge-emerald text-[10px] mt-2">Verified & Encrypted in JOY Storage Vault ✓</span>
-                    </div>
-                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px] font-medium flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Original document validated against live government registry.</span>
+                      <h4 className="font-extrabold text-sm text-white">{previewDoc.name || previewDoc.title}</h4>
+                      <p className="text-[10px] text-slate-400 font-mono">{previewDoc.type || 'Document'} • {previewDoc.size || `${previewDoc.file_size_kb || 250} KB`}</p>
                     </div>
                   </div>
-                )}
-              </div>
-
-              <div className="p-3 bg-white border-t border-slate-200 flex items-center justify-between shrink-0 text-xs">
-                <span className="text-slate-500 font-mono text-[10px]">Candidate: {formData.fullName}</span>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setPreviewDoc(null)} className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer">
-                    Close Preview
+                  <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
+                    <X className="w-5 h-5" />
                   </button>
-                  {previewDoc.file_path && (
-                    <a
-                      href={previewDoc.file_path}
-                      download={previewDoc.name || 'document.pdf'}
-                      className="btn btn-primary text-xs py-1.5 px-3.5 font-bold flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download</span>
-                    </a>
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center bg-slate-100 space-y-4">
+                  {allImages.length > 0 ? (
+                    <div className="w-full flex flex-col items-center space-y-4">
+                      {allImages.map((img, i) => (
+                        <div key={i} className="w-full flex flex-col items-center space-y-2">
+                          {allImages.length > 1 && (
+                            <span className="badge badge-purple text-[10px]">Page {i + 1} of {allImages.length}</span>
+                          )}
+                          <div className="w-full flex justify-center bg-white p-2 rounded-xl shadow-md border border-slate-200">
+                            <img 
+                              src={img} 
+                              alt={`${previewDoc.name || 'Document'} page ${i + 1}`} 
+                              className="w-full max-w-full h-auto object-contain rounded-lg bg-white"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (previewDoc.file_path && (previewDoc.file_path.includes('application/pdf') || previewDoc.file_path.endsWith('.pdf') || previewDoc.file_path.startsWith('data:application/pdf') || previewDoc.type?.includes('pdf') || previewDoc.file_format === 'pdf')) ? (
+                    <div className="w-full h-full min-h-[480px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-lg flex flex-col">
+                      <iframe 
+                        src={previewDoc.file_path || previewDoc.dataUrl || previewDoc.data} 
+                        title={previewDoc.name || 'Document PDF Preview'}
+                        className="w-full flex-1 min-h-[480px] border-0 bg-white"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-md border-2 border-dashed border-indigo-300 text-center space-y-3">
+                      <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center mx-auto shadow-xs">
+                        <FileText className="w-8 h-8" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-slate-900 text-sm">{previewDoc.name || previewDoc.title}</h4>
+                        <p className="text-xs text-slate-500 font-mono mt-0.5">Proof: {previewDoc.masked || 'Verified ID Exhibit'}</p>
+                        <span className="badge badge-emerald text-[10px] mt-2">Verified & Encrypted in JOY Storage Vault ✓</span>
+                      </div>
+                      <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px] font-medium flex items-center justify-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Original document validated against live government registry.</span>
+                      </div>
+                    </div>
                   )}
+                </div>
+
+                <div className="p-3 bg-white border-t border-slate-200 flex items-center justify-between shrink-0 text-xs">
+                  <span className="text-slate-500 font-mono text-[10px]">Candidate: {formData.fullName}</span>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setPreviewDoc(null)} className="btn btn-secondary text-xs py-1.5 px-4 font-bold cursor-pointer">
+                      Close Preview
+                    </button>
+                    {previewDoc.file_path && (
+                      <a
+                        href={previewDoc.file_path}
+                        download={previewDoc.name || 'document.pdf'}
+                        className="btn btn-primary text-xs py-1.5 px-3.5 font-bold flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Download</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
                 {/* Mandatory Aadhaar OTP Modal */}
         {showAadhaarOtpModal && (
