@@ -469,6 +469,11 @@ export const api = {
     return request(`/superadmin/logs/${logId}`, { method: 'DELETE' });
   },
   getSuperAdminStats: () => request('/superadmin/stats', {}, true),
+  getSystemHealth360: () => request('/superadmin/health/360-audit', {}, false),
+  pingVerificationGateway: (gatewayId) => request('/superadmin/health/ping-gateway', {
+    method: 'POST',
+    body: JSON.stringify({ gateway_id: gatewayId })
+  }),
   
   // Super Admin - API Telemetry & Candidate Document Ledger
   getCompanyApiTelemetry: (timeRange = 'all') => request(`/superadmin/telemetry/company-stats?time_range=${timeRange}`, {}, false),

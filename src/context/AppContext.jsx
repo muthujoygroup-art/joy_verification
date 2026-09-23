@@ -1,6 +1,7 @@
 import { initGlobalErrorListeners } from '../utils/errorLogger';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { getUserFriendlyErrorMessage } from '../utils/diagnosticPlaybooks';
 
 const AppContext = createContext();
 
@@ -1221,8 +1222,92 @@ export const AppProvider = ({ children }) => {
   });
 
   const showToast = (msg, type = 'success') => {
-    setToastMessage({ msg, type });
+    let finalMsg = msg;
+    if (type === 'error' && currentRole !== 'superadmin') {
+      finalMsg = getUserFriendlyErrorMessage(msg);
+    }
+    setToastMessage({ msg: finalMsg, type });
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // 🩺 360° Comprehensive Platform Health Telemetry State
+  const [systemHealthData, setSystemHealthData] = useState(null);
+  const [isLoadingHealth, setIsLoadingHealth] = useState(false);
+
+  const fetchSystemHealthAudit = async () => {
+    setIsLoadingHealth(true);
+    try {
+      const data = await api.getSystemHealth360();
+      if (data) {
+        setSystemHealthData(data);
+      }
+      return data;
+    } catch (e) {
+      console.warn('Could not fetch 360 health audit:', e);
+    } finally {
+      setIsLoadingHealth(false);
+    }
+  };
+
+  const pingGateway = async (gatewayId) => {
+    try {
+      const res = await api.pingVerificationGateway(gatewayId);
+      if (res && res.success) {
+        showToast(`⚡ ${res.gateway_name || gatewayId}: Online (${res.latency_ms}ms)`, 'success');
+        fetchSystemHealthAudit();
+      }
+      return res;
+    } catch (err) {
+      showToast('Gateway socket ping timed out', 'error');
+      return null;
+    }
+  };
+
+  // Dispatches rich system incident to backend and adds to local state
+  const logSystemIncident = async (incident) => {
+    try {
+      const payload = {
+        section: incident.section || 'General Application',
+        error_code: incident.errorCode || incident.error_code || 'ERR_SYSTEM_GENERAL',
+        message: incident.message || 'System operation exception',
+        portal: incident.portal || 'HR Executive Portal',
+        function_name: incident.functionName || incident.function_name || null,
+        stack_trace: incident.stackTrace || incident.stack_trace || null,
+        user_info: incident.userInfo || incident.user_info || {
+          role: currentRole,
+          userEmail: currentUser?.email,
+          url: typeof window !== 'undefined' ? window.location.href : ''
+        },
+        ip_address: incident.ipAddress || null,
+        device_info: incident.deviceInfo || (typeof navigator !== 'undefined' ? navigator.userAgent : null),
+        severity: incident.severity || 'Critical'
+      };
+
+      const res = await api.reportErrorLog(payload);
+      if (res && res.id) {
+        setSystemErrorLogs(prev => [
+          {
+            id: res.id,
+            timestamp: res.timestamp,
+            portal: res.portal,
+            section: res.section,
+            functionName: res.function_name,
+            errorCode: res.error_code,
+            message: res.message,
+            stackTrace: res.stack_trace,
+            userInfo: res.user_info,
+            ipAddress: res.ip_address,
+            deviceInfo: res.device_info,
+            severity: res.severity,
+            solved: false
+          },
+          ...prev
+        ]);
+      }
+      return res;
+    } catch (e) {
+      console.warn('Could not log system incident:', e);
+    }
   };
 
   // INITIAL LOAD: Sync with Python FastAPI & PostgreSQL Backend
@@ -4127,6 +4212,10 @@ export const AppProvider = ({ children }) => {
       simulateTestError,
       purgeSolvedLogs,
       deleteSingleLog,
+      logSystemIncident,
+      systemHealthData,
+      fetchSystemHealthAudit,
+      pingGateway,
       supportTickets,
       addSupportTicket,
       addTicketReply,

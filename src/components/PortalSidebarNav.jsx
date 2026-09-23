@@ -446,8 +446,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'dbms', label: 'PostgreSQL Database Explorer', tab: 'dbms', icon: Database },
             { id: 'audit', label: 'Audit Trail & Activity Log', tab: 'audit', icon: FileText },
             { id: 'sessions', label: 'Active User Sessions', tab: 'sessions', icon: ShieldCheck },
-            { id: 'issuelogs', label: 'System Incident Logs', tab: 'issuelogs', icon: Activity },
-            { id: 'system_health', label: 'Platform Performance & Stats', tab: 'analytics', icon: TrendingUp }
+            { id: 'issuelogs', label: 'System Incident Logs & Forensics', tab: 'issuelogs', icon: Activity },
+            { id: 'system_health', label: '360° Platform Health & Telemetry', tab: 'system_health', icon: ShieldCheck }
           ]
         },
         {
