@@ -102,34 +102,54 @@ export const CompanyAdminView = () => {
     settlePostpaidInvoice,
     setActiveInvoiceModal
   } = useApp();
-  const [selectedCompanyId, setSelectedCompanyId] = useState(() => localStorage.getItem('joy_active_company_id') || 'comp-joy');
+  const [selectedCompanyId, setSelectedCompanyId] = useState(() => {
+    return currentUser?.id || currentUser?.companyId || localStorage.getItem('joy_active_company_id') || 'comp-joy';
+  });
 
   // Robust Tenant-Aware Company Resolution (Never returns undefined)
   const resolvedCompany = (Array.isArray(companies) && companies.length > 0)
-    ? (companies.find(c => c.id === selectedCompanyId || c.id === currentUser?.companyId || c.email === currentUser?.email) || companies[0])
+    ? (companies.find(c => 
+        (currentUser?.id && c.id === currentUser.id) ||
+        (currentUser?.companyId && c.id === currentUser.companyId) ||
+        (currentUser?.email && c.email && c.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        c.id === selectedCompanyId
+      ) || companies[0])
     : (currentUser?.company || {
-        id: currentUser?.companyId || 'comp-joy',
-        name: currentUser?.companyName || 'Joy Corporate Solutions Pvt Ltd',
-        code: 'COMP001',
+        id: currentUser?.id || currentUser?.companyId || 'comp-joy',
+        name: currentUser?.companyName || currentUser?.name || 'Joy Corporate Solutions Pvt Ltd',
+        code: currentUser?.companyCode || 'COMP001',
         email: currentUser?.email || 'info@joycorporatesolutions.com',
-        plan: 'Tier 1 (Starter)',
+        plan: currentUser?.plan || 'Tier 1 (Starter)',
         features: {},
         documents: {}
       });
 
   const company = resolvedCompany || {
-    id: 'comp-joy',
-    name: 'Joy Corporate Solutions Pvt Ltd',
-    code: 'COMP001',
-    email: 'info@joycorporatesolutions.com',
-    plan: 'Tier 1 (Starter)',
+    id: currentUser?.id || currentUser?.companyId || 'comp-joy',
+    name: currentUser?.companyName || currentUser?.name || 'Joy Corporate Solutions Pvt Ltd',
+    code: currentUser?.companyCode || 'COMP001',
+    email: currentUser?.email || 'info@joycorporatesolutions.com',
+    plan: currentUser?.plan || 'Tier 1 (Starter)',
     features: {},
     documents: {}
   };
 
   // 💳 Real-time Postpaid Billing Telemetry & Calculation
-  const postpaidBill = calculateCompanyPostpaidBill(company, candidates, vendors);
-  const currentPlan = postpaidBill?.plan || (POSTPAID_PLANS && POSTPAID_PLANS.tier1);
+  const postpaidBill = (typeof calculateCompanyPostpaidBill === 'function')
+    ? calculateCompanyPostpaidBill(company, candidates || [], vendors || [])
+    : {
+        totalAmountDue: 0,
+        subtotal: 0,
+        gstAmount: 0,
+        baseQuota: 50,
+        baseProfilesCount: 0,
+        overageProfilesCount: 0,
+        baseRate: 250,
+        overageRate: 250,
+        isOverage: false,
+        plan: (POSTPAID_PLANS && POSTPAID_PLANS.tier1) || { name: 'Tier 1 (< 50 Employees)', shortName: 'Tier 1', maxProfiles: 50 }
+      };
+  const currentPlan = postpaidBill?.plan || (POSTPAID_PLANS && POSTPAID_PLANS.tier1) || { name: 'Tier 1 (< 50 Employees)', shortName: 'Tier 1', maxProfiles: 50 };
   const pendingUpgrade = company?.pendingPlanUpgrade || (company?.features || {})?.pending_plan_upgrade;
 
   const [activeMainSection, setActiveMainSection] = useState('telemetry_candidates');
@@ -803,14 +823,19 @@ export const CompanyAdminView = () => {
     });
   }, [candidates, company?.id]);
 
-  const filteredCandidates = (companyCandidates || []).filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.empId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCandidates = (companyCandidates || []).filter(c => {
+    if (!c) return false;
+    const q = (searchQuery || '').toLowerCase().trim();
+    if (!q) return true;
+    const nameStr = (c.name || '').toLowerCase();
+    const empStr = (c.empId || c.employeeNumber || c.token || c.id || '').toLowerCase();
+    const emailStr = (c.email || '').toLowerCase();
+    const phoneStr = (c.mobile || c.phone || '').toLowerCase();
+    return nameStr.includes(q) || empStr.includes(q) || emailStr.includes(q) || phoneStr.includes(q);
+  });
 
-  const verifiedCount = (companyCandidates || []).filter(c => c.status === 'Verified').length;
-  const pendingCount = (companyCandidates || []).filter(c => c.status !== 'Verified').length;
+  const verifiedCount = (companyCandidates || []).filter(c => c?.status === 'Verified').length;
+  const pendingCount = (companyCandidates || []).filter(c => c?.status !== 'Verified').length;
 
 
   const handleToggleFeature = (featKey, val) => {
@@ -974,7 +999,7 @@ export const CompanyAdminView = () => {
     },
     billing_wallet: {
       pillarBadge: '💳 5. Postpaid Billing',
-      badgeText: `${currentPlan?.shortName || 'Postpaid'} • ₹${postpaidBill.totalAmountDue.toLocaleString()} Due`,
+      badgeText: `${currentPlan?.shortName || 'Postpaid'} • ₹${(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')} Due`,
       title: 'Postpaid Plan Tier, Monthly Accruals & GST Invoices',
       subtitle: 'Real-time metered unbilled usage, non-blocking overage handling, 1:1 vendor parity, and official month-end GST tax invoices',
       icon: CreditCard,
@@ -1181,8 +1206,8 @@ export const CompanyAdminView = () => {
             />
             <MetricCard 
               title="Postpaid Accrued Total" 
-              value={`₹${postpaidBill.totalAmountDue.toLocaleString()}`} 
-              subtext={`${postpaidBill.totalVerifiedProfiles} Verified Profiles (${postpaidBill.plan.shortName})`} 
+              value={`₹${(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')}`} 
+              subtext={`${postpaidBill?.totalVerifiedProfiles || 0} Verified Profiles (${postpaidBill?.plan?.shortName || currentPlan?.shortName || 'Tier 1'})`} 
               icon={CreditCard} 
               color="amber" 
               onClick={() => {
@@ -1613,18 +1638,18 @@ export const CompanyAdminView = () => {
                 <span className="badge badge-cyan text-[10px]">{currentPlan.name}</span>
               </div>
               <div className="text-2xl font-black text-slate-900">
-                {postpaidBill.overageProfilesCount > 0 
+                {(postpaidBill?.overageProfilesCount || 0) > 0 
                   ? `+${postpaidBill.overageProfilesCount} Exceeding Tier Limit` 
-                  : `${Math.max(0, postpaidBill.baseQuota - postpaidBill.baseProfilesCount).toLocaleString()} Available Capacity`}
+                  : `${Math.max(0, (postpaidBill?.baseQuota || 50) - (postpaidBill?.baseProfilesCount || 0)).toLocaleString('en-IN')} Available Capacity`}
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200 mt-1">
                 <div 
-                  style={{ width: `${Math.min(Math.round((postpaidBill.totalVerifiedProfiles / postpaidBill.baseQuota) * 100), 100)}%` }} 
-                  className={`h-full rounded-full ${postpaidBill.isOverage ? 'bg-gradient-to-r from-amber-500 to-rose-600' : 'bg-gradient-to-r from-sky-500 to-teal-600'}`}
+                  style={{ width: `${Math.min(Math.round(((postpaidBill?.totalVerifiedProfiles || 0) / (postpaidBill?.baseQuota || 50)) * 100), 100)}%` }} 
+                  className={`h-full rounded-full ${postpaidBill?.isOverage ? 'bg-gradient-to-r from-amber-500 to-rose-600' : 'bg-gradient-to-r from-sky-500 to-teal-600'}`}
                 />
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
-                Verified <strong>{postpaidBill.totalVerifiedProfiles}</strong> / {postpaidBill.baseQuota === 999999 ? '∞' : postpaidBill.baseQuota} employees (Plan: {currentPlan.name}{postpaidBill.isOverage ? `, +${postpaidBill.overageProfilesCount} overage @ ₹${postpaidBill.overageRate}` : ''}).
+                Verified <strong>{postpaidBill?.totalVerifiedProfiles || 0}</strong> / {(postpaidBill?.baseQuota || 50) === 999999 ? '∞' : (postpaidBill?.baseQuota || 50)} employees (Plan: {currentPlan?.name || 'Tier 1'}{postpaidBill?.isOverage ? `, +${postpaidBill.overageProfilesCount} overage @ ₹${postpaidBill.overageRate}` : ''}).
               </p>
             </div>
 
@@ -4143,32 +4168,32 @@ export const CompanyAdminView = () => {
               <div className="p-4 rounded-2xl bg-white border-2 border-indigo-200 shadow-2xs space-y-1">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Base Quota Consumed</span>
                 <div className="text-2xl font-black text-indigo-700">
-                  {postpaidBill.baseProfilesCount} <span className="text-sm font-semibold text-slate-400">/ {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles}</span>
+                  {postpaidBill?.baseProfilesCount || 0} <span className="text-sm font-semibold text-slate-400">/ {(currentPlan?.maxProfiles || 50) === 999999 ? '∞' : (currentPlan?.maxProfiles || 50)}</span>
                 </div>
                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div 
-                    style={{ width: `${Math.min(Math.round((postpaidBill.baseProfilesCount / (currentPlan.maxProfiles === 999999 ? 500 : currentPlan.maxProfiles)) * 100), 100)}%` }} 
+                    style={{ width: `${Math.min(Math.round(((postpaidBill?.baseProfilesCount || 0) / ((currentPlan?.maxProfiles || 50) === 999999 ? 500 : (currentPlan?.maxProfiles || 50))) * 100), 100)}%` }} 
                     className="h-full bg-indigo-600 rounded-full"
                   />
                 </div>
                 <span className="text-[11px] text-slate-500 font-medium block">
-                  ₹{postpaidBill.baseCost.toLocaleString('en-IN')} (@ ₹{postpaidBill.baseRate}/profile)
+                  ₹{(postpaidBill?.baseCost || 0).toLocaleString('en-IN')} (@ ₹{postpaidBill?.baseRate || 250}/profile)
                 </span>
               </div>
 
               {/* Card 3: Exceeding Profiles & Overage */}
-              <div className={`p-4 rounded-2xl bg-white border-2 shadow-2xs space-y-1 ${postpaidBill.isOverage ? 'border-amber-400 bg-amber-50/30' : 'border-slate-200'}`}>
+              <div className={`p-4 rounded-2xl bg-white border-2 shadow-2xs space-y-1 ${postpaidBill?.isOverage ? 'border-amber-400 bg-amber-50/30' : 'border-slate-200'}`}>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Exceeding Profiles</span>
-                  {postpaidBill.isOverage && (
+                  {postpaidBill?.isOverage && (
                     <span className="badge badge-amber text-[9px] font-black animate-pulse">Overage Active ⚡</span>
                   )}
                 </div>
                 <div className="text-2xl font-black text-amber-700">
-                  +{postpaidBill.overageProfilesCount} <span className="text-xs font-bold text-slate-500">Profiles</span>
+                  +{postpaidBill?.overageProfilesCount || 0} <span className="text-xs font-bold text-slate-500">Profiles</span>
                 </div>
                 <span className="text-[11px] text-slate-600 font-semibold block">
-                  {postpaidBill.isOverage ? `₹${postpaidBill.overageCost.toLocaleString('en-IN')} (@ ₹${postpaidBill.overageRate}/profile)` : 'Within Tier Limit (No Overage)'}
+                  {postpaidBill?.isOverage ? `₹${(postpaidBill?.overageCost || 0).toLocaleString('en-IN')} (@ ₹${postpaidBill?.overageRate || 250}/profile)` : 'Within Tier Limit (No Overage)'}
                 </span>
                 <span className="text-[10px] text-emerald-700 font-bold block">
                   ✓ Verifications Never Interrupted
@@ -4179,10 +4204,10 @@ export const CompanyAdminView = () => {
               <div className="p-4 rounded-2xl bg-white border-2 border-emerald-300 shadow-2xs space-y-1 bg-gradient-to-br from-white to-emerald-50/40">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Month-End Net Payable Due</span>
                 <div className="text-2xl font-black text-emerald-700">
-                  ₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}
+                  ₹{(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')}
                 </div>
                 <span className="text-[11px] text-slate-600 font-medium block">
-                  Subtotal: ₹{postpaidBill.subtotal.toLocaleString('en-IN')} + 18% GST (₹{postpaidBill.gstAmount.toLocaleString('en-IN')})
+                  Subtotal: ₹{(postpaidBill?.subtotal || 0).toLocaleString('en-IN')} + 18% GST (₹{(postpaidBill?.gstAmount || 0).toLocaleString('en-IN')})
                 </span>
                 <span className="text-[10px] text-slate-500 font-bold block">
                   SAC Code: 998311 (IT BGV Services)
@@ -4361,7 +4386,7 @@ export const CompanyAdminView = () => {
                   className="btn btn-secondary text-xs py-2 px-4 flex-1 flex items-center justify-center gap-1.5 font-bold cursor-pointer"
                 >
                   <SendHorizontal className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Generate Payment Link (₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}) 🔗</span>
+                  <span>Generate Payment Link (₹{(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')}) 🔗</span>
                 </button>
               </div>
             </div>
@@ -4428,19 +4453,19 @@ export const CompanyAdminView = () => {
                       Current Month Cycle (Live)
                     </td>
                     <td className="py-3 px-3 font-bold text-slate-900">
-                      {postpaidBill.baseProfilesCount} / {currentPlan.maxProfiles === 999999 ? '∞' : currentPlan.maxProfiles}
+                      {postpaidBill?.baseProfilesCount || 0} / {(currentPlan?.maxProfiles || 50) === 999999 ? '∞' : (currentPlan?.maxProfiles || 50)}
                     </td>
                     <td className="py-3 px-3 font-bold text-amber-700">
-                      {postpaidBill.overageProfilesCount > 0 ? `+${postpaidBill.overageProfilesCount} (@ ₹${postpaidBill.overageRate})` : '0 (None)'}
+                      {(postpaidBill?.overageProfilesCount || 0) > 0 ? `+${postpaidBill.overageProfilesCount} (@ ₹${postpaidBill?.overageRate || 250})` : '0 (None)'}
                     </td>
                     <td className="py-3 px-3 font-mono font-bold text-slate-900">
-                      ₹{postpaidBill.subtotal.toLocaleString('en-IN')}
+                      ₹{(postpaidBill?.subtotal || 0).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-3 font-mono text-slate-600">
-                      ₹{postpaidBill.gstAmount.toLocaleString('en-IN')}
+                      ₹{(postpaidBill?.gstAmount || 0).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-3 font-mono font-black text-indigo-800 text-sm">
-                      ₹{postpaidBill.totalAmountDue.toLocaleString('en-IN')}
+                      ₹{(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-3 text-slate-600">
                       Postpaid Metered Accrual
