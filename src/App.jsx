@@ -7,61 +7,45 @@ import { GuidedTourSpotlight } from './components/GuidedTourSpotlight';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { GlobalPlatformPreloader } from './components/GlobalPlatformPreloader';
 
-// Resilient Lazy Loader with Automatic Chunk Reload & Cache-Busting Recovery
-function lazyWithRetry(componentImport, chunkName = 'chunk') {
+// Resilient Lazy Loader with Automatic Module Retry
+function lazyWithRetry(componentImport) {
   return lazy(async () => {
-    const isRetried = window.sessionStorage.getItem(`chunk_retry_${chunkName}`);
-
     try {
-      const component = await componentImport();
-      window.sessionStorage.removeItem(`chunk_retry_${chunkName}`);
-      return component;
+      return await componentImport();
     } catch (error) {
-      console.warn(`Dynamic chunk import failed for [${chunkName}]:`, error);
-
-      if (!isRetried) {
-        window.sessionStorage.setItem(`chunk_retry_${chunkName}`, 'true');
-
-        if ('caches' in window) {
-          try {
-            const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
-          } catch (e) {
-            console.warn('Failed clearing caches on chunk error:', e);
-          }
-        }
-
-        window.location.reload();
-        return new Promise(() => {}); // Keep Suspense active until reload completes
+      console.warn('Initial chunk load failed, retrying module import...', error);
+      try {
+        return await componentImport();
+      } catch (retryErr) {
+        console.error('Dynamic module import failed:', retryErr);
+        throw retryErr;
       }
-
-      window.sessionStorage.removeItem(`chunk_retry_${chunkName}`);
-      throw error;
     }
   });
 }
 
-// Statically import LandingPageView to prevent Suspense fallback flash on reload
+// Statically import LandingPageView and LoginView for instantaneous zero-latency access
 import { LandingPageView } from './views/LandingPageView';
+import { LoginView } from './views/LoginView';
 
 // Public Specialized Pages
-const PublicPagesView = lazyWithRetry(() => import('./views/PublicPagesView').then(m => ({ default: m.PublicPagesView })), 'PublicPagesView');
+const PublicPagesView = lazyWithRetry(() => import('./views/PublicPagesView').then(m => ({ default: m.PublicPagesView })));
 
 // Route-Level Code Splitting for Authenticated Portals
-const LoginView = lazyWithRetry(() => import('./views/LoginView').then(m => ({ default: m.LoginView })), 'LoginView');
-const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })), 'SuperAdminView');
-const CompanyAdminView = lazyWithRetry(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })), 'CompanyAdminView');
-const HrExecutiveView = lazyWithRetry(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })), 'HrExecutiveView');
-const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })), 'EmployeePortalView');
-const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })), 'CompanyActivationView');
-const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })), 'HrActivationView');
+const SuperAdminView = lazyWithRetry(() => import('./views/SuperAdminView').then(m => ({ default: m.SuperAdminView })));
+const CompanyAdminView = lazyWithRetry(() => import('./views/CompanyAdminView').then(m => ({ default: m.CompanyAdminView })));
+const HrExecutiveView = lazyWithRetry(() => import('./views/HrExecutiveView').then(m => ({ default: m.HrExecutiveView })));
+const EmployeePortalView = lazyWithRetry(() => import('./views/EmployeePortalView').then(m => ({ default: m.EmployeePortalView })));
+const CompanyActivationView = lazyWithRetry(() => import('./views/CompanyActivationView').then(m => ({ default: m.CompanyActivationView })));
+const HrActivationView = lazyWithRetry(() => import('./views/HrActivationView').then(m => ({ default: m.HrActivationView })));
 
-// Seamless Loading Component for Suspense Fallback
+// Authentic Brand Loading Animation for Suspense Fallback
 const RouteLoadingSpinner = () => (
-  <div className="min-h-screen bg-[#070A11] flex flex-col items-center justify-center gap-3 select-none">
-    <div className="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
-    <span className="text-xs font-mono font-bold text-slate-400 tracking-wider">INITIALIZING SESSION...</span>
-  </div>
+  <GlobalPlatformPreloader 
+    isFullScreen={true}
+    autoDismissMs={1200}
+    subtitleText="AUTHENTICATING SECURE SESSION"
+  />
 );
 
 // Global Route & Action Cinematic Preloader (Triggered on manual events)

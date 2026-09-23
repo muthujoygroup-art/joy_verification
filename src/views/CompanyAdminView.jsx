@@ -5393,3 +5393,5 @@ export const CompanyAdminView = () => {
     </div>
   );
 };
+
+export default CompanyAdminView;
