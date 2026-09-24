@@ -235,43 +235,58 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           </div>
 
           {/* Verified Candidate Profile Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-slate-200 text-xs shadow-sm relative z-10">
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Employee Full Name</span>
-              <strong className="text-slate-900 font-extrabold text-sm">{candidate.name}</strong>
+          <div className="bg-white p-4 rounded-xl border border-slate-200 text-xs shadow-sm relative z-10 space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Employee Full Name</span>
+                <strong className="text-slate-900 font-extrabold text-sm">{candidate.name}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Employee Code / ID</span>
+                <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || candidate.employeeNumber || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Father / Spouse Name</span>
+                <strong className="text-slate-900 font-bold">{candidate.fatherName || candidate.spouseName || candidate.fatherSpouseName || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Employer Enterprise</span>
+                <strong className="text-sky-700 font-bold">{companyName}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Mobile Number</span>
+                <strong className="text-slate-900 font-bold font-mono">{candidate.mobile || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Aadhaar Identity Ref</span>
+                <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${String(candidate.aadhaarNo).slice(-4)}` : '—'}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">PAN Tax Identifier</span>
+                <strong className="text-slate-900 font-bold font-mono uppercase">{candidate.panNo || candidate.panNumber || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 font-medium block">Biometrics Liveness Score</span>
+                {facePassed ? (
+                  <span className="badge badge-emerald text-[10px]">99.4% Match ✓</span>
+                ) : (
+                  <span className="badge badge-amber text-[10px]">Pending Liveness ⌛</span>
+                )}
+              </div>
             </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Employee Code / ID</span>
-              <strong className="text-slate-900 font-extrabold text-sm">{candidate.empId || candidate.employeeNumber || '—'}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Designation</span>
-              <strong className="text-slate-900 font-bold">{candidate.designation || '—'}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Employer Enterprise</span>
-              <strong className="text-sky-700 font-bold">{companyName}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Mobile Number</span>
-              <strong className="text-slate-900 font-bold font-mono">{candidate.mobile || '—'}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Aadhaar Identity Ref</span>
-              <strong className="text-slate-900 font-bold font-mono">{candidate.aadhaarNo ? `XXXX XXXX ${String(candidate.aadhaarNo).slice(-4)}` : '—'}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Department / Division</span>
-              <strong className="text-slate-900 font-bold text-xs truncate block">{candidate.dept || candidate.department || '—'}</strong>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-400 font-medium block">Biometrics Liveness Score</span>
-              {facePassed ? (
-                <span className="badge badge-emerald text-[10px]">99.4% Match ✓</span>
-              ) : (
-                <span className="badge badge-amber text-[10px]">Pending Liveness ⌛</span>
-              )}
-            </div>
+
+            {/* Additional Statutory Registrations Sub-Row */}
+            {(candidate.passportNo || candidate.drivingLicenseNo || candidate.voterId || candidate.uanNo || candidate.esiNumber || candidate.rationCardNo) && (
+              <div className="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+                <span className="text-slate-400 font-bold uppercase">Original Documents:</span>
+                {candidate.passportNo && <span className="px-2 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200">Passport: {candidate.passportNo}</span>}
+                {candidate.drivingLicenseNo && <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">DL: {candidate.drivingLicenseNo}</span>}
+                {candidate.voterId && <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200">EPIC: {candidate.voterId}</span>}
+                {candidate.rationCardNo && <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200">Ration: {candidate.rationCardNo}</span>}
+                {candidate.uanNo && <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">UAN: {candidate.uanNo}</span>}
+                {candidate.esiNumber && <span className="px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">ESIC: {candidate.esiNumber}</span>}
+              </div>
+            )}
           </div>
 
           {/* Audit Verification Table */}

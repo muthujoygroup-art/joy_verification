@@ -48,6 +48,9 @@ import {
   MOTHER_TONGUE_OPTIONS,
   RELATIONSHIP_OPTIONS,
   FAMILY_MEMBER_RELATION_OPTIONS,
+  SIBLING_RELATION_OPTIONS,
+  CHILD_GENDER_OPTIONS,
+  OCCUPATION_OPTIONS,
   isOtherValue 
 } from '../data/masterDropdownOptions';
 import { getIndianStates, getDistrictsByState, getCitiesByDistrict, isOtherLocation, isOtherCity } from '../data/indiaLocations';
@@ -56,6 +59,7 @@ import {
   AlertCircle,
   AlertTriangle,
   Award,
+  Baby,
   BarChart3,
   Briefcase,
   Building2,
@@ -82,6 +86,7 @@ import {
   Globe,
   GraduationCap,
   HardHat,
+  Heart,
   KeyRound,
   Landmark,
   Layers,
@@ -91,6 +96,7 @@ import {
   Mail,
   MapPin,
   MessageSquare,
+  Phone,
   Plus,
   Power,
   QrCode,
@@ -105,6 +111,7 @@ import {
   ShoppingBag,
   Sliders,
   Smartphone,
+  Smile,
   Sparkles,
   Stethoscope,
   Trash2,
@@ -118,6 +125,8 @@ import {
   X,
   Zap
 } from 'lucide-react';
+import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from '../components/SocialIcons';
+
 
 // Helper to create clean default form data
 const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
@@ -148,13 +157,22 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   designation: '',
   dept: '',
   fatherName: '',
+  fatherMobile: '',
+  fatherOccupation: '',
   motherName: '',
+  motherMobile: '',
+  motherOccupation: '',
+  siblings: [],
   spouseName: '',
+  spouseMobile: '',
+  spouseOccupation: '',
+  children: [],
   gender: '',
   bloodGroup: '',
-  maritalStatus: '',
+  maritalStatus: 'Single / Unmarried',
   nationality: 'Indian',
   languagesKnown: '',
+  languages: [],
   selfInterests: '',
   state: '',
   city: '',
@@ -246,6 +264,10 @@ const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
   githubUrl: '',
   portfolioUrl: '',
   twitterUrl: '',
+  instagramUrl: '',
+  facebookUrl: '',
+  youtubeUrl: '',
+  rationCardNo: '',
 
   // Dynamic Multi-Entry Education Qualifications
   educationList: [],
@@ -682,6 +704,7 @@ export const HrExecutiveView = () => {
   const [hasRestoredDraft, setHasRestoredDraft] = useState(() => {
     return Boolean(localStorage.getItem('joy_hr_employee_draft_v1'));
   });
+  const [customLanguageInput, setCustomLanguageInput] = useState('');
 
 
   // Dynamic Upstream Verification & Data-Fetching Dependency Evaluator
@@ -996,6 +1019,107 @@ export const HrExecutiveView = () => {
         ...(prev.industrySpecialization || {}),
         industryType: categoryKey
       }
+    }));
+  };
+
+  // 👨‍👩‍👧 Sibling Dynamic Handlers
+  const handleAddSibling = () => {
+    const newSibling = {
+      id: Date.now(),
+      name: '',
+      relation: 'Brother',
+      occupation: '',
+      mobile: '',
+      age: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      siblings: [...(prev.siblings || []), newSibling]
+    }));
+  };
+
+  const handleUpdateSibling = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      siblings: (prev.siblings || []).map(sib => sib.id === id ? { ...sib, [field]: value } : sib)
+    }));
+  };
+
+  const handleRemoveSibling = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      siblings: (prev.siblings || []).filter(sib => sib.id !== id)
+    }));
+  };
+
+  // 👶 Children Dynamic Handlers
+  const handleAddChild = () => {
+    const newChild = {
+      id: Date.now(),
+      name: '',
+      gender: 'Male / Son',
+      age: '',
+      dob: '',
+      occupation: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      children: [...(prev.children || []), newChild]
+    }));
+  };
+
+  const handleUpdateChild = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      children: (prev.children || []).map(ch => ch.id === id ? { ...ch, [field]: value } : ch)
+    }));
+  };
+
+  const handleRemoveChild = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      children: (prev.children || []).filter(ch => ch.id !== id)
+    }));
+  };
+
+  // 🌐 Known Languages Handlers
+  const handleAddLanguage = (langName) => {
+    if (!langName || !langName.trim()) return;
+    const trimmed = langName.trim();
+    const currentList = Array.isArray(formData.languages) ? formData.languages : [];
+    if (!currentList.some(l => (typeof l === 'string' ? l : l.name)?.toLowerCase() === trimmed.toLowerCase())) {
+      const updated = [...currentList, { name: trimmed, read: true, write: true, speak: true }];
+      setFormData(prev => ({
+        ...prev,
+        languages: updated,
+        languagesKnown: updated.map(l => typeof l === 'string' ? l : l.name).join(', ')
+      }));
+    }
+  };
+
+  const handleRemoveLanguage = (langName) => {
+    const currentList = Array.isArray(formData.languages) ? formData.languages : [];
+    const updated = currentList.filter(l => (typeof l === 'string' ? l : l.name) !== langName);
+    setFormData(prev => ({
+      ...prev,
+      languages: updated,
+      languagesKnown: updated.map(l => typeof l === 'string' ? l : l.name).join(', ')
+    }));
+  };
+
+  const handleToggleLanguageProficiency = (langName, skill) => {
+    const currentList = Array.isArray(formData.languages) ? formData.languages : [];
+    const updated = currentList.map(l => {
+      const name = typeof l === 'string' ? l : l.name;
+      if (name === langName) {
+        const obj = typeof l === 'string' ? { name: l, read: true, write: true, speak: true } : { ...l };
+        return { ...obj, [skill]: !obj[skill] };
+      }
+      return l;
+    });
+    setFormData(prev => ({
+      ...prev,
+      languages: updated
     }));
   };
 
@@ -3303,60 +3427,236 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              {/* Row 2: Parents & Age */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
-                <div>
-                  {renderFieldLabel("Father's Name", 'fatherName')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Suresh Chandra"
-                    value={formData.fatherName}
-                    onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
-                    className={getFieldInputClass('fatherName')}
-                  />
+              {/* Row 2: Parents Details (Name, Mobile, Occupation) & Age */}
+              <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-3">
+                <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Parents & Primary Family Details</span>
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    {renderFieldLabel("Father's Full Name", 'fatherName')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Suresh Chandra"
+                      value={formData.fatherName}
+                      onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
+                      className={getFieldInputClass('fatherName')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel("Father's Mobile Number", 'fatherMobile')}
+                    <input 
+                      type="tel" 
+                      placeholder="+91 98765 12345"
+                      value={formData.fatherMobile || ''}
+                      onChange={(e) => setFormData({ ...formData, fatherMobile: e.target.value })}
+                      className={getFieldInputClass('fatherMobile', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel("Father's Occupation", 'fatherOccupation')}
+                    <select
+                      value={OCCUPATION_OPTIONS.includes(formData.fatherOccupation) ? formData.fatherOccupation : (formData.fatherOccupation ? 'Others' : '')}
+                      onChange={(e) => setFormData({ ...formData, fatherOccupation: e.target.value })}
+                      className={getFieldInputClass('fatherOccupation', 'form-select')}
+                    >
+                      <option value="">-- Select Father's Occupation --</option>
+                      {OCCUPATION_OPTIONS.map(occ => (
+                        <option key={occ} value={occ}>{occ}</option>
+                      ))}
+                    </select>
+                    {(formData.fatherOccupation === 'Others' || (formData.fatherOccupation && !OCCUPATION_OPTIONS.includes(formData.fatherOccupation))) && (
+                      <input 
+                        type="text" 
+                        placeholder="Specify custom father occupation..."
+                        value={formData.customFatherOccupation || (formData.fatherOccupation !== 'Others' ? formData.fatherOccupation : '')}
+                        onChange={(e) => setFormData({ ...formData, customFatherOccupation: e.target.value, fatherOccupation: e.target.value || 'Others' })}
+                        className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div>
-                  {renderFieldLabel("Mother's Name", 'motherName')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Kavitha Chandra"
-                    value={formData.motherName}
-                    onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
-                    className={getFieldInputClass('motherName')}
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+                  <div>
+                    {renderFieldLabel("Mother's Full Name", 'motherName')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Kavitha Chandra"
+                      value={formData.motherName}
+                      onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
+                      className={getFieldInputClass('motherName')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel("Mother's Mobile Number", 'motherMobile')}
+                    <input 
+                      type="tel" 
+                      placeholder="+91 98765 67890"
+                      value={formData.motherMobile || ''}
+                      onChange={(e) => setFormData({ ...formData, motherMobile: e.target.value })}
+                      className={getFieldInputClass('motherMobile', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel("Mother's Occupation", 'motherOccupation')}
+                    <select
+                      value={OCCUPATION_OPTIONS.includes(formData.motherOccupation) ? formData.motherOccupation : (formData.motherOccupation ? 'Others' : '')}
+                      onChange={(e) => setFormData({ ...formData, motherOccupation: e.target.value })}
+                      className={getFieldInputClass('motherOccupation', 'form-select')}
+                    >
+                      <option value="">-- Select Mother's Occupation --</option>
+                      {OCCUPATION_OPTIONS.map(occ => (
+                        <option key={occ} value={occ}>{occ}</option>
+                      ))}
+                    </select>
+                    {(formData.motherOccupation === 'Others' || (formData.motherOccupation && !OCCUPATION_OPTIONS.includes(formData.motherOccupation))) && (
+                      <input 
+                        type="text" 
+                        placeholder="Specify custom mother occupation..."
+                        value={formData.customMotherOccupation || (formData.motherOccupation !== 'Others' ? formData.motherOccupation : '')}
+                        onChange={(e) => setFormData({ ...formData, customMotherOccupation: e.target.value, motherOccupation: e.target.value || 'Others' })}
+                        className="form-input text-xs mt-1 font-bold text-indigo-900 bg-indigo-50/50"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div>
-                  {renderFieldLabel('Date of Birth (DOB)', 'dob')}
-                  <input 
-                    type="date" 
-                    value={toIsoDateString(formData.dob) || formData.dob || ''}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const calcAge = calculateAccurateAge(val);
-                      setFormData({ 
-                        ...formData, 
-                        dob: val,
-                        age: calcAge !== null ? calcAge : formData.age
-                      });
-                    }}
-                    className={getFieldInputClass('dob')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Age (Years)', 'age')}
-                  <input 
-                    type="number" 
-                    min="18"
-                    max="80"
-                    placeholder="e.g. 28"
-                    value={formData.age || ''}
-                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                    className={getFieldInputClass('age', 'form-input font-bold')}
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div>
+                    {renderFieldLabel('Date of Birth (DOB)', 'dob')}
+                    <input 
+                      type="date" 
+                      value={toIsoDateString(formData.dob) || formData.dob || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const calcAge = calculateAccurateAge(val);
+                        setFormData({ 
+                          ...formData, 
+                          dob: val,
+                          age: calcAge !== null ? calcAge : formData.age
+                        });
+                      }}
+                      className={getFieldInputClass('dob')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('Age (Years)', 'age')}
+                    <input 
+                      type="number" 
+                      min="18"
+                      max="80"
+                      placeholder="e.g. 28"
+                      value={formData.age || ''}
+                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                      className={getFieldInputClass('age', 'form-input font-bold')}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Row 3: Gender, Marital, Blood Group, Mother Language */}
+              {/* SIBLINGS SECTION (Dynamic Multi-Entry) */}
+              <div className="p-3.5 bg-blue-50/60 rounded-2xl border border-blue-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-blue-700" />
+                    <span className="text-xs font-black uppercase text-blue-950 tracking-wider">Siblings Details</span>
+                    <span className="text-[10px] bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded-full">
+                      {(formData.siblings || []).length} Declared
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddSibling}
+                    className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Sibling</span>
+                  </button>
+                </div>
+
+                {(!formData.siblings || formData.siblings.length === 0) ? (
+                  <div className="text-center py-3 bg-white/70 rounded-xl border border-dashed border-blue-300 text-xs text-blue-700 font-medium flex items-center justify-center gap-2">
+                    <span>No siblings declared yet.</span>
+                    <button
+                      type="button"
+                      onClick={handleAddSibling}
+                      className="text-blue-800 font-bold underline hover:text-blue-950 cursor-pointer"
+                    >
+                      Click here to + Add Sibling
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {formData.siblings.map((sib, sIdx) => (
+                      <div key={sib.id || sIdx} className="p-3 bg-white rounded-xl border border-blue-200 shadow-2xs space-y-2">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                          <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-50 px-2 py-0.5 rounded">
+                            Sibling #{sIdx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSibling(sIdx)}
+                            className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove</span>
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+                          <div>
+                            <label className="text-[11px] font-bold text-slate-700 block mb-1">Sibling Name *</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Priya Chandra"
+                              value={sib.name || ''}
+                              onChange={(e) => handleUpdateSibling(sIdx, 'name', e.target.value)}
+                              className="form-input text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-bold text-slate-700 block mb-1">Relation *</label>
+                            <select
+                              value={sib.relation || 'Brother'}
+                              onChange={(e) => handleUpdateSibling(sIdx, 'relation', e.target.value)}
+                              className="form-select text-xs font-medium"
+                            >
+                              {SIBLING_RELATION_OPTIONS.map(rel => (
+                                <option key={rel} value={rel}>{rel}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-bold text-slate-700 block mb-1">Occupation</label>
+                            <select
+                              value={sib.occupation || 'Private Sector Employee (Corporate / IT / MNC)'}
+                              onChange={(e) => handleUpdateSibling(sIdx, 'occupation', e.target.value)}
+                              className="form-select text-xs font-medium"
+                            >
+                              {OCCUPATION_OPTIONS.map(occ => (
+                                <option key={occ} value={occ}>{occ}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-bold text-slate-700 block mb-1">Mobile / Contact</label>
+                            <input
+                              type="tel"
+                              placeholder="+91 98765 00000"
+                              value={sib.mobile || ''}
+                              onChange={(e) => handleUpdateSibling(sIdx, 'mobile', e.target.value)}
+                              className="form-input text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Row 3: Demographics (Gender, Marital, Blood Group, Mother Tongue) */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
                   {renderFieldLabel('Gender', 'gender')}
@@ -3381,7 +3681,7 @@ export const HrExecutiveView = () => {
                   )}
                 </div>
                 <div>
-                  {renderFieldLabel('Status Married / Unmarried', 'maritalStatus')}
+                  {renderFieldLabel('Marital Status', 'maritalStatus')}
                   <select 
                     value={formData.maritalStatus}
                     onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
@@ -3455,7 +3755,282 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              {/* Row 4: Religion, Caste, Category, Identification Marks */}
+              {/* MARITAL STATUS CONDITIONAL: SPOUSE & CHILDREN SECTION */}
+              {(formData.maritalStatus === 'Married' || (formData.maritalStatus && formData.maritalStatus.toLowerCase().includes('married'))) && (
+                <div className="p-4 bg-gradient-to-r from-rose-50/70 to-pink-50/70 rounded-2xl border border-rose-200 space-y-3.5">
+                  <div className="flex items-center justify-between border-b border-rose-200/80 pb-2">
+                    <span className="text-xs font-black uppercase text-rose-900 tracking-wider flex items-center gap-1.5">
+                      <Heart className="w-4 h-4 text-rose-600 fill-rose-600" />
+                      <span>Spouse & Children Details (Marital Particulars)</span>
+                    </span>
+                    <span className="badge badge-rose text-[9px] font-bold">Married Candidate Record</span>
+                  </div>
+
+                  {/* Spouse Details Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      {renderFieldLabel("Spouse Full Name", 'spouseName')}
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Sunita Chandra"
+                        value={formData.spouseName || ''}
+                        onChange={(e) => setFormData({ ...formData, spouseName: e.target.value })}
+                        className={getFieldInputClass('spouseName', 'form-input font-bold')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel("Spouse Mobile Number", 'spouseMobile')}
+                      <input 
+                        type="tel" 
+                        placeholder="+91 98765 44444"
+                        value={formData.spouseMobile || ''}
+                        onChange={(e) => setFormData({ ...formData, spouseMobile: e.target.value })}
+                        className={getFieldInputClass('spouseMobile', 'form-input font-mono')}
+                      />
+                    </div>
+                    <div>
+                      {renderFieldLabel("Spouse Occupation", 'spouseOccupation')}
+                      <select
+                        value={OCCUPATION_OPTIONS.includes(formData.spouseOccupation) ? formData.spouseOccupation : (formData.spouseOccupation ? 'Others' : '')}
+                        onChange={(e) => setFormData({ ...formData, spouseOccupation: e.target.value })}
+                        className={getFieldInputClass('spouseOccupation', 'form-select')}
+                      >
+                        <option value="">-- Select Spouse Occupation --</option>
+                        {OCCUPATION_OPTIONS.map(occ => (
+                          <option key={occ} value={occ}>{occ}</option>
+                        ))}
+                      </select>
+                      {(formData.spouseOccupation === 'Others' || (formData.spouseOccupation && !OCCUPATION_OPTIONS.includes(formData.spouseOccupation))) && (
+                        <input 
+                          type="text" 
+                          placeholder="Specify spouse occupation..."
+                          value={formData.customSpouseOccupation || (formData.spouseOccupation !== 'Others' ? formData.spouseOccupation : '')}
+                          onChange={(e) => setFormData({ ...formData, customSpouseOccupation: e.target.value, spouseOccupation: e.target.value || 'Others' })}
+                          className="form-input text-xs mt-1 font-bold text-rose-900 bg-rose-50"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Children Multi-Entry Matrix */}
+                  <div className="pt-2 border-t border-rose-200/60 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Baby className="w-3.5 h-3.5 text-rose-700" />
+                        <span className="text-[11px] font-black uppercase text-rose-950 tracking-wider">Children / Dependents</span>
+                        <span className="text-[10px] bg-rose-100 text-rose-900 font-bold px-1.5 py-0.2 rounded-full">
+                          {(formData.children || []).length} Registered
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddChild}
+                        className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Child</span>
+                      </button>
+                    </div>
+
+                    {(!formData.children || formData.children.length === 0) ? (
+                      <div className="text-center py-2.5 bg-white/80 rounded-xl border border-dashed border-rose-300 text-xs text-rose-700 font-medium flex items-center justify-center gap-2">
+                        <span>No children added.</span>
+                        <button
+                          type="button"
+                          onClick={handleAddChild}
+                          className="text-rose-800 font-bold underline hover:text-rose-950 cursor-pointer"
+                        >
+                          Click here to + Add Child (if any)
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {formData.children.map((ch, cIdx) => (
+                          <div key={ch.id || cIdx} className="p-2.5 bg-white rounded-xl border border-rose-200 shadow-2xs space-y-2">
+                            <div className="flex items-center justify-between border-b border-rose-100 pb-1">
+                              <span className="text-[10px] font-black uppercase text-rose-800 bg-rose-50 px-2 py-0.5 rounded">
+                                Child #{cIdx + 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveChild(cIdx)}
+                                className="text-rose-500 hover:text-rose-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Remove</span>
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-700 block mb-0.5">Child Full Name *</label>
+                                <input
+                                  type="text"
+                                  placeholder="e.g. Aryan Chandra"
+                                  value={ch.name || ''}
+                                  onChange={(e) => handleUpdateChild(cIdx, 'name', e.target.value)}
+                                  className="form-input text-xs font-bold"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-700 block mb-0.5">Gender *</label>
+                                <select
+                                  value={ch.gender || 'Male / Son'}
+                                  onChange={(e) => handleUpdateChild(cIdx, 'gender', e.target.value)}
+                                  className="form-select text-xs font-medium"
+                                >
+                                  {CHILD_GENDER_OPTIONS.map(cg => (
+                                    <option key={cg} value={cg}>{cg}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-700 block mb-0.5">Age / Date of Birth</label>
+                                <input
+                                  type="text"
+                                  placeholder="e.g. 6 Years / 12-05-2020"
+                                  value={ch.age || ''}
+                                  onChange={(e) => handleUpdateChild(cIdx, 'age', e.target.value)}
+                                  className="form-input text-xs"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-700 block mb-0.5">School / Status</label>
+                                <input
+                                  type="text"
+                                  placeholder="e.g. Primary School / Student"
+                                  value={ch.occupation || ''}
+                                  onChange={(e) => handleUpdateChild(cIdx, 'occupation', e.target.value)}
+                                  className="form-input text-xs"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* KNOWN LANGUAGES MULTI-SELECT & PROFICIENCY MATRIX */}
+              <div className="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-emerald-700" />
+                    <span className="text-xs font-black uppercase text-emerald-950 tracking-wider">Known Languages & Proficiency</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
+                      {(formData.languages || []).length} Languages
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      className="form-select text-xs font-bold text-emerald-950 bg-white"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          handleAddLanguage(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    >
+                      <option value="">+ Add Known Language...</option>
+                      {LANGUAGES_OPTIONS.map(l => (
+                        <option key={l} value={l}>{l}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Custom language add input */}
+                <div className="flex items-center gap-2 max-w-md">
+                  <input
+                    type="text"
+                    placeholder="Or type custom language (e.g. Sourashtra, Konkani, Tulu)..."
+                    value={customLanguageInput}
+                    onChange={(e) => setCustomLanguageInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (customLanguageInput.trim()) {
+                          handleAddLanguage(customLanguageInput.trim());
+                          setCustomLanguageInput('');
+                        }
+                      }
+                    }}
+                    className="form-input text-xs bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customLanguageInput.trim()) {
+                        handleAddLanguage(customLanguageInput.trim());
+                        setCustomLanguageInput('');
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer"
+                  >
+                    + Add
+                  </button>
+                </div>
+
+                {/* Render language tags */}
+                {(!formData.languages || formData.languages.length === 0) ? (
+                  <p className="text-[11px] text-emerald-700 italic">Select languages from the dropdown above to add language proficiency tags.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {formData.languages.map((langObj, lIdx) => {
+                      const langName = typeof langObj === 'string' ? langObj : langObj.name;
+                      const canRead = typeof langObj === 'object' ? langObj.read : true;
+                      const canWrite = typeof langObj === 'object' ? langObj.write : true;
+                      const canSpeak = typeof langObj === 'object' ? langObj.speak : true;
+                      return (
+                        <div key={lIdx} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-emerald-300 shadow-2xs text-xs">
+                          <span className="font-extrabold text-emerald-950">{langName}</span>
+                          <div className="flex items-center gap-1.5 text-[10px] text-slate-600 border-l border-emerald-200 pl-2">
+                            <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                              <input 
+                                type="checkbox" 
+                                checked={canRead}
+                                onChange={() => handleToggleLanguageProficiency(lIdx, 'read')}
+                                className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                              />
+                              <span>R</span>
+                            </label>
+                            <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                              <input 
+                                type="checkbox" 
+                                checked={canWrite}
+                                onChange={() => handleToggleLanguageProficiency(lIdx, 'write')}
+                                className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                              />
+                              <span>W</span>
+                            </label>
+                            <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                              <input 
+                                type="checkbox" 
+                                checked={canSpeak}
+                                onChange={() => handleToggleLanguageProficiency(lIdx, 'speak')}
+                                className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                              />
+                              <span>S</span>
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveLanguage(lIdx)}
+                            className="text-rose-400 hover:text-rose-700 ml-1 cursor-pointer font-bold"
+                            title="Remove Language"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Row 4: Religion, Caste, Category, Identification Marks & Interests */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
                   {renderFieldLabel('Religion', 'religion')}
@@ -3542,19 +4117,9 @@ export const HrExecutiveView = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
-                  {renderFieldLabel('Spouse Name (if married)', 'spouseName')}
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Sunita Chandra"
-                    value={formData.spouseName}
-                    onChange={(e) => setFormData({ ...formData, spouseName: e.target.value })}
-                    className={getFieldInputClass('spouseName')}
-                  />
-                </div>
-                <div>
-                  {renderFieldLabel('Languages Known (Master)', 'languagesKnown')}
+                  {renderFieldLabel('Master Languages Summary', 'languagesKnown')}
                   <input 
                     type="text" 
                     placeholder="e.g. English, Tamil, Hindi, Telugu"
@@ -3860,7 +4425,7 @@ export const HrExecutiveView = () => {
                   <Globe className="w-4 h-4 text-indigo-600" />
                   <span>2B. Professional & Social Media Presence Links</span>
                 </h4>
-                <span className="badge badge-indigo text-[9px] font-bold">Auto-Bound to Profile Dossier</span>
+                <span className="badge badge-indigo text-[9px] font-bold">Auto-Bound to Profile Dossier & Verification PDF</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
@@ -3895,13 +4460,43 @@ export const HrExecutiveView = () => {
                   />
                 </div>
                 <div>
-                  {renderFieldLabel('Twitter (X) / Other Profile', 'twitterUrl')}
+                  {renderFieldLabel('Twitter (X) Profile URL', 'twitterUrl')}
                   <input 
                     type="url"
                     placeholder="https://x.com/handle"
                     value={formData.twitterUrl || ''}
                     onChange={(e) => setFormData({ ...formData, twitterUrl: e.target.value })}
                     className={getFieldInputClass('twitterUrl', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Instagram Profile URL', 'instagramUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://instagram.com/username"
+                    value={formData.instagramUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, instagramUrl: e.target.value })}
+                    className={getFieldInputClass('instagramUrl', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('Facebook Profile URL', 'facebookUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://facebook.com/username"
+                    value={formData.facebookUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, facebookUrl: e.target.value })}
+                    className={getFieldInputClass('facebookUrl', 'form-input font-mono')}
+                  />
+                </div>
+                <div>
+                  {renderFieldLabel('YouTube Channel / Video URL', 'youtubeUrl')}
+                  <input 
+                    type="url"
+                    placeholder="https://youtube.com/@channel"
+                    value={formData.youtubeUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
+                    className={getFieldInputClass('youtubeUrl', 'form-input font-mono')}
                   />
                 </div>
               </div>
@@ -4208,9 +4803,9 @@ export const HrExecutiveView = () => {
               {/* SUB-SECTION 5A: Core Government IDs */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                 <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
-                  🪪 Core Government Identity Credentials:
+                  🪪 Core Government Identity Credentials & Original Document Numbers:
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                   <div>
                     {renderFieldLabel('Income Tax PAN Number', 'panNo')}
                     <input 
@@ -4249,6 +4844,26 @@ export const HrExecutiveView = () => {
                       value={formData.voterId || ''}
                       onChange={(e) => setFormData({ ...formData, voterId: e.target.value.toUpperCase() })}
                       className={getFieldInputClass('voterId', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('National / State Ration Card Number', 'rationCardNo')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 33019842109"
+                      value={formData.rationCardNo || ''}
+                      onChange={(e) => setFormData({ ...formData, rationCardNo: e.target.value.toUpperCase() })}
+                      className={getFieldInputClass('rationCardNo', 'form-input font-mono')}
+                    />
+                  </div>
+                  <div>
+                    {renderFieldLabel('ESIC IP / Insurance Number', 'esicNumber')}
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 31001234560001001"
+                      value={formData.esicNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, esicNumber: e.target.value })}
+                      className={getFieldInputClass('esicNumber', 'form-input font-mono')}
                     />
                   </div>
                 </div>

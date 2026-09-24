@@ -34,12 +34,17 @@ import {
   Layers,
   HeartPulse,
   Scale,
-  Loader2,
   FileSpreadsheet,
   ZoomIn,
   ZoomOut,
-  Maximize2
+  Maximize2,
+  Globe,
+  Baby,
+  Heart,
+  Phone,
+  Mail
 } from 'lucide-react';
+import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from './SocialIcons';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
@@ -122,11 +127,31 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   // Clean, Dynamic Attributes Resolution (Removing fake mock fallbacks)
   const candidateName = jf.fullName || jf.name || c.name || '-';
   const fatherName = jf.fatherName || jf.father_name || jf.fatherSpouseName || c.fatherName || c.father_name || c.fatherSpouseName || aadhData.care_of || aadhData.careOf || panData.father_name || panData.fatherName || epfoData.father_name || '-';
+  const fatherMobile = jf.fatherMobile || jf.father_mobile || c.fatherMobile || '-';
+  const fatherOccupation = jf.fatherOccupation || jf.father_occupation || c.fatherOccupation || '-';
   const motherName = jf.motherName || jf.mother_name || c.motherName || c.mother_name || '-';
+  const motherMobile = jf.motherMobile || jf.mother_mobile || c.motherMobile || '-';
+  const motherOccupation = jf.motherOccupation || jf.mother_occupation || c.motherOccupation || '-';
   const maritalStatus = jf.maritalStatus || jf.marital_status || c.maritalStatus || c.marital_status || 'Single';
-  const spouseName = maritalStatus === 'Married' 
+  const isMarried = maritalStatus === 'Married' || (typeof maritalStatus === 'string' && maritalStatus.toLowerCase().includes('married'));
+  const spouseName = isMarried 
     ? (jf.spouseName || jf.spouse_name || c.spouseName || c.spouse_name || '-') 
     : 'N/A (Single)';
+  const spouseMobile = isMarried ? (jf.spouseMobile || jf.spouse_mobile || c.spouseMobile || '-') : '-';
+  const spouseOccupation = isMarried ? (jf.spouseOccupation || jf.spouse_occupation || c.spouseOccupation || '-') : '-';
+
+  // Dynamic Sibling Array (Deduplicated)
+  const rawSiblings = (Array.isArray(jf.siblings) && jf.siblings.length > 0) ? jf.siblings : (Array.isArray(c.siblings) && c.siblings.length > 0) ? c.siblings : [];
+  const siblingsList = rawSiblings.filter(s => s && (s.name || s.relation || s.occupation));
+
+  // Dynamic Children Array (Deduplicated)
+  const rawChildren = (Array.isArray(jf.children) && jf.children.length > 0) ? jf.children : (Array.isArray(c.children) && c.children.length > 0) ? c.children : [];
+  const childrenList = rawChildren.filter(ch => ch && (ch.name || ch.gender || ch.age));
+
+  // Dynamic Languages Array
+  const rawLanguages = (Array.isArray(jf.languages) && jf.languages.length > 0) ? jf.languages : (Array.isArray(c.languages) && c.languages.length > 0) ? c.languages : [];
+  const languagesList = rawLanguages.map(l => typeof l === 'string' ? { name: l, read: true, write: true, speak: true } : l);
+
   const rawDob = jf.dob || c.dob || aadhData.dob || panData.dob || epfoData.dob || dlData.dob || '';
   const dob = formatDobAndAge(rawDob, jf.age || c.age);
   const rawDoj = jf.doj || c.doj || '';
@@ -135,7 +160,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const bloodGroup = jf.bloodGroup || jf.blood_group || c.bloodGroup || c.blood_group || dlData.blood_group || '-';
   const gender = jf.gender || c.gender || '-';
   const motherTongue = jf.motherTongue || jf.mother_tongue || c.motherTongue || c.mother_tongue || '-';
-  const languagesKnown = jf.languagesKnown || jf.languages_known || c.languagesKnown || c.languages_known || '-';
+  const languagesKnown = jf.languagesKnown || jf.languages_known || c.languagesKnown || c.languages_known || (languagesList.length > 0 ? languagesList.map(l => l.name).join(', ') : '-');
   const religion = jf.religion || c.religion || '-';
   const caste = jf.caste || c.caste || '-';
   const category = jf.category || c.category || 'General';
@@ -158,13 +183,14 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const dlNo = jf.dlNo || jf.dl_no || jf.drivingLicense || dlData.dl_number || c.dlNo || c.dlNumber || '-';
   const passportNo = jf.passportNo || jf.passport_no || passportData.passport_number || passportData.fileNumber || c.passportNo || c.passport_no || '-';
   const voterId = jf.voterId || jf.voter_id || voterData.voter_id || voterData.epic_number || c.voterId || c.voter_id || '-';
+  const rationCardNo = jf.rationCardNo || jf.ration_card_no || c.rationCardNo || '-';
   const uanNo = jf.uanEpf || jf.uan_no || jf.pfNumber || jf.pf_number || epfoData.uan || c.uanEpf || c.pfNumber || c.pf_number || '-';
   const pfNum = jf.pfNumber || jf.pf_number || c.pfNumber || c.pf_number || uanNo || '-';
   const esiNum = jf.esiNumber || jf.esi_number || jf.esicNo || esicData.esic_number || c.esiNumber || c.esi_number || '-';
   const vehicleRcNo = jf.rcNumber || jf.rc_number || rcData.rc_number || c.rcNumber || '-';
   const courtVerdict = jf.courtRecordStatus || courtData.verdict || c.courtRecordStatus || 'Clear / Verified';
-  const nomineeName = jf.nomineeName || jf.nominee_name || (maritalStatus === 'Married' ? (jf.spouseName || c.spouseName || '-') : (jf.fatherName || c.fatherName || '-'));
-  const nomineeRelation = jf.nomineeRelation || jf.nominee_relation || (maritalStatus === 'Married' ? 'Spouse' : 'Father');
+  const nomineeName = jf.nomineeName || jf.nominee_name || (isMarried ? (jf.spouseName || c.spouseName || '-') : (jf.fatherName || c.fatherName || '-'));
+  const nomineeRelation = jf.nomineeRelation || jf.nominee_relation || (isMarried ? 'Spouse' : 'Father');
   const nomineePhone = jf.nomineePhone || jf.emergencyContactPhone || mobile;
 
   // Social Media & Online Professional Presence
@@ -172,6 +198,9 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
   const github = jf.githubUrl || c.githubUrl || spec.githubUrl || '';
   const portfolio = jf.portfolioUrl || c.portfolioUrl || spec.portfolioUrl || '';
   const twitter = jf.twitterUrl || c.twitterUrl || '';
+  const instagram = jf.instagramUrl || c.instagramUrl || '';
+  const facebook = jf.facebookUrl || c.facebookUrl || '';
+  const youtube = jf.youtubeUrl || c.youtubeUrl || '';
 
   // Dynamic Multi-Row Education Qualifications (Deduplicated)
   const rawEduList = (Array.isArray(jf.educationList) && jf.educationList.length > 0)
@@ -665,19 +694,6 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{dob}</div>
                     </div>
                     <div className="py-0.5">
-                      <span className="text-slate-500 block text-[10px]">Father's Full Name:</span>
-                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{fatherName}</div>
-                    </div>
-                    <div className="py-0.5">
-                      <span className="text-slate-500 block text-[10px]">Mother's Full Name:</span>
-                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{motherName}</div>
-                    </div>
-
-                    <div className="py-0.5">
-                      <span className="text-slate-500 block text-[10px]">Spouse Name:</span>
-                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{spouseName}</div>
-                    </div>
-                    <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Gender / Blood Group:</span>
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{gender} • {bloodGroup}</div>
                     </div>
@@ -695,14 +711,10 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{motherTongue}</div>
                     </div>
                     <div className="py-0.5">
-                      <span className="text-slate-500 block text-[10px]">Languages Known:</span>
-                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{languagesKnown}</div>
-                    </div>
-
-                    <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Religion / Caste / Category:</span>
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{religion} • {caste} ({category})</div>
                     </div>
+
                     <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Native State & District:</span>
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{nativeState}, {nativeDistrict}</div>
@@ -711,11 +723,11 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                       <span className="text-slate-500 block text-[10px]">Identification Marks:</span>
                       <div className="text-slate-900 font-semibold text-xs mt-0.5">{identificationMarks}</div>
                     </div>
-
                     <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Official Mobile:</span>
                       <div className="font-mono text-slate-900 font-bold text-xs mt-0.5">{mobile}</div>
                     </div>
+
                     <div className="py-0.5">
                       <span className="text-slate-500 block text-[10px]">Official & Personal Email:</span>
                       <div className="font-mono text-slate-900 text-xs break-all mt-0.5">{email}</div>
@@ -726,6 +738,122 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                         {emergencyContactName !== '-' ? `${emergencyContactName} (${emergencyContactPhone})` : '-'}
                       </div>
                     </div>
+                    <div className="py-0.5">
+                      <span className="text-slate-500 block text-[10px]">Master Languages Summary:</span>
+                      <div className="text-slate-900 font-semibold text-xs mt-0.5">{languagesKnown}</div>
+                    </div>
+
+                    {/* Parents Details Sub-Block */}
+                    <div className="sm:col-span-3 pt-3 border-t border-slate-200">
+                      <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block mb-2">
+                        👨‍👩‍👦 Parents & Immediate Family Particulars:
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 font-bold uppercase block">Father's Details</span>
+                          <div className="font-bold text-slate-900 text-xs mt-0.5">{fatherName}</div>
+                          <div className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-between">
+                            <span>Occ: <strong>{fatherOccupation}</strong></span>
+                            <span className="font-mono text-slate-700">📞 {fatherMobile}</span>
+                          </div>
+                        </div>
+                        <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 font-bold uppercase block">Mother's Details</span>
+                          <div className="font-bold text-slate-900 text-xs mt-0.5">{motherName}</div>
+                          <div className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-between">
+                            <span>Occ: <strong>{motherOccupation}</strong></span>
+                            <span className="font-mono text-slate-700">📞 {motherMobile}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Adaptive Siblings Block (Rendered if siblings declared) */}
+                    {siblingsList.length > 0 && (
+                      <div className="sm:col-span-3 pt-2 border-t border-slate-200 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-black text-blue-900 uppercase tracking-wider">
+                            👥 Declared Siblings ({siblingsList.length}):
+                          </span>
+                          <span className="text-[10px] bg-blue-50 text-blue-800 px-2 py-0.5 rounded font-bold border border-blue-200">
+                            Family Verification
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          {siblingsList.map((sib, sIdx) => (
+                            <div key={sIdx} className="p-2 bg-white rounded-lg border border-blue-200 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-slate-900 block">{sib.name}</span>
+                                <span className="text-[10px] text-slate-500">{sib.relation || 'Sibling'} • {sib.occupation || 'Corporate / Student'}</span>
+                              </div>
+                              {sib.mobile && <span className="font-mono text-[10px] text-slate-700">📞 {sib.mobile}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Adaptive Marital Status & Dependents Block (Rendered if Married) */}
+                    {isMarried && (
+                      <div className="sm:col-span-3 pt-2 border-t border-rose-200 space-y-2 bg-rose-50/50 p-3 rounded-lg border">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-black text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <Heart className="w-3.5 h-3.5 text-rose-600 fill-rose-600" />
+                            <span>Spouse & Children Particulars (Married Candidate Record)</span>
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <span className="text-[10px] text-slate-500 block">Spouse Name:</span>
+                            <strong className="text-slate-900 text-xs">{spouseName}</strong>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-500 block">Spouse Mobile:</span>
+                            <strong className="font-mono text-slate-900 text-xs">{spouseMobile}</strong>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-500 block">Spouse Occupation:</span>
+                            <strong className="text-slate-900 text-xs">{spouseOccupation}</strong>
+                          </div>
+                        </div>
+
+                        {childrenList.length > 0 && (
+                          <div className="pt-2 border-t border-rose-200/80 space-y-1">
+                            <span className="text-[10px] font-bold text-rose-800 uppercase block">Children ({childrenList.length}):</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {childrenList.map((ch, cIdx) => (
+                                <div key={cIdx} className="p-2 bg-white rounded border border-rose-200 flex items-center justify-between text-xs">
+                                  <div>
+                                    <span className="font-bold text-slate-900 block">{ch.name}</span>
+                                    <span className="text-[10px] text-slate-500">{ch.gender || 'Child'} • Age: {ch.age || '-'}</span>
+                                  </div>
+                                  <span className="text-[10px] text-slate-600">{ch.occupation || 'Student'}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Adaptive Known Languages Proficiency Badges */}
+                    {languagesList.length > 0 && (
+                      <div className="sm:col-span-3 pt-2 border-t border-slate-200 space-y-1.5">
+                        <span className="text-[11px] font-black text-emerald-900 uppercase tracking-wider block">
+                          🌐 Known Languages Proficiency Matrix:
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {languagesList.map((l, lIdx) => (
+                            <span key={lIdx} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-emerald-300 rounded-lg text-xs">
+                              <strong className="text-emerald-950 font-bold">{l.name}</strong>
+                              <span className="text-[10px] text-emerald-800 bg-emerald-50 px-1 rounded font-mono">
+                                {[l.read !== false && 'R', l.write !== false && 'W', l.speak !== false && 'S'].filter(Boolean).join(' • ')}
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Full Width Residential & Permanent Addresses */}
                     <div className="sm:col-span-3 pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -826,17 +954,83 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   </div>
                 </div>
 
-                {/* Professional Links & Sector Specific Details */}
-                {(linkedIn || github || portfolio || Object.keys(spec).length > 0) && (
-                  <div className="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-lg space-y-1.5 text-xs">
-                    <span className="font-extrabold text-indigo-950 text-[11px] block">Sector-Specific Parameters ({employeeTypeLabel}):</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {linkedIn && <div><span className="text-slate-500 text-[10px] block">LinkedIn Profile:</span><a href={linkedIn} target="_blank" rel="noreferrer" className="text-indigo-700 font-mono truncate block hover:underline">{linkedIn}</a></div>}
-                      {github && <div><span className="text-slate-500 text-[10px] block">GitHub / Repo:</span><a href={github} target="_blank" rel="noreferrer" className="text-indigo-700 font-mono truncate block hover:underline">{github}</a></div>}
-                      {portfolio && <div><span className="text-slate-500 text-[10px] block">Portfolio URL:</span><a href={portfolio} target="_blank" rel="noreferrer" className="text-indigo-700 font-mono truncate block hover:underline">{portfolio}</a></div>}
-                      {spec.techStack && <div><span className="text-slate-500 text-[10px] block">Tech Stack / Tools:</span><strong className="text-indigo-900 font-mono">{spec.techStack}</strong></div>}
-                      {spec.laptopAssetTag && <div><span className="text-slate-500 text-[10px] block">Asset Provisioning:</span><strong className="font-mono text-purple-900">{spec.laptopAssetTag}</strong></div>}
-                      <div><span className="text-slate-500 text-[10px] block">Anti-Moonlighting Covenant:</span><strong className="text-emerald-800">Executed & Consented ✓</strong></div>
+                {/* 🌟 ADAPTIVE PROFESSIONAL & SOCIAL MEDIA LINKS MATRIX */}
+                {(linkedIn || github || portfolio || twitter || instagram || facebook || youtube) && (
+                  <div className="p-3.5 bg-gradient-to-r from-indigo-50/90 to-sky-50/90 border border-indigo-200 rounded-xl space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-indigo-950 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Professional & Social Media Verified Presence</span>
+                      </span>
+                      <span className="text-[9px] font-mono font-bold bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded">
+                        Interactive Verified Links
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                      {linkedIn && (
+                        <a href={linkedIn} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-indigo-200 hover:bg-indigo-50 transition shadow-2xs group">
+                          <Linkedin className="w-4 h-4 text-sky-700 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">LinkedIn</span>
+                            <span className="text-[11px] font-bold text-sky-800 truncate block group-hover:underline">{linkedIn.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {github && (
+                        <a href={github} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-300 hover:bg-slate-50 transition shadow-2xs group">
+                          <Github className="w-4 h-4 text-slate-900 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">GitHub</span>
+                            <span className="text-[11px] font-bold text-slate-900 truncate block group-hover:underline">{github.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {portfolio && (
+                        <a href={portfolio} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-emerald-200 hover:bg-emerald-50 transition shadow-2xs group">
+                          <Globe className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">Portfolio</span>
+                            <span className="text-[11px] font-bold text-emerald-800 truncate block group-hover:underline">{portfolio.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {twitter && (
+                        <a href={twitter} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-sky-200 hover:bg-sky-50 transition shadow-2xs group">
+                          <Twitter className="w-4 h-4 text-sky-500 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">Twitter (X)</span>
+                            <span className="text-[11px] font-bold text-sky-700 truncate block group-hover:underline">{twitter.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {instagram && (
+                        <a href={instagram} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-pink-200 hover:bg-pink-50 transition shadow-2xs group">
+                          <Instagram className="w-4 h-4 text-pink-600 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">Instagram</span>
+                            <span className="text-[11px] font-bold text-pink-700 truncate block group-hover:underline">{instagram.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {facebook && (
+                        <a href={facebook} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-blue-200 hover:bg-blue-50 transition shadow-2xs group">
+                          <Facebook className="w-4 h-4 text-blue-600 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">Facebook</span>
+                            <span className="text-[11px] font-bold text-blue-700 truncate block group-hover:underline">{facebook.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
+                      {youtube && (
+                        <a href={youtube} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-white rounded-lg border border-red-200 hover:bg-red-50 transition shadow-2xs group">
+                          <Youtube className="w-4 h-4 text-red-600 shrink-0" />
+                          <div className="overflow-hidden">
+                            <span className="text-[10px] text-slate-500 block">YouTube</span>
+                            <span className="text-[11px] font-bold text-red-700 truncate block group-hover:underline">{youtube.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                          </div>
+                        </a>
+                      )}
                     </div>
                   </div>
                 )}
@@ -972,14 +1166,18 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+                  <div><span className="text-slate-400 block text-[10px]">Income Tax PAN:</span><strong className="font-mono text-indigo-900 font-bold">{panNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Aadhaar Identity Ref:</span><strong className="font-mono text-indigo-900 font-bold">{aadhaarNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Passport Number:</span><strong className="font-mono">{passportNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Driving License (DL):</span><strong className="font-mono">{dlNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">Voter ID (EPIC):</span><strong className="font-mono">{voterId}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">National Ration Card:</span><strong className="font-mono text-emerald-900 font-bold">{rationCardNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">EPFO UAN Number:</span><strong className="font-mono">{uanNo}</strong></div>
+                  <div><span className="text-slate-400 block text-[10px]">ESIC Insurance No:</span><strong className="font-mono text-[11px]">{esiNum}</strong></div>
                   <div><span className="text-slate-400 block text-[10px]">Primary Bank:</span><strong className="text-slate-900">{bankName}</strong></div>
                   <div><span className="text-slate-400 block text-[10px]">Account Number:</span><strong className="font-mono text-slate-900 font-bold">{accNo}</strong></div>
                   <div><span className="text-slate-400 block text-[10px]">IFSC & Branch:</span><strong className="font-mono">{ifsc} {branch !== '-' ? `(${branch})` : ''}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Income Tax PAN:</span><strong className="font-mono text-indigo-900 font-bold">{panNo}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">Aadhaar Identity Ref:</span><strong className="font-mono text-indigo-900 font-bold">{aadhaarNo}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">EPFO UAN Number:</span><strong className="font-mono">{uanNo}</strong></div>
                   <div><span className="text-slate-400 block text-[10px]">PF Member ID:</span><strong className="font-mono text-[11px]">{pfNum}</strong></div>
-                  <div><span className="text-slate-400 block text-[10px]">ESIC Insurance No:</span><strong className="font-mono text-[11px]">{esiNum}</strong></div>
                 </div>
 
                 {/* Health & Lifestyle Questionnaire */}

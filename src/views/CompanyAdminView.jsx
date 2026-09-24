@@ -24,7 +24,9 @@ import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import {
   AlertTriangle,
   Award,
+  Baby,
   BarChart3,
+  Briefcase,
   Building2,
   Check,
   CheckCircle2,
@@ -39,6 +41,9 @@ import {
   FileCheck,
   FileText,
   FolderDown,
+  Globe,
+  GraduationCap,
+  Heart,
   KeyRound,
   Layers,
   LifeBuoy,
@@ -46,6 +51,7 @@ import {
   Lock,
   Mail,
   MessageSquare,
+  Phone,
   Plus,
   QrCode,
   Receipt,
@@ -69,6 +75,22 @@ import {
   X,
   Zap
 } from 'lucide-react';
+import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from '../components/SocialIcons';
+import { 
+  GENDER_OPTIONS, 
+  MARITAL_STATUS_OPTIONS, 
+  BLOOD_GROUP_OPTIONS, 
+  RELIGION_OPTIONS, 
+  CASTE_OPTIONS,
+  COMMUNITY_CATEGORY_OPTIONS, 
+  LANGUAGES_OPTIONS, 
+  SIBLING_RELATION_OPTIONS,
+  CHILD_GENDER_OPTIONS,
+  OCCUPATION_OPTIONS,
+  isOtherValue 
+} from '../data/masterDropdownOptions';
+import { getIndianStates, getDistrictsByState, getCitiesByDistrict, isOtherLocation, isOtherCity } from '../data/indiaLocations';
+import { toIsoDateString, calculateAccurateAge } from '../utils/validationRules';
 
 export const CompanyAdminView = () => {
   const { 
@@ -271,17 +293,166 @@ export const CompanyAdminView = () => {
   const [isTestingSmtp, setIsTestingSmtp] = useState(false);
   const [testSmtpEmail, setTestSmtpEmail] = useState('');
 
-  // 4-Digit PIN & Advanced New HR State
-  const [newHr, setNewHr] = useState({
+  // 4-Digit PIN & Advanced Comprehensive New HR State
+  const getInitialNewHrState = () => ({
     name: '',
     email: '',
     phone: '',
+    empId: '',
+    doj: '',
     dept: 'Engineering Recruitment',
     designation: 'HR Recruiter',
     password: 'Hr@Recruiter2026',
     activation_password: '1234',
-    send_email: true
+    send_email: true,
+    // Parents
+    fatherName: '',
+    fatherMobile: '',
+    fatherOccupation: '',
+    motherName: '',
+    motherMobile: '',
+    motherOccupation: '',
+    // Demographics
+    dob: '',
+    age: '',
+    gender: 'Male',
+    maritalStatus: 'Single / Unmarried',
+    bloodGroup: 'O+',
+    motherTongue: 'English',
+    religion: 'Hindu',
+    caste: 'General / Forward Caste (FC / OC / UR)',
+    category: 'General (Open Category / OC / FC / UR)',
+    identificationMarks: '',
+    // Siblings
+    siblings: [],
+    // Marital / Spouse & Children
+    spouseName: '',
+    spouseMobile: '',
+    spouseOccupation: '',
+    children: [],
+    // Languages
+    languages: [],
+    languagesKnown: '',
+    // Addresses
+    nativeState: '',
+    nativeDistrict: '',
+    nativeCity: '',
+    state: '',
+    city: '',
+    area: '',
+    presentAddress: '',
+    permanentAddress: '',
+    pincode: '',
+    // Statutory Documents
+    panNo: '',
+    aadhaarNo: '',
+    passportNo: '',
+    drivingLicense: '',
+    voterId: '',
+    rationCardNo: '',
+    uanEpf: '',
+    esicNumber: '',
+    // Social Links
+    linkedInUrl: '',
+    githubUrl: '',
+    portfolioUrl: '',
+    twitterUrl: '',
+    instagramUrl: '',
+    facebookUrl: '',
+    youtubeUrl: '',
+    // Bank
+    bankName: '',
+    bankAccountNo: '',
+    ifscCode: '',
+    branchName: ''
   });
+
+  const [newHr, setNewHr] = useState(getInitialNewHrState);
+  const [addHrActiveTab, setAddHrActiveTab] = useState('work'); // 'work' | 'personal' | 'family' | 'social_statutory'
+  const [customHrLanguageInput, setCustomHrLanguageInput] = useState('');
+
+  // Sibling Helpers for Add HR Modal
+  const handleAddHrSibling = () => {
+    setNewHr(prev => ({
+      ...prev,
+      siblings: [
+        ...(prev.siblings || []),
+        { id: `sib-${Date.now()}`, name: '', relation: 'Brother', occupation: 'Private Sector Employee (Corporate / IT / MNC)', mobile: '' }
+      ]
+    }));
+  };
+
+  const handleUpdateHrSibling = (idx, field, value) => {
+    setNewHr(prev => {
+      const updated = [...(prev.siblings || [])];
+      updated[idx] = { ...updated[idx], [field]: value };
+      return { ...prev, siblings: updated };
+    });
+  };
+
+  const handleRemoveHrSibling = (idx) => {
+    setNewHr(prev => ({
+      ...prev,
+      siblings: (prev.siblings || []).filter((_, i) => i !== idx)
+    }));
+  };
+
+  // Children Helpers for Add HR Modal
+  const handleAddHrChild = () => {
+    setNewHr(prev => ({
+      ...prev,
+      children: [
+        ...(prev.children || []),
+        { id: `ch-${Date.now()}`, name: '', gender: 'Male / Son', age: '', occupation: 'Student' }
+      ]
+    }));
+  };
+
+  const handleUpdateHrChild = (idx, field, value) => {
+    setNewHr(prev => {
+      const updated = [...(prev.children || [])];
+      updated[idx] = { ...updated[idx], [field]: value };
+      return { ...prev, children: updated };
+    });
+  };
+
+  const handleRemoveHrChild = (idx) => {
+    setNewHr(prev => ({
+      ...prev,
+      children: (prev.children || []).filter((_, i) => i !== idx)
+    }));
+  };
+
+  // Language Helpers for Add HR Modal
+  const handleAddHrLanguage = (langName) => {
+    if (!langName) return;
+    setNewHr(prev => {
+      const existing = prev.languages || [];
+      if (existing.some(l => (typeof l === 'string' ? l : l.name).toLowerCase() === langName.toLowerCase())) return prev;
+      const updated = [...existing, { name: langName, read: true, write: true, speak: true }];
+      const lKnown = updated.map(l => typeof l === 'string' ? l : l.name).join(', ');
+      return { ...prev, languages: updated, languagesKnown: lKnown };
+    });
+  };
+
+  const handleRemoveHrLanguage = (idx) => {
+    setNewHr(prev => {
+      const updated = (prev.languages || []).filter((_, i) => i !== idx);
+      const lKnown = updated.map(l => typeof l === 'string' ? l : l.name).join(', ');
+      return { ...prev, languages: updated, languagesKnown: lKnown };
+    });
+  };
+
+  const handleToggleHrLanguageProficiency = (idx, mode) => {
+    setNewHr(prev => {
+      const updated = [...(prev.languages || [])];
+      const target = updated[idx];
+      const curObj = typeof target === 'string' ? { name: target, read: true, write: true, speak: true } : { ...target };
+      curObj[mode] = !curObj[mode];
+      updated[idx] = curObj;
+      return { ...prev, languages: updated };
+    });
+  };
 
   // 🏢 Company Profile Details, Branding Logo & Statutory Uploads States
   const [profileData, setProfileData] = useState({
@@ -722,22 +893,23 @@ export const CompanyAdminView = () => {
       return;
     }
     try {
-      const res = await api.onboardHrUser(company.id, newHr);
+      const payload = {
+        ...newHr,
+        companyId: company.id,
+        company_id: company.id,
+        companyName: company.name
+      };
+      const res = await api.onboardHrUser(company.id, payload);
+      if (typeof addHrUser === 'function') {
+        await addHrUser(res.hr_user || payload);
+      }
       showToast(res.message || `🎉 HR Recruiter ${newHr.name} onboarded!`);
       if (res.hr_user) {
         setDbHrUsers(prev => [res.hr_user, ...prev]);
       }
       setShowAddHrModal(false);
-      setNewHr({
-        name: '',
-        email: '',
-        phone: '',
-        dept: 'Engineering Recruitment',
-        designation: 'HR Recruiter',
-        password: 'Hr@Recruiter2026',
-        activation_password: '1234',
-        send_email: true
-      });
+      setNewHr(getInitialNewHrState());
+      setAddHrActiveTab('work');
     } catch (err) {
       showToast(`❌ Failed to onboard HR: ${err.message}`, 'error');
     }
@@ -5497,111 +5669,964 @@ export const CompanyAdminView = () => {
         </div>
       )}
 
-            {/* Add HR Onboarding Modal */}
+            {/* Add HR Onboarding Modal (Comprehensive Full-Fidelity Profiler) */}
       {showAddHrModal && (
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl">
+          <div className="glass-panel w-full max-w-4xl p-5 sm:p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl my-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shadow-2xs">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900">Onboard & Invite HR Recruiter</h3>
-                  <p className="text-[11px] text-slate-500 font-medium">Provision workstation access with 4-digit PIN security</p>
+                  <h3 className="text-base font-black text-slate-900">Onboard & Create HR Recruiter Profile</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">Enterprise full-fidelity HR credentials & statutory governance matrix</p>
                 </div>
               </div>
-              <button onClick={() => setShowAddHrModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+              <button onClick={() => setShowAddHrModal(false)} className="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
             </div>
 
-            <form onSubmit={handleOnboardHrSubmit} className="space-y-3.5 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">HR Recruiter Full Name *</label>
-                  <input 
-                    type="text"
-                    required
-                    placeholder="e.g. Priya Sundaram"
-                    value={newHr.name}
-                    onChange={(e) => setNewHr({ ...newHr, name: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
+            {/* Modal Navigation Tabs */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-xl overflow-x-auto text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('work')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'work' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>1. Work & PIN</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('personal')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'personal' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>2. Personal & Demographics</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('family')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'family' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>3. Parents & Siblings ({newHr.siblings?.length || 0})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('marital')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'marital' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <Heart className="w-3.5 h-3.5 text-rose-500" />
+                <span>4. Marital & Dependents ({newHr.children?.length || 0})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('languages_social')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'languages_social' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                <span>5. Languages & Social ({newHr.languages?.length || 0})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddHrActiveTab('statutory')}
+                className={`px-3 py-1.5 rounded-lg transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${addHrActiveTab === 'statutory' ? 'bg-white text-indigo-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                <CreditCard className="w-3.5 h-3.5 text-purple-600" />
+                <span>6. Statutory IDs & Banking</span>
+              </button>
+            </div>
 
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Work Email Address *</label>
-                  <input 
-                    type="email"
-                    required
-                    placeholder="priya.s@company.com"
-                    value={newHr.email}
-                    onChange={(e) => setNewHr({ ...newHr, email: e.target.value })}
-                    className="form-input font-mono"
-                  />
-                </div>
+            <form onSubmit={handleOnboardHrSubmit} className="space-y-4 text-xs">
+              {/* TAB 1: WORK & ACCESS CREDENTIALS */}
+              {addHrActiveTab === 'work' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">HR Recruiter Full Name *</label>
+                      <input 
+                        type="text"
+                        required
+                        placeholder="e.g. Priya Sundaram"
+                        value={newHr.name}
+                        onChange={(e) => setNewHr({ ...newHr, name: e.target.value })}
+                        className="form-input font-bold"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Official Mobile / Phone</label>
-                  <input 
-                    type="text"
-                    placeholder="+91 98401 23456"
-                    value={newHr.phone}
-                    onChange={(e) => setNewHr({ ...newHr, phone: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Official Work Email Address *</label>
+                      <input 
+                        type="email"
+                        required
+                        placeholder="priya.s@company.com"
+                        value={newHr.email}
+                        onChange={(e) => setNewHr({ ...newHr, email: e.target.value })}
+                        className="form-input font-mono"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Recruitment Department</label>
-                  <input 
-                    type="text"
-                    placeholder="e.g. Talent Acquisition"
-                    value={newHr.dept}
-                    onChange={(e) => setNewHr({ ...newHr, dept: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Official Mobile / Phone</label>
+                      <input 
+                        type="tel"
+                        placeholder="+91 98401 23456"
+                        value={newHr.phone}
+                        onChange={(e) => setNewHr({ ...newHr, phone: e.target.value })}
+                        className="form-input font-mono"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Designation / Role</label>
-                  <input 
-                    type="text"
-                    placeholder="e.g. Senior Technical Recruiter"
-                    value={newHr.designation}
-                    onChange={(e) => setNewHr({ ...newHr, designation: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Recruiter Employee Code</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g. HR-2026-08"
+                        value={newHr.empId || ''}
+                        onChange={(e) => setNewHr({ ...newHr, empId: e.target.value })}
+                        className="form-input font-mono"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">4-Digit Security Unlock PIN *</label>
-                  <input 
-                    type="text"
-                    maxLength={6}
-                    required
-                    placeholder="1234"
-                    value={newHr.activation_password}
-                    onChange={(e) => setNewHr({ ...newHr, activation_password: e.target.value })}
-                    className="form-input font-mono font-black text-center tracking-widest text-sm bg-emerald-50 border-emerald-300 text-emerald-900"
-                  />
-                </div>
-              </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Recruitment Department</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g. Talent Acquisition"
+                        value={newHr.dept}
+                        onChange={(e) => setNewHr({ ...newHr, dept: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
 
-              <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200 text-[11px] text-indigo-900 font-medium space-y-1">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Designation / Role</label>
+                      <input 
+                        type="text"
+                        placeholder="e.g. Senior Technical Recruiter"
+                        value={newHr.designation}
+                        onChange={(e) => setNewHr({ ...newHr, designation: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-emerald-950 font-black mb-1 text-[11px] uppercase tracking-wider">
+                        4-Digit Security Unlock PIN *
+                      </label>
+                      <input 
+                        type="text"
+                        maxLength={6}
+                        required
+                        placeholder="1234"
+                        value={newHr.activation_password}
+                        onChange={(e) => setNewHr({ ...newHr, activation_password: e.target.value })}
+                        className="form-input font-mono font-black text-center tracking-widest text-base bg-white border-emerald-300 text-emerald-900 shadow-2xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-emerald-950 font-black mb-1 text-[11px] uppercase tracking-wider">
+                        Default Temporary Password
+                      </label>
+                      <input 
+                        type="text"
+                        value={newHr.password}
+                        onChange={(e) => setNewHr({ ...newHr, password: e.target.value })}
+                        className="form-input font-mono bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: PERSONAL & DEMOGRAPHICS */}
+              {addHrActiveTab === 'personal' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Date of Birth (DOB)</label>
+                      <input 
+                        type="date"
+                        value={toIsoDateString(newHr.dob) || newHr.dob || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const calcAge = calculateAccurateAge(val);
+                          setNewHr({ ...newHr, dob: val, age: calcAge !== null ? calcAge : newHr.age });
+                        }}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Age (Years)</label>
+                      <input 
+                        type="number"
+                        min="18"
+                        max="80"
+                        placeholder="e.g. 29"
+                        value={newHr.age || ''}
+                        onChange={(e) => setNewHr({ ...newHr, age: e.target.value })}
+                        className="form-input font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Gender</label>
+                      <select 
+                        value={newHr.gender}
+                        onChange={(e) => setNewHr({ ...newHr, gender: e.target.value })}
+                        className="form-select font-medium"
+                      >
+                        {GENDER_OPTIONS.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Marital Status</label>
+                      <select 
+                        value={newHr.maritalStatus}
+                        onChange={(e) => setNewHr({ ...newHr, maritalStatus: e.target.value })}
+                        className="form-select font-medium"
+                      >
+                        {MARITAL_STATUS_OPTIONS.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Blood Group</label>
+                      <select 
+                        value={newHr.bloodGroup}
+                        onChange={(e) => setNewHr({ ...newHr, bloodGroup: e.target.value })}
+                        className="form-select"
+                      >
+                        {BLOOD_GROUP_OPTIONS.map(bg => (
+                          <option key={bg} value={bg}>{bg}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Mother Tongue</label>
+                      <select 
+                        value={newHr.motherTongue}
+                        onChange={(e) => setNewHr({ ...newHr, motherTongue: e.target.value })}
+                        className="form-select"
+                      >
+                        {LANGUAGES_OPTIONS.map(lang => (
+                          <option key={lang} value={lang}>{lang}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Religion</label>
+                      <select 
+                        value={newHr.religion}
+                        onChange={(e) => setNewHr({ ...newHr, religion: e.target.value })}
+                        className="form-select"
+                      >
+                        {RELIGION_OPTIONS.map(rel => (
+                          <option key={rel} value={rel}>{rel}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Caste / Community</label>
+                      <select 
+                        value={newHr.caste}
+                        onChange={(e) => setNewHr({ ...newHr, caste: e.target.value })}
+                        className="form-select"
+                      >
+                        {CASTE_OPTIONS.map(cst => (
+                          <option key={cst} value={cst}>{cst}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Present Residential Address</label>
+                      <textarea 
+                        rows="2"
+                        placeholder="e.g. 102, Green Glen Layout, Bellandur, Bengaluru"
+                        value={newHr.presentAddress || ''}
+                        onChange={(e) => setNewHr({ ...newHr, presentAddress: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Permanent Home Town Address</label>
+                      <textarea 
+                        rows="2"
+                        placeholder="e.g. 45, Anna Nagar, Madurai, Tamil Nadu"
+                        value={newHr.permanentAddress || ''}
+                        onChange={(e) => setNewHr({ ...newHr, permanentAddress: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: PARENTS & SIBLINGS */}
+              {addHrActiveTab === 'family' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
+                      👨‍👩‍👦 Parents Details:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Father's Full Name</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. Sundaram K"
+                          value={newHr.fatherName || ''}
+                          onChange={(e) => setNewHr({ ...newHr, fatherName: e.target.value })}
+                          className="form-input"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Father's Mobile</label>
+                        <input 
+                          type="tel"
+                          placeholder="+91 98400 11111"
+                          value={newHr.fatherMobile || ''}
+                          onChange={(e) => setNewHr({ ...newHr, fatherMobile: e.target.value })}
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Father's Occupation</label>
+                        <select 
+                          value={newHr.fatherOccupation || ''}
+                          onChange={(e) => setNewHr({ ...newHr, fatherOccupation: e.target.value })}
+                          className="form-select"
+                        >
+                          <option value="">-- Select Occupation --</option>
+                          {OCCUPATION_OPTIONS.map(occ => (
+                            <option key={occ} value={occ}>{occ}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-200">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Mother's Full Name</label>
+                        <input 
+                          type="text"
+                          placeholder="e.g. Lakshmi Sundaram"
+                          value={newHr.motherName || ''}
+                          onChange={(e) => setNewHr({ ...newHr, motherName: e.target.value })}
+                          className="form-input"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Mother's Mobile</label>
+                        <input 
+                          type="tel"
+                          placeholder="+91 98400 22222"
+                          value={newHr.motherMobile || ''}
+                          onChange={(e) => setNewHr({ ...newHr, motherMobile: e.target.value })}
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Mother's Occupation</label>
+                        <select 
+                          value={newHr.motherOccupation || ''}
+                          onChange={(e) => setNewHr({ ...newHr, motherOccupation: e.target.value })}
+                          className="form-select"
+                        >
+                          <option value="">-- Select Occupation --</option>
+                          {OCCUPATION_OPTIONS.map(occ => (
+                            <option key={occ} value={occ}>{occ}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SIBLINGS MATRIX */}
+                  <div className="p-3.5 bg-blue-50/60 rounded-2xl border border-blue-200/80 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Users className="w-4 h-4 text-blue-700" />
+                        <span className="text-xs font-black uppercase text-blue-950 tracking-wider">Siblings Particulars</span>
+                        <span className="text-[10px] bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded-full">
+                          {(newHr.siblings || []).length} Declared
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddHrSibling}
+                        className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Sibling</span>
+                      </button>
+                    </div>
+
+                    {(!newHr.siblings || newHr.siblings.length === 0) ? (
+                      <div className="text-center py-3 bg-white/70 rounded-xl border border-dashed border-blue-300 text-xs text-blue-700 font-medium">
+                        No siblings declared yet. Click "+ Add Sibling" to declare siblings.
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {newHr.siblings.map((sib, sIdx) => (
+                          <div key={sib.id || sIdx} className="p-2.5 bg-white rounded-xl border border-blue-200 shadow-2xs grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">
+                            <div>
+                              <input 
+                                type="text"
+                                placeholder="Sibling Name *"
+                                value={sib.name || ''}
+                                onChange={(e) => handleUpdateHrSibling(sIdx, 'name', e.target.value)}
+                                className="form-input text-xs font-bold"
+                              />
+                            </div>
+                            <div>
+                              <select 
+                                value={sib.relation || 'Brother'}
+                                onChange={(e) => handleUpdateHrSibling(sIdx, 'relation', e.target.value)}
+                                className="form-select text-xs"
+                              >
+                                {SIBLING_RELATION_OPTIONS.map(rel => (
+                                  <option key={rel} value={rel}>{rel}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <select 
+                                value={sib.occupation || 'Private Sector Employee (Corporate / IT / MNC)'}
+                                onChange={(e) => handleUpdateHrSibling(sIdx, 'occupation', e.target.value)}
+                                className="form-select text-xs"
+                              >
+                                {OCCUPATION_OPTIONS.map(occ => (
+                                  <option key={occ} value={occ}>{occ}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="tel"
+                                placeholder="Mobile Contact"
+                                value={sib.mobile || ''}
+                                onChange={(e) => handleUpdateHrSibling(sIdx, 'mobile', e.target.value)}
+                                className="form-input text-xs font-mono"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveHrSibling(sIdx)}
+                                className="text-rose-500 hover:text-rose-700 cursor-pointer p-1"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: MARITAL, SPOUSE & CHILDREN */}
+              {addHrActiveTab === 'marital' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  <div className="p-3.5 bg-pink-50/60 rounded-2xl border border-pink-200/80 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase text-pink-950 tracking-wider flex items-center gap-1.5">
+                        <Heart className="w-4 h-4 text-pink-600 fill-pink-600" />
+                        <span>Marital Status & Spouse Particulars</span>
+                      </span>
+                      <select 
+                        value={newHr.maritalStatus}
+                        onChange={(e) => setNewHr({ ...newHr, maritalStatus: e.target.value })}
+                        className="form-select text-xs font-bold text-pink-950 bg-white max-w-xs"
+                      >
+                        {MARITAL_STATUS_OPTIONS.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {(newHr.maritalStatus === 'Married' || (newHr.maritalStatus && newHr.maritalStatus.toLowerCase().includes('married'))) ? (
+                      <div className="space-y-3 pt-2 border-t border-pink-200">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">Spouse Full Name</label>
+                            <input 
+                              type="text"
+                              placeholder="e.g. Preethi Sundaram"
+                              value={newHr.spouseName || ''}
+                              onChange={(e) => setNewHr({ ...newHr, spouseName: e.target.value })}
+                              className="form-input font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">Spouse Mobile</label>
+                            <input 
+                              type="tel"
+                              placeholder="+91 98400 33333"
+                              value={newHr.spouseMobile || ''}
+                              onChange={(e) => setNewHr({ ...newHr, spouseMobile: e.target.value })}
+                              className="form-input font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">Spouse Occupation</label>
+                            <select 
+                              value={newHr.spouseOccupation || ''}
+                              onChange={(e) => setNewHr({ ...newHr, spouseOccupation: e.target.value })}
+                              className="form-select"
+                            >
+                              <option value="">-- Select Occupation --</option>
+                              {OCCUPATION_OPTIONS.map(occ => (
+                                <option key={occ} value={occ}>{occ}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Children List */}
+                        <div className="pt-2 border-t border-pink-200 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <Baby className="w-3.5 h-3.5 text-pink-700" />
+                              <span className="text-[11px] font-black uppercase text-pink-950 tracking-wider">Children Details</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleAddHrChild}
+                              className="px-2.5 py-1 bg-pink-600 hover:bg-pink-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>Add Child</span>
+                            </button>
+                          </div>
+
+                          {(!newHr.children || newHr.children.length === 0) ? (
+                            <p className="text-[11px] text-pink-800 italic">No children declared. Click "+ Add Child" if applicable.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {newHr.children.map((ch, cIdx) => (
+                                <div key={ch.id || cIdx} className="p-2.5 bg-white rounded-xl border border-pink-200 shadow-2xs grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">
+                                  <input 
+                                    type="text"
+                                    placeholder="Child Name"
+                                    value={ch.name || ''}
+                                    onChange={(e) => handleUpdateHrChild(cIdx, 'name', e.target.value)}
+                                    className="form-input text-xs font-bold"
+                                  />
+                                  <select 
+                                    value={ch.gender || 'Male / Son'}
+                                    onChange={(e) => handleUpdateHrChild(cIdx, 'gender', e.target.value)}
+                                    className="form-select text-xs"
+                                  >
+                                    {CHILD_GENDER_OPTIONS.map(cg => (
+                                      <option key={cg} value={cg}>{cg}</option>
+                                    ))}
+                                  </select>
+                                  <input 
+                                    type="text"
+                                    placeholder="Age / DOB"
+                                    value={ch.age || ''}
+                                    onChange={(e) => handleUpdateHrChild(cIdx, 'age', e.target.value)}
+                                    className="form-input text-xs"
+                                  />
+                                  <div className="flex items-center gap-2">
+                                    <input 
+                                      type="text"
+                                      placeholder="School / Status"
+                                      value={ch.occupation || ''}
+                                      onChange={(e) => handleUpdateHrChild(cIdx, 'occupation', e.target.value)}
+                                      className="form-input text-xs"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveHrChild(cIdx)}
+                                      className="text-rose-500 hover:text-rose-700 cursor-pointer p-1"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-white/70 rounded-xl border border-dashed border-pink-300 text-xs text-pink-700 text-center">
+                        Recruiter marked as <strong>{newHr.maritalStatus || 'Single'}</strong>. Select 'Married' above to declare spouse and children particulars.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: LANGUAGES & SOCIAL MEDIA */}
+              {addHrActiveTab === 'languages_social' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  {/* Languages Section */}
+                  <div className="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-emerald-700" />
+                        <span className="text-xs font-black uppercase text-emerald-950 tracking-wider">Known Languages & Proficiency</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
+                          {(newHr.languages || []).length} Languages
+                        </span>
+                      </div>
+                      <select 
+                        className="form-select text-xs font-bold text-emerald-950 bg-white max-w-xs"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleAddHrLanguage(e.target.value);
+                            e.target.value = '';
+                          }
+                        }}
+                      >
+                        <option value="">+ Add Known Language...</option>
+                        {LANGUAGES_OPTIONS.map(l => (
+                          <option key={l} value={l}>{l}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2 max-w-md">
+                      <input 
+                        type="text"
+                        placeholder="Or specify custom language..."
+                        value={customHrLanguageInput}
+                        onChange={(e) => setCustomHrLanguageInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (customHrLanguageInput.trim()) {
+                              handleAddHrLanguage(customHrLanguageInput.trim());
+                              setCustomHrLanguageInput('');
+                            }
+                          }
+                        }}
+                        className="form-input text-xs bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (customHrLanguageInput.trim()) {
+                            handleAddHrLanguage(customHrLanguageInput.trim());
+                            setCustomHrLanguageInput('');
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold whitespace-nowrap cursor-pointer"
+                      >
+                        + Add
+                      </button>
+                    </div>
+
+                    {(!newHr.languages || newHr.languages.length === 0) ? (
+                      <p className="text-[11px] text-emerald-700 italic">Select languages from the dropdown above to add language tags.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {newHr.languages.map((langObj, lIdx) => {
+                          const langName = typeof langObj === 'string' ? langObj : langObj.name;
+                          const canRead = typeof langObj === 'object' ? langObj.read : true;
+                          const canWrite = typeof langObj === 'object' ? langObj.write : true;
+                          const canSpeak = typeof langObj === 'object' ? langObj.speak : true;
+                          return (
+                            <div key={lIdx} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-emerald-300 shadow-2xs text-xs">
+                              <span className="font-extrabold text-emerald-950">{langName}</span>
+                              <div className="flex items-center gap-1.5 text-[10px] text-slate-600 border-l border-emerald-200 pl-2">
+                                <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={canRead}
+                                    onChange={() => handleToggleHrLanguageProficiency(lIdx, 'read')}
+                                    className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                                  />
+                                  <span>R</span>
+                                </label>
+                                <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={canWrite}
+                                    onChange={() => handleToggleHrLanguageProficiency(lIdx, 'write')}
+                                    className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                                  />
+                                  <span>W</span>
+                                </label>
+                                <label className="flex items-center gap-0.5 cursor-pointer font-bold">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={canSpeak}
+                                    onChange={() => handleToggleHrLanguageProficiency(lIdx, 'speak')}
+                                    className="rounded text-emerald-600 focus:ring-0 w-3 h-3"
+                                  />
+                                  <span>S</span>
+                                </label>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveHrLanguage(lIdx)}
+                                className="text-rose-400 hover:text-rose-700 ml-1 cursor-pointer font-bold"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Social Media Links */}
+                  <div className="p-3.5 bg-indigo-50/60 rounded-2xl border border-indigo-200/80 space-y-3">
+                    <span className="text-xs font-black uppercase text-indigo-950 tracking-wider flex items-center gap-1.5">
+                      <Linkedin className="w-4 h-4 text-indigo-700" />
+                      <span>Professional & Social Media Verified Profiles</span>
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">LinkedIn Profile</label>
+                        <input 
+                          type="url"
+                          placeholder="https://linkedin.com/in/username"
+                          value={newHr.linkedInUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, linkedInUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">GitHub / Portfolio</label>
+                        <input 
+                          type="url"
+                          placeholder="https://github.com/username"
+                          value={newHr.githubUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, githubUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Twitter / X Handle</label>
+                        <input 
+                          type="url"
+                          placeholder="https://x.com/handle"
+                          value={newHr.twitterUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, twitterUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Instagram URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://instagram.com/username"
+                          value={newHr.instagramUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, instagramUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Facebook URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://facebook.com/username"
+                          value={newHr.facebookUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, facebookUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">YouTube Channel URL</label>
+                        <input 
+                          type="url"
+                          placeholder="https://youtube.com/@channel"
+                          value={newHr.youtubeUrl || ''}
+                          onChange={(e) => setNewHr({ ...newHr, youtubeUrl: e.target.value })}
+                          className="form-input text-xs font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 6: STATUTORY IDS & BANKING */}
+              {addHrActiveTab === 'statutory' && (
+                <div className="space-y-3.5 animate-fadeIn">
+                  <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
+                      🪪 Government Statutory Identity Numbers:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Income Tax PAN Number</label>
+                        <input 
+                          type="text"
+                          placeholder="ABCDE1234F"
+                          value={newHr.panNo || ''}
+                          onChange={(e) => setNewHr({ ...newHr, panNo: e.target.value.toUpperCase() })}
+                          className="form-input font-mono font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Aadhaar Identity Number</label>
+                        <input 
+                          type="text"
+                          placeholder="XXXX XXXX XXXX"
+                          value={newHr.aadhaarNo || ''}
+                          onChange={(e) => setNewHr({ ...newHr, aadhaarNo: e.target.value })}
+                          className="form-input font-mono font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Passport Number</label>
+                        <input 
+                          type="text"
+                          placeholder="J8912401"
+                          value={newHr.passportNo || ''}
+                          onChange={(e) => setNewHr({ ...newHr, passportNo: e.target.value.toUpperCase() })}
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Driving License (DL)</label>
+                        <input 
+                          type="text"
+                          placeholder="KA-01201900124"
+                          value={newHr.drivingLicense || ''}
+                          onChange={(e) => setNewHr({ ...newHr, drivingLicense: e.target.value })}
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Voter ID (EPIC Number)</label>
+                        <input 
+                          type="text"
+                          placeholder="ABC1234567"
+                          value={newHr.voterId || ''}
+                          onChange={(e) => setNewHr({ ...newHr, voterId: e.target.value.toUpperCase() })}
+                          className="form-input font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">National Ration Card No.</label>
+                        <input 
+                          type="text"
+                          placeholder="33019842109"
+                          value={newHr.rationCardNo || ''}
+                          onChange={(e) => setNewHr({ ...newHr, rationCardNo: e.target.value.toUpperCase() })}
+                          className="form-input font-mono font-bold text-emerald-900"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-purple-50/70 rounded-2xl border border-purple-200 grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div>
+                      <label className="block text-purple-950 font-bold mb-1">Primary Bank Name</label>
+                      <input 
+                        type="text"
+                        placeholder="HDFC Bank"
+                        value={newHr.bankName || ''}
+                        onChange={(e) => setNewHr({ ...newHr, bankName: e.target.value })}
+                        className="form-input bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-purple-950 font-bold mb-1">Bank Account Number</label>
+                      <input 
+                        type="text"
+                        placeholder="501002341209"
+                        value={newHr.bankAccountNo || ''}
+                        onChange={(e) => setNewHr({ ...newHr, bankAccountNo: e.target.value })}
+                        className="form-input font-mono font-bold bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-purple-950 font-bold mb-1">IFSC Code</label>
+                      <input 
+                        type="text"
+                        placeholder="HDFC0001234"
+                        value={newHr.ifscCode || ''}
+                        onChange={(e) => setNewHr({ ...newHr, ifscCode: e.target.value.toUpperCase() })}
+                        className="form-input font-mono font-bold bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-purple-950 font-bold mb-1">Branch Name</label>
+                      <input 
+                        type="text"
+                        placeholder="Koramangala, Bengaluru"
+                        value={newHr.branchName || ''}
+                        onChange={(e) => setNewHr({ ...newHr, branchName: e.target.value })}
+                        className="form-input bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200 text-[11px] text-indigo-900 font-medium flex items-center justify-between">
                 <div className="flex items-center gap-1.5 font-bold text-indigo-700">
                   <Sparkles className="w-4 h-4" />
-                  <span>Automated Self-Onboarding Workflow:</span>
+                  <span>Automated Invitation & PIN Handover</span>
                 </div>
-                <p>
-                  A self-activation invitation link will be dispatched to <strong>{newHr.email || 'the recruiter'}</strong> along with the 4-digit PIN. Once the recruiter completes their profile and document proofs, you can give final 1-click authorization.
-                </p>
+                <label className="flex items-center gap-1.5 cursor-pointer font-bold">
+                  <input 
+                    type="checkbox"
+                    checked={newHr.send_email}
+                    onChange={(e) => setNewHr({ ...newHr, send_email: e.target.checked })}
+                    className="rounded text-indigo-600 focus:ring-0"
+                  />
+                  <span>Dispatch activation email with 4-digit PIN</span>
+                </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowAddHrModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
-                <button type="submit" className="btn btn-company text-xs font-black py-2 px-5 shadow-md cursor-pointer">
-                  🚀 Onboard & Send Invitation Link
-                </button>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                <div className="flex items-center gap-2">
+                  {addHrActiveTab !== 'work' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const tabs = ['work', 'personal', 'family', 'marital', 'languages_social', 'statutory'];
+                        const curIdx = tabs.indexOf(addHrActiveTab);
+                        if (curIdx > 0) setAddHrActiveTab(tabs[curIdx - 1]);
+                      }}
+                      className="btn btn-secondary text-xs font-bold cursor-pointer"
+                    >
+                      ← Previous
+                    </button>
+                  )}
+                  {addHrActiveTab !== 'statutory' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const tabs = ['work', 'personal', 'family', 'marital', 'languages_social', 'statutory'];
+                        const curIdx = tabs.indexOf(addHrActiveTab);
+                        if (curIdx < tabs.length - 1) setAddHrActiveTab(tabs[curIdx + 1]);
+                      }}
+                      className="btn btn-secondary text-xs font-bold cursor-pointer"
+                    >
+                      Next →
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setShowAddHrModal(false)} className="btn btn-secondary text-xs font-bold cursor-pointer">Cancel</button>
+                  <button type="submit" className="btn btn-company text-xs font-black py-2 px-5 shadow-md cursor-pointer">
+                    🚀 Onboard & Provision HR Recruiter
+                  </button>
+                </div>
               </div>
             </form>
           </div>

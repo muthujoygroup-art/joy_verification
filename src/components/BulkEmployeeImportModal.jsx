@@ -921,6 +921,33 @@ export const BulkEmployeeImportModal = ({
           const bankIfsc = findVal(['bankifsccode', 'ifsccode', 'ifsc']).toUpperCase();
           const bankBranch = findVal(['branchname', 'bankbranch', 'branch']);
 
+          // 9. Extended Family & Parents Details
+          const fatherMobile = findVal(['fathermobilenumber', 'fathermobile', 'fatherphone']);
+          const fatherOccupation = findVal(['fatheroccupation', 'fatherprofession', 'fatherjob']);
+          const motherMobile = findVal(['mothermobilenumber', 'mothermobile', 'motherphone']);
+          const motherOccupation = findVal(['motheroccupation', 'motherprofession', 'motherjob']);
+          const spouseName = findVal(['spousename', 'husbandname', 'wifename']);
+          const spouseMobile = findVal(['spousemobile', 'spousephone']);
+          const spouseOccupation = findVal(['spouseoccupation', 'spouseprofession']);
+          const siblingsRaw = findVal(['siblingsdetails', 'siblingsname', 'siblings', 'brotherssister']);
+          const childrenRaw = findVal(['childrendetails', 'childrenname', 'children']);
+
+          // 10. Known Languages & Fluency
+          const languagesKnown = findVal(['knownlanguages', 'languagesknown', 'languages', 'mothertongue']) || motherTongue || 'English';
+
+          // 11. Social Media & Online Footprint
+          const linkedInUrl = findVal(['linkedinurl', 'linkedinprofile', 'linkedin']);
+          const githubUrl = findVal(['githuburl', 'githubprofile', 'github']);
+          const twitterUrl = findVal(['twitterurl', 'twitterprofile', 'twitter', 'xprofile']);
+          const portfolioUrl = findVal(['portfoliourl', 'portfolio', 'websitelink']);
+          const instagramUrl = findVal(['instagramurl', 'instagramprofile', 'instagram']);
+          const facebookUrl = findVal(['facebookurl', 'facebookprofile', 'facebook']);
+          const youtubeUrl = findVal(['youtubeurl', 'youtubechannel', 'youtube']);
+
+          // 12. Extended Statutory Identity Numbers
+          const voterId = findVal(['voteridnumber', 'voterid', 'epicnumber', 'epicno']);
+          const rationCardNo = findVal(['rationcardnumber', 'rationcardno', 'rationcard']);
+
           // Fallback Auto-Healing for Contact Details
           let finalEmail = email;
           let finalMobile = mobile || '';
@@ -951,7 +978,28 @@ export const BulkEmployeeImportModal = ({
             gender,
             // Extended 35+ fields
             fatherSpouseName,
+            fatherName: fatherSpouseName,
+            fatherMobile,
+            fatherOccupation,
             motherName,
+            motherMobile,
+            motherOccupation,
+            spouseName,
+            spouseMobile,
+            spouseOccupation,
+            siblings: siblingsRaw ? [{ id: 1, name: siblingsRaw, relation: 'Sibling', occupation: 'Corporate' }] : [],
+            children: childrenRaw ? [{ id: 1, name: childrenRaw, gender: 'Child', age: '5', occupation: 'Student' }] : [],
+            languagesKnown,
+            languages: languagesKnown ? languagesKnown.split(',').map(l => ({ name: l.trim(), read: true, write: true, speak: true })) : [],
+            linkedInUrl,
+            githubUrl,
+            twitterUrl,
+            portfolioUrl,
+            instagramUrl,
+            facebookUrl,
+            youtubeUrl,
+            voterId,
+            rationCardNo,
             dob,
             age,
             bloodGroup,
@@ -1305,8 +1353,33 @@ export const BulkEmployeeImportModal = ({
           hr_id: targetHrId,
           fatherName: cand.fatherName || cand.father_name || orig.fatherSpouseName || payload.fatherName || '',
           father_name: cand.fatherName || cand.father_name || orig.fatherSpouseName || payload.fatherName || '',
+          fatherMobile: cand.fatherMobile || orig.fatherMobile || '',
+          fatherOccupation: cand.fatherOccupation || orig.fatherOccupation || '',
           motherName: cand.motherName || cand.mother_name || orig.motherName || payload.motherName || '',
           mother_name: cand.motherName || cand.mother_name || orig.motherName || payload.motherName || '',
+          motherMobile: cand.motherMobile || orig.motherMobile || '',
+          motherOccupation: cand.motherOccupation || orig.motherOccupation || '',
+          maritalStatus: cand.maritalStatus || orig.maritalStatus || 'Single',
+          spouseName: cand.spouseName || orig.spouseName || '',
+          spouseMobile: cand.spouseMobile || orig.spouseMobile || '',
+          spouseOccupation: cand.spouseOccupation || orig.spouseOccupation || '',
+          siblings: cand.siblings || orig.siblings || [],
+          children: cand.children || orig.children || [],
+          languages: cand.languages || orig.languages || [],
+          languagesKnown: cand.languagesKnown || orig.languagesKnown || '',
+          linkedInUrl: cand.linkedInUrl || orig.linkedInUrl || '',
+          githubUrl: cand.githubUrl || orig.githubUrl || '',
+          twitterUrl: cand.twitterUrl || orig.twitterUrl || '',
+          portfolioUrl: cand.portfolioUrl || orig.portfolioUrl || '',
+          instagramUrl: cand.instagramUrl || orig.instagramUrl || '',
+          facebookUrl: cand.facebookUrl || orig.facebookUrl || '',
+          youtubeUrl: cand.youtubeUrl || orig.youtubeUrl || '',
+          passportNo: cand.passportNo || orig.passportNo || '',
+          drivingLicenseNo: cand.drivingLicenseNo || cand.drivingLicense || orig.drivingLicense || '',
+          voterId: cand.voterId || orig.voterId || '',
+          rationCardNo: cand.rationCardNo || orig.rationCardNo || '',
+          uanNo: cand.uanNo || cand.uanEpf || orig.uanEpf || '',
+          esiNumber: cand.esiNumber || cand.esicNo || orig.esicNo || '',
           permanentAddress: cand.permanentAddress || cand.permanent_address || orig.permanentAddressLine || payload.permanentAddress || '',
           presentAddress: cand.presentAddress || cand.present_address || orig.presentAddressLine || payload.presentAddress || '',
           panNo: cand.panNo || cand.pan_no || orig.pan || payload.panNo || '',

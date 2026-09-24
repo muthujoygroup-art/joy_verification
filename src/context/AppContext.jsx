@@ -755,8 +755,17 @@ const mapCandidateDto = (c) => {
     voter_id: voter,
     fatherName: father,
     father_name: father,
+    fatherMobile: c.father_mobile || c.fatherMobile || jfd.fatherMobile || jfd.father_mobile || '',
+    father_mobile: c.father_mobile || c.fatherMobile || jfd.fatherMobile || jfd.father_mobile || '',
+    fatherOccupation: c.father_occupation || c.fatherOccupation || jfd.fatherOccupation || jfd.father_occupation || '',
+    father_occupation: c.father_occupation || c.fatherOccupation || jfd.fatherOccupation || jfd.father_occupation || '',
     motherName: mother,
     mother_name: mother,
+    motherMobile: c.mother_mobile || c.motherMobile || jfd.motherMobile || jfd.mother_mobile || '',
+    mother_mobile: c.mother_mobile || c.motherMobile || jfd.motherMobile || jfd.mother_mobile || '',
+    motherOccupation: c.mother_occupation || c.motherOccupation || jfd.motherOccupation || jfd.mother_occupation || '',
+    mother_occupation: c.mother_occupation || c.motherOccupation || jfd.motherOccupation || jfd.mother_occupation || '',
+    siblings: Array.isArray(c.siblings) ? c.siblings : (Array.isArray(jfd.siblings) ? jfd.siblings : []),
     permanentAddress: permAddr,
     permanent_address: permAddr,
     presentAddress: presAddr,
@@ -783,11 +792,17 @@ const mapCandidateDto = (c) => {
     marital_status: c.marital_status || c.maritalStatus || jfd.maritalStatus || 'Single',
     spouseName: c.spouse_name || c.spouseName || jfd.spouseName || '',
     spouse_name: c.spouse_name || c.spouseName || jfd.spouseName || '',
+    spouseMobile: c.spouse_mobile || c.spouseMobile || jfd.spouseMobile || '',
+    spouse_mobile: c.spouse_mobile || c.spouseMobile || jfd.spouseMobile || '',
+    spouseOccupation: c.spouse_occupation || c.spouseOccupation || jfd.spouseOccupation || '',
+    spouse_occupation: c.spouse_occupation || c.spouseOccupation || jfd.spouseOccupation || '',
+    children: Array.isArray(c.children) ? c.children : (Array.isArray(jfd.children) ? jfd.children : []),
     nationality: c.nationality || jfd.nationality || 'Indian',
     motherTongue: c.mother_tongue || c.motherTongue || jfd.motherTongue || '',
     mother_tongue: c.mother_tongue || c.motherTongue || jfd.motherTongue || '',
     languagesKnown: c.languages_known || c.languagesKnown || jfd.languagesKnown || '',
     languages_known: c.languages_known || c.languagesKnown || jfd.languagesKnown || '',
+    languages: Array.isArray(c.languages) ? c.languages : (Array.isArray(jfd.languages) ? jfd.languages : (c.languagesKnown ? c.languagesKnown.split(',').map(s => s.trim()).filter(Boolean) : [])),
     religion: c.religion || jfd.religion || '',
     caste: c.caste || jfd.caste || '',
     category: c.category || jfd.category || 'General',
@@ -797,6 +812,8 @@ const mapCandidateDto = (c) => {
     native_district: c.native_district || c.nativeDistrict || jfd.nativeDistrict || '',
     identificationMarks: c.identification_marks || c.identificationMarks || jfd.identificationMarks || '',
     identification_marks: c.identification_marks || c.identificationMarks || jfd.identificationMarks || '',
+    rationCardNo: c.ration_card_no || c.rationCardNo || jfd.rationCardNo || '',
+    ration_card_no: c.ration_card_no || c.rationCardNo || jfd.rationCardNo || '',
     
     // Nominee & Gratuity Particulars
     nomineeName: c.nominee_name || c.nomineeName || jfd.nomineeName || '',
@@ -852,6 +869,9 @@ const mapCandidateDto = (c) => {
     githubUrl: c.github_url || c.githubUrl || jfd.githubUrl || '',
     portfolioUrl: c.portfolio_url || c.portfolioUrl || jfd.portfolioUrl || '',
     twitterUrl: c.twitter_url || c.twitterUrl || jfd.twitterUrl || '',
+    instagramUrl: c.instagram_url || c.instagramUrl || jfd.instagramUrl || '',
+    facebookUrl: c.facebook_url || c.facebookUrl || jfd.facebookUrl || '',
+    youtubeUrl: c.youtube_url || c.youtubeUrl || jfd.youtubeUrl || '',
 
     // Multi-Row Lists & Configs
     educationList: Array.isArray(c.education_list) ? c.education_list : (Array.isArray(c.educationList) ? c.educationList : (Array.isArray(jfd.educationList) ? jfd.educationList : [])),
@@ -2188,8 +2208,17 @@ export const AppProvider = ({ children }) => {
         native_district: candidateData.nativeDistrict || candidateData.native_district,
         identification_marks: candidateData.identificationMarks || candidateData.identification_marks,
         father_name: candidateData.fatherName || candidateData.father_name,
+        father_mobile: candidateData.fatherMobile || candidateData.father_mobile,
+        father_occupation: candidateData.fatherOccupation || candidateData.father_occupation,
         mother_name: candidateData.motherName || candidateData.mother_name,
+        mother_mobile: candidateData.motherMobile || candidateData.mother_mobile,
+        mother_occupation: candidateData.motherOccupation || candidateData.mother_occupation,
+        siblings: candidateData.siblings || [],
         spouse_name: candidateData.spouseName || candidateData.spouse_name,
+        spouse_mobile: candidateData.spouseMobile || candidateData.spouse_mobile,
+        spouse_occupation: candidateData.spouseOccupation || candidateData.spouse_occupation,
+        children: candidateData.children || [],
+        languages: candidateData.languages || [],
         blood_group: candidateData.bloodGroup || candidateData.blood_group,
         state: candidateData.state,
         district: candidateData.district,
@@ -2199,6 +2228,10 @@ export const AppProvider = ({ children }) => {
         present_address: candidateData.presentAddress || candidateData.present_address,
         permanent_address: candidateData.permanentAddress || candidateData.permanent_address,
         pan_no: candidateData.panNo || candidateData.pan_no,
+        passport_no: candidateData.passportNo || candidateData.passport_no,
+        dl_number: candidateData.drivingLicense || candidateData.dlNumber || candidateData.dl_number,
+        voter_id: candidateData.voterId || candidateData.voter_id,
+        ration_card_no: candidateData.rationCardNo || candidateData.ration_card_no,
         uan_no: candidateData.uanEpf || candidateData.uan_no || candidateData.pfNumber,
         alternate_mobile: candidateData.alternateMobile || candidateData.alternate_mobile,
         emergency_contact_name: candidateData.emergencyContactName || candidateData.emergency_contact_name,
@@ -2216,6 +2249,9 @@ export const AppProvider = ({ children }) => {
         github_url: candidateData.githubUrl || candidateData.github_url,
         portfolio_url: candidateData.portfolioUrl || candidateData.portfolio_url,
         twitter_url: candidateData.twitterUrl || candidateData.twitter_url,
+        instagram_url: candidateData.instagramUrl || candidateData.instagram_url,
+        facebook_url: candidateData.facebookUrl || candidateData.facebook_url,
+        youtube_url: candidateData.youtubeUrl || candidateData.youtube_url,
         company_id: candidateData.companyId || candidateData.company_id || 'COMP001',
         hr_id: candidateData.hrId || candidateData.hr_id || 'HR001',
         portal_password: candidatePin,
@@ -3110,20 +3146,42 @@ export const AppProvider = ({ children }) => {
 
   // Add HR user
   const addHrUser = async (hrData) => {
+    const newHr = {
+      id: hrData.id || `hr-${Date.now()}`,
+      activeLinks: 0,
+      verifiedCandidatesCount: 0,
+      status: 'Active',
+      created_at: new Date().toISOString(),
+      ...hrData
+    };
     try {
-      const created = await api.addHrUser(hrData.companyId || 'comp-1', {
+      await api.addHrUser(hrData.companyId || 'comp-1', {
         name: hrData.name,
         email: hrData.email,
         dept: hrData.dept,
-        company_id: hrData.companyId || 'comp-1'
+        company_id: hrData.companyId || 'comp-1',
+        ...hrData
       });
-      setHrUsers(prev => [...prev, created]);
-      showToast(`HR Executive "${hrData.name}" created & stored in PostgreSQL!`);
-    } catch (err) {
-      const newHr = { id: `hr-${Date.now()}`, activeLinks: 0, ...hrData };
-      setHrUsers(prev => [...prev, newHr]);
-      showToast(`HR Executive "${hrData.name}" created!`);
+    } catch (e) {
+      console.warn('API addHrUser fallback to local store:', e);
     }
+    setHrUsers(prev => {
+      const nextList = [...(Array.isArray(prev) ? prev.filter(h => h.id !== newHr.id && h.email !== newHr.email) : []), newHr];
+      try { localStorage.setItem('joy_hr_users_v1', JSON.stringify(nextList)); } catch (e) {}
+      return nextList;
+    });
+    showToast(`HR Recruiter "${hrData.name}" created & onboarded!`);
+    return newHr;
+  };
+
+  // Update HR user
+  const updateHrUser = async (hrId, hrData) => {
+    setHrUsers(prev => {
+      const nextList = (Array.isArray(prev) ? prev : []).map(hr => (hr.id === hrId || (hrData.email && hr.email === hrData.email)) ? { ...hr, ...hrData } : hr);
+      try { localStorage.setItem('joy_hr_users_v1', JSON.stringify(nextList)); } catch (e) {}
+      return nextList;
+    });
+    showToast(`HR Profile "${hrData.name || hrId}" updated successfully!`);
   };
 
   // Master Dropdowns
@@ -4538,6 +4596,7 @@ export const AppProvider = ({ children }) => {
       updateCompanyRoutingEngine,
       hrUsers,
       addHrUser,
+      updateHrUser,
       candidates,
       setCandidates,
       refreshCandidates,

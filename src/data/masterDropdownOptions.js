@@ -298,6 +298,7 @@ export const LANGUAGES_OPTIONS = [
 ];
 
 export const MOTHER_TONGUE_OPTIONS = LANGUAGES_OPTIONS;
+export const LANGUAGE_OPTIONS = LANGUAGES_OPTIONS;
 
 /**
  * Statutory Nomination & Family Relationship Matrix
@@ -337,6 +338,53 @@ export const RELATIONSHIP_OPTIONS = [
   'Legally Adopted Daughter',
   'Legal Guardian / Ward',
   'Nominee / Non-Family Dependent (As Permitted by Law)',
+  'Others'
+];
+
+export const SIBLING_RELATION_OPTIONS = [
+  'Brother',
+  'Sister',
+  'Elder Brother',
+  'Elder Sister',
+  'Younger Brother',
+  'Younger Sister',
+  'Twin Brother',
+  'Twin Sister',
+  'Cousin Brother',
+  'Cousin Sister',
+  'Others'
+];
+
+export const CHILD_GENDER_OPTIONS = [
+  'Male / Son',
+  'Female / Daughter',
+  'Other / Ward'
+];
+
+
+export const OCCUPATION_OPTIONS = [
+  'Private Sector Employee (Corporate / IT / MNC)',
+  'Government / PSU Employee',
+  'State Govt / Municipal Employee',
+  'Banking & Financial Services',
+  'Business Owner / Entrepreneur',
+  'Self-Employed / Freelancer',
+  'Doctor / Healthcare Professional',
+  'Lawyer / Legal Practitioner',
+  'Chartered Accountant / Financial Consultant',
+  'Professor / Lecturer / Teacher',
+  'Engineer / Technical Consultant',
+  'Agriculture / Farming / Landowner',
+  'Defence Forces (Army / Navy / Air Force)',
+  'Police / Paramilitary Services',
+  'Civil Services (IAS / IPS / State PSC)',
+  'Real Estate / Construction',
+  'Retail / Trading / Merchant',
+  'Transport / Logistics / Driver',
+  'Homemaker',
+  'Retired / Pensioner',
+  'Student / Pursuing Education',
+  'Not Employed / Seeking Employment',
   'Others'
 ];
 

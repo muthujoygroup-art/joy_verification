@@ -36,8 +36,14 @@ import {
   Zap,
   Loader2,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Globe,
+  Heart,
+  Baby,
+  Users,
+  Languages
 } from 'lucide-react';
+import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from './SocialIcons';
 import { useApp } from '../context/AppContext';
 import { formatDisplayDate, excelSerialToDate } from '../utils/validationRules';
 import { IndividualDocumentSlipModal } from './IndividualDocumentSlipModal';
@@ -126,6 +132,51 @@ export const ComprehensiveBgvReportModal = ({
 
   const formattedCandidateDob = formatDisplayDate(c.dob || jf.dob || aadhData.dob || "—");
   const candidateFatherName = panData.father_name || panData.fatherName || aadhData.care_of || aadhData.careOf || c.father_name || c.fatherName || c.fatherSpouseName || jf.father_name || jf.fatherName || jf.fatherSpouseName || "—";
+  const candidateMotherName = c.motherName || c.mother_name || jf.motherName || jf.mother_name || "—";
+  const fatherMobile = c.fatherMobile || jf.fatherMobile || "—";
+  const fatherOccupation = c.fatherOccupation || jf.fatherOccupation || "—";
+  const motherMobile = c.motherMobile || jf.motherMobile || "—";
+  const motherOccupation = c.motherOccupation || jf.motherOccupation || "—";
+
+  const maritalStatus = c.maritalStatus || jf.maritalStatus || "Single";
+  const isMarried = maritalStatus === 'Married' || (maritalStatus && maritalStatus.toLowerCase().includes('married'));
+  const spouseName = c.spouseName || jf.spouseName || "—";
+  const spouseMobile = c.spouseMobile || jf.spouseMobile || "—";
+  const spouseOccupation = c.spouseOccupation || jf.spouseOccupation || "—";
+
+  const siblingsList = Array.isArray(c.siblings) ? c.siblings : (Array.isArray(jf.siblings) ? jf.siblings : []);
+  const childrenList = Array.isArray(c.children) ? c.children : (Array.isArray(jf.children) ? jf.children : []);
+
+  const languagesList = Array.isArray(c.languages) && c.languages.length > 0
+    ? c.languages
+    : (Array.isArray(jf.languages) && jf.languages.length > 0
+      ? jf.languages
+      : (c.languagesKnown || jf.languagesKnown
+        ? String(c.languagesKnown || jf.languagesKnown).split(',').map(s => ({ name: s.trim(), read: true, write: true, speak: true }))
+        : []));
+
+  const socialLinks = {
+    linkedin: c.linkedInUrl || jf.linkedInUrl || c.linkedin_url || jf.linkedin_url || null,
+    github: c.githubUrl || jf.githubUrl || c.github_url || jf.github_url || null,
+    twitter: c.twitterUrl || jf.twitterUrl || c.twitter_url || jf.twitter_url || null,
+    portfolio: c.portfolioUrl || jf.portfolioUrl || c.portfolio_url || jf.portfolio_url || null,
+    instagram: c.instagramUrl || jf.instagramUrl || c.instagram_url || jf.instagram_url || null,
+    facebook: c.facebookUrl || jf.facebookUrl || c.facebook_url || jf.facebook_url || null,
+    youtube: c.youtubeUrl || jf.youtubeUrl || c.youtube_url || jf.youtube_url || null
+  };
+
+  const hasAnySocial = Object.values(socialLinks).some(Boolean);
+
+  const statutoryDocNumbers = {
+    pan: panData.pan_number || c.panNo || c.panNumber || jf.panNo || "—",
+    aadhaar: aadhData.masked_aadhaar || (c.aadhaarNo ? `XXXX XXXX ${String(c.aadhaarNo).slice(-4)}` : (jf.aadhaarNo ? `XXXX XXXX ${String(jf.aadhaarNo).slice(-4)}` : "—")),
+    passport: passportData.passport_number || c.passportNo || c.passport_no || jf.passportNo || "—",
+    dl: dlData.dl_number || c.drivingLicenseNo || c.drivingLicense || c.dl_no || jf.drivingLicense || "—",
+    voter: voterData.epic_number || c.voterId || c.voterIdNo || jf.voterId || "—",
+    ration: c.rationCardNo || jf.rationCardNo || "—",
+    uan: epfoData.uan || c.uanNo || c.uanNumber || jf.uanEpf || "—",
+    esic: esicData.esic_number || c.esiNumber || c.esiNo || jf.esiNumber || "—"
+  };
 
   const isEmailVerified = !!(c.verificationsCompleted?.email || c.verifications_completed?.email || c.emailVerified);
   const isAadhaarVerified = !!(c.verificationsCompleted?.aadhaar || c.verifications_completed?.aadhaar || aadhData.full_name || aadhData.masked_aadhaar || (c.status === 'Verified' && (c.aadhaarNo || c.aadhaar_no)));
@@ -450,23 +501,155 @@ export const ComprehensiveBgvReportModal = ({
               </div>
             </div>
 
-            {/* Candidate Key Demographics Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-100 text-xs">
+            {/* Candidate Key Demographics & Family Profile Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Father's Name</span>
-                <strong className="text-slate-900 text-xs">{candidateFatherName}</strong>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Father's Name & Contact</span>
+                <strong className="text-slate-900 text-xs block">{candidateFatherName}</strong>
+                {(fatherMobile !== '—' || fatherOccupation !== '—') && (
+                  <span className="text-[10px] text-slate-500 block">📞 {fatherMobile} • {fatherOccupation}</span>
+                )}
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Date of Birth (DOB)</span>
-                <strong className="text-slate-900 text-xs font-mono">{formattedCandidateDob}</strong>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Mother's Name & Contact</span>
+                <strong className="text-slate-900 text-xs block">{candidateMotherName}</strong>
+                {(motherMobile !== '—' || motherOccupation !== '—') && (
+                  <span className="text-[10px] text-slate-500 block">📞 {motherMobile} • {motherOccupation}</span>
+                )}
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Gender / Marital Status</span>
-                <strong className="text-slate-900 text-xs">{c.gender || 'MALE'} • Single</strong>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Date of Birth (DOB) / Gender</span>
+                <strong className="text-slate-900 text-xs font-mono block">{formattedCandidateDob} ({c.gender || 'MALE'})</strong>
+                <span className="text-[10px] text-slate-500 block">Status: {maritalStatus}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Permanent District / State</span>
-                <strong className="text-slate-900 text-xs">{c.state || 'Tamil Nadu, India'}</strong>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Permanent Address / State</span>
+                <strong className="text-slate-900 text-xs block truncate" title={c.permanentAddress || c.presentAddress || c.state}>{c.state || 'Tamil Nadu, India'}</strong>
+                <span className="text-[10px] text-slate-500 block truncate">{c.city || 'Chennai'}</span>
+              </div>
+            </div>
+
+            {/* Adaptive Siblings Block */}
+            {siblingsList.length > 0 && (
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                <div className="flex items-center gap-1.5 text-slate-700 font-bold text-[11px]">
+                  <Users className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Declared Siblings ({siblingsList.length}):</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {siblingsList.map((sib, sIdx) => (
+                    <span key={sib.id || sIdx} className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-medium text-slate-800 shadow-2xs">
+                      <strong>{sib.name}</strong> ({sib.relation || 'Sibling'}) • {sib.occupation || 'Corporate'} {sib.mobile ? `• 📞 ${sib.mobile}` : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Adaptive Marital Spouse & Children Block */}
+            {isMarried && (
+              <div className="p-3 bg-pink-50/50 rounded-xl border border-pink-200 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 text-pink-900 font-bold text-[11px]">
+                  <Heart className="w-3.5 h-3.5 text-pink-600" />
+                  <span>Spouse & Dependents Details:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                  <div><strong className="text-slate-500">Spouse Name:</strong> <span className="font-bold text-slate-900">{spouseName}</span></div>
+                  <div><strong className="text-slate-500">Spouse Phone:</strong> <span className="font-mono text-slate-800">{spouseMobile}</span></div>
+                  <div><strong className="text-slate-500">Spouse Occupation:</strong> <span className="text-slate-800">{spouseOccupation}</span></div>
+                </div>
+
+                {childrenList.length > 0 && (
+                  <div className="pt-1.5 border-t border-pink-200/60 flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold text-pink-700 uppercase flex items-center gap-1">
+                      <Baby className="w-3 h-3 text-pink-600" /> Children ({childrenList.length}):
+                    </span>
+                    {childrenList.map((ch, cIdx) => (
+                      <span key={ch.id || cIdx} className="px-2 py-0.5 rounded-md bg-white border border-pink-200 text-[10px] text-slate-800 font-medium">
+                        <strong>{ch.name}</strong> ({ch.gender || 'Child'}, {ch.age || '—'} yrs) • {ch.occupation || 'Student'}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Adaptive Known Languages Block */}
+            {languagesList.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap text-xs pt-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
+                  <Languages className="w-3 h-3 text-indigo-600" /> Languages Known:
+                </span>
+                {languagesList.map((l, lIdx) => (
+                  <span key={l.name || lIdx} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                    <span>{l.name}</span>
+                    <span className="text-[9px] text-indigo-500 font-mono">
+                      ({[l.read && 'R', l.write && 'W', l.speak && 'S'].filter(Boolean).join('/') || 'Fluent'})
+                    </span>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Adaptive Social Media Profiles Row */}
+            {hasAnySocial && (
+              <div className="flex items-center gap-2 flex-wrap text-xs pt-2 border-t border-slate-100">
+                <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
+                  <Globe className="w-3 h-3 text-indigo-600" /> Public Profiles:
+                </span>
+                {socialLinks.linkedin && (
+                  <a href={socialLinks.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#0A66C2]/10 text-[#0A66C2] border border-[#0A66C2]/30 text-[10px] font-bold hover:bg-[#0A66C2]/20 transition-all">
+                    <Linkedin className="w-3 h-3" /> LinkedIn
+                  </a>
+                )}
+                {socialLinks.github && (
+                  <a href={socialLinks.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-800 border border-slate-300 text-[10px] font-bold hover:bg-slate-200 transition-all">
+                    <Github className="w-3 h-3" /> GitHub
+                  </a>
+                )}
+                {socialLinks.twitter && (
+                  <a href={socialLinks.twitter} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-800 border border-slate-300 text-[10px] font-bold hover:bg-slate-200 transition-all">
+                    <Twitter className="w-3 h-3" /> Twitter (X)
+                  </a>
+                )}
+                {socialLinks.portfolio && (
+                  <a href={socialLinks.portfolio} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold hover:bg-indigo-100 transition-all">
+                    <Globe className="w-3 h-3" /> Portfolio
+                  </a>
+                )}
+                {socialLinks.instagram && (
+                  <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#E4405F]/10 text-[#E4405F] border border-[#E4405F]/30 text-[10px] font-bold hover:bg-[#E4405F]/20 transition-all">
+                    <Instagram className="w-3 h-3" /> Instagram
+                  </a>
+                )}
+                {socialLinks.facebook && (
+                  <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/30 text-[10px] font-bold hover:bg-[#1877F2]/20 transition-all">
+                    <Facebook className="w-3 h-3" /> Facebook
+                  </a>
+                )}
+                {socialLinks.youtube && (
+                  <a href={socialLinks.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/30 text-[10px] font-bold hover:bg-[#FF0000]/20 transition-all">
+                    <Youtube className="w-3 h-3" /> YouTube
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Original Statutory Documents Number Matrix */}
+            <div className="p-3 bg-slate-900 text-white rounded-xl space-y-1.5 shadow-xs">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Statutory Government Document Numbers & Registration Matrix:</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
+                <div><span className="text-slate-400 text-[10px] block">PAN CARD:</span> <span className="font-bold text-amber-300">{statutoryDocNumbers.pan}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">AADHAAR UID:</span> <span className="font-bold text-emerald-300">{statutoryDocNumbers.aadhaar}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">PASSPORT NO:</span> <span className="font-bold text-sky-300">{statutoryDocNumbers.passport}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">DRIVING LICENSE:</span> <span className="font-bold text-teal-300">{statutoryDocNumbers.dl}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">VOTER ID (EPIC):</span> <span className="font-bold text-indigo-300">{statutoryDocNumbers.voter}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">RATION CARD:</span> <span className="font-bold text-purple-300">{statutoryDocNumbers.ration}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">EPFO UAN:</span> <span className="font-bold text-pink-300">{statutoryDocNumbers.uan}</span></div>
+                <div><span className="text-slate-400 text-[10px] block">ESIC IP NO:</span> <span className="font-bold text-emerald-300">{statutoryDocNumbers.esic}</span></div>
               </div>
             </div>
 
