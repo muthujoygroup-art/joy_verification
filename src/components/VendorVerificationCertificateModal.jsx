@@ -25,12 +25,14 @@ import {
 import { useApp } from '../context/AppContext';
 import { exportElementToPdf } from '../services/pdfExporter';
 
-export const VendorVerificationCertificateModal = ({ vendor, checkType = 'all', onClose }) => {
+export const VendorVerificationCertificateModal = ({ vendor, isOpen, checkType = 'all', onClose }) => {
   const { platformLogoEmblem, companies } = useApp() || {};
   const [isExporting, setIsExporting] = useState(false);
   const printRef = useRef(null);
 
-  const v = vendor || {};
+  if (!vendor || isOpen === false) return null;
+
+  const v = vendor;
   const verifs = v.verifications || {};
   const comp = (companies || []).find(c => c.id === v.companyId) || {
     name: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',

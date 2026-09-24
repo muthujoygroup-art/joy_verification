@@ -5820,14 +5820,6 @@ export const CompanyAdminView = () => {
         </div>
       )}
 
-      {/* 📄 OFFICIAL VENDOR STATUTORY VERIFICATION CERTIFICATE MODAL */}
-      {selectedCertVendor && (
-        <VendorVerificationCertificateModal
-          vendor={selectedCertVendor}
-          onClose={() => setSelectedCertVendor(null)}
-        />
-      )}
-
       {/* 🔑 DIRECT HR RECRUITER PASSWORD CHANGE MODAL */}
       {passwordModalHr && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
@@ -6117,30 +6109,36 @@ export const CompanyAdminView = () => {
       )}
 
       {/* 📄 VENDOR OFFICIAL POINT-IN-TIME VERIFICATION CERTIFICATE MODAL */}
-      <VendorVerificationCertificateModal
-        vendor={selectedCertVendor}
-        isOpen={Boolean(selectedCertVendor)}
-        onClose={() => setSelectedCertVendor(null)}
-      />
+      {selectedCertVendor && (
+        <VendorVerificationCertificateModal
+          vendor={selectedCertVendor}
+          isOpen={Boolean(selectedCertVendor)}
+          onClose={() => setSelectedCertVendor(null)}
+        />
+      )}
 
       {/* 🔗 VENDOR MAGIC LINK ONBOARDING & DISPATCH MODAL */}
-      <VendorLinkModal
-        vendor={selectedLinkVendor}
-        company={company}
-        isOpen={Boolean(selectedLinkVendor)}
-        onClose={() => setSelectedLinkVendor(null)}
-      />
+      {selectedLinkVendor && (
+        <VendorLinkModal
+          vendor={selectedLinkVendor}
+          company={company}
+          isOpen={Boolean(selectedLinkVendor)}
+          onClose={() => setSelectedLinkVendor(null)}
+        />
+      )}
 
       {/* 📑 VENDOR COMPREHENSIVE B2B DUE DILIGENCE DOSSIER MODAL */}
-      <VendorDossierModal
-        vendor={selectedDossierVendor}
-        isOpen={Boolean(selectedDossierVendor)}
-        onClose={() => setSelectedDossierVendor(null)}
-        onOpenCertificate={(v) => {
-          setSelectedDossierVendor(null);
-          setSelectedCertVendor(v);
-        }}
-      />
+      {selectedDossierVendor && (
+        <VendorDossierModal
+          vendor={selectedDossierVendor}
+          isOpen={Boolean(selectedDossierVendor)}
+          onClose={() => setSelectedDossierVendor(null)}
+          onOpenCertificate={(v) => {
+            setSelectedDossierVendor(null);
+            setSelectedCertVendor(v);
+          }}
+        />
+      )}
 
     </div>
   );
