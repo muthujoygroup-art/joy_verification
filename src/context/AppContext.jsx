@@ -143,6 +143,273 @@ export const POSTPAID_PLANS = {
   }
 };
 
+export const DEFAULT_MOCK_VENDORS = [
+  {
+    id: 'vend-1',
+    token: 'vend_apex_001',
+    magicToken: 'vend_apex_001',
+    companyId: 'comp-joy',
+    vendorCode: 'VEND-001',
+    vendorName: 'Apex Prime Solutions Private Limited',
+    category: 'IT Infrastructure & Cloud Services',
+    entityType: 'Private Limited Company',
+    cin: 'U72900KA2020PTC134567',
+    llpin: '',
+    din: '08918234',
+    directorName: 'Rajesh Kumar Sundaram',
+    gstin: '29AAAAA0000A1Z5',
+    pan: 'AABCA1234F',
+    fssai: '11223344556677',
+    bankAccount: '998234120912',
+    bankIfsc: 'HDFC0000053',
+    bankName: 'HDFC Bank Ltd',
+    contactPerson: 'Rajesh Kumar Sundaram',
+    phone: '+91 98765 43210',
+    email: 'compliance@apexprime.com',
+    address: 'Plot 42, Outer Ring Road, Tech Corridor, Bangalore, Karnataka - 560103',
+    jurisdiction: 'Bangalore, Karnataka, India',
+    createdAt: '2026-09-20T10:00:00.000Z',
+    overallStatus: '100% Statutory Verified',
+    linkStatus: 'Submitted & Verified',
+    verifiedAt: '24/09/2026, 10:15 AM IST',
+    termsAccepted: true,
+    dpdpConsentGiven: true,
+    verifications: {
+      company_name_to_cin: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'company_name_to_cin',
+        endpointName: 'Company Name To CIN',
+        documentNumber: 'Apex Prime Solutions Private Limited',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-COMP-918234',
+        data: { cin: 'U72900KA2020PTC134567', legalName: 'Apex Prime Solutions Private Limited', roc: 'RoC-Bangalore', status: 'Active' }
+      },
+      cin_to_company_details: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'cin_to_company_details',
+        endpointName: 'CIN To Company Details',
+        documentNumber: 'U72900KA2020PTC134567',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-CIND-918235',
+        data: { legalName: 'Apex Prime Solutions Private Limited', entityType: 'Private Limited Company', incorporationDate: '12/03/2020', authorizedCapital: '₹10,00,000', paidUpCapital: '₹5,00,000', rocCode: 'ROC-BANGALORE' }
+      },
+      cin_to_mca: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'cin_to_mca',
+        endpointName: 'CIN To MCA',
+        documentNumber: 'U72900KA2020PTC134567',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-MCA-918236',
+        data: { mcaStatus: 'Active & Compliant', lastAgmDate: '30/09/2025', balanceSheetDate: '31/03/2025', activeCompliance: 'ACTIVE (INC-22A Verified)' }
+      },
+      llpin_to_company_details: {
+        verified: false,
+        status: 'Not Applicable',
+        endpointKey: 'llpin_to_company_details',
+        endpointName: 'LLPIN To Company Details',
+        documentNumber: 'N/A (Private Limited Entity)'
+      },
+      mca_company_search: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'mca_company_search',
+        endpointName: 'MCA Company Search',
+        documentNumber: 'Apex Prime Solutions',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-MCAS-918237',
+        data: { matchScore: 100, officialRegistryName: 'Apex Prime Solutions Private Limited', cin: 'U72900KA2020PTC134567', state: 'Karnataka' }
+      },
+      cin_to_directors_lookup: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'cin_to_directors_lookup',
+        endpointName: 'CIN to Directors Lookup',
+        documentNumber: 'U72900KA2020PTC134567',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-CIND-918238',
+        data: {
+          directorsCount: 2,
+          directors: [
+            { din: '08918234', name: 'Rajesh Kumar Sundaram', designation: 'Managing Director', appointmentDate: '12/03/2020', status: 'Active' },
+            { din: '08918235', name: 'Pooja Rajesh Sundaram', designation: 'Director', appointmentDate: '12/03/2020', status: 'Active' }
+          ]
+        }
+      },
+      din_to_director_details: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'din_to_director_details',
+        endpointName: 'DIN To Director Details',
+        documentNumber: '08918234',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-DIND-918239',
+        data: { din: '08918234', directorName: 'Rajesh Kumar Sundaram', activeDirectorships: 2, kycStatus: 'KYC Compliant (DIR-3 KYC Verified)', panMasked: 'AABCAXXXXF' }
+      },
+      din_to_mca: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'din_to_mca',
+        endpointName: 'DIN to MCA',
+        documentNumber: '08918234',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-DINM-918240',
+        data: { disqualificationStatus: 'Clear (Not Disqualified u/s 164(2))', mcaStatus: 'Approved & Active', companiesAssociated: 2 }
+      },
+      gst_details_basic_v2: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'gst_details_basic_v2',
+        endpointName: 'GST Details (Basic) V2',
+        documentNumber: '29AAAAA0000A1Z5',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-GSTV-918241',
+        data: { legalName: 'Apex Prime Solutions Private Limited', tradeName: 'Apex Prime Solutions', gstinStatus: 'Active', taxpayerType: 'Regular', jurisdiction: 'State - Ward 052, Central - Range II, Bangalore', filingFrequency: 'Monthly' }
+      },
+      gst: {
+        verified: true,
+        status: 'Verified',
+        documentNumber: '29AAAAA0000A1Z5'
+      },
+      fssai_verification: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'fssai_verification',
+        endpointName: 'FSSAI Verification',
+        documentNumber: '11223344556677',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-FSSA-918242',
+        data: { licenseNumber: '11223344556677', licenseeName: 'Apex Prime Hospitality Division', licenseType: 'State License', status: 'Active & Valid', validUntil: '14/11/2028' }
+      },
+      realtime_court_case_search: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'realtime_court_case_search',
+        endpointName: 'Realtime Court Case Search',
+        documentNumber: 'Apex Prime Solutions Private Limited',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-COUR-918243',
+        data: { matchFound: false, totalLitigationsFound: 0, civilCases: 0, criminalCases: 0, highCourtCases: 0, riskCategory: 'LOW_RISK_CLEAN_RECORD', status: 'Clean Record (0 Adverse Findings)' }
+      },
+      bank: {
+        verified: true,
+        status: 'Verified',
+        accountNumber: '998234120912',
+        ifsc: 'HDFC0000053',
+        bankName: 'HDFC Bank Ltd',
+        beneficiaryName: 'APEX PRIME SOLUTIONS PRIVATE LIMITED',
+        matchScore: 100,
+        utrNumber: 'NPCI-IMPS-889123049182',
+        verifiedAt: '24/09/2026, 10:15 AM IST',
+        certificateId: 'JCS-VEND-BNK-918244'
+      }
+    }
+  },
+  {
+    id: 'vend-2',
+    token: 'vend_zenith_002',
+    magicToken: 'vend_zenith_002',
+    companyId: 'comp-joy',
+    vendorCode: 'VEND-002',
+    vendorName: 'Zenith Logistics & Supply Chain LLP',
+    category: 'Corporate Logistics & Fleet',
+    entityType: 'Limited Liability Partnership (LLP)',
+    cin: '',
+    llpin: 'AAK-9876',
+    din: '07654321',
+    directorName: 'Vikramaditya Rao',
+    gstin: '27AABCZ1234F1Z8',
+    pan: 'AABCZ1234F',
+    fssai: '',
+    bankAccount: '50200012345678',
+    bankIfsc: 'ICIC0000021',
+    bankName: 'ICICI Bank Ltd',
+    contactPerson: 'Vikramaditya Rao',
+    phone: '+91 98450 11223',
+    email: 'compliance@zenithlogistics.in',
+    address: 'Unit 12, Logistics Park, NH-48, Navi Mumbai, Maharashtra - 410206',
+    jurisdiction: 'Mumbai, Maharashtra, India',
+    createdAt: '2026-09-22T14:30:00.000Z',
+    overallStatus: 'In Progress',
+    linkStatus: 'Form In Progress',
+    verifiedAt: '23/09/2026, 11:30 AM IST',
+    termsAccepted: true,
+    dpdpConsentGiven: true,
+    verifications: {
+      llpin_to_company_details: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'llpin_to_company_details',
+        endpointName: 'LLPIN To Company Details',
+        documentNumber: 'AAK-9876',
+        verifiedAt: '23/09/2026, 11:30 AM IST',
+        certificateId: 'JCS-VEND-LLPD-876123',
+        data: { llpName: 'Zenith Logistics & Supply Chain LLP', llpin: 'AAK-9876', totalPartners: 2, totalObligationOfContribution: '₹25,00,000', rocCode: 'ROC-MUMBAI', status: 'Active' }
+      },
+      gst_details_basic_v2: {
+        verified: true,
+        status: 'Verified',
+        endpointKey: 'gst_details_basic_v2',
+        endpointName: 'GST Details (Basic) V2',
+        documentNumber: '27AABCZ1234F1Z8',
+        verifiedAt: '23/09/2026, 11:30 AM IST',
+        certificateId: 'JCS-VEND-GSTV-876124',
+        data: { legalName: 'Zenith Logistics & Supply Chain LLP', gstinStatus: 'Active', taxpayerType: 'Regular', jurisdiction: 'Maharashtra State Jurisdiction' }
+      },
+      gst: {
+        verified: true,
+        status: 'Verified',
+        documentNumber: '27AABCZ1234F1Z8'
+      }
+    }
+  },
+  {
+    id: 'vend-3',
+    token: 'vend_shield_003',
+    magicToken: 'vend_shield_003',
+    companyId: 'comp-joy',
+    vendorCode: 'VEND-003',
+    vendorName: 'Global Shield Facility & Security Services',
+    category: 'Security & Facility Management',
+    entityType: 'Private Limited Company',
+    cin: 'U74999MH2019PTC321456',
+    llpin: '',
+    din: '09123456',
+    directorName: 'Sunil Narayan Patil',
+    gstin: '27AAACG9876Q1ZB',
+    pan: 'AAACG9876Q',
+    fssai: '11519022000341',
+    bankAccount: '334455667788',
+    bankIfsc: 'SBIN0001234',
+    bankName: 'State Bank of India',
+    contactPerson: 'Sunil Narayan Patil',
+    phone: '+91 97654 32109',
+    email: 'security@globalshield.co.in',
+    address: '7th Floor, Trade Tower, Bandra Kurla Complex, Mumbai, Maharashtra - 400051',
+    jurisdiction: 'Mumbai, Maharashtra, India',
+    createdAt: '2026-09-23T09:00:00.000Z',
+    overallStatus: '100% Statutory Verified',
+    linkStatus: 'Submitted & Verified',
+    verifiedAt: '23/09/2026, 04:30 PM IST',
+    termsAccepted: true,
+    dpdpConsentGiven: true,
+    verifications: {
+      company_name_to_cin: { verified: true, status: 'Verified', endpointKey: 'company_name_to_cin', documentNumber: 'Global Shield Facility & Security Services', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-COMP-765431', data: { cin: 'U74999MH2019PTC321456', legalName: 'Global Shield Facility & Security Services Private Limited' } },
+      cin_to_company_details: { verified: true, status: 'Verified', endpointKey: 'cin_to_company_details', documentNumber: 'U74999MH2019PTC321456', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-CIND-765432', data: { legalName: 'Global Shield Facility & Security Services Private Limited', entityType: 'Private Limited Company', rocCode: 'ROC-MUMBAI' } },
+      cin_to_mca: { verified: true, status: 'Verified', endpointKey: 'cin_to_mca', documentNumber: 'U74999MH2019PTC321456', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-MCA-765433', data: { mcaStatus: 'Active & Compliant', activeCompliance: 'ACTIVE (INC-22A Verified)' } },
+      cin_to_directors_lookup: { verified: true, status: 'Verified', endpointKey: 'cin_to_directors_lookup', documentNumber: 'U74999MH2019PTC321456', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-CIND-765434', data: { directorsCount: 2, directors: [{ din: '09123456', name: 'Sunil Narayan Patil', designation: 'Director', status: 'Active' }] } },
+      din_to_director_details: { verified: true, status: 'Verified', endpointKey: 'din_to_director_details', documentNumber: '09123456', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-DIND-765435', data: { din: '09123456', directorName: 'Sunil Narayan Patil', kycStatus: 'KYC Compliant' } },
+      din_to_mca: { verified: true, status: 'Verified', endpointKey: 'din_to_mca', documentNumber: '09123456', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-DINM-765436', data: { disqualificationStatus: 'Clear (Not Disqualified)' } },
+      gst_details_basic_v2: { verified: true, status: 'Verified', endpointKey: 'gst_details_basic_v2', documentNumber: '27AAACG9876Q1ZB', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-GSTV-765437', data: { legalName: 'Global Shield Facility & Security Services', gstinStatus: 'Active' } },
+      gst: { verified: true, status: 'Verified', documentNumber: '27AAACG9876Q1ZB' },
+      fssai_verification: { verified: true, status: 'Verified', endpointKey: 'fssai_verification', documentNumber: '11519022000341', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-FSSA-765438', data: { licenseNumber: '11519022000341', licenseeName: 'Global Shield Facility Catering Support', status: 'Active' } },
+      realtime_court_case_search: { verified: true, status: 'Verified', endpointKey: 'realtime_court_case_search', documentNumber: 'Global Shield Facility & Security Services', verifiedAt: '23/09/2026, 04:30 PM IST', certificateId: 'JCS-VEND-COUR-765439', data: { matchFound: false, totalLitigationsFound: 0, riskCategory: 'LOW_RISK_CLEAN_RECORD' } }
+    }
+  }
+];
+
 export const DEFAULT_LANDING_PAGE_CONTENT = {
   // 1. Home / Hero Section
   heroBadge: 'Direct Registry Rails',
@@ -630,7 +897,22 @@ export const AppProvider = ({ children }) => {
       return [];
     }
   });
-  const [vendors, setVendors] = useState([]);
+  const [vendors, setVendors] = useState(() => {
+    try {
+      const saved = localStorage.getItem('joy_company_vendors_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_MOCK_VENDORS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('joy_company_vendors_v1', JSON.stringify(vendors));
+    } catch (e) {}
+  }, [vendors]);
   const [candidates, setCandidates] = useState(() => {
     try {
       const saved = localStorage.getItem('joy_candidates_v1');
@@ -3854,13 +4136,19 @@ export const AppProvider = ({ children }) => {
 
   // 🤝 ENTERPRISE VENDOR MANAGEMENT & VERIFICATION METHODS
   const addCompanyVendor = (companyId, vendorData) => {
+    const vendorToken = vendorData.token || `vend_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
     const newVendor = {
-      id: `vend-${Date.now()}`,
-      companyId: companyId || 'comp-1',
-      vendorCode: `VEND-${String((vendors || []).length + 1).padStart(3, '0')}`,
+      id: vendorData.id || `vend-${Date.now()}`,
+      token: vendorToken,
+      magicToken: vendorToken,
+      companyId: companyId || 'comp-joy',
+      vendorCode: vendorData.vendorCode || `VEND-${String((vendors || []).length + 1).padStart(3, '0')}`,
       createdAt: new Date().toISOString(),
-      overallStatus: 'Pending Review',
-      verifications: {},
+      overallStatus: vendorData.overallStatus || 'Pending Review',
+      linkStatus: vendorData.linkStatus || 'Form Dispatched',
+      termsAccepted: Boolean(vendorData.termsAccepted),
+      dpdpConsentGiven: Boolean(vendorData.dpdpConsentGiven),
+      verifications: vendorData.verifications || {},
       ...vendorData
     };
 

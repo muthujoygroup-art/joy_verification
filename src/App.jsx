@@ -15,6 +15,7 @@ import { SuperAdminView } from './views/SuperAdminView';
 import { CompanyAdminView } from './views/CompanyAdminView';
 import { HrExecutiveView } from './views/HrExecutiveView';
 import { EmployeePortalView } from './views/EmployeePortalView';
+import { VendorPortalView } from './views/VendorPortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
 import { HrActivationView } from './views/HrActivationView';
 
@@ -39,6 +40,7 @@ const GlobalPageReloadPreloader = () => {
     if (p.startsWith('/superadmin')) return 'superadmin';
     if (p.includes('/company') || p.startsWith('/company')) return 'company';
     if (p.includes('/hr') || p.startsWith('/hr')) return 'hr';
+    if (p.includes('/vendor') || p.startsWith('/vendor')) return 'vendor';
     if (p.startsWith('/verify') || p.startsWith('/candidate') || p.startsWith('/employee') || p.includes('/verify') || p.includes('/candidate')) return 'candidate';
     if (p.startsWith('/login')) return 'login';
     if (p.includes('activate')) return 'activate';
@@ -50,6 +52,7 @@ const GlobalPageReloadPreloader = () => {
     if (p.startsWith('/superadmin')) return 'AUTHENTICATING SUPERADMIN CONSOLE';
     if (p.includes('/company') || p.startsWith('/company')) return 'AUTHENTICATING COMPANY PORTAL';
     if (p.includes('/hr') || p.startsWith('/hr')) return 'AUTHENTICATING HR WORKSTATION';
+    if (p.includes('/vendor') || p.startsWith('/vendor')) return 'AUTHENTICATING B2B VENDOR VERIFICATION';
     if (p.startsWith('/verify') || p.startsWith('/candidate') || p.startsWith('/employee') || p.includes('/verify') || p.includes('/candidate')) return 'INITIALIZING CANDIDATE VERIFICATION';
     if (p.startsWith('/login')) return 'SECURE SYSTEM PORTAL LOGIN';
     if (p.includes('activate')) return 'VERIFYING ONBOARDING ACTIVATION';
@@ -166,6 +169,25 @@ const CandidateRoute = () => {
   );
 };
 
+// Wrapper for Vendor Verification Self-Service Route (/vendor, /:companySlug/vendor, etc.)
+const VendorRoute = () => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  
+  // Extract token from route param, query param, or path split
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const lastPart = pathParts[pathParts.length - 1];
+  const reservedWords = ['vendor', 'verify', 'onboarding', 'b2b', 'verification'];
+  const isPathToken = lastPart && !reservedWords.includes(lastPart.toLowerCase());
+  const token = searchParams.get('token') || searchParams.get('t') || searchParams.get('id') || (isPathToken ? lastPart : null) || 'vend-1';
+
+  return (
+    <PortalLayout isCandidatePortal={true}>
+      <VendorPortalView directToken={token} />
+    </PortalLayout>
+  );
+};
+
 export const App = () => {
   return (
     <ErrorBoundary>
@@ -235,7 +257,15 @@ export const App = () => {
                 <Route path="/candidate/:token" element={<CandidateRoute />} />
                 <Route path="/candidate" element={<CandidateRoute />} />
 
-                {/* 5. Onboarding & Activation Flows */}
+                {/* 5. Enterprise Vendor Statutory Verification Magic Links & Self-Service Portal */}
+                <Route path="/:companySlug/vendor/:token" element={<VendorRoute />} />
+                <Route path="/:companySlug/vendor" element={<VendorRoute />} />
+                <Route path="/vendor/verify/:token" element={<VendorRoute />} />
+                <Route path="/vendor/verify" element={<VendorRoute />} />
+                <Route path="/vendor/:token" element={<VendorRoute />} />
+                <Route path="/vendor" element={<VendorRoute />} />
+
+                {/* 6. Onboarding & Activation Flows */}
                 <Route path="/activate" element={<CompanyActivationView />} />
                 <Route path="/activate-company" element={<CompanyActivationView />} />
                 <Route path="/company-activation" element={<CompanyActivationView />} />
