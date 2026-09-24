@@ -39,7 +39,9 @@ import {
   CheckCircle2,
   Mail,
   Globe,
-  BookOpen
+  BookOpen,
+  BarChart3,
+  Share2
 } from 'lucide-react';
 
 export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed = false, onToggleCollapse }) => {
@@ -50,6 +52,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     candidates,
     selectedCandidateToken,
     hrUsers,
+    vendors,
     notifications,
     platformLogoEmblem,
     companies,
@@ -295,6 +298,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         section: pillar.id,
         tab: targetTab,
         division: division?.id || null,
+        subDivision: division?.subDivision || null,
         modal: division?.modal || pillar.modal || null,
         query: division?.query || null
       }
@@ -505,15 +509,17 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         {
           id: 'vendor_verification',
           title: '3. Vendor Verification 🤝',
-          subtitle: 'Company Vendor Checks',
-          badgeText: 'VERIFIED',
+          subtitle: 'Corporate Due Diligence',
+          badgeText: `${(vendors || []).length} VENDORS`,
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-700',
           defaultTab: 'vendor_verification',
           divisions: [
-            { id: 'vendor_list', label: 'Vendor List & Checks (GST/PAN)', tab: 'vendor_verification', icon: ShieldCheck },
-            { id: 'add_vendor_modal', label: '+ Verify New Vendor', modal: 'add_vendor', icon: Plus },
-            { id: 'vendor_pdf', label: 'Official Vendor Verification PDF', tab: 'vendor_verification', icon: Download }
+            { id: 'vendor_directory', label: '1. Vendor Directory & Status Matrix', tab: 'vendor_verification', subDivision: 'directory', icon: BarChart3 },
+            { id: 'vendor_register', label: '2. Register & Onboard New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
+            { id: 'vendor_links', label: '3. Magic Link Dispatch & Tracker', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
+            { id: 'vendor_studio', label: '4. Statutory API Studio (11 Gateways)', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
+            { id: 'vendor_pdf', label: '5. Official Vendor Due Diligence PDF', tab: 'vendor_verification', modal: 'vendor_pdf_export', icon: Download }
           ]
         },
         {

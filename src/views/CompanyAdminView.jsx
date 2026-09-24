@@ -796,16 +796,37 @@ export const CompanyAdminView = () => {
   // Listen to navigation events from Left Portal Sidebar
   useEffect(() => {
     const handlePortalNav = (e) => {
-      const { section, tab, modal } = e.detail || {};
+      const { section, tab, division, subDivision, modal } = e.detail || {};
       if (section) setActiveMainSection(section);
       if (tab) setActiveTab(tab);
+      
+      if (subDivision) {
+        setVendorSubDivision(subDivision);
+      } else if (division === 'vendor_directory') {
+        setVendorSubDivision('directory');
+      } else if (division === 'vendor_register') {
+        setVendorSubDivision('register');
+      } else if (division === 'vendor_links') {
+        setVendorSubDivision('links');
+      } else if (division === 'vendor_studio') {
+        setVendorSubDivision('studio');
+      }
+
       if (modal === 'add_hr') setShowAddHrModal(true);
       else if (modal === 'razorpay') setShowRazorpayModal(true);
-      else if (modal === 'add_vendor') setShowAddVendorModal(true);
+      else if (modal === 'add_vendor') setVendorSubDivision('register');
+      else if (modal === 'vendor_pdf_export') {
+        if (vendors && vendors.length > 0) {
+          setSelectedCertVendor(vendors[0]);
+        } else {
+          setVendorSubDivision('directory');
+          if (showToast) showToast('Please register or select a vendor to view the official PDF certificate', 'info');
+        }
+      }
     };
     window.addEventListener('portal_nav_navigate', handlePortalNav);
     return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
-  }, []);
+  }, [vendors, showToast]);
 
   // Listen to tour action events from Navbar / Tour Modal
   useEffect(() => {
