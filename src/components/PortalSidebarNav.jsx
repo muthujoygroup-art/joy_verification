@@ -251,8 +251,10 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   // Two-way listener: Sync active tab and pillar from Portal Views
   useEffect(() => {
     const handleStateSync = (e) => {
-      const { activeMainSection, activeTab } = e.detail || {};
-      if (activeTab) {
+      const { activeMainSection, activeTab, activeDivisionId: syncDivId } = e.detail || {};
+      if (syncDivId) {
+        setActiveDivisionId(syncDivId);
+      } else if (activeTab) {
         setActiveDivisionId(activeTab);
       }
       if (activeMainSection) {
@@ -878,7 +880,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
 
                     <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
                       {divisions.map((div) => {
-                        const isDivActive = activeDivisionId === div.id || activeDivisionId === div.tab;
+                        const isDivActive = activeDivisionId === div.id || (div.id === div.tab && activeDivisionId === div.tab && !divisions.some(d => d.id !== div.id && d.tab === div.tab));
                         const DivIcon = div.icon || ChevronRight;
                         return (
                           <button
@@ -968,7 +970,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                 {isExpanded && divisions.length > 0 && (
                   <div className="ml-3 pl-2.5 border-l-2 border-slate-200/80 my-1 space-y-1 bg-white/70 animate-in slide-in-from-top-1 duration-150 pr-2 pb-1.5">
                     {divisions.map((div) => {
-                      const isDivActive = activeDivisionId === div.id || activeDivisionId === div.tab;
+                      const isDivActive = activeDivisionId === div.id || (div.id === div.tab && activeDivisionId === div.tab && !divisions.some(d => d.id !== div.id && d.tab === div.tab));
                       const DivIcon = div.icon || ChevronRight;
 
                       // Determine if candidate division is disabled by SuperAdmin / Company feature flags

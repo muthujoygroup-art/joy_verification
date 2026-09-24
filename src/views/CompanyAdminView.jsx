@@ -23,6 +23,7 @@ import { VendorDossierModal } from '../components/VendorDossierModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import {
   AlertTriangle,
+  Award,
   BarChart3,
   Building2,
   Check,
@@ -764,13 +765,24 @@ export const CompanyAdminView = () => {
   };
 
   // Smooth Dashboard Positioning on Tab Switches
-  // Smooth Dashboard Positioning on Tab Switches & Sync with Left Sidebar
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    let syncDivisionId = activeTab;
+    if (activeTab === 'vendor_verification') {
+      if (vendorSubDivision === 'directory') syncDivisionId = 'vendor_directory';
+      else if (vendorSubDivision === 'register') syncDivisionId = 'vendor_register';
+      else if (vendorSubDivision === 'links') syncDivisionId = 'vendor_links';
+      else if (vendorSubDivision === 'studio') syncDivisionId = 'vendor_studio';
+    }
     window.dispatchEvent(new CustomEvent('portal_nav_state_sync', {
-      detail: { activeMainSection, activeTab }
+      detail: { 
+        activeMainSection, 
+        activeTab, 
+        activeDivisionId: syncDivisionId,
+        subDivision: vendorSubDivision 
+      }
     }));
-  }, [activeTab, activeMainSection]);
+  }, [activeTab, activeMainSection, vendorSubDivision]);
 
   // Slugify Helper
   const slugify = (text) => (text || '').toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -3402,11 +3414,11 @@ export const CompanyAdminView = () => {
                     <button
                       type="button"
                       onClick={(e) => handleAddNewVendorSubmit(e, 'link')}
-                      className="btn bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs py-2.5 px-4 font-black rounded-xl shadow-md flex items-center gap-1.5 cursor-pointer"
+                      className="btn btn-purple text-xs py-2.5 px-4.5 font-black rounded-xl shadow-md flex items-center gap-2 cursor-pointer text-white"
                       title="Generates magic link and opens sharing hub"
                     >
-                      <Share2 className="w-4 h-4" />
-                      <span>Generate & Dispatch Magic Link 🚀</span>
+                      <Share2 className="w-4 h-4 text-white shrink-0" />
+                      <span className="text-white font-black">Generate & Dispatch Magic Link 🚀</span>
                     </button>
 
                     {/* Action 2: Save & Run Instant 11-in-1 Audit */}

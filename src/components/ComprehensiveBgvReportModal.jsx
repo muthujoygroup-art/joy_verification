@@ -35,7 +35,8 @@ import {
   Check,
   Zap,
   Loader2,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { formatDisplayDate, excelSerialToDate } from '../utils/validationRules';
