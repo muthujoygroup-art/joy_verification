@@ -1936,7 +1936,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 value={globalSearchQuery}
                 onChange={(e) => setGlobalSearchQuery(e.target.value)}
                 placeholder="Search by Profile ID (COMP001, COMP001HR001, COMP001EMP001), Name, Email, Mobile, Aadhaar, Token, or Designation..."
-                className="w-full pl-12 pr-28 py-3.5 rounded-xl bg-slate-950 text-white font-bold placeholder:text-slate-400 placeholder:font-normal border-2 border-indigo-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/40 text-sm shadow-inner"
+                className="w-full pl-12 pr-28 py-3.5 rounded-xl bg-white text-slate-900 font-bold placeholder:text-slate-400 placeholder:font-normal border-2 border-indigo-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 text-sm shadow-sm"
                 autoFocus
               />
               {globalSearchQuery ? (
@@ -3392,13 +3392,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           </div>
 
           {/* 💻 Direct SQL Console & Code-Side Migration Runner */}
-          <div className="p-5 rounded-2xl bg-slate-950 text-slate-100 space-y-4 shadow-xl border border-slate-800">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div className="p-5 rounded-2xl bg-white text-slate-900 space-y-4 shadow-md border-2 border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-emerald-400" />
+                <Terminal className="w-5 h-5 text-indigo-600" />
                 <div>
-                  <h4 className="font-bold text-sm text-white">Live PostgreSQL Query Console & Code-Side Migrations</h4>
-                  <p className="text-[11px] text-slate-400">Run queries, alter tables, or execute migrations directly without pgAdmin</p>
+                  <h4 className="font-bold text-sm text-slate-900">Live PostgreSQL Query Console & Code-Side Migrations</h4>
+                  <p className="text-[11px] text-slate-500">Run queries, alter tables, or execute migrations directly without pgAdmin</p>
                 </div>
               </div>
 
@@ -3427,7 +3427,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
             {/* Quick Preset Queries */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px]">
-              <span className="text-slate-400 font-bold uppercase text-[9px] mr-1">Presets:</span>
+              <span className="text-slate-500 font-bold uppercase text-[9px] mr-1">Presets:</span>
               {[
                 { label: 'View Companies', sql: 'SELECT id, name, code, email, status, created_at FROM companies ORDER BY created_at DESC LIMIT 10;' },
                 { label: 'View Candidates', sql: 'SELECT id, name, email, mobile, status, company_id, created_at FROM candidates ORDER BY created_at DESC LIMIT 10;' },
@@ -3442,7 +3442,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     setCustomSqlQuery(preset.sql);
                     handleExecuteSql(preset.sql);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 whitespace-nowrap cursor-pointer transition-all text-[10px] font-mono"
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 whitespace-nowrap cursor-pointer transition-all text-[10px] font-mono shadow-xs"
                 >
                   {preset.label}
                 </button>
@@ -3455,13 +3455,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               value={customSqlQuery}
               onChange={(e) => setCustomSqlQuery(e.target.value)}
               placeholder="e.g. SELECT * FROM companies; or ALTER TABLE candidates ADD COLUMN IF NOT EXISTS ...;"
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 font-mono text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:bg-white"
             />
 
             {/* SQL Query Result Display */}
             {sqlQueryResult && (
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2 text-xs font-mono animate-fadeIn">
-                <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs font-mono animate-fadeIn">
+                <div className="flex items-center justify-between text-[11px] text-slate-600 border-b border-slate-200 pb-2 font-bold">
                   <span className="flex items-center gap-1.5">
                     <span className={`w-2 h-2 rounded-full ${sqlQueryResult.success ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                     <strong>{sqlQueryResult.success ? 'Execution Succeeded' : 'Execution Failed'}</strong>
@@ -3470,26 +3470,26 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
 
                 {sqlQueryResult.error && (
-                  <div className="p-2.5 bg-rose-950/60 border border-rose-800 rounded text-rose-300 text-xs">
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs">
                     {sqlQueryResult.error}
                   </div>
                 )}
 
                 {sqlQueryResult.rows && sqlQueryResult.rows.length > 0 && (
-                  <div className="max-h-60 overflow-auto no-scrollbar rounded border border-slate-800">
-                    <table className="w-full text-left text-[11px] text-slate-200">
-                      <thead className="bg-slate-950 text-slate-400 font-bold sticky top-0">
+                  <div className="max-h-60 overflow-auto no-scrollbar rounded border border-slate-200 bg-white">
+                    <table className="w-full text-left text-[11px] text-slate-800">
+                      <thead className="bg-slate-100 text-slate-700 font-bold sticky top-0 border-b border-slate-200">
                         <tr>
                           {sqlQueryResult.columns.map((col, cIdx) => (
-                            <th key={cIdx} className="p-2 border-b border-slate-800 whitespace-nowrap">{col}</th>
+                            <th key={cIdx} className="p-2 border-b border-slate-200 whitespace-nowrap">{col}</th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800">
+                      <tbody className="divide-y divide-slate-100">
                         {sqlQueryResult.rows.map((row, rIdx) => (
-                          <tr key={rIdx} className="hover:bg-slate-800/50">
+                          <tr key={rIdx} className="hover:bg-slate-50">
                             {sqlQueryResult.columns.map((col, cIdx) => (
-                              <td key={cIdx} className="p-2 whitespace-nowrap text-slate-300 max-w-xs truncate">
+                              <td key={cIdx} className="p-2 whitespace-nowrap text-slate-800 max-w-xs truncate">
                                 {typeof row[col] === 'object' ? JSON.stringify(row[col]) : String(row[col] ?? 'NULL')}
                               </td>
                             ))}
@@ -5622,80 +5622,80 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               const f = analyzeIncidentForensics(selectedLogForDetail);
 
               return (
-                <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-                  <div className="bg-slate-900 border border-slate-700 text-white w-full max-w-4xl max-h-[90vh] rounded-3xl p-6 space-y-5 shadow-2xl flex flex-col animate-modal-spring">
+                <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+                  <div className="bg-white border-2 border-slate-200 text-slate-900 w-full max-w-4xl max-h-[90vh] rounded-3xl p-6 space-y-5 shadow-2xl flex flex-col animate-modal-spring">
                     {/* Modal Header */}
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="p-2 rounded-xl bg-rose-950 text-rose-400 border border-rose-800">
+                        <span className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 shadow-xs">
                           <AlertTriangle className="w-5 h-5" />
                         </span>
                         <div>
-                          <h4 className="font-extrabold text-base text-white flex items-center gap-2">
+                          <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
                             <span>Incident Forensic Dossier • #{selectedLogForDetail.id}</span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-rose-900 text-rose-200 border border-rose-700 font-mono">
+                            <span className="text-xs px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 font-mono font-bold">
                               {f.why?.errorCode || selectedLogForDetail.errorCode || 'ERR_SYSTEM'}
                             </span>
                           </h4>
-                          <p className="text-xs text-slate-400 font-mono mt-0.5">
+                          <p className="text-xs text-slate-500 font-mono mt-0.5">
                             {f.where?.portal} ➔ {f.where?.section} • Recorded {f.when?.timestamp}
                           </p>
                         </div>
                       </div>
-                      <button onClick={() => setSelectedLogForDetail(null)} className="text-slate-400 hover:text-white text-xl cursor-pointer">✕</button>
+                      <button onClick={() => setSelectedLogForDetail(null)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer">✕</button>
                     </div>
 
                     {/* Modal Body: The 4 Pillars Forensic Details */}
                     <div className="space-y-4 overflow-y-auto flex-1 pr-1 font-mono text-xs">
                       {/* PILLAR 1: WHERE */}
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-indigo-900/60 space-y-2">
-                        <div className="flex items-center justify-between text-indigo-400 font-bold uppercase tracking-wider text-[11px]">
+                      <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-2">
+                        <div className="flex items-center justify-between text-indigo-800 font-bold uppercase tracking-wider text-[11px]">
                           <span className="flex items-center gap-1.5">
                             <span>📍 Pillar 1: Location & Endpoint Telemetry (WHERE)</span>
                           </span>
                           <span className="badge badge-indigo text-[10px]">{f.where?.portal}</span>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300 pt-1 text-[11px]">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700 pt-1 text-[11px]">
                           <div>
                             <span className="text-slate-500 block text-[10px]">Module / Component:</span>
-                            <strong className="text-white">{f.where?.section || 'System Runtime Core'}</strong>
+                            <strong className="text-slate-900">{f.where?.section || 'System Runtime Core'}</strong>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Target Function / Route:</span>
-                            <strong className="text-indigo-300 font-mono">{f.where?.functionName ? `${f.where.functionName}()` : f.where?.endpoint || 'Runtime Handler'}</strong>
+                            <strong className="text-indigo-700 font-mono">{f.where?.functionName ? `${f.where.functionName}()` : f.where?.endpoint || 'Runtime Handler'}</strong>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Client IP Address:</span>
-                            <strong className="text-slate-300 font-mono">{f.where?.clientIp || '127.0.0.1 (Direct Gateway Call)'}</strong>
+                            <strong className="text-slate-800 font-mono">{f.where?.clientIp || '127.0.0.1 (Direct Gateway Call)'}</strong>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Browser / User-Agent:</span>
-                            <strong className="text-slate-300 truncate block font-mono">{f.where?.userAgent || 'Chrome 122.0.0 / React 19 SPA'}</strong>
+                            <strong className="text-slate-800 truncate block font-mono">{f.where?.userAgent || 'Chrome 122.0.0 / React 19 SPA'}</strong>
                           </div>
                         </div>
                       </div>
 
                       {/* PILLAR 2: WHEN */}
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-teal-900/60 space-y-2">
-                        <div className="flex items-center justify-between text-teal-400 font-bold uppercase tracking-wider text-[11px]">
+                      <div className="p-4 rounded-2xl bg-teal-50/60 border border-teal-200 space-y-2">
+                        <div className="flex items-center justify-between text-teal-800 font-bold uppercase tracking-wider text-[11px]">
                           <span className="flex items-center gap-1.5">
-                            <Clock className="w-4 h-4 text-teal-400" />
+                            <Clock className="w-4 h-4 text-teal-600" />
                             <span>⏱️ Pillar 2: Exact Timestamp & Chronology (WHEN)</span>
                           </span>
                           <span className="badge badge-emerald text-[10px]">{f.when?.relativeTime || 'Recent'}</span>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-300 pt-1 text-[11px]">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-700 pt-1 text-[11px]">
                           <div>
                             <span className="text-slate-500 block text-[10px]">Timestamp (IST):</span>
-                            <strong className="text-white font-mono">{f.when?.timestamp}</strong>
+                            <strong className="text-slate-900 font-mono">{f.when?.timestamp}</strong>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Elapsed Relative Time:</span>
-                            <strong className="text-teal-300 font-mono">{f.when?.relativeTime}</strong>
+                            <strong className="text-teal-700 font-mono">{f.when?.relativeTime}</strong>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Status:</span>
-                            <strong className={selectedLogForDetail.solved ? 'text-emerald-400' : 'text-rose-400'}>
+                            <strong className={selectedLogForDetail.solved ? 'text-emerald-700' : 'text-rose-700'}>
                               {selectedLogForDetail.solved ? 'Mitigated / Solved' : 'Unresolved Active'}
                             </strong>
                           </div>
@@ -5703,28 +5703,28 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       </div>
 
                       {/* PILLAR 3: WHY */}
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-rose-900/60 space-y-2">
-                        <div className="flex items-center justify-between text-rose-400 font-bold uppercase tracking-wider text-[11px]">
+                      <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-200 space-y-2">
+                        <div className="flex items-center justify-between text-rose-800 font-bold uppercase tracking-wider text-[11px]">
                           <span>❓ Pillar 3: Root Cause Analysis (WHY)</span>
                           <span className="badge badge-rose text-[10px]">{f.why?.category || 'System Exception'}</span>
                         </div>
                         <div className="space-y-2 text-[11px]">
                           <div>
                             <span className="text-slate-500 block text-[10px]">Root Cause Diagnosis:</span>
-                            <p className="text-rose-200 font-sans font-medium text-xs leading-relaxed mt-0.5">
+                            <p className="text-rose-900 font-sans font-medium text-xs leading-relaxed mt-0.5">
                               {f.why?.rootCauseDiagnosis || selectedLogForDetail.message}
                             </p>
                           </div>
                           <div>
                             <span className="text-slate-500 block text-[10px]">Raw Exception Dump:</span>
-                            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-rose-300 font-mono text-[11px] overflow-x-auto whitespace-pre-wrap">
+                            <div className="p-2.5 rounded-lg bg-white border border-rose-200 text-rose-900 font-mono text-[11px] overflow-x-auto whitespace-pre-wrap">
                               {selectedLogForDetail.message || selectedLogForDetail.details}
                             </div>
                           </div>
                           {(selectedLogForDetail.stackTrace || selectedLogForDetail.stack_trace) && (
                             <div>
                               <span className="text-slate-500 block text-[10px]">Stack Trace & Function Telemetry:</span>
-                              <pre className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[10px] overflow-x-auto whitespace-pre-wrap max-h-36">
+                              <pre className="p-2.5 rounded-lg bg-slate-100 border border-slate-300 text-slate-800 font-mono text-[10px] overflow-x-auto whitespace-pre-wrap max-h-36">
                                 {selectedLogForDetail.stackTrace || selectedLogForDetail.stack_trace}
                               </pre>
                             </div>
@@ -5733,19 +5733,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       </div>
 
                       {/* PILLAR 4: HOW TO SOLVE */}
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-emerald-900/60 space-y-3">
-                        <div className="flex items-center justify-between text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
+                      <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+                        <div className="flex items-center justify-between text-emerald-800 font-bold uppercase tracking-wider text-[11px]">
                           <span>🛠️ Pillar 4: Actionable Remediation Playbook (HOW TO SOLVE)</span>
                           <span className="badge badge-emerald text-[10px]">1-Click Playbook</span>
                         </div>
                         <div className="space-y-2 font-sans">
-                          <p className="text-slate-200 text-xs font-semibold">
+                          <p className="text-slate-900 text-xs font-semibold">
                             {f.howToSolve?.summary}
                           </p>
                           <div className="space-y-1.5 pl-2">
                             {f.howToSolve?.steps?.map((step, idx) => (
-                              <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                                <span className="w-5 h-5 rounded-full bg-emerald-950 border border-emerald-700 text-emerald-300 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                              <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
+                                <span className="w-5 h-5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                                   {idx + 1}
                                 </span>
                                 <span className="leading-relaxed">{step}</span>
@@ -5755,13 +5755,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         </div>
 
                         {/* Interactive Remediation Triggers */}
-                        <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2">
+                        <div className="pt-2 border-t border-emerald-200 flex flex-wrap items-center gap-2">
                           <button
                             type="button"
                             onClick={() => handlePingGatewayTest('uidai_aadhaar')}
-                            className="btn btn-secondary text-xs py-1.5 px-3 text-teal-300 bg-teal-950 border-teal-800 hover:bg-teal-900 flex items-center gap-1.5 cursor-pointer"
+                            className="btn text-xs py-1.5 px-3 text-teal-800 bg-teal-100 border border-teal-300 hover:bg-teal-200 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
                           >
-                            <Zap className="w-3.5 h-3.5 text-teal-400" />
+                            <Zap className="w-3.5 h-3.5 text-teal-600" />
                             <span>⚡ Ping Verification Gateway</span>
                           </button>
 
@@ -5773,9 +5773,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                                 showToast('Deduplicated candidates roster in PostgreSQL!', 'success');
                               }
                             }}
-                            className="btn btn-secondary text-xs py-1.5 px-3 text-indigo-300 bg-indigo-950 border-indigo-800 hover:bg-indigo-900 flex items-center gap-1.5 cursor-pointer"
+                            className="btn btn-secondary text-xs py-1.5 px-3 text-indigo-700 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-indigo-400" />
+                            <Trash2 className="w-3.5 h-3.5 text-indigo-600" />
                             <span>🧹 Purge Duplicate Records</span>
                           </button>
                         </div>
@@ -5783,7 +5783,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     </div>
 
                     {/* Modal Footer Controls */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-800 pt-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 pt-3">
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(JSON.stringify({
@@ -5793,7 +5793,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           }, null, 2));
                           showToast('Full 4-Pillars Forensic Report copied to clipboard!', 'success');
                         }}
-                        className="btn btn-secondary text-xs py-2 px-3 text-slate-200 bg-slate-800 border-slate-700 hover:bg-slate-700 flex items-center gap-1.5"
+                        className="btn btn-secondary text-xs py-2 px-3 text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-200 flex items-center gap-1.5 shadow-xs"
                       >
                         <Copy className="w-3.5 h-3.5" />
                         <span>Copy Forensic JSON</span>
@@ -5817,7 +5817,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         )}
                         <button
                           onClick={() => setSelectedLogForDetail(null)}
-                          className="btn btn-secondary text-xs py-2 px-4 text-slate-300 bg-slate-800 border-slate-700 hover:bg-slate-700 cursor-pointer"
+                          className="btn btn-secondary text-xs py-2 px-4 text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-200 cursor-pointer shadow-xs"
                         >
                           Close
                         </button>
@@ -6612,7 +6612,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <p className="text-[10px] text-slate-500">Includes Shield + Project Name + Tagline. Rendered on first load splash screen, login cards & hero branding.</p>
                   <span className="badge badge-amber text-[9px] mt-1 font-bold">First Load / Splash ✓</span>
                 </div>
-                <div className="w-28 h-20 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 shadow-xs shrink-0">
+                <div className="w-28 h-20 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center p-2 shadow-xs shrink-0">
                   <img 
                     src={platformLogo || '/assets/logos/joy_true_profile_badge.png'} 
                     alt="Full Brand Logo" 
@@ -6689,18 +6689,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 {/* Preset 1: Clean Shield Badge (Active Default) */}
                 <div 
                   onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge.png')}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-950 text-white ${
-                    platformLogo === '/assets/logos/joy_true_profile_badge.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white text-slate-900 ${
+                    platformLogo === '/assets/logos/joy_true_profile_badge.png' ? 'border-amber-500 shadow-sm ring-2 ring-amber-200' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center p-1 shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
                     <img src="/assets/logos/joy_true_profile_badge.png" alt="Clean Badge" className="max-h-full max-w-full object-contain" />
                   </div>
                   <div className="overflow-hidden">
-                    <span className="font-black text-amber-400 block truncate">Official Shield Badge</span>
-                    <span className="text-[10px] text-slate-400 block">Shield + Text (No Wings)</span>
+                    <span className="font-black text-amber-700 block truncate">Official Shield Badge</span>
+                    <span className="text-[10px] text-slate-500 block">Shield + Text (No Wings)</span>
                     {platformLogo === '/assets/logos/joy_true_profile_badge.png' && (
-                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                      <span className="text-[9px] text-amber-600 font-bold">● Active Now</span>
                     )}
                   </div>
                 </div>
@@ -6708,18 +6708,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 {/* Preset 2: Transparent Shield Brand */}
                 <div 
                   onClick={() => updatePlatformLogo('/assets/logos/joy_true_profile_badge_transparent.png')}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-slate-900 text-white ${
-                    platformLogo === '/assets/logos/joy_true_profile_badge_transparent.png' ? 'border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'border-slate-800 hover:border-slate-700'
+                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center gap-3 bg-white text-slate-900 ${
+                    platformLogo === '/assets/logos/joy_true_profile_badge_transparent.png' ? 'border-amber-500 shadow-sm ring-2 ring-amber-200' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1 shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center p-1 shrink-0">
                     <img src="/assets/logos/joy_true_profile_badge_transparent.png" alt="Transparent Badge" className="max-h-full max-w-full object-contain" />
                   </div>
                   <div className="overflow-hidden">
-                    <span className="font-black text-white block truncate">Transparent Shield</span>
-                    <span className="text-[10px] text-slate-400 block">Alpha Transparent BG</span>
+                    <span className="font-black text-slate-900 block truncate">Transparent Shield</span>
+                    <span className="text-[10px] text-slate-500 block">Alpha Transparent BG</span>
                     {platformLogo === '/assets/logos/joy_true_profile_badge_transparent.png' && (
-                      <span className="text-[9px] text-amber-400 font-bold">● Active Now</span>
+                      <span className="text-[9px] text-amber-600 font-bold">● Active Now</span>
                     )}
                   </div>
                 </div>

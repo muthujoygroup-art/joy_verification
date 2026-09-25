@@ -1069,48 +1069,48 @@ export const EmployeePortalView = ({ directToken = null }) => {
           </div>
         )}
 
-        {/* ⚡ ATTENTION & CANDIDATE INSTRUCTIONS BANNER */}
-        <div className="p-4 bg-slate-950 text-white rounded-2xl space-y-2.5 shadow-md border border-slate-800">
+        {/* ⚡ ATTENTION & CANDIDATE INSTRUCTIONS BANNER (Clean Light Theme) */}
+        <div className="p-4 bg-amber-50/80 text-amber-950 rounded-2xl space-y-2.5 shadow-2xs border-2 border-amber-200">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <h3 className="font-black text-xs uppercase tracking-wider text-amber-300">Important Candidate Attention & Instructions</h3>
+            <Sparkles className="w-4 h-4 text-amber-600" />
+            <h3 className="font-black text-xs uppercase tracking-wider text-amber-900">Important Candidate Attention & Instructions</h3>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-200">
-            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-white block font-bold">1. Legal Identity Match</strong>
-              <p className="text-slate-300 leading-snug">Ensure Full Legal Name, Father's Name, and DOB match your Government Aadhaar & PAN Card exactly.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-700">
+            <div className="p-2.5 bg-white rounded-xl border border-amber-200 space-y-1 shadow-2xs">
+              <strong className="text-slate-900 block font-bold">1. Legal Identity Match</strong>
+              <p className="text-slate-600 leading-snug">Ensure Full Legal Name, Father's Name, and DOB match your Government Aadhaar & PAN Card exactly.</p>
             </div>
-            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-white block font-bold">2. Clear Original Document Scans</strong>
-              <p className="text-slate-300 leading-snug">Upload high-resolution color scans or sharp phone photos of original documents (not photocopies).</p>
+            <div className="p-2.5 bg-white rounded-xl border border-amber-200 space-y-1 shadow-2xs">
+              <strong className="text-slate-900 block font-bold">2. Clear Original Document Scans</strong>
+              <p className="text-slate-600 leading-snug">Upload high-resolution color scans or sharp phone photos of original documents (not photocopies).</p>
             </div>
-            <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-white block font-bold">3. Review Statutory Declarations</strong>
-              <p className="text-slate-300 leading-snug">Check your Form 16A TDS, Form 11 EPFO, and Form F Gratuity nominations before digital sign-off.</p>
+            <div className="p-2.5 bg-white rounded-xl border border-amber-200 space-y-1 shadow-2xs">
+              <strong className="text-slate-900 block font-bold">3. Review Statutory Declarations</strong>
+              <p className="text-slate-600 leading-snug">Check your Form 16A TDS, Form 11 EPFO, and Form F Gratuity nominations before digital sign-off.</p>
             </div>
           </div>
         </div>
 
-        {/* 🎯 GUIDED CANDIDATE ACTION ITEMS & REMAINING FORM FIELDS CHECKLIST */}
-        <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-2xl border border-indigo-500/30 shadow-md space-y-3 animate-fadeIn">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+        {/* 🎯 GUIDED CANDIDATE ACTION ITEMS & REMAINING FORM FIELDS CHECKLIST (Clean Light Theme) */}
+        <div className="p-5 bg-white text-slate-900 rounded-3xl border-2 border-indigo-200 shadow-sm space-y-3.5 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-amber-500 text-slate-950 rounded-lg">
+              <div className="p-1.5 bg-indigo-600 text-white rounded-lg shadow-2xs">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
                   Candidate Verification Action Items & Prerequisites
                 </h4>
-                <p className="text-[11px] text-slate-300 font-medium">
+                <p className="text-[11px] text-slate-500 font-medium">
                   Your employer requires these fields to execute document verification and payroll activation.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-800/90 px-3 py-1 rounded-xl border border-slate-700 self-start sm:self-auto">
-              <span className="text-[10px] text-slate-400 font-bold">Document Readiness:</span>
-              <span className="text-xs font-mono font-black text-emerald-400">
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+              <span className="text-[10px] text-slate-500 font-bold">Document Readiness:</span>
+              <span className="text-xs font-mono font-black text-emerald-700">
                 {portalReadiness.readyChecks.length} / {portalReadiness.totalChecks} Ready ({portalReadiness.completionScore}%)
               </span>
             </div>
@@ -1118,19 +1118,19 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             {/* Box 1: Ready to Verify */}
-            <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-1.5">
+            <div className="p-3 bg-emerald-50/90 border border-emerald-300 rounded-xl space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="font-extrabold text-emerald-300 flex items-center gap-1 text-[11px]">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="font-extrabold text-emerald-950 flex items-center gap-1 text-[11px]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Ready for Instant Verification ({portalReadiness.readyChecks.length})</span>
                 </span>
-                <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.2 rounded font-mono">
+                <span className="text-[9px] bg-emerald-200/80 text-emerald-900 font-bold px-1.5 py-0.2 rounded font-mono">
                   All Data Present ✓
                 </span>
               </div>
               <div className="flex flex-wrap gap-1">
                 {portalReadiness.readyChecks.map(c => (
-                  <span key={c.id} className="px-2 py-0.5 bg-emerald-900/60 text-emerald-200 border border-emerald-500/40 rounded-md text-[10px] font-bold">
+                  <span key={c.id} className="px-2 py-0.5 bg-white text-emerald-900 border border-emerald-300 rounded-md text-[10px] font-bold shadow-2xs">
                     {c.icon} {c.shortName} ✓
                   </span>
                 ))}
@@ -1138,21 +1138,21 @@ export const EmployeePortalView = ({ directToken = null }) => {
             </div>
 
             {/* Box 2: Pending Mandatory Fields */}
-            <div className="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl space-y-1.5">
+            <div className="p-3 bg-amber-50/90 border border-amber-300 rounded-xl space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="font-extrabold text-amber-300 flex items-center gap-1 text-[11px]">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span className="font-extrabold text-amber-950 flex items-center gap-1 text-[11px]">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
                   <span>Action Required: Fill Remaining Fields ({portalReadiness.pendingChecks.length})</span>
                 </span>
-                <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.2 rounded font-mono">
+                <span className="text-[9px] bg-amber-200/80 text-amber-900 font-bold px-1.5 py-0.2 rounded font-mono">
                   Needs Attention
                 </span>
               </div>
               <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
                 {portalReadiness.pendingChecks.map(c => (
-                  <div key={c.id} className="text-[10px] text-slate-300 flex items-center justify-between bg-slate-900/80 p-1 px-2 rounded border border-amber-500/20">
-                    <span className="font-bold text-amber-200">{c.icon} {c.name}:</span>
-                    <span className="text-[9px] text-amber-300 font-medium">
+                  <div key={c.id} className="text-[10px] text-slate-800 flex items-center justify-between bg-white p-1 px-2 rounded border border-amber-200 shadow-2xs">
+                    <span className="font-bold text-amber-900">{c.icon} {c.name}:</span>
+                    <span className="text-[9px] text-amber-800 font-semibold">
                       Fill: {c.missingFields.map(f => f.label).join(', ')}
                     </span>
                   </div>
@@ -1161,33 +1161,33 @@ export const EmployeePortalView = ({ directToken = null }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] bg-slate-900/80 p-2 rounded-xl border border-slate-800 flex-wrap gap-2">
-            <span className="text-slate-300">
+          <div className="flex items-center justify-between text-[10px] bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex-wrap gap-2">
+            <span className="text-slate-600">
               💡 <strong>Tip for Candidate:</strong> Click below to open the joining form. Pre-filled items from HR are marked in green 🏢, while items you need to complete are highlighted in amber 📱.
             </span>
             <button
               type="button"
               onClick={() => setShowFullJoiningModal(true)}
-              className="text-amber-400 font-black hover:underline cursor-pointer flex items-center gap-1 text-[11px]"
+              className="text-indigo-700 font-black hover:underline cursor-pointer flex items-center gap-1 text-[11px]"
             >
               <span>Complete Remaining Fields →</span>
             </button>
           </div>
         </div>
 
-        {/* 📝 HERO CALL-TO-ACTION: FILL FULL JOINING FORM & UPLOAD DOCUMENTS */}
-        <div className="p-5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-indigo-400/30">
-          <div className="space-y-1">
+        {/* 📝 HERO CALL-TO-ACTION: FILL FULL JOINING FORM & UPLOAD DOCUMENTS (Clean Light Theme) */}
+        <div className="p-5 sm:p-6 bg-gradient-to-r from-indigo-50/90 via-purple-50/80 to-sky-50/90 border-2 border-indigo-200 rounded-3xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="bg-amber-400 text-amber-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
+              <span className="bg-amber-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-2xs">
                 Step 1 of 2: Master Profile
               </span>
-              <span className="text-indigo-200 text-xs font-bold">• 10 Comprehensive Industry Sections</span>
+              <span className="text-indigo-900 text-xs font-extrabold">• 10 Comprehensive Industry Sections</span>
             </div>
-            <h3 className="text-base sm:text-lg font-black text-white">
+            <h3 className="text-base sm:text-lg font-black text-slate-900">
               Candidate Onboarding Joining Form & Document Vault
             </h3>
-            <p className="text-xs text-indigo-100 font-medium">
+            <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-2xl">
               Fill Personal Details, Address, Education, Employment, Govt Proofs, Bank Payroll, Industry Matrix, Upload Original Files with Live Previews & Sign Statutory Declarations.
             </p>
           </div>
@@ -1195,9 +1195,9 @@ export const EmployeePortalView = ({ directToken = null }) => {
           <button
             type="button"
             onClick={() => setShowFullJoiningModal(true)}
-            className="btn bg-white text-indigo-900 hover:bg-indigo-50 border-0 text-xs font-black py-3 px-5 flex items-center gap-2 shrink-0 shadow-md cursor-pointer rounded-xl transition-all hover:scale-103"
+            className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 text-xs font-black py-3 px-5 flex items-center gap-2 shrink-0 shadow-md cursor-pointer rounded-xl transition-all hover:scale-102"
           >
-            <FileEdit className="w-4 h-4 text-indigo-700" />
+            <FileEdit className="w-4 h-4 text-white" />
             <span>📝 Fill Full Joining Form</span>
           </button>
         </div>
@@ -1247,23 +1247,23 @@ export const EmployeePortalView = ({ directToken = null }) => {
         </div>
       </div>
 
-      {/* 📜 SECTION 2: TRANSPARENT DATA DISCLOSURE & DPDP ACT 2023 CANDIDATE CONSENT GATE */}
-      <div className="p-6 border-2 border-indigo-500/50 bg-slate-950 text-white rounded-3xl shadow-xl space-y-4">
+      {/* 📜 SECTION 2: TRANSPARENT DATA DISCLOSURE & DPDP ACT 2023 CANDIDATE CONSENT GATE (Clean Light Theme) */}
+      <div className="p-6 border-2 border-indigo-200 bg-white text-slate-900 rounded-3xl shadow-sm space-y-4">
         
         {/* Header & Policy Badge */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-500/20 border border-indigo-400/40 text-indigo-300">
+            <div className="p-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 shadow-2xs">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-2.5 py-0.5 rounded-full border border-indigo-400/30">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 px-2.5 py-0.5 rounded-full border border-indigo-200">
                   DPDP Act 2023 Statutory Privacy Disclosure
                 </span>
-                <span className="text-[11px] text-slate-300 font-mono hidden sm:inline">• Section 6(1) Notice</span>
+                <span className="text-[11px] text-slate-500 font-mono font-bold">• Section 6(1) Notice</span>
               </div>
-              <h3 className="text-base sm:text-lg font-black text-white mt-1">
+              <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1">
                 Employer Data Authorization & Purpose Notice
               </h3>
             </div>
@@ -1271,46 +1271,46 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
           <button
             onClick={() => setShowLegalHandbook(true)}
-            className="btn bg-indigo-600/80 hover:bg-indigo-600 text-white border border-indigo-400/40 text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer btn-interactive"
+            className="btn bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer shadow-2xs"
           >
-            <Scale className="w-3.5 h-3.5" />
+            <Scale className="w-3.5 h-3.5 text-indigo-700" />
             <span>Read Privacy Handbook 📖</span>
           </button>
         </div>
 
         {/* Transparency Explanation Cards */}
-        <div className="text-xs text-slate-200 space-y-3 leading-relaxed">
-          <p className="text-slate-300">
-            Your prospective employer (<strong className="text-white">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
+        <div className="text-xs text-slate-600 space-y-3 leading-relaxed">
+          <p>
+            Your prospective employer (<strong className="text-slate-900">{candidate.companyName || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}</strong>) has requested your authorization to verify your submitted identity and employment credentials for payroll onboarding, EPFO compliance, and background security checks.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] font-medium text-slate-200 pt-1">
-            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
-              <strong className="text-indigo-300 font-bold block">🔒 Irreversible Masking</strong>
-              <span className="text-slate-300">Aadhaar numbers are processed in UIDAI-compliant masked format (<code>XXXX-XXXX-9876</code>).</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] font-medium pt-1">
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
+              <strong className="text-indigo-900 font-bold block">🔒 Irreversible Masking</strong>
+              <span className="text-slate-600">Aadhaar numbers are processed in UIDAI-compliant masked format (<code>XXXX-XXXX-9876</code>).</span>
             </div>
 
-            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
-              <strong className="text-sky-300 font-bold block">⏱️ 60-Day Purge Policy</strong>
-              <span className="text-slate-300">Verification records automatically expire after 60 days in compliance with ISO 27001 standards.</span>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
+              <strong className="text-sky-900 font-bold block">⏱️ 60-Day Purge Policy</strong>
+              <span className="text-slate-600">Verification records automatically expire after 60 days in compliance with ISO 27001 standards.</span>
             </div>
 
-            <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-1">
-              <strong className="text-emerald-300 font-bold block">🛡️ Verified Sources Only</strong>
-              <span className="text-slate-300">Queries official databases (UIDAI, NSDL Income Tax, EPFO, MoRTH, NPCI Bank Gateway).</span>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
+              <strong className="text-emerald-900 font-bold block">🛡️ Verified Sources Only</strong>
+              <span className="text-slate-600">Queries official databases (UIDAI, NSDL Income Tax, EPFO, MoRTH, NPCI Bank Gateway).</span>
             </div>
           </div>
         </div>
 
         {/* Affirmative Consent Checkbox */}
-        <label className="flex items-start gap-3 p-3.5 bg-slate-900 rounded-2xl border border-slate-800 cursor-pointer text-xs font-bold text-white hover:bg-slate-850 transition-all">
+        <label className="flex items-start gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 cursor-pointer text-xs font-bold text-slate-800 hover:bg-indigo-50/50 hover:border-indigo-200 transition-all">
           <input 
             type="checkbox"
             checked={candidateConsentAgreed}
             onChange={(e) => setCandidateConsentAgreed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-white/40 bg-slate-800 accent-indigo-500 shrink-0" 
+            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 bg-white accent-indigo-600 shrink-0" 
           />
-          <span className="leading-snug text-slate-200">
+          <span className="leading-snug">
             I understand the verification purpose and grant voluntary affirmative consent to authenticate my records with government repositories and institutional verification servers.
           </span>
         </label>
@@ -1959,69 +1959,69 @@ export const EmployeePortalView = ({ directToken = null }) => {
       )}
 
       {/* 📋 STATUTORY TERMS & CONDITIONS & DPDP ACT PRIVACY POLICY CONSENT CHECKLIST GATE */}
-      <div className="p-5 sm:p-6 bg-slate-900 text-white rounded-3xl border-2 border-indigo-500/50 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="p-5 sm:p-6 bg-white text-slate-900 rounded-3xl border-2 border-indigo-200 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+            <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-sm">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Statutory Onboarding Agreement & DPDP Act 2023 Consent</h3>
-              <p className="text-xs text-slate-400 font-medium">Final verification submission checklist for candidate onboarding</p>
+              <h3 className="text-base font-black text-slate-900">Statutory Onboarding Agreement & DPDP Act 2023 Consent</h3>
+              <p className="text-xs text-slate-500 font-medium">Final verification submission checklist for candidate onboarding</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowTermsModal(true)}
-              className="text-xs text-indigo-300 hover:text-white font-bold underline cursor-pointer"
+              className="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer"
             >
               Terms & Conditions 📄
             </button>
-            <span className="text-slate-600">•</span>
+            <span className="text-slate-300">•</span>
             <button
               type="button"
               onClick={() => setShowDpdpModal(true)}
-              className="text-xs text-emerald-300 hover:text-white font-bold underline cursor-pointer"
+              className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
             >
               DPDP Privacy Policy 🛡️
             </button>
           </div>
         </div>
 
-        <label className="flex items-start gap-3 p-3.5 bg-slate-950 rounded-2xl border border-slate-800 cursor-pointer text-xs font-bold text-white hover:bg-slate-800/60 transition-all select-none">
+        <label className="flex items-start gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 cursor-pointer text-xs font-bold text-slate-800 hover:bg-slate-100/80 transition-all select-none">
           <input 
             type="checkbox"
             checked={isTermsAccepted}
             onChange={(e) => setIsTermsAccepted(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 border-slate-600 bg-slate-900 accent-indigo-500 cursor-pointer shrink-0" 
+            className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 bg-white accent-indigo-600 cursor-pointer shrink-0" 
           />
-          <span className="leading-relaxed text-slate-200">
-            I hereby accept the <strong className="text-white underline" onClick={(e) => { e.stopPropagation(); setShowTermsModal(true); }}>Terms & Conditions</strong> and consent to the <strong className="text-emerald-300 underline" onClick={(e) => { e.stopPropagation(); setShowDpdpModal(true); }}>DPDP Act 2023 Privacy Policy</strong>. I declare that all submitted personal, statutory, and document particulars are authentic and complete.
+          <span className="leading-relaxed text-slate-700">
+            I hereby accept the <strong className="text-indigo-700 underline font-extrabold" onClick={(e) => { e.stopPropagation(); setShowTermsModal(true); }}>Terms & Conditions</strong> and consent to the <strong className="text-emerald-700 underline font-extrabold" onClick={(e) => { e.stopPropagation(); setShowDpdpModal(true); }}>DPDP Act 2023 Privacy Policy</strong>. I declare that all submitted personal, statutory, and document particulars are authentic and complete.
           </span>
         </label>
 
         {/* FINAL ONBOARDING SUBMISSION BUTTON */}
-        <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-slate-400 font-medium">
+        <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs font-medium">
             {completedStepsCount < totalConfiguredSteps ? (
-              <span className="text-amber-400 font-bold flex items-center gap-1.5">
-                <Clock className="w-4 h-4" />
+              <span className="text-amber-700 font-bold flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-amber-600" />
                 <span>Complete all {totalConfiguredSteps} required verification steps ({completedStepsCount}/{totalConfiguredSteps} done) to submit</span>
               </span>
             ) : !isTermsAccepted ? (
-              <span className="text-indigo-300 font-bold flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4 text-indigo-400" />
+              <span className="text-indigo-700 font-bold flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-indigo-600" />
                 <span>Check the Terms & Privacy Policy consent box above to enable final submission</span>
               </span>
             ) : docConflict && docConflict.isDuplicate ? (
-              <span className="text-rose-400 font-bold flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4 text-rose-400" />
+              <span className="text-rose-700 font-bold flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-rose-600" />
                 <span>Resolve duplicate document conflict ({docConflict.field}) to enable final submission</span>
               </span>
             ) : (
-              <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>All verification steps, consent requirements & document checks satisfied ✓</span>
               </span>
             )}
@@ -2035,7 +2035,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
               showToast('🎉 Onboarding Application & Verification Dossier Submitted to HR!');
               confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
             }}
-            className="w-full sm:w-auto py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-black text-sm shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-2 btn-interactive shrink-0"
+            className="w-full sm:w-auto py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white font-black text-sm shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-2 btn-interactive shrink-0"
           >
             <CheckCircle2 className="w-5 h-5" />
             <span>Submit Onboarding Application</span>
@@ -2045,7 +2045,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
       {/* Aadhaar OTP Modal */}
       {showAadhaarOtpModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
@@ -2104,7 +2104,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
       {/* Mobile OTP Modal */}
       {showMobileOtpModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
@@ -2163,7 +2163,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
       {/* ✉️ EMAIL OTP VERIFICATION MODAL */}
       {showEmailOtpModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
@@ -2242,18 +2242,18 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
       {/* 📡 ENGAGING REAL-TIME UIDAI e-KYC DATA FETCHING RADAR MODAL */}
       {isFetchingAadhaarData && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="bg-slate-950 text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border-2 border-indigo-500/40 shadow-2xl space-y-6 relative overflow-hidden text-center animate-scaleIn">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 shadow-2xl space-y-6 relative overflow-hidden text-center animate-scaleIn">
             
-            {/* Ambient Background Glow & Radar Pulse */}
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-600/30 rounded-full blur-3xl pointer-events-none" />
+            {/* Ambient Background Glow */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-100/60 rounded-full blur-3xl pointer-events-none" />
 
             {/* High-Tech Animated Radar Scanner */}
             <div className="relative mx-auto w-24 h-24 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-2 border-indigo-500/30 animate-ping" />
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-300/60 animate-ping" />
               <div className="absolute inset-2 rounded-full border border-indigo-400/50 animate-pulse" />
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-600 flex items-center justify-center shadow-lg shadow-indigo-300">
                 <Database className="w-8 h-8 text-white animate-bounce" />
               </div>
             </div>
@@ -2263,22 +2263,22 @@ export const EmployeePortalView = ({ directToken = null }) => {
               <span className="badge badge-indigo text-[10px] uppercase font-mono tracking-widest">
                 UIDAI CIDR GATEWAY 256-BIT e-KYC
               </span>
-              <h3 className="text-xl font-black text-white">Fetching Official Aadhaar Data...</h3>
-              <p className="text-xs text-slate-400 font-mono">
+              <h3 className="text-xl font-black text-slate-900">Fetching Official Aadhaar Data...</h3>
+              <p className="text-xs text-slate-600 font-mono">
                 Demographic XML Decryption • {aadhaarFetchProgress}% Complete
               </p>
             </div>
 
             {/* Glowing Active Progress Meter */}
-            <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800 p-0.5">
+            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200 p-0.5">
               <div 
                 style={{ width: `${aadhaarFetchProgress}%` }}
-                className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-500 rounded-full transition-all duration-500"
               />
             </div>
 
             {/* Engaging Telemetry Steps */}
-            <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800/80 text-left space-y-2.5 text-xs font-mono">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left space-y-2.5 text-xs font-mono">
               {[
                 { title: 'Connecting to UIDAI Central Data Repository (CIDR)', done: aadhaarFetchStep >= 1, active: aadhaarFetchStep === 0 },
                 { title: 'Validating 256-Bit e-KYC Session & OTP Signature', done: aadhaarFetchStep >= 2, active: aadhaarFetchStep === 1 },
@@ -2288,24 +2288,24 @@ export const EmployeePortalView = ({ directToken = null }) => {
                 <div key={idx} className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     {step.done ? (
-                      <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                      <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">✓</span>
                     ) : step.active ? (
-                      <Loader2 className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
                     ) : (
-                      <span className="w-3.5 h-3.5 rounded-full border border-slate-700 block" />
+                      <span className="w-3.5 h-3.5 rounded-full border border-slate-300 block" />
                     )}
-                    <span className={step.done ? 'text-emerald-300 font-bold' : step.active ? 'text-white font-bold' : 'text-slate-500'}>
+                    <span className={step.done ? 'text-emerald-800 font-bold' : step.active ? 'text-indigo-950 font-bold' : 'text-slate-400'}>
                       {step.title}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-slate-500 font-bold">
                     {step.done ? 'DONE' : step.active ? 'LIVE' : 'WAIT'}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="text-[11px] text-slate-400">
+            <div className="text-[11px] text-slate-500 font-medium">
               🔒 Encrypted under Section 29 of Aadhaar Act 2016
             </div>
 

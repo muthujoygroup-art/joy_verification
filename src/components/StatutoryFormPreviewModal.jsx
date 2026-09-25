@@ -107,12 +107,12 @@ export const StatutoryFormPreviewModal = ({
       >
         
         {/* Modal Header */}
-        <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0 print:hidden">
+        <div className="p-4 bg-slate-50 text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0 print:hidden">
           <div className="flex items-center gap-2.5 min-w-0">
             <span className="px-2.5 py-0.5 rounded-md bg-purple-600 text-white font-mono font-bold text-xs uppercase shadow-sm shrink-0">
               Live Preview
             </span>
-            <span className="text-xs sm:text-sm text-slate-100 font-bold truncate">
+            <span className="text-xs sm:text-sm text-slate-900 font-bold truncate">
               {formTitle}
             </span>
           </div>
@@ -121,7 +121,7 @@ export const StatutoryFormPreviewModal = ({
             <button
               type="button"
               onClick={() => window.print()}
-              className="p-1.5 px-3 rounded-xl bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 text-xs font-bold hover:bg-slate-700 transition-colors cursor-pointer"
+              className="p-1.5 px-3 rounded-xl bg-white text-slate-700 hover:text-slate-900 flex items-center gap-1.5 text-xs font-bold hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer shadow-xs"
               title="Print Document"
             >
               <Printer className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export const StatutoryFormPreviewModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer hover:bg-slate-700 transition-colors"
+              className="p-1.5 rounded-xl bg-white text-slate-500 hover:text-slate-800 cursor-pointer hover:bg-slate-100 border border-slate-200 transition-colors shadow-xs"
               title="Close Preview"
             >
               <X className="w-5 h-5" />

@@ -2016,19 +2016,19 @@ export const HrExecutiveView = () => {
           })()}
 
           {/* ⚖️ Fair Hiring & DPDP Act 2023 Statutory Advisory Banner */}
-          <div className="p-4 bg-slate-950 text-white rounded-2xl border-2 border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+          <div className="p-4 bg-indigo-50/80 text-slate-900 rounded-2xl border-2 border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
             <div className="flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-600/50 text-white shrink-0 border border-indigo-400/40">
-                <Scale className="w-5 h-5 text-indigo-200" />
+              <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 shrink-0 border border-indigo-200">
+                <Scale className="w-5 h-5 text-indigo-700" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white px-2.5 py-0.5 rounded-full shadow-xs">
                     Statutory Fair Hiring Notice
                   </span>
-                  <span className="text-[11px] text-indigo-300 font-mono font-bold">• DPDP Act 2023 Section 7(a)</span>
+                  <span className="text-[11px] text-indigo-700 font-mono font-bold">• DPDP Act 2023 Section 7(a)</span>
                 </div>
-                <p className="text-xs text-slate-100 font-medium leading-relaxed">
+                <p className="text-xs text-slate-700 font-medium leading-relaxed">
                   All verification queries are conducted pursuant to candidate digital consent gathered automatically on link dispatch. Masked Aadhaar and 60-day document lifecycle rules apply.
                 </p>
               </div>
@@ -3203,27 +3203,27 @@ export const HrExecutiveView = () => {
                       }}
                       className={`p-3 rounded-2xl border-2 transition-all flex items-start gap-2.5 cursor-pointer select-none ${
                         isChecked 
-                          ? 'bg-indigo-900/60 border-indigo-400 ring-2 ring-indigo-400/20 shadow-sm' 
-                          : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 opacity-75'
+                          ? 'bg-indigo-50/90 border-indigo-300 ring-2 ring-indigo-200 shadow-xs' 
+                          : 'bg-white border-slate-200 hover:border-slate-300 opacity-90'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        className="accent-indigo-500 w-4 h-4 rounded mt-0.5 shrink-0"
+                        className="accent-indigo-600 w-4 h-4 rounded mt-0.5 shrink-0"
                       />
                       <div className="min-w-0 flex-1 space-y-0.5">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-extrabold text-white text-xs truncate">{item.name}</span>
+                          <span className="font-extrabold text-slate-900 text-xs truncate">{item.name}</span>
                           <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 ${
-                            isChecked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+                            isChecked ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-600'
                           }`}>
                             {isChecked ? 'Selected ✓' : 'Verify Later'}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-400 truncate">{item.desc}</p>
-                        <span className="text-[9px] text-indigo-300/80 font-mono block">{item.provider}</span>
+                        <p className="text-[10px] text-slate-500 truncate">{item.desc}</p>
+                        <span className="text-[9px] text-indigo-700 font-mono block">{item.provider}</span>
                       </div>
                     </label>
                   );
@@ -3231,7 +3231,7 @@ export const HrExecutiveView = () => {
               </div>
 
               {/* Informative Reassurance Footer */}
-              <div className="p-2.5 bg-slate-900/80 rounded-xl border border-indigo-500/20 flex items-center justify-between text-[11px] text-indigo-200">
+              <div className="p-2.5 bg-indigo-50/60 rounded-xl border border-indigo-200 flex items-center justify-between text-[11px] text-indigo-900">
                 <div className="flex items-center gap-2">
                   <span className="text-base">💡</span>
                   <span>
@@ -7189,16 +7189,16 @@ export const HrExecutiveView = () => {
           <div className="bg-white w-full max-w-3xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
             
             {/* Modal Header */}
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
+            <div className="bg-slate-50 text-slate-900 p-5 flex items-center justify-between border-b border-slate-200 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
+                <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-200">
                   <FolderDown className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-white">
+                  <h3 className="font-extrabold text-base text-slate-900">
                     Candidate Uploaded Compliance Documents Registry
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500 font-medium">
                     {viewingUploadedDocsCandidate.name} • {viewingUploadedDocsCandidate.empId || viewingUploadedDocsCandidate.employeeNumber ? `#${viewingUploadedDocsCandidate.empId || viewingUploadedDocsCandidate.employeeNumber} • ` : ''}{currentCompany?.name}
                   </p>
                 </div>
@@ -7209,7 +7209,7 @@ export const HrExecutiveView = () => {
                   setViewingUploadedDocsCandidate(null);
                   setSelectedDocPreview(null);
                 }}
-                className="flex items-center gap-1 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer text-xs font-bold"
+                className="flex items-center gap-1 text-slate-500 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer text-xs font-bold"
                 title="Close (Esc)"
               >
                 <X className="w-5 h-5" />
@@ -7312,14 +7312,14 @@ export const HrExecutiveView = () => {
           }}
         >
           <div className="bg-white w-full max-w-xl h-full max-h-[calc(100vh-4rem)] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
+            <div className="bg-slate-50 text-slate-900 p-4 flex items-center justify-between border-b border-slate-200 shrink-0">
               <div>
-                <h4 className="font-extrabold text-sm text-white">{selectedDocPreview.name}</h4>
-                <p className="text-[10px] text-slate-400">{selectedDocPreview.type} • {selectedDocPreview.format}</p>
+                <h4 className="font-extrabold text-sm text-slate-900">{selectedDocPreview.name}</h4>
+                <p className="text-[10px] text-slate-500 font-medium">{selectedDocPreview.type} • {selectedDocPreview.format}</p>
               </div>
               <button 
                 onClick={() => setSelectedDocPreview(null)}
-                className="flex items-center gap-1 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer text-xs font-bold"
+                className="flex items-center gap-1 text-slate-500 hover:text-slate-800 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer text-xs font-bold"
                 title="Close (Esc)"
               >
                 <X className="w-5 h-5" />
@@ -8081,48 +8081,48 @@ export const HrExecutiveView = () => {
               </div>
 
               {/* ⚡ Real-Time Verification Telemetry & Institutional Audit Ledger Card */}
-              <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="p-3.5 bg-slate-50 text-slate-900 rounded-2xl border-2 border-slate-200 space-y-2 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span className="font-extrabold text-xs text-slate-100 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                       <span>Live Gateway Telemetry Stream</span>
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full font-bold">
                     Institutional Ledger: api_call_logs (Active)
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px]">
                   <div>
-                    <span className="text-slate-400 block text-[9.5px]">LATEST CHECK:</span>
-                    <strong className="text-slate-100 font-bold truncate block">
+                    <span className="text-slate-500 block text-[9.5px] font-bold">LATEST CHECK:</span>
+                    <strong className="text-slate-900 font-bold truncate block">
                       {latestVerificationTelemetry?.docName || 'UIDAI Aadhaar Verification'}
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[9.5px]">GATEWAY ROUTE:</span>
-                    <strong className="text-indigo-300 font-mono truncate block">
+                    <span className="text-slate-500 block text-[9.5px] font-bold">GATEWAY ROUTE:</span>
+                    <strong className="text-indigo-700 font-mono truncate block font-bold">
                       Server 2 (Institutional Gateway)
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[9.5px]">RESPONSE LATENCY:</span>
-                    <strong className="text-emerald-400 font-mono">
+                    <span className="text-slate-500 block text-[9.5px] font-bold">RESPONSE LATENCY:</span>
+                    <strong className="text-emerald-700 font-mono font-bold">
                       {latestVerificationTelemetry?.latencyMs || 48}ms (Real-Time)
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[9.5px]">AUDIT STATUS:</span>
-                    <strong className="text-emerald-400 font-bold">
+                    <span className="text-slate-500 block text-[9.5px] font-bold">AUDIT STATUS:</span>
+                    <strong className="text-emerald-700 font-bold">
                       Logged & DPDP Sealed ✓
                     </strong>
                   </div>
                 </div>
 
-                <div className="pt-1 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                <div className="pt-1 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-600 font-mono">
                   <span className="truncate">
                     🔒 DPDP Seal: {latestVerificationTelemetry?.sha256Seal || 'SHA256-JOY-VERIFIED-UIDAI-2026'}
                   </span>

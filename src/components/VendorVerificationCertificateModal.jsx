@@ -111,9 +111,9 @@ export const VendorVerificationCertificateModal = ({ vendor, isOpen, checkType =
       >
         
         {/* Top Action Bar (Hidden on Print) */}
-        <div className="px-5 py-3.5 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0 print:hidden">
+        <div className="px-5 py-3.5 bg-slate-50 text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0 print:hidden">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center p-1 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center p-1 shrink-0">
               <img 
                 src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
                 alt="Emblem" 
@@ -121,10 +121,10 @@ export const VendorVerificationCertificateModal = ({ vendor, isOpen, checkType =
               />
             </div>
             <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 block">
                 Official Statutory Audit Certificate • 11-Registry Verification
               </span>
-              <h3 className="text-xs sm:text-sm font-bold text-white truncate max-w-sm sm:max-w-md">
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 truncate max-w-sm sm:max-w-md">
                 {v.vendorName || 'Vendor Verification Record'}
               </h3>
             </div>
@@ -133,9 +133,9 @@ export const VendorVerificationCertificateModal = ({ vendor, isOpen, checkType =
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
+              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold bg-white border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer shadow-xs"
             >
-              <Printer className="w-3.5 h-3.5 text-indigo-400" />
+              <Printer className="w-3.5 h-3.5 text-indigo-600" />
               <span className="hidden sm:inline">Print</span>
             </button>
 
@@ -150,7 +150,7 @@ export const VendorVerificationCertificateModal = ({ vendor, isOpen, checkType =
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition-colors ml-1 cursor-pointer"
+              className="text-slate-500 hover:text-slate-800 p-1.5 rounded-xl hover:bg-slate-200 transition-colors ml-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

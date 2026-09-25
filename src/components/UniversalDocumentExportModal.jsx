@@ -463,7 +463,7 @@ export const UniversalDocumentExportModal = ({
       <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-slate-900 relative z-10 my-auto" onClick={(e) => e.stopPropagation()}>
         
         {/* Modal Top Header */}
-        <div className="p-4 sm:px-8 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="p-4 sm:px-8 bg-slate-50 text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-3.5">
             <img src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} alt="JOY Logo" className="w-10 h-10 object-contain shrink-0" />
             <div>
@@ -471,9 +471,9 @@ export const UniversalDocumentExportModal = ({
                 <span className="badge badge-purple text-[10px] font-black uppercase">
                   Multi-Filter Export Engine
                 </span>
-                <span className="text-xs text-slate-400 font-mono hidden sm:inline">Date Range & Custom Period Reports</span>
+                <span className="text-xs text-slate-500 font-mono hidden sm:inline">Date Range & Custom Period Reports</span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-white mt-0.5">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 mt-0.5">
                 Universal Document & Report Downloading Center
               </h2>
             </div>
@@ -481,7 +481,7 @@ export const UniversalDocumentExportModal = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+            className="p-2 rounded-xl bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all cursor-pointer border border-slate-200 shadow-xs"
           >
             <X className="w-5 h-5" />
           </button>
