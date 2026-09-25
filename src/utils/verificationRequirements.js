@@ -188,31 +188,60 @@ export const evaluateVerificationReadiness = (formData = {}) => {
  */
 export const getFieldOwnershipStatus = (fieldName, fieldValue, delegatedFieldsMap = {}) => {
   // If explicitly overridden in delegatedFieldsMap:
-  if (delegatedFieldsMap && delegatedFieldsMap[fieldName] !== undefined) {
-    const rawVal = delegatedFieldsMap[fieldName];
-    if (rawVal === 'omit' || rawVal === 'omitted' || rawVal === -1) {
-      return {
-        status: 'omit',
-        label: 'Omitted from Form 🚫',
-        badgeClass: 'bg-rose-100 text-rose-900 border-rose-300 hover:bg-rose-200',
-        borderClass: 'border-rose-300 bg-rose-50/25 opacity-60'
-      };
+  if (delegatedFieldsMap) {
+    let rawVal = delegatedFieldsMap[fieldName];
+
+    // Fallback checks for indexed education fields (e.g. edu_0_degreeName -> degreeName -> educationList)
+    if (rawVal === undefined && fieldName && typeof fieldName === 'string' && fieldName.startsWith('edu_')) {
+      const parts = fieldName.split('_');
+      const baseKey = parts.slice(2).join('_');
+      if (baseKey && delegatedFieldsMap[baseKey] !== undefined) {
+        rawVal = delegatedFieldsMap[baseKey];
+      } else if (delegatedFieldsMap['educationList'] !== undefined) {
+        rawVal = delegatedFieldsMap['educationList'];
+      } else if (delegatedFieldsMap['education'] !== undefined) {
+        rawVal = delegatedFieldsMap['education'];
+      }
     }
-    const isLinkDelegated = rawVal === 'link' || rawVal === 'employee' || rawVal === true;
-    if (isLinkDelegated) {
-      return {
-        status: 'employee',
-        label: 'To be filled by Candidate via Link 📱',
-        badgeClass: 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200',
-        borderClass: 'border-amber-300 bg-amber-50/25'
-      };
-    } else {
-      return {
-        status: 'hr',
-        label: 'Filled by HR 🖥️',
-        badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200',
-        borderClass: 'border-slate-300 bg-white'
-      };
+
+    // Fallback checks for indexed experience fields (e.g. exp_0_companyName -> companyName -> experienceList)
+    if (rawVal === undefined && fieldName && typeof fieldName === 'string' && fieldName.startsWith('exp_')) {
+      const parts = fieldName.split('_');
+      const baseKey = parts.slice(2).join('_');
+      if (baseKey && delegatedFieldsMap[baseKey] !== undefined) {
+        rawVal = delegatedFieldsMap[baseKey];
+      } else if (delegatedFieldsMap['experienceList'] !== undefined) {
+        rawVal = delegatedFieldsMap['experienceList'];
+      } else if (delegatedFieldsMap['experience'] !== undefined) {
+        rawVal = delegatedFieldsMap['experience'];
+      }
+    }
+
+    if (rawVal !== undefined) {
+      if (rawVal === 'omit' || rawVal === 'omitted' || rawVal === -1) {
+        return {
+          status: 'omit',
+          label: 'Omitted from Form 🚫',
+          badgeClass: 'bg-rose-100 text-rose-900 border-rose-300 hover:bg-rose-200',
+          borderClass: 'border-rose-300 bg-rose-50/25 opacity-60'
+        };
+      }
+      const isLinkDelegated = rawVal === 'link' || rawVal === 'employee' || rawVal === true;
+      if (isLinkDelegated) {
+        return {
+          status: 'employee',
+          label: 'To be filled by Candidate via Link 📱',
+          badgeClass: 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200',
+          borderClass: 'border-amber-300 bg-amber-50/25'
+        };
+      } else {
+        return {
+          status: 'hr',
+          label: 'Filled by HR 🖥️',
+          badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200',
+          borderClass: 'border-slate-300 bg-white'
+        };
+      }
     }
   }
 

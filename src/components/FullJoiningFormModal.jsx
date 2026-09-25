@@ -637,7 +637,22 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
   };
 
   const delegatedMap = candidate?.delegatedFieldsMap || jfd.delegatedFieldsMap || candidate?.joiningFormData?.delegatedFieldsMap || {};
-  const isFieldOmitted = (fieldKey) => delegatedMap[fieldKey] === 'omit';
+  const isFieldOmitted = (fieldKey) => {
+    if (!delegatedMap) return false;
+    if (delegatedMap[fieldKey] === 'omit') return true;
+    if (fieldKey && typeof fieldKey === 'string' && fieldKey.startsWith('edu_')) {
+      const parts = fieldKey.split('_');
+      const baseKey = parts.slice(2).join('_');
+      if (baseKey && delegatedMap[baseKey] === 'omit') return true;
+      if (delegatedMap['educationList'] === 'omit' || delegatedMap['education'] === 'omit') return true;
+    }
+    if (delegatedMap['educationList'] === 'omit' || delegatedMap['education'] === 'omit') {
+      if (['educationList', 'education', 'institutionName', 'degreeName', 'yearOfJoining', 'yearOfEnd', 'grade', 'qualificationCategory', 'university'].includes(fieldKey)) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   const docConflict = useMemo(() => {
     if (!candidates || !Array.isArray(candidates) || candidates.length === 0) return { isDuplicate: false };
@@ -696,11 +711,11 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     });
   }, [formData]);
 
-  const renderCandidateFieldLabel = (label, fieldKey, isRequired = false) => {
+  const renderCandidateFieldLabel = (label, fieldKey, isRequired = false, overrideValue = undefined) => {
     const isOmitted = isFieldOmitted(fieldKey);
-    const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
-    const currentVal = formData[fieldKey];
-    const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
+    const val = overrideValue !== undefined ? overrideValue : formData[fieldKey];
+    const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey] || (overrideValue && overrideValue.toString().trim().length > 0));
+    const isFilled = !!(val && val.toString().trim().length > 0);
 
     return (
       <div className="flex items-center justify-between gap-1 mb-1">
@@ -728,14 +743,14 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
     );
   };
 
-  const getCandidateFieldInputClass = (fieldKey, baseClass = 'form-input') => {
+  const getCandidateFieldInputClass = (fieldKey, baseClass = 'form-input', overrideValue = undefined) => {
     const isOmitted = isFieldOmitted(fieldKey);
     if (isOmitted) {
       return `${baseClass} border-rose-200 bg-rose-50/20 text-slate-400 opacity-60`;
     }
+    const val = overrideValue !== undefined ? overrideValue : formData[fieldKey];
     const hasPreFilledVal = !!(candidate?.[fieldKey] || candidate?.joiningFormData?.[fieldKey]);
-    const currentVal = formData[fieldKey];
-    const isFilled = !!(currentVal && currentVal.toString().trim().length > 0);
+    const isFilled = !!(val && val.toString().trim().length > 0);
 
     if (!isFilled && !hasPreFilledVal) {
       return `${baseClass} border-amber-300 bg-amber-50/20 focus:border-amber-500 focus:bg-white`;
@@ -1902,65 +1917,70 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-700 font-bold block mb-1">Name of the Institution / College *</label>
+                        {renderCandidateFieldLabel('Name of the Institution / College', `edu_${idx}_institutionName`, true, edu.institutionName)}
                         <input
                           type="text"
-                          required
+                          required={!isFieldOmitted(`edu_${idx}_institutionName`) && !isFieldOmitted('institutionName') && !isFieldOmitted('educationList')}
+                          disabled={isFieldOmitted(`edu_${idx}_institutionName`) || isFieldOmitted('institutionName') || isFieldOmitted('educationList')}
                           value={edu.institutionName}
                           onChange={e => handleUpdateEducation(idx, 'institutionName', e.target.value)}
                           placeholder="e.g. PSG College of Technology, Coimbatore"
-                          className="form-input font-bold"
+                          className={getCandidateFieldInputClass(`edu_${idx}_institutionName`, 'form-input font-bold', edu.institutionName)}
                         />
                       </div>
                       <div>
-                        <label className="text-slate-700 font-bold block mb-1">Degree Name / Specialization *</label>
+                        {renderCandidateFieldLabel('Degree Name / Specialization', `edu_${idx}_degreeName`, true, edu.degreeName)}
                         <input
                           type="text"
-                          required
+                          required={!isFieldOmitted(`edu_${idx}_degreeName`) && !isFieldOmitted('degreeName') && !isFieldOmitted('educationList')}
+                          disabled={isFieldOmitted(`edu_${idx}_degreeName`) || isFieldOmitted('degreeName') || isFieldOmitted('educationList')}
                           value={edu.degreeName}
                           onChange={e => handleUpdateEducation(idx, 'degreeName', e.target.value)}
                           placeholder="e.g. B.Tech in Computer Science & Engg"
-                          className="form-input"
+                          className={getCandidateFieldInputClass(`edu_${idx}_degreeName`, 'form-input', edu.degreeName)}
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className="text-slate-700 font-bold block mb-1">Year of Joining *</label>
+                        {renderCandidateFieldLabel('Year of Joining', `edu_${idx}_yearOfJoining`, false, edu.yearOfJoining)}
                         <input
                           type="number"
-                          required
+                          required={!isFieldOmitted(`edu_${idx}_yearOfJoining`) && !isFieldOmitted('yearOfJoining') && !isFieldOmitted('educationList')}
+                          disabled={isFieldOmitted(`edu_${idx}_yearOfJoining`) || isFieldOmitted('yearOfJoining') || isFieldOmitted('educationList')}
                           min="1980"
                           max="2030"
                           value={edu.yearOfJoining}
                           onChange={e => handleUpdateEducation(idx, 'yearOfJoining', e.target.value)}
                           placeholder="e.g. 2014"
-                          className="form-input font-mono"
+                          className={getCandidateFieldInputClass(`edu_${idx}_yearOfJoining`, 'form-input font-mono', edu.yearOfJoining)}
                         />
                       </div>
                       <div>
-                        <label className="text-slate-700 font-bold block mb-1">Year of End / Graduation *</label>
+                        {renderCandidateFieldLabel('Year of End / Graduation', `edu_${idx}_yearOfEnd`, true, edu.yearOfEnd)}
                         <input
                           type="number"
-                          required
+                          required={!isFieldOmitted(`edu_${idx}_yearOfEnd`) && !isFieldOmitted('yearOfEnd') && !isFieldOmitted('educationList')}
+                          disabled={isFieldOmitted(`edu_${idx}_yearOfEnd`) || isFieldOmitted('yearOfEnd') || isFieldOmitted('educationList')}
                           min="1980"
                           max="2030"
                           value={edu.yearOfEnd}
                           onChange={e => handleUpdateEducation(idx, 'yearOfEnd', e.target.value)}
                           placeholder="e.g. 2018"
-                          className="form-input font-mono"
+                          className={getCandidateFieldInputClass(`edu_${idx}_yearOfEnd`, 'form-input font-mono', edu.yearOfEnd)}
                         />
                       </div>
                       <div>
-                        <label className="text-slate-700 font-bold block mb-1">Grade / Percentage / CGPA *</label>
+                        {renderCandidateFieldLabel('Grade / Percentage / CGPA', `edu_${idx}_grade`, true, edu.grade)}
                         <input
                           type="text"
-                          required
+                          required={!isFieldOmitted(`edu_${idx}_grade`) && !isFieldOmitted('grade') && !isFieldOmitted('educationList')}
+                          disabled={isFieldOmitted(`edu_${idx}_grade`) || isFieldOmitted('grade') || isFieldOmitted('educationList')}
                           value={edu.grade}
                           onChange={e => handleUpdateEducation(idx, 'grade', e.target.value)}
                           placeholder="e.g. 8.75 CGPA (85.2%)"
-                          className="form-input font-bold"
+                          className={getCandidateFieldInputClass(`edu_${idx}_grade`, 'form-input font-bold', edu.grade)}
                         />
                       </div>
                     </div>
