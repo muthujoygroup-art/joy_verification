@@ -273,17 +273,17 @@ export const LegalComplianceHandbookModal = ({ isOpen, onClose }) => {
         <div className="p-4 sm:p-8 overflow-y-auto space-y-6 text-xs leading-relaxed">
           
           {/* Section Summary Banner */}
-          <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl shadow-sm space-y-2">
+          <div className="p-5 bg-indigo-50/70 border border-indigo-200 text-slate-900 rounded-2xl shadow-xs space-y-2">
             <div className="flex items-center justify-between">
               <span className={`badge ${currentSection.badgeClass} text-[10px] font-black`}>
                 {currentSection.badge}
               </span>
-              <span className="text-[11px] text-slate-300 font-mono">Statutory Policy Document</span>
+              <span className="text-[11px] text-slate-500 font-mono font-semibold">Statutory Policy Document</span>
             </div>
-            <h3 className="text-base sm:text-lg font-black text-white">
+            <h3 className="text-base sm:text-lg font-black text-slate-900">
               {currentSection.title}
             </h3>
-            <p className="text-slate-300 text-xs font-medium leading-relaxed">
+            <p className="text-slate-600 text-xs font-medium leading-relaxed">
               {currentSection.summary}
             </p>
           </div>

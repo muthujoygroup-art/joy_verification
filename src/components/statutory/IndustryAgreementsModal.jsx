@@ -37,26 +37,26 @@ export default function IndustryAgreementsModal({ isOpen, onClose, candidate, ca
       <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 text-slate-900 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-indigo-600/30 rounded-xl border border-indigo-400/30 text-indigo-300">
+            <div className="p-2.5 bg-indigo-50 rounded-xl border border-indigo-200 text-indigo-700">
               <Scale className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-bold text-white">Statutory & Industry Legal Agreements</h2>
-                <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                <h2 className="text-lg font-bold text-slate-900">Statutory & Industry Legal Agreements</h2>
+                <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300">
                   {categoryConfig.title}
                 </span>
               </div>
-              <p className="text-xs text-slate-300">
-                Official Legal Statutory Paperwork for <span className="text-white font-medium">{candidate?.name || 'Employee Candidate'}</span> ({candidate?.employeeNumber || candidate?.emp_id || candidate?.empId || '-'})
+              <p className="text-xs text-slate-500">
+                Official Legal Statutory Paperwork for <span className="text-slate-900 font-bold">{candidate?.name || 'Employee Candidate'}</span> ({candidate?.employeeNumber || candidate?.emp_id || candidate?.empId || '-'})
               </p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -104,7 +104,7 @@ export default function IndustryAgreementsModal({ isOpen, onClose, candidate, ca
                   <p className="text-xs text-slate-500">Ministry of Corporate Affairs & Ministry of Labour and Employment Compliance</p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-mono font-bold rounded">
+                  <span className="inline-block px-3 py-1 bg-slate-100 border border-slate-300 text-slate-800 text-xs font-mono font-bold rounded">
                     REF: {activePaper.sampleCode}
                   </span>
                   <p className="text-[11px] text-slate-500 mt-1">Date: {new Date().toLocaleDateString('en-IN')}</p>

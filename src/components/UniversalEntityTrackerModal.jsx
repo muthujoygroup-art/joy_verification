@@ -317,26 +317,26 @@ export const UniversalEntityTrackerModal = ({
               </div>
 
               {/* ⚡ UPSTREAM API USAGE & UNIT COST CALCULATION LEDGER */}
-              <div className="p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-indigo-500/30 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              <div className="p-4 bg-slate-50 text-slate-900 rounded-2xl border border-indigo-200 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-indigo-600 rounded-lg text-white">
                       <Zap className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
                         Upstream API Telemetry & Calculation Ledger (SuperAdmin Audit)
                       </h4>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-slate-500 font-medium">
                         Provider breakdown, unit charges, network latencies & cryptographic transaction seals
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold border border-emerald-300">
                       Total: 6 Upstream Calls
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">
+                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono text-[10px] font-bold border border-amber-300">
                       Cost: ₹18.00 Calculated
                     </span>
                   </div>
@@ -344,63 +344,63 @@ export const UniversalEntityTrackerModal = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] font-mono">
                   {/* Server 1 Details */}
-                  <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                      <strong className="text-sky-400 flex items-center gap-1.5">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                      <strong className="text-sky-700 flex items-center gap-1.5 font-bold">
                         <Database className="w-3.5 h-3.5" />
                         Server 1 (Govt / NSDL Gateway)
                       </strong>
-                      <span className="text-[9px] text-slate-400">4 API Endpoints</span>
+                      <span className="text-[9px] text-slate-500 font-bold">4 API Endpoints</span>
                     </div>
                     <div className="space-y-1.5 text-[10px]">
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• UIDAI Aadhaar CIDR e-KYC:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹2.50 (182ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹2.50 (182ms)</strong>
                       </div>
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• Income Tax / NSDL PAN Check:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹1.80 (145ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹1.80 (145ms)</strong>
                       </div>
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• NPCI IMPS Penny Drop Match:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹2.20 (210ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹2.20 (210ms)</strong>
                       </div>
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• MoRTH Sarathi DL Registry:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹1.50 (160ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹1.50 (160ms)</strong>
                       </div>
-                      <div className="flex justify-between border-t border-slate-800/80 pt-1 text-slate-400 font-bold">
+                      <div className="flex justify-between border-t border-slate-200 pt-1 text-slate-700 font-bold">
                         <span>Server 1 Subtotal:</span>
-                        <span className="text-sky-300">4 Calls • ₹8.00</span>
+                        <span className="text-sky-700">4 Calls • ₹8.00</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Server 2 Details */}
-                  <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                      <strong className="text-purple-400 flex items-center gap-1.5">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                      <strong className="text-purple-700 flex items-center gap-1.5 font-bold">
                         <Cpu className="w-3.5 h-3.5" />
                         Server 2 (Institutional Gateway ⚡)
                       </strong>
-                      <span className="text-[9px] text-purple-300 font-bold">Premium Tier</span>
+                      <span className="text-[9px] text-purple-700 font-bold bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">Premium Tier</span>
                     </div>
                     <div className="space-y-1.5 text-[10px]">
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• MEA Passport Direct API:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹4.50 (240ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹4.50 (240ms)</strong>
                       </div>
-                      <div className="flex justify-between text-slate-300">
+                      <div className="flex justify-between text-slate-700">
                         <span>• EPFO UAN Moonlighting Audit:</span>
-                        <strong className="text-emerald-400">1 Call @ ₹5.50 (275ms)</strong>
+                        <strong className="text-emerald-700">1 Call @ ₹5.50 (275ms)</strong>
                       </div>
-                      <div className="flex justify-between border-t border-slate-800/80 pt-1 text-slate-400 font-bold">
+                      <div className="flex justify-between border-t border-slate-200 pt-1 text-slate-700 font-bold">
                         <span>Server 2 Subtotal:</span>
-                        <span className="text-purple-300">2 Calls • ₹10.00</span>
+                        <span className="text-purple-700">2 Calls • ₹10.00</span>
                       </div>
                       <div className="flex justify-between text-[9px] text-slate-500 pt-0.5">
                         <span>Ledger SHA-256:</span>
-                        <span className="text-indigo-300 truncate max-w-[140px]">SHA256-API-CALC-881924</span>
+                        <span className="text-indigo-700 font-bold truncate max-w-[140px]">SHA256-API-CALC-881924</span>
                       </div>
                     </div>
                   </div>

@@ -69,28 +69,28 @@ export const VendorDossierModal = ({ vendor, isOpen, onClose, onOpenCertificate 
       <div className="bg-white border border-slate-200 rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden animate-scaleUp max-h-[92vh] flex flex-col">
         
         {/* Header Bar */}
-        <div className="p-5 sm:p-6 border-b border-slate-100 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between shrink-0">
+        <div className="p-5 sm:p-6 border-b border-slate-200 bg-slate-50 text-slate-900 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 p-2 flex items-center justify-center shrink-0">
-              <Building2 className="w-6 h-6 text-amber-400" />
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 p-2 flex items-center justify-center shrink-0">
+              <Building2 className="w-6 h-6 text-indigo-700" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="badge badge-purple text-[9px] font-black uppercase">
                   B2B VENDOR STATUTORY DOSSIER
                 </span>
-                <span className="text-[10px] text-slate-300 font-mono font-bold">
+                <span className="text-[10px] text-slate-500 font-mono font-bold">
                   {v.vendorCode || 'VEND-001'}
                 </span>
                 <span className="badge badge-cyan text-[9px] font-bold">
                   {v.category || 'IT Infrastructure'}
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-white mt-1 leading-tight">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1 leading-tight">
                 {v.vendorName}
               </h2>
-              <p className="text-xs text-slate-300 font-medium">
-                Client Enterprise: <strong className="text-amber-300">{comp.name}</strong> • Audit Date: {new Date().toLocaleDateString('en-IN')}
+              <p className="text-xs text-slate-500 font-medium">
+                Client Enterprise: <strong className="text-indigo-700">{comp.name}</strong> • Audit Date: {new Date().toLocaleDateString('en-IN')}
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ export const VendorDossierModal = ({ vendor, isOpen, onClose, onOpenCertificate 
                   onClose();
                   onOpenCertificate(v);
                 }}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl shadow-sm transition-all cursor-pointer"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Certificate PDF</span>
@@ -112,7 +112,7 @@ export const VendorDossierModal = ({ vendor, isOpen, onClose, onOpenCertificate 
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200 cursor-pointer transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -448,10 +448,10 @@ export const VendorDossierModal = ({ vendor, isOpen, onClose, onOpenCertificate 
           {/* TAB 6: LITIGATION & COURT RECORDS */}
           {activeTab === 'litigation' && (
             <div className="space-y-4 animate-fadeIn">
-              <div className="p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 flex items-center justify-between">
                 <div>
-                  <h4 className="font-black text-white text-xs">eCourts National Judicial Data Grid (NJDG) Radar</h4>
-                  <p className="text-[11px] text-slate-300 font-medium">Real-time commercial litigation and criminal court case screening.</p>
+                  <h4 className="font-black text-slate-900 text-xs">eCourts National Judicial Data Grid (NJDG) Radar</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">Real-time commercial litigation and criminal court case screening.</p>
                 </div>
                 <span className="badge badge-emerald text-[9px] py-1 px-3">0 ADVERSE CASES FOUND</span>
               </div>

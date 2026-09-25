@@ -238,7 +238,7 @@ export const HrActivationView = () => {
 
   if (errorMsg || isExpired) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl border border-slate-200 text-center space-y-4">
           <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto">
             <AlertTriangle className="w-7 h-7" />
@@ -263,7 +263,7 @@ export const HrActivationView = () => {
   // AWAITING APPROVAL STATE
   if (hrDetails?.status === 'Pending Approval' || hrDetails?.activation_status === 'Pending Approval') {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-white">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 text-slate-900">
         <div className="max-w-lg w-full bg-white text-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-200 text-center space-y-5">
           <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
             <Sparkles className="w-8 h-8" />
@@ -293,7 +293,7 @@ export const HrActivationView = () => {
             </div>
           </div>
 
-          <p className="text-[11.5px] text-slate-500">
+          <p className="text-[11.5px] text-slate-500 font-medium">
             You will receive a confirmation email once your administrator grants live login access.
           </p>
 
@@ -311,7 +311,7 @@ export const HrActivationView = () => {
   // PIN UNLOCK SCREEN
   if (!isUnlocked) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl border border-slate-200 space-y-6">
           <div className="text-center space-y-2">
             <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
@@ -372,23 +372,23 @@ export const HrActivationView = () => {
 
   // 4-STEP HR ONBOARDING WIZARD
   return (
-    <div className="min-h-screen bg-slate-900 py-10 px-4 flex justify-center items-start">
+    <div className="min-h-screen bg-slate-50 py-10 px-4 flex justify-center items-start text-slate-900">
       <div className="max-w-3xl w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
         
         {/* HEADER */}
-        <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between border-b border-indigo-900/40">
+        <div className="p-6 bg-slate-50 text-slate-900 flex items-center justify-between border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-indigo-300">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-black">
               <User className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight">HR Account Setup</h1>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                <h1 className="text-lg font-black tracking-tight text-slate-900">HR Account Setup</h1>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-100 text-indigo-800 border border-indigo-300">
                   {hrDetails.company_name}
                 </span>
               </div>
-              <p className="text-xs text-indigo-200/70 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5 font-medium">
                 HR Staff: {hrDetails.name} ({hrDetails.email})
               </p>
             </div>

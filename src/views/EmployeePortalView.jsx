@@ -1970,21 +1970,20 @@ export const EmployeePortalView = ({ directToken = null }) => {
               <p className="text-xs text-slate-500 font-medium">Final verification submission checklist for candidate onboarding</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
               onClick={() => setShowTermsModal(true)}
-              className="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer"
+              className="text-xs px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
             >
-              Terms & Conditions 📄
+              <span>📄 Terms & Conditions</span>
             </button>
-            <span className="text-slate-300">•</span>
             <button
               type="button"
               onClick={() => setShowDpdpModal(true)}
-              className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
+              className="text-xs px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
             >
-              DPDP Privacy Policy 🛡️
+              <span>🛡️ DPDP Privacy Policy</span>
             </button>
           </div>
         </div>
@@ -2035,7 +2034,11 @@ export const EmployeePortalView = ({ directToken = null }) => {
               showToast('🎉 Onboarding Application & Verification Dossier Submitted to HR!');
               confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
             }}
-            className="w-full sm:w-auto py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white font-black text-sm shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-2 btn-interactive shrink-0"
+            className={`w-full sm:w-auto py-3 px-8 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2 shrink-0 ${
+              completedStepsCount < totalConfiguredSteps || !isTermsAccepted || (docConflict && docConflict.isDuplicate)
+                ? 'bg-slate-200 text-slate-500 border border-slate-300 cursor-not-allowed shadow-none'
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/30 cursor-pointer btn-interactive active:scale-95'
+            }`}
           >
             <CheckCircle2 className="w-5 h-5" />
             <span>Submit Onboarding Application</span>

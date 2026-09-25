@@ -3301,7 +3301,7 @@ export const HrExecutiveView = () => {
               </div>
 
               {/* 📸 Real-Time Live Photo Capture & WebCam Snapper Card */}
-              <div className="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-fadeIn">
+              <div className="p-4 bg-indigo-50/70 border border-indigo-200 text-slate-900 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs animate-fadeIn">
                 <div className="flex items-center gap-3.5">
                   <div className="relative shrink-0">
                     {formData.photo ? (
@@ -3309,14 +3309,14 @@ export const HrExecutiveView = () => {
                         <img 
                           src={formData.photo} 
                           alt="Employee" 
-                          className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400 shadow-md"
+                          className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-500 shadow-sm"
                         />
-                        <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 shadow-sm">
+                        <span className="absolute -bottom-1 -right-1 bg-emerald-600 text-white rounded-full p-0.5 shadow-sm">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                         </span>
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-2xl bg-indigo-900/60 border-2 border-dashed border-indigo-400/50 flex flex-col items-center justify-center text-indigo-300">
+                      <div className="w-16 h-16 rounded-2xl bg-indigo-100 border-2 border-dashed border-indigo-300 flex flex-col items-center justify-center text-indigo-700">
                         <Camera className="w-6 h-6" />
                         <span className="text-[9px] font-bold mt-0.5">No Photo</span>
                       </div>
@@ -3324,12 +3324,12 @@ export const HrExecutiveView = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-sm text-white">Employee Photo & Live Biometric</span>
+                      <span className="font-extrabold text-sm text-slate-900">Employee Photo & Live Biometric</span>
                       <span className="badge badge-indigo text-[9px] font-bold">HR WebCam / Candidate Selfie</span>
                     </div>
-                    <p className="text-[11px] text-slate-300 font-medium mt-0.5">
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5">
                       {formData.photo ? (
-                        <span className="text-emerald-300 font-bold">✓ Live Photo Attached (Will be bound to Profile PDF & Certificate)</span>
+                        <span className="text-emerald-700 font-bold">✓ Live Photo Attached (Will be bound to Profile PDF & Certificate)</span>
                       ) : (
                         <span>Snap live photo via WebCam now, upload a photo file, or let candidate take selfie from their magic link.</span>
                       )}
@@ -3341,13 +3341,13 @@ export const HrExecutiveView = () => {
                   <button
                     type="button"
                     onClick={() => setShowHrLivePhotoModal(true)}
-                    className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3 flex items-center gap-1.5 font-black shadow-xs cursor-pointer rounded-xl transition-all"
+                    className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer rounded-xl transition-all"
                   >
                     <Camera className="w-3.5 h-3.5" />
                     <span>{formData.photo ? '📸 Retake WebCam Photo' : '📸 Capture Live Photo (WebCam)'}</span>
                   </button>
 
-                  <label className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-200 bg-slate-800 border-slate-700 hover:bg-slate-700 cursor-pointer">
+                  <label className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 cursor-pointer shadow-2xs">
                     <Upload className="w-3.5 h-3.5" />
                     <span>Upload File</span>
                     <input 
@@ -7374,20 +7374,20 @@ export const HrExecutiveView = () => {
           <div className="bg-white w-full max-w-4xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-scaleIn shrink-0 relative z-10">
             
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
+            <div className="bg-slate-50 text-slate-900 p-5 flex items-center justify-between border-b border-slate-200 shrink-0">
               <div className="flex items-center gap-3.5">
-                <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
+                <div className="p-3 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="badge badge-amber text-[10px] font-black">SUBMISSION PENDING HR REVIEW</span>
-                    <span className="text-xs text-slate-400 font-mono">Token: {reviewingCandidate.token}</span>
+                    <span className="text-xs text-slate-500 font-mono font-bold">Token: {reviewingCandidate.token}</span>
                   </div>
-                  <h3 className="font-black text-lg text-white mt-0.5">
+                  <h3 className="font-black text-lg text-slate-900 mt-0.5">
                     Review Onboarding Submission: {reviewingCandidate.name}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500 font-medium">
                     {reviewingCandidate.empId || reviewingCandidate.employeeNumber ? `#${reviewingCandidate.empId || reviewingCandidate.employeeNumber} • ` : ''}{reviewingCandidate.designation || 'Associate'} • {currentCompany?.name}
                   </p>
                 </div>

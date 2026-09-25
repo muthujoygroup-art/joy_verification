@@ -3971,7 +3971,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     type="text" 
                     value={callbackUrl}
                     onChange={(e) => setCallbackUrl(e.target.value)}
-                    className="w-full bg-slate-950/80 border-2 border-indigo-500/40 text-indigo-200 font-mono text-xs py-2.5 px-3.5 rounded-xl outline-none focus:border-indigo-400 font-bold"
+                    className="w-full bg-slate-50 border-2 border-indigo-200 text-indigo-900 font-mono text-xs py-2.5 px-3.5 rounded-xl outline-none focus:border-indigo-500 focus:bg-white font-bold"
                     placeholder="https://your-domain.com/api/verification/webhook/callback"
                   />
                 </div>
@@ -5411,7 +5411,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                               INCIDENT #{log.id}
                             </span>
 
-                            <span className="px-2.5 py-1 rounded-lg font-bold text-xs bg-slate-900 text-white flex items-center gap-1 shadow-2xs">
+                            <span className="px-2.5 py-1 rounded-lg font-bold text-xs bg-indigo-50 border border-indigo-200 text-indigo-800 flex items-center gap-1 shadow-2xs">
                               <span>{forensics.where?.portal || log.portal || 'HR Executive Portal'}</span>
                             </span>
 
@@ -6097,7 +6097,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <div className="glass-panel p-6 border-slate-200 bg-white rounded-2xl shadow-sm relative overflow-hidden space-y-5">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-emerald-700 flex items-center justify-center font-black shadow-xs shrink-0">
                     <Activity className="w-6 h-6 animate-pulse" />
                   </div>
                   <div>
@@ -6218,7 +6218,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     onClick={() => setHealthActiveFilter(tab.id)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                       healthActiveFilter === tab.id 
-                        ? 'bg-slate-900 text-white shadow-xs' 
+                        ? 'bg-indigo-600 text-white shadow-xs' 
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -6425,7 +6425,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border-2 border-indigo-200 text-indigo-700 flex items-center justify-center font-black shadow-xs shrink-0">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
@@ -6576,7 +6576,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border-2 border-amber-200 text-amber-700 flex items-center justify-center font-black shadow-xs shrink-0">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>

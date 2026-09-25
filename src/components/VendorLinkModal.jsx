@@ -206,15 +206,15 @@ export const VendorLinkModal = ({ vendor, company, isOpen, onClose }) => {
 
           {/* QR Code Reveal Panel */}
           {showQrCode && (
-            <div className="p-4 rounded-2xl bg-slate-900 text-white text-center space-y-3 animate-fadeIn">
-              <div className="w-40 h-40 mx-auto bg-white p-2.5 rounded-2xl shadow-lg flex items-center justify-center">
+            <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-slate-900 text-center space-y-3 animate-fadeIn">
+              <div className="w-40 h-40 mx-auto bg-white p-2.5 rounded-2xl shadow-xs border border-indigo-100 flex items-center justify-center">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(vendorMagicUrl)}&margin=1`}
                   alt="Vendor QR Code"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <p className="text-[11px] text-slate-300 font-medium">
+              <p className="text-[11px] text-slate-600 font-medium">
                 Scan with any smartphone camera to open vendor self-verification gateway.
               </p>
             </div>

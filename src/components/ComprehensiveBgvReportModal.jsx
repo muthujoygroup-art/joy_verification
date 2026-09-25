@@ -393,7 +393,7 @@ export const ComprehensiveBgvReportModal = ({
       <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-full max-h-[calc(100vh-2rem)] text-slate-900 animate-modal-spring relative z-10" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Control Bar */}
-        <div className="p-3.5 sm:px-6 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="p-3.5 sm:px-6 bg-slate-50 text-slate-900 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-3">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
@@ -402,12 +402,12 @@ export const ComprehensiveBgvReportModal = ({
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[9.5px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                <span className="text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-300">
                   10+ APIs Verified (360° Dossier)
                 </span>
-                <span className="text-xs text-slate-400 font-mono hidden sm:inline">ISO 27001 & DPDP Act</span>
+                <span className="text-xs text-slate-500 font-mono hidden sm:inline font-bold">ISO 27001 & DPDP Act</span>
               </div>
-              <h2 className="text-sm sm:text-base font-black text-white mt-0.5 tracking-tight truncate max-w-xs sm:max-w-md">
+              <h2 className="text-sm sm:text-base font-black text-slate-900 mt-0.5 tracking-tight truncate max-w-xs sm:max-w-md">
                 JOY CORPORATE SOLUTIONS — 360° Verification Dossier
               </h2>
             </div>
@@ -417,27 +417,27 @@ export const ComprehensiveBgvReportModal = ({
             <button
               onClick={() => setShowReverifyConfirmModal(true)}
               disabled={isReverifying}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-amber-500 shadow-sm transition-all"
+              className="text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black cursor-pointer bg-amber-500 hover:bg-amber-600 text-slate-950 border border-amber-400 shadow-sm rounded-xl transition-all"
               title="Execute live real-time verification against Server 2 Gateways"
             >
-              {isReverifying ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Zap className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />}
+              {isReverifying ? <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-950" /> : <Zap className="w-3.5 h-3.5 text-slate-950 fill-slate-950" />}
               <span className="hidden sm:inline">{isReverifying ? "Verifying Live..." : "⚡ Re-Verify (Server 2)"}</span>
               <span className="sm:hidden">{isReverifying ? "Verifying..." : "⚡ Verify"}</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl shadow-xs"
               title="Print Complete 360° Dossier"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-slate-600" />
               <span className="hidden sm:inline">Print</span>
             </button>
 
             <button
               onClick={handleDownloadMasterPdf}
               disabled={isExporting}
-              className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-md cursor-pointer transition-all hover:scale-105"
+              className="text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black shadow-md cursor-pointer transition-all bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
               title="Download Master All-In-One Report"
             >
               {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5 text-white" />}
@@ -446,7 +446,7 @@ export const ComprehensiveBgvReportModal = ({
 
             <button
               onClick={onClose}
-              className="bg-slate-800 hover:bg-rose-900/80 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold transition-all text-xs cursor-pointer ml-1"
+              className="bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold transition-all text-xs cursor-pointer ml-1 shadow-xs"
               title="Close Dossier (Esc)"
             >
               <X className="w-4 h-4" />
@@ -636,20 +636,20 @@ export const ComprehensiveBgvReportModal = ({
             )}
 
             {/* Original Statutory Documents Number Matrix */}
-            <div className="p-3 bg-slate-900 text-white rounded-xl space-y-1.5 shadow-xs">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
-                <CreditCard className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="p-3 bg-slate-50 text-slate-900 border border-slate-200 rounded-xl space-y-1.5 shadow-2xs">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5 text-indigo-600" />
                 <span>Statutory Government Document Numbers & Registration Matrix:</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
-                <div><span className="text-slate-400 text-[10px] block">PAN CARD:</span> <span className="font-bold text-amber-300">{statutoryDocNumbers.pan}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">AADHAAR UID:</span> <span className="font-bold text-emerald-300">{statutoryDocNumbers.aadhaar}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">PASSPORT NO:</span> <span className="font-bold text-sky-300">{statutoryDocNumbers.passport}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">DRIVING LICENSE:</span> <span className="font-bold text-teal-300">{statutoryDocNumbers.dl}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">VOTER ID (EPIC):</span> <span className="font-bold text-indigo-300">{statutoryDocNumbers.voter}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">RATION CARD:</span> <span className="font-bold text-purple-300">{statutoryDocNumbers.ration}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">EPFO UAN:</span> <span className="font-bold text-pink-300">{statutoryDocNumbers.uan}</span></div>
-                <div><span className="text-slate-400 text-[10px] block">ESIC IP NO:</span> <span className="font-bold text-emerald-300">{statutoryDocNumbers.esic}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">PAN CARD:</span> <span className="font-bold text-amber-700">{statutoryDocNumbers.pan}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">AADHAAR UID:</span> <span className="font-bold text-emerald-700">{statutoryDocNumbers.aadhaar}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">PASSPORT NO:</span> <span className="font-bold text-sky-700">{statutoryDocNumbers.passport}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">DRIVING LICENSE:</span> <span className="font-bold text-teal-700">{statutoryDocNumbers.dl}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">VOTER ID (EPIC):</span> <span className="font-bold text-indigo-700">{statutoryDocNumbers.voter}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">RATION CARD:</span> <span className="font-bold text-purple-700">{statutoryDocNumbers.ration}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">EPFO UAN:</span> <span className="font-bold text-pink-700">{statutoryDocNumbers.uan}</span></div>
+                <div><span className="text-slate-500 text-[10px] block">ESIC IP NO:</span> <span className="font-bold text-emerald-700">{statutoryDocNumbers.esic}</span></div>
               </div>
             </div>
 

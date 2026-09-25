@@ -462,17 +462,17 @@ By performing real-time authenticated service timeline audits against official E
       )}
 
       {/* 🏢 Enterprise Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-12 text-xs border-t border-slate-800 mt-20">
+      <footer className="bg-slate-50 text-slate-600 py-12 text-xs border-t border-slate-200 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <h4 className="font-black text-white text-sm">JOY TrueProfile</h4>
-            <p className="text-[11px] text-slate-500">© 2026 JOY CORPORATE SOLUTIONS PVT LTD. All Rights Reserved.</p>
+            <h4 className="font-black text-slate-900 text-sm">JOY TrueProfile</h4>
+            <p className="text-[11px] text-slate-500 font-medium">© 2026 JOY CORPORATE SOLUTIONS PVT LTD. All Rights Reserved.</p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-bold">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
-            <Link to="/blog" className="hover:text-white transition-colors">Knowledge Base</Link>
-            <Link to="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
-            <Link to="/#faq" className="hover:text-white transition-colors">FAQ</Link>
+          <div className="flex items-center gap-4 text-xs font-bold text-slate-700">
+            <Link to="/" className="hover:text-indigo-600 transition-colors">Home</Link>
+            <Link to="/blog" className="hover:text-indigo-600 transition-colors">Knowledge Base</Link>
+            <Link to="/#pricing" className="hover:text-indigo-600 transition-colors">Pricing</Link>
+            <Link to="/#faq" className="hover:text-indigo-600 transition-colors">FAQ</Link>
           </div>
         </div>
       </footer>

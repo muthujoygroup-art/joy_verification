@@ -239,7 +239,7 @@ export const CompanyActivationView = () => {
   // Error Screen
   if (errorMsg || !companyDetails) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center space-y-5 shadow-2xl border border-slate-200">
           <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto">
             <AlertTriangle className="w-8 h-8" />
@@ -262,7 +262,7 @@ export const CompanyActivationView = () => {
   // Expired Screen
   if (isExpired && !isActivatedSuccess) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center space-y-5 shadow-2xl border border-amber-200">
           <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
             <AlertTriangle className="w-8 h-8" />
@@ -285,25 +285,25 @@ export const CompanyActivationView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 py-8 px-4 sm:px-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 text-slate-900 py-8 px-4 sm:px-6 flex flex-col justify-between">
       
       {/* Top Header Bar */}
-      <div className="max-w-4xl mx-auto w-full mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="max-w-4xl mx-auto w-full mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg text-white font-black text-lg">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md text-white font-black text-lg">
             JOY
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-black tracking-tight text-white">JOY DATA VERIFICATION</h1>
+              <h1 className="text-lg font-black tracking-tight text-slate-900">JOY DATA VERIFICATION</h1>
               <span className="badge badge-emerald text-[9px] font-bold">DPDP ACT 2023 COMPLIANT</span>
             </div>
-            <p className="text-xs text-slate-400">Company Account Activation</p>
+            <p className="text-xs text-slate-500 font-medium">Company Account Activation</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="bg-slate-800 text-indigo-400 font-mono px-3 py-1.5 rounded-xl border border-slate-700 font-bold">
+          <span className="bg-indigo-50 text-indigo-800 font-mono px-3 py-1.5 rounded-xl border border-indigo-200 font-bold">
             🏢 {companyDetails.name} (#{companyDetails.code})
           </span>
         </div>
@@ -852,7 +852,7 @@ export const CompanyActivationView = () => {
       </div>
 
       {/* Bottom Footer */}
-      <div className="max-w-4xl mx-auto w-full mt-6 text-center text-slate-500 text-[11px] border-t border-slate-800 pt-4">
+      <div className="max-w-4xl mx-auto w-full mt-6 text-center text-slate-500 text-[11px] border-t border-slate-200 pt-4">
         JOY CORPORATE SOLUTIONS PRIVATE LIMITED &bull; ISO 27001 Certified &bull; Direct Government Gateway Authorized Partner
       </div>
 

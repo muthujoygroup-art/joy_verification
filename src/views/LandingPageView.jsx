@@ -1138,37 +1138,37 @@ export const LandingPageView = () => {
           <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
 
           {/* Direct API Performance & Uptime SLA Matrix */}
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-8 rounded-3xl border border-indigo-500/30 shadow-lg space-y-6">
+          <div className="bg-white text-slate-900 p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div className="text-center max-w-3xl mx-auto space-y-2">
-              <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider px-3.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 inline-block">
+              <span className="text-xs font-bold text-indigo-800 uppercase tracking-wider px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 inline-block">
                 DIRECT REGISTRY API TELEMETRY
               </span>
-              <h3 className="text-2xl sm:text-3xl font-bold font-outfit text-white">Direct Registry Connector Response Speed & Uptime SLA</h3>
-              <p className="text-slate-300 text-xs sm:text-sm">
+              <h3 className="text-2xl sm:text-3xl font-bold font-outfit text-slate-900">Direct Registry Connector Response Speed & Uptime SLA</h3>
+              <p className="text-slate-600 text-xs sm:text-sm">
                 JOY True Profile maintains direct encrypted connectors with government and banking rails for sub-second response times and 99.99% enterprise service availability.
               </p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-mono font-bold">UIDAI Aadhaar e-KYC</span>
-                <div className="text-xl font-black text-emerald-400 font-mono">0.42s TAT</div>
-                <span className="text-[10px] text-slate-400">Direct OTP Demographic Match</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">UIDAI Aadhaar e-KYC</span>
+                <div className="text-xl font-black text-emerald-700 font-mono">0.42s TAT</div>
+                <span className="text-[10px] text-slate-500">Direct OTP Demographic Match</span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-mono font-bold">NSDL PAN 2.0 Rail</span>
-                <div className="text-xl font-black text-indigo-400 font-mono">0.35s TAT</div>
-                <span className="text-[10px] text-slate-400">Active Tax ID & Name Validation</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">NSDL PAN 2.0 Rail</span>
+                <div className="text-xl font-black text-indigo-700 font-mono">0.35s TAT</div>
+                <span className="text-[10px] text-slate-500">Active Tax ID & Name Validation</span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-mono font-bold">EPFO UAN Moonlighting</span>
-                <div className="text-xl font-black text-amber-400 font-mono">0.78s TAT</div>
-                <span className="text-[10px] text-slate-400">Dual Employment Audit Radar</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">EPFO UAN Moonlighting</span>
+                <div className="text-xl font-black text-amber-700 font-mono">0.78s TAT</div>
+                <span className="text-[10px] text-slate-500">Dual Employment Audit Radar</span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-mono font-bold">NPCI IMPS Penny Drop</span>
-                <div className="text-xl font-black text-cyan-400 font-mono">0.38s TAT</div>
-                <span className="text-[10px] text-slate-400">₹1 Bank Beneficiary Match</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
+                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">NPCI IMPS Penny Drop</span>
+                <div className="text-xl font-black text-teal-700 font-mono">0.38s TAT</div>
+                <span className="text-[10px] text-slate-500">₹1 Bank Beneficiary Match</span>
               </div>
             </div>
           </div>

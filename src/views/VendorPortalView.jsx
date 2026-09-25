@@ -851,37 +851,37 @@ export const VendorPortalView = ({ directToken = null }) => {
             </div>
 
             {/* Certificate Acknowledgment Badge Box */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white space-y-3">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-slate-900 space-y-3">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-400" />
-                  <span className="font-black text-sm text-white">Official B2B Verification Certificate Issued</span>
+                  <Award className="w-5 h-5 text-indigo-700" />
+                  <span className="font-black text-sm text-slate-900">Official B2B Verification Certificate Issued</span>
                 </div>
                 <span className="badge badge-emerald text-[9px] font-mono font-bold">GRADE A+</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Certificate ID</span>
-                  <div className="font-mono font-bold text-amber-300 text-[11px] truncate">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Certificate ID</span>
+                  <div className="font-mono font-bold text-indigo-700 text-[11px] truncate">
                     JCS-VEND-MASTER-2026-9921
                   </div>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Verified CIN</span>
-                  <div className="font-mono font-bold text-white text-[11px] truncate">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Verified CIN</span>
+                  <div className="font-mono font-bold text-slate-800 text-[11px] truncate">
                     {formData.cin || 'U72900KA2020PTC134567'}
                   </div>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Verified GSTIN</span>
-                  <div className="font-mono font-bold text-white text-[11px] truncate">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Verified GSTIN</span>
+                  <div className="font-mono font-bold text-slate-800 text-[11px] truncate">
                     {formData.gstin || '29AAAAA0000A1Z5'}
                   </div>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">DPDP Consent Hash</span>
-                  <div className="font-mono font-bold text-emerald-400 text-[11px] truncate">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">DPDP Consent Hash</span>
+                  <div className="font-mono font-bold text-emerald-700 text-[11px] truncate">
                     SHA-256 Verified ✓
                   </div>
                 </div>

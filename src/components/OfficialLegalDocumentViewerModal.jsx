@@ -41,31 +41,31 @@ export const OfficialLegalDocumentViewerModal = ({ isOpen, onClose, docType, doc
       <div className="glass-panel w-full max-w-3xl bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 animate-modal-spring max-h-[92vh] flex flex-col overflow-hidden">
         
         {/* Modal Top Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white rounded-t-3xl shrink-0">
+        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 text-slate-900 rounded-t-3xl shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-purple-600/30 border border-purple-400/40 text-purple-300 flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-black">
               <Scale className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-white">{docTitle || 'Official Statutory Certificate'}</h3>
+                <h3 className="text-base font-black text-slate-900">{docTitle || 'Official Statutory Certificate'}</h3>
                 <span className="badge badge-purple text-[9px] font-black uppercase">GOVT COMPLIANT</span>
               </div>
-              <p className="text-xs text-slate-300 font-medium">{docSubtitle || 'Verified Point-in-Time Regulatory Record'}</p>
+              <p className="text-xs text-slate-500 font-medium">{docSubtitle || 'Verified Point-in-Time Regulatory Record'}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-all"
+              className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition-all shadow-xs"
               title="Print Document"
             >
               <Printer className="w-4 h-4" />
             </button>
             <button 
               onClick={onClose} 
-              className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer transition-all"
+              className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 cursor-pointer transition-all shadow-xs"
             >
               ✕
             </button>
@@ -77,8 +77,8 @@ export const OfficialLegalDocumentViewerModal = ({ isOpen, onClose, docType, doc
           
           {/* Certificate Header Banner */}
           <div className="p-6 rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-purple-50/80 via-white to-indigo-50/80 text-center space-y-3 relative overflow-hidden shadow-sm">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-900 text-white flex items-center justify-center mx-auto shadow-md">
-              <Award className="w-8 h-8 text-amber-300" />
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center mx-auto shadow-xs">
+              <Award className="w-8 h-8 text-indigo-700" />
             </div>
             
             <div>

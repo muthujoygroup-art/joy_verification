@@ -144,18 +144,18 @@ export const WorkforceConnectivityHub = () => {
                 onClick={() => handleSelectNode(node.id)}
                 className={`p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-4 group ${
                   isSelected
-                    ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white border-indigo-500 shadow-xl scale-[1.02]'
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]'
                     : 'bg-slate-50/90 hover:bg-white border-slate-200 text-slate-800 hover:border-slate-300 shadow-2xs'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className={`p-2.5 rounded-xl ${
-                    isSelected ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-400/40' : 'bg-white text-indigo-600 border border-slate-200 shadow-2xs'
+                    isSelected ? 'bg-white/20 text-white border border-white/30' : 'bg-white text-indigo-600 border border-slate-200 shadow-2xs'
                   }`}>
                     <NodeIcon className="w-5 h-5" />
                   </div>
                   <span className={`font-mono text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md border ${
-                    isSelected ? 'bg-white/10 text-slate-300 border-white/20' : node.badgeColor
+                    isSelected ? 'bg-white/20 text-white border-white/30' : node.badgeColor
                   }`}>
                     {node.roleTag}
                   </span>
@@ -165,16 +165,16 @@ export const WorkforceConnectivityHub = () => {
                   <h4 className={`text-sm sm:text-base font-black font-outfit line-clamp-1 ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                     {node.name}
                   </h4>
-                  <p className={`text-[11px] mt-1 line-clamp-2 leading-relaxed ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
+                  <p className={`text-[11px] mt-1 line-clamp-2 leading-relaxed ${isSelected ? 'text-indigo-100' : 'text-slate-500'}`}>
                     {node.summary}
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-200/40 text-[11px] font-bold">
-                  <span className={isSelected ? 'text-emerald-400' : 'text-indigo-600'}>
+                  <span className={isSelected ? 'text-white' : 'text-indigo-600'}>
                     {isSelected ? '● Active Inspection' : 'Inspect Role →'}
                   </span>
-                  {isSelected && <Sparkles className="w-3.5 h-3.5 text-amber-400" />}
+                  {isSelected && <Sparkles className="w-3.5 h-3.5 text-amber-300" />}
                 </div>
               </button>
             );
@@ -182,37 +182,37 @@ export const WorkforceConnectivityHub = () => {
         </div>
 
         {/* Right Active Node Deep Dive & Live Telemetry Inspector */}
-        <div className="lg:col-span-6 bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xl">
+        <div className="lg:col-span-6 bg-white text-slate-900 border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-sm">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-200">
                   <ActiveIcon className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-400 font-bold">INSPECTING ROLE</span>
-                  <h4 className="text-xl sm:text-2xl font-black text-white font-outfit">{activeNode.name}</h4>
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-indigo-600 font-bold">INSPECTING ROLE</span>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 font-outfit">{activeNode.name}</h4>
                 </div>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1.5">
+              <span className="font-mono text-[10px] uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold flex items-center gap-1.5">
                 <Activity className="w-3 h-3 animate-pulse" /> LIVE STREAM
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
               {activeNode.summary}
             </p>
 
             {/* Core Capabilities Checklist */}
             <div className="space-y-2.5">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold block">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
                 CORE VERIFICATION CAPABILITIES
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {activeNode.capabilities.map((cap, cIdx) => (
-                  <div key={cIdx} className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-200 flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="leading-snug text-[11px]">{cap}</span>
+                  <div key={cIdx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="leading-snug text-[11px] font-medium">{cap}</span>
                   </div>
                 ))}
               </div>
@@ -221,11 +221,11 @@ export const WorkforceConnectivityHub = () => {
             {/* Real-time KPI Metric Pills */}
             <div className="grid grid-cols-3 gap-2.5 pt-2">
               {Object.entries(activeNode.liveMetrics).map(([k, v], mIdx) => (
-                <div key={mIdx} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 block truncate">
+                <div key={mIdx} className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 block truncate">
                     {k.replace(/([A-Z])/g, ' $1')}
                   </span>
-                  <span className="text-xs sm:text-sm font-black text-emerald-400 font-outfit mt-1 block truncate">
+                  <span className="text-xs sm:text-sm font-black text-emerald-700 font-outfit mt-1 block truncate">
                     {v}
                   </span>
                 </div>
@@ -233,12 +233,12 @@ export const WorkforceConnectivityHub = () => {
             </div>
           </div>
 
-          <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-400 flex items-center gap-1.5">
-              <Cpu className="w-4 h-4 text-purple-400" />
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-600 flex items-center gap-1.5 font-medium">
+              <Cpu className="w-4 h-4 text-purple-600" />
               <span>JOY Zero-Trust Core 2.0</span>
             </span>
-            <span className="text-emerald-400 font-bold">256-Bit Encrypted Mesh ✓</span>
+            <span className="text-emerald-700 font-bold">256-Bit Encrypted Mesh ✓</span>
           </div>
         </div>
 

@@ -121,35 +121,35 @@ export const MetricDrilldownModal = ({
       <div className="w-full max-w-4xl h-full max-h-[calc(100vh-2rem)] bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col text-slate-900 shrink-0 animate-modal-spring">
         
         {/* Modal Header */}
-        <div className="shrink-0 p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white relative">
+        <div className="shrink-0 p-4 sm:p-5 bg-slate-50 text-slate-900 border-b border-slate-200 relative">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 border border-indigo-300">
                   Metric Inspector
                 </span>
-                <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Live Telemetry</span>
+                <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">• Live Telemetry</span>
               </div>
               
               <div className="flex items-center gap-2.5 flex-wrap pt-0.5">
-                <h2 className="text-base sm:text-xl font-black tracking-tight text-white">
+                <h2 className="text-base sm:text-xl font-black tracking-tight text-slate-900">
                   {title}
                 </h2>
-                <span className="text-indigo-300 font-mono text-sm sm:text-base font-bold bg-indigo-900/60 px-2.5 py-0.5 rounded-lg border border-indigo-700/50 shadow-xs">
+                <span className="text-indigo-800 font-mono text-sm sm:text-base font-bold bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-200 shadow-2xs">
                   {metricValue}
                 </span>
               </div>
               
-              <p className="text-[11px] text-slate-300 font-medium line-clamp-1 sm:line-clamp-none">{subtitle}</p>
+              <p className="text-[11px] text-slate-500 font-medium line-clamp-1 sm:line-clamp-none">{subtitle}</p>
             </div>
 
             <button 
               onClick={onClose}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-200 hover:text-white border border-white/20 hover:border-rose-400 transition-colors cursor-pointer shrink-0 text-xs font-bold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors cursor-pointer shrink-0 text-xs font-bold shadow-2xs"
               title="Close (Esc)"
             >
               <X className="w-4 h-4" />
-              <span>Close (Esc)</span>
+              <span>Close</span>
             </button>
           </div>
         </div>
@@ -239,7 +239,7 @@ export const MetricDrilldownModal = ({
               <div className="hidden sm:block border border-slate-200 rounded-2xl overflow-hidden shadow-2xs">
                 <div className="custom-horizontal-scroll">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-900 text-white font-bold text-[10.5px] uppercase tracking-wider">
+                    <thead className="bg-slate-100 text-slate-800 font-black text-[10.5px] uppercase tracking-wider border-b border-slate-200">
                       <tr>
                         <th className="p-3">Record Detail</th>
                         <th className="p-3">Entity / Department</th>

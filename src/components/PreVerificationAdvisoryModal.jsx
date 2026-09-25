@@ -116,11 +116,11 @@ export const PreVerificationAdvisoryModal = ({ isOpen, onClose, candidateName, c
         <button
           type="button"
           onClick={onClose}
-          className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+          className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 border-2 border-indigo-700"
         >
           <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-          <span>I Understand — Proceed to Verification</span>
-          <ArrowRight className="w-4 h-4" />
+          <span className="tracking-wide">I Understand — Proceed to Verification</span>
+          <ArrowRight className="w-4 h-4 text-white" />
         </button>
       </div>
     </div>
