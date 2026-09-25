@@ -8719,24 +8719,27 @@ export const HrExecutiveView = () => {
                       identifier: aadh,
                       token: hrAadhaarModal.candidate.token || hrAadhaarModal.candidate.id
                     });
-                    setHrAadhaarModal(prev => ({
-                      ...prev,
-                      isSendingOtp: false,
-                      isOtpSent: true,
-                      demoOtp: res?.demo_otp || '492018',
-                      maskedTarget: res?.masked_target || `XXXX-XXXX-${aadh.slice(-4)}`
-                    }));
-                    showToast(`📲 UIDAI OTP dispatched to employee's linked mobile number!`);
+                    if (res && res.success) {
+                      setHrAadhaarModal(prev => ({
+                        ...prev,
+                        isSendingOtp: false,
+                        isOtpSent: true,
+                        maskedTarget: res?.masked_target || `XXXX-XXXX-${aadh.slice(-4)}`
+                      }));
+                      showToast(`📲 UIDAI OTP dispatched to mobile linked with Aadhaar (${res?.masked_target || aadh.slice(-4)})!`);
+                    } else {
+                      setHrAadhaarModal(prev => ({
+                        ...prev,
+                        isSendingOtp: false,
+                        error: res?.message || 'UIDAI Gateway could not dispatch OTP. Please verify the 12-digit Aadhaar number and API gateway status.'
+                      }));
+                    }
                   } catch (err) {
-                    const fallbackOtp = String(Math.floor(100000 + Math.random() * 900000));
                     setHrAadhaarModal(prev => ({
                       ...prev,
                       isSendingOtp: false,
-                      isOtpSent: true,
-                      demoOtp: fallbackOtp,
-                      maskedTarget: `XXXX-XXXX-${aadh.slice(-4)}`
+                      error: err.message || 'UIDAI Gateway connection error. Please ensure active API gateway credentials are configured in SuperAdmin.'
                     }));
-                    showToast(`📲 UIDAI OTP dispatched to candidate's mobile (Verification Gateway)!`);
                   }
                 }}
                 className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
@@ -8763,26 +8766,15 @@ export const HrExecutiveView = () => {
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                     <span>2. Enter 6-Digit OTP Received on Mobile</span>
                   </label>
-                  <span className="text-[10px] text-emerald-700 font-mono font-medium">
-                    {hrAadhaarModal.maskedTarget}
+                  <span className="text-[10px] text-emerald-700 font-mono font-bold">
+                    Target: {hrAadhaarModal.maskedTarget}
                   </span>
                 </div>
-
-                {hrAadhaarModal.demoOtp && (
-                  <div 
-                    onClick={() => setHrAadhaarModal(prev => ({ ...prev, otp: hrAadhaarModal.demoOtp }))}
-                    className="p-2 bg-emerald-100/80 hover:bg-emerald-200/80 rounded-lg text-[11px] text-emerald-900 border border-emerald-300 flex items-center justify-between cursor-pointer transition-colors"
-                    title="Click to auto-fill sandbox OTP"
-                  >
-                    <span>🧪 <strong>Sandbox Demo OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-emerald-950">{hrAadhaarModal.demoOtp}</code></span>
-                    <span className="text-[10px] underline font-bold text-emerald-800">Click to Auto-Fill</span>
-                  </div>
-                )}
 
                 <input
                   type="text"
                   maxLength={6}
-                  placeholder="Enter 6-digit OTP (e.g. 492018)"
+                  placeholder="Enter 6-digit OTP received via SMS..."
                   value={hrAadhaarModal.otp}
                   onChange={(e) => setHrAadhaarModal(prev => ({ ...prev, otp: e.target.value.replace(/\D/g, '') }))}
                   className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-base font-mono font-black text-center tracking-widest text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"

@@ -664,22 +664,29 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
   const handleSendAadhaarOtp = async () => {
     setIsSendingAadhaarOtp(true);
-    const aadhClean = (candidate.aadhaarNo || candidate.aadhaar_no || '548912349876').replace(/\s+/g, '');
+    const aadhClean = (candidate.aadhaarNo || candidate.aadhaar_no || '').replace(/\s+/g, '');
+    if (!aadhClean || aadhClean.length !== 12) {
+      showToast('⚠️ Please provide a valid 12-digit Aadhaar number.');
+      setIsSendingAadhaarOtp(false);
+      return;
+    }
     try {
       const res = await api.sendOtp({
         channel: 'aadhaar',
         identifier: aadhClean,
         token: candidate.token || candidate.id
       });
-      if (res && res.demo_otp) setAadhaarDemoOtp(res.demo_otp);
-      if (res && res.masked_target) setAadhaarOtpMasked(res.masked_target);
-      setShowAadhaarOtpModal(true);
-      setAadhaarInputOtp('');
-      showToast('📲 UIDAI OTP dispatched to candidate registered mobile!');
+      if (res && res.success) {
+        if (res.masked_target) setAadhaarOtpMasked(res.masked_target);
+        setShowAadhaarOtpModal(true);
+        setAadhaarInputOtp('');
+        showToast(`📲 UIDAI OTP dispatched to mobile linked with Aadhaar (${res.masked_target || aadhClean.slice(-4)})!`);
+      } else {
+        showToast(`❌ ${res?.message || 'UIDAI Gateway could not dispatch OTP. Please check your Aadhaar number.'}`);
+      }
     } catch (err) {
       console.warn('Aadhaar OTP dispatch notice:', err);
-      setShowAadhaarOtpModal(true);
-      setAadhaarInputOtp('');
+      showToast(`❌ Connection Error: ${err.message || 'Failed to reach UIDAI Gateway.'}`);
     } finally {
       setIsSendingAadhaarOtp(false);
     }
@@ -748,20 +755,27 @@ export const EmployeePortalView = ({ directToken = null }) => {
 
   const handleSendMobileOtp = async () => {
     setIsSendingMobileOtp(true);
-    const cleanMob = (candidate.mobile || '9942817491').replace(/\s+/g, '');
+    const cleanMob = (candidate.mobile || '').replace(/\s+/g, '');
+    if (!cleanMob || cleanMob.length < 10) {
+      showToast('⚠️ Please provide a valid mobile number.');
+      setIsSendingMobileOtp(false);
+      return;
+    }
     try {
       const res = await api.sendOtp({
         channel: 'mobile',
         identifier: cleanMob,
         token: candidate.token || candidate.id
       });
-      if (res && res.demo_otp) setMobileDemoOtp(res.demo_otp);
-      setShowMobileOtpModal(true);
-      setMobileInputOtp('');
-      showToast('📱 SMS OTP dispatched to candidate registered mobile!');
+      if (res && res.success) {
+        setShowMobileOtpModal(true);
+        setMobileInputOtp('');
+        showToast('📱 SMS OTP dispatched to candidate registered mobile!');
+      } else {
+        showToast(`❌ ${res?.message || 'Could not dispatch SMS OTP.'}`);
+      }
     } catch (err) {
-      setShowMobileOtpModal(true);
-      setMobileInputOtp('');
+      showToast(`❌ Failed to send SMS OTP: ${err.message}`);
     } finally {
       setIsSendingMobileOtp(false);
     }
@@ -2067,17 +2081,6 @@ export const EmployeePortalView = ({ directToken = null }) => {
               A 6-digit OTP code has been dispatched to your UIDAI registered mobile number for Aadhaar <strong className="text-slate-900 font-mono">{candidate.aadhaarNo || '5489 1234 9876'}</strong>.
             </p>
 
-            {aadhaarDemoOtp && (
-              <div 
-                onClick={() => setAadhaarInputOtp(aadhaarDemoOtp)}
-                className="bg-indigo-50 hover:bg-indigo-100/80 p-3 rounded-xl border border-indigo-200 text-xs text-indigo-950 flex items-center justify-between cursor-pointer transition-colors"
-                title="Click to auto-fill sandbox OTP"
-              >
-                <span>🧪 <strong>Sandbox Test OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-indigo-950">{aadhaarDemoOtp}</code></span>
-                <span className="text-[10px] underline font-bold text-indigo-700">Click to Auto-Fill</span>
-              </div>
-            )}
-
             <form onSubmit={handleVerifyAadhaarOtpSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Enter 6-Digit UIDAI OTP *</label>
@@ -2086,7 +2089,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
                   maxLength="6"
                   required
                   autoFocus
-                  placeholder="Enter 6-digit OTP..."
+                  placeholder="Enter 6-digit OTP received on mobile..."
                   value={aadhaarInputOtp}
                   onChange={(e) => setAadhaarInputOtp(e.target.value.replace(/\D/g, ''))}
                   className="form-input text-center text-xl font-mono tracking-widest font-black py-2.5 rounded-2xl border-indigo-200 focus:border-indigo-500"
@@ -2125,17 +2128,6 @@ export const EmployeePortalView = ({ directToken = null }) => {
             <p className="text-xs text-slate-600 font-medium leading-relaxed">
               SMS verification code dispatched to mobile <strong className="text-slate-900 font-mono">{candidate.mobile || '+91 99428 17491'}</strong>.
             </p>
-
-            {mobileDemoOtp && (
-              <div 
-                onClick={() => setMobileInputOtp(mobileDemoOtp)}
-                className="bg-sky-50 hover:bg-sky-100/80 p-3 rounded-xl border border-sky-200 text-xs text-sky-950 flex items-center justify-between cursor-pointer transition-colors"
-                title="Click to auto-fill sandbox OTP"
-              >
-                <span>🧪 <strong>Sandbox Test OTP:</strong> <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded text-sky-950">{mobileDemoOtp}</code></span>
-                <span className="text-[10px] underline font-bold text-sky-700">Click to Auto-Fill</span>
-              </div>
-            )}
 
             <form onSubmit={handleVerifyMobileOtpSubmit} className="space-y-4">
               <div>
