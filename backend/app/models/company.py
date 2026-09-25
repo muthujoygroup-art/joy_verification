@@ -393,6 +393,46 @@ class HrUser(Base):
         p["terms_accepted_by"] = val
         self.permissions = p
 
+    @property
+    def family_details(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("family_details", {})
+
+    @family_details.setter
+    def family_details(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["family_details"] = val or {}
+        self.permissions = p
+
+    @property
+    def social_links(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("social_links", {})
+
+    @social_links.setter
+    def social_links(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["social_links"] = val or {}
+        self.permissions = p
+
+    @property
+    def statutory_details(self) -> Dict[str, Any]:
+        return (self.permissions or {}).get("statutory_details", {})
+
+    @statutory_details.setter
+    def statutory_details(self, val: Dict[str, Any]):
+        p = dict(self.permissions or {})
+        p["statutory_details"] = val or {}
+        self.permissions = p
+
+    @property
+    def languages(self) -> Any:
+        return (self.permissions or {}).get("languages", [])
+
+    @languages.setter
+    def languages(self, val: Any):
+        p = dict(self.permissions or {})
+        p["languages"] = val or []
+        self.permissions = p
+
     # Relationships
     company = relationship("Company", back_populates="hr_users")
     candidates = relationship("Candidate", back_populates="hr_user")

@@ -132,14 +132,73 @@ CREATE TABLE IF NOT EXISTS candidates (
     token VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     emp_id VARCHAR(100) NULL,
+    employee_number VARCHAR(50) NULL,
     email VARCHAR(255) NULL,
     mobile VARCHAR(50) NOT NULL,
     aadhaar_no VARCHAR(50) NULL,
     pan_no VARCHAR(50) NULL,
-    driving_license VARCHAR(100) NULL,
-    uan_epf VARCHAR(100) NULL,
+    uan_no VARCHAR(50) NULL,
+    passport_no VARCHAR(50) NULL,
+    driving_license_no VARCHAR(50) NULL,
+    voter_id VARCHAR(50) NULL,
+    ration_card_no VARCHAR(50) NULL,
     designation VARCHAR(255) NULL,
     dept VARCHAR(255) NULL,
+    employee_type VARCHAR(50) DEFAULT 'it_tech',
+    dob VARCHAR(50) NULL,
+    doj VARCHAR(50) NULL,
+    age INTEGER NULL,
+    gender VARCHAR(20) NULL,
+    marital_status VARCHAR(30) NULL,
+    mother_tongue VARCHAR(50) NULL,
+    languages_known VARCHAR(200) NULL,
+    pf_number VARCHAR(50) NULL,
+    esi_number VARCHAR(50) NULL,
+    religion VARCHAR(50) NULL,
+    caste VARCHAR(50) NULL,
+    category VARCHAR(50) NULL,
+    native_state VARCHAR(100) NULL,
+    native_district VARCHAR(100) NULL,
+    identification_marks TEXT NULL,
+    father_name VARCHAR(150) NULL,
+    father_mobile VARCHAR(50) NULL,
+    father_occupation VARCHAR(100) NULL,
+    mother_name VARCHAR(150) NULL,
+    mother_mobile VARCHAR(50) NULL,
+    mother_occupation VARCHAR(100) NULL,
+    spouse_name VARCHAR(150) NULL,
+    spouse_mobile VARCHAR(50) NULL,
+    spouse_occupation VARCHAR(100) NULL,
+    siblings JSON DEFAULT '[]',
+    children JSON DEFAULT '[]',
+    languages JSON DEFAULT '[]',
+    blood_group VARCHAR(20) NULL,
+    state VARCHAR(100) NULL,
+    district VARCHAR(100) NULL,
+    city VARCHAR(100) NULL,
+    area VARCHAR(150) NULL,
+    pincode VARCHAR(20) NULL,
+    present_address TEXT NULL,
+    permanent_address TEXT NULL,
+    alternate_mobile VARCHAR(50) NULL,
+    emergency_contact_name VARCHAR(150) NULL,
+    emergency_contact_phone VARCHAR(50) NULL,
+    qualification_category VARCHAR(100) NULL,
+    highest_qualification VARCHAR(150) NULL,
+    job_category VARCHAR(150) NULL,
+    job_type VARCHAR(100) NULL,
+    bank_name VARCHAR(150) NULL,
+    bank_account_no VARCHAR(100) NULL,
+    ifsc_code VARCHAR(50) NULL,
+    nominee_name VARCHAR(150) NULL,
+    nominee_relation VARCHAR(100) NULL,
+    linked_in_url VARCHAR(255) NULL,
+    github_url VARCHAR(255) NULL,
+    portfolio_url VARCHAR(255) NULL,
+    twitter_url VARCHAR(255) NULL,
+    instagram_url VARCHAR(255) NULL,
+    facebook_url VARCHAR(255) NULL,
+    youtube_url VARCHAR(255) NULL,
     company_id VARCHAR(50) NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     hr_id VARCHAR(50) NULL REFERENCES hr_users(id) ON DELETE SET NULL,
     status VARCHAR(50) DEFAULT 'Link Sent',
@@ -150,8 +209,21 @@ CREATE TABLE IF NOT EXISTS candidates (
     face_images JSON DEFAULT '{}',
     manual_checks JSON DEFAULT '{}',
     joining_form_data JSON DEFAULT '{}',
-    verification_date TIMESTAMP NULL,
+    custom_fields JSON DEFAULT '{}',
     industry_specialization JSON DEFAULT '{}',
+    specimen_signature TEXT NULL,
+    aadhaar_data JSON DEFAULT '{}',
+    pan_data JSON DEFAULT '{}',
+    bank_data JSON DEFAULT '{}',
+    dl_data JSON DEFAULT '{}',
+    epfo_data JSON DEFAULT '{}',
+    passport_data JSON DEFAULT '{}',
+    face_match_data JSON DEFAULT '{}',
+    court_record_data JSON DEFAULT '{}',
+    risk_score DOUBLE PRECISION DEFAULT 0.0,
+    bgv_verdict VARCHAR(50) DEFAULT 'Pending',
+    discrepancies_detected JSON DEFAULT '[]',
+    verification_date TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -160,14 +232,73 @@ ALTER TABLE candidates ADD COLUMN IF NOT EXISTS id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS token VARCHAR(100);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS name VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS emp_id VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_number VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mobile VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pan_no VARCHAR(50);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS driving_license VARCHAR(100);
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS uan_epf VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS uan_no VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS passport_no VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS driving_license_no VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS voter_id VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS ration_card_no VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS designation VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dept VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dob VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS doj VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS age INTEGER;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS gender VARCHAR(20);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS marital_status VARCHAR(30);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_tongue VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS languages_known VARCHAR(200);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pf_number VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS esi_number VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS religion VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS caste VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS category VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_state VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS native_district VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS father_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS father_mobile VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS father_occupation VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_mobile VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS mother_occupation VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS spouse_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS spouse_mobile VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS spouse_occupation VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS siblings JSON DEFAULT '[]';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS children JSON DEFAULT '[]';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS languages JSON DEFAULT '[]';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS blood_group VARCHAR(20);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS state VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS district VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS city VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS area VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pincode VARCHAR(20);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS present_address TEXT;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS permanent_address TEXT;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS alternate_mobile VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS qualification_category VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS highest_qualification VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS job_category VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS job_type VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bank_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bank_account_no VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS ifsc_code VARCHAR(50);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS nominee_name VARCHAR(150);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS nominee_relation VARCHAR(100);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS linked_in_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS github_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS portfolio_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS twitter_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS instagram_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS facebook_url VARCHAR(255);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS youtube_url VARCHAR(255);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS company_id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS hr_id VARCHAR(50);
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Link Sent';
@@ -178,8 +309,21 @@ ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verified_attributes JSON DEFAULT
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS face_images JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS manual_checks JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS joining_form_data JSON DEFAULT '{}';
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_date TIMESTAMP;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS custom_fields JSON DEFAULT '{}';
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS industry_specialization JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS specimen_signature TEXT;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS aadhaar_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS pan_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bank_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS dl_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS epfo_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS passport_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS face_match_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS court_record_data JSON DEFAULT '{}';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS risk_score DOUBLE PRECISION DEFAULT 0.0;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS bgv_verdict VARCHAR(50) DEFAULT 'Pending';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS discrepancies_detected JSON DEFAULT '[]';
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS verification_date TIMESTAMP;
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE candidates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 

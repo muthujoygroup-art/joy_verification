@@ -203,8 +203,17 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.native_district: existing_cand.native_district = payload.native_district
         if payload.identification_marks: existing_cand.identification_marks = payload.identification_marks
         if payload.father_name: existing_cand.father_name = payload.father_name
+        if payload.father_mobile: existing_cand.father_mobile = payload.father_mobile
+        if payload.father_occupation: existing_cand.father_occupation = payload.father_occupation
         if payload.mother_name: existing_cand.mother_name = payload.mother_name
+        if payload.mother_mobile: existing_cand.mother_mobile = payload.mother_mobile
+        if payload.mother_occupation: existing_cand.mother_occupation = payload.mother_occupation
         if payload.spouse_name: existing_cand.spouse_name = payload.spouse_name
+        if payload.spouse_mobile: existing_cand.spouse_mobile = payload.spouse_mobile
+        if payload.spouse_occupation: existing_cand.spouse_occupation = payload.spouse_occupation
+        if payload.siblings is not None: existing_cand.siblings = payload.siblings
+        if payload.children is not None: existing_cand.children = payload.children
+        if payload.languages is not None: existing_cand.languages = payload.languages
         if payload.blood_group: existing_cand.blood_group = payload.blood_group
         if payload.state: existing_cand.state = payload.state
         if payload.district: existing_cand.district = payload.district
@@ -215,6 +224,10 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.permanent_address: existing_cand.permanent_address = payload.permanent_address
         if payload.pan_no: existing_cand.pan_no = payload.pan_no
         if payload.uan_no: existing_cand.uan_no = payload.uan_no
+        if payload.passport_no: existing_cand.passport_no = payload.passport_no
+        if payload.driving_license_no: existing_cand.driving_license_no = payload.driving_license_no
+        if payload.voter_id: existing_cand.voter_id = payload.voter_id
+        if payload.ration_card_no: existing_cand.ration_card_no = payload.ration_card_no
         if payload.alternate_mobile: existing_cand.alternate_mobile = payload.alternate_mobile
         if payload.emergency_contact_name: existing_cand.emergency_contact_name = payload.emergency_contact_name
         if payload.emergency_contact_phone: existing_cand.emergency_contact_phone = payload.emergency_contact_phone
@@ -230,6 +243,10 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         if payload.linked_in_url: existing_cand.linked_in_url = payload.linked_in_url
         if payload.github_url: existing_cand.github_url = payload.github_url
         if payload.portfolio_url: existing_cand.portfolio_url = payload.portfolio_url
+        if payload.twitter_url: existing_cand.twitter_url = payload.twitter_url
+        if payload.instagram_url: existing_cand.instagram_url = payload.instagram_url
+        if payload.facebook_url: existing_cand.facebook_url = payload.facebook_url
+        if payload.youtube_url: existing_cand.youtube_url = payload.youtube_url
 
         # Check joining_form_data for statutory numbers fallback on update
         if payload.joining_form_data:
@@ -361,8 +378,17 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         native_district=payload.native_district or joining_data.get("nativeDistrict") or None,
         identification_marks=payload.identification_marks or joining_data.get("identificationMarks") or None,
         father_name=father_val,
+        father_mobile=payload.father_mobile or joining_data.get("fatherMobile") or None,
+        father_occupation=payload.father_occupation or joining_data.get("fatherOccupation") or None,
         mother_name=mother_val,
+        mother_mobile=payload.mother_mobile or joining_data.get("motherMobile") or None,
+        mother_occupation=payload.mother_occupation or joining_data.get("motherOccupation") or None,
         spouse_name=payload.spouse_name or joining_data.get("spouseName") or None,
+        spouse_mobile=payload.spouse_mobile or joining_data.get("spouseMobile") or None,
+        spouse_occupation=payload.spouse_occupation or joining_data.get("spouseOccupation") or None,
+        siblings=payload.siblings or joining_data.get("siblings") or [],
+        children=payload.children or joining_data.get("children") or [],
+        languages=payload.languages or joining_data.get("languages") or [],
         blood_group=payload.blood_group or joining_data.get("bloodGroup") or None,
         state=payload.state or joining_data.get("permanentState") or None,
         district=payload.district or joining_data.get("permanentCity") or None,
@@ -373,6 +399,10 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         permanent_address=perm_addr_val,
         pan_no=pan_val,
         uan_no=uan_val,
+        passport_no=payload.passport_no or joining_data.get("passportNo") or None,
+        driving_license_no=payload.driving_license_no or joining_data.get("drivingLicenseNo") or None,
+        voter_id=payload.voter_id or joining_data.get("voterId") or None,
+        ration_card_no=payload.ration_card_no or joining_data.get("rationCardNo") or None,
         alternate_mobile=payload.alternate_mobile or joining_data.get("alternateMobile") or None,
         emergency_contact_name=payload.emergency_contact_name or joining_data.get("emergencyContactName") or None,
         emergency_contact_phone=payload.emergency_contact_phone or joining_data.get("emergencyContactPhone") or None,
@@ -389,6 +419,9 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         github_url=payload.github_url or joining_data.get("githubUrl") or None,
         portfolio_url=payload.portfolio_url or joining_data.get("portfolioUrl") or None,
         twitter_url=payload.twitter_url or joining_data.get("twitterUrl") or None,
+        instagram_url=payload.instagram_url or joining_data.get("instagramUrl") or None,
+        facebook_url=payload.facebook_url or joining_data.get("facebookUrl") or None,
+        youtube_url=payload.youtube_url or joining_data.get("youtubeUrl") or None,
         company_id=resolved_comp_id,
         hr_id=resolved_hr_id,
         portal_password=payload.portal_password or "1234",
@@ -800,8 +833,17 @@ def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Se
     if payload.native_district is not None: cand.native_district = payload.native_district
     if payload.identification_marks is not None: cand.identification_marks = payload.identification_marks
     if payload.father_name is not None: cand.father_name = payload.father_name
+    if payload.father_mobile is not None: cand.father_mobile = payload.father_mobile
+    if payload.father_occupation is not None: cand.father_occupation = payload.father_occupation
     if payload.mother_name is not None: cand.mother_name = payload.mother_name
+    if payload.mother_mobile is not None: cand.mother_mobile = payload.mother_mobile
+    if payload.mother_occupation is not None: cand.mother_occupation = payload.mother_occupation
     if payload.spouse_name is not None: cand.spouse_name = payload.spouse_name
+    if payload.spouse_mobile is not None: cand.spouse_mobile = payload.spouse_mobile
+    if payload.spouse_occupation is not None: cand.spouse_occupation = payload.spouse_occupation
+    if payload.siblings is not None: cand.siblings = payload.siblings
+    if payload.children is not None: cand.children = payload.children
+    if payload.languages is not None: cand.languages = payload.languages
     if payload.blood_group is not None: cand.blood_group = payload.blood_group
     if payload.state is not None: cand.state = payload.state
     if payload.district is not None: cand.district = payload.district
@@ -812,6 +854,10 @@ def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Se
     if payload.permanent_address is not None: cand.permanent_address = payload.permanent_address
     if payload.pan_no is not None: cand.pan_no = payload.pan_no
     if payload.uan_no is not None: cand.uan_no = payload.uan_no
+    if payload.passport_no is not None: cand.passport_no = payload.passport_no
+    if payload.driving_license_no is not None: cand.driving_license_no = payload.driving_license_no
+    if payload.voter_id is not None: cand.voter_id = payload.voter_id
+    if payload.ration_card_no is not None: cand.ration_card_no = payload.ration_card_no
     if payload.alternate_mobile is not None: cand.alternate_mobile = payload.alternate_mobile
     if payload.emergency_contact_name is not None: cand.emergency_contact_name = payload.emergency_contact_name
     if payload.emergency_contact_phone is not None: cand.emergency_contact_phone = payload.emergency_contact_phone
@@ -828,6 +874,9 @@ def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Se
     if payload.github_url is not None: cand.github_url = payload.github_url
     if payload.portfolio_url is not None: cand.portfolio_url = payload.portfolio_url
     if payload.twitter_url is not None: cand.twitter_url = payload.twitter_url
+    if payload.instagram_url is not None: cand.instagram_url = payload.instagram_url
+    if payload.facebook_url is not None: cand.facebook_url = payload.facebook_url
+    if payload.youtube_url is not None: cand.youtube_url = payload.youtube_url
     if payload.status is not None: cand.status = payload.status
     if payload.portal_password is not None: cand.portal_password = payload.portal_password
     if payload.verification_config is not None: cand.verification_config = payload.verification_config
