@@ -1,0 +1,387 @@
+{
+  "aadhaar-detail-verif": {
+    "page": 9,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$\notp OTP REQUIRED ^\\d{6}$",
+    "sample": ""
+  },
+  "aadhaar-link-check": {
+    "page": 11,
+    "req_fields": "FIELD LABEL FORMAT\nid_type ID Type REQUIRED\nWhen id_type  is one of the values below, also send its companion field:\nMOBILE\n\u2192 \u00a0 mobile\nMobile REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\n\\d{3}[-.\\s]?\\d{4}$\nEMAIL  \u2192 \u00a0 email Email REQUIRED ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-\nzA-Z]{2,}$\naadhaar_number Aadhaar\nNumber\nREQUIRED ^[2-9]{1}[0-9]{11}$",
+    "sample": ""
+  },
+  "aadhaar-to-pan": {
+    "page": 12,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$",
+    "sample": ""
+  },
+  "aadhaar-to-pan-maske": {
+    "page": 13,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$",
+    "sample": ""
+  },
+  "aadhaar-to-pan-unmas": {
+    "page": 14,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$",
+    "sample": ""
+  },
+  "aadhaar-to-pan-ckyc": {
+    "page": 15,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$",
+    "sample": ""
+  },
+  "aadhaar-validation-v": {
+    "page": 17,
+    "req_fields": "FIELD LABEL FORMAT\naadhaarNumber Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$",
+    "sample": ""
+  },
+  "aadhaar-verify": {
+    "page": 18,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$",
+    "sample": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"data\": {\n      \"address\": \"Test Address, Test City, Test State - 000000\",\n      \"age_band\": \"20-30\",\n      \"gender\": \"M\",\n      \"masked_mobile_number\": \"XXXXXX9999\",\n      \"status_message\": \"Success\",\n      \"aadhaar_status_code\": \"1\"\n    }"
+  },
+  "driving-license-deta": {
+    "page": 19,
+    "req_fields": "FIELD LABEL FORMAT\ndriving_license_number Driving license number REQUIRED ^[A-Za-z]{2}\\d{2}[A-Za-z0-9]\n{10,13}$\ndate_of_birth Date of birth of license\nholder\nREQUIRED",
+    "sample": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"status\": \"Success\",\n    \"address\": \"Madhya Pradesh\",\n    \"ageBand\": \"20-30\",\n    \"gender\": \"MALE\",\n    \"maskedMobileNumber\": \"******5533\",\n    \"statusMessage\": \"785601683897 Exists\",\n    \"aadhaarStatusCode\": \"1\"\n  }"
+  },
+  "generate-aadhaar-otp": {
+    "page": 22,
+    "req_fields": "FIELD LABEL FORMAT\naadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$",
+    "sample": ""
+  },
+  "identity-verificatio": {
+    "page": 23,
+    "req_fields": "",
+    "sample": ""
+  },
+  "mobile-number-to-cha": {
+    "page": 24,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile-number-to-pan": {
+    "page": 30,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile-to-profile-ad": {
+    "page": 31,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile360": {
+    "page": 33,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "pan-details-v1": {
+    "page": 37,
+    "req_fields": "FIELD LABEL FORMAT\npan PAN Number REQUIRED ^[A-Z]{5}[0-9]{4}[A-Z]{1}$",
+    "sample": ""
+  },
+  "passport-verificatio": {
+    "page": 38,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"pan\": \"EFBPA9601F\",\n    \"pan_type\": \"Individual\",\n    \"fullname\": \"RAO ARJUNSINGH\",\n    \"first_name\": \"RAO\",\n    \"middle_name\": \"\",\n    \"last_name\": \"ARJUNSINGH\",\n    \"father_name\": \"RAM SINGH RAO\",\n    \"gender\": \"male\",\n    \"aadhaar_number\": \"41XXXXXXXX67\",\n    \"aadhaar_linked\": true,\n    \"dob\": \"09/02/2003\",\n    \"address\": {\n      \"building_name\": \"S/O: Ramsingh, 155/6, Chankyapuri, Nr JJ hospital\",\n      \"locality\": \"Ghatlodia S.O\",\n      \"street_name\": \"Ghatalodia, Ahmedabad City, Ahmedabad, \",\n      \"pincode\": \"380061\",\n      \"city\": \"Ahmadabad City\",\n      \"state\": \"Gujarat\",\n      \"country\": \"India\"\n    },\n    \"mobile\": \"\",\n    \"email\": \"\"\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 38 of 279",
+    "sample": ""
+  },
+  "voter-id-details": {
+    "page": 39,
+    "req_fields": "{\n  \"dob\": \"03-02-1999\",\n  \"fileNumber\": \"LK5072574276018\"\n}\n{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"file_number\": \"AH2066802792526\",\n    \"name\": \"ARJUNSINGH RAO\",\n    \"dob\": \"2003-02-09\",\n    \"application_type\": \"NORMAL\",\n    \"application_received_date\": \"2026-02-10\",\n    \"status\": \"VALID\"\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 39 of 279",
+    "sample": ""
+  },
+  "crif": {
+    "page": 43,
+    "req_fields": "FIELD LABEL FORMAT\nname Full Name REQUIRED\nmobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$",
+    "sample": ""
+  },
+  "mobile-to-account-v2": {
+    "page": 58,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile-to-account-v3": {
+    "page": 60,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$",
+    "sample": ""
+  },
+  "mobile-to-primary-up": {
+    "page": 62,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile-to-uan-v2": {
+    "page": 63,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$",
+    "sample": ""
+  },
+  "mobile-to-verified-u": {
+    "page": 64,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "pan-basic": {
+    "page": 66,
+    "req_fields": "FIELD LABEL FORMAT\npan_number Pan Number REQUIRED ^[A-Z]{3}[CPHFATBLJG][A-Z]\\d{4}[A-Z]$",
+    "sample": ""
+  },
+  "pan-experian": {
+    "page": 67,
+    "req_fields": "FIELD LABEL FORMAT\npan_number PAN Number REQUIRED ^[A-Z]{3}[CPHFATBLJG][A-Z]\\d{4}[A-Z]$",
+    "sample": ""
+  },
+  "pan-info": {
+    "page": 100,
+    "req_fields": "FIELD LABEL FORMAT\npan_number Pan\nNumber\nREQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-\nZa-z]$",
+    "sample": ""
+  },
+  "pan-info-v2": {
+    "page": 101,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"dob\": \"05/02/2000\",\n    \"pan\": \"GMTPP1412A\",\n    \"tax\": \"N/A\",\n    \"email\": null,\n    \"gender\": \"male\",\n    \"mobile\": null,\n    \"aadhaar\": \"XXXXXXXX3897\",\n    \"address\": {\n      \"state\": \"Madhya Pradesh\",\n      \"pin_code\": \"486001\",\n      \"address_line_1\": \"15 shiv prasad marg Saman pathkhan tola\",\n      \"address_line_2\": \"Rewa H.O\",\n      \"address_line_3\": \" Near kisor nyayalay huzur rewa\",\n      \"address_line_4\": \"Huzur\",\n      \"address_line_5\": \"\"\n    },\n    \"category\": \"Person\",\n    \"full_name\": \"SHIVANK SINGH PARIHAR\",\n    \"last_name\": \"PARIHAR\",\n    \"aadharlink\": true,\n    \"first_name\": \"SHIVANK\",\n    \"middle_name\": \"SINGH\"\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 101 of 279",
+    "sample": ""
+  },
+  "pan-to-insurance": {
+    "page": 104,
+    "req_fields": "FIELD LABEL FORMAT\npan_number Pan\nNumber\nREQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-\nZa-z]$",
+    "sample": ""
+  },
+  "pan-to-itr": {
+    "page": 105,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": [\n    {\n      \"pan\": \"COBPP0051F\",\n      \"insurer\": \"Bajaj Life Insurance Limited\",\n      \"agent_name\": \"MANIBHAI DAHYABHAI PARMAR\",\n      \"agency_code\": \"ABLIC1003342682\",\n      \"insurer_type\": \"Life\",\n      \"date_of_birth\": \"12 Mar 1964\",\n      \"status_of_agency\": \"Terminated for Non Fulfilment of Minimum business Gua\n      \"status_change_date\": \"10 Jun 2025\",\n      \"date_of_appointment\": \"25 May 2024\",\n      \"license_no_previously_held\": \"\"\n    },\n    {\n      \"pan\": \"COBPP0051F\",\n      \"insurer\": \"LIFE INSURANCE CORPORATION OF INDIA\",\n      \"agent_name\": \"MANIBHAI DAHYABHAI PARMAR\",\n      \"agency_code\": \"LIC05931833\",\n      \"insurer_type\": \"Life\",\n      \"date_of_birth\": \"12 Mar 1964\",\n      \"status_of_agency\": \"Inforce\",\n      \"status_change_date\": \"30 Dec 2025\",\n      \"date_of_appointment\": \"30 Dec 2025\",\n      \"license_no_previously_held\": \"\"\n    }\n  ],\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 105 of 279",
+    "sample": ""
+  },
+  "upi-id-payment-analy": {
+    "page": 108,
+    "req_fields": "FIELD LABEL FORMAT\nupi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$",
+    "sample": ""
+  },
+  "upi-to-account": {
+    "page": 109,
+    "req_fields": "FIELD LABEL FORMAT\nupi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$",
+    "sample": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"key\": \"iamashishtiwari2004-1@oksbi\",\n    \"data\": {\n      \"bank\": \"Bank of Baroda\",\n      \"city\": \"BABUPUR\",\n      \"name\": \"ASHISH TIWARI\",\n      \"state\": \"HARYANA\",\n      \"branch\": \"BABUPUR\",\n      \"center\": \"\",\n      \"address\": \"PLOT NO. 107, MAIN LINK ROAD, , DWARKA, EXPRESSWAY VILLAGE,BAB\n      \"contact\": \"+910221800223344\",\n      \"district\": \"GURGAON\"\n    }"
+  },
+  "verify-upi-id": {
+    "page": 112,
+    "req_fields": "FIELD LABEL FORMAT\nupi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$",
+    "sample": ""
+  },
+  "account-validation": {
+    "page": 113,
+    "req_fields": "FIELD LABEL FORMAT\naccount_number Bank Account Number REQUIRED ^\\d{9,18}$\nifsc_code IFSC Code REQUIRED ^[A-Z]{4}0[A-Z0-9]{6}$",
+    "sample": ""
+  },
+  "ifsc-lookup": {
+    "page": 114,
+    "req_fields": "FIELD LABEL FORMAT\nifsc IFSC Code REQUIRED ^[A-Z]{4}0[A-Z0-9]{6}$",
+    "sample": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"bank_details\": {\n      \"bank_address\": \"SUNRISE ARCADE VISHALA CIRCLE OPP VARKHAWALA PARTY PLOT J\n      \"bank_name\": \"Bank of Baroda\",\n      \"branch_name\": \"JUHAPURA\",\n      \"micr_code\": \"380012146\"\n    }"
+  },
+  "upi-verification": {
+    "page": 115,
+    "req_fields": "{\n  \"ifsc\": \"CBIN0282121\"\n}\n{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"bank\": \"BANK OF BARODA\",\n    \"ifsc\": \"BARB0GHATLO\",\n    \"neft\": \"Live\",\n    \"imps\": \"Live\",\n    \"rtgs\": \"Live\",\n    \"upi\": \"Live\",\n    \"ft\": \"Not Live\",\n    \"micr\": 380012081,\n    \"nbin\": 0,\n    \"address\": \"GROUND FLOOR, SHOP 65-70, DEVNANDAN COMPLEX, NEAR CHNAKYAPURI OV\n    \"city\": \"GHATLODIYA\",\n    \"state\": \"GUJARAT\",\n    \"branch\": \"GHATLODIA, AHMEDABAD\",\n    \"ifscSubcode\": \"BARB0\",\n    \"category\": \"\",\n    \"swiftCode\": \"\"\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 115 of 279",
+    "sample": ""
+  },
+  "cin-to-company-detai": {
+    "page": 117,
+    "req_fields": "FIELD LABEL FORMAT\ncin CIN REQUIRED ^[U|L]\\d{5}[A-Za-z]{2}\\d{4}[A-Za-z]{3}\\d{6}$",
+    "sample": ""
+  },
+  "cin-to-directors-loo": {
+    "page": 119,
+    "req_fields": "FIELD LABEL FORMAT\ncin Company CIN Number REQUIRED ^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$",
+    "sample": ""
+  },
+  "cin-to-gst": {
+    "page": 137,
+    "req_fields": "FIELD LABEL FORMAT\ncin Company CIN Number REQUIRED ^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$",
+    "sample": ""
+  },
+  "cin-to-gst-v2": {
+    "page": 139,
+    "req_fields": "{\n        \"company_name\": \"RELIANCE INDUSTRIES LIMITED\",\n        \"gst_number\": \"03AAACR5055K2ZG\",\n        \"pan_number\": \"AAACR5055K\",\n        \"category\": \"Company\",\n        \"status\": \"Active\"\n      },\n      {\n        \"company_name\": \"RELIANCE INDUSTRIES LIMITED\",\n        \"gst_number\": \"25AAACR5055K1ZB\",\n        \"pan_number\": \"AAACR5055K\",\n        \"category\": \"Company\",\n        \"status\": \"Cancelled\"\n      },\n      {\n        \"company_name\": \"RELIANCE INDUSTRIES LIMITED\",\n        \"gst_number\": \"03AAACR5055K1ZH\",\n        \"pan_number\": \"AAACR5055K\",\n        \"category\": \"Company\",\n        \"status\": \"Cancelled\"\n      },\n      {\n        \"company_name\": \"RELIANCE INDUSTRIES LIMITED\",\n        \"gst_number\": \"29AAACR5055K2Z2\",\n        \"pan_number\": \"AAACR5055K\",\n        \"category\": \"Company\",\n        \"status\": \"Cancelled\"\n      }\n    ]\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 139 of 279",
+    "sample": ""
+  },
+  "cin-to-mca": {
+    "page": 142,
+    "req_fields": "FIELD LABEL FORMAT\ncin_number Cin Number REQUIRED ^[L|U]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$",
+    "sample": ""
+  },
+  "company-name-to-cin": {
+    "page": 150,
+    "req_fields": "\"profitSharingPercentage\": \"\",\n            \"educationalQualification\": \"Secondary education\",\n            \"monetaryContributionValue\": \"\",\n            \"signatoryAssociationStatus\": \"\",\n            \"othersEducationalQualification\": \"\"\n          }\n        ],\n        \"contactAddress\": [\n          {\n            \"state\": \"Orissa\",\n            \"country\": \"India\",\n            \"district\": \"Ganjam\",\n            \"postalCode\": \"761115\",\n            \"streetAddress\": \"*****\",\n            \"streetAddress2\": \"Gunthapada\"\n          },\n          {\n            \"state\": \"Orissa\",\n            \"country\": \"India\",\n            \"district\": \"Ganjam\",\n            \"postalCode\": \"761115\",\n            \"streetAddress\": \"*****\",\n            \"streetAddress2\": \"Gunthapada\"\n          }\n        ],\n        \"dateOfAppointment\": \"08/02/2024\",\n        \"DirectorDisqualified\": \"N\"\n      }\n    ]\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 150 of 279",
+    "sample": ""
+  },
+  "company-name-to-gst-": {
+    "page": 151,
+    "req_fields": "FIELD LABEL FORMAT\ncompany_name Company Name REQUIRED",
+    "sample": "{\n  \"company_name\": \"Neeved Venture Private Limited\"\n}"
+  },
+  "din-to-director-deta": {
+    "page": 152,
+    "req_fields": "FIELD LABEL FORMAT\ndin DIN Number REQUIRED ^\\d{8}$",
+    "sample": "{\n  \"company_name\": \"Neeved Venture Private Limited\"\n}"
+  },
+  "din-to-mca": {
+    "page": 155,
+    "req_fields": "FIELD LABEL FORMAT\ndin_number DIN Number REQUIRED ^[0-9]{8}$",
+    "sample": ""
+  },
+  "fssai-verification": {
+    "page": 166,
+    "req_fields": "FIELD LABEL FORMAT\nid_number FSSAI ID Number REQUIRED ^[1-3]{1}\\d{13}$",
+    "sample": ""
+  },
+  "gst-advance-report": {
+    "page": 167,
+    "req_fields": "",
+    "sample": ""
+  },
+  "gst-details-basic-v2": {
+    "page": 174,
+    "req_fields": "FIELD LABEL FORMAT\ngstin GSTIN REQUIRED ^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$",
+    "sample": ""
+  },
+  "gst-report": {
+    "page": 175,
+    "req_fields": "",
+    "sample": ""
+  },
+  "llpin-to-company-det": {
+    "page": 203,
+    "req_fields": "},\n        \"status\": 1\n      },\n      \"2026-2027\": {\n        \"data\": {\n          \"response\": [\n            {\n              \"quarter\": \"Q1\",\n              \"preference\": \"M\"\n            },\n            {\n              \"quarter\": \"Q2\",\n              \"preference\": \"M\"\n            },\n            {\n              \"quarter\": \"Q3\",\n              \"preference\": \"M\"\n            },\n            {\n              \"quarter\": \"Q4\",\n              \"preference\": \"M\"\n            }\n          ]\n        },\n        \"status\": 1\n      }\n    }\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 203 of 279",
+    "sample": ""
+  },
+  "mca-company-search": {
+    "page": 206,
+    "req_fields": "FIELD LABEL FORMAT\ntype Search type (COMPANY_NAME / CIN / DIN) REQUIRED ^(COMPANY_NAME|CIN|DIN)$\nAllowed values: COMPANY_NAME , CIN , DIN\nvalue Search value based on selected type REQUIRED",
+    "sample": ""
+  },
+  "pan-to-gst-numbers": {
+    "page": 216,
+    "req_fields": "FIELD LABEL FORMAT\npan_number Pan\nNumber\nREQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-\nZa-z]$",
+    "sample": ""
+  },
+  "pan-to-gst-numbers-v": {
+    "page": 217,
+    "req_fields": "FIELD LABEL FORMAT\npan PAN Number REQUIRED ^[A-Za-z]{5}[0-9]{4}[A-Za-z]$",
+    "sample": ""
+  },
+  "udyam-advance": {
+    "page": 218,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"pan\": \"ABCDE1234F\",\n    \"gst_numbers\": [\n      {\n        \"gstin\": \"27ABCDE1234F1Z5\",\n        \"state\": \"Maharashtra\",\n        \"status\": \"Active\"\n      }\n    ]\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 218 of 279",
+    "sample": ""
+  },
+  "udyam-list": {
+    "page": 223,
+    "req_fields": "FIELD LABEL FORMAT\nid_type ID Type REQUIRED\nWhen id_type  is one of the values below, also send its companion field:\npan  \u2192 \u00a0 pan Pan REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG]\n[a-zA-Z]\\d{4}[A-Za-z]$\nmobile  \u2192 \u00a0 mobile Mobile REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?\n[-.\\s]?\\d{3}[-.\\s]?\\d{4}$\nemail  \u2192 \u00a0 email Email REQUIRED ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.\n[a-zA-Z]{2,}$\ncompany_name\n\u2192 \u00a0 company_name\nCompany\nName\nREQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG]\n[a-zA-Z]\\d{4}[A-Za-z]$",
+    "sample": ""
+  },
+  "udyam-report": {
+    "page": 224,
+    "req_fields": "FIELD LABEL FORMAT\nudyam_number Udyam Number REQUIRED",
+    "sample": "{\n  \"id_type\": \"pan\",\n  \"pan\": \"JEOPK5626F\"\n}"
+  },
+  "challan-number-to-ch": {
+    "page": 228,
+    "req_fields": "FIELD LABEL FORMAT\nchallan_number Challan Number REQUIRED",
+    "sample": ""
+  },
+  "challan-status": {
+    "page": 230,
+    "req_fields": "FIELD LABEL FORMAT\nid_number RC/Vehicle\nNumber(MP17CD1010)\nREQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]\n{4}$",
+    "sample": ""
+  },
+  "fastag-details": {
+    "page": 234,
+    "req_fields": "FIELD LABEL FORMAT\nvehicle_number Vehicle Number REQUIRED ^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$",
+    "sample": ""
+  },
+  "mobile-number-to-veh": {
+    "page": 236,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "rc-advance": {
+    "page": 239,
+    "req_fields": "FIELD LABEL FORMAT\nid_number Vehicle\nNumber(MP17CD0101)\nREQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]\n{4}$",
+    "sample": ""
+  },
+  "rc-details": {
+    "page": 241,
+    "req_fields": "FIELD LABEL FORMAT\nvehicle_number Vehicle Number REQUIRED",
+    "sample": ""
+  },
+  "rc-details-advance": {
+    "page": 243,
+    "req_fields": "FIELD LABEL FORMAT\nvehicle_number Vehicle Number REQUIRED",
+    "sample": ""
+  },
+  "rc-to-mobile-number": {
+    "page": 245,
+    "req_fields": "",
+    "sample": ""
+  },
+  "rc-to-number": {
+    "page": 246,
+    "req_fields": "FIELD LABEL FORMAT\nid_number Vehicle\nNumber(MP14CD0110)\nREQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]\n{4}$",
+    "sample": "{\n  \"id_number\": \"MP17CD0101\"\n}"
+  },
+  "vehicle-number-to-ch": {
+    "page": 247,
+    "req_fields": "FIELD LABEL FORMAT\nvehicle_number Vehicle Number REQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$",
+    "sample": ""
+  },
+  "din-to-pan": {
+    "page": 254,
+    "req_fields": "FIELD LABEL FORMAT\ndin_number DIN Number REQUIRED ^\\d{8}$",
+    "sample": ""
+  },
+  "employment-history-v": {
+    "page": 255,
+    "req_fields": "FIELD LABEL FORMAT\nid_number UAN Number REQUIRED ^[1-9][0-9]{11}$",
+    "sample": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"din_number\": \"09565255\",\n    \"din_status\": \"Approved\",\n    \"pan_number\": \"ABAPK2752N\",\n    \"first_name\": \"BHARATI\",\n    \"middle_name\": \"GOPAL\",\n    \"last_name\": \"KHANDELWAL\",\n    \"date_of_birth\": \"1956-04-17\",\n    \"father_first_name\": \"RUDMAL\",\n    \"father_middle_name\": \"GANGARAM\",\n    \"father_last_name\": \"KHANDELWAL\",\n    \"resident_of_india\": \"Y\",\n    \"membership_number\": \"\"\n  }"
+  },
+  "esic-data": {
+    "page": 256,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"client_id\": \"employment_history_uan_v2_jDtovapjsLmCykNUpppn\",\n    \"uan\": \"102161689669\",\n    \"employment_history\": [\n      {\n        \"name\": \"ABHISHEK GUPTA\",\n        \"guardian_name\": \"LAVKUSH GUPTA\",\n        \"establishment_name\": \"WEB4NEXT TECHNOLOGY PRIVATE LIMITED\",\n        \"member_id\": \"GJAHD26281780000010025\",\n        \"date_of_joining\": \"2023-08-01\",\n        \"date_of_exit\": null\n      }\n    ]\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 256 of 279",
+    "sample": ""
+  },
+  "mobile-to-pan": {
+    "page": 258,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "mobile-to-uan": {
+    "page": 260,
+    "req_fields": "FIELD LABEL FORMAT\nmobile_number Mobile\nNumber\nREQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}\n[-.\\s]?\\d{4}$",
+    "sample": ""
+  },
+  "uan-advance": {
+    "page": 261,
+    "req_fields": "FIELD LABEL FORMAT\nuan_number UAN Number REQUIRED ^[1-9][0-9]{11}$",
+    "sample": "{\n  \"pan_number\": \"JEOPK5626F\"\n}"
+  },
+  "uan-to-employment-hi": {
+    "page": 264,
+    "req_fields": "FIELD LABEL FORMAT\nuan_number UAN Number REQUIRED ^\\d{12}$",
+    "sample": ""
+  },
+  "uan-to-employment-pr": {
+    "page": 268,
+    "req_fields": "FIELD LABEL FORMAT\nuan_number Uan Number REQUIRED ^[1-9]{1}[0-9]{11}$",
+    "sample": ""
+  },
+  "uan-to-employment-re": {
+    "page": 269,
+    "req_fields": "{\n  \"success\": true,\n  \"message\": \"success\",\n  \"data\": {\n    \"uan_employment_history\": {\n      \"uan\": \"101615138758\",\n      \"name\": \"DEMO USER\",\n      \"guardian_name\": \"DEMO GUARDIAN\",\n      \"employment_history\": [\n        {\n          \"establishment_name\": \"DEMO COMPANY PVT LTD\",\n          \"member_id\": \"MRNOI00000000000010001\",\n          \"date_of_joining\": \"2022-01-01\",\n          \"date_of_exit\": \"2024-12-31\"\n        }\n      ]\n    },\n    \"uan_advance\": {\n      \"uan\": \"101615138758\",\n      \"name\": \"DEMO USER\",\n      \"pan_number\": \"ABCDE1234F\",\n      \"dob\": \"1990-01-01\",\n      \"gender\": \"Male\",\n      \"mobile\": \"9999999999\",\n      \"email\": \"demo@example.com\"\n    },\n    \"pan_info\": null\n  },\n  \"html\": null,\n  \"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",\n  \"timestamp\": \"2026-08-25T10:15:30.000Z\"\n}\nNeev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 269 of 279",
+    "sample": ""
+  },
+  "realtime-court-case-": {
+    "page": 272,
+    "req_fields": "",
+    "sample": ""
+  },
+  "domain-search": {
+    "page": 273,
+    "req_fields": "FIELD LABEL FORMAT\ndomain Domain REQUIRED",
+    "sample": ""
+  }
+}

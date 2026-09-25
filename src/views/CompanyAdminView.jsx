@@ -1488,7 +1488,16 @@ export const CompanyAdminView = () => {
               subtext="Suppliers in Directory" 
               icon={Building2} 
               color="purple" 
-              onClick={() => {}}
+              onClick={() => {
+                setActiveMainSection('vendor_verification');
+                setActiveTab('vendor_verification');
+                setVendorSubDivision('directory');
+                setVendorStatusFilter('All');
+                setTimeout(() => {
+                  const el = document.getElementById('vendor_section_container');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+              }}
             />
             <MetricCard 
               title="Verified Vendor Profiles" 
@@ -1497,7 +1506,16 @@ export const CompanyAdminView = () => {
               icon={CheckCircle2} 
               trend={`${Math.round(((vendors || []).filter(v => v.verifications?.gst?.verified && v.verifications?.pan?.verified).length / Math.max((vendors || []).length, 1)) * 100)}% Verified`}
               color="emerald" 
-              onClick={() => {}}
+              onClick={() => {
+                setActiveMainSection('vendor_verification');
+                setActiveTab('vendor_verification');
+                setVendorSubDivision('directory');
+                setVendorStatusFilter('100% Statutory Verified');
+                setTimeout(() => {
+                  const el = document.getElementById('vendor_section_container');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+              }}
             />
             <MetricCard 
               title="Postpaid Accrued Total" 
@@ -1517,8 +1535,13 @@ export const CompanyAdminView = () => {
               icon={FileText} 
               color="indigo" 
               onClick={() => {
-                const v = (vendors || [])[0];
-                if (v) setSelectedCertVendor(v);
+                setActiveMainSection('vendor_verification');
+                setActiveTab('vendor_verification');
+                setVendorSubDivision('pdf');
+                setTimeout(() => {
+                  const el = document.getElementById('vendor_section_container');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
               }}
             />
           </>
@@ -2748,7 +2771,7 @@ export const CompanyAdminView = () => {
 
       {/* TAB: ENTERPRISE VENDOR MANAGEMENT & STATUTORY VERIFICATION SUITE */}
       {activeTab === 'vendor_verification' && (
-        <div className="space-y-6 animate-fadeIn">
+        <div id="vendor_section_container" className="space-y-6 animate-fadeIn">
           
           {/* 🌟 Top Navigation & Hub Header */}
           <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-6">

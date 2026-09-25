@@ -32,13 +32,13 @@ export const SANDBOX_MODULES = [
     icon: CreditCard,
     color: 'from-amber-600 to-orange-600',
     endpoints: [
-      { slug: '/pan-details-v1', name: 'PAN Details V1 (Authoritative)', defaultPayload: { pan: 'ABCDE1234F', consent: 'Y' }, desc: 'Full NSDL Income Tax PAN details with holder name & category.' },
-      { slug: '/pan-info-v2', name: 'PAN Info V2 (Aadhaar Linked)', defaultPayload: { pan_number: 'ABCDE1234F' }, desc: 'PAN verification with Section 139AA Aadhaar seeding check.' },
-      { slug: '/pan-basic', name: 'PAN Basic Format Status', defaultPayload: { pan_number: 'ABCDE1234F' }, desc: 'Lightweight format & operative status verification.' },
-      { slug: '/pan-to-itr', name: 'PAN to ITR Filing History', defaultPayload: { pan_number: 'ABCDE1234F' }, desc: 'Verifies ITR acknowledgement & filing regularity.' },
-      { slug: '/pan-to-gst-numbers', name: 'PAN to GST Numbers', defaultPayload: { pan: 'ABCDE1234F' }, desc: 'Discovers all GSTIN registrations under this PAN.' },
-      { slug: '/pan-to-insurance', name: 'PAN to Insurance Policies', defaultPayload: { pan_number: 'ABCDE1234F' }, desc: 'IRDAI insurance policy records linked to PAN.' },
-      { slug: '/crif', name: 'CRIF Credit Bureau Check', defaultPayload: { pan: 'ABCDE1234F', name: 'MUTHUKUMAR P', mobile: '9942817491' }, desc: 'Commercial & retail credit report & score check.' }
+      { slug: '/pan-basic', name: 'PAN Basic NSDL (Active ✓)', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'Authoritative NSDL Income Tax PAN verification with holder name, category & operative status.' },
+      { slug: '/pan-info-v2', name: 'PAN Info V2 (Aadhaar Linked)', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'PAN verification with Section 139AA Aadhaar seeding check.' },
+      { slug: '/pan-details-v1', name: 'PAN Details V1 (Authoritative)', defaultPayload: { pan: 'JEOPK5626F', consent: 'Y' }, desc: 'Full NSDL Income Tax PAN details with holder name & category.' },
+      { slug: '/pan-to-itr', name: 'PAN to ITR Filing History', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'Verifies ITR acknowledgement & filing regularity.' },
+      { slug: '/pan-to-gst-numbers', name: 'PAN to GST Numbers', defaultPayload: { pan_number: 'AAACR5055K' }, desc: 'Discovers all GSTIN registrations under this PAN.' },
+      { slug: '/pan-to-insurance', name: 'PAN to Insurance Policies', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'IRDAI insurance policy records linked to PAN.' },
+      { slug: '/crif', name: 'CRIF Credit Bureau Check', defaultPayload: { name: 'MUTHUKUMAR P', mobile_number: '9942817491' }, desc: 'Commercial & retail credit report & score check.' }
     ]
   },
   {
@@ -47,11 +47,11 @@ export const SANDBOX_MODULES = [
     icon: Shield,
     color: 'from-purple-600 to-indigo-600',
     endpoints: [
-      { slug: '/aadhaar-verify', name: 'Aadhaar Demographic Verify', defaultPayload: { aadhaar_number: '555555555555' }, desc: 'Validates state, age band, gender & masked mobile.' },
-      { slug: '/aadhaar-link-check', name: 'Aadhaar Mobile Link Check', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491', aadhaar_number: '555555555555' }, desc: 'Verifies if specific phone is linked to Aadhaar.' },
-      { slug: '/aadhaar-to-pan', name: 'Aadhaar to PAN Mapping', defaultPayload: { aadhaar_number: '555555555555' }, desc: 'Discovers PAN number linked to this Aadhaar.' },
-      { slug: '/generate-aadhaar-otp-v2', name: 'Generate Aadhaar OTP V2', defaultPayload: { aadhaar_number: '555555555555' }, desc: 'Dispatches live UIDAI OTP to registered mobile.' },
-      { slug: '/aadhaar-detail-verification-v2', name: 'Aadhaar Detail with OTP', defaultPayload: { aadhaar_number: '555555555555', otp: '482913' }, desc: 'Complete biometric demographic & full address e-KYC extraction.' }
+      { slug: '/generate-aadhaar-otp-v2', name: 'Generate Aadhaar OTP V2', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Dispatches live UIDAI OTP to registered mobile.' },
+      { slug: '/aadhaar-detail-verification-v2', name: 'Aadhaar Detail with OTP', defaultPayload: { aadhaar_number: '548912349876', otp: '123456' }, desc: 'Complete biometric demographic & full address e-KYC extraction.' },
+      { slug: '/aadhaar-verify', name: 'Aadhaar Demographic Verify', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Validates state, age band, gender & masked mobile.' },
+      { slug: '/aadhaar-link-check', name: 'Aadhaar Mobile Link Check', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491', aadhaar_number: '548912349876' }, desc: 'Verifies if specific phone is linked to Aadhaar.' },
+      { slug: '/aadhaar-to-pan', name: 'Aadhaar to PAN Mapping', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Discovers PAN number linked to this Aadhaar.' }
     ]
   },
   {
@@ -60,9 +60,9 @@ export const SANDBOX_MODULES = [
     icon: Landmark,
     color: 'from-emerald-600 to-teal-600',
     endpoints: [
+      { slug: '/ifsc-lookup', name: 'RBI IFSC Code Lookup (Active ✓)', defaultPayload: { ifsc: 'HDFC0000128' }, desc: 'Fetches bank name, branch address, city, state, MICR & NEFT/IMPS flags.' },
       { slug: '/account-validation', name: 'IMPS Penny Drop (₹1)', defaultPayload: { account_number: '501002349845', ifsc_code: 'HDFC0000128' }, desc: 'Live NPCI ₹1 penny drop to extract beneficiary legal name.' },
-      { slug: '/ifsc-lookup', name: 'RBI IFSC Code Lookup', defaultPayload: { ifsc_code: 'HDFC0000128' }, desc: 'Fetches bank name, branch address, city & NEFT/RTGS flags.' },
-      { slug: '/upi-verification', name: 'UPI VPA Verification', defaultPayload: { vpa: 'joycorp@upi' }, desc: 'Validates UPI ID active status and registered name.' },
+      { slug: '/upi-verification', name: 'UPI VPA Verification', defaultPayload: { ifsc: 'HDFC0000128' }, desc: 'Validates UPI ID active status and registered name.' },
       { slug: '/upi-to-account', name: 'UPI to Bank Account', defaultPayload: { upi_id: 'muthukumar@okaxis' }, desc: 'Resolves destination bank account for UPI handle.' }
     ]
   },
@@ -72,7 +72,7 @@ export const SANDBOX_MODULES = [
     icon: Car,
     color: 'from-sky-600 to-blue-700',
     endpoints: [
-      { slug: '/driving-license-details', name: 'MoRTH DL Details & Validity', defaultPayload: { driving_license_number: 'KA0120200004910', date_of_birth: '15-05-1996' }, desc: 'Fetches complete Sarathi DL record, vehicle categories (MCWG, LMV), and expiry.' }
+      { slug: '/driving-license-details', name: 'MoRTH DL Details & Validity', defaultPayload: { driving_license_number: 'KA0120200004910', date_of_birth: '22-07-2003' }, desc: 'Fetches complete Sarathi DL record, vehicle categories (MCWG, LMV), and expiry.' }
     ]
   },
   {
@@ -81,9 +81,10 @@ export const SANDBOX_MODULES = [
     icon: Briefcase,
     color: 'from-indigo-600 to-violet-700',
     endpoints: [
-      { slug: '/uan-to-employment-profile', name: 'UAN Profile & Moonlighting Audit', defaultPayload: { uan: '101239019283' }, desc: 'Full member KYC, active establishments, and dual employment check.' },
-      { slug: '/uan-to-employment-history-v3', name: 'UAN Service History V3', defaultPayload: { uan: '101239019283' }, desc: 'All past companies, DOJs, DOEs, and resignation reasons.' },
-      { slug: '/esic-data', name: 'ESIC Social Security Data', defaultPayload: { id_type: 'MOBILE', mobile: '8610597895' }, desc: 'Employee State Insurance Corporation (ESIC) member records by Mobile or UAN.' }
+      { slug: '/uan-to-employment-profile', name: 'UAN Profile & Moonlighting Audit', defaultPayload: { uan_number: '101615138758' }, desc: 'Full member KYC, active establishments, and dual employment check.' },
+      { slug: '/uan-to-employment-history-v3', name: 'UAN Service History V3', defaultPayload: { uan_number: '101615138758' }, desc: 'All past companies, DOJs, DOEs, and resignation reasons.' },
+      { slug: '/employment-history-v2', name: 'Employment History V2', defaultPayload: { id_number: '101615138758' }, desc: 'Service tenure records from EPFO.' },
+      { slug: '/esic-data', name: 'ESIC Social Security Data', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491' }, desc: 'Employee State Insurance Corporation (ESIC) member records by Mobile or UAN.' }
     ]
   },
   {
@@ -92,7 +93,7 @@ export const SANDBOX_MODULES = [
     icon: Scale,
     color: 'from-red-600 to-rose-700',
     endpoints: [
-      { slug: '/realtime-court-case-search', name: 'Realtime Indian e-Courts Search', defaultPayload: { name: 'MUTHUKUMAR P', father_name: 'Suresh Kumar P', address: 'Bengaluru, Karnataka', dob: '1996-05-15' }, desc: 'Searches High Courts, District Courts, and Tribunals across India.' }
+      { slug: '/realtime-court-case-search', name: 'Realtime Indian e-Courts Search', defaultPayload: { name: 'MUTHUKUMAR P', father_name: 'Suresh Kumar P', address: 'Bengaluru, Karnataka' }, desc: 'Searches High Courts, District Courts, and Tribunals across India.' }
     ]
   },
   {
@@ -101,7 +102,7 @@ export const SANDBOX_MODULES = [
     icon: FileCheck,
     color: 'from-teal-600 to-cyan-700',
     endpoints: [
-      { slug: '/passport-verification', name: 'MEA Passport Seva File Verification', defaultPayload: { fileNumber: 'V9481920', dob: '1996-05-15', name: 'MUTHUKUMAR P' }, desc: 'Verifies Indian Passport validity, issue date, and adverse flags.' }
+      { slug: '/passport-verification', name: 'MEA Passport Verification (Active ✓)', defaultPayload: { fileNumber: 'AH2066802792526', dob: '09-02-2003', name: 'ARJUNSINGH RAO' }, desc: 'Verifies Indian Passport validity, file number, issue date, and adverse flags.' }
     ]
   },
   {
@@ -110,7 +111,7 @@ export const SANDBOX_MODULES = [
     icon: Vote,
     color: 'from-rose-600 to-pink-600',
     endpoints: [
-      { slug: '/voter-id-details', name: 'ECI Voter ID (EPIC) Details', defaultPayload: { fileNumber: 'ABC1234567', dob: '1996-05-15' }, desc: 'Election Commission of India constituency & polling booth check.' }
+      { slug: '/voter-id-details', name: 'ECI Voter ID Details', defaultPayload: { epic_number: 'WOC1574045', fileNumber: 'LK5072574276018', dob: '03-02-1999' }, desc: 'Election Commission of India constituency & polling booth check.' }
     ]
   },
   {
@@ -119,9 +120,10 @@ export const SANDBOX_MODULES = [
     icon: Truck,
     color: 'from-amber-600 to-yellow-600',
     endpoints: [
-      { slug: '/rc-details', name: 'MoRTH Vahan Vehicle RC Details', defaultPayload: { rc_number: 'KA01AB1234' }, desc: 'Owner name, vehicle class, maker model, fuel type & fitness.' },
-      { slug: '/rc-advance', name: 'Vahan RC Advance Report', defaultPayload: { rc_number: 'KA01AB1234' }, desc: 'Hypothecation, insurance company, and PUCC expiry.' },
-      { slug: '/challan-status', name: 'Traffic Challan Status', defaultPayload: { rc_number: 'KA01AB1234' }, desc: 'Pending traffic violation fines & challan dates.' },
+      { slug: '/vehicle-number-to-challan-details', name: 'Vehicle Traffic Challans (Active ✓)', defaultPayload: { vehicle_number: 'KA01AB1234' }, desc: 'Pending traffic violation fines & state challans.' },
+      { slug: '/rc-details', name: 'MoRTH Vahan Vehicle RC Details', defaultPayload: { vehicle_number: 'KA01AB1234' }, desc: 'Owner name, vehicle class, maker model, fuel type & fitness.' },
+      { slug: '/rc-advance', name: 'Vahan RC Advance Report', defaultPayload: { id_number: 'KA01AB1234' }, desc: 'Hypothecation, insurance company, and PUCC expiry.' },
+      { slug: '/challan-status', name: 'Traffic Challan Status', defaultPayload: { id_number: 'KA01AB1234' }, desc: 'Pending traffic violation fines & challan dates.' },
       { slug: '/fastag-details', name: 'NETC FASTag Status', defaultPayload: { vehicle_number: 'KA01AB1234' }, desc: 'FASTag issuer bank and active tag ID.' }
     ]
   },
@@ -131,8 +133,11 @@ export const SANDBOX_MODULES = [
     icon: Building2,
     color: 'from-slate-700 to-slate-900',
     endpoints: [
-      { slug: '/cin-to-company-details', name: 'MCA Company Profile by CIN', defaultPayload: { cin: 'U72900KA2020PTC131920' }, desc: 'Ministry of Corporate Affairs incorporation, capital, and status.' },
-      { slug: '/gst-details-basic-v2', name: 'GSTIN Basic & Principal Place', defaultPayload: { gstin: '29AABCJ1234D1Z5' }, desc: 'GST trade name, legal status, and active registration.' },
+      { slug: '/cin-to-directors-lookup', name: 'CIN to Directors & Board (Active ✓)', defaultPayload: { cin: 'U72900KA2020PTC131845' }, desc: 'Ministry of Corporate Affairs active board directors and DINs.' },
+      { slug: '/cin-to-company-details', name: 'MCA Company Profile by CIN', defaultPayload: { cin: 'U72900KA2020PTC131845' }, desc: 'Ministry of Corporate Affairs incorporation, capital, and status.' },
+      { slug: '/cin-to-mca', name: 'CIN to MCA Compliance', defaultPayload: { cin_number: 'U72900KA2020PTC131845' }, desc: 'ROC filing compliance and master record.' },
+      { slug: '/gst-details-basic-v2', name: 'GSTIN Basic & Principal Place', defaultPayload: { gstin: '29AAACR5055K2Z2' }, desc: 'GST trade name, legal status, and active registration.' },
+      { slug: '/pan-to-gst-numbers', name: 'PAN to GST List', defaultPayload: { pan_number: 'AAACR5055K' }, desc: 'All GSTINs registered under corporate PAN.' },
       { slug: '/din-to-director-details', name: 'MCA Director Profile by DIN', defaultPayload: { din: '08192830' }, desc: 'Director appointments and active directorships.' },
       { slug: '/udyam-advance', name: 'MSME Udyam Certificate Advance', defaultPayload: { udyam_number: 'UDYAM-KR-03-0012345' }, desc: 'Ministry of MSME enterprise classification and verified activity.' }
     ]
