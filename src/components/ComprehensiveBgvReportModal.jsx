@@ -418,10 +418,10 @@ export const ComprehensiveBgvReportModal = ({
               onClick={() => setShowReverifyConfirmModal(true)}
               disabled={isReverifying}
               className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold cursor-pointer bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-amber-500 shadow-sm transition-all"
-              title="Execute live real-time verification against CoinCircleTrust Gateways"
+              title="Execute live real-time verification against Server 2 Gateways"
             >
               {isReverifying ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Zap className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />}
-              <span className="hidden sm:inline">{isReverifying ? "Verifying Live..." : "⚡ Re-Verify (CoinCircleTrust)"}</span>
+              <span className="hidden sm:inline">{isReverifying ? "Verifying Live..." : "⚡ Re-Verify (Server 2)"}</span>
               <span className="sm:hidden">{isReverifying ? "Verifying..." : "⚡ Verify"}</span>
             </button>
 
@@ -1197,10 +1197,10 @@ export const ComprehensiveBgvReportModal = ({
                     COMPLETE 360° BGV RE-VERIFICATION
                   </span>
                   <strong className="text-sm text-slate-900 font-extrabold block">
-                    All 10+ Statutory Verification Gates (Neev 81 APIs)
+                    All 10+ Statutory Verification Gates (Server 2 Gateways)
                   </strong>
                   <span className="text-[11px] text-amber-900 font-mono block mt-0.5">
-                    Provider: CoinCircleTrust Multi-Provider Hub (UIDAI, NSDL, NPCI, MoRTH, EPFO, MEA, ECI, eCourts, ESIC)
+                    Provider: Server 2 Institutional Gateway (UIDAI, NSDL, NPCI, MoRTH, EPFO, MEA, ECI, eCourts, ESIC)
                   </span>
                 </div>
               </div>
@@ -1211,7 +1211,7 @@ export const ComprehensiveBgvReportModal = ({
                   <span>Are you sure you want to perform another verification for this employee document?</span>
                 </div>
                 <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>SuperAdmin Consumption Ledger</strong>.
+                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>Compliance / Institutional Ledger</strong>.
                 </p>
               </div>
             </div>

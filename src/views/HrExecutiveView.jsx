@@ -2699,7 +2699,7 @@ export const HrExecutiveView = () => {
                                 ? 'text-emerald-950 bg-emerald-50/90 border-emerald-300 hover:bg-emerald-100'
                                 : 'text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100'
                             }`}
-                            title="Manage, check, and trigger live document verification for this employee via CoinCircleTrust API"
+                            title="Manage, check, and trigger live document verification for this employee via Server 2 Gateway"
                           >
                             <CheckSquare className={`w-3.5 h-3.5 ${
                               cand.status === 'Verified' || Object.values(cand.verificationsCompleted || {}).filter(Boolean).length >= 3
@@ -7647,30 +7647,31 @@ export const HrExecutiveView = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-extrabold text-xs text-indigo-950 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>CoinCircleTrust Live Verification Engine (Neev 81 APIs)</span>
+                    <span>Institutional Verification Engine (Server 2 Active)</span>
                   </span>
-                  <span className="text-[10px] font-mono bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-full font-bold border border-indigo-200">
+                  <span className="text-[10px] font-mono bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full font-bold border border-emerald-300 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
                     Primary Gateway: Server 2 (Live)
                   </span>
                 </div>
                 <p className="text-[11px] text-indigo-900/80 leading-relaxed font-medium">
-                  Execute real-time government and institutional checks below. Verified data automatically synchronizes with the <strong>360° BGV PDF Dossier</strong> and writes an immutable audit log into the <strong>SuperAdmin API Consumption Ledger</strong>.
+                  Execute real-time government and institutional checks below. Verified data automatically synchronizes with the <strong>360° BGV PDF Dossier</strong> and writes an immutable audit log into the <strong>Institutional Verification Ledger</strong>.
                 </p>
               </div>
 
               {/* 10-Document Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
-                  { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'CoinCircleTrust / UIDAI Official' },
-                  { key: 'pan', name: '2. PAN Card Verification', icon: '💳', provider: 'CoinCircleTrust / Income Tax NSDL' },
-                  { key: 'bankCheck', name: '3. Bank Account Penny Drop', icon: '🏦', provider: 'CoinCircleTrust / NPCI IMPS Switch' },
-                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'CoinCircleTrust / EPFO Unified Portal' },
-                  { key: 'drivingLicense', name: '5. MoRTH Driving License', icon: '🚗', provider: 'CoinCircleTrust / Sarathi Gateway' },
-                  { key: 'passport', name: '6. MEA Passport Seva', icon: '✈️', provider: 'CoinCircleTrust / Passport Seva' },
-                  { key: 'voterId', name: '7. Election Commission Voter ID', icon: '🗳️', provider: 'CoinCircleTrust / ECI EPIC Registry' },
-                  { key: 'courtRecords', name: '8. National e-Courts Search', icon: '⚖️', provider: 'CoinCircleTrust / e-Courts Judiciary' },
-                  { key: 'esic', name: '9. ESIC Insurance Record', icon: '🏥', provider: 'CoinCircleTrust / Ministry of Labour' },
-                  { key: 'faceCapture', name: '10. 3D Facial Liveness & Match', icon: '👤', provider: 'JOY AI Craniofacial Biometrics' }
+                  { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'Server 2 / UIDAI Official Gateway' },
+                  { key: 'pan', name: '2. PAN Card Verification', icon: '💳', provider: 'Server 2 / Income Tax Department' },
+                  { key: 'bankCheck', name: '3. Bank Account Penny Drop', icon: '🏦', provider: 'Server 2 / NPCI IMPS Switch' },
+                  { key: 'uan', name: '4. EPFO UAN Service History', icon: '🏛️', provider: 'Server 2 / EPFO Unified Portal' },
+                  { key: 'drivingLicense', name: '5. MoRTH Driving License', icon: '🚗', provider: 'Server 2 / MoRTH Sarathi Gateway' },
+                  { key: 'passport', name: '6. MEA Passport Seva', icon: '✈️', provider: 'Server 2 / MEA Passport Seva' },
+                  { key: 'voterId', name: '7. Election Commission Voter ID', icon: '🗳️', provider: 'Server 2 / ECI Electoral Registry' },
+                  { key: 'courtRecords', name: '8. National e-Courts Search', icon: '⚖️', provider: 'Server 2 / National e-Courts Judiciary' },
+                  { key: 'esic', name: '9. ESIC Insurance Record', icon: '🏥', provider: 'Server 2 / Ministry of Labour ESIC' },
+                  { key: 'faceCapture', name: '10. 3D Facial Liveness & Match', icon: '👤', provider: 'Server 2 / Craniofacial Biometric Engine' }
                 ].map((doc) => {
                   const isChecked = !!managingDocVerifCandidate.verificationConfig?.[doc.key];
                   const isVerified = managingDocVerifCandidate.verificationsCompleted?.[doc.key] || 
@@ -7757,7 +7758,7 @@ export const HrExecutiveView = () => {
                           provider: docProvider,
                           fetchedData: fetched,
                           sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
-                          transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
+                          transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-AUTH-${Date.now().toString().slice(-8)}`,
                           latencyMs: res.data?.latency_ms || Math.floor(Math.random() * 30 + 45),
                           timestamp: new Date().toLocaleTimeString(),
                           status: 'SUCCESS'
@@ -7969,7 +7970,13 @@ export const HrExecutiveView = () => {
                         <div className="flex items-center gap-2.5 min-w-0">
                           <span className="text-xl shrink-0">{doc.icon}</span>
                           <div className="min-w-0">
-                            <strong className="text-slate-900 font-extrabold text-xs block truncate">{doc.name}</strong>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <strong className="text-slate-900 font-extrabold text-xs block truncate">{doc.name}</strong>
+                              <span className="inline-flex items-center gap-1 text-[8.5px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                                <span>Server 2 Active</span>
+                              </span>
+                            </div>
                             <span className="text-[9.5px] text-slate-500 font-mono block truncate">{doc.provider}</span>
                           </div>
                         </div>
@@ -8024,7 +8031,7 @@ export const HrExecutiveView = () => {
                                   ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-sm'
                                   : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 hover:border-slate-400'
                               }`}
-                              title={`Verify ${doc.name} via CoinCircleTrust API now`}
+                              title={`Verify ${doc.name} via Server 2 now`}
                             >
                               {isVerifyingThis ? (
                                 <>
@@ -8070,18 +8077,18 @@ export const HrExecutiveView = () => {
                 })}
               </div>
 
-              {/* ⚡ Real-Time Verification Telemetry & SuperAdmin Audit Ledger Card */}
+              {/* ⚡ Real-Time Verification Telemetry & Institutional Audit Ledger Card */}
               <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-2 shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
                     <span className="font-extrabold text-xs text-slate-100 flex items-center gap-1.5">
                       <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                      <span>Live SuperAdmin API Telemetry Stream</span>
+                      <span>Live Gateway Telemetry Stream</span>
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full">
-                    PostgreSQL: api_call_logs (Active)
+                    Institutional Ledger: api_call_logs (Active)
                   </span>
                 </div>
 
@@ -8095,7 +8102,7 @@ export const HrExecutiveView = () => {
                   <div>
                     <span className="text-slate-400 block text-[9.5px]">GATEWAY ROUTE:</span>
                     <strong className="text-indigo-300 font-mono truncate block">
-                      Server 2 (CoinCircleTrust)
+                      Server 2 (Institutional Gateway)
                     </strong>
                   </div>
                   <div>
@@ -8107,7 +8114,7 @@ export const HrExecutiveView = () => {
                   <div>
                     <span className="text-slate-400 block text-[9.5px]">AUDIT STATUS:</span>
                     <strong className="text-emerald-400 font-bold">
-                      Logged in SuperAdmin ✓
+                      Logged & DPDP Sealed ✓
                     </strong>
                   </div>
                 </div>
@@ -8117,7 +8124,7 @@ export const HrExecutiveView = () => {
                     🔒 DPDP Seal: {latestVerificationTelemetry?.sha256Seal || 'SHA256-JOY-VERIFIED-UIDAI-2026'}
                   </span>
                   <span className="text-slate-500 shrink-0 ml-2">
-                    TxRef: {latestVerificationTelemetry?.transactionRef || 'TXN-NEEV-UIDAI-881902'}
+                    TxRef: {latestVerificationTelemetry?.transactionRef || 'TXN-AUTH-UIDAI-881902'}
                   </span>
                 </div>
               </div>
@@ -8201,11 +8208,11 @@ export const HrExecutiveView = () => {
                           setManagingDocVerifCandidate(updated);
                           setLatestVerificationTelemetry({
                             docKey: 'all',
-                            docName: 'All 10+ Statutory Verification APIs (Batch Run)',
-                            provider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                            docName: 'All 10+ Statutory Verification Gates (Batch Run)',
+                            provider: 'Server 2 Multi-Provider Institutional Hub',
                             fetchedData: res.results || {},
                             sha256Seal: `SHA256-BATCH-${Date.now().toString(36).toUpperCase()}`,
-                            transactionRef: `TXN-BATCH-${Date.now().toString().slice(-8)}`,
+                            transactionRef: `TXN-AUTH-BATCH-${Date.now().toString().slice(-8)}`,
                             latencyMs: 142,
                             timestamp: new Date().toLocaleTimeString(),
                             status: 'SUCCESS'
@@ -8224,7 +8231,7 @@ export const HrExecutiveView = () => {
                         candidate: cand,
                         docKey: 'all',
                         docName: `Batch Re-Verification (${keysToVerify.length} Statutory Gates)`,
-                        docProvider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                        docProvider: 'Server 2 Multi-Provider Institutional Hub',
                         docIcon: '⚡',
                         docInputValue: `Employee: ${cand.name}`,
                         payload: null,
@@ -8240,12 +8247,12 @@ export const HrExecutiveView = () => {
                   {isVerifyingDocuments ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
-                      <span>Verifying with CoinCircleTrust...</span>
+                      <span>Verifying with Server 2...</span>
                     </>
                   ) : (
                     <>
                       <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-                      <span>Verify All (CoinCircleTrust) ⚡</span>
+                      <span>Verify All (Server 2) ⚡</span>
                     </>
                   )}
                 </button>
@@ -8321,7 +8328,7 @@ export const HrExecutiveView = () => {
                   <span>Are you sure you want to perform another verification for this employee document?</span>
                 </div>
                 <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>SuperAdmin Consumption Ledger</strong>.
+                  This will query the live government gateway, fetch the latest point-in-time statutory snapshot, update the candidate's <strong>360° BGV PDF Dossier</strong> and <strong>Individual Document Slips</strong>, and log an additional billable API transaction in the <strong>Institutional Verification Ledger</strong>.
                 </p>
               </div>
             </div>
@@ -8357,11 +8364,11 @@ export const HrExecutiveView = () => {
                         setManagingDocVerifCandidate(updated);
                         setLatestVerificationTelemetry({
                           docKey: 'all',
-                          docName: 'All 10+ Statutory Verification APIs (Batch Run)',
-                          provider: 'CoinCircleTrust Multi-Provider Hub (Neev 81 APIs)',
+                          docName: 'All 10+ Statutory Verification Gates (Batch Run)',
+                          provider: 'Server 2 Multi-Provider Institutional Hub',
                           fetchedData: res.results || {},
                           sha256Seal: `SHA256-BATCH-${Date.now().toString(36).toUpperCase()}`,
-                          transactionRef: `TXN-BATCH-${Date.now().toString().slice(-8)}`,
+                          transactionRef: `TXN-AUTH-BATCH-${Date.now().toString().slice(-8)}`,
                           latencyMs: 142,
                           timestamp: new Date().toLocaleTimeString(),
                           status: 'SUCCESS'
@@ -8417,7 +8424,7 @@ export const HrExecutiveView = () => {
                           provider: modal.docProvider,
                           fetchedData: fetched,
                           sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
-                          transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
+                          transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-AUTH-${Date.now().toString().slice(-8)}`,
                           latencyMs: res.data?.latency_ms || Math.floor(Math.random() * 30 + 45),
                           timestamp: new Date().toLocaleTimeString(),
                           status: 'SUCCESS'
@@ -8641,7 +8648,7 @@ export const HrExecutiveView = () => {
                         setLatestVerificationTelemetry({
                           docKey: 'aadhaar',
                           docName: '1. Aadhaar Card (OTP)',
-                          provider: 'CoinCircleTrust / UIDAI Official',
+                          provider: 'Server 2 / UIDAI Official Gateway',
                           fetchedData: fetched,
                           sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
                           transactionRef: fetched.uidai_auth_code || res.data?.transaction_ref || `TXN-UIDAI-${Date.now().toString().slice(-8)}`,
@@ -8791,13 +8798,13 @@ export const HrExecutiveView = () => {
                         provider: hrDocPromptModal.provider,
                         fetchedData: fetched,
                         sha256Seal: res.data?.sha256_seal || fetched.sha256_seal || `SHA256-${Date.now().toString(36).toUpperCase()}`,
-                        transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-NEEV-${Date.now().toString().slice(-8)}`,
+                        transactionRef: fetched.uidai_auth_code || fetched.imps_utr_reference || fetched.requestId || `TXN-AUTH-${Date.now().toString().slice(-8)}`,
                         latencyMs: res.data?.latency_ms || Math.floor(Math.random() * 30 + 45),
                         timestamp: new Date().toLocaleTimeString(),
                         status: 'SUCCESS'
                       });
                       setHrDocPromptModal({ isOpen: false, candidate: null, docKey: '', docName: '', provider: '', field1Label: '', field1Key: '', field1Value: '', field2Label: '', field2Key: '', field2Value: '', isVerifying: false, error: '' });
-                      showToast(`✅ ${hrDocPromptModal.docName} verified via CoinCircleTrust Gateway!`);
+                      showToast(`✅ ${hrDocPromptModal.docName} verified via Server 2 Gateway!`);
                     } else {
                       setHrDocPromptModal(prev => ({ ...prev, isVerifying: false, error: res?.message || res?.error || 'Verification failed. Please check document number.' }));
                     }
@@ -8805,6 +8812,7 @@ export const HrExecutiveView = () => {
                     setHrDocPromptModal(prev => ({ ...prev, isVerifying: false, error: err.message || 'Verification error.' }));
                   }
                 }}
+                className="btn btn-hrexecutive text-xs py-2 px-4 font-extrabold shadow-sm flex items-center gap-1.5 cursor-pointer"
                 className="btn btn-hrexecutive text-xs py-2 px-4 font-extrabold shadow-sm flex items-center gap-1.5 cursor-pointer"
               >
                 {hrDocPromptModal.isVerifying ? (

@@ -1798,7 +1798,10 @@ export const EmployeePortalView = ({ directToken = null }) => {
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-slate-900 text-base">Passport Verification (MEA Direct)</h4>
-                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
+                    <span className="inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                      <span>Server 2 Active</span>
+                    </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
                     Passport File Number: <strong className="text-slate-900 font-mono">{candidate.passportNo || 'J8912401'}</strong> • Ministry of External Affairs Verified
@@ -1844,7 +1847,10 @@ export const EmployeePortalView = ({ directToken = null }) => {
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-slate-900 text-base">EPFO UAN Dual Employment & Moonlighting Check</h4>
-                    <span className="badge badge-purple text-[10px]">Server 2 (CoinCircleTrust ⚡)</span>
+                    <span className="inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                      <span>Server 2 Active</span>
+                    </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5 font-medium">
                     UAN Number: <strong className="text-slate-900 font-mono">{candidate.uanEpf || '100982341209'}</strong> • Past Service Passbook History & Overlap Detection

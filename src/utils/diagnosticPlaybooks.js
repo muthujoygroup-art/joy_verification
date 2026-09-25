@@ -19,7 +19,7 @@ export const DIAGNOSTIC_PLAYBOOKS = {
     },
     why: 'The upstream UIDAI/API Setu Gateway did not respond within the 20-second threshold. This usually occurs during intermittent UIDAI server latency spikes or when network carrier OTP deliveries are delayed.',
     how: [
-      '1. Verify active CoinCircle / API Setu credentials in SuperAdmin ➔ Verification Gateways tab.',
+      '1. Verify active Server 2 / Verification Gateway credentials in Settings ➔ Verification Gateways tab.',
       '2. Trigger a live gateway ping in SuperAdmin ➔ 360° Health Monitoring to check UIDAI latency.',
       '3. Advise the candidate to click "Resend OTP" to generate a fresh OTP transaction.',
       '4. If UIDAI servers remain unresponsive, switch Company Routing Engine to "Server 1 Sandbox" or "Smart Hybrid" mode.'

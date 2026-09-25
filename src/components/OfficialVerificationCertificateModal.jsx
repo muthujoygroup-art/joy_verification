@@ -356,7 +356,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
                   {/* Check 3: Face Liveness */}
                   <tr className="hover:bg-slate-50">
                     <td className="p-2 font-bold text-slate-800">3. AI Face Liveness Match</td>
-                    <td className="p-2 text-slate-600">Coincircletrust 3-Pose Engine</td>
+                    <td className="p-2 text-slate-600">Server 2 Craniofacial Engine</td>
                     <td className="p-2 text-slate-500 font-mono text-[11px]">
                       {facePassed ? '99.4% Liveness Score' : 'Awaiting WebCam Face Scan'}
                     </td>

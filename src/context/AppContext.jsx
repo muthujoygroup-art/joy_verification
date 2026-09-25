@@ -29,12 +29,12 @@ const INITIAL_FEATURE_LIST = [
   { id: 'voterId', name: 'Voter ID Card (ECI) Verification', provider: 'Server 1 & 2', category: 'Government ID', serverMode: 'both', serverTag: 'Server 1 / Server 2', defaultOn: false, description: 'Election Commission of India EPIC voter verification' },
   { id: 'mobileOtp', name: 'Mobile Number OTP & WhatsApp Carrier', provider: 'Multi-Carrier Gateway', category: 'Contact Verification', serverMode: 'both', serverTag: 'Multi-Carrier', defaultOn: true, description: 'Direct carrier SMS OTP and Meta WhatsApp Cloud API' },
   { id: 'email', name: 'Official Candidate Email Address OTP Verification', provider: 'Multi-Carrier SMTP', category: 'Contact Verification', serverMode: 'both', serverTag: 'SMTP / Cloud API', defaultOn: true, description: 'Direct 6-digit email OTP dispatch & SMTP verification gateway' },
-  { id: 'passport', name: 'Passport Verification (MEA Direct)', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Government ID', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of External Affairs Passport File No & Date of Birth verification' },
-  { id: 'uan', name: 'EPFO Past Employment / UAN Dual Employment V3', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Employment', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: 'EPFO Service Passbook history, overlapping dates & moonlighting detection' },
-  { id: 'criminalCheck', name: 'Court & Criminal Record Background Check', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'District Court, High Court & National Crime CCTNS record check' },
-  { id: 'education', name: 'Educational Degree & University Board Check', provider: 'Server 2 (CoinCircleTrust)', category: 'Education', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'University roll number, UGC/AICTE degree authentication' },
-  { id: 'directorship', name: 'DIN / MCA Directorship Check (Moonlighting Prevention)', provider: 'Server 2 (CoinCircleTrust Exclusive ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of Corporate Affairs Director Identification Number & CIN audit' },
-  { id: 'faceCapture', name: 'AI 3D WebCam Biometric Liveness Match', provider: 'Server 2 (CoinCircleTrust Biometrics)', category: 'Biometrics', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: '3D face geometry, anti-spoofing liveness & photo match score' },
+  { id: 'passport', name: 'Passport Verification (MEA Direct)', provider: 'Server 2 (Institutional Gateway ⚡)', category: 'Government ID', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of External Affairs Passport File No & Date of Birth verification' },
+  { id: 'uan', name: 'EPFO Past Employment / UAN Dual Employment V3', provider: 'Server 2 (Institutional Gateway ⚡)', category: 'Employment', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: 'EPFO Service Passbook history, overlapping dates & moonlighting detection' },
+  { id: 'criminalCheck', name: 'Court & Criminal Record Background Check', provider: 'Server 2 (Institutional Gateway ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'District Court, High Court & National Crime CCTNS record check' },
+  { id: 'education', name: 'Educational Degree & University Board Check', provider: 'Server 2 (Institutional Gateway ⚡)', category: 'Education', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'University roll number, UGC/AICTE degree authentication' },
+  { id: 'directorship', name: 'DIN / MCA Directorship Check (Moonlighting Prevention)', provider: 'Server 2 (Institutional Gateway ⚡)', category: 'Compliance', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: false, description: 'Ministry of Corporate Affairs Director Identification Number & CIN audit' },
+  { id: 'faceCapture', name: 'AI 3D WebCam Biometric Liveness Match', provider: 'Server 2 (Craniofacial Biometrics)', category: 'Biometrics', serverMode: 'server2_only', serverTag: 'Server 2 Exclusive ⚡', defaultOn: true, description: '3D face geometry, anti-spoofing liveness & photo match score' },
   { id: 'addressCheck', name: 'Physical Address Verification Dispatch', provider: 'Internal Ops', category: 'Field Check', serverMode: 'both', serverTag: 'Internal Ops', defaultOn: false, description: 'GPS geotagged physical home/office visit' }
 ];
 
@@ -2144,8 +2144,8 @@ export const AppProvider = ({ children }) => {
     setCompanies(prev => prev.map(c => c.id === companyId ? { ...c, apiRoutingEngine: engine } : c));
     const engineLabels = {
       hybrid: 'Smart Hybrid Engine (Server 1 + Server 2 Auto-Fallback ⚡)',
-      server1: 'Server 1 Only (Sandbox API Gateway 🌐)',
-      server2: 'Server 2 Only (CoinCircleTrust 47+ APIs 🛡️)'
+      server1: 'Server 1 Only (Primary Standard Gateway 🌐)',
+      server2: 'Server 2 Only (Institutional Gateway 47+ Checks 🛡️)'
     };
     showToast(`Verification Engine set to ${engineLabels[engine] || engine}`);
   };
@@ -3025,7 +3025,7 @@ export const AppProvider = ({ children }) => {
           } catch (e) {}
           return nextList;
         });
-        showToast(`✅ ${docType.toUpperCase()} verified via CoinCircleTrust Gateway & saved to PostgreSQL!`);
+        showToast(`✅ ${docType.toUpperCase()} verified via Server 2 Gateway & saved to PostgreSQL!`);
         return resp;
       }
 
@@ -3100,10 +3100,10 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // ⚡ Execute Batch Live Verification via CoinCircleTrust for All / Selected Documents
+  // ⚡ Execute Batch Live Verification via Server 2 for All / Selected Documents
   const verifyAllCandidateDocuments = async (candidateToken, docTypes = null) => {
     try {
-      showToast(`⚡ Initiating CoinCircleTrust multi-API verification...`);
+      showToast(`⚡ Initiating Server 2 multi-gateway verification...`);
       const resp = await api.verifyAllCandidateDocuments(candidateToken, docTypes);
       if (resp && resp.success) {
         const updatedCandidate = resp.candidate || {};

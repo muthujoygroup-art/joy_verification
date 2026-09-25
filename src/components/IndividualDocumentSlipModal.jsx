@@ -567,7 +567,7 @@ export const IndividualDocumentSlipModal = ({
 
             <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between text-[10px] text-slate-400 font-mono gap-2">
               <div>Audited & Certified by: <strong>{hrName} (Compliance Officer)</strong></div>
-              <div>Platform Gateway: <strong>CoinCircleTrust / JOY BGV Core 2.0</strong></div>
+              <div>Platform Gateway: <strong>Server 2 / JOY BGV Core 2.0</strong></div>
             </div>
           </div>
         </div>

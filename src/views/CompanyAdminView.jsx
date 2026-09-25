@@ -4530,7 +4530,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <div>
                     <h4 className="font-black text-slate-900 text-sm sm:text-base">Upstream Verification Server Routing Engine</h4>
-                    <p className="text-slate-500 text-[11px]">Select your company's upstream data fetching engine between Server 1 (Sandbox) and Server 2 (CoinCircleTrust)</p>
+                    <p className="text-slate-500 text-[11px]">Select your company's upstream data fetching engine between Server 1 (Standard) and Server 2 (Institutional Gateway)</p>
                   </div>
                 </div>
 
@@ -4566,7 +4566,7 @@ export const CompanyAdminView = () => {
                     </div>
                     <strong className="text-slate-900 font-black text-xs block">⚡ Smart Hybrid Engine</strong>
                     <p className="text-slate-600 text-[11px] leading-relaxed">
-                      Routes standard IDs via <strong>Server 1 (Sandbox)</strong>. Automatically routes non-Sandbox checks (<strong>Passport, EPFO UAN V3, Court Records, Moonlighting Directorship</strong>) via <strong>Server 2 (CoinCircleTrust)</strong>.
+                      Routes standard IDs via <strong>Server 1 (Primary)</strong>. Automatically routes institutional checks (<strong>Passport, EPFO UAN V3, Court Records, Moonlighting Directorship</strong>) via <strong>Server 2 (Institutional Gateway)</strong>.
                     </p>
                   </div>
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-teal-800">
@@ -4595,9 +4595,9 @@ export const CompanyAdminView = () => {
                         className="text-indigo-600"
                       />
                     </div>
-                    <strong className="text-slate-900 font-black text-xs block">🌐 Server 1: Sandbox API Router</strong>
+                    <strong className="text-slate-900 font-black text-xs block">🌐 Server 1: Primary Standard Gateway</strong>
                     <p className="text-slate-600 text-[11px] leading-relaxed">
-                      Exclusively queries Sandbox API (<code className="font-mono text-[10px]">api.sandbox.co.in</code>). Fast standard checks for Aadhaar, PAN, Bank IMPS, and Driving License.
+                      Queries Server 1 high-speed standard verification gateway. Fast checks for Aadhaar, PAN, Bank IMPS, and Driving License.
                     </p>
                   </div>
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
@@ -4606,7 +4606,7 @@ export const CompanyAdminView = () => {
                   </div>
                 </div>
 
-                {/* 3. Server 2 Only (CoinCircleTrust 47+ APIs) */}
+                {/* 3. Server 2 Only (Institutional Gateway) */}
                 <div 
                   onClick={() => updateCompanyRoutingEngine(company.id, 'server2')}
                   className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between space-y-3 ${
@@ -4617,7 +4617,7 @@ export const CompanyAdminView = () => {
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="badge badge-purple text-[9px] font-black">SERVER 2 (47+ APIs)</span>
+                      <span className="badge badge-purple text-[9px] font-black">SERVER 2 (47+ CHECKS)</span>
                       <input 
                         type="radio" 
                         name="routingEngine"
@@ -4626,13 +4626,13 @@ export const CompanyAdminView = () => {
                         className="text-purple-600"
                       />
                     </div>
-                    <strong className="text-slate-900 font-black text-xs block">🛡️ Server 2: CoinCircleTrust</strong>
+                    <strong className="text-slate-900 font-black text-xs block">🛡️ Server 2: Institutional Gateway</strong>
                     <p className="text-slate-600 text-[11px] leading-relaxed">
-                      Exclusively queries CoinCircleTrust (<code className="font-mono text-[10px]">api.coincircletrust.com</code>). Full institutional BGV, Passport, Court eCourts, Dual Employment, and 3D Biometrics.
+                      Exclusively queries Server 2 Institutional verification cluster. Full institutional BGV, Passport, Court eCourts, Dual Employment, and 3D Biometrics.
                     </p>
                   </div>
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-purple-700 font-bold">
-                    <span>47 Enterprise APIs</span>
+                    <span>47 Enterprise Verification Gates</span>
                     <span>Cost: ₹4.00/call</span>
                   </div>
                 </div>

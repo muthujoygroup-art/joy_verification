@@ -381,7 +381,7 @@ export const UniversalEntityTrackerModal = ({
                     <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
                       <strong className="text-purple-400 flex items-center gap-1.5">
                         <Cpu className="w-3.5 h-3.5" />
-                        Server 2 (CoinCircleTrust ⚡)
+                        Server 2 (Institutional Gateway ⚡)
                       </strong>
                       <span className="text-[9px] text-purple-300 font-bold">Premium Tier</span>
                     </div>
