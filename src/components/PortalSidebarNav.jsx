@@ -521,7 +521,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'vendor_register', label: '2. Register & Onboard New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
             { id: 'vendor_links', label: '3. Magic Link Dispatch & Tracker', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
             { id: 'vendor_studio', label: '4. Statutory API Studio (11 Gateways)', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
-            { id: 'vendor_pdf', label: '5. Official Vendor Due Diligence PDF', tab: 'vendor_verification', modal: 'vendor_pdf_export', icon: Download }
+            { id: 'vendor_pdf', label: '5. Official Vendor Due Diligence PDF', tab: 'vendor_verification', subDivision: 'pdf', icon: Download }
           ]
         },
         {

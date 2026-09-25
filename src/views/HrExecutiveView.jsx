@@ -7782,31 +7782,31 @@ export const HrExecutiveView = () => {
       {/* ⚡ MODAL: MANAGE & VERIFY DOCUMENTS LATER */}
       {managingDocVerifCandidate && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[999999] bg-slate-950/85 backdrop-blur-md p-2 sm:p-4 md:p-6 flex items-center justify-center overflow-hidden animate-fadeIn"
+          className="fixed inset-0 z-[999999] bg-slate-950/80 backdrop-blur-md p-3 sm:p-6 md:p-8 flex items-center justify-center overflow-y-auto animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) setManagingDocVerifCandidate(null);
           }}
         >
-          <div className="bg-white text-slate-900 w-full max-w-2xl h-full max-h-[calc(100vh-2rem)] rounded-2xl sm:rounded-3xl p-5 sm:p-7 space-y-4 shadow-2xl border border-slate-200 animate-modal-spring overflow-hidden flex flex-col shrink-0 relative z-10">
+          <div className="bg-white text-slate-900 w-full max-w-5xl h-full max-h-[92vh] rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-200 animate-modal-spring overflow-hidden flex flex-col shrink-0 relative z-10 my-auto">
             
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  <CheckSquare className="w-5 h-5" />
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+              <div className="flex items-center gap-3.5">
+                <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-700 border-2 border-indigo-200 shadow-2xs">
+                  <CheckSquare className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-slate-900">
-                    Verify Documents & KYC Checklist ⚡
+                  <h3 className="font-black text-lg sm:text-xl text-slate-900 tracking-tight flex items-center gap-2">
+                    <span>Verify Documents & KYC Checklist ⚡</span>
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-xs sm:text-sm text-slate-600 font-semibold mt-0.5">
                     {managingDocVerifCandidate.name} • #{managingDocVerifCandidate.empId || 'EMP-2026'} • {currentCompany?.name}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setManagingDocVerifCandidate(null)} 
-                className="flex items-center gap-1 text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                className="flex items-center gap-1.5 text-slate-400 hover:text-slate-900 p-2 rounded-xl hover:bg-slate-100 transition-all cursor-pointer text-xs font-bold"
                 title="Close (Esc)"
               >
                 <X className="w-5 h-5" />
@@ -7815,25 +7815,25 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* Modal Body */}
-            <div className="overflow-y-auto flex-1 space-y-3.5 pr-1 text-xs">
-              <div className="p-3.5 bg-gradient-to-r from-indigo-50 via-purple-50 to-emerald-50 border border-indigo-200 rounded-2xl text-indigo-950 space-y-1.5 shadow-2xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-xs text-indigo-950 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+            <div className="overflow-y-auto flex-1 space-y-4 pr-1 text-xs">
+              <div className="p-4 bg-gradient-to-r from-indigo-50 via-purple-50 to-emerald-50 border-2 border-indigo-200/80 rounded-2xl text-indigo-950 space-y-2 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <span className="font-black text-sm text-indigo-950 flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-indigo-600" />
                     <span>Institutional Verification Engine (Server 2 Active)</span>
                   </span>
-                  <span className="text-[10px] font-mono bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full font-bold border border-emerald-300 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                  <span className="text-xs font-mono bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full font-bold border border-emerald-300 flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
                     Primary Gateway: Server 2 (Live)
                   </span>
                 </div>
-                <p className="text-[11px] text-indigo-900/80 leading-relaxed font-medium">
+                <p className="text-xs text-indigo-900/90 leading-relaxed font-medium">
                   Execute real-time government and institutional checks below. Verified data automatically synchronizes with the <strong>360° BGV PDF Dossier</strong> and writes an immutable audit log into the <strong>Institutional Verification Ledger</strong>.
                 </p>
               </div>
 
               {/* 10-Document Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {[
                   { key: 'aadhaar', name: '1. Aadhaar Card (OTP)', icon: '🪪', provider: 'Server 2 / UIDAI Official Gateway' },
                   { key: 'pan', name: '2. PAN Card Verification', icon: '💳', provider: 'Server 2 / Income Tax Department' },
@@ -8129,7 +8129,7 @@ export const HrExecutiveView = () => {
                         setManagingDocVerifCandidate(updated);
                         setCandidates(prev => prev.map(c => (c.id === updated.id || c.token === updated.token) ? updated : c));
                       }}
-                      className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-2.5 select-none ${
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 select-none ${
                         isVerifyingThis
                           ? 'bg-amber-50 border-amber-400 shadow-md ring-2 ring-amber-300 animate-pulse'
                           : isVerified
@@ -8140,19 +8140,19 @@ export const HrExecutiveView = () => {
                       }`}
                     >
                       {/* Row 1: Document Icon + Name (Left) and Action Buttons (Right) */}
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <span className="text-xl shrink-0">{doc.icon}</span>
-                          <strong className="text-slate-900 font-extrabold text-xs truncate" title={doc.name}>
+                      <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span className="text-2xl shrink-0">{doc.icon}</span>
+                          <strong className="text-slate-900 font-black text-sm truncate" title={doc.name}>
                             {doc.name}
                           </strong>
                         </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                           {isVerified ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 flex items-center gap-1 shadow-2xs">
-                                <Check className="w-3 h-3 text-emerald-700 stroke-[3]" />
+                            <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                              <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 flex items-center gap-1 shadow-2xs">
+                                <Check className="w-3.5 h-3.5 text-emerald-700 stroke-[3]" />
                                 <span>Verified ✓</span>
                               </span>
                               <button
@@ -8165,24 +8165,24 @@ export const HrExecutiveView = () => {
                                     dataObj: docData
                                   });
                                 }}
-                                className="text-[9.5px] font-bold px-2 py-0.8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                                className="text-xs font-bold px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all shadow-2xs hover:scale-105 active:scale-95"
                                 title="View official statutory government-style verification slip (PDF)"
                               >
-                                <FileText className="w-3 h-3 text-indigo-600" />
+                                <FileText className="w-3.5 h-3.5 text-indigo-600" />
                                 <span>Slip 📄</span>
                               </button>
                               <button
                                 type="button"
                                 disabled={isVerifyingThis || isVerifyingDocuments}
                                 onClick={(e) => handleTriggerDocVerification(e, true)}
-                                className="text-[9.5px] font-bold px-2 py-0.8 rounded-lg bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 flex items-center gap-1 cursor-pointer transition-all shadow-2xs hover:border-amber-400"
+                                className="text-xs font-bold px-2.5 py-1 rounded-xl bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 flex items-center gap-1 cursor-pointer transition-all shadow-2xs hover:border-amber-400 hover:scale-105 active:scale-95"
                                 title="Re-verify against live government gateway (fetches fresh point-in-time snapshot)"
                               >
                                 {isVerifyingThis ? (
-                                  <Loader2 className="w-3 h-3 animate-spin text-amber-600" />
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" />
                                 ) : (
                                   <>
-                                    <RefreshCw className="w-3 h-3 text-amber-600" />
+                                    <RefreshCw className="w-3.5 h-3.5 text-amber-600" />
                                     <span>Re-Verify 🔄</span>
                                   </>
                                 )}
@@ -8193,21 +8193,21 @@ export const HrExecutiveView = () => {
                               type="button"
                               disabled={isVerifyingThis || isVerifyingDocuments}
                               onClick={(e) => handleTriggerDocVerification(e, false)}
-                              className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                              className={`text-xs sm:text-sm font-black px-4 py-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 ${
                                 isChecked
-                                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-sm'
+                                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-md ring-2 ring-indigo-300'
                                   : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 hover:border-slate-400'
                               }`}
                               title={`Verify ${doc.name} via Server 2 now`}
                             >
                               {isVerifyingThis ? (
                                 <>
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-300" />
+                                  <Loader2 className="w-4 h-4 animate-spin text-indigo-300" />
                                   <span>Checking...</span>
                                 </>
                               ) : (
                                 <>
-                                  <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                  <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
                                   <span>Verify ⚡</span>
                                 </>
                               )}
@@ -8217,9 +8217,9 @@ export const HrExecutiveView = () => {
                       </div>
 
                       {/* Row 2: Provider Name (Left) and Server 2 Active Indicator (Right) */}
-                      <div className="flex items-center justify-between gap-2 text-[9.5px] text-slate-500 font-mono">
-                        <span className="truncate block" title={doc.provider}>{doc.provider}</span>
-                        <span className="inline-flex items-center gap-1 text-[8.5px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
+                      <div className="flex items-center justify-between gap-2 text-[11px] text-slate-500 font-mono">
+                        <span className="truncate block font-medium" title={doc.provider}>{doc.provider}</span>
+                        <span className="inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
                           <span>Server 2 Active</span>
                         </span>
@@ -8227,23 +8227,23 @@ export const HrExecutiveView = () => {
 
                       {/* Result / Extracted Number Strip */}
                       {isVerified ? (
-                        <div className="pt-1.5 border-t border-emerald-200/80 flex items-center justify-between text-[10px] text-emerald-900 font-medium">
+                        <div className="pt-2 border-t border-emerald-200/80 flex items-center justify-between text-xs text-emerald-900 font-medium">
                           <span className="truncate font-mono font-bold" title={getVerifiedSnippet()}>{getVerifiedSnippet()}</span>
-                          <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold shrink-0 ml-1">
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold shrink-0 ml-1">
                             DPDP Sealed
                           </span>
                         </div>
                       ) : (
-                        <div className="pt-1.5 border-t border-slate-200/80 flex items-center justify-between text-[10px]">
+                        <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs">
                           {docInputValue ? (
-                            <span className="text-indigo-950 font-mono font-bold truncate flex items-center gap-1 min-w-0" title="Extracted from Excel upload or candidate profile">
-                              <span className="text-[8.5px] px-1 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold uppercase shrink-0">Excel/Form:</span>
+                            <span className="text-indigo-950 font-mono font-bold truncate flex items-center gap-1.5 min-w-0" title="Extracted from Excel upload or candidate profile">
+                              <span className="text-[9.5px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold uppercase shrink-0">Excel/Form:</span>
                               <span className="truncate">{docInputValue}</span>
                             </span>
                           ) : (
-                            <span className="text-slate-400 italic text-[9.5px]">No document number entered</span>
+                            <span className="text-slate-400 italic text-[11px]">No document number entered</span>
                           )}
-                          <span className="text-[9px] text-slate-500 font-bold shrink-0 ml-1">
+                          <span className="text-[10px] text-slate-500 font-bold shrink-0 ml-1">
                             {docInputValue ? '1-Click Ready ⚡' : 'Prompt on Verify'}
                           </span>
                         </div>
@@ -8254,49 +8254,49 @@ export const HrExecutiveView = () => {
               </div>
 
               {/* ⚡ Real-Time Verification Telemetry & Institutional Audit Ledger Card */}
-              <div className="p-3.5 bg-slate-50 text-slate-900 rounded-2xl border-2 border-slate-200 space-y-2 shadow-xs">
+              <div className="p-4 bg-slate-50 text-slate-900 rounded-2xl border-2 border-slate-200 space-y-2.5 shadow-xs">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <span className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                    <span className="font-black text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+                      <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
                       <span>Live Gateway Telemetry Stream</span>
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full font-bold">
+                  <span className="text-xs font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold">
                     Institutional Ledger: api_call_logs (Active)
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <span className="text-slate-500 block text-[9.5px] font-bold">LATEST CHECK:</span>
+                    <span className="text-slate-500 block text-[10px] font-bold">LATEST CHECK:</span>
                     <strong className="text-slate-900 font-bold truncate block">
                       {latestVerificationTelemetry?.docName || 'UIDAI Aadhaar Verification'}
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[9.5px] font-bold">GATEWAY ROUTE:</span>
+                    <span className="text-slate-500 block text-[10px] font-bold">GATEWAY ROUTE:</span>
                     <strong className="text-indigo-700 font-mono truncate block font-bold">
                       Server 2 (Institutional Gateway)
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[9.5px] font-bold">RESPONSE LATENCY:</span>
+                    <span className="text-slate-500 block text-[10px] font-bold">RESPONSE LATENCY:</span>
                     <strong className="text-emerald-700 font-mono font-bold">
                       {latestVerificationTelemetry?.latencyMs || 48}ms (Real-Time)
                     </strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[9.5px] font-bold">AUDIT STATUS:</span>
+                    <span className="text-slate-500 block text-[10px] font-bold">AUDIT STATUS:</span>
                     <strong className="text-emerald-700 font-bold">
                       Logged & DPDP Sealed ✓
                     </strong>
                   </div>
                 </div>
 
-                <div className="pt-1 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-600 font-mono">
-                  <span className="truncate">
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
+                  <span className="truncate font-semibold">
                     🔒 DPDP Seal: {latestVerificationTelemetry?.sha256Seal || 'SHA256-JOY-VERIFIED-UIDAI-2026'}
                   </span>
                   <span className="text-slate-500 shrink-0 ml-2">
@@ -8308,12 +8308,12 @@ export const HrExecutiveView = () => {
             </div>
 
             {/* Footer Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 shrink-0 text-xs">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 pt-4 shrink-0 text-xs">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => setManagingDocVerifCandidate(null)}
-                  className="btn btn-secondary text-xs py-2 px-3.5 font-bold cursor-pointer"
+                  className="btn btn-secondary text-xs sm:text-sm py-2.5 px-4 font-bold rounded-xl cursor-pointer"
                 >
                   Close
                 </button>
@@ -8327,16 +8327,16 @@ export const HrExecutiveView = () => {
                       setManagingDocVerifCandidate(null);
                       openBgvReport(cand);
                     }}
-                    className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 cursor-pointer shadow-2xs"
+                    className="btn btn-secondary text-xs sm:text-sm py-2.5 px-4 flex items-center gap-2 font-black text-purple-900 bg-purple-50 border-2 border-purple-200 hover:bg-purple-100 cursor-pointer shadow-2xs rounded-xl hover:scale-105 active:scale-95"
                     title="Open 360° Background Verification Report Dossier"
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                    <ShieldCheck className="w-4 h-4 text-purple-600" />
                     <span>360° BGV PDF Dossier 📄</span>
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => {
@@ -8344,9 +8344,9 @@ export const HrExecutiveView = () => {
                     setManagingDocVerifCandidate(null);
                     setDispatchingCandidate(cand);
                   }}
-                  className="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                  className="btn btn-secondary text-xs sm:text-sm py-2.5 px-4 flex items-center gap-2 font-black text-indigo-900 bg-indigo-50 border-2 border-indigo-200 hover:bg-indigo-100 cursor-pointer rounded-xl hover:scale-105 active:scale-95"
                 >
-                  <QrCode className="w-3.5 h-3.5 text-indigo-600" />
+                  <QrCode className="w-4 h-4 text-indigo-600" />
                   <span>Send Link 📲</span>
                 </button>
 
@@ -8418,16 +8418,16 @@ export const HrExecutiveView = () => {
                       executeBatchVerification(keysToVerify);
                     }
                   }}
-                  className="btn btn-hrexecutive text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-50"
+                  className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm py-2.5 px-6 flex items-center gap-2 font-black shadow-md cursor-pointer disabled:opacity-50 rounded-xl hover:scale-105 active:scale-95"
                 >
                   {isVerifyingDocuments ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
                       <span>Verifying with Server 2...</span>
                     </>
                   ) : (
                     <>
-                      <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                      <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
                       <span>Verify All (Server 2) ⚡</span>
                     </>
                   )}
