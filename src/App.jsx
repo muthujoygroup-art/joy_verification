@@ -163,9 +163,11 @@ const CandidateRoute = () => {
   }, [token, setSelectedCandidateToken]);
 
   return (
-    <PortalLayout isCandidatePortal={true}>
-      <EmployeePortalView directToken={token} />
-    </PortalLayout>
+    <ErrorBoundary>
+      <PortalLayout isCandidatePortal={true}>
+        <EmployeePortalView directToken={token} />
+      </PortalLayout>
+    </ErrorBoundary>
   );
 };
 

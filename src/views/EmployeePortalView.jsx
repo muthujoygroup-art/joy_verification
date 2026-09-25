@@ -106,6 +106,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [mobileInputOtp, setMobileInputOtp] = useState('');
   const [emailInputOtp, setEmailInputOtp] = useState('');
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
 
   // Live OTP dispatch states
   const [aadhaarDemoOtp, setAadhaarDemoOtp] = useState('123456');
@@ -552,6 +553,20 @@ export const EmployeePortalView = ({ directToken = null }) => {
     return () => clearInterval(timer);
   }, [showEmailOtpModal, emailOtpCountdown]);
 
+  if (isLoadingCandidate && !candidate) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center space-y-4">
+        <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-3xl shadow-md">
+          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-base font-extrabold text-slate-900">Loading Candidate Verification Profile...</h3>
+          <p className="text-xs text-slate-500 font-medium">Authorizing digital onboarding credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!candidate) {
     return (
       <div className="glass-panel p-8 text-center max-w-lg mx-auto my-12 space-y-4 bg-white border-slate-200 shadow-xl rounded-2xl">
@@ -834,6 +849,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
     confetti({ particleCount: 80, spread: 70 });
   };
 
+  const jf = candidate?.joiningFormData || candidate?.joining_form_data || {};
   const currentCapturedPhoto = candidate.faceImages?.livePhoto || candidate.faceImages?.straight;
 
   return (

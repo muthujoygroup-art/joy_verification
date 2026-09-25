@@ -7966,19 +7966,13 @@ export const HrExecutiveView = () => {
                               : 'bg-slate-50 border-slate-200 hover:border-slate-300'
                       }`}
                     >
+                      {/* Row 1: Document Icon + Name (Left) and Action Buttons (Right) */}
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <span className="text-xl shrink-0">{doc.icon}</span>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <strong className="text-slate-900 font-extrabold text-xs block truncate">{doc.name}</strong>
-                              <span className="inline-flex items-center gap-1 text-[8.5px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-                                <span>Server 2 Active</span>
-                              </span>
-                            </div>
-                            <span className="text-[9.5px] text-slate-500 font-mono block truncate">{doc.provider}</span>
-                          </div>
+                          <strong className="text-slate-900 font-extrabold text-xs truncate" title={doc.name}>
+                            {doc.name}
+                          </strong>
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
@@ -8047,6 +8041,15 @@ export const HrExecutiveView = () => {
                             </button>
                           )}
                         </div>
+                      </div>
+
+                      {/* Row 2: Provider Name (Left) and Server 2 Active Indicator (Right) */}
+                      <div className="flex items-center justify-between gap-2 text-[9.5px] text-slate-500 font-mono">
+                        <span className="truncate block" title={doc.provider}>{doc.provider}</span>
+                        <span className="inline-flex items-center gap-1 text-[8.5px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shrink-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                          <span>Server 2 Active</span>
+                        </span>
                       </div>
 
                       {/* Result / Extracted Number Strip */}
