@@ -1390,14 +1390,14 @@ export const CompanyAdminView = () => {
                 setActiveMainSection('vendor_verification');
                 setActiveTab('vendor_verification');
               }}
-              className={`btn text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-black rounded-xl shadow-md cursor-pointer shrink-0 transition-all ${
+              className={`text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold rounded-xl shadow-xs cursor-pointer shrink-0 transition-all ${
                 activeTab === 'vendor_verification'
-                  ? 'bg-gradient-to-r from-purple-700 to-indigo-700 text-white ring-2 ring-purple-300'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'
               }`}
               title="Verify Vendors (GST, PAN, Bank, MSME) & Download Official Point-in-Time PDF Certificates"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-white" />
+              <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === 'vendor_verification' ? 'text-white' : 'text-indigo-600'}`} />
               <span>Verify Vendors & PDF 🤝</span>
             </button>
 
@@ -1425,27 +1425,14 @@ export const CompanyAdminView = () => {
               <Receipt className="w-3.5 h-3.5" />
               <span>Pay Online & Settle Bill 💳</span>
             </button>
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-600 font-bold">Company:</span>
-              <select 
-                value={company.id}
-                onChange={(e) => setSelectedCompanyId(e.target.value)}
-                className="form-select bg-slate-50 border-slate-300 text-slate-900 text-xs font-bold w-auto"
-              >
-                {companies.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.plan})</option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
 
         {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white shadow-md bg-gradient-to-br from-sky-600 via-teal-600 to-sky-800 shrink-0 transition-all duration-200">
-              <CurrentCompanyDivIcon className="w-5 h-5 text-white" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold bg-sky-50 border border-sky-200 text-sky-700 shadow-2xs shrink-0 transition-all duration-200">
+              <CurrentCompanyDivIcon className="w-5 h-5 text-sky-700" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -2769,8 +2756,8 @@ export const CompanyAdminView = () => {
           <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-6">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div className="flex items-start sm:items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md shrink-0">
-                  <ShieldCheck className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-2xl bg-purple-50 border-2 border-purple-200 text-purple-700 flex items-center justify-center font-black shadow-2xs shrink-0">
+                  <ShieldCheck className="w-7 h-7 text-purple-700" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
