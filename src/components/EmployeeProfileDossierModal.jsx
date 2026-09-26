@@ -9,6 +9,7 @@ import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
 import { ContractFormXIII } from './statutory/ContractFormXIII';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { 
   FileText, 
   Download, 
@@ -644,7 +645,19 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <div className="w-20 h-24 rounded-lg border-2 border-sky-600 overflow-hidden bg-slate-100 shadow-sm flex items-center justify-center shrink-0">
+                    {/* Scannable Authenticity QR Code */}
+                    <div className="flex flex-col items-center justify-center p-1.5 bg-slate-50 border border-slate-200 rounded-xl">
+                      <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
+                        <QRCodeSVG 
+                          value={`https://verification.joycorporatesolutions.com/verify-dossier?id=${c.token || c.id || 'TOK'}&emp=${c.employeeNumber || c.empId || 'EMP001'}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-AUTHENTIC-RECORD'}`}
+                          size={46}
+                          level="M"
+                        />
+                      </div>
+                      <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-tight mt-0.5">Scan to Verify 📲</span>
+                    </div>
+
+                    <div className="w-18 h-22 rounded-lg border-2 border-sky-600 overflow-hidden bg-slate-100 shadow-sm flex items-center justify-center shrink-0">
                       <img src={facePhoto} alt="Employee Profile Photo" className="w-full h-full object-cover" />
                     </div>
                     <div className="text-right text-xs space-y-1">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
+import { QRCodeSVG } from 'qrcode.react';
 import { 
   X, 
   Download, 
@@ -491,13 +492,26 @@ export const ComprehensiveBgvReportModal = ({
                 </div>
               </div>
 
-              <div className="text-left sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Compliance Verification Score</span>
-                <div className="text-2xl font-black text-emerald-700 flex items-center sm:justify-end gap-1.5 mt-0.5">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                  <span>{overallKycScore}</span>
+              <div className="flex items-center gap-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 justify-between sm:justify-end">
+                <div className="flex flex-col items-center justify-center p-1.5 bg-slate-50 border border-slate-200 rounded-xl">
+                  <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
+                    <QRCodeSVG 
+                      value={`https://verification.joycorporatesolutions.com/verify-dossier?token=${c.token || c.id || 'TOK'}&emp=${uniqueCode}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-JOY-VERIFIED'}`}
+                      size={46}
+                      level="M"
+                    />
+                  </div>
+                  <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-tight mt-0.5">Scan to Verify 📲</span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono">Audited by {hrName}</span>
+
+                <div className="text-right">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Compliance Score</span>
+                  <div className="text-2xl font-black text-emerald-700 flex items-center justify-end gap-1 mt-0.5">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    <span>{overallKycScore}</span>
+                  </div>
+                  <span className="text-[9.5px] text-slate-400 font-mono">Audited by {hrName}</span>
+                </div>
               </div>
             </div>
 

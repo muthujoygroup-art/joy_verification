@@ -16,6 +16,7 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { api } from '../services/api';
 import { exportElementToPdf } from '../services/pdfExporter';
 import { useApp } from '../context/AppContext';
@@ -406,31 +407,43 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
           </div>
 
           {/* Digital Certification Seal & Signatures */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-indigo-100 text-xs items-center relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-3 border-t border-indigo-100 text-xs items-center relative z-10">
             <div className="space-y-1">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">Certified Authority</span>
               <p className="font-extrabold text-slate-900">JOY CORPORATE SOLUTIONS</p>
               <p className="text-[11px] text-slate-500">Bangalore Tech Hub, KA - 560103</p>
             </div>
 
+            {/* Scannable Instant Digital Authenticity QR Code */}
+            <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
+                <QRCodeSVG 
+                  value={`https://verification.joycorporatesolutions.com/verify?id=${certId}&emp=${candidate.empId || candidate.token || 'EMP'}&status=${isFullyVerified ? 'VERIFIED' : 'PROVISIONAL'}`}
+                  size={54}
+                  level="M"
+                />
+              </div>
+              <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter mt-1">Scan to Verify 📲</span>
+            </div>
+
             <div className={`text-center p-2 rounded-xl border ${
               isFullyVerified ? 'bg-indigo-50 border-indigo-200' : 'bg-amber-50 border-amber-300'
             }`}>
-              <div className="w-7 h-7 mx-auto text-indigo-700 mb-1 flex items-center justify-center">
-                <Award className="w-6 h-6" />
+              <div className="w-6 h-6 mx-auto text-indigo-700 mb-0.5 flex items-center justify-center">
+                <Award className="w-5 h-5" />
               </div>
-              <p className="text-[11px] font-black text-indigo-900">
+              <p className="text-[10px] font-black text-indigo-900">
                 {isFullyVerified ? 'DIGITALLY VERIFIED SEAL' : 'PROVISIONAL AUDIT SEAL'}
               </p>
-              <p className="text-[9px] text-indigo-600 font-mono">
-                {isFullyVerified ? 'RSA-2048 / 8fa9-22b1-098e' : 'AUDIT-PENDING / GATE-AUTH'}
+              <p className="text-[8.5px] text-indigo-600 font-mono truncate">
+                {candidate.sha256Seal || candidate.sha256_seal || 'SHA256-JOY-VERIF-2026'}
               </p>
             </div>
 
             <div className="text-right space-y-1">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">Authorized Signatory</span>
               <p className="font-serif italic font-bold text-indigo-950 text-sm">{candidate.authorizedSignatory || 'Authorized Compliance Officer'}</p>
-              <p className="text-[11px] font-semibold text-slate-700">Chief Compliance Officer (CCO)</p>
+              <p className="text-[10px] font-semibold text-slate-700">Chief Compliance Officer (CCO)</p>
             </div>
           </div>
 

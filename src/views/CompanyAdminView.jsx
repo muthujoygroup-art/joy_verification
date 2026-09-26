@@ -1571,7 +1571,7 @@ export const CompanyAdminView = () => {
             <MetricCard 
               title="Verified Profiles" 
               value={verifiedCount} 
-              subtext={`Out of ${(companyCandidates || []).length} profiles`} 
+              subtext={`Out of ${(companyCandidates || []).length} total profiles`} 
               icon={CheckCircle2} 
               trend={`${Math.round((verifiedCount / ((companyCandidates || []).length || 1)) * 100)}% Pass`}
               color="emerald" 
@@ -1596,7 +1596,7 @@ export const CompanyAdminView = () => {
             <MetricCard 
               title="In Progress / Pending" 
               value={pendingCount} 
-              subtext="Awaiting Link Completion" 
+              subtext="Awaiting Link / Form Completion" 
               icon={Clock} 
               color="amber" 
               onClick={() => setActiveDrilldown({
@@ -1618,26 +1618,41 @@ export const CompanyAdminView = () => {
             />
             <MetricCard 
               tourStep="company-quota-card"
-              title="Monthly Quota Usage" 
-              value={`${company.verifiedCountThisMonth} / ${company.maxLimit}`} 
-              subtext={`Plan: ${company.plan}`} 
+              title="Plan Profile Capacity" 
+              value={`${verifiedCount} / ${currentPlan?.maxProfiles || 50}`} 
+              subtext={verifiedCount >= (currentPlan?.maxProfiles || 50) ? '⚠️ Tier Limit Reached • Upgrade Plan' : `Plan: ${currentPlan?.name || 'Tier 1 (<50)'}`} 
               icon={FileCheck} 
-              color="indigo" 
-              onClick={() => setActiveDrilldown({
-                title: 'Monthly Verification Quota Consumption',
-                subtitle: `Detailed usage breakdown for plan ${company.plan}`,
-                metricValue: `${company.verifiedCountThisMonth} / ${company.maxLimit} (${Math.round((company.verifiedCountThisMonth/company.maxLimit)*100)}%)`,
-                metricType: 'company_quota',
-                data: [
-                  { title: 'Verified Candidates this Month', amount: `${company.verifiedCountThisMonth} checks`, status: 'Consumed' },
-                  { title: 'Remaining Balance Quota', amount: `${company.maxLimit - company.verifiedCountThisMonth} checks`, status: 'Available' },
-                  { title: 'Current Billing Plan Tier', amount: `${company.plan} (₹${company.pricePerVerification}/check)`, status: 'Active Plan' }
-                ]
-              })}
+              trend={`${Math.max(0, (currentPlan?.maxProfiles || 50) - verifiedCount)} Left`}
+              color={verifiedCount >= (currentPlan?.maxProfiles || 50) ? 'rose' : 'indigo'} 
+              onClick={() => {
+                setShowPlanUpgradeModal(true);
+              }}
             />
           </>
         )}
       </div>
+
+      {/* Plan Tier Limit Exhausted Alert Banner */}
+      {verifiedCount >= (currentPlan?.maxProfiles || 50) && (
+        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-indigo-500/10 border-2 border-amber-400/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-pulse">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-900">All {currentPlan?.maxProfiles || 50} Profiles in Current Plan ({currentPlan?.name || 'Tier 1'}) Completed!</h4>
+              <p className="text-xs text-slate-600 font-medium">To onboard and verify more employee candidates, please extend or upgrade your subscription to the next tier (&lt;100 / &lt;300 profiles).</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPlanUpgradeModal(true)}
+            className="btn btn-superadmin text-xs py-2 px-4 font-bold shadow-md cursor-pointer shrink-0 flex items-center gap-1.5"
+          >
+            <span>Extend / Upgrade Plan Tier 🚀</span>
+          </button>
+        </div>
+      )}
 
       {/* TAB: MASTER EMPLOYEE REGISTRY */}
       {activeTab === 'registry' && (
