@@ -8401,22 +8401,18 @@ export const HrExecutiveView = () => {
                       }
                     };
 
-                    if (hasAnyVerified) {
-                      setConfirmReverifyModal({
-                        isOpen: true,
-                        candidate: cand,
-                        docKey: 'all',
-                        docName: `Batch Re-Verification (${keysToVerify.length} Statutory Gates)`,
-                        docProvider: 'Server 2 Multi-Provider Institutional Hub',
-                        docIcon: '⚡',
-                        docInputValue: `Employee: ${cand.name}`,
-                        payload: null,
-                        isBatch: true,
-                        keysToVerify: keysToVerify
-                      });
-                    } else {
-                      executeBatchVerification(keysToVerify);
-                    }
+                    setConfirmReverifyModal({
+                      isOpen: true,
+                      candidate: cand,
+                      docKey: 'all',
+                      docName: `11-in-1 Full Suite Verification (${keysToVerify.length} Statutory Gates)`,
+                      docProvider: 'Server 2 Live Institutional Gateways (UIDAI, NSDL, EPFO, Sarathi, e-Courts)',
+                      docIcon: '⚡',
+                      docInputValue: `Candidate: ${cand.name} (#${cand.empId || cand.token || 'EMP-2026'})`,
+                      payload: null,
+                      isBatch: true,
+                      keysToVerify: keysToVerify
+                    });
                   }}
                   className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm py-2.5 px-6 flex items-center gap-2 font-black shadow-md cursor-pointer disabled:opacity-50 rounded-xl hover:scale-105 active:scale-95"
                 >

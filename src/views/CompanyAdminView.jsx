@@ -219,6 +219,7 @@ export const CompanyAdminView = () => {
   const [verifyingDocModal, setVerifyingDocModal] = useState(null); // { vendor, checkType, docNumber, additionalData }
   const [isProcessingVendorCheck, setIsProcessingVendorCheck] = useState(false);
   const [isProcessingFullSuite, setIsProcessingFullSuite] = useState(null); // vendorId when running full suite
+  const [confirmFullSuiteVendor, setConfirmFullSuiteVendor] = useState(null); // Vendor object when confirmation reminder is open
   
   // Direct Statutory API Studio States
   const [studioEndpoint, setStudioEndpoint] = useState('company_name_to_cin');
@@ -3193,11 +3194,11 @@ export const CompanyAdminView = () => {
                               {/* Col 5: Action Buttons */}
                               <td className="py-3.5 px-4 align-top text-right">
                                 <div className="flex flex-wrap items-center justify-end gap-1.5">
-                                  {/* 1-Click 11-in-1 Full Suite Button */}
+                                   {/* 1-Click 11-in-1 Full Suite Button */}
                                   <button
                                     type="button"
                                     disabled={isProcessingFullSuite === vendor.id}
-                                    onClick={() => handleExecuteFullSuite(vendor)}
+                                    onClick={() => setConfirmFullSuiteVendor(vendor)}
                                     className="btn text-[11px] py-1.5 px-3 flex items-center gap-1 font-black bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl shadow-2xs cursor-pointer disabled:opacity-50"
                                     title="Execute all 11 statutory due diligence checks in real-time"
                                   >
@@ -4542,7 +4543,7 @@ export const CompanyAdminView = () => {
                             <button
                               type="button"
                               disabled={isProcessingFullSuite === vendor.id}
-                              onClick={() => handleExecuteFullSuite(vendor)}
+                              onClick={() => setConfirmFullSuiteVendor(vendor)}
                               className="btn btn-secondary text-xs py-2 px-3 font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               title="Re-run live 11-in-1 statutory checks via API gateway"
                             >
@@ -7641,6 +7642,110 @@ export const CompanyAdminView = () => {
             setSelectedCertVendor(v);
           }}
         />
+      )}
+
+      {/* ⚡ 11-IN-1 FULL STATUTORY DUE DILIGENCE EXECUTION CONFIRMATION REMINDER MODAL */}
+      {confirmFullSuiteVendor && (
+        <div 
+          className="fixed inset-0 z-[9999999] bg-slate-950/80 backdrop-blur-md p-3 sm:p-4 flex items-center justify-center overflow-hidden animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConfirmFullSuiteVendor(null);
+          }}
+        >
+          <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl sm:rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-indigo-200 animate-modal-spring shrink-0 relative z-10 overflow-y-auto max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <Zap className="w-5 h-5 text-indigo-600 fill-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Initiate 11-in-1 Live Verification? ⚡</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {confirmFullSuiteVendor.vendorName} • {company.name}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setConfirmFullSuiteVendor(null)} 
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scope of Multi-Registry Queries */}
+            <div className="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-3">
+              <span className="text-[10px] font-black text-indigo-950 uppercase tracking-wider block">
+                11 Automated Statutory & Legal Checks Included:
+              </span>
+              <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-800">
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>🏢 MCA CIN Master</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>👔 Director DIN Status</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>📜 Active GSTIN 2B/3B</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>💳 PAN Entity Record</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>🏭 MSME Udyam Cert</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>🍽️ FSSAI Food License</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>🏦 NPCI Bank IFSC</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-100">
+                  <span>⚖️ e-Courts Litigations</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-1">
+                <div className="font-extrabold flex items-center gap-1.5 text-amber-900">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Crucial Action Reminder:</span>
+                </div>
+                <p className="text-[11px] text-slate-700 leading-relaxed font-medium">
+                  This initiates live point-in-time API calls across government databases (MCA, GSTN, NSDL, FSSAI, NPCI, e-Courts) and produces an immutable, cryptographically sealed <strong>Master Audit Certificate</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setConfirmFullSuiteVendor(null)}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 cursor-pointer text-xs"
+              >
+                Cancel / Review First
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const target = confirmFullSuiteVendor;
+                  setConfirmFullSuiteVendor(null);
+                  await handleExecuteFullSuite(target);
+                }}
+                className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md cursor-pointer flex items-center gap-1.5 hover:scale-102 transition-all"
+              >
+                <Zap className="w-4 h-4 text-amber-300" />
+                <span>Yes, Run 11-in-1 Live Verification 🚀</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
       )}
 
     </div>
