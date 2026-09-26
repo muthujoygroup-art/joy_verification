@@ -392,7 +392,7 @@ def endpoint_verify_aadhaar(payload: VerifyAadhaarRequest, db: Session = Depends
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_aadhaar: {e}", exc_info=True)
-        return {"success": True, "message": "Aadhaar e-KYC demographic verified via UIDAI Gateway!", "data": {"fetched_data": {"aadhaar_number": payload.aadhaar_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Aadhaar verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-pan")
 def endpoint_verify_pan(payload: VerifyPanRequest, db: Session = Depends(get_db)):
@@ -405,7 +405,7 @@ def endpoint_verify_pan(payload: VerifyPanRequest, db: Session = Depends(get_db)
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_pan: {e}", exc_info=True)
-        return {"success": True, "message": "NSDL / ITD PAN Card verified via Neev API Gateway!", "data": {"fetched_data": {"pan_number": payload.pan_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"PAN verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-bank")
 def endpoint_verify_bank(payload: VerifyBankRequest, db: Session = Depends(get_db)):
@@ -418,7 +418,7 @@ def endpoint_verify_bank(payload: VerifyBankRequest, db: Session = Depends(get_d
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_bank: {e}", exc_info=True)
-        return {"success": True, "message": "Bank Account verified via NPCI Penny Drop Switch!", "data": {"fetched_data": {"account_number": payload.account_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Bank verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-dl")
 def endpoint_verify_dl(payload: VerifyDlRequest, db: Session = Depends(get_db)):
@@ -431,7 +431,7 @@ def endpoint_verify_dl(payload: VerifyDlRequest, db: Session = Depends(get_db)):
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_dl: {e}", exc_info=True)
-        return {"success": True, "message": "Driving License verified with MoRTH Sarathi!", "data": {"fetched_data": {"dl_number": payload.dl_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Driving License verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-epfo")
 def endpoint_verify_epfo(payload: VerifyEpfoRequest, db: Session = Depends(get_db)):
@@ -444,7 +444,7 @@ def endpoint_verify_epfo(payload: VerifyEpfoRequest, db: Session = Depends(get_d
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_epfo: {e}", exc_info=True)
-        return {"success": True, "message": "EPFO UAN Dual Employment & Service History verified!", "data": {"fetched_data": {"uan": payload.uan_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"EPFO verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-passport")
 def endpoint_verify_passport(payload: VerifyPassportRequest, db: Session = Depends(get_db)):
@@ -457,7 +457,7 @@ def endpoint_verify_passport(payload: VerifyPassportRequest, db: Session = Depen
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_passport: {e}", exc_info=True)
-        return {"success": True, "message": "Passport verified via MEA Passport Seva Gateway!", "data": {"fetched_data": {"passport_number": payload.passport_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Passport verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-voter-id")
 def endpoint_verify_voter_id(payload: VerifyVoterRequest, db: Session = Depends(get_db)):
@@ -470,7 +470,7 @@ def endpoint_verify_voter_id(payload: VerifyVoterRequest, db: Session = Depends(
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_voter_id: {e}", exc_info=True)
-        return {"success": True, "message": "Voter ID verified via Election Commission of India Gateway!", "data": {"fetched_data": {"voter_id": payload.voter_id, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Voter ID verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-court-records")
 def endpoint_verify_court_records(payload: VerifyCourtRequest, db: Session = Depends(get_db)):
@@ -483,7 +483,7 @@ def endpoint_verify_court_records(payload: VerifyCourtRequest, db: Session = Dep
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_court_records: {e}", exc_info=True)
-        return {"success": True, "message": "Realtime Court & Criminal Case search completed!", "data": {"fetched_data": {"verdict": "Clear / No Criminal Records Found", "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Court records verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-vehicle-rc")
 def endpoint_verify_vehicle_rc(payload: VerifyVehicleRcRequest, db: Session = Depends(get_db)):
@@ -496,7 +496,7 @@ def endpoint_verify_vehicle_rc(payload: VerifyVehicleRcRequest, db: Session = De
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_vehicle_rc: {e}", exc_info=True)
-        return {"success": True, "message": "Vehicle Registration Certificate (RC) verified via Vahan MoRTH!", "data": {"fetched_data": {"rc_number": payload.rc_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"Vehicle RC verification error: {str(e)}", "data": {}}
 
 @router.post("/verify-esic")
 def endpoint_verify_esic(payload: VerifyEsicRequest, db: Session = Depends(get_db)):
@@ -509,7 +509,7 @@ def endpoint_verify_esic(payload: VerifyEsicRequest, db: Session = Depends(get_d
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
         logger.error(f"Error in endpoint_verify_esic: {e}", exc_info=True)
-        return {"success": True, "message": "ESIC Insurance Record verified successfully!", "data": {"fetched_data": {"esic_number": payload.esic_number, "status": "VERIFIED"}}}
+        return {"success": False, "message": f"ESIC verification error: {str(e)}", "data": {}}
 
 @router.post("/candidate/{token}/verify-all")
 @router.post("/verify-all")
@@ -521,7 +521,7 @@ def endpoint_verify_all_documents(
     """
     Executes live verification across all candidate documents via CoinCircleTrust API Gateway.
     Stores permanent VerificationRecord entries in PostgreSQL with SHA-256 DPDP digital seals,
-    updates candidate.verified_attributes across all 10 checks, recalculates risk score,
+    updates candidate.verified_attributes across all requested checks, recalculates risk score,
     and enriches joining form particulars for the 360° BGV PDF Dossier.
     """
     try:
@@ -541,9 +541,7 @@ def endpoint_verify_all_documents(
 
         # 1. PAN Verification (NSDL / CoinCircleTrust)
         clean_pan = (candidate.pan_no or jfd.get("panNo") or jfd.get("pan") or jfd.get("panNumber") or "").strip().upper()
-        if should_verify("pan") and (clean_pan or not requested_types):
-            if not clean_pan:
-                clean_pan = "ABCDE1234F"
+        if should_verify("pan") and clean_pan:
             ok, msg, data = verify_pan_live(db, candidate.token, clean_pan)
             if ok:
                 verified_results["pan"] = data
@@ -552,28 +550,24 @@ def endpoint_verify_all_documents(
         # 2. Bank Account Penny Drop (NPCI / CoinCircleTrust)
         acc_no = str(candidate.bank_account_no or jfd.get("accountNumber") or jfd.get("bankAccountNo") or jfd.get("accountNo") or "").strip()
         ifsc = str(candidate.ifsc_code or jfd.get("ifscCode") or jfd.get("ifsc") or "").strip().upper()
-        if should_verify("bank") or should_verify("bankCheck"):
-            if not acc_no: acc_no = "50100234129845"
-            if not ifsc: ifsc = "HDFC0000128"
+        if (should_verify("bank") or should_verify("bankCheck")) and acc_no and ifsc:
             ok, msg, data = verify_bank_account_live(db, candidate.token, acc_no, ifsc)
             if ok:
                 verified_results["bankCheck"] = data
                 verified_types.append("bankCheck")
 
         # 3. Driving License (MoRTH Sarathi / CoinCircleTrust)
-        dl_no = str(jfd.get("drivingLicense") or jfd.get("dlNo") or jfd.get("dlNumber") or "").strip()
-        dob_val = str(candidate.dob or jfd.get("dob") or "1996-05-15")
-        if should_verify("drivingLicense") or should_verify("dl"):
-            if not dl_no: dl_no = "KA0120200004910"
+        dl_no = str(jfd.get("drivingLicense") or jfd.get("dlNo") or jfd.get("dlNumber") or candidate.driving_license_no or "").strip()
+        dob_val = str(candidate.dob or jfd.get("dob") or "")
+        if (should_verify("drivingLicense") or should_verify("dl")) and dl_no:
             ok, msg, data = verify_driving_license_live(db, candidate.token, dl_no, dob_val)
             if ok:
                 verified_results["drivingLicense"] = data
                 verified_types.append("drivingLicense")
 
         # 4. EPFO UAN History & Dual Employment (CoinCircleTrust)
-        uan_no = str(candidate.pf_number or jfd.get("uanEpf") or jfd.get("uan") or jfd.get("uanNumber") or "").strip()
-        if should_verify("epfo") or should_verify("uan") or should_verify("epfoUan"):
-            if not uan_no: uan_no = "101239019283"
+        uan_no = str(candidate.pf_number or candidate.uan_no or jfd.get("uanEpf") or jfd.get("uan") or jfd.get("uanNumber") or "").strip()
+        if (should_verify("epfo") or should_verify("uan") or should_verify("epfoUan")) and uan_no:
             ok, msg, data = verify_epfo_uan_live(db, candidate.token, uan_no)
             if ok:
                 verified_results["epfoUan"] = data
@@ -581,26 +575,23 @@ def endpoint_verify_all_documents(
 
         # 5. Aadhaar UIDAI Demographic / OTP (CoinCircleTrust)
         clean_aadh = "".join(filter(str.isdigit, str(candidate.aadhaar_no or jfd.get("aadhaarNo") or jfd.get("aadhaar") or "")))
-        if should_verify("aadhaar"):
-            if not clean_aadh: clean_aadh = "548912349876"
+        if should_verify("aadhaar") and clean_aadh:
             ok, msg, data = verify_aadhaar_live(db, candidate.token, clean_aadh, "123456")
             if ok:
                 verified_results["aadhaar"] = data
                 verified_types.append("aadhaar")
 
         # 6. Passport (MEA Passport Seva / CoinCircleTrust)
-        pass_no = str(jfd.get("passportNo") or jfd.get("passport") or jfd.get("passportNumber") or "").strip()
-        if should_verify("passport"):
-            if not pass_no: pass_no = "Z8491024"
+        pass_no = str(jfd.get("passportNo") or jfd.get("passport") or jfd.get("passportNumber") or candidate.passport_no or "").strip()
+        if should_verify("passport") and pass_no:
             ok, msg, data = verify_passport_live(db, candidate.token, pass_no, dob_val)
             if ok:
                 verified_results["passport"] = data
                 verified_types.append("passport")
 
         # 7. Voter ID (ECI EPIC / CoinCircleTrust)
-        voter_no = str(jfd.get("voterId") or jfd.get("epicNumber") or "").strip()
-        if should_verify("voterId") or should_verify("voter_id") or should_verify("voter"):
-            if not voter_no: voter_no = "WZK8912301"
+        voter_no = str(jfd.get("voterId") or jfd.get("epicNumber") or candidate.voter_id or "").strip()
+        if (should_verify("voterId") or should_verify("voter_id") or should_verify("voter")) and voter_no:
             ok, msg, data = verify_voter_id_live(db, candidate.token, voter_no, dob_val)
             if ok:
                 verified_results["voter_id"] = data
@@ -612,8 +603,8 @@ def endpoint_verify_all_documents(
                 db, 
                 candidate.token, 
                 candidate.name, 
-                candidate.father_name or jfd.get("fatherName") or "Suresh Kumar P", 
-                candidate.permanent_address or jfd.get("permanentAddress") or "Bengaluru"
+                candidate.father_name or jfd.get("fatherName") or "", 
+                candidate.permanent_address or jfd.get("permanentAddress") or ""
             )
             if ok:
                 verified_results["courtRecords"] = data
@@ -621,8 +612,7 @@ def endpoint_verify_all_documents(
 
         # 9. ESIC Insurance (Ministry of Labour / CoinCircleTrust)
         esi_no = str(candidate.esi_number or jfd.get("esiNumber") or jfd.get("esicNo") or "").strip()
-        if should_verify("esic"):
-            if not esi_no: esi_no = "31001234560000001"
+        if should_verify("esic") and esi_no:
             ok, msg, data = verify_esic_live(db, candidate.token, esi_no, dob_val)
             if ok:
                 verified_results["esic"] = data
@@ -630,8 +620,7 @@ def endpoint_verify_all_documents(
 
         # 10. Vehicle RC (MoRTH Vahan / CoinCircleTrust)
         rc_no = str(jfd.get("vehicleRc") or jfd.get("rcNo") or "").strip()
-        if should_verify("vehicleRc") or should_verify("rc") or should_verify("rc_details"):
-            if not rc_no: rc_no = "KA01AB1234"
+        if (should_verify("vehicleRc") or should_verify("rc") or should_verify("rc_details")) and rc_no:
             ok, msg, data = verify_vehicle_rc_live(db, candidate.token, rc_no)
             if ok:
                 verified_results["rc_details"] = data
@@ -650,7 +639,7 @@ def endpoint_verify_all_documents(
 
         return {
             "success": True,
-            "message": f"Successfully verified {len(verified_types)} document(s) via CoinCircleTrust Gateway for {candidate.name}!",
+            "message": f"Successfully processed {len(verified_types)} verification(s) for {candidate.name}.",
             "verified_types": verified_types,
             "results": verified_results,
             "candidate": candidate
@@ -658,9 +647,9 @@ def endpoint_verify_all_documents(
     except Exception as e:
         logger.error(f"Error in endpoint_verify_all_documents: {e}", exc_info=True)
         return {
-            "success": True,
-            "message": "Documents verified successfully via CoinCircleTrust Gateway!",
-            "verified_types": ["pan", "bankCheck", "epfoUan", "aadhaar"],
+            "success": False,
+            "message": f"Error running verification: {str(e)}",
+            "verified_types": [],
             "results": {},
             "candidate": candidate if 'candidate' in locals() and candidate else None
         }

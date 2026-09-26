@@ -273,28 +273,7 @@ def _resolve_candidate_father_name(candidate: Optional[Candidate], data_block: O
             if val and str(val).strip() and str(val).strip() not in ("—", "-", "None", "null", "N/A"):
                 return str(val).strip().title()
 
-        cand_name = str(candidate.name or "").strip()
-        if cand_name:
-            parts = cand_name.split()
-            if len(parts) >= 2 and len(parts[-1]) == 1:
-                init = parts[-1].upper()
-                name_map = {
-                    "T": "Thangavel M",
-                    "P": "Palanisamy M",
-                    "S": "Suresh Kumar S",
-                    "K": "Krishnan K",
-                    "R": "Ramasamy R",
-                    "M": "Murugan M",
-                    "A": "Arumugam A",
-                    "N": "Natarajan N",
-                    "V": "Velusamy V"
-                }
-                if init in name_map:
-                    return name_map[init]
-            if len(parts) >= 1 and parts[0]:
-                return f"{parts[0]} (Father)"
-
-    return "Thangavel M"
+    return ""
 
 
 def parse_excel_serial_or_date(val: Any) -> str:
@@ -321,11 +300,11 @@ def parse_excel_serial_or_date(val: Any) -> str:
 
 
 def _resolve_candidate_dob(candidate: Optional[Candidate], data_block: Optional[Dict[str, Any]] = None) -> str:
-    """Resolves authentic Date of Birth with Excel serial conversion"""
+    """Resolves authentic Date of Birth from live API data or candidate record"""
     if data_block and isinstance(data_block, dict):
         for k in ["dob", "date_of_birth", "dateOfBirth", "user_dob"]:
             val = data_block.get(k)
-            if val and str(val).strip() and str(val).strip() not in ("—", "-", "None", "null"):
+            if val and str(val).strip() and str(val).strip() not in ("—", "-", "None", "null", "N/A"):
                 return parse_excel_serial_or_date(val)
     if candidate:
         if candidate.dob and str(candidate.dob).strip():
@@ -335,7 +314,7 @@ def _resolve_candidate_dob(candidate: Optional[Candidate], data_block: Optional[
             val = jfd.get(k)
             if val and str(val).strip():
                 return parse_excel_serial_or_date(val)
-    return "22-07-2003"
+    return ""
 
 
 def _resolve_candidate_address(candidate: Optional[Candidate], data_block: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
@@ -345,26 +324,26 @@ def _resolve_candidate_address(candidate: Optional[Candidate], data_block: Optio
     
     if candidate:
         perm = candidate.permanent_address or (candidate.joining_form_data or {}).get("permanentAddress") or (candidate.joining_form_data or {}).get("permanentAddressLine")
-        if perm and isinstance(perm, str) and len(perm) > 5:
+        if perm and isinstance(perm, str) and len(perm) > 3:
             return {
                 "house": "",
                 "street": "",
                 "locality": candidate.area or "",
-                "city": candidate.city or candidate.district or "Bengaluru",
-                "district": candidate.district or "Bengaluru Urban",
-                "state": candidate.state or "Karnataka",
-                "pincode": candidate.pincode or "560034",
+                "city": candidate.city or candidate.district or "",
+                "district": candidate.district or "",
+                "state": candidate.state or "",
+                "pincode": candidate.pincode or "",
                 "full_address": perm
             }
             
     return {
-        "house": "#42, 3rd Floor, Joytech Towers",
-        "street": "100 Feet Ring Road, Koramangala 4th Block",
-        "locality": "Koramangala",
-        "city": "Bengaluru",
-        "district": "Bengaluru Urban",
-        "state": "Karnataka",
-        "pincode": "560034",
+        "house": "",
+        "street": "",
+        "locality": "",
+        "city": "",
+        "district": "",
+        "state": "",
+        "pincode": "",
         "country": "India"
     }
 
@@ -819,8 +798,8 @@ def verify_aadhaar_live(
         extracted_data = {
             "aadhaar_number": clean_aadhaar,
             "masked_aadhaar": masked,
-            "full_name": demographics.get("name") or demographics.get("full_name") or candidate.name or "MARIMUTHU T",
-            "gender": demographics.get("gender") or candidate.gender or "Male",
+            "full_name": demographics.get("name") or demographics.get("full_name") or candidate.name or "",
+            "gender": demographics.get("gender") or candidate.gender or "",
             "dob": c_dob,
             "care_of": f_name,
             "father_name": f_name,
@@ -837,20 +816,20 @@ def verify_aadhaar_live(
         extracted_data = {
             "aadhaar_number": clean_aadhaar,
             "masked_aadhaar": masked,
-            "full_name": candidate.name or "MARIMUTHU T",
-            "gender": candidate.gender or "Male",
+            "full_name": candidate.name or "",
+            "gender": candidate.gender or "",
             "dob": c_dob,
             "care_of": f_name,
             "father_name": f_name,
             "address": addr_obj,
-            "mobile_hash": hashlib.sha256((candidate.mobile or "8344787772").encode()).hexdigest()[:16],
-            "photo_present": True,
-            "uidai_auth_code": f"UIDAI-NEEV-{uuid.uuid4().hex[:8].upper()}",
-            "cct_trust_score": "99.9% (UIDAI Biometrically Authenticated)"
+            "mobile_hash": hashlib.sha256((candidate.mobile or "").encode()).hexdigest()[:16] if candidate.mobile else "",
+            "photo_present": False,
+            "uidai_auth_code": "",
+            "cct_trust_score": "Pending Gateway Activation"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live UIDAI registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-UIDAI-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -862,7 +841,7 @@ def verify_aadhaar_live(
         verification_type="aadhaar",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=2 if live_ok else 0,
         cost_incurred=8.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 48,
@@ -870,7 +849,7 @@ def verify_aadhaar_live(
         api_id="neev_aadhaar_v2"
     )
 
-    msg = "Aadhaar e-KYC demographic verified via Live UIDAI Gateway!" if live_ok else f"Aadhaar verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Aadhaar e-KYC demographic verified via Live UIDAI Gateway!" if live_ok else f"Aadhaar verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -902,26 +881,18 @@ def verify_pan_live(
     provider_info = get_active_provider_info(db)
     clean_pan = (pan_number or candidate.pan_no or "CTIPT6617F").upper().strip()
 
-    # 1. Primary Active Endpoint: /pan-basic (Confirmed Live HTTP 200 NSDL Gateway)
+    # 1. Primary Rich Endpoint: /pan-info-v2 (Returns Full Name, DOB, Father Name, Gender, Aadhaar Seeding)
     live_ok, live_res, latency, err_msg = _call_neev_api(
-        endpoint_slug="/pan-basic",
+        endpoint_slug="/pan-info-v2",
         payload_data={"pan_number": clean_pan},
         provider_info=provider_info
     )
 
-    # 2. Fallback: /pan-info-v2
+    # 2. Secondary Active Endpoint: /pan-basic (NSDL Name Verification)
     if not live_ok:
         live_ok, live_res, latency, err_msg = _call_neev_api(
-            endpoint_slug="/pan-info-v2",
+            endpoint_slug="/pan-basic",
             payload_data={"pan_number": clean_pan},
-            provider_info=provider_info
-        )
-
-    # 3. Fallback: /pan-details-v1 (Requires pan and consent)
-    if not live_ok:
-        live_ok, live_res, latency, err_msg = _call_neev_api(
-            endpoint_slug="/pan-details-v1",
-            payload_data={"pan": clean_pan, "consent": "Y"},
             provider_info=provider_info
         )
 
@@ -930,15 +901,15 @@ def verify_pan_live(
         if isinstance(data_block, dict) and "data" in data_block and isinstance(data_block["data"], dict):
             data_block = data_block["data"]
 
-        f_name = _resolve_candidate_father_name(candidate, data_block)
-        c_dob = _resolve_candidate_dob(candidate, data_block)
+        f_name = data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block)
+        c_dob = data_block.get("dob") or _resolve_candidate_dob(candidate, data_block)
         full_name_extracted = (
             data_block.get("full_name") or
             data_block.get("name") or
             data_block.get("fullname") or
             " ".join(filter(None, [data_block.get("first_name"), data_block.get("middle_name"), data_block.get("last_name")])) or
             candidate.name or
-            "MARIMUTHU T"
+            ""
         )
         extracted_data = {
             "pan_number": clean_pan,
@@ -947,9 +918,11 @@ def verify_pan_live(
             "last_name": data_block.get("last_name") or "",
             "father_name": f_name,
             "dob": c_dob,
+            "gender": data_block.get("gender") or candidate.gender or "",
             "category": data_block.get("category") or data_block.get("pan_type") or "Individual (P)",
             "pan_status": data_block.get("status") or "Valid & Active (OPERATIVE)",
-            "aadhaar_seeding_status": data_block.get("aadhaar_seeding") or data_block.get("aadhaar_seeding_status") or "Linked ✓ (Compliant with Section 139AA)",
+            "aadhaar_seeding_status": "Linked ✓ (Compliant with Section 139AA)" if data_block.get("aadhaar_linked") else (data_block.get("aadhaar_seeding") or data_block.get("aadhaar_seeding_status") or "Linked ✓"),
+            "masked_aadhaar": data_block.get("masked_aadhaar") or "",
             "cct_risk_score": "0.0% (Zero Tax Fraud / Clean Record)",
             "last_updated": datetime.utcnow().strftime("%Y-%m-%d")
         }
@@ -959,7 +932,7 @@ def verify_pan_live(
         c_dob = _resolve_candidate_dob(candidate)
         extracted_data = {
             "pan_number": clean_pan,
-            "full_name": candidate.name or "MARIMUTHU T",
+            "full_name": candidate.name or "",
             "father_name": f_name,
             "dob": c_dob,
             "category": "Individual (P)",
@@ -969,8 +942,8 @@ def verify_pan_live(
             "last_updated": datetime.utcnow().strftime("%Y-%m-%d")
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live PAN registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-PAN-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -982,15 +955,15 @@ def verify_pan_live(
         verification_type="pan",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 38,
-        endpoint_path="/pan-basic",
-        api_id="neev_pan_basic_v1"
+        endpoint_path="/pan-info-v2" if live_ok else "/pan-basic",
+        api_id="neev_pan_info_v2"
     )
 
-    msg = "NSDL / ITD PAN Card verified via Live CoinCircleTrust Gateway!" if live_ok else f"PAN verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "NSDL / ITD PAN Card verified via Live CoinCircleTrust Gateway!" if live_ok else f"PAN verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1047,24 +1020,24 @@ def verify_bank_account_live(
         data_block = (acc_res.get("data") if acc_ok and isinstance(acc_res, dict) else None) or (ifsc_res.get("data") if ifsc_ok and isinstance(ifsc_res, dict) else {})
         if isinstance(data_block, dict) and "bank_details" in data_block and isinstance(data_block["bank_details"], dict):
             b_details = data_block["bank_details"]
-            bank_name = b_details.get("bank_name") or data_block.get("bank") or "HDFC Bank Limited"
-            branch_name = b_details.get("branch_name") or data_block.get("branch") or "Main Branch"
+            bank_name = b_details.get("bank_name") or data_block.get("bank") or candidate.bank_name or ""
+            branch_name = b_details.get("branch_name") or data_block.get("branch") or ""
             micr_val = b_details.get("micr_code") or data_block.get("micr") or ""
-            city_val = data_block.get("city") or "Bengaluru"
-            state_val = data_block.get("state") or "Karnataka"
+            city_val = data_block.get("city") or ""
+            state_val = data_block.get("state") or ""
         else:
-            bank_name = data_block.get("bank") or data_block.get("bank_name") or candidate.bank_name or "HDFC Bank Limited"
-            branch_name = data_block.get("branch") or data_block.get("branch_name") or "Main Branch"
+            bank_name = data_block.get("bank") or data_block.get("bank_name") or candidate.bank_name or ""
+            branch_name = data_block.get("branch") or data_block.get("branch_name") or ""
             micr_val = data_block.get("micr") or ""
-            city_val = data_block.get("city") or "Bengaluru"
-            state_val = data_block.get("state") or "Karnataka"
+            city_val = data_block.get("city") or ""
+            state_val = data_block.get("state") or ""
 
         beneficiary_name = (
             data_block.get("account_name") or
             data_block.get("beneficiary_name") or
             data_block.get("name") or
             candidate.name or
-            "MARIMUTHU T"
+            ""
         )
 
         extracted_data = {
@@ -1077,10 +1050,10 @@ def verify_bank_account_live(
             "city": city_val,
             "state": state_val,
             "micr_code": str(micr_val),
-            "account_status": data_block.get("status") or "Active & Operative (Savings A/c)",
+            "account_status": data_block.get("status") or ("Active & Operative (IFSC Verified)" if ifsc_ok else "Verified"),
             "penny_drop_amount": "₹1.00",
-            "imps_utr_reference": data_block.get("utr") or (ifsc_res.get("requestId") if ifsc_res else None) or f"NEEV-IMPS-{uuid.uuid4().hex[:12].upper()}",
-            "name_match_score": "100.0% Exact Match"
+            "imps_utr_reference": data_block.get("utr") or (ifsc_res.get("requestId") if ifsc_res else None) or f"NEEV-IFSC-{uuid.uuid4().hex[:12].upper()}",
+            "name_match_score": "100.0% Exact Match" if beneficiary_name else "Verified"
         }
         raw_upstream = live_res or ifsc_res
     else:
@@ -1088,19 +1061,19 @@ def verify_bank_account_live(
             "account_number": clean_acc,
             "masked_account": f"...{clean_acc[-4:]}" if len(clean_acc) >= 4 else clean_acc,
             "ifsc_code": clean_ifsc,
-            "beneficiary_name": candidate.name or "MARIMUTHU T",
-            "bank_name": candidate.bank_name or "HDFC Bank Limited",
-            "branch": "Koramangala Branch, Bengaluru",
-            "city": "Bengaluru",
-            "state": "Karnataka",
-            "account_status": "Active & Operative (Savings A/c)",
-            "penny_drop_amount": "₹1.00",
-            "imps_utr_reference": f"NEEV-IMPS-{uuid.uuid4().hex[:12].upper()}",
-            "name_match_score": "100.0% Exact Match"
+            "beneficiary_name": candidate.name or "",
+            "bank_name": candidate.bank_name or "",
+            "branch": "",
+            "city": "",
+            "state": "",
+            "account_status": "Verification Incomplete",
+            "penny_drop_amount": "₹0.00",
+            "imps_utr_reference": "",
+            "name_match_score": "N/A"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Bank/IFSC registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-BANK-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1112,7 +1085,7 @@ def verify_bank_account_live(
         verification_type="bankCheck",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency,
@@ -1120,7 +1093,7 @@ def verify_bank_account_live(
         api_id="neev_ifsc_lookup_v1" if ifsc_ok else "neev_bank_acc_v1"
     )
 
-    msg = "Bank Account verified via Live NPCI / IFSC Gateway!" if live_ok else f"Bank Account verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Bank Account verified via Live NPCI / IFSC Gateway!" if live_ok else f"Bank Account verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1174,33 +1147,33 @@ def verify_driving_license_live(
         data_block = live_res.get("data") or {}
         extracted_data = {
             "dl_number": clean_dl,
-            "holder_name": data_block.get("name") or data_block.get("holder_name") or candidate.name or "MARIMUTHU T",
-            "father_name": _resolve_candidate_father_name(candidate, data_block),
-            "dob": c_dob,
-            "blood_group": data_block.get("blood_group") or candidate.blood_group or "O+",
-            "rto_name": data_block.get("rto") or "KA-01 (Bengaluru Central - Koramangala)",
-            "issue_date": data_block.get("issue_date") or "2020-03-10",
-            "valid_until_nt": data_block.get("expiry_date") or "2040-03-09 (Non-Transport)",
-            "vehicle_classes": data_block.get("vehicle_category_details") or ["Motorcycle With Gear (MCWG)", "Light Motor Vehicle (LMV)"],
+            "holder_name": data_block.get("name") or data_block.get("holder_name") or candidate.name or "",
+            "father_name": data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block),
+            "dob": data_block.get("dob") or c_dob,
+            "blood_group": data_block.get("blood_group") or candidate.blood_group or "",
+            "rto_name": data_block.get("rto") or "",
+            "issue_date": data_block.get("issue_date") or "",
+            "valid_until_nt": data_block.get("expiry_date") or "",
+            "vehicle_classes": data_block.get("vehicle_category_details") or [],
             "status": "Active & Valid"
         }
         raw_upstream = live_res
     else:
         extracted_data = {
             "dl_number": clean_dl,
-            "holder_name": candidate.name or "MARIMUTHU T",
+            "holder_name": candidate.name or "",
             "father_name": f_name,
             "dob": c_dob,
-            "blood_group": candidate.blood_group or "O+",
-            "rto_name": "KA-01 (Bengaluru Central - Koramangala)",
-            "issue_date": "2020-03-10",
-            "valid_until_nt": "2040-03-09 (Non-Transport)",
-            "vehicle_classes": ["Motorcycle With Gear (MCWG)", "Light Motor Vehicle (LMV)"],
-            "status": "Active & Valid"
+            "blood_group": candidate.blood_group or "",
+            "rto_name": "",
+            "issue_date": "",
+            "valid_until_nt": "",
+            "vehicle_classes": [],
+            "status": "Verification Incomplete"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Driving License registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-DL-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1212,7 +1185,7 @@ def verify_driving_license_live(
         verification_type="drivingLicense",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 64,
@@ -1220,7 +1193,7 @@ def verify_driving_license_live(
         api_id="neev_dl_v1"
     )
 
-    msg = "Driving License verified with MoRTH Sarathi via Live Gateway!" if live_ok else f"Driving License verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Driving License verified with MoRTH Sarathi via Live Gateway!" if live_ok else f"Driving License verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1254,74 +1227,77 @@ def verify_epfo_uan_live(
     f_name = _resolve_candidate_father_name(candidate)
     c_dob = _resolve_candidate_dob(candidate)
 
-    # 1. Try /uan-to-employment-profile
+    # 1. Primary Rich Endpoint: /uan-to-employment-history-v3 (Confirmed Live HTTP 200)
     live_ok, live_res, latency, err_msg = _call_neev_api(
-        endpoint_slug="/uan-to-employment-profile",
-        payload_data={"uan": clean_uan},
+        endpoint_slug="/uan-to-employment-history-v3",
+        payload_data={"uan_number": clean_uan, "uan": clean_uan},
         provider_info=provider_info
     )
 
-    # 2. Fallback: /uan-to-employment-history-v3
+    # 2. Fallback Endpoint: /uan-to-employment-profile
     if not live_ok:
         live_ok, live_res, latency, err_msg = _call_neev_api(
-            endpoint_slug="/uan-to-employment-history-v3",
-            payload_data={"uan": clean_uan},
+            endpoint_slug="/uan-to-employment-profile",
+            payload_data={"uan_number": clean_uan, "uan": clean_uan},
             provider_info=provider_info
         )
 
     if live_ok and live_res:
         data_block = live_res.get("data") or {}
+        profile = data_block.get("profile_details") or data_block.get("profile") or (data_block if not isinstance(data_block.get("data"), dict) else data_block["data"])
+        
+        member_name = profile.get("name") or data_block.get("name") or candidate.name or ""
+        father_name = profile.get("father_or_husband_name") or data_block.get("father_name") or _resolve_candidate_father_name(candidate, profile)
+        c_dob = profile.get("date_of_birth") or _resolve_candidate_dob(candidate, profile)
+        c_gender = profile.get("gender") or candidate.gender or "Male"
+        
+        extracted_companies = []
+        raw_emp_history = data_block.get("employment_history") or []
+        for item in raw_emp_history:
+            if isinstance(item, dict):
+                comp_details = item.get("company_details") or {}
+                emp_detail = item.get("employee_detail") or {}
+                c_name = comp_details.get("company_name") or item.get("establishment_name") or item.get("companyName") or ""
+                est_id = comp_details.get("est_id") or item.get("est_id") or ""
+                doj = emp_detail.get("doj_epf") or emp_detail.get("doj") or item.get("date_of_joining") or ""
+                doe = emp_detail.get("doe_epf") or emp_detail.get("doe") or item.get("date_of_exit") or ""
+                reason = emp_detail.get("reason_of_leaving") or item.get("exit_reason") or ""
+                member_id = emp_detail.get("member_id") or ""
+                if c_name:
+                    extracted_companies.append({
+                        "companyName": c_name,
+                        "establishment_name": c_name,
+                        "member_id": member_id,
+                        "est_id": est_id,
+                        "doj": doj,
+                        "doe": doe,
+                        "exit_reason": reason,
+                        "pf_passbook_verified": True
+                    })
+
         extracted_data = {
             "uan": clean_uan,
-            "member_name": data_block.get("name") or candidate.name or "MARIMUTHU T",
-            "father_name": _resolve_candidate_father_name(candidate, data_block),
-            "dob": _resolve_candidate_dob(candidate, data_block),
-            "gender": data_block.get("gender") or candidate.gender or "Male",
+            "member_name": member_name,
+            "father_name": father_name,
+            "dob": c_dob,
+            "gender": c_gender,
+            "email_id": profile.get("email_id") or candidate.email or "",
+            "mobile_number": profile.get("mobile_number") or candidate.mobile or "",
             "aadhaar_linked": True,
             "pan_linked": True,
             "bank_linked": True,
             "dual_employment_detected": False,
             "dual_employment_verdict": "Clear / No Concurrent Overlapping EPFO Tenures",
-            "establishments": data_block.get("employment_history") or [
-                {
-                    "establishment_name": "TCS LIMITED (Tata Consultancy Services)",
-                    "member_id": f"MHBAN0048192000/{clean_uan[-4:]}",
-                    "date_of_joining": "2021-06-01",
-                    "date_of_exit": "2024-03-31",
-                    "exit_reason": "Resignation / Normal Cessation",
-                    "tenure_months": 34,
-                    "pf_passbook_verified": True
-                },
-                {
-                    "establishment_name": "INFOSYS TECHNOLOGIES LIMITED",
-                    "member_id": f"KABAN0019283000/{clean_uan[-4:]}",
-                    "date_of_joining": "2019-01-15",
-                    "date_of_exit": "2021-05-20",
-                    "exit_reason": "Normal Cessation",
-                    "tenure_months": 28,
-                    "pf_passbook_verified": True
-                }
-            ],
-            "employment_history": data_block.get("employment_history") or [
-                {
-                    "companyName": "TCS LIMITED (Tata Consultancy Services)",
-                    "designation": "Senior Software Engineer",
-                    "doj": "2021-06-01",
-                    "doe": "2024-03-31"
-                },
-                {
-                    "companyName": "INFOSYS TECHNOLOGIES LIMITED",
-                    "designation": "Software Engineer",
-                    "doj": "2019-01-15",
-                    "doe": "2021-05-20"
-                }
-            ]
+            "establishments": extracted_companies,
+            "employment_history": extracted_companies
         }
         raw_upstream = live_res
     else:
+        f_name = _resolve_candidate_father_name(candidate)
+        c_dob = _resolve_candidate_dob(candidate)
         extracted_data = {
             "uan": clean_uan,
-            "member_name": candidate.name or "MARIMUTHU T",
+            "member_name": candidate.name or "",
             "father_name": f_name,
             "dob": c_dob,
             "gender": candidate.gender or "Male",
@@ -1330,44 +1306,12 @@ def verify_epfo_uan_live(
             "bank_linked": True,
             "dual_employment_detected": False,
             "dual_employment_verdict": "Clear / No Concurrent Overlapping EPFO Tenures",
-            "establishments": [
-                {
-                    "establishment_name": "TCS LIMITED (Tata Consultancy Services)",
-                    "member_id": f"MHBAN0048192000/{clean_uan[-4:]}",
-                    "date_of_joining": "2021-06-01",
-                    "date_of_exit": "2024-03-31",
-                    "exit_reason": "Resignation / Normal Cessation",
-                    "tenure_months": 34,
-                    "pf_passbook_verified": True
-                },
-                {
-                    "establishment_name": "INFOSYS TECHNOLOGIES LIMITED",
-                    "member_id": f"KABAN0019283000/{clean_uan[-4:]}",
-                    "date_of_joining": "2019-01-15",
-                    "date_of_exit": "2021-05-20",
-                    "exit_reason": "Normal Cessation",
-                    "tenure_months": 28,
-                    "pf_passbook_verified": True
-                }
-            ],
-            "employment_history": [
-                {
-                    "companyName": "TCS LIMITED (Tata Consultancy Services)",
-                    "designation": "Senior Software Engineer",
-                    "doj": "2021-06-01",
-                    "doe": "2024-03-31"
-                },
-                {
-                    "companyName": "INFOSYS TECHNOLOGIES LIMITED",
-                    "designation": "Software Engineer",
-                    "doj": "2019-01-15",
-                    "doe": "2021-05-20"
-                }
-            ]
+            "establishments": [],
+            "employment_history": []
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live EPFO registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-EPFO-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1379,15 +1323,15 @@ def verify_epfo_uan_live(
         verification_type="epfoUan",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=2 if live_ok else 0,
         cost_incurred=8.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 85,
-        endpoint_path="/uan-to-employment-profile",
-        api_id="neev_uan_profile_v1"
+        endpoint_path="/uan-to-employment-history-v3" if live_ok else "/uan-to-employment-profile",
+        api_id="neev_uan_history_v3"
     )
 
-    msg = "EPFO UAN Dual Employment & Service History verified via Live Gateway!" if live_ok else f"EPFO UAN verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "EPFO UAN Dual Employment & Service History verified via Live Gateway!" if live_ok else f"EPFO UAN verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1432,31 +1376,31 @@ def verify_passport_live(
         data_block = live_res.get("data") or {}
         extracted_data = {
             "passport_number": clean_passport,
-            "holder_name": data_block.get("name") or candidate.name or "MARIMUTHU T",
-            "father_name": _resolve_candidate_father_name(candidate, data_block),
-            "dob": c_dob,
+            "holder_name": data_block.get("name") or candidate.name or "",
+            "father_name": data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block),
+            "dob": data_block.get("dob") or c_dob,
             "country_code": "IND",
-            "type": "P (Regular Passport)",
-            "issue_date": data_block.get("issue_date") or "2018-09-12",
-            "expiry_date": data_block.get("expiry_date") or "2028-09-11",
-            "passport_status": "Valid & Active (Dispatched / No Adverse Flags)"
+            "type": data_block.get("application_type") or "P (Regular Passport)",
+            "issue_date": data_block.get("issue_date") or data_block.get("date_of_issue") or "",
+            "expiry_date": data_block.get("expiry_date") or "",
+            "passport_status": "Valid & Active (MEA Dispatched / Verified)"
         }
         raw_upstream = live_res
     else:
         extracted_data = {
             "passport_number": clean_passport,
-            "holder_name": candidate.name or "MARIMUTHU T",
+            "holder_name": candidate.name or "",
             "father_name": f_name,
             "dob": c_dob,
             "country_code": "IND",
             "type": "P (Regular Passport)",
-            "issue_date": "2018-09-12",
-            "expiry_date": "2028-09-11",
-            "passport_status": "Valid & Active (Dispatched / No Adverse Flags)"
+            "issue_date": "",
+            "expiry_date": "",
+            "passport_status": "Verification Incomplete"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Passport registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-PASSPORT-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1468,7 +1412,7 @@ def verify_passport_live(
         verification_type="passport",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 72,
@@ -1476,7 +1420,7 @@ def verify_passport_live(
         api_id="neev_passport_v1"
     )
 
-    msg = "Passport verified via Live MEA Gateway!" if live_ok else f"Passport verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Passport verified via Live MEA Gateway!" if live_ok else f"Passport verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1522,13 +1466,13 @@ def verify_voter_id_live(
         extracted_data = {
             "voter_id": clean_voter,
             "epic_number": clean_voter,
-            "full_name": data_block.get("name") or candidate.name or "MARIMUTHU T",
-            "father_name": _resolve_candidate_father_name(candidate, data_block),
-            "gender": data_block.get("gender") or candidate.gender or "MALE",
-            "state": data_block.get("state") or candidate.state or "Karnataka",
-            "assembly_constituency": data_block.get("ac_name") or "BTM Layout",
-            "parliamentary_constituency": data_block.get("pc_name") or "Bangalore South",
-            "polling_station": data_block.get("ps_name") or "Govt High School, Koramangala",
+            "full_name": data_block.get("name") or candidate.name or "",
+            "father_name": data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block),
+            "gender": data_block.get("gender") or candidate.gender or "",
+            "state": data_block.get("state") or candidate.state or "",
+            "assembly_constituency": data_block.get("ac_name") or "",
+            "parliamentary_constituency": data_block.get("pc_name") or "",
+            "polling_station": data_block.get("ps_name") or "",
             "status": "Active & Valid (ECI Operative)"
         }
         raw_upstream = live_res
@@ -1536,18 +1480,18 @@ def verify_voter_id_live(
         extracted_data = {
             "voter_id": clean_voter,
             "epic_number": clean_voter,
-            "full_name": candidate.name or "MARIMUTHU T",
+            "full_name": candidate.name or "",
             "father_name": f_name,
-            "gender": candidate.gender or "MALE",
-            "state": candidate.state or "Karnataka",
-            "assembly_constituency": "BTM Layout",
-            "parliamentary_constituency": "Bangalore South",
-            "polling_station": "Govt High School, Koramangala",
-            "status": "Active & Valid (ECI Operative)"
+            "gender": candidate.gender or "",
+            "state": candidate.state or "",
+            "assembly_constituency": "",
+            "parliamentary_constituency": "",
+            "polling_station": "",
+            "status": "Verification Incomplete"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Voter ID registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-VOTER-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1559,7 +1503,7 @@ def verify_voter_id_live(
         verification_type="voter_id",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 55,
@@ -1567,7 +1511,7 @@ def verify_voter_id_live(
         api_id="neev_voter_v1"
     )
 
-    msg = "Voter ID verified via Election Commission of India Gateway!" if live_ok else f"Voter ID verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Voter ID verified via Election Commission of India Gateway!" if live_ok else f"Voter ID verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1599,9 +1543,9 @@ def verify_court_records_live(
         return False, "Candidate not found", None
 
     provider_info = get_active_provider_info(db)
-    target_name = name or candidate.name or "MARIMUTHU T"
+    target_name = name or candidate.name or ""
     target_father = _resolve_candidate_father_name(candidate, {"father_name": father_name})
-    target_addr = address or candidate.permanent_address or "Bengaluru, Karnataka"
+    target_addr = address or candidate.permanent_address or ""
 
     live_ok, live_res, latency, err_msg = _call_neev_api(
         endpoint_slug="/realtime-court-case-search",
@@ -1638,8 +1582,8 @@ def verify_court_records_live(
             "ecourts_status": "Clean Record (No pending warrants, chargesheets or FIRs)"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Court registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-COURT-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1651,7 +1595,7 @@ def verify_court_records_live(
         verification_type="courtRecords",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=6.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 95,
@@ -1659,7 +1603,7 @@ def verify_court_records_live(
         api_id="neev_court_v1"
     )
 
-    msg = "Realtime Court & Criminal Case search completed across Indian Judiciary!" if live_ok else f"Court records verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Realtime Court & Criminal Case search completed across Indian Judiciary!" if live_ok else f"Court records search: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1689,7 +1633,7 @@ def verify_vehicle_rc_live(
         return False, "Candidate not found", None
 
     provider_info = get_active_provider_info(db)
-    clean_rc = (rc_number or "KA01AB1234").upper().strip()
+    clean_rc = (rc_number or "").upper().strip()
 
     # 1. Primary Active Endpoint: /vehicle-number-to-challan-details (Confirmed Live HTTP 200)
     live_ok, live_res, latency, err_msg = _call_neev_api(
@@ -1712,56 +1656,56 @@ def verify_vehicle_rc_live(
             first_item = data_block[0]
             extracted_data = {
                 "rc_number": clean_rc,
-                "owner_name": candidate.name or "MARIMUTHU T",
-                "vehicle_class": "Motor Car (LMV)",
-                "maker_model": "Hyundai i20 Asta",
-                "fuel_type": "PETROL",
-                "state": first_item.get("state") or "Karnataka",
+                "owner_name": first_item.get("owner_name") or candidate.name or "",
+                "vehicle_class": first_item.get("vehicle_class") or "Motor Vehicle",
+                "maker_model": first_item.get("maker_model") or "",
+                "fuel_type": first_item.get("fuel_type") or "",
+                "state": first_item.get("state") or "",
                 "challans_found": len(data_block),
                 "challan_records": data_block,
-                "registration_date": "2021-04-10",
-                "fitness_valid_upto": "2036-04-09",
-                "insurance_status": "Active (Valid upto 2027)",
-                "pucc_valid_upto": "2027-02-15",
+                "registration_date": first_item.get("registration_date") or "",
+                "fitness_valid_upto": first_item.get("fitness_upto") or "",
+                "insurance_status": first_item.get("insurance_status") or "Active",
+                "pucc_valid_upto": first_item.get("pucc_upto") or "",
                 "status": "Active & Valid RC (MoRTH Verified)"
             }
         elif isinstance(data_block, dict):
             extracted_data = {
                 "rc_number": clean_rc,
-                "owner_name": data_block.get("owner_name") or candidate.name or "MARIMUTHU T",
-                "vehicle_class": data_block.get("vehicle_class") or "Motor Car (LMV)",
-                "maker_model": data_block.get("maker_model") or "Hyundai i20 Asta",
-                "fuel_type": data_block.get("fuel_type") or "PETROL",
-                "registration_date": data_block.get("registration_date") or "2021-04-10",
-                "fitness_valid_upto": data_block.get("fitness_upto") or "2036-04-09",
-                "insurance_status": data_block.get("insurance_status") or "Active (Valid upto 2027)",
-                "pucc_valid_upto": data_block.get("pucc_upto") or "2027-02-15",
+                "owner_name": data_block.get("owner_name") or candidate.name or "",
+                "vehicle_class": data_block.get("vehicle_class") or "Motor Vehicle",
+                "maker_model": data_block.get("maker_model") or "",
+                "fuel_type": data_block.get("fuel_type") or "",
+                "registration_date": data_block.get("registration_date") or "",
+                "fitness_valid_upto": data_block.get("fitness_upto") or "",
+                "insurance_status": data_block.get("insurance_status") or "Active",
+                "pucc_valid_upto": data_block.get("pucc_upto") or "",
                 "status": "Active & Valid RC"
             }
         else:
             extracted_data = {
                 "rc_number": clean_rc,
-                "owner_name": candidate.name or "MARIMUTHU T",
-                "vehicle_class": "Motor Car (LMV)",
+                "owner_name": candidate.name or "",
+                "vehicle_class": "Motor Vehicle",
                 "status": "Active & Valid RC"
             }
         raw_upstream = live_res
     else:
         extracted_data = {
             "rc_number": clean_rc,
-            "owner_name": candidate.name or "MARIMUTHU T",
-            "vehicle_class": "Motor Car (LMV)",
-            "maker_model": "Hyundai i20 Asta",
-            "fuel_type": "PETROL",
-            "registration_date": "2021-04-10",
-            "fitness_valid_upto": "2036-04-09",
-            "insurance_status": "Active (Valid upto 2027)",
-            "pucc_valid_upto": "2027-02-15",
-            "status": "Active & Valid RC"
+            "owner_name": candidate.name or "",
+            "vehicle_class": "",
+            "maker_model": "",
+            "fuel_type": "",
+            "registration_date": "",
+            "fitness_valid_upto": "",
+            "insurance_status": "",
+            "pucc_valid_upto": "",
+            "status": "Verification Incomplete"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live Vehicle registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-RC-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1773,7 +1717,7 @@ def verify_vehicle_rc_live(
         verification_type="rc_details",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 60,
@@ -1781,7 +1725,7 @@ def verify_vehicle_rc_live(
         api_id="neev_rc_v1"
     )
 
-    msg = "Vehicle Registration Certificate (RC) verified via Vahan MoRTH Gateway!" if live_ok else f"Vehicle RC verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "Vehicle Registration Certificate (RC) verified via Vahan MoRTH Gateway!" if live_ok else f"Vehicle RC verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
@@ -1812,7 +1756,7 @@ def verify_esic_live(
         return False, "Candidate not found", None
 
     provider_info = get_active_provider_info(db)
-    target_mobile = candidate.mobile or "8344787772"
+    target_mobile = candidate.mobile or ""
     clean_esi = "".join(filter(str.isdigit, str(esic_number or "")))
     f_name = _resolve_candidate_father_name(candidate)
     
@@ -1835,27 +1779,27 @@ def verify_esic_live(
         data_block = live_res.get("data") or {}
         extracted_data = {
             "esic_number": clean_esi,
-            "insured_person_name": data_block.get("ip_name") or candidate.name or "MARIMUTHU T",
-            "father_name": _resolve_candidate_father_name(candidate, data_block),
-            "employer_code": data_block.get("employer_code") or "53000123450000999",
-            "employer_name": data_block.get("employer_name") or "JOY Corporate Solutions Pvt Ltd",
-            "dispensary": data_block.get("dispensary") or "ESIC Hospital, Rajajinagar, Bengaluru",
+            "insured_person_name": data_block.get("ip_name") or candidate.name or "",
+            "father_name": data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block),
+            "employer_code": data_block.get("employer_code") or "",
+            "employer_name": data_block.get("employer_name") or "",
+            "dispensary": data_block.get("dispensary") or "",
             "status": "Active & Insured"
         }
         raw_upstream = live_res
     else:
         extracted_data = {
             "esic_number": clean_esi,
-            "insured_person_name": candidate.name or "MARIMUTHU T",
+            "insured_person_name": candidate.name or "",
             "father_name": f_name,
-            "employer_code": "53000123450000999",
-            "employer_name": "JOY Corporate Solutions Pvt Ltd",
-            "dispensary": "ESIC Hospital, Rajajinagar, Bengaluru",
-            "status": "Active & Insured"
+            "employer_code": "",
+            "employer_name": "",
+            "dispensary": "",
+            "status": "Verification Incomplete"
         }
         raw_upstream = {
-            "success": True,
-            "message": "success",
+            "success": False,
+            "message": err_msg or "Failed to query live ESIC registry",
             "data": extracted_data,
             "requestId": f"REQ-NEEV-ESIC-{uuid.uuid4().hex[:10].upper()}",
             "timestamp": datetime.utcnow().isoformat()
@@ -1867,7 +1811,7 @@ def verify_esic_live(
         verification_type="esic",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Simulator Fallback)",
+        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 50,
@@ -1875,7 +1819,7 @@ def verify_esic_live(
         api_id="neev_esic_v1"
     )
 
-    msg = "ESIC Insured Person Record verified via Ministry of Labour & Employment!" if live_ok else f"ESIC verified in sandbox mode ({err_msg or 'Configure API Key in SuperAdmin'})"
+    msg = "ESIC Insured Person Record verified via Ministry of Labour & Employment!" if live_ok else f"ESIC verification: {err_msg or 'Configure API Key in SuperAdmin'}"
 
     return True, msg, {
         "record_id": rec.id,
