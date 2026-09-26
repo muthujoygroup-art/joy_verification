@@ -62,7 +62,7 @@ export const SANDBOX_MODULES = [
     endpoints: [
       { slug: '/ifsc-lookup', name: 'RBI IFSC Code Lookup (Active ✓)', defaultPayload: { ifsc: 'HDFC0000128' }, desc: 'Fetches bank name, branch address, city, state, MICR & NEFT/IMPS flags.' },
       { slug: '/account-validation', name: 'IMPS Penny Drop (₹1)', defaultPayload: { account_number: '501002349845', ifsc_code: 'HDFC0000128' }, desc: 'Live NPCI ₹1 penny drop to extract beneficiary legal name.' },
-      { slug: '/upi-verification', name: 'UPI VPA Verification', defaultPayload: { ifsc: 'HDFC0000128' }, desc: 'Validates UPI ID active status and registered name.' },
+      { slug: '/upi-verification', name: 'UPI VPA Verification (Active ✓)', defaultPayload: { upi: 'muthukumar@okaxis' }, desc: 'Validates UPI ID active status and registered name.' },
       { slug: '/upi-to-account', name: 'UPI to Bank Account', defaultPayload: { upi_id: 'muthukumar@okaxis' }, desc: 'Resolves destination bank account for UPI handle.' }
     ]
   },
@@ -81,10 +81,10 @@ export const SANDBOX_MODULES = [
     icon: Briefcase,
     color: 'from-indigo-600 to-violet-700',
     endpoints: [
-      { slug: '/uan-to-employment-profile', name: 'UAN Profile & Moonlighting Audit', defaultPayload: { uan_number: '101615138758' }, desc: 'Full member KYC, active establishments, and dual employment check.' },
-      { slug: '/uan-to-employment-history-v3', name: 'UAN Service History V3', defaultPayload: { uan_number: '101615138758' }, desc: 'All past companies, DOJs, DOEs, and resignation reasons.' },
+      { slug: '/uan-to-employment-profile', name: 'UAN Profile & Moonlighting Audit (Active ✓)', defaultPayload: { uan_number: '101615138758' }, desc: 'Full member KYC, active establishments, and dual employment check.' },
+      { slug: '/uan-to-employment-history-v3', name: 'UAN Service History V3 (Active ✓)', defaultPayload: { uan_number: '101615138758' }, desc: 'All past companies, DOJs, DOEs, and resignation reasons.' },
       { slug: '/employment-history-v2', name: 'Employment History V2', defaultPayload: { id_number: '101615138758' }, desc: 'Service tenure records from EPFO.' },
-      { slug: '/esic-data', name: 'ESIC Social Security Data', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491' }, desc: 'Employee State Insurance Corporation (ESIC) member records by Mobile or UAN.' }
+      { slug: '/esic-data', name: 'ESIC Social Security Data (Active ✓)', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491' }, desc: 'Employee State Insurance Corporation (ESIC) member records by Mobile or UAN.' }
     ]
   },
   {
@@ -111,7 +111,8 @@ export const SANDBOX_MODULES = [
     icon: Vote,
     color: 'from-rose-600 to-pink-600',
     endpoints: [
-      { slug: '/voter-id-details', name: 'ECI Voter ID Details', defaultPayload: { epic_number: 'WOC1574045', fileNumber: 'LK5072574276018', dob: '03-02-1999' }, desc: 'Election Commission of India constituency & polling booth check.' }
+      { slug: '/voter-id-verification', name: 'ECI Voter ID Verification (Active ✓)', defaultPayload: { id_number: 'WOC1574045' }, desc: 'Election Commission of India EPIC number identity check.' },
+      { slug: '/voter-id-details', name: 'ECI Voter ID Details', defaultPayload: { fileNumber: 'LK5072574276018', dob: '03-02-1999' }, desc: 'Election Commission of India constituency & polling booth check.' }
     ]
   },
   {

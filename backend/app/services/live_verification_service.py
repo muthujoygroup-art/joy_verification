@@ -1455,11 +1455,20 @@ def verify_voter_id_live(
     c_dob = _resolve_candidate_dob(candidate, {"dob": dob})
     f_name = _resolve_candidate_father_name(candidate)
 
+    # 1. Primary Active Endpoint: /voter-id-verification (id_number: clean_voter)
     live_ok, live_res, latency, err_msg = _call_neev_api(
-        endpoint_slug="/voter-id-details",
-        payload_data={"fileNumber": clean_voter, "dob": c_dob, "epic_number": clean_voter},
+        endpoint_slug="/voter-id-verification",
+        payload_data={"id_number": clean_voter, "epic_number": clean_voter, "name": candidate.name},
         provider_info=provider_info
     )
+
+    # 2. Secondary Fallback: /voter-id-details
+    if not live_ok:
+        live_ok, live_res, latency, err_msg = _call_neev_api(
+            endpoint_slug="/voter-id-details",
+            payload_data={"fileNumber": clean_voter, "dob": c_dob, "epic_number": clean_voter},
+            provider_info=provider_info
+        )
 
     if live_ok and live_res:
         data_block = live_res.get("data") or {}
@@ -1470,9 +1479,9 @@ def verify_voter_id_live(
             "father_name": data_block.get("father_name") or _resolve_candidate_father_name(candidate, data_block),
             "gender": data_block.get("gender") or candidate.gender or "",
             "state": data_block.get("state") or candidate.state or "",
-            "assembly_constituency": data_block.get("ac_name") or "",
+            "assembly_constituency": data_block.get("ac_name") or data_block.get("constituency") or "",
             "parliamentary_constituency": data_block.get("pc_name") or "",
-            "polling_station": data_block.get("ps_name") or "",
+            "polling_station": data_block.get("ps_name") or data_block.get("polling_station") or "",
             "status": "Active & Valid (ECI Operative)"
         }
         raw_upstream = live_res
@@ -1507,7 +1516,7 @@ def verify_voter_id_live(
         api_calls_count=1 if live_ok else 0,
         cost_incurred=4.0 if live_ok else 0.0,
         latency_ms=latency if 'latency' in locals() else 55,
-        endpoint_path="/voter-id-details",
+        endpoint_path="/voter-id-verification" if live_ok else "/voter-id-details",
         api_id="neev_voter_v1"
     )
 
