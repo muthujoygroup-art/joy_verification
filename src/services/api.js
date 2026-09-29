@@ -641,6 +641,15 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ token, esic_number: esicNumber, dob }),
   }),
+  fetchDigilockerDetails: (payload) => request('/verification/digilocker/fetch', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  initiateDigilockerSession: (payload) => request('/verification/digilocker/initiate', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  getDigilockerRecords: () => request('/verification/digilocker/records'),
   verifyAllCandidateDocuments: (token, docTypes = null) => request(`/verification/candidate/${encodeURIComponent(token)}/verify-all`, {
     method: 'POST',
     body: JSON.stringify({ doc_types: docTypes, force_refresh: true }),

@@ -29,6 +29,7 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
 import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
+import { DigiLockerFetchModal } from '../components/DigiLockerFetchModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
@@ -496,6 +497,8 @@ export const HrExecutiveView = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('it_tech');
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
+  const [showDigilockerModal, setShowDigilockerModal] = useState(false);
+  const [digilockerTargetCandidate, setDigilockerTargetCandidate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
@@ -927,6 +930,7 @@ export const HrExecutiveView = () => {
         else if (activeDrilldown) setActiveDrilldown(null);
         else if (showLegalHandbook) setShowLegalHandbook(false);
         else if (showUniversalExportModal) setShowUniversalExportModal(false);
+        else if (showDigilockerModal) { setShowDigilockerModal(false); setDigilockerTargetCandidate(null); }
         else if (showFullJoiningModal) setShowFullJoiningModal(false);
         else if (showBulkImportModal) setShowBulkImportModal(false);
         else if (activePreviewStatutoryForm) setActivePreviewStatutoryForm(null);
@@ -939,7 +943,7 @@ export const HrExecutiveView = () => {
     managingDocVerifCandidate, showAddCustomFieldModal, showAddCustomDocModal,
     dispatchingCandidate, viewingDossierCandidate, viewingCertificateCandidate,
     viewingBgvReportCandidate, downloadingCandidate, activeDrilldown,
-    showLegalHandbook, showUniversalExportModal, showFullJoiningModal, 
+    showLegalHandbook, showUniversalExportModal, showDigilockerModal, showFullJoiningModal, 
     showBulkImportModal, activePreviewStatutoryForm
   ]);
 
@@ -1280,6 +1284,7 @@ export const HrExecutiveView = () => {
     reviewingCandidate ||
     showLegalHandbook ||
     showUniversalExportModal ||
+    showDigilockerModal ||
     activePreviewStatutoryForm ||
     managingDocVerifCandidate ||
     showAddCustomFieldModal ||
@@ -1870,6 +1875,19 @@ export const HrExecutiveView = () => {
           <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-auto">
             <button
               type="button"
+              onClick={() => {
+                setDigilockerTargetCandidate(null);
+                setShowDigilockerModal(true);
+              }}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer transition-all"
+              title="Query & Fetch official government documents from DigiLocker via mobile number"
+            >
+              <Landmark className="w-3.5 h-3.5 text-sky-600" />
+              <span>DigiLocker Fetch 🏛️</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setShowUniversalExportModal(true)}
               className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer transition-all"
               title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
@@ -2129,6 +2147,19 @@ export const HrExecutiveView = () => {
             </div>
             
             <div className="flex items-center gap-2 self-start flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setDigilockerTargetCandidate(null);
+                  setShowDigilockerModal(true);
+                }}
+                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer"
+                title="Query & Fetch official government documents from DigiLocker via mobile number"
+              >
+                <Landmark className="w-3.5 h-3.5 text-sky-600" />
+                <span>DigiLocker Fetch 🏛️</span>
+              </button>
+
               <button
                 onClick={() => setShowUniversalExportModal(true)}
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer"
@@ -2798,6 +2829,29 @@ export const HrExecutiveView = () => {
                                 </span>
                               )}
                             </span>
+                          </button>
+
+                          {/* 4.6 DigiLocker Direct Fetch Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDigilockerTargetCandidate(cand);
+                              setShowDigilockerModal(true);
+                            }}
+                            className={`btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs cursor-pointer ${
+                              cand.digilockerVerified || cand.digilockerData
+                                ? 'text-sky-950 bg-sky-50/90 border-sky-300 hover:bg-sky-100'
+                                : 'text-slate-700 bg-slate-100 border-slate-300 hover:bg-slate-200'
+                            }`}
+                            title="Fetch government certificates directly from DigiLocker using candidate mobile number"
+                          >
+                            <Landmark className="w-3.5 h-3.5 text-sky-600" />
+                            <span>DigiLocker 🏛️</span>
+                            {(cand.digilockerVerified || cand.digilockerData) && (
+                              <span className="ml-1 px-1.5 py-0.2 bg-sky-200 text-sky-900 rounded-full text-[9px] font-extrabold border border-sky-300">
+                                Verified✓
+                              </span>
+                            )}
                           </button>
 
                           {/* 4.8 Edit Employee Profile Button */}
@@ -7344,6 +7398,16 @@ export const HrExecutiveView = () => {
         onClose={() => setShowUniversalExportModal(false)}
         initialRole="hrexecutive"
         scopedCompanyId={currentCompany?.id}
+      />
+
+      {/* 🏛️ DigiLocker Data Fetch & Verified Profiles Dossier Modal */}
+      <DigiLockerFetchModal
+        isOpen={showDigilockerModal}
+        onClose={() => {
+          setShowDigilockerModal(false);
+          setDigilockerTargetCandidate(null);
+        }}
+        initialCandidate={digilockerTargetCandidate}
       />
 
       {/* 📁 HR UPLOADED ORIGINAL DOCUMENTS REPOSITORY MODAL */}
