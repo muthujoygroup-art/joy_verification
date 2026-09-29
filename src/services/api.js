@@ -649,6 +649,11 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(payload),
   }),
+  initiateDigilockerAuth: (payload) => request('/verification/digilocker/initiate-auth', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  getDigilockerPurposes: () => request('/verification/digilocker/purposes'),
   getDigilockerRecords: () => request('/verification/digilocker/records'),
   verifyAllCandidateDocuments: (token, docTypes = null) => request(`/verification/candidate/${encodeURIComponent(token)}/verify-all`, {
     method: 'POST',

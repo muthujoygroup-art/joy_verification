@@ -205,10 +205,13 @@ def apply_runtime_migrations(target_engine, force: bool = False):
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS http_status INTEGER DEFAULT 200;",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS latency_ms INTEGER DEFAULT 50;",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS cost_incurred FLOAT DEFAULT 4.0;",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS input_identifier VARCHAR(100);",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS request_payload JSON DEFAULT '{}';",
         "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS response_summary JSON DEFAULT '{}';",
-        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;"
+        "ALTER TABLE api_call_logs ADD COLUMN IF NOT EXISTS error_message TEXT;",
+        "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS digilocker_data JSON DEFAULT '{}';",
+        "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS digilocker_verified BOOLEAN DEFAULT FALSE;",
+        "CREATE TABLE IF NOT EXISTS digilocker_verifications (id VARCHAR(50) PRIMARY KEY, session_id VARCHAR(100), candidate_id VARCHAR(50), user_type VARCHAR(20) DEFAULT 'individual', auth_type VARCHAR(20) DEFAULT 'mobile', identifier_value VARCHAR(50), digilocker_id VARCHAR(50), full_name VARCHAR(150), dob VARCHAR(30), gender VARCHAR(20), email VARCHAR(150), aadhaar_no VARCHAR(50), uan_no VARCHAR(50), pan_no VARCHAR(50), dl_no VARCHAR(50), address TEXT, pincode VARCHAR(20), profile_photo TEXT, status VARCHAR(30) DEFAULT 'success', error_message TEXT, purpose VARCHAR(100), service_name VARCHAR(100), company_id VARCHAR(50), hr_id VARCHAR(50), access_token TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+        "CREATE TABLE IF NOT EXISTS digilocker_documents (id VARCHAR(50) PRIMARY KEY, verification_id VARCHAR(50), candidate_id VARCHAR(50), document_name VARCHAR(150) NOT NULL, issuer VARCHAR(255) NOT NULL, doc_no VARCHAR(100), doc_uri VARCHAR(255), doc_type VARCHAR(50), doc_status VARCHAR(50) DEFAULT 'Verified', raw_data JSON DEFAULT '{}', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
     ]
     for stmt in migrations:
         try:

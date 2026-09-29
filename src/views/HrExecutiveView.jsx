@@ -30,6 +30,7 @@ import { UniversalDocumentExportModal } from '../components/UniversalDocumentExp
 import { StatutoryFormPreviewModal } from '../components/StatutoryFormPreviewModal';
 import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
 import { DigiLockerFetchModal } from '../components/DigiLockerFetchModal';
+import { DigiLockerSectionView } from '../components/DigiLockerSectionView';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
@@ -364,6 +365,14 @@ const HR_DIVISION_META_MAP = {
     subtitle: 'Configure automated candidate reminder intervals, email notification routing, and statutory compliance parameters',
     icon: Settings,
     colorClass: 'from-purple-600 to-indigo-800'
+  },
+  digilocker_vault: {
+    pillarBadge: '🏛️ 4. DigiLocker Government Vault',
+    badgeText: () => 'NeGD API Setu Live',
+    title: 'DigiLocker Government Data Vault & Digital Verification Desk',
+    subtitle: 'Direct integration with NeGD API Setu for authenticated fetching of Aadhaar e-KYC XML, PAN, Driving License, Marksheets & UAN',
+    icon: Building2,
+    colorClass: 'from-sky-600 to-indigo-800'
   }
 };
 
@@ -1876,14 +1885,13 @@ export const HrExecutiveView = () => {
             <button
               type="button"
               onClick={() => {
-                setDigilockerTargetCandidate(null);
-                setShowDigilockerModal(true);
+                setActiveTab('digilocker_vault');
               }}
               className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer transition-all"
-              title="Query & Fetch official government documents from DigiLocker via mobile number"
+              title="Open DigiLocker Government Data Vault & Digital Verification Desk"
             >
               <Landmark className="w-3.5 h-3.5 text-sky-600" />
-              <span>DigiLocker Fetch 🏛️</span>
+              <span>DigiLocker Vault 🏛️</span>
             </button>
 
             <button
@@ -2150,14 +2158,13 @@ export const HrExecutiveView = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setDigilockerTargetCandidate(null);
-                  setShowDigilockerModal(true);
+                  setActiveTab('digilocker_vault');
                 }}
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer"
-                title="Query & Fetch official government documents from DigiLocker via mobile number"
+                title="Open DigiLocker Government Data Vault & Digital Verification Desk"
               >
                 <Landmark className="w-3.5 h-3.5 text-sky-600" />
-                <span>DigiLocker Fetch 🏛️</span>
+                <span>DigiLocker Vault 🏛️</span>
               </button>
 
               <button
@@ -7223,6 +7230,14 @@ export const HrExecutiveView = () => {
             </div>
           </form>
         </div>
+      )}
+
+      {/* 🏛️ TAB: DIGILOCKER GOVERNMENT VAULT & DIGITAL VERIFICATION DESK */}
+      {activeTab === 'digilocker_vault' && (
+        <DigiLockerSectionView
+          currentCompany={currentCompany}
+          activeHr={activeHr}
+        />
       )}
 
       {/* TAB: MY WORKSPACE PERSONAL VIEW */}

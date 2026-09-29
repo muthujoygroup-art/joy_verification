@@ -85,6 +85,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     pipeline_dossiers: true,
     profiler_dispatch: false,
     statutory_settings: false,
+    digilocker_vault: true,
     // Candidate
     cand_identity: true,
     cand_financial: false,
@@ -600,6 +601,20 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'analytics', label: 'Verification Reports', tab: 'analytics', icon: TrendingUp },
             { id: 'statutory_forms', label: 'Government Forms (EPF/ESI)', tab: 'statutory_forms', icon: Scale },
             { id: 'settings', label: 'HR Settings', tab: 'settings', icon: Settings }
+          ]
+        },
+        {
+          id: 'digilocker_vault',
+          title: '4. DigiLocker Vault',
+          subtitle: 'Govt e-KYC & Certificates',
+          badgeText: 'DIGILOCKER',
+          icon: Building2,
+          colorClass: 'from-sky-600 to-indigo-800',
+          defaultTab: 'digilocker_vault',
+          divisions: [
+            { id: 'digilocker_create', label: 'DigiLocker Fetch ⚡', tab: 'digilocker_vault', icon: Smartphone },
+            { id: 'digilocker_dossier', label: 'Verified Profiles 🏛️', tab: 'digilocker_vault', icon: Building2 },
+            { id: 'digilocker_compliance', label: 'NeGD 2026 Compliance 🛡️', tab: 'digilocker_vault', icon: Scale }
           ]
         }
       ];
