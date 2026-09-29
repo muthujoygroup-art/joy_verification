@@ -42,6 +42,7 @@ from backend.app.services.digilocker_service import (
     SAMPLE_PURPOSES_CATALOGUE,
     generate_authorization_url,
     process_digilocker_verification,
+    handle_digilocker_callback,
     get_all_digilocker_records,
     get_digilocker_config
 )
@@ -122,6 +123,15 @@ class DigilockerInitiateAuthRequest(BaseModel):
     service_name: Optional[str] = "JoyVerify"
     redirect_uri: Optional[str] = None
     candidate_id: Optional[str] = None
+
+class DigilockerCallbackRequest(BaseModel):
+    code: str
+    state: Optional[str] = None
+    verifier: Optional[str] = None
+    user_type: Optional[str] = "individual"
+    candidate_id: Optional[str] = None
+    company_id: Optional[str] = None
+    hr_id: Optional[str] = None
 
 class VerifyAllRequest(BaseModel):
     token: Optional[str] = None
@@ -635,6 +645,54 @@ def endpoint_initiate_digilocker(payload: VerifyDigilockerRequest, db: Session =
         "timestamp": datetime.utcnow().isoformat()
     }
 
+@router.post("/digilocker/callback")
+@router.get("/digilocker/callback")
+def endpoint_digilocker_callback(
+    request: Request,
+    payload: Optional[DigilockerCallbackRequest] = None,
+    code: Optional[str] = None,
+    state: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Handles OAuth2 authorization callback from DigiLocker / API Setu.
+    Exchanges code for live access token, retrieves issued files, and enriches dossier.
+    """
+    try:
+        # Extract code & state from query parameters or JSON body
+        auth_code = code or (payload.code if payload else None) or request.query_params.get("code")
+        oauth_state = state or (payload.state if payload else None) or request.query_params.get("state")
+        
+        if not auth_code:
+            error_param = request.query_params.get("error") or "No authorization code received"
+            error_desc = request.query_params.get("error_description") or ""
+            return {
+                "success": False,
+                "message": f"DigiLocker authorization failed: {error_param} {error_desc}".strip(),
+                "documents": []
+            }
+
+        verifier = payload.verifier if payload else None
+        user_type = (payload.user_type if payload else None) or request.query_params.get("user_type") or "individual"
+        candidate_id = payload.candidate_id if payload else request.query_params.get("candidate_id")
+        company_id = payload.company_id if payload else request.query_params.get("company_id")
+        hr_id = payload.hr_id if payload else request.query_params.get("hr_id")
+
+        result = handle_digilocker_callback(
+            db=db,
+            code=auth_code,
+            state=oauth_state,
+            verifier=verifier,
+            user_type=user_type,
+            candidate_id=candidate_id,
+            company_id=company_id,
+            hr_id=hr_id
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error handling digilocker callback: {e}", exc_info=True)
+        return {"success": False, "message": f"DigiLocker callback processing error: {str(e)}", "documents": []}
+
 @router.get("/digilocker/records")
 def endpoint_get_digilocker_records(db: Session = Depends(get_db)):
     """
@@ -647,9 +705,6 @@ def endpoint_get_digilocker_records(db: Session = Depends(get_db)):
             "count": len(records),
             "records": records
         }
-    except Exception as e:
-        logger.error(f"Error fetching digilocker records: {e}")
-        return {"success": True, "count": 0, "records": []}
     except Exception as e:
         logger.error(f"Error fetching digilocker records: {e}")
         return {"success": True, "count": 0, "records": []}

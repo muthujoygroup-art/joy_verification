@@ -149,7 +149,52 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     );
   };
 
-  // ⚡ Execute Instant Live Government Vault Fetch
+  // 🚀 Open Live DigiLocker Portal with PKCE & NeGD 2026 Redirection (Primary Flow)
+  const handleRedirectToDigilocker = async (e) => {
+    if (e) e.preventDefault();
+    const cleanId = (identifierValue || '').trim();
+    if (!cleanId) {
+      showToast('⚠️ Please enter a valid Mobile Number, Aadhaar Number, or PAN.', 'error');
+      return;
+    }
+
+    const effectivePurpose = customPurpose ? customPurpose.trim().slice(0, 50) : selectedPurpose;
+    const effectiveService = (serviceName || 'JoyVerify').trim().slice(0, 50);
+
+    setIsGeneratingAuth(true);
+    try {
+      const callbackUri = window.location.origin + '/digilocker-callback';
+      const res = await api.initiateDigilockerAuth({
+        user_type: userType,
+        auth_type: authType,
+        identifier_value: cleanId,
+        purpose: effectivePurpose,
+        service_name: effectiveService,
+        redirect_uri: callbackUri,
+        candidate_id: selectedCandidateId || undefined
+      });
+
+      if (res && res.success && res.auth_url) {
+        setGeneratedAuthData(res);
+        showToast('🚀 Opening Official Government DigiLocker Portal...', 'success');
+        
+        // Attempt to open in a new tab first
+        const newWindow = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Fallback if popup is blocked by browser
+          window.location.href = res.auth_url;
+        }
+      } else {
+        showToast(res?.message || 'Failed to initiate DigiLocker redirection.', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Error communicating with DigiLocker service.', 'error');
+    } finally {
+      setIsGeneratingAuth(false);
+    }
+  };
+
+  // ⚡ Execute Instant Live Government Vault Fetch (In-Portal Direct Ingest)
   const handleExecuteFetch = async (e) => {
     if (e) e.preventDefault();
     const cleanId = (identifierValue || '').trim();
@@ -222,12 +267,14 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
     setIsGeneratingAuth(true);
     try {
+      const callbackUri = window.location.origin + '/digilocker-callback';
       const res = await api.initiateDigilockerAuth({
         user_type: userType,
         auth_type: authType,
         identifier_value: cleanId,
         purpose: effectivePurpose,
         service_name: effectiveService,
+        redirect_uri: callbackUri,
         candidate_id: selectedCandidateId || undefined
       });
 
@@ -251,6 +298,14 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
       setCopiedLink(true);
       showToast('📋 DigiLocker authorization URL copied to clipboard!', 'success');
       setTimeout(() => setCopiedLink(false), 2500);
+    }
+  };
+
+  // Share generated auth URL via WhatsApp
+  const handleShareWhatsApp = () => {
+    if (generatedAuthData?.auth_url) {
+      const text = encodeURIComponent(`Hello, please complete your official DigiLocker document verification for Joy TrueProfile onboarding here: ${generatedAuthData.auth_url}`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
   };
 
@@ -448,7 +503,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
               </span>
             </div>
 
-            <form onSubmit={handleExecuteFetch} className="space-y-4">
+            <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
               
               {/* 1. Target Entity Selector */}
               <div>
@@ -674,37 +729,37 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   type="submit"
-                  disabled={isFetching}
-                  className="w-full py-3 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs shadow-md hover:shadow-sky-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                  disabled={isGeneratingAuth}
+                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md hover:shadow-sky-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
                 >
-                  {isFetching ? (
+                  {isGeneratingAuth ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                      <span>Fetching Government Vault...</span>
+                      <span>Opening DigiLocker Portal...</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 text-sky-200" />
-                      <span>Fetch Government Data ⚡</span>
+                      <ExternalLink className="w-4 h-4 text-sky-200" />
+                      <span>Continue with DigiLocker Gateway 🚀</span>
                     </>
                   )}
                 </button>
 
                 <button
                   type="button"
-                  onClick={handleGenerateAuthUrl}
-                  disabled={isGeneratingAuth}
-                  className="w-full py-3 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-extrabold text-xs border border-indigo-200 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                  onClick={handleExecuteFetch}
+                  disabled={isFetching}
+                  className="w-full py-3.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs border border-slate-300 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
                 >
-                  {isGeneratingAuth ? (
+                  {isFetching ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
-                      <span>Building Redirection...</span>
+                      <RefreshCw className="w-4 h-4 animate-spin text-sky-600" />
+                      <span>Ingesting Vault Records...</span>
                     </>
                   ) : (
                     <>
-                      <QrCode className="w-4 h-4 text-indigo-600" />
-                      <span>Generate Consent URL 🔗</span>
+                      <Sparkles className="w-4 h-4 text-sky-600" />
+                      <span>Direct In-Portal Fetch (Instant) ⚡</span>
                     </>
                   )}
                 </button>
@@ -774,25 +829,34 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   {generatedAuthData.auth_url}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className="flex-1 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                  >
-                    {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedLink ? 'Copied to Clipboard!' : 'Copy Redirection URL'}</span>
-                  </button>
-
+                <div className="flex flex-wrap items-center gap-2">
                   <a
                     href={generatedAuthData.auth_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1 cursor-pointer border border-slate-700"
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
                   >
-                    <span>Open Link</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-4 h-4 text-white" />
+                    <span>Open DigiLocker Gateway ↗️</span>
                   </a>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-700 transition-all"
+                  >
+                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedLink ? 'Copied!' : 'Copy URL'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleShareWhatsApp}
+                    className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all"
+                    title="Send DigiLocker Verification link to candidate on WhatsApp"
+                  >
+                    <span>💬 WhatsApp</span>
+                  </button>
                 </div>
               </div>
             )}

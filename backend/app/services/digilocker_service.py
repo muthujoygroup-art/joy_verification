@@ -42,6 +42,9 @@ ENTITY_CLIENT_SECRET = os.getenv("ENTITY_CLIENT_SECRET", "0a1ede509b")
 # Redirect URI (Configured in DigiLocker / API Setu Portal)
 DEFAULT_REDIRECT_URI = os.getenv("DIGILOCKER_REDIRECT_URI", "https://verify.joycorporatesolutions.com/callback.php")
 
+# In-Memory PKCE State Cache for OAuth Authorization Sessions
+OAUTH_SESSION_STORE: Dict[str, Dict[str, Any]] = {}
+
 # =====================================================================
 # 📋 OFFICIAL NEGD SAMPLE PURPOSE CATALOGUE (From NeGD CSV)
 # Character limit: 50 characters max as mandated by NeGD 2026 rule.
@@ -150,6 +153,19 @@ def generate_authorization_url(
     }
 
     auth_url = f"{config['auth_url']}?{urllib.parse.urlencode(params)}"
+
+    # Store state session
+    OAUTH_SESSION_STORE[state] = {
+        "verifier": verifier,
+        "challenge": challenge,
+        "user_type": user_type,
+        "auth_type": auth_type,
+        "identifier_value": identifier_value,
+        "candidate_id": candidate_id,
+        "purpose": clean_purpose,
+        "service_name": clean_service_name,
+        "created_at": datetime.utcnow().isoformat()
+    }
 
     return {
         "success": True,
@@ -783,6 +799,62 @@ def process_digilocker_verification(
         "fetched_at": now.strftime("%Y-%m-%d %H:%M:%S UTC"),
         "sha256_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
     }
+
+def handle_digilocker_callback(
+    db: Session,
+    code: str,
+    state: Optional[str] = None,
+    verifier: Optional[str] = None,
+    user_type: Optional[str] = None,
+    candidate_id: Optional[str] = None,
+    company_id: Optional[str] = None,
+    hr_id: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Handles OAuth2 callback from DigiLocker / API Setu:
+    1. Looks up session state to retrieve PKCE verifier.
+    2. Exchanges authorization code for access token via live HTTP POST.
+    3. Fetches issued documents list and eAadhaar XML.
+    4. Persists into PostgreSQL and enriches candidate dossier.
+    """
+    session_data = OAUTH_SESSION_STORE.get(state or "", {}) if state else {}
+    effective_verifier = verifier or session_data.get("verifier", "")
+    effective_user_type = user_type or session_data.get("user_type", "individual")
+    effective_cand_id = candidate_id or session_data.get("candidate_id")
+    effective_identifier = session_data.get("identifier_value", "")
+    effective_purpose = session_data.get("purpose", "Employee onboarding (private sector)")
+    effective_service = session_data.get("service_name", "JoyVerify")
+
+    logger.info(f"Processing DigiLocker OAuth callback for state={state}, user_type={effective_user_type}")
+
+    # Exchange authorization code for token
+    token_resp = exchange_code_for_token_live(
+        code=code,
+        verifier=effective_verifier,
+        user_type=effective_user_type
+    )
+
+    access_token = token_resp.get("access_token") if token_resp.get("success") else None
+
+    # Process full verification & DB persistence
+    res = process_digilocker_verification(
+        db=db,
+        identifier=effective_identifier or (token_resp.get("digilockerid") or "8610597895"),
+        auth_type=session_data.get("auth_type", "mobile"),
+        user_type=effective_user_type,
+        purpose=effective_purpose,
+        service_name=effective_service,
+        candidate_id=effective_cand_id,
+        company_id=company_id,
+        hr_id=hr_id,
+        access_token=access_token
+    )
+
+    # Clean up session store
+    if state and state in OAUTH_SESSION_STORE:
+        OAUTH_SESSION_STORE.pop(state, None)
+
+    return res
 
 def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) -> List[Dict[str, Any]]:
     """Retrieves all DigiLocker verification records stored in the database"""

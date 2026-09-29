@@ -18,6 +18,7 @@ import { EmployeePortalView } from './views/EmployeePortalView';
 import { VendorPortalView } from './views/VendorPortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
 import { HrActivationView } from './views/HrActivationView';
+import { DigiLockerCallbackView } from './views/DigiLockerCallbackView';
 
 // Authentic Brand Loading Animation for Suspense Fallback
 const RouteLoadingSpinner = () => (
@@ -277,7 +278,12 @@ export const App = () => {
                 <Route path="/hr-activation" element={<HrActivationView />} />
                 <Route path="/hr-activation/*" element={<HrActivationView />} />
 
-                {/* 6. Fallback Wildcard Redirect */}
+                {/* 7. Official DigiLocker Government Callback Routes */}
+                <Route path="/digilocker-callback" element={<DigiLockerCallbackView />} />
+                <Route path="/callback" element={<DigiLockerCallbackView />} />
+                <Route path="/callback.php" element={<DigiLockerCallbackView />} />
+
+                {/* 8. Fallback Wildcard Redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
