@@ -3,4 +3,4 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/$USER/test2.joycorporatesolutions.com/
     - /bin/cp -R dist/* $DEPLOYPATH 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/test2/ 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/
-
+    - /bin/cp -R digilocker_gateway/* /home/$USER/verify.joycorporatesolutions.com/ 2>/dev/null || /bin/cp -R digilocker_gateway/* /home/$USER/public_html/verify/ 2>/dev/null || /bin/cp -R digilocker_gateway/* /home/$USER/verify/ 2>/dev/null
