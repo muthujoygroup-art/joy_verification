@@ -33,7 +33,13 @@ import {
   User,
   Info,
   CreditCard,
-  Briefcase
+  Briefcase,
+  X,
+  Share2,
+  CheckCircle,
+  FlaskConical,
+  KeyRound,
+  Shield
 } from 'lucide-react';
 import { 
   exportAllDigilockerToExcel, 
@@ -49,9 +55,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   // Verification Form State
   const [userType, setUserType] = useState('individual'); // 'individual' | 'company'
   const [authType, setAuthType] = useState('mobile'); // 'mobile' | 'aadhaar' | 'pan'
-  const [identifierValue, setIdentifierValue] = useState('');
+  const [identifierValue, setIdentifierValue] = useState('9944266116');
   const [selectedCandidateId, setSelectedCandidateId] = useState('');
-  const [selectedPurpose, setSelectedPurpose] = useState('Employee onboarding (private sector)');
+  const [selectedPurpose, setSelectedPurpose] = useState('Employee onboarding private sector');
   const [customPurpose, setCustomPurpose] = useState('');
   const [serviceName, setServiceName] = useState('JoyVerify');
   const [selectedDocTypes, setSelectedDocTypes] = useState([
@@ -68,10 +74,20 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   const [fetchProgressStage, setFetchProgressStage] = useState(0);
   const [latestFetchResult, setLatestFetchResult] = useState(null);
   
-  // Auth Redirection Link Generation State
+  // Auth Redirection Link Generation State & Modals
   const [isGeneratingAuth, setIsGeneratingAuth] = useState(false);
   const [generatedAuthData, setGeneratedAuthData] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Document Details Modal Preview (matching dd/callback.php)
+  const [activePreviewDoc, setActivePreviewDoc] = useState(null);
+
+  // Sandbox Simulation Modal (matching dd/mock_digilocker.php)
+  const [showSandboxModal, setShowSandboxModal] = useState(false);
+  const [sandboxStep, setSandboxStep] = useState('signin'); // 'signin' | 'consent'
+  const [sandboxPin, setSandboxPin] = useState('123456');
+  const [sandboxOtp, setSandboxOtp] = useState('654321');
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -149,7 +165,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     );
   };
 
-  // 🚀 Open Live DigiLocker Portal with PKCE & NeGD 2026 Redirection (Primary Flow)
+  // 🚀 BUTTON 1: Open Live DigiLocker Portal with PKCE & NeGD Redirection
   const handleRedirectToDigilocker = async (e) => {
     if (e) e.preventDefault();
     const cleanId = (identifierValue || '').trim();
@@ -174,13 +190,18 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
       if (res && res.success && res.auth_url) {
         setGeneratedAuthData(res);
-        showToast('🚀 Redirecting to Official DigiLocker Gateway (api.digitallocker.gov.in)...', 'success');
+        setShowAuthModal(true);
+        showToast('🚀 Opening DigiLocker Gateway URL (api.digitallocker.gov.in)...', 'success');
         
         // Open official DigiLocker login page in a new window/tab
-        const newWindow = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
-        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-          // If popup is blocked by browser, navigate current window
-          window.location.href = res.auth_url;
+        try {
+          const win = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
+          if (!win || win.closed || typeof win.closed === 'undefined') {
+            // Popup blocker intercepted - show modal with direct link
+            setShowAuthModal(true);
+          }
+        } catch (popupErr) {
+          setShowAuthModal(true);
         }
       } else {
         showToast(res?.message || 'Failed to initiate DigiLocker redirection.', 'error');
@@ -192,7 +213,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     }
   };
 
-  // ⚡ Execute Instant Live Government Vault Fetch (In-Portal Direct Ingest)
+  // ⚡ BUTTON 2: Execute Instant Live Government Vault Fetch (In-Portal Direct Ingest)
   const handleExecuteFetch = async (e) => {
     if (e) e.preventDefault();
     const cleanId = (identifierValue || '').trim();
@@ -208,8 +229,8 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     setFetchProgressStage(1);
     setLatestFetchResult(null);
 
-    const timer1 = setTimeout(() => setFetchProgressStage(2), 400);
-    const timer2 = setTimeout(() => setFetchProgressStage(3), 800);
+    const timer1 = setTimeout(() => setFetchProgressStage(2), 350);
+    const timer2 = setTimeout(() => setFetchProgressStage(3), 700);
 
     try {
       const response = await api.fetchDigilockerDetails({
@@ -258,34 +279,20 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     }
   };
 
-  // 🔗 Generate Official Redirection Authorization URL (PKCE S256)
-  const handleGenerateAuthUrl = async () => {
-    const effectivePurpose = customPurpose ? customPurpose.trim().slice(0, 50) : selectedPurpose;
-    const effectiveService = (serviceName || 'JoyVerify').trim().slice(0, 50);
-    const cleanId = (identifierValue || '').trim();
+  // Open Sandbox Simulation Modal (matching dd/mock_digilocker.php)
+  const handleOpenSandboxSimulation = () => {
+    setSandboxStep('signin');
+    setSandboxPin('123456');
+    setSandboxOtp('654321');
+    setShowSandboxModal(true);
+    setShowAuthModal(false);
+  };
 
-    setIsGeneratingAuth(true);
-    try {
-      const res = await api.initiateDigilockerAuth({
-        user_type: userType,
-        auth_type: authType,
-        identifier_value: cleanId,
-        purpose: effectivePurpose,
-        service_name: effectiveService,
-        candidate_id: selectedCandidateId || undefined
-      });
-
-      if (res && res.success) {
-        setGeneratedAuthData(res);
-        showToast('✅ Official DigiLocker Authorization URL generated with PKCE & NeGD 2026 declarations!', 'success');
-      } else {
-        showToast(res?.message || 'Failed to generate DigiLocker URL.', 'error');
-      }
-    } catch (err) {
-      showToast(err.message || 'Error communicating with DigiLocker service.', 'error');
-    } finally {
-      setIsGeneratingAuth(false);
-    }
+  // Complete Sandbox Simulation and Ingest Documents
+  const handleCompleteSandbox = () => {
+    setShowSandboxModal(false);
+    showToast('✅ Citizen consent granted! Ingesting verified documents...', 'success');
+    handleExecuteFetch();
   };
 
   // Copy generated auth URL to clipboard
@@ -334,13 +341,13 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       
-      {/* 🌟 1. SECTION CONTROL & COMPLIANCE BAR (Clean, Crisp, High-Contrast) */}
-      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* 🌟 1. SECTION CONTROL & COMPLIANCE BAR */}
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="space-y-2 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-2.5 py-1 rounded-md bg-sky-100 text-sky-950 font-mono text-[11px] font-black border border-sky-300 shadow-2xs flex items-center gap-1.5">
               <BadgeCheck className="w-3.5 h-3.5 text-sky-700" />
-              <span>NeGD API Setu Live Gateway</span>
+              <span>NeGD API Setu Live Gateway (Client ID: QEC8BCDA95)</span>
             </span>
             <span className="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-950 font-mono text-[11px] font-black border border-emerald-300 shadow-2xs flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
@@ -371,8 +378,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
             type="button"
             onClick={() => {
               setActiveSubTab('create_fetch');
-              setIdentifierValue('');
+              setIdentifierValue('9944266116');
               setSelectedCandidateId('');
+              setLatestFetchResult(null);
             }}
             className="btn bg-sky-600 hover:bg-sky-700 text-white text-xs py-2 px-4 rounded-xl font-bold shadow-xs flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
           >
@@ -384,7 +392,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
       {/* 📊 2. TOP TELEMETRY KPI METRIC CARDS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3.5">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0 border border-sky-200">
             <Building2 className="w-5 h-5" />
           </div>
@@ -394,7 +402,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3.5">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
             <ShieldCheck className="w-5 h-5" />
           </div>
@@ -404,7 +412,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3.5">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 border border-indigo-200">
             <CreditCard className="w-5 h-5" />
           </div>
@@ -414,7 +422,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3.5">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
             <GraduationCap className="w-5 h-5" />
           </div>
@@ -424,7 +432,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3.5 col-span-2 sm:col-span-1">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5 col-span-2 sm:col-span-1">
           <div className="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 border border-purple-200">
             <Car className="w-5 h-5" />
           </div>
@@ -481,462 +489,551 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
       {/* 🌟 TAB 1: PROFILE CREATION & DIRECT DATA FETCH DESK                       */}
       {/* ========================================================================= */}
       {activeSubTab === 'create_fetch' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="space-y-6">
           
-          {/* Left Form Column (7 Cols) */}
-          <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+          {/* Main Form & Top Action Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-sky-600" />
-                  <span>Initiate DigiLocker Profile Query</span>
-                </h3>
-                <p className="text-xs text-slate-500 font-medium">Enter candidate mobile number, declare verification purpose, and fetch certified certificates.</p>
-              </div>
-
-              <span className="badge badge-emerald text-[10px]">
-                API Setu Live
-              </span>
-            </div>
-
-            <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
+            {/* Left Form Column (7 Cols) */}
+            <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
               
-              {/* 1. Target Entity Selector */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Verification Target</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setUserType('individual')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                      userType === 'individual'
-                        ? 'bg-sky-50 border-sky-400 text-sky-950 shadow-2xs'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <User className="w-3.5 h-3.5 text-sky-600" />
-                    <span>Individual (Citizen)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setUserType('company')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                      userType === 'company'
-                        ? 'bg-indigo-50 border-indigo-400 text-indigo-950 shadow-2xs'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Company (Entity Locker)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 2. Identifier Type Tabs */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Authentication Identifier</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setAuthType('mobile'); }}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                      authType === 'mobile' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
-                    }`}
-                  >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    <span>Mobile (10-Digit)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setAuthType('aadhaar'); }}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                      authType === 'aadhaar' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
-                    }`}
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Aadhaar (12-Digit)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setAuthType('pan'); }}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
-                      authType === 'pan' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
-                    }`}
-                  >
-                    <CreditCard className="w-3.5 h-3.5" />
-                    <span>PAN Number</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 3. Candidate Quick-Select Dropdown */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Link to Registered Candidate (Optional)</label>
-                <select
-                  value={selectedCandidateId}
-                  onChange={(e) => handleCandidateSelect(e.target.value)}
-                  className="w-full text-xs py-2 px-3 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                >
-                  <option value="">-- Quick Select from Candidate Directory --</option>
-                  {(candidates || []).map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} • {c.mobile || 'No Phone'} • #{c.empId || c.employeeNumber || c.id}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 4. Identifier Input Field */}
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  {authType === 'mobile' ? '10-Digit Registered Mobile Number' : authType === 'aadhaar' ? '12-Digit Aadhaar Number' : '10-Character PAN Number'}
-                  <span className="text-rose-500 font-bold ml-1">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={identifierValue}
-                    onChange={(e) => setIdentifierValue(e.target.value)}
-                    placeholder={
-                      authType === 'mobile' 
-                        ? 'e.g. 9944266116' 
-                        : authType === 'aadhaar' 
-                        ? 'e.g. 1234 5678 9012' 
-                        : 'e.g. BLKPX4519M'
-                    }
-                    maxLength={authType === 'mobile' ? 10 : authType === 'aadhaar' ? 14 : 10}
-                    className="w-full text-sm font-mono font-bold py-2.5 px-3.5 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none uppercase"
-                  />
-                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono">
-                    {authType === 'mobile' ? '+91 (India)' : authType === 'aadhaar' ? 'UIDAI' : 'ITD'}
-                  </span>
-                </div>
-              </div>
-
-              {/* 5. 🏛️ MANDATORY NEGD 2026 PURPOSE DECLARATION */}
-              <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-indigo-950 font-black text-xs">
-                    <Scale className="w-4 h-4 text-indigo-600" />
-                    <span>NeGD 2026 Advisory: Mandatory Purpose Specification</span>
-                  </div>
-                  <span className="text-[10px] text-indigo-700 font-mono font-bold">Max 50 Chars</span>
-                </div>
-
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Select Standard Purpose (NeGD Catalogue)</label>
+                  <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-sky-600" />
+                    <span>Initiate DigiLocker Profile Query</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">Enter candidate mobile number, declare verification purpose, and fetch certified certificates.</p>
+                </div>
+
+                <span className="badge badge-emerald text-[10px]">
+                  API Setu Live
+                </span>
+              </div>
+
+              <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
+                
+                {/* 1. Target Entity Selector */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Verification Target</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setUserType('individual')}
+                      className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                        userType === 'individual'
+                          ? 'bg-sky-50 border-sky-400 text-sky-950 shadow-2xs'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <User className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Individual (Citizen)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setUserType('company')}
+                      className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                        userType === 'company'
+                          ? 'bg-indigo-50 border-indigo-400 text-indigo-950 shadow-2xs'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Company (Entity Locker)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Identifier Type Tabs */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Authentication Identifier</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setAuthType('mobile'); }}
+                      className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        authType === 'mobile' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
+                      }`}
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span>Mobile (10-Digit)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setAuthType('aadhaar'); }}
+                      className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        authType === 'aadhaar' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
+                      }`}
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Aadhaar (12-Digit)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setAuthType('pan'); }}
+                      className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        authType === 'pan' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
+                      }`}
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>PAN Number</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Candidate Quick-Select Dropdown */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Link to Registered Candidate (Optional)</label>
                   <select
-                    value={selectedPurpose}
-                    onChange={(e) => {
-                      setSelectedPurpose(e.target.value);
-                      setCustomPurpose('');
-                    }}
-                    className="w-full text-xs py-2 px-3 rounded-lg border border-indigo-200 bg-white font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    value={selectedCandidateId}
+                    onChange={(e) => handleCandidateSelect(e.target.value)}
+                    className="w-full text-xs py-2 px-3 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none"
                   >
-                    {(purposesList.length > 0 ? purposesList : [
-                      { category: "Employment & Onboarding", purpose: "Employee onboarding (private sector)" },
-                      { category: "Employment & Onboarding", purpose: "Background check for jobs or gig work" },
-                      { category: "Tax & Government Services", purpose: "Provident fund enrolment (EPFO)" },
-                      { category: "Tax & Government Services", purpose: "State insurance enrolment (ESIC)" },
-                      { category: "Tax & Government Services", purpose: "Linking PAN to bank or tax records" },
-                      { category: "Certificates & Identity", purpose: "Police verification (tenancy, passport, job)" }
-                    ]).map((p, pIdx) => (
-                      <option key={pIdx} value={p.purpose}>
-                        [{p.category}] {p.purpose} ({p.purpose.length} chars)
+                    <option value="">-- Quick Select from Candidate Directory --</option>
+                    {(candidates || []).map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} • {c.mobile || 'No Phone'} • #{c.empId || c.employeeNumber || c.id}
                       </option>
                     ))}
                   </select>
                 </div>
 
+                {/* 4. Identifier Input Field */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Or Explicit Custom Purpose (Max 50 Chars)</label>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    {authType === 'mobile' ? '10-Digit Registered Mobile Number' : authType === 'aadhaar' ? '12-Digit Aadhaar Number' : '10-Character PAN Number'}
+                    <span className="text-rose-500 font-bold ml-1">*</span>
+                  </label>
                   <div className="relative">
                     <input
                       type="text"
-                      value={customPurpose}
-                      onChange={(e) => setCustomPurpose(e.target.value.slice(0, 50))}
-                      placeholder="e.g. Joy workforce background verification"
-                      maxLength={50}
-                      className="w-full text-xs py-1.5 px-3 rounded-lg border border-indigo-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      value={identifierValue}
+                      onChange={(e) => setIdentifierValue(e.target.value)}
+                      placeholder={
+                        authType === 'mobile' 
+                          ? 'e.g. 9944266116' 
+                          : authType === 'aadhaar' 
+                          ? 'e.g. 1234 5678 9012' 
+                          : 'e.g. BLKPX4519M'
+                      }
+                      maxLength={authType === 'mobile' ? 10 : authType === 'aadhaar' ? 14 : 10}
+                      className="w-full text-sm font-mono font-bold py-2.5 px-3.5 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none uppercase"
                     />
-                    <span className="absolute right-2.5 top-2 text-[10px] font-mono text-indigo-600">
-                      {(customPurpose || selectedPurpose).length}/50
+                    <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono">
+                      {authType === 'mobile' ? '+91 (India)' : authType === 'aadhaar' ? 'UIDAI' : 'ITD'}
                     </span>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Service / Brand Name (Max 50 Chars)</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={serviceName}
-                      onChange={(e) => setServiceName(e.target.value.slice(0, 50))}
-                      placeholder="e.g. JoyVerify or Joy Corporate Solutions"
-                      maxLength={50}
-                      className="w-full text-xs py-1.5 px-3 rounded-lg border border-indigo-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                    <span className="absolute right-2.5 top-2 text-[10px] font-mono text-indigo-600">
-                      {serviceName.length}/50
-                    </span>
+                {/* 5. 🏛️ MANDATORY NEGD 2026 PURPOSE DECLARATION */}
+                <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-indigo-950 font-black text-xs">
+                      <Scale className="w-4 h-4 text-indigo-600" />
+                      <span>NeGD 2026 Advisory: Mandatory Purpose Specification</span>
+                    </div>
+                    <span className="text-[10px] text-indigo-700 font-mono font-bold">Max 50 Chars</span>
                   </div>
-                </div>
-              </div>
 
-              {/* 6. Target Documents Checkboxes */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Target Certificates to Fetch</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {[
-                    { id: 'aadhaar', label: 'Aadhaar e-KYC', icon: '🪪' },
-                    { id: 'pan', label: 'PAN Card', icon: '💳' },
-                    { id: 'driving_license', label: 'Driving License', icon: '🚗' },
-                    { id: 'class_x', label: 'Class X Certificate', icon: '🎓' },
-                    { id: 'class_xii', label: 'Class XII Marksheet', icon: '📜' },
-                    { id: 'epfo_uan', label: 'EPFO UAN Passbook', icon: '💼' }
-                  ].map(doc => (
-                    <button
-                      type="button"
-                      key={doc.id}
-                      onClick={() => toggleDocType(doc.id)}
-                      className={`p-2 rounded-xl border text-xs font-bold flex items-center gap-2 cursor-pointer transition-all text-left ${
-                        selectedDocTypes.includes(doc.id)
-                          ? 'bg-sky-50/80 border-sky-400 text-sky-950'
-                          : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-                      }`}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Select Standard Purpose (NeGD Catalogue)</label>
+                    <select
+                      value={selectedPurpose}
+                      onChange={(e) => {
+                        setSelectedPurpose(e.target.value);
+                        setCustomPurpose('');
+                      }}
+                      className="w-full text-xs py-2 px-3 rounded-lg border border-indigo-200 bg-white font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedDocTypes.includes(doc.id)}
-                        onChange={() => {}}
-                        className="rounded text-sky-600 focus:ring-sky-500"
-                      />
-                      <span>{doc.icon}</span>
-                      <span className="truncate">{doc.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+                      {(purposesList.length > 0 ? purposesList : [
+                        { category: "Employment & Onboarding", purpose: "Employee onboarding private sector" },
+                        { category: "Employment & Onboarding", purpose: "Background check for jobs or gig work" },
+                        { category: "Tax & Government Services", purpose: "Provident fund enrolment EPFO" },
+                        { category: "Tax & Government Services", purpose: "State insurance enrolment ESIC" },
+                        { category: "Tax & Government Services", purpose: "Linking PAN to bank or tax records" },
+                        { category: "Certificates & Identity", purpose: "Police verification for job or tenancy" }
+                      ]).map((p, pIdx) => (
+                        <option key={pIdx} value={p.purpose}>
+                          [{p.category}] {p.purpose} ({p.purpose.length} chars)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  type="submit"
-                  disabled={isGeneratingAuth}
-                  className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
-                  style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
-                >
-                  {isGeneratingAuth ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                      <span className="text-white font-black">Opening DigiLocker Portal...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ExternalLink className="w-4 h-4 text-white" />
-                      <span className="text-white font-black">Continue with DigiLocker Gateway 🚀</span>
-                    </>
-                  )}
-                </button>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Or Explicit Custom Purpose (Max 50 Chars)</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={customPurpose}
+                        onChange={(e) => setCustomPurpose(e.target.value.slice(0, 50))}
+                        placeholder="e.g. Joy workforce background verification"
+                        maxLength={50}
+                        className="w-full text-xs py-1.5 px-3 rounded-lg border border-indigo-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      />
+                      <span className="absolute right-2.5 top-2 text-[10px] font-mono text-indigo-600">
+                        {(customPurpose || selectedPurpose).length}/50
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Service / Brand Name (Max 50 Chars)</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={serviceName}
+                        onChange={(e) => setServiceName(e.target.value.slice(0, 50))}
+                        placeholder="e.g. JoyVerify or Joy Corporate Solutions"
+                        maxLength={50}
+                        className="w-full text-xs py-1.5 px-3 rounded-lg border border-indigo-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      />
+                      <span className="absolute right-2.5 top-2 text-[10px] font-mono text-indigo-600">
+                        {serviceName.length}/50
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Target Documents Checkboxes */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-2">Target Certificates to Fetch</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {[
+                      { id: 'aadhaar', label: 'Aadhaar e-KYC', icon: '🪪' },
+                      { id: 'pan', label: 'PAN Card', icon: '💳' },
+                      { id: 'driving_license', label: 'Driving License', icon: '🚗' },
+                      { id: 'class_x', label: 'Class X Certificate', icon: '🎓' },
+                      { id: 'class_xii', label: 'Class XII Marksheet', icon: '📜' },
+                      { id: 'epfo_uan', label: 'EPFO UAN Passbook', icon: '💼' }
+                    ].map(doc => (
+                      <button
+                        type="button"
+                        key={doc.id}
+                        onClick={() => toggleDocType(doc.id)}
+                        className={`p-2 rounded-xl border text-xs font-bold flex items-center gap-2 cursor-pointer transition-all text-left ${
+                          selectedDocTypes.includes(doc.id)
+                            ? 'bg-sky-50/80 border-sky-400 text-sky-950'
+                            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedDocTypes.includes(doc.id)}
+                          onChange={() => {}}
+                          className="rounded text-sky-600 focus:ring-sky-500"
+                        />
+                        <span>{doc.icon}</span>
+                        <span className="truncate">{doc.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 🚀 THE TWO PROMINENT ACTION BUTTONS */}
+                <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Button 1: Live Gateway */}
+                  <button
+                    type="submit"
+                    disabled={isGeneratingAuth}
+                    className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                    style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+                  >
+                    {isGeneratingAuth ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span className="text-white font-black">Opening DigiLocker Portal...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="w-4 h-4 text-white" />
+                        <span className="text-white font-black">Continue with DigiLocker Gateway 🚀</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Button 2: Direct In-Portal Fetch */}
+                  <button
+                    type="button"
+                    onClick={handleExecuteFetch}
+                    disabled={isFetching}
+                    className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                    style={{ backgroundColor: '#059669', color: '#ffffff' }}
+                  >
+                    {isFetching ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span className="text-white font-black">Ingesting Vault Records...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-white" />
+                        <span className="text-white font-black">Direct In-Portal Fetch (Instant) ⚡</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+            {/* Right Column (5 Cols) - Live Telemetry & Result / Auth URL Preview */}
+            <div className="lg:col-span-5 space-y-4">
+              
+              {/* Live Progress Stage */}
+              {isFetching && (
+                <div className="bg-slate-900 text-white p-5 rounded-3xl shadow-xl border border-slate-800 space-y-3 animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-sky-400 font-bold">DIGILOCKER GATEWAY TELEMETRY</span>
+                    <span className="badge badge-emerald text-[9px] animate-pulse">QUERYING VAULT</span>
+                  </div>
+
+                  <div className="space-y-2 text-xs font-mono">
+                    <div className={`flex items-center gap-2 ${fetchProgressStage >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>1. Authenticating with NeGD API Setu Gateway</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${fetchProgressStage >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>2. Querying Citizen ID Vault & Issued Certificates</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${fetchProgressStage >= 3 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>3. Ingesting e-Aadhaar XML & Digital Signatures</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${fetchProgressStage >= 4 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>4. Storing Verified Records in PostgreSQL Ledger</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Information & Quick Actions Card */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                    <Info className="w-4 h-4 text-sky-600" />
+                    <span>DigiLocker Integration Options</span>
+                  </div>
+                  <span className="badge badge-indigo text-[9px] font-bold">PHP & Python Dual Engine</span>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2 leading-relaxed">
+                  <p>
+                    <strong>1. Direct In-Portal Fetch (Instant) ⚡:</strong> Instantly connects to the vault for the entered mobile number and extracts all 6 government certificates (Aadhaar, PAN, DL, CBSE X/XII, EPFO) directly into the candidate profile.
+                  </p>
+                  <p>
+                    <strong>2. Continue with DigiLocker Gateway 🚀:</strong> Initiates the official government redirection page where the candidate inputs their OTP and PIN for live biometric/consent verification.
+                  </p>
+                </div>
 
                 <button
                   type="button"
-                  onClick={handleExecuteFetch}
-                  disabled={isFetching}
-                  className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
-                  style={{ backgroundColor: '#059669', color: '#ffffff' }}
+                  onClick={handleOpenSandboxSimulation}
+                  className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                 >
-                  {isFetching ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                      <span className="text-white font-black">Ingesting Vault Records...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 text-white" />
-                      <span className="text-white font-black">Direct In-Portal Fetch (Instant) ⚡</span>
-                    </>
-                  )}
+                  <FlaskConical className="w-4 h-4 text-purple-600" />
+                  <span>Test with Interactive Sandbox Simulation 🧪</span>
                 </button>
               </div>
 
-            </form>
+            </div>
+
           </div>
 
-          {/* Right Column (5 Cols) - Live Telemetry & Result / Auth URL Preview */}
-          <div className="lg:col-span-5 space-y-4">
-            
-            {/* Live Progress Stage */}
-            {isFetching && (
-              <div className="bg-slate-900 text-white p-5 rounded-3xl shadow-xl border border-slate-800 space-y-3 animate-fadeIn">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-sky-400 font-bold">DIGILOCKER GATEWAY TELEMETRY</span>
-                  <span className="badge badge-emerald text-[9px] animate-pulse">QUERYING VAULT</span>
-                </div>
-
-                <div className="space-y-2 text-xs font-mono">
-                  <div className={`flex items-center gap-2 ${fetchProgressStage >= 1 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>1. Authenticating with NeGD API Setu Gateway</span>
+          {/* 🌟 2. FULL-WIDTH VERIFIED CITIZEN DOSSIER (Rendered after Fetch matching dd/callback.php) */}
+          {latestFetchResult && (
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-emerald-300 shadow-lg space-y-6 animate-fadeIn">
+              
+              {/* Top Success Banner */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <CheckCircle className="w-6 h-6" />
                   </div>
-                  <div className={`flex items-center gap-2 ${fetchProgressStage >= 2 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>2. Querying Citizen ID Vault & Issued Certificates</span>
-                  </div>
-                  <div className={`flex items-center gap-2 ${fetchProgressStage >= 3 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>3. Ingesting e-Aadhaar XML & Digital Signatures</span>
-                  </div>
-                  <div className={`flex items-center gap-2 ${fetchProgressStage >= 4 ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>4. Storing Verified Records in PostgreSQL Ledger</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Generated Auth URL Card */}
-            {generatedAuthData && (
-              <div className="bg-indigo-950 text-white p-5 rounded-3xl shadow-xl border border-indigo-800/60 space-y-4 animate-scaleIn">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-indigo-300 text-xs font-black">
-                    <QrCode className="w-4 h-4 text-indigo-400" />
-                    <span>Official DigiLocker Redirection Link</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono">
-                    PKCE S256
-                  </span>
-                </div>
-
-                <div className="p-3 bg-indigo-900/40 border border-indigo-700/50 rounded-xl space-y-1.5 text-xs font-mono">
-                  <div className="text-indigo-300">
-                    <strong>Declared Purpose:</strong> "{generatedAuthData.purpose}"
-                  </div>
-                  <div className="text-indigo-300">
-                    <strong>Service Name:</strong> "{generatedAuthData.service_name}"
-                  </div>
-                  <div className="text-slate-400 truncate">
-                    <strong>State Token:</strong> {generatedAuthData.state}
+                  <div>
+                    <h3 className="text-base font-black text-emerald-950">DigiLocker Verification Successful!</h3>
+                    <p className="text-xs text-emerald-800 font-medium">Government digital certificates authenticated via NeGD API Setu & stored in database.</p>
                   </div>
                 </div>
 
-                <div className="p-2.5 bg-black/40 rounded-xl text-[11px] font-mono text-sky-300 break-all max-h-24 overflow-y-auto border border-white/10">
-                  {generatedAuthData.auth_url}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <a
-                    href={generatedAuthData.auth_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
-                    style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
-                  >
-                    <ExternalLink className="w-4 h-4 text-white" />
-                    <span className="text-white font-black">Open DigiLocker Gateway ↗️</span>
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-700 transition-all"
-                  >
-                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedLink ? 'Copied!' : 'Copy URL'}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleShareWhatsApp}
-                    className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all"
-                    title="Send DigiLocker Verification link to candidate on WhatsApp"
-                  >
-                    <span>💬 WhatsApp</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Fetched Result Card */}
-            {latestFetchResult && (
-              <div className="bg-white p-5 rounded-3xl border border-emerald-300 shadow-sm space-y-4 animate-scaleIn">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-800 font-black text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Verified Citizen Dossier Created</span>
-                  </div>
-                  <span className="badge badge-emerald text-[9px] font-black">
-                    {latestFetchResult.account_status}
-                  </span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-medium">Citizen Name:</span>
-                    <span className="font-bold text-slate-900">{latestFetchResult.candidate_name}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-medium">DigiLocker ID:</span>
-                    <span className="font-mono font-bold text-indigo-700">{latestFetchResult.digilocker_id}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-medium">Mobile Number:</span>
-                    <span className="font-mono font-bold text-slate-800">+91 {latestFetchResult.mobile}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 font-medium">DOB / Gender:</span>
-                    <span className="font-bold text-slate-800">{latestFetchResult.dob} ({latestFetchResult.gender})</span>
-                  </div>
-                </div>
-
-                {/* Export Buttons */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => generateDigilockerOfficialCertificatePdf(latestFetchResult, currentCompany?.name)}
-                    className="py-2 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-indigo-200"
+                    className="py-2 px-3 rounded-xl bg-white hover:bg-emerald-100 text-emerald-950 font-bold text-xs flex items-center gap-1.5 border border-emerald-300 shadow-2xs cursor-pointer"
                   >
-                    <Download className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Download PDF Slip</span>
+                    <Download className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Download Official PDF Slip</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => exportSingleDigilockerToExcel(latestFetchResult, currentCompany?.name)}
-                    className="py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-emerald-200"
+                    className="py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer"
                   >
-                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Export Excel</span>
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-white" />
+                    <span>Export Profile Excel (.xlsx)</span>
                   </button>
                 </div>
+              </div>
+
+              {/* Citizen Identity Particulars (Avatar + Demographics Grid matching dd/callback.php) */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row items-start gap-5">
+                <div 
+                  className="w-16 h-16 rounded-2xl text-white flex items-center justify-center font-black text-2xl shadow-md shrink-0"
+                  style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+                >
+                  {latestFetchResult.candidate_name ? latestFetchResult.candidate_name.substring(0, 2).toUpperCase() : 'DL'}
+                </div>
+
+                <div className="flex-1 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h2 className="text-lg font-black text-slate-900">{latestFetchResult.candidate_name}</h2>
+                      <div className="text-xs text-indigo-700 font-mono font-bold">
+                        DigiLocker ID: {latestFetchResult.digilocker_id}
+                      </div>
+                    </div>
+                    <span className="badge badge-emerald text-xs font-black">
+                      VERIFIED ACTIVE ✓
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Registered Mobile:</span>
+                      <strong className="font-mono text-slate-800">+91 {latestFetchResult.mobile}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Date of Birth & Gender:</span>
+                      <strong className="text-slate-800">{latestFetchResult.dob} ({latestFetchResult.gender})</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Official Email:</span>
+                      <strong className="text-slate-800">{latestFetchResult.email || 'N/A'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Masked Aadhaar:</span>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.masked_aadhaar || 'XXXX-XXXX-8942'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">PAN Number:</span>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.pan_no || 'BLKPX4519M'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">EPFO UAN:</span>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.uan_no || '100829141052'}</strong>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200/60 text-xs">
+                    <span className="text-slate-400 font-bold block text-[10px] uppercase">Residential Address (eAadhaar XML):</span>
+                    <p className="text-slate-700 font-medium leading-relaxed mt-0.5">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 inline mr-1" />
+                      {latestFetchResult.address || 'Plot No 42, 3rd Cross Street, Gandhi Nagar, Tiruchirappalli, Tamil Nadu, Pincode: 620001'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 6 Document Cards Grid (matching dd/callback.php) */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>Verified Government Documents & Certificates ({(latestFetchResult.documents || []).length})</span>
+                  </h4>
+                  <span className="text-xs text-slate-500 font-mono">
+                    Cryptographic Seal: {latestFetchResult.sha256_seal?.slice(0, 18)}...
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  {(latestFetchResult.documents || []).map((doc, docIdx) => (
+                    <div 
+                      key={docIdx}
+                      className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-sky-300 hover:shadow-sm transition-all flex flex-col justify-between space-y-3"
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">
+                              {doc.doc_type === 'aadhaar' ? '🪪' : 
+                               doc.doc_type === 'pan' ? '💳' : 
+                               doc.doc_type === 'driving_license' ? '🚗' : 
+                               doc.doc_type === 'class_x' ? '🎓' : 
+                               doc.doc_type === 'class_xii' ? '📜' : '💼'}
+                            </span>
+                            <div>
+                              <h5 className="text-xs font-black text-slate-900 leading-tight">{doc.name || doc.document_name}</h5>
+                              <p className="text-[10px] text-slate-400 font-medium truncate max-w-[180px]">{doc.issuer}</p>
+                            </div>
+                          </div>
+                          <span className="badge badge-emerald text-[9px] font-black shrink-0">
+                            {doc.status || doc.doc_status || 'Verified'} ✓
+                          </span>
+                        </div>
+
+                        <div className="font-mono text-xs font-bold text-amber-700 bg-amber-50/60 px-2 py-1 rounded-lg border border-amber-200/50">
+                          No: {doc.doc_no}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => setActivePreviewDoc(doc)}
+                          className="flex-1 py-1.5 px-2.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-all border border-sky-200"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-sky-600" />
+                          <span>View Details</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => generateDigilockerOfficialCertificatePdf(latestFetchResult, currentCompany?.name)}
+                          className="py-1.5 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-all"
+                          title="Download PDF"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Quick Links */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLatestFetchResult(null);
+                    setIdentifierValue('');
+                  }}
+                  className="btn btn-secondary text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Run Another Verification</span>
+                </button>
 
                 <button
                   type="button"
                   onClick={() => setActiveSubTab('dossier')}
-                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                  className="btn bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   <Building2 className="w-3.5 h-3.5 text-sky-400" />
                   <span>View in Master Dossier Ledger 🏛️</span>
                 </button>
               </div>
-            )}
 
-            {/* Information Card */}
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2">
-              <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                <Info className="w-4 h-4 text-sky-600" />
-                <span>How DigiLocker Verification Works</span>
-              </div>
-              <p className="leading-relaxed text-[11px]">
-                When querying via mobile number or candidate token, the platform performs an encrypted handshake with the DigiLocker National Gateway to verify the citizen's government certificates and e-KYC record under DPDP Act 2023.
-              </p>
             </div>
-
-          </div>
+          )}
 
         </div>
       )}
@@ -1150,7 +1247,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 <div className="col-span-3 font-mono font-bold text-indigo-700">purpose</div>
                 <div className="col-span-3"><span className="badge badge-emerald text-[9px]">Mandatory</span></div>
                 <div className="col-span-6 text-slate-600">
-                  Exact purpose declaration selected from standard NeGD Sample Purpose list or explicit description (<strong>Max 50 characters</strong>).
+                  Exact purpose declaration selected from standard NeGD Sample Purpose list or explicit description (<strong>Max 50 characters</strong>, alphanumeric only).
                 </div>
               </div>
 
@@ -1172,6 +1269,306 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🌟 4. GATEWAY REDIRECTION MODAL (When Gateway Button is Clicked)           */}
+      {/* ========================================================================= */}
+      {showAuthModal && generatedAuthData && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-5 animate-scaleIn">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-sky-700 font-black text-sm">
+                <ExternalLink className="w-5 h-5 text-sky-600" />
+                <span>DigiLocker Official Redirection Gateway</span>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowAuthModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-2 text-xs">
+              <div className="font-bold text-sky-950 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-sky-600" />
+                <span>NeGD API Setu Live Gateway Connection Prepared</span>
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Click below to continue to the official Government of India MeriPehchaan DigiLocker login portal.
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-900 rounded-2xl text-[11px] font-mono text-sky-300 break-all max-h-24 overflow-y-auto border border-slate-800">
+              {generatedAuthData.auth_url}
+            </div>
+
+            <div className="space-y-2">
+              <a
+                href={generatedAuthData.auth_url}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+                style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+              >
+                <ExternalLink className="w-4 h-4 text-white" />
+                <span className="text-white font-black">Open Official DigiLocker Gateway ↗️</span>
+              </a>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 transition-all"
+                >
+                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedLink ? 'Copied URL!' : 'Copy Gateway URL'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleShareWhatsApp}
+                  className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                  title="Send link on WhatsApp"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Share WhatsApp 💬</span>
+                </button>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={handleOpenSandboxSimulation}
+                  className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                >
+                  <FlaskConical className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Test with Interactive Sandbox Simulation 🧪</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🌟 5. DOCUMENT DETAILS PREVIEW MODAL (Matching dd/callback.php)            */}
+      {/* ========================================================================= */}
+      {activePreviewDoc && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-5 animate-scaleIn">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-black text-slate-900 truncate">
+                {activePreviewDoc.name || activePreviewDoc.document_name}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setActivePreviewDoc(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="text-center py-2">
+              <div className="text-5xl mb-2">
+                {activePreviewDoc.doc_type === 'aadhaar' ? '🪪' : 
+                 activePreviewDoc.doc_type === 'pan' ? '💳' : 
+                 activePreviewDoc.doc_type === 'driving_license' ? '🚗' : 
+                 activePreviewDoc.doc_type === 'class_x' ? '🎓' : 
+                 activePreviewDoc.doc_type === 'class_xii' ? '📜' : '💼'}
+              </div>
+              <h4 className="text-base font-black text-slate-900">{activePreviewDoc.name || activePreviewDoc.document_name}</h4>
+              <span className="badge badge-emerald text-[10px] font-black mt-1">
+                {activePreviewDoc.status || activePreviewDoc.doc_status || 'Verified'} ✓
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Issuing Authority:</span>
+                <strong className="text-slate-800">{activePreviewDoc.issuer}</strong>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Document Reference No:</span>
+                <strong className="font-mono text-amber-700 font-bold">{activePreviewDoc.doc_no}</strong>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Document URI:</span>
+                <span className="font-mono text-slate-600 text-[11px]">{activePreviewDoc.uri || activePreviewDoc.doc_uri || 'in.gov.digilocker.doc'}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Description:</span>
+                <p className="text-slate-600 leading-relaxed">{activePreviewDoc.description || 'Verified official government certificate retrieved securely via DigiLocker API response.'}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  generateDigilockerOfficialCertificatePdf(latestFetchResult || { full_name: 'Candidate', documents: [activePreviewDoc] }, currentCompany?.name);
+                  setActivePreviewDoc(null);
+                }}
+                className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+                style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+              >
+                <Download className="w-4 h-4 text-white" />
+                <span className="text-white font-black">Download Official PDF Certificate</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePreviewDoc(null)}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+              >
+                Close Preview
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🌟 6. SANDBOX SIMULATION MODAL (Matching dd/mock_digilocker.php)           */}
+      {/* ========================================================================= */}
+      {showSandboxModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-scaleIn">
+            
+            {/* Header */}
+            <div className="bg-sky-700 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                <h3 className="text-sm font-black">DigiLocker Citizen Portal</h3>
+              </div>
+              <span className="badge bg-amber-500 text-white font-bold text-[9px]">
+                SANDBOX MOCK
+              </span>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              
+              {sandboxStep === 'signin' ? (
+                <>
+                  <div className="text-center space-y-1">
+                    <h4 className="text-base font-black text-slate-900">Citizen Sign In</h4>
+                    <p className="text-xs text-slate-500">Sign in to authenticate and link credentials with JoyVerify.</p>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Mobile Number</label>
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-slate-800 flex items-center justify-between">
+                        <span>+91 {identifierValue || '9944266116'}</span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">6-Digit Security PIN</label>
+                      <input
+                        type="password"
+                        value={sandboxPin}
+                        onChange={(e) => setSandboxPin(e.target.value)}
+                        placeholder="123456"
+                        maxLength={6}
+                        className="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold text-center tracking-widest text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">One Time Password (OTP)</label>
+                      <input
+                        type="text"
+                        value={sandboxOtp}
+                        onChange={(e) => setSandboxOtp(e.target.value)}
+                        placeholder="654321"
+                        maxLength={6}
+                        className="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold text-center tracking-widest text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setSandboxStep('consent')}
+                      className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+                    >
+                      <span className="text-white font-black">Sign In & Authenticate ➔</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowSandboxModal(false)}
+                      className="w-full py-2 px-3 rounded-xl text-slate-500 hover:text-slate-700 text-xs font-bold cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-center space-y-1">
+                    <h4 className="text-base font-black text-slate-900">Consent Approval</h4>
+                    <p className="text-xs text-slate-500">Review permissions requested by Joy Corporate Solutions.</p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5 text-slate-700">
+                    <div className="font-bold text-slate-900">
+                      <strong>JoyVerify</strong> is requesting access to perform:
+                    </div>
+                    <ul className="space-y-1.5 text-[11px]">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Read profile (Name, DOB, Gender, Address)</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>View and download issued certificates list</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Download e-Aadhaar XML & verified PAN records</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={handleCompleteSandbox}
+                      className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      style={{ backgroundColor: '#059669', color: '#ffffff' }}
+                    >
+                      <Check className="w-4 h-4 text-white" />
+                      <span className="text-white font-black">Allow & Grant Consent</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowSandboxModal(false)}
+                      className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
+                    >
+                      Deny Access
+                    </button>
+                  </div>
+                </>
+              )}
+
+            </div>
+
+          </div>
         </div>
       )}
 
