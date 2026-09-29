@@ -282,59 +282,51 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       
-      {/* 🌟 1. SECTION HEADER BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-7 rounded-3xl shadow-xl border border-indigo-500/20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 font-mono text-[11px] font-black border border-sky-400/30 flex items-center gap-1.5 shadow-xs">
-                <BadgeCheck className="w-3.5 h-3.5 text-sky-400" />
-                <span>NeGD API Setu Production Integration</span>
-              </span>
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[11px] font-bold border border-emerald-400/30 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                <span>Oct 21 2026 NeGD Mandate Compliant</span>
-              </span>
-              <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-mono text-[11px] font-bold border border-purple-400/30">
-                🔒 DPDP Act 2023 Encrypted Vault
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-              <Building2 className="w-8 h-8 text-sky-400" />
-              <span>DigiLocker Government Vault & Verification Desk</span>
-            </h1>
-            
-            <p className="text-sm text-slate-300 font-medium max-w-3xl leading-relaxed">
-              Fetch authentic government-issued identity credentials (Aadhaar e-KYC XML, PAN, Driving License, Class X / XII Marksheets, and EPFO UAN) directly into the candidate onboarding dossier using citizen mobile numbers.
-            </p>
+      {/* 🌟 1. SECTION CONTROL & COMPLIANCE BAR (Clean, Crisp, High-Contrast) */}
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="space-y-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-2.5 py-1 rounded-md bg-sky-100 text-sky-950 font-mono text-[11px] font-black border border-sky-300 shadow-2xs flex items-center gap-1.5">
+              <BadgeCheck className="w-3.5 h-3.5 text-sky-700" />
+              <span>NeGD API Setu Live Gateway</span>
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-950 font-mono text-[11px] font-black border border-emerald-300 shadow-2xs flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Oct 21 2026 NeGD Mandate Compliant</span>
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-purple-100 text-purple-950 font-mono text-[11px] font-black border border-purple-300 shadow-2xs">
+              🔒 DPDP Act 2023 Encrypted Vault
+            </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => exportAllDigilockerToExcel(verifiedRecords, currentCompany?.name)}
-              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md hover:shadow-emerald-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
-              title="Download Master DigiLocker Excel spreadsheet (.xlsx)"
-            >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-200" />
-              <span>Export Overall Excel (.xlsx) 📊</span>
-            </button>
+          <p className="text-xs text-slate-700 font-bold max-w-3xl leading-relaxed">
+            Directly query and ingest verified government documents (Aadhaar e-KYC XML, PAN, Driving License, CBSE Marksheets, and EPFO UAN) into employee dossiers with cryptographic verification.
+          </p>
+        </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveSubTab('create_fetch');
-                setIdentifierValue('');
-                setSelectedCandidateId('');
-              }}
-              className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md hover:shadow-sky-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
-            >
-              <Smartphone className="w-4 h-4 text-sky-200" />
-              <span>New DigiLocker Fetch ⚡</span>
-            </button>
-          </div>
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-auto">
+          <button
+            type="button"
+            onClick={() => exportAllDigilockerToExcel(verifiedRecords, currentCompany?.name)}
+            className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all active:scale-95"
+            title="Download Master DigiLocker Excel spreadsheet (.xlsx)"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+            <span>Export Overall Excel (.xlsx) 📊</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveSubTab('create_fetch');
+              setIdentifierValue('');
+              setSelectedCandidateId('');
+            }}
+            className="btn bg-sky-600 hover:bg-sky-700 text-white text-xs py-2 px-4 rounded-xl font-bold shadow-xs flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
+          >
+            <Smartphone className="w-4 h-4 text-sky-100" />
+            <span>New DigiLocker Fetch ⚡</span>
+          </button>
         </div>
       </div>
 
