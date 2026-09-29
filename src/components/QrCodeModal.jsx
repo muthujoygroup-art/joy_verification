@@ -209,13 +209,6 @@ export const QrCodeModal = ({
     if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 
-  const handleShareWhatsApp = () => {
-    const phone = (candidate.mobile || '').replace(/[^0-9]/g, '');
-    const message = `Hello ${candidate.name},\n\nPlease complete your official digital onboarding verification for ${company.name} using the link below:\n\n🔗 Onboarding Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})`;
-    const waUrl = `https://api.whatsapp.com/send?${phone ? `phone=${phone}&` : ''}text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank', 'noopener,noreferrer');
-  };
-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -401,7 +394,7 @@ export const QrCodeModal = ({
 
           {/* 🚀 PRIMARY ACTIONS */}
           <div className="space-y-2 pt-1">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {/* Action 1: Open Employee Portal Directly */}
               <button
                 type="button"
@@ -409,42 +402,32 @@ export const QrCodeModal = ({
                 className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                <span>Open Portal 🚀</span>
+                <span>Open Candidate Portal 🚀</span>
               </button>
 
-              {/* Action 2: WhatsApp Share */}
+              {/* Action 2: Copy Clean Verification Link */}
               <button
                 type="button"
-                onClick={handleShareWhatsApp}
-                className="btn bg-emerald-500 hover:bg-emerald-600 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+                onClick={handleCopyCleanLink}
+                className={`btn py-2.5 px-3 flex items-center justify-center gap-1.5 font-black text-xs rounded-xl border transition-all cursor-pointer ${
+                  isLinkCopied 
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
+                    : 'bg-slate-800 hover:bg-slate-900 text-white shadow-md'
+                }`}
               >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>WhatsApp 💬</span>
+                {isLinkCopied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Link Copied! ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy Verification Link 📋</span>
+                  </>
+                )}
               </button>
             </div>
-
-            {/* Action 3: Copy Pure Clean Verification Link */}
-            <button
-              type="button"
-              onClick={handleCopyCleanLink}
-              className={`w-full btn py-2.5 px-4 flex items-center justify-center gap-2 font-black text-xs rounded-xl border transition-all cursor-pointer ${
-                isLinkCopied 
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
-                  : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 shadow-sm'
-              }`}
-            >
-              {isLinkCopied ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span>Verification Link Copied to Clipboard! ✓</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 text-slate-600" />
-                  <span>Copy Onboarding Verification Link 📋</span>
-                </>
-              )}
-            </button>
           </div>
 
         </div>

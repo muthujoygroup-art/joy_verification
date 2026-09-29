@@ -360,7 +360,7 @@ const HR_DIVISION_META_MAP = {
     pillarBadge: '⚙️ 3. Reports & Settings',
     badgeText: () => 'Preferences & Compliance Rules',
     title: 'Workstation Preferences, Statutory Rules & Notification Alerts',
-    subtitle: 'Configure automated candidate reminder intervals, SMS/WhatsApp gateways, and statutory compliance parameters',
+    subtitle: 'Configure automated candidate reminder intervals, email notification routing, and statutory compliance parameters',
     icon: Settings,
     colorClass: 'from-purple-600 to-indigo-800'
   }
@@ -1960,7 +1960,7 @@ export const HrExecutiveView = () => {
           color="cyan" 
           onClick={() => setActiveDrilldown({
             title: 'Sent Verification Links',
-            subtitle: 'Candidates who have received a verification link via WhatsApp, SMS, or Email',
+            subtitle: 'Candidates who have received a verification onboarding link via Email or Direct Link',
             metricValue: `${companyCandidates.filter(c => c.status !== 'Draft').length} Dispatched`,
             metricType: 'hr_dispatched',
             data: companyCandidates.filter(c => c.status !== 'Draft').map(c => ({
@@ -2125,7 +2125,7 @@ export const HrExecutiveView = () => {
                 <Smartphone className="w-5 h-5 text-emerald-600" />
                 <span>Candidate Verification List & Records</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Send verification links via WhatsApp/SMS/Email, monitor 60-day certificate validity, and export official reports</p>
+              <p className="text-xs text-slate-500 font-medium">Send verification links via Official Email or Direct Link, monitor 60-day certificate validity, and export official reports</p>
             </div>
             
             <div className="flex items-center gap-2 self-start flex-wrap">
@@ -2816,7 +2816,7 @@ export const HrExecutiveView = () => {
                             data-tour-step={index === 0 ? 'hr-dispatch-btn' : undefined}
                             onClick={() => setDispatchingCandidate(cand)}
                             className="btn btn-hrexecutive text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-sm"
-                            title="Dispatch via WhatsApp, SMS, Email, QR Code"
+                            title="Dispatch Onboarding Link via Email / QR Code"
                           >
                             <QrCode className="w-3.5 h-3.5" />
                             <span>Dispatch Link 📲</span>
@@ -4234,7 +4234,7 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  {renderFieldLabel('Primary Mobile (WhatsApp/SMS)', 'mobile', true)}
+                  {renderFieldLabel('Primary Mobile Number', 'mobile', true)}
                   <input 
                     type="tel" 
                     placeholder="+91 98765 43210"
@@ -7106,12 +7106,10 @@ export const HrExecutiveView = () => {
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">Preferred Default Dispatch Channel</label>
                   <select 
-                    value={systemSettings.hr?.defaultDispatchChannel || 'whatsapp'}
+                    value={systemSettings.hr?.defaultDispatchChannel || 'email'}
                     onChange={(e) => updateRoleSettings('hr', { defaultDispatchChannel: e.target.value })}
                     className="form-select text-xs font-bold"
                   >
-                    <option value="whatsapp">Meta WhatsApp Business API (Fastest 💬)</option>
-                    <option value="sms">Carrier SMS Gateway (Mobile OTP)</option>
                     <option value="email">Enterprise SMTP Email (HTML Template)</option>
                     <option value="qrcode">On-Screen Scannable QR Code</option>
                   </select>
@@ -8770,7 +8768,7 @@ export const HrExecutiveView = () => {
                 <input
                   type="text"
                   maxLength={6}
-                  placeholder="Enter 6-digit OTP received via SMS..."
+                  placeholder="Enter 6-digit Aadhaar UIDAI OTP..."
                   value={hrAadhaarModal.otp}
                   onChange={(e) => setHrAadhaarModal(prev => ({ ...prev, otp: e.target.value.replace(/\D/g, '') }))}
                   className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-base font-mono font-black text-center tracking-widest text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"

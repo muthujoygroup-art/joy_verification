@@ -1167,7 +1167,6 @@ export const CompanyAdminView = () => {
     const aadhaarOnly = {
       ...(company.features || {}),
       aadhaar: true,
-      mobileOtp: false,
       emailGateway: false,
       email: false,
       emailOtp: false,
@@ -1186,7 +1185,6 @@ export const CompanyAdminView = () => {
     const allStandard = {
       ...(company.features || {}),
       aadhaar: true,
-      mobileOtp: true,
       emailGateway: true,
       email: true,
       emailOtp: true,
@@ -1602,7 +1600,7 @@ export const CompanyAdminView = () => {
               color="amber" 
               onClick={() => setActiveDrilldown({
                 title: 'Pending & In-Progress Candidates',
-                subtitle: `Candidates currently awaiting Aadhaar OTP, SMS OTP, or Face verification`,
+                subtitle: `Candidates currently awaiting Aadhaar e-KYC or Face verification`,
                 metricValue: `${pendingCount} Pending`,
                 metricType: 'company_pending',
                 data: (companyCandidates || []).filter(c => c.status !== 'Verified').map(c => ({
@@ -3537,7 +3535,7 @@ export const CompanyAdminView = () => {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Contact Phone / WhatsApp *</label>
+                      <label className="block font-bold text-slate-700 mb-1">Contact Phone Number *</label>
                       <input
                         type="tel"
                         required
@@ -3762,26 +3760,6 @@ export const CompanyAdminView = () => {
                           >
                             <Copy className="w-3 h-3" />
                             <span>Copy</span>
-                          </button>
-
-                          {/* WhatsApp Share */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const waMsg = encodeURIComponent(
-                                `Hello ${v.vendorName || 'Partner'},\n\n${company.name} has invited you to complete your B2B Statutory Vendor Verification on JOY True Profile:\n${magicUrl}\n\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`
-                              );
-                              const phoneDigits = (v.phone || '').replace(/\D/g, '');
-                              const waUrl = phoneDigits.length >= 10
-                                ? `https://wa.me/91${phoneDigits.slice(-10)}?text=${waMsg}`
-                                : `https://wa.me/?text=${waMsg}`;
-                              window.open(waUrl, '_blank');
-                            }}
-                            className="btn text-[11px] py-1.5 px-2.5 font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1"
-                            title="Share on WhatsApp"
-                          >
-                            <MessageSquare className="w-3 h-3" />
-                            <span>WhatsApp</span>
                           </button>
 
                           {/* Open Modal Share Hub */}
@@ -4788,29 +4766,7 @@ export const CompanyAdminView = () => {
                   />
                 </div>
 
-                {/* 2. Mobile SMS OTP */}
-                <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
-                  company.features?.mobileOtp ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
-                }`}>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">📱</span>
-                      <strong className="text-slate-900 font-black">Mobile SMS OTP</strong>
-                    </div>
-                    <p className="text-[11px] text-slate-500 font-medium">Carrier SMS 6-digit OTP code</p>
-                    <span className={`badge text-[9px] font-black ${company.features?.mobileOtp ? 'badge-indigo' : 'bg-slate-200 text-slate-600'}`}>
-                      {company.features?.mobileOtp ? 'ACTIVE' : 'PAUSED / OFF'}
-                    </span>
-                  </div>
-                  <input 
-                    type="checkbox" 
-                    checked={!!company.features?.mobileOtp}
-                    onChange={(e) => handleToggleFeature('mobileOtp', e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded mt-1 cursor-pointer"
-                  />
-                </div>
-
-                {/* 3. Official Email */}
+                {/* 2. Official Email */}
                 <div className={`p-3.5 rounded-xl border-2 transition-all flex items-start justify-between gap-3 ${
                   company.features?.emailGateway ? 'bg-indigo-50/60 border-indigo-300 shadow-2xs' : 'bg-slate-50 border-slate-200 opacity-60'
                 }`}>
@@ -5918,9 +5874,8 @@ export const CompanyAdminView = () => {
                 const fullPermissions = {
                   allowProfileCreation: true,
                   allowBulkExcelUpload: true,
-                  allowWhatsAppDispatch: true,
                   allowEmailDispatch: true,
-                  allowSmsDispatch: true,
+                  allowDirectLinkAccess: true,
                   requireOriginalDocumentVault: true,
                   requireAiFaceBiometrics: true,
                   allow360DossierExport: true,
@@ -5972,14 +5927,13 @@ export const CompanyAdminView = () => {
             <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5">
               <h4 className="font-extrabold text-xs text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-200 pb-2">
                 <MessageSquare className="w-4 h-4" />
-                <span>2. Candidate Communication Dispatch Channels</span>
+                <span>2. Candidate Communication & Link Dispatch</span>
               </h4>
 
               <div className="space-y-2.5">
                 {[
-                  { id: 'allowWhatsAppDispatch', title: 'WhatsApp Cloud API Dispatch 💬', desc: 'Allow HR to send magic verification links via WhatsApp' },
-                  { id: 'allowEmailDispatch', title: 'Email Magic Link & OTP Dispatch 📧', desc: 'Allow HR to send automated invitation emails & OTP codes' },
-                  { id: 'allowSmsDispatch', title: 'Carrier SMS Notification Dispatch 📱', desc: 'Allow HR to send direct SMS OTP and notification alerts' }
+                  { id: 'allowEmailDispatch', title: 'Enterprise Email Magic Link Dispatch 📧', desc: 'Allow HR to send automated invitation emails & verification links via cPanel SMTP' },
+                  { id: 'allowDirectLinkAccess', title: 'Direct Onboarding Link & QR Generation 🔗', desc: 'Allow HR to generate instant scannable QR codes and copy direct verification links' }
                 ].map(item => {
                   const isChecked = company.hrPermissions?.[item.id] ?? true;
                   return (

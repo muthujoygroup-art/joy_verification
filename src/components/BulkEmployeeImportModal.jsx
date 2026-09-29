@@ -150,9 +150,7 @@ export const BulkEmployeeImportModal = ({
   // Link Sending Option States
   const [autoSendLinks, setAutoSendLinks] = useState(true);
   const [dispatchChannels, setDispatchChannels] = useState({
-    email: true,
-    sms: true,
-    whatsapp: false
+    email: true
   });
   const [customHrMessage, setCustomHrMessage] = useState(
     `Welcome to ${currentCompany?.name || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED'}! Please click the official onboarding link to complete your digital identity and background verification.`
@@ -2210,38 +2208,21 @@ export const BulkEmployeeImportModal = ({
 
               {autoSendLinks && (
                 <div className="space-y-3 pt-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.email ? 'bg-white border-indigo-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
+                  <div className="grid grid-cols-1 gap-3">
+                    <label className={`p-3 rounded-xl border flex items-center justify-between gap-2.5 cursor-pointer ${dispatchChannels.email ? 'bg-white border-indigo-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
+                      <div className="flex items-center gap-2.5">
+                        <Mail className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <div>
+                          <span className="text-xs font-bold text-slate-900 block">Enterprise Email Dispatch (cPanel SMTP)</span>
+                          <span className="text-[11px] text-slate-500 font-medium">Sends official invitation email with secure token link directly to each candidate's inbox</span>
+                        </div>
+                      </div>
                       <input
                         type="checkbox"
                         checked={dispatchChannels.email}
                         onChange={(e) => setDispatchChannels({ ...dispatchChannels, email: e.target.checked })}
                         className="accent-indigo-600 w-4 h-4 rounded"
                       />
-                      <Mail className="w-4 h-4 text-indigo-600" />
-                      <span className="text-xs font-bold text-slate-800">Email Dispatch (cPanel SMTP)</span>
-                    </label>
-
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.sms ? 'bg-white border-teal-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
-                      <input
-                        type="checkbox"
-                        checked={dispatchChannels.sms}
-                        onChange={(e) => setDispatchChannels({ ...dispatchChannels, sms: e.target.checked })}
-                        className="accent-teal-600 w-4 h-4 rounded"
-                      />
-                      <Smartphone className="w-4 h-4 text-teal-600" />
-                      <span className="text-xs font-bold text-slate-800">Carrier SMS (Twilio / DLT)</span>
-                    </label>
-
-                    <label className={`p-3 rounded-xl border flex items-center gap-2.5 cursor-pointer ${dispatchChannels.whatsapp ? 'bg-white border-emerald-300 shadow-xs' : 'bg-slate-100 border-slate-200'}`}>
-                      <input
-                        type="checkbox"
-                        checked={dispatchChannels.whatsapp}
-                        onChange={(e) => setDispatchChannels({ ...dispatchChannels, whatsapp: e.target.checked })}
-                        className="accent-emerald-600 w-4 h-4 rounded"
-                      />
-                      <MessageSquare className="w-4 h-4 text-emerald-600" />
-                      <span className="text-xs font-bold text-slate-800">Meta WhatsApp Cloud</span>
                     </label>
                   </div>
 
