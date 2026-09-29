@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { 
   generateDigilockerOfficialCertificatePdf, 
+  generateIndividualDocumentPdf,
   exportSingleDigilockerToExcel 
 } from '../utils/digilockerExportUtils';
 
@@ -266,9 +267,20 @@ export const DigiLockerCallbackView = () => {
                         <div className="text-[11px] text-slate-400 truncate">{doc.issuer} • Doc No: <span className="font-mono text-sky-300">{doc.doc_no || 'Verified'}</span></div>
                       </div>
                     </div>
-                    <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-400/30 shrink-0">
-                      VERIFIED
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-400/30">
+                        VERIFIED ✓
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => generateIndividualDocumentPdf(doc, result)}
+                        className="p-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+                        title="Download official PDF for this document"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">PDF</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

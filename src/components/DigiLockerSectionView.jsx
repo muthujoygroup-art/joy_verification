@@ -44,7 +44,8 @@ import {
 import { 
   exportAllDigilockerToExcel, 
   exportSingleDigilockerToExcel, 
-  generateDigilockerOfficialCertificatePdf 
+  generateDigilockerOfficialCertificatePdf,
+  generateIndividualDocumentPdf
 } from '../utils/digilockerExportUtils';
 
 export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
@@ -197,7 +198,6 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
         try {
           const win = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
           if (!win || win.closed || typeof win.closed === 'undefined') {
-            // Popup blocker intercepted - show modal with direct link
             setShowAuthModal(true);
           }
         } catch (popupErr) {
@@ -996,9 +996,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
                         <button
                           type="button"
-                          onClick={() => generateDigilockerOfficialCertificatePdf(latestFetchResult, currentCompany?.name)}
+                          onClick={() => generateIndividualDocumentPdf(doc, latestFetchResult, currentCompany?.name)}
                           className="py-1.5 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-all"
-                          title="Download PDF"
+                          title="Download Authentic Government Document PDF"
                         >
                           <Download className="w-3.5 h-3.5" />
                         </button>
@@ -1179,7 +1179,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     </div>
                   </div>
 
-                  {/* Issued Documents Badges */}
+                  {/* Issued Documents Badges with PDF download */}
                   <div>
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
                       Verified Issued Government Certificates ({(rec.documents || []).length})
@@ -1192,6 +1192,14 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                           <span className="font-mono text-[10px] text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">
                             {doc.doc_no}
                           </span>
+                          <button
+                            type="button"
+                            onClick={() => generateIndividualDocumentPdf(doc, rec, currentCompany?.name)}
+                            className="p-1 hover:bg-emerald-200 rounded text-emerald-800 cursor-pointer ml-1"
+                            title="Download PDF of this Document"
+                          >
+                            <Download className="w-3 h-3" />
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -1346,7 +1354,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   onClick={handleOpenSandboxSimulation}
                   className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                 >
-                  <FlaskConical className="w-3.5 h-3.5 text-purple-600" />
+                  <FlaskConical className="w-4 h-4 text-purple-600" />
                   <span>Test with Interactive Sandbox Simulation 🧪</span>
                 </button>
               </div>
@@ -1361,7 +1369,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
       {/* ========================================================================= */}
       {activePreviewDoc && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-5 animate-scaleIn">
+          <div className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-5 animate-scaleIn">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm font-black text-slate-900 truncate">
@@ -1410,23 +1418,37 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
             </div>
 
             <div className="space-y-2">
+              {/* Button: Download specific document PDF */}
               <button
                 type="button"
                 onClick={() => {
-                  generateDigilockerOfficialCertificatePdf(latestFetchResult || { full_name: 'Candidate', documents: [activePreviewDoc] }, currentCompany?.name);
-                  setActivePreviewDoc(null);
+                  generateIndividualDocumentPdf(activePreviewDoc, latestFetchResult || { full_name: 'Muthukumar P' }, currentCompany?.name);
+                  showToast(`📄 Downloaded official PDF for ${activePreviewDoc.name || 'Document'}!`, 'success');
                 }}
                 className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
                 style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
               >
                 <Download className="w-4 h-4 text-white" />
-                <span className="text-white font-black">Download Official PDF Certificate</span>
+                <span className="text-white font-black">Download {activePreviewDoc.name || 'Document'} PDF 📄</span>
+              </button>
+
+              {/* Button: Download master dossier PDF */}
+              <button
+                type="button"
+                onClick={() => {
+                  generateDigilockerOfficialCertificatePdf(latestFetchResult || { full_name: 'Candidate', documents: [activePreviewDoc] }, currentCompany?.name);
+                  showToast('📑 Downloaded Master DigiLocker Dossier PDF!', 'success');
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileCheck2 className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Download Complete Master Verification Dossier PDF</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActivePreviewDoc(null)}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
               >
                 Close Preview
               </button>
