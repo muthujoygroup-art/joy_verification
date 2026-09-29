@@ -209,6 +209,18 @@ export const QrCodeModal = ({
     if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 
+  // 💬 1-Click WhatsApp Direct Share (No server-side configuration needed)
+  const handleShareWhatsApp = () => {
+    const rawMobile = (candidate.mobile || '').replace(/\D/g, '');
+    const phone = rawMobile.length >= 10 ? `91${rawMobile.slice(-10)}` : '';
+    const cleanPin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
+    const message = `Hello ${candidate.name},\n\nPlease complete your official digital identity & background onboarding verification for ${company.name} using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n🔐 Access PIN: ${cleanPin}\n\nIssued by: ${hrSenderName} (${company.name})\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`;
+    const waUrl = phone 
+      ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -394,18 +406,30 @@ export const QrCodeModal = ({
 
           {/* 🚀 PRIMARY ACTIONS */}
           <div className="space-y-2 pt-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {/* Action 1: Open Employee Portal Directly */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {/* Action 1: Share on WhatsApp */}
+              <button
+                type="button"
+                onClick={handleShareWhatsApp}
+                className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+                title="Send Onboarding Link via WhatsApp Web or Mobile App"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Share WhatsApp 💬</span>
+              </button>
+
+              {/* Action 2: Open Employee Portal Directly */}
               <button
                 type="button"
                 onClick={handleOpenDirectly}
-                className="btn bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+                className="btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2.5 px-3 flex items-center justify-center gap-1.5 rounded-xl shadow-md transition-all cursor-pointer text-xs"
+                title="Open Candidate Verification Portal directly in new tab"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                <span>Open Candidate Portal 🚀</span>
+                <span>Open Portal 🚀</span>
               </button>
 
-              {/* Action 2: Copy Clean Verification Link */}
+              {/* Action 3: Copy Clean Verification Link */}
               <button
                 type="button"
                 onClick={handleCopyCleanLink}
@@ -414,6 +438,7 @@ export const QrCodeModal = ({
                     ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-inner' 
                     : 'bg-slate-800 hover:bg-slate-900 text-white shadow-md'
                 }`}
+                title="Copy clean verification link to clipboard"
               >
                 {isLinkCopied ? (
                   <>
@@ -423,7 +448,7 @@ export const QrCodeModal = ({
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5" />
-                    <span>Copy Verification Link 📋</span>
+                    <span>Copy Link 📋</span>
                   </>
                 )}
               </button>

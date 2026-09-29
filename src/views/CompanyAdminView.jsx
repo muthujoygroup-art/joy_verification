@@ -3762,6 +3762,26 @@ export const CompanyAdminView = () => {
                             <span>Copy</span>
                           </button>
 
+                          {/* WhatsApp 1-Click Share (No backend config required) */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const waMsg = encodeURIComponent(
+                                `Hello ${v.vendorName || 'Partner'},\n\n${company.name} has invited you to complete your B2B Statutory Vendor Verification on JOY True Profile:\n🔗 Verification Link: ${magicUrl}\n\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`
+                              );
+                              const phoneDigits = (v.phone || '').replace(/\D/g, '');
+                              const waUrl = phoneDigits.length >= 10
+                                ? `https://api.whatsapp.com/send?phone=91${phoneDigits.slice(-10)}&text=${waMsg}`
+                                : `https://api.whatsapp.com/send?text=${waMsg}`;
+                              window.open(waUrl, '_blank', 'noopener,noreferrer');
+                            }}
+                            className="btn text-[11px] py-1.5 px-2.5 font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer"
+                            title="Share Onboarding Link directly via WhatsApp"
+                          >
+                            <MessageSquare className="w-3 h-3" />
+                            <span>WhatsApp 💬</span>
+                          </button>
+
                           {/* Open Modal Share Hub */}
                           <button
                             type="button"
