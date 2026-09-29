@@ -247,6 +247,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
         if (typeof refreshCandidates === 'function') {
           refreshCandidates();
         }
+        loadDbRecords();
       } else {
         showToast(response?.message || 'Failed to fetch DigiLocker details. Please try again.', 'error');
       }
@@ -730,17 +731,18 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 <button
                   type="submit"
                   disabled={isGeneratingAuth}
-                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md hover:shadow-sky-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                  className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                  style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
                 >
                   {isGeneratingAuth ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                      <span>Opening DigiLocker Portal...</span>
+                      <span className="text-white font-black">Opening DigiLocker Portal...</span>
                     </>
                   ) : (
                     <>
-                      <ExternalLink className="w-4 h-4 text-sky-200" />
-                      <span>Continue with DigiLocker Gateway 🚀</span>
+                      <ExternalLink className="w-4 h-4 text-white" />
+                      <span className="text-white font-black">Continue with DigiLocker Gateway 🚀</span>
                     </>
                   )}
                 </button>
@@ -749,17 +751,18 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   type="button"
                   onClick={handleExecuteFetch}
                   disabled={isFetching}
-                  className="w-full py-3.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs border border-slate-300 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                  className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
+                  style={{ backgroundColor: '#059669', color: '#ffffff' }}
                 >
                   {isFetching ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-sky-600" />
-                      <span>Ingesting Vault Records...</span>
+                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                      <span className="text-white font-black">Ingesting Vault Records...</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 text-sky-600" />
-                      <span>Direct In-Portal Fetch (Instant) ⚡</span>
+                      <Sparkles className="w-4 h-4 text-white" />
+                      <span className="text-white font-black">Direct In-Portal Fetch (Instant) ⚡</span>
                     </>
                   )}
                 </button>
@@ -834,10 +837,11 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     href={generatedAuthData.auth_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
+                    className="flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
+                    style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
                   >
                     <ExternalLink className="w-4 h-4 text-white" />
-                    <span>Open DigiLocker Gateway ↗️</span>
+                    <span className="text-white font-black">Open DigiLocker Gateway ↗️</span>
                   </a>
 
                   <button
@@ -913,6 +917,15 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     <span>Export Excel</span>
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSubTab('dossier')}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-sky-400" />
+                  <span>View in Master Dossier Ledger 🏛️</span>
+                </button>
               </div>
             )}
 
@@ -1005,7 +1018,10 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   {/* Card Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center font-black text-base shadow-sm shrink-0">
+                      <div 
+                        className="w-12 h-12 rounded-2xl text-white flex items-center justify-center font-black text-base shadow-sm shrink-0"
+                        style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+                      >
                         {rec.full_name ? rec.full_name.substring(0, 2).toUpperCase() : (rec.candidate_name ? rec.candidate_name.substring(0, 2).toUpperCase() : 'DL')}
                       </div>
                       <div>
