@@ -16,7 +16,7 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
-import httpx
+import requests
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -221,19 +221,18 @@ def exchange_code_for_token_live(code: str, verifier: str = "", user_type: str =
     }
 
     try:
-        with httpx.Client(timeout=10.0, verify=False) as client:
-            resp = client.post(dl_config["token_url"], data=post_data, headers=headers)
-            if resp.status_code == 200:
-                data = resp.json()
-                if "access_token" in data:
-                    data["success"] = True
-                    return data
-            logger.warning(f"Live token exchange status: {resp.status_code}, body: {resp.text}")
-            return {
-                "success": False,
-                "error": f"Failed to retrieve access token. Status: {resp.status_code}",
-                "details": resp.text
-            }
+        resp = requests.post(dl_config["token_url"], data=post_data, headers=headers, timeout=10.0, verify=False)
+        if resp.status_code == 200:
+            data = resp.json()
+            if "access_token" in data:
+                data["success"] = True
+                return data
+        logger.warning(f"Live token exchange status: {resp.status_code}, body: {resp.text}")
+        return {
+            "success": False,
+            "error": f"Failed to retrieve access token. Status: {resp.status_code}",
+            "details": resp.text
+        }
     except Exception as e:
         logger.error(f"Live token exchange exception: {e}")
         return {
@@ -253,57 +252,56 @@ def fetch_issued_files_live(access_token: str, user_type: str = "individual") ->
     }
 
     try:
-        with httpx.Client(timeout=10.0, verify=False) as client:
-            resp = client.get(dl_config["files_url"], headers=headers)
-            if resp.status_code == 200:
-                data = resp.json()
-                raw_files = data.get("items") or data.get("files") or data
-                if not isinstance(raw_files, list):
-                    raw_files = []
+        resp = requests.get(dl_config["files_url"], headers=headers, timeout=10.0, verify=False)
+        if resp.status_code == 200:
+            data = resp.json()
+            raw_files = data.get("items") or data.get("files") or data
+            if not isinstance(raw_files, list):
+                raw_files = []
 
-                normalized_files = []
-                for file_item in raw_files:
-                    if not isinstance(file_item, dict):
-                        continue
-                    
-                    doc_no = file_item.get("doc_no")
-                    uri = file_item.get("uri", "")
-                    if not doc_no and uri:
-                        parts = uri.split("-")
-                        doc_no = parts[-1] if parts else "N/A"
-                    if not doc_no:
-                        doc_no = "N/A"
+            normalized_files = []
+            for file_item in raw_files:
+                if not isinstance(file_item, dict):
+                    continue
+                
+                doc_no = file_item.get("doc_no")
+                uri = file_item.get("uri", "")
+                if not doc_no and uri:
+                    parts = uri.split("-")
+                    doc_no = parts[-1] if parts else "N/A"
+                if not doc_no:
+                    doc_no = "N/A"
 
-                    icon = "fa-file-invoice"
-                    uri_lower = uri.lower()
-                    if "aadhaar" in uri_lower:
-                        icon = "fa-fingerprint"
-                    elif "pan" in uri_lower:
-                        icon = "fa-address-card"
-                    elif "dl" in uri_lower or "license" in uri_lower:
-                        icon = "fa-car"
-                    elif "class10" in uri_lower or "class12" in uri_lower:
-                        icon = "fa-graduation-cap"
+                icon = "fa-file-invoice"
+                uri_lower = uri.lower()
+                if "aadhaar" in uri_lower:
+                    icon = "fa-fingerprint"
+                elif "pan" in uri_lower:
+                    icon = "fa-address-card"
+                elif "dl" in uri_lower or "license" in uri_lower:
+                    icon = "fa-car"
+                elif "class10" in uri_lower or "class12" in uri_lower:
+                    icon = "fa-graduation-cap"
 
-                    normalized_files.append({
-                        "name": file_item.get("name", "Official Document"),
-                        "issuer": file_item.get("issuer", "Government Issuer"),
-                        "doc_no": doc_no,
-                        "status": "Verified",
-                        "icon": icon,
-                        "uri": uri,
-                        "description": file_item.get("description", "Verified official document linked in DigiLocker.")
-                    })
+                normalized_files.append({
+                    "name": file_item.get("name", "Official Document"),
+                    "issuer": file_item.get("issuer", "Government Issuer"),
+                    "doc_no": doc_no,
+                    "status": "Verified",
+                    "icon": icon,
+                    "uri": uri,
+                    "description": file_item.get("description", "Verified official document linked in DigiLocker.")
+                })
 
-                return {
-                    "success": True,
-                    "files": normalized_files
-                }
             return {
-                "success": False,
-                "error": f"Failed to fetch documents. Status: {resp.status_code}",
-                "details": resp.text
+                "success": True,
+                "files": normalized_files
             }
+        return {
+            "success": False,
+            "error": f"Failed to fetch documents. Status: {resp.status_code}",
+            "details": resp.text
+        }
     except Exception as e:
         logger.error(f"Live files fetch exception: {e}")
         return {
@@ -322,18 +320,17 @@ def fetch_eaadhaar_live(access_token: str) -> Dict[str, Any]:
     }
 
     try:
-        with httpx.Client(timeout=10.0, verify=False) as client:
-            resp = client.get(url, headers=headers)
-            if resp.status_code == 200:
-                return {
-                    "success": True,
-                    "xml": resp.text
-                }
+        resp = requests.get(url, headers=headers, timeout=10.0, verify=False)
+        if resp.status_code == 200:
             return {
-                "success": False,
-                "error": f"Failed to fetch e-Aadhaar XML. Status: {resp.status_code}",
-                "details": resp.text
+                "success": True,
+                "xml": resp.text
             }
+        return {
+            "success": False,
+            "error": f"Failed to fetch e-Aadhaar XML. Status: {resp.status_code}",
+            "details": resp.text
+        }
     except Exception as e:
         logger.error(f"Live e-Aadhaar XML fetch exception: {e}")
         return {
@@ -353,20 +350,19 @@ def download_document_live(access_token: str, uri: str, user_type: str = "indivi
     }
 
     try:
-        with httpx.Client(timeout=15.0, verify=False) as client:
-            resp = client.get(url, headers=headers)
-            if resp.status_code == 200:
-                content_type = resp.headers.get("content-type", "application/pdf")
-                return {
-                    "success": True,
-                    "content": resp.content,
-                    "content_type": content_type
-                }
+        resp = requests.get(url, headers=headers, timeout=15.0, verify=False)
+        if resp.status_code == 200:
+            content_type = resp.headers.get("content-type", "application/pdf")
             return {
-                "success": False,
-                "error": f"Failed to download document. Status: {resp.status_code}",
-                "details": resp.text
+                "success": True,
+                "content": resp.content,
+                "content_type": content_type
             }
+        return {
+            "success": False,
+            "error": f"Failed to download document. Status: {resp.status_code}",
+            "details": resp.text
+        }
     except Exception as e:
         logger.error(f"Live document download exception: {e}")
         return {
