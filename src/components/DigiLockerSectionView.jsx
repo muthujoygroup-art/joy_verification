@@ -163,25 +163,23 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
     setIsGeneratingAuth(true);
     try {
-      const callbackUri = window.location.origin + '/digilocker-callback';
       const res = await api.initiateDigilockerAuth({
         user_type: userType,
         auth_type: authType,
         identifier_value: cleanId,
         purpose: effectivePurpose,
         service_name: effectiveService,
-        redirect_uri: callbackUri,
         candidate_id: selectedCandidateId || undefined
       });
 
       if (res && res.success && res.auth_url) {
         setGeneratedAuthData(res);
-        showToast('🚀 Opening Official Government DigiLocker Portal...', 'success');
+        showToast('🚀 Redirecting to Official DigiLocker Gateway (api.digitallocker.gov.in)...', 'success');
         
-        // Attempt to open in a new tab first
+        // Open official DigiLocker login page in a new window/tab
         const newWindow = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-          // Fallback if popup is blocked by browser
+          // If popup is blocked by browser, navigate current window
           window.location.href = res.auth_url;
         }
       } else {
@@ -210,8 +208,8 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     setFetchProgressStage(1);
     setLatestFetchResult(null);
 
-    const timer1 = setTimeout(() => setFetchProgressStage(2), 500);
-    const timer2 = setTimeout(() => setFetchProgressStage(3), 1100);
+    const timer1 = setTimeout(() => setFetchProgressStage(2), 400);
+    const timer2 = setTimeout(() => setFetchProgressStage(3), 800);
 
     try {
       const response = await api.fetchDigilockerDetails({
@@ -268,14 +266,12 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
     setIsGeneratingAuth(true);
     try {
-      const callbackUri = window.location.origin + '/digilocker-callback';
       const res = await api.initiateDigilockerAuth({
         user_type: userType,
         auth_type: authType,
         identifier_value: cleanId,
         purpose: effectivePurpose,
         service_name: effectiveService,
-        redirect_uri: callbackUri,
         candidate_id: selectedCandidateId || undefined
       });
 

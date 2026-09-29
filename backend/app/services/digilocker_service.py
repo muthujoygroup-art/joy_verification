@@ -47,27 +47,27 @@ OAUTH_SESSION_STORE: Dict[str, Dict[str, Any]] = {}
 
 # =====================================================================
 # 📋 OFFICIAL NEGD SAMPLE PURPOSE CATALOGUE (From NeGD CSV)
-# Character limit: 50 characters max as mandated by NeGD 2026 rule.
+# DigiLocker Rule: Only letters, numbers, spaces, and underscores allowed. Max 50 chars.
 # =====================================================================
 SAMPLE_PURPOSES_CATALOGUE = [
-    {"category": "Employment & Onboarding", "purpose": "Employee onboarding (private sector)", "length": 36},
+    {"category": "Employment & Onboarding", "purpose": "Employee onboarding private sector", "length": 34},
     {"category": "Employment & Onboarding", "purpose": "Background check for jobs or gig work", "length": 37},
-    {"category": "Tax & Government Services", "purpose": "Provident fund enrolment (EPFO)", "length": 31},
-    {"category": "Tax & Government Services", "purpose": "State insurance enrolment (ESIC)", "length": 32},
+    {"category": "Tax & Government Services", "purpose": "Provident fund enrolment EPFO", "length": 29},
+    {"category": "Tax & Government Services", "purpose": "State insurance enrolment ESIC", "length": 30},
     {"category": "Tax & Government Services", "purpose": "Linking PAN to bank or tax records", "length": 34},
-    {"category": "Tax & Government Services", "purpose": "Income tax e-filing registration", "length": 32},
-    {"category": "Certificates & Identity", "purpose": "Labour welfare registration (eShram)", "length": 36},
+    {"category": "Tax & Government Services", "purpose": "Income tax efiling registration", "length": 31},
+    {"category": "Certificates & Identity", "purpose": "Labour welfare registration eShram", "length": 34},
     {"category": "Certificates & Identity", "purpose": "Domicile or residence certificate", "length": 33},
     {"category": "Certificates & Identity", "purpose": "Caste certificate issuance", "length": 26},
-    {"category": "Certificates & Identity", "purpose": "Income certificate issuance (EWS)", "length": 33},
-    {"category": "Digital Identity & e-Governance", "purpose": "Police verification (tenancy, passport, job)", "length": 44},
+    {"category": "Certificates & Identity", "purpose": "Income certificate issuance EWS", "length": 31},
+    {"category": "Digital Identity & e-Governance", "purpose": "Police verification for job or tenancy", "length": 38},
     {"category": "Digital Identity & e-Governance", "purpose": "Driving licence issue or renewal", "length": 32},
     {"category": "Digital Identity & e-Governance", "purpose": "Passport application or renewal", "length": 31},
-    {"category": "Digital Identity & e-Governance", "purpose": "Voter ID (EPIC) issuance or update", "length": 34},
+    {"category": "Digital Identity & e-Governance", "purpose": "Voter ID EPIC issuance or update", "length": 32},
     {"category": "Education & Public Services", "purpose": "University admission verification", "length": 33},
     {"category": "Education & Public Services", "purpose": "College admission verification", "length": 30},
     {"category": "Education & Public Services", "purpose": "Scholarship application verification", "length": 36},
-    {"category": "Education & Public Services", "purpose": "Student ID or credential issuance (APAAR)", "length": 41},
+    {"category": "Education & Public Services", "purpose": "Student ID credential issuance APAAR", "length": 36},
     {"category": "Bank Accounts", "purpose": "Bank savings account opening", "length": 28},
     {"category": "Bank Accounts", "purpose": "Bank current account opening", "length": 28},
     {"category": "Bank Accounts", "purpose": "Demat account opening", "length": 21},
@@ -75,8 +75,8 @@ SAMPLE_PURPOSES_CATALOGUE = [
     {"category": "Loans", "purpose": "Business loan application", "length": 25},
     {"category": "Insurance", "purpose": "Health insurance policy purchase", "length": 32},
     {"category": "Insurance", "purpose": "Life insurance policy purchase", "length": 30},
-    {"category": "Ongoing/Perpetual KYC & Compliance", "purpose": "Periodic KYC record update (CKYC)", "length": 33},
-    {"category": "Ongoing/Perpetual KYC & Compliance", "purpose": "Ongoing fraud and money-laundering check", "length": 40}
+    {"category": "Ongoing/Perpetual KYC & Compliance", "purpose": "Periodic KYC record update CKYC", "length": 31},
+    {"category": "Ongoing/Perpetual KYC & Compliance", "purpose": "Ongoing fraud and AML compliance check", "length": 39}
 ]
 
 def get_digilocker_config(user_type: str = "individual") -> Dict[str, str]:
@@ -121,7 +121,7 @@ def generate_authorization_url(
     user_type: str = "individual",
     auth_type: str = "mobile",
     identifier_value: str = "",
-    purpose: str = "Employee onboarding (private sector)",
+    purpose: str = "Employee onboarding private sector",
     service_name: str = "JoyVerify",
     redirect_uri: Optional[str] = None,
     candidate_id: Optional[str] = None
@@ -129,15 +129,25 @@ def generate_authorization_url(
     """
     Constructs the standard PKCE DigiLocker Authorization Redirection URL
     strictly adhering to the NeGD 2026 Purpose & Service Name regulations.
+    Strictly sanitizes purpose to alphanumeric chars only (no parentheses) to satisfy DigiLocker API validator.
     """
     config = get_digilocker_config(user_type)
     state = secrets.token_hex(16)
     verifier, challenge = generate_pkce_pair()
-    target_redirect = redirect_uri or DEFAULT_REDIRECT_URI
+    target_redirect = DEFAULT_REDIRECT_URI
 
-    # Enforce 50 character limit for Purpose & Service Name
-    clean_purpose = (purpose or "Employee onboarding (private sector)")[:50]
-    clean_service_name = (service_name or "JoyVerify")[:50]
+    # Enforce strictly alphanumeric + space + underscore only (DigiLocker rule)
+    raw_purpose = purpose or "Employee onboarding private sector"
+    clean_purpose = re.sub(r'[^a-zA-Z0-9_ ]', ' ', raw_purpose)
+    clean_purpose = re.sub(r'\s+', ' ', clean_purpose).strip()[:50]
+    if not clean_purpose:
+        clean_purpose = "Employee onboarding private sector"
+
+    raw_service = service_name or "JoyVerify"
+    clean_service_name = re.sub(r'[^a-zA-Z0-9_ ]', ' ', raw_service)
+    clean_service_name = re.sub(r'\s+', ' ', clean_service_name).strip()[:50]
+    if not clean_service_name:
+        clean_service_name = "JoyVerify"
 
     params = {
         "response_type": "code",
