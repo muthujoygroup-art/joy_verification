@@ -2,5 +2,11 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/$USER/test2.joycorporatesolutions.com/
-    - /bin/cp -R dist/* $DEPLOYPATH 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/test2/ 2>/dev/null || /bin/cp -R dist/* /home/$USER/public_html/ 2>/dev/null
-    - /bin/cp -f digilocker_gateway/* /home/$USER/verify.joycorporatesolutions.com/ 2>/dev/null || /bin/cp -f digilocker_gateway/* /home/$USER/public_html/verify/ 2>/dev/null || /bin/cp -f digilocker_gateway/* /home/$USER/public_html/verify.joycorporatesolutions.com/ 2>/dev/null || /bin/cp -f digilocker_gateway/* /home/$USER/verify/ 2>/dev/null
+    - /bin/cp -Rf dist/* $DEPLOYPATH 2>/dev/null || true
+    - /bin/cp -Rf dist/* /home/$USER/public_html/test2/ 2>/dev/null || true
+    - /bin/cp -Rf dist/* /home/$USER/public_html/ 2>/dev/null || true
+    - /bin/cp -f digilocker_gateway/* /home/$USER/verify.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -f digilocker_gateway/* /home/$USER/public_html/verify/ 2>/dev/null || true
+    - /bin/cp -f digilocker_gateway/* /home/$USER/public_html/verify.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -f digilocker_gateway/* /home/$USER/verify/ 2>/dev/null || true
+    - touch passenger_wsgi.py 2>/dev/null || true

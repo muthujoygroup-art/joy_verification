@@ -139,11 +139,18 @@ def get_app():
             from a2wsgi import ASGIMiddleware
             from backend.app.main import app as fastapi_app
             _wsgi_app = ASGIMiddleware(fastapi_app)
-            return _wsgi_app
         except ImportError:
             from backend.app.main import app as fastapi_app
             _wsgi_app = PureAsyncWsgiAdapter(fastapi_app)
-            return _wsgi_app
+
+        # Auto-patch verify.joycorporatesolutions.com gateway forwarders on server startup
+        try:
+            from backend.app.services.digilocker_service import patch_verify_gateway_on_server
+            patch_verify_gateway_on_server()
+        except Exception:
+            pass
+
+        return _wsgi_app
     except Exception as e:
         _init_error = traceback.format_exc()
         return None

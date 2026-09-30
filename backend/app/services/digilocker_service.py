@@ -934,8 +934,8 @@ def patch_verify_gateway_on_server() -> Dict[str, Any]:
     """
     forwarder_php = """<?php
 /**
- * DigiLocker OAuth Callback Gateway Forwarder
- * Automatically bounces to test2.joycorporatesolutions.com
+ * Joy Corporate Solutions - DigiLocker OAuth Callback Gateway Forwarder
+ * Automatically forwards code & state to test2.joycorporatesolutions.com/digilocker-callback
  */
 error_reporting(0);
 ini_set('display_errors', 0);
@@ -956,73 +956,188 @@ if (!empty($params)) {
     $target_url .= '?' . http_build_query($params);
 }
 
+header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
 header("Location: " . $target_url, true, 302);
-exit;
-?>"""
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=<?php echo htmlspecialchars($target_url); ?>">
+<script>window.location.replace("<?php echo addslashes($target_url); ?>");</script>
+<title>Redirecting to JOY Verification...</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 60px 20px; background: #0f172a; color: #f8fafc;">
+  <div style="max-width: 500px; margin: 0 auto; background: #1e293b; padding: 40px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <h2 style="color: #38bdf8; margin-bottom: 12px;">Redirecting to JOY Verification...</h2>
+    <p style="color: #94a3b8; font-size: 15px; line-height: 1.6;">Transferring your verified DigiLocker credentials safely to candidate dossier.</p>
+    <div style="margin-top: 24px;">
+      <a href="<?php echo htmlspecialchars($target_url); ?>" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+        Click here if not redirected automatically &rarr;
+      </a>
+    </div>
+  </div>
+</body>
+</html>"""
 
     login_forwarder_php = """<?php
-header("Location: https://test2.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates", true, 302);
-exit;
-?>"""
+/**
+ * Joy Corporate Solutions - Login Eliminator Forwarder
+ * Completely bypasses legacy Operator Login and routes to candidate dossier or callback
+ */
+error_reporting(0);
+ini_set('display_errors', 0);
+
+$code       = isset($_GET['code']) ? trim($_GET['code']) : '';
+$state      = isset($_GET['state']) ? trim($_GET['state']) : '';
+$error      = isset($_GET['error']) ? trim($_GET['error']) : '';
+$error_desc = isset($_GET['error_description']) ? trim($_GET['error_description']) : '';
+
+if (!empty($code)) {
+    $params = ['code' => $code];
+    if (!empty($state)) $params['state'] = $state;
+    if (!empty($error)) $params['error'] = $error;
+    if (!empty($error_desc)) $params['error_description'] = $error_desc;
+    $target_url = 'https://test2.joycorporatesolutions.com/digilocker-callback?' . http_build_query($params);
+} else {
+    $target_url = 'https://test2.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates';
+}
+
+header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
+header("Location: " . $target_url, true, 302);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=<?php echo htmlspecialchars($target_url); ?>">
+<script>window.location.replace("<?php echo addslashes($target_url); ?>");</script>
+<title>Redirecting to JOY Verification...</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 60px 20px; background: #0f172a; color: #f8fafc;">
+  <div style="max-width: 500px; margin: 0 auto; background: #1e293b; padding: 40px; border-radius: 16px; border: 1px solid #334155;">
+    <h2 style="color: #38bdf8; margin-bottom: 12px;">Redirecting to JOY Verification...</h2>
+    <p style="color: #94a3b8; font-size: 15px;">Transferring safely to candidate dossier.</p>
+    <div style="margin-top: 24px;">
+      <a href="<?php echo htmlspecialchars($target_url); ?>" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px;">
+        Click here to continue &rarr;
+      </a>
+    </div>
+  </div>
+</body>
+</html>"""
+
+    htaccess_content = """# Joy Corporate Solutions - Disable caching for DigiLocker gateway forwarders
+<IfModule mod_headers.c>
+  Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+  Header set Pragma "no-cache"
+  Header set Expires "0"
+</IfModule>
+"""
 
     patched_locations = []
     errors = []
 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    candidate_roots = [
-        os.path.abspath(os.path.join(current_dir, "..", "..", "..")),
-        os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..")),
+    # 1. Collect all root paths to inspect
+    search_dirs = set()
+
+    # Current directory and upwards
+    cur = os.path.abspath(os.path.dirname(__file__))
+    for _ in range(6):
+        search_dirs.add(cur)
+        parent = os.path.dirname(cur)
+        if parent == cur:
+            break
+        cur = parent
+
+    # User home dir
+    home_env = os.environ.get("HOME")
+    if home_env and os.path.isdir(home_env):
+        search_dirs.add(os.path.abspath(home_env))
+    try:
+        user_home = os.path.expanduser("~")
+        if user_home and os.path.isdir(user_home):
+            search_dirs.add(os.path.abspath(user_home))
+    except Exception:
+        pass
+
+    # Extract /home/<user> from current path if on Linux
+    norm_cur = os.path.abspath(os.path.dirname(__file__)).replace("\\", "/")
+    if norm_cur.startswith("/home/"):
+        parts = norm_cur.split("/")
+        if len(parts) >= 3:
+            user_base = f"/{parts[1]}/{parts[2]}"
+            if os.path.isdir(user_base):
+                search_dirs.add(user_base)
+
+    # 2. Check direct known subpaths under each search dir
+    candidate_subpaths = [
+        "verify.joycorporatesolutions.com",
+        "public_html/verify",
+        "public_html/verify.joycorporatesolutions.com",
+        "verify",
+        "subdomains/verify",
+        "subdomains/verify.joycorporatesolutions.com",
     ]
 
-    try:
-        if os.path.exists("/home"):
-            for u in os.listdir("/home"):
-                u_path = os.path.join("/home", u)
-                if os.path.isdir(u_path):
-                    candidate_roots.append(u_path)
-    except Exception as e:
-        errors.append(f"List /home: {e}")
+    target_directories = set()
 
-    for root in candidate_roots:
-        if not os.path.isdir(root):
+    for base in search_dirs:
+        for sub in candidate_subpaths:
+            full = os.path.abspath(os.path.join(base, sub))
+            if os.path.isdir(full):
+                target_directories.add(full)
+
+    # 3. In addition, scan immediate subdirectories of each search dir for folders matching "verify"
+    for base in search_dirs:
+        if not os.path.isdir(base):
             continue
         try:
-            for item in os.listdir(root):
-                full_item = os.path.join(root, item)
-                if not os.path.isdir(full_item):
-                    continue
-                item_lower = item.lower()
-                
-                # Check root items matching verify
-                if "verify" in item_lower:
-                    try:
-                        with open(os.path.join(full_item, "callback.php"), "w", encoding="utf-8") as f:
-                            f.write(forwarder_php)
-                        with open(os.path.join(full_item, "login.php"), "w", encoding="utf-8") as f:
-                            f.write(login_forwarder_php)
-                        with open(os.path.join(full_item, "index.php"), "w", encoding="utf-8") as f:
-                            f.write(login_forwarder_php)
-                        patched_locations.append(full_item)
-                    except Exception as we:
-                        errors.append(f"Write error in {full_item}: {we}")
-                
-                # Check inside public_html
-                if "public_html" in item_lower:
-                    try:
-                        for sub in os.listdir(full_item):
-                            sub_full = os.path.join(full_item, sub)
-                            if os.path.isdir(sub_full) and "verify" in sub.lower():
-                                with open(os.path.join(sub_full, "callback.php"), "w", encoding="utf-8") as f:
-                                    f.write(forwarder_php)
-                                with open(os.path.join(sub_full, "login.php"), "w", encoding="utf-8") as f:
-                                    f.write(login_forwarder_php)
-                                with open(os.path.join(sub_full, "index.php"), "w", encoding="utf-8") as f:
-                                    f.write(login_forwarder_php)
-                                patched_locations.append(sub_full)
-                    except Exception as we:
-                        errors.append(f"Scan public_html error: {we}")
-        except Exception as re_err:
-            errors.append(f"Scan error in {root}: {re_err}")
+            entries = os.listdir(base)
+        except Exception:
+            continue
+        for entry in entries:
+            full_entry = os.path.join(base, entry)
+            if not os.path.isdir(full_entry):
+                continue
+            entry_lower = entry.lower()
+            if "verify" in entry_lower:
+                target_directories.add(os.path.abspath(full_entry))
+            
+            # Check inside public_html
+            if entry_lower == "public_html":
+                try:
+                    for pub_sub in os.listdir(full_entry):
+                        pub_full = os.path.join(full_entry, pub_sub)
+                        if os.path.isdir(pub_full) and "verify" in pub_sub.lower():
+                            target_directories.add(os.path.abspath(pub_full))
+                except Exception:
+                    pass
+
+    # 4. Now write forwarders into every target directory
+    for target in target_directories:
+        try:
+            cb_file = os.path.join(target, "callback.php")
+            lg_file = os.path.join(target, "login.php")
+            ix_file = os.path.join(target, "index.php")
+            ht_file = os.path.join(target, ".htaccess")
+
+            with open(cb_file, "w", encoding="utf-8") as f:
+                f.write(forwarder_php)
+            with open(lg_file, "w", encoding="utf-8") as f:
+                f.write(login_forwarder_php)
+            with open(ix_file, "w", encoding="utf-8") as f:
+                f.write(login_forwarder_php)
+            with open(ht_file, "w", encoding="utf-8") as f:
+                f.write(htaccess_content)
+
+            patched_locations.append(target)
+        except Exception as we:
+            errors.append(f"Write error in {target}: {we}")
 
     logger.info(f"Patched verify gateway locations on server: {patched_locations}")
     return {
