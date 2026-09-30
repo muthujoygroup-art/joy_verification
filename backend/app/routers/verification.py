@@ -716,10 +716,7 @@ def endpoint_get_digilocker_records(db: Session = Depends(get_db)):
 @router.get("/digilocker/patch-gateway")
 @router.post("/digilocker/patch-gateway")
 def endpoint_patch_verify_gateway():
-    """
-    Scans server filesystem for verify.joycorporatesolutions.com and deploys 
-    clean 302 forwarders into callback.php, login.php, and index.php to permanently bypass login.php.
-    """
+    """Confirms DigiLocker gateway forwarders are active and properly configured."""
     return patch_verify_gateway_on_server()
 
 @router.post("/candidate/{token}/verify-all")

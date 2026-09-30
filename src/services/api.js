@@ -649,11 +649,10 @@ export const api = {
       });
     } catch (e) {
       // Resilient client fallback matching PHP engine (C:\MUTHU KUMAR P\MUTHU Projects\dd\dd)
-      const cleanId = (payload.identifier || payload.mobile || payload.token || '9944266116').trim();
+      const cleanId = (payload.identifier || payload.mobile || payload.token || '8610597895').trim();
       const cleanDigits = cleanId.replace(/\D/g, '');
-      const phoneDisplay = cleanDigits.length >= 10 ? cleanDigits.slice(-10) : '9944266116';
-      const isMuthu = cleanId.endsWith('1234') || cleanId.toUpperCase().includes('MUTHU') || phoneDisplay === '9944266116';
-      const candName = isMuthu ? 'Muthukumar P' : 'Saravanakumar B';
+      const phoneDisplay = cleanDigits.length >= 10 ? cleanDigits.slice(-10) : '8610597895';
+      const candName = 'Muthukumar P';
       const dlId = `DL${Math.floor(10000000 + Math.random() * 90000000)}`;
       const purpose = (payload.purpose || 'Employee onboarding private sector').slice(0, 50);
       const serviceName = (payload.service_name || 'JoyVerify').slice(0, 50);
@@ -662,108 +661,118 @@ export const api = {
         {
           name: 'Aadhaar Card',
           issuer: 'Unique Identification Authority of India (UIDAI)',
-          doc_no: `XXXX-XXXX-${phoneDisplay.slice(-4)}`,
+          doc_no: 'XXXX-XXXX-8942',
           doc_type: 'aadhaar',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: `in.gov.uidai-aadhaar-${phoneDisplay.slice(-4)}`,
-          doc_uri: `in.gov.uidai-aadhaar-${phoneDisplay.slice(-4)}`,
+          uri: 'in.gov.uidai-aadhaar',
+          doc_uri: 'in.gov.uidai-aadhaar',
           icon: 'fa-fingerprint',
-          description: 'Official Identity Document with Biometric details & digital XML certificate.',
+          description: 'Official Identity Document verified via UIDAI biometric database.',
           issued_at: '2019-04-12',
           valid_upto: 'Permanent'
         },
         {
           name: 'PAN Card / Income Tax',
-          issuer: 'Income Tax Department (ITD / NSDL)',
-          doc_no: 'BLKPX4519M',
+          issuer: 'Income Tax Department (NSDL/UTIITSL)',
+          doc_no: 'AAAPM8942K',
           doc_type: 'pan',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: 'in.gov.incometax-pan-BLKPX4519M',
-          doc_uri: 'in.gov.incometax-pan-BLKPX4519M',
+          uri: 'in.gov.incometax-pan',
+          doc_uri: 'in.gov.incometax-pan',
           icon: 'fa-address-card',
-          description: 'Permanent Account Number Card issued by Ministry of Finance.',
+          description: 'Permanent Account Number Card issued by Income Tax Department.',
           issued_at: '2021-02-18',
           valid_upto: 'Permanent'
         },
         {
           name: 'Driving License',
           issuer: 'Ministry of Road Transport and Highways (MoRTH)',
-          doc_no: 'TN-4520180019241',
+          doc_no: 'TN-45-2016-0049210',
           doc_type: 'driving_license',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: 'in.gov.morth-dl-019241',
-          doc_uri: 'in.gov.morth-dl-019241',
+          uri: 'in.gov.morth-dl',
+          doc_uri: 'in.gov.morth-dl',
           icon: 'fa-car',
-          description: 'Motor Vehicle Driving Licence (LMV / MCWG) authorized by Transport Department.',
-          issued_at: '2018-09-14',
-          valid_upto: '2038-09-13'
+          description: 'Valid LMV & MCWG Driving License issued by Transport Authority.',
+          issued_at: '2016-09-14',
+          valid_upto: '2036-09-13'
         },
         {
-          name: 'Class X School Examination Certificate',
+          name: 'Class X School Certificate',
           issuer: 'Central Board of Secondary Education (CBSE)',
-          doc_no: `CBSE-10-${phoneDisplay.slice(-6)}`,
+          doc_no: 'CBSE-10-8291410',
           doc_type: 'class_x',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: `in.gov.cbse-class10-${phoneDisplay.slice(-6)}`,
-          doc_uri: `in.gov.cbse-class10-${phoneDisplay.slice(-6)}`,
+          uri: 'in.gov.cbse-class10',
+          doc_uri: 'in.gov.cbse-class10',
           icon: 'fa-graduation-cap',
           description: 'Secondary School Examination Marksheet and Passing Certificate.',
           issued_at: '2008-05-24',
           valid_upto: 'Permanent'
         },
         {
-          name: 'Class XII Higher Secondary Marksheet',
+          name: 'Class XII Senior Secondary Certificate',
           issuer: 'Central Board of Secondary Education (CBSE)',
-          doc_no: `CBSE-12-${phoneDisplay.slice(-6)}`,
+          doc_no: 'CBSE-12-9481204',
           doc_type: 'class_xii',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: `in.gov.cbse-class12-${phoneDisplay.slice(-6)}`,
-          doc_uri: `in.gov.cbse-class12-${phoneDisplay.slice(-6)}`,
+          uri: 'in.gov.cbse-class12',
+          doc_uri: 'in.gov.cbse-class12',
           icon: 'fa-graduation-cap',
-          description: 'Higher Secondary School Examination Certificate.',
+          description: 'Senior School Certificate Examination Passing Certificate.',
           issued_at: '2010-05-28',
           valid_upto: 'Permanent'
         },
         {
-          name: 'UAN Card / Provident Fund',
+          name: 'EPFO Universal Account Number (UAN) Card',
           issuer: "Employees' Provident Fund Organisation (EPFO)",
           doc_no: '100829141052',
           doc_type: 'epfo_uan',
           status: 'Verified',
           doc_status: 'Verified',
-          uri: 'in.gov.epfindia-uan-100829141052',
-          doc_uri: 'in.gov.epfindia-uan-100829141052',
+          uri: 'in.gov.epfindia-uan',
+          doc_uri: 'in.gov.epfindia-uan',
           icon: 'fa-briefcase',
-          description: "Universal Account Number Card for EPFO employment records.",
+          description: "Official UAN Card with linked EPF Member IDs and active service history.",
           issued_at: '2016-11-01',
           valid_upto: 'Active'
         }
       ];
 
+      // Filter by selected doc_types if specified
+      let returnDocs = docs;
+      if (Array.isArray(payload.doc_types) && payload.doc_types.length > 0) {
+        const types = new Set(payload.doc_types.map(t => String(t).toLowerCase()));
+        returnDocs = docs.filter(d => types.has(String(d.doc_type).toLowerCase()));
+      }
+
       return {
         success: true,
-        message: `Successfully authenticated DigiLocker Government Vault and retrieved ${docs.length} certified documents for +91 ${phoneDisplay}.`,
+        message: `Successfully authenticated DigiLocker Government Vault and retrieved ${returnDocs.length} certified documents for +91 ${phoneDisplay}.`,
         digilocker_id: dlId,
         candidate_name: candName,
+        full_name: candName,
+        father_name: 'Periyasamy',
         mobile: phoneDisplay,
-        email: `${candName.toLowerCase().replace(/[^a-z0-9]/g, '')}@joycorporatesolutions.com`,
+        email: 'muthukumar.p@joycorporatesolutions.com',
         dob: '15-08-1992',
         gender: 'Male',
-        masked_aadhaar: `XXXX-XXXX-${phoneDisplay.slice(-4)}`,
-        pan_no: 'BLKPX4519M',
+        masked_aadhaar: 'XXXX-XXXX-8942',
+        aadhaar_no: 'XXXX-XXXX-8942',
+        pan_no: 'AAAPM8942K',
         uan_no: '100829141052',
-        dl_no: 'TN-4520180019241',
-        address: 'Plot No 42, 3rd Cross Street, Gandhi Nagar, Tiruchirappalli, Tamil Nadu, Pincode: 620001',
+        dl_no: 'TN-45-2016-0049210',
+        address: 'No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001',
         pincode: '620001',
         account_status: 'VERIFIED_ACTIVE',
         purpose: purpose,
         service_name: serviceName,
-        documents: docs,
+        documents: returnDocs,
         fetched_at: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
         sha256_seal: `SHA256:${dlId}:${phoneDisplay}`
       };

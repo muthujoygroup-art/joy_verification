@@ -235,11 +235,11 @@ export const generateIndividualDocumentPdf = (docItem, profile = {}, companyName
 
   const docType = (docItem.doc_type || docItem.type || '').toLowerCase();
   const candName = val(profile.full_name || profile.candidate_name || profile.name, 'Muthukumar P');
-  const dlId = val(profile.digilocker_id || profile.digilockerId, 'DL74918230');
-  const phone = val(profile.mobile || profile.identifier_value, '9944266116');
+  const dlId = val(profile.digilocker_id || profile.digilockerId, 'DL86105978');
+  const phone = val(profile.mobile || profile.identifier_value, '8610597895');
   const dob = val(profile.dob, '15-08-1992');
   const gender = val(profile.gender, 'Male');
-  const address = val(profile.address, 'Plot No 42, 3rd Cross Street, Gandhi Nagar, Tiruchirappalli, Tamil Nadu - 620001');
+  const address = val(profile.address, 'No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001');
   const docName = val(docItem.name || docItem.document_name, 'Official Government Certificate');
   const issuer = val(docItem.issuer, 'Government Authority');
   const docNo = val(docItem.doc_no, 'VERIFIED-DOC-01');
@@ -463,7 +463,7 @@ export const generateIndividualDocumentPdf = (docItem, profile = {}, companyName
     pdf.setTextColor(30, 58, 138);
     pdf.setFont('courier', 'bold');
     pdf.setFontSize(22);
-    pdf.text(docNo || 'BLKPX4519M', pageWidth / 2, 133, { align: 'center' });
+    pdf.text(docNo || 'AAAPM8942K', pageWidth / 2, 133, { align: 'center' });
 
     // Compliance & QR Footer Box
     pdf.setFillColor(240, 253, 244);
@@ -518,7 +518,7 @@ export const generateIndividualDocumentPdf = (docItem, profile = {}, companyName
     pdf.setTextColor(15, 118, 110);
     pdf.setFontSize(11);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(`DL NO: ${docNo || 'TN-4520180019241'}`, 24, ly);
+    pdf.text(`DL NO: ${docNo || 'TN-45-2016-0049210'}`, 24, ly);
 
     ly += 10;
     pdf.setTextColor(100, 116, 139);
@@ -808,7 +808,7 @@ export const generateIndividualDocumentPdf = (docItem, profile = {}, companyName
     pdf.text('PAN KYC Status:', 24, ey);
     pdf.setTextColor(16, 185, 129);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('✓ Verified & Seeded (BLKPX4519M)', 70, ey);
+    pdf.text('✓ Verified & Seeded (AAAPM8942K)', 70, ey);
 
     ey += 10;
     pdf.setTextColor(100, 116, 139);

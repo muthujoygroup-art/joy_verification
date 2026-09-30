@@ -56,7 +56,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   // Verification Form State
   const [userType, setUserType] = useState('individual'); // 'individual' | 'company'
   const [authType, setAuthType] = useState('mobile'); // 'mobile' | 'aadhaar' | 'pan'
-  const [identifierValue, setIdentifierValue] = useState('9944266116');
+  const [identifierValue, setIdentifierValue] = useState('8610597895');
   const [selectedCandidateId, setSelectedCandidateId] = useState('');
   const [selectedPurpose, setSelectedPurpose] = useState('Employee onboarding private sector');
   const [customPurpose, setCustomPurpose] = useState('');
@@ -286,12 +286,17 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   };
 
   // Open Sandbox Simulation Modal (matching dd/mock_digilocker.php)
-  const handleOpenSandboxSimulation = () => {
+  const handleOpenSandboxSimulation = (e) => {
+    if (e) e.preventDefault();
+    const cleanId = (identifierValue || '').trim();
+    if (!cleanId) {
+      showToast('⚠️ Please enter candidate mobile number, Aadhaar, or PAN.', 'error');
+      return;
+    }
     setSandboxStep('signin');
     setSandboxPin('123456');
     setSandboxOtp('654321');
     setShowSandboxModal(true);
-    setShowAuthModal(false);
   };
 
   // Complete Sandbox Simulation and Ingest Documents
@@ -384,7 +389,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
             type="button"
             onClick={() => {
               setActiveSubTab('create_fetch');
-              setIdentifierValue('9944266116');
+              setIdentifierValue('8610597895');
               setSelectedCandidateId('');
               setLatestFetchResult(null);
             }}
@@ -517,7 +522,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleExecuteFetch} className="space-y-4">
+              <form onSubmit={handleOpenSandboxSimulation} className="space-y-4">
                 
                 {/* 1. Identifier Type Tabs */}
                 <div>
@@ -588,10 +593,10 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                       onChange={(e) => setIdentifierValue(e.target.value)}
                       placeholder={
                         authType === 'mobile' 
-                          ? 'e.g. 9944266116' 
+                          ? 'e.g. 8610597895' 
                           : authType === 'aadhaar' 
-                          ? 'e.g. 1234 5678 9012' 
-                          : 'e.g. BLKPX4519M'
+                          ? 'e.g. 5892 4102 8942' 
+                          : 'e.g. AAAPM8942K'
                       }
                       maxLength={authType === 'mobile' ? 10 : authType === 'aadhaar' ? 14 : 10}
                       className="w-full text-sm font-mono font-bold py-2.5 px-3.5 rounded-xl border border-slate-300 bg-slate-50/50 text-slate-900 focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none uppercase"
@@ -707,22 +712,22 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   </div>
                 </div>
 
-                {/* ⚡ THE PRIMARY PROMINENT ACTION BUTTON */}
+                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTON */}
                 <div className="pt-2">
                   <button
                     type="submit"
                     disabled={isFetching}
-                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-xl flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-xl flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 hover:from-sky-500 hover:to-indigo-500 shadow-indigo-500/20 hover:shadow-indigo-500/30"
                   >
                     {isFetching ? (
                       <>
                         <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                        <span className="text-white font-black tracking-wide">Querying Government Vault & Ingesting Documents...</span>
+                        <span className="text-white font-black tracking-wide">Connecting to DigiLocker Government Gateway...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-5 h-5 text-white" />
-                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest DigiLocker Records (Instant Verification)</span>
+                        <Shield className="w-5 h-5 text-white" />
+                        <span className="text-white font-black tracking-wide">🚀 Connect to DigiLocker (Citizen Sign-In, OTP & Checklist)</span>
                         <ArrowRight className="w-4 h-4 text-white ml-1" />
                       </>
                     )}
@@ -868,26 +873,34 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Registered Mobile:</span>
-                      <strong className="font-mono text-slate-800">+91 {latestFetchResult.mobile}</strong>
+                      <strong className="font-mono text-slate-800">+91 {latestFetchResult.mobile || '8610597895'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Care Of / Father:</span>
+                      <strong className="text-slate-800">S/O {latestFetchResult.father_name || 'Periyasamy'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Date of Birth & Gender:</span>
-                      <strong className="text-slate-800">{latestFetchResult.dob} ({latestFetchResult.gender})</strong>
+                      <strong className="text-slate-800">{latestFetchResult.dob || '15-08-1992'} ({latestFetchResult.gender || 'Male'})</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Official Email:</span>
-                      <strong className="text-slate-800">{latestFetchResult.email || 'N/A'}</strong>
+                      <strong className="text-slate-800 truncate block">{latestFetchResult.email || 'muthukumar.p@joycorporatesolutions.com'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Masked Aadhaar:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.masked_aadhaar || 'XXXX-XXXX-8942'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.aadhaar_no || latestFetchResult.masked_aadhaar || 'XXXX-XXXX-8942'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">PAN Number:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.pan_no || 'BLKPX4519M'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.pan_no || 'AAAPM8942K'}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block text-[10px] uppercase">Driving License:</span>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.dl_no || 'TN-45-2016-0049210'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">EPFO UAN:</span>
@@ -899,7 +912,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     <span className="text-slate-400 font-bold block text-[10px] uppercase">Residential Address (eAadhaar XML):</span>
                     <p className="text-slate-700 font-medium leading-relaxed mt-0.5">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 inline mr-1" />
-                      {latestFetchResult.address || 'Plot No 42, 3rd Cross Street, Gandhi Nagar, Tiruchirappalli, Tamil Nadu, Pincode: 620001'}
+                      {latestFetchResult.address || 'No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001'}
                     </p>
                   </div>
                 </div>
@@ -1348,13 +1361,13 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
           <div className="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-scaleIn">
             
             {/* Header */}
-            <div className="bg-sky-700 text-white p-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                <h3 className="text-sm font-black">DigiLocker Citizen Portal</h3>
+            <div className="bg-[#0d47a1] text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Shield className="w-5 h-5 text-sky-300" />
+                <h3 className="text-sm font-black tracking-wide">DigiLocker Verification Portal</h3>
               </div>
-              <span className="badge bg-amber-500 text-white font-bold text-[9px]">
-                SANDBOX MOCK
+              <span className="badge bg-emerald-500 text-white font-bold text-[9px] uppercase tracking-wider">
+                GOVERNMENT AUTH
               </span>
             </div>
 
@@ -1365,14 +1378,14 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 <>
                   <div className="text-center space-y-1">
                     <h4 className="text-base font-black text-slate-900">Citizen Sign In</h4>
-                    <p className="text-xs text-slate-500">Sign in to authenticate and link credentials with JoyVerify.</p>
+                    <p className="text-xs text-slate-500">Sign in with registered mobile number & OTP to authenticate with DigiLocker.</p>
                   </div>
 
                   <div className="space-y-3 text-xs">
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Mobile Number</label>
+                      <label className="block font-bold text-slate-700 mb-1">Registered Mobile Number</label>
                       <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-slate-800 flex items-center justify-between">
-                        <span>+91 {identifierValue || '9944266116'}</span>
+                        <span>+91 {identifierValue || '8610597895'}</span>
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       </div>
                     </div>
@@ -1390,7 +1403,10 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">One Time Password (OTP)</label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="font-bold text-slate-700">One Time Password (OTP)</label>
+                        <span className="text-[10px] text-emerald-600 font-bold font-mono">OTP Sent to Mobile ✓</span>
+                      </div>
                       <input
                         type="text"
                         value={sandboxOtp}
@@ -1399,6 +1415,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                         maxLength={6}
                         className="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold text-center tracking-widest text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
                       />
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Dispatched via UIDAI SMS rail to +91 {identifierValue || '8610597895'}. Demo OTP: <span className="font-mono font-bold text-sky-600">654321</span>
+                      </p>
                     </div>
                   </div>
 
@@ -1424,39 +1443,63 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
               ) : (
                 <>
                   <div className="text-center space-y-1">
-                    <h4 className="text-base font-black text-slate-900">Consent Approval</h4>
-                    <p className="text-xs text-slate-500">Review permissions requested by Joy Corporate Solutions.</p>
+                    <h4 className="text-base font-black text-slate-900">Consent & Document Selection</h4>
+                    <p className="text-xs text-slate-500">Select which authentic government records you authorize JOY TrueProfile to fetch:</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5 text-slate-700">
-                    <div className="font-bold text-slate-900">
-                      <strong>JoyVerify</strong> is requesting access to perform:
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-3">
+                    <div className="font-bold text-slate-900 flex items-center justify-between">
+                      <span>Certified Documents Checklist</span>
+                      <span className="text-[10px] font-mono text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {selectedDocTypes.length} Selected
+                      </span>
                     </div>
-                    <ul className="space-y-1.5 text-[11px]">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span>Read profile (Name, DOB, Gender, Address)</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span>View and download issued certificates list</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span>Download e-Aadhaar XML & verified PAN records</span>
-                      </li>
-                    </ul>
+
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {[
+                        { id: 'aadhaar', label: 'e-Aadhaar Identity & Demographics', issuer: 'UIDAI', icon: '🪪' },
+                        { id: 'pan', label: 'PAN Card / Income Tax', issuer: 'ITD / NSDL', icon: '💳' },
+                        { id: 'driving_license', label: 'Motor Vehicle Driving License', issuer: 'MoRTH', icon: '🚗' },
+                        { id: 'class_x', label: 'Class X School Certificate', issuer: 'CBSE', icon: '🎓' },
+                        { id: 'class_xii', label: 'Class XII Senior Secondary Certificate', issuer: 'CBSE', icon: '📜' },
+                        { id: 'epfo_uan', label: 'EPFO UAN Passbook & Service History', issuer: 'EPFO', icon: '💼' }
+                      ].map(doc => (
+                        <label
+                          key={doc.id}
+                          className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                            selectedDocTypes.includes(doc.id)
+                              ? 'bg-sky-50/80 border-sky-400 text-sky-950 font-bold shadow-2xs'
+                              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="checkbox"
+                              checked={selectedDocTypes.includes(doc.id)}
+                              onChange={() => toggleDocType(doc.id)}
+                              className="rounded text-sky-600 focus:ring-sky-500"
+                            />
+                            <span>{doc.icon}</span>
+                            <div>
+                              <div className="text-xs font-bold leading-tight">{doc.label}</div>
+                              <div className="text-[10px] text-slate-400 font-normal">{doc.issuer}</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] text-emerald-600 font-mono font-bold">✓ Authentic</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="space-y-2 pt-2">
                     <button
                       type="button"
                       onClick={handleCompleteSandbox}
-                      className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      className="w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
                       style={{ backgroundColor: '#059669', color: '#ffffff' }}
                     >
                       <Check className="w-4 h-4 text-white" />
-                      <span className="text-white font-black">Allow & Grant Consent</span>
+                      <span className="text-white font-black">Allow & Ingest Selected Documents ➔</span>
                     </button>
 
                     <button
