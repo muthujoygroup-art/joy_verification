@@ -84,12 +84,6 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   // Document Details Modal Preview (matching dd/callback.php)
   const [activePreviewDoc, setActivePreviewDoc] = useState(null);
 
-  // Sandbox Simulation Modal (matching dd/mock_digilocker.php)
-  const [showSandboxModal, setShowSandboxModal] = useState(false);
-  const [sandboxStep, setSandboxStep] = useState('signin'); // 'signin' | 'consent'
-  const [sandboxPin, setSandboxPin] = useState('123456');
-  const [sandboxOtp, setSandboxOtp] = useState('654321');
-
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
   const [docTypeFilter, setDocTypeFilter] = useState('all');
@@ -283,27 +277,6 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     } finally {
       setIsFetching(false);
     }
-  };
-
-  // Open Sandbox Simulation Modal (matching dd/mock_digilocker.php)
-  const handleOpenSandboxSimulation = (e) => {
-    if (e) e.preventDefault();
-    const cleanId = (identifierValue || '').trim();
-    if (!cleanId) {
-      showToast('⚠️ Please enter candidate mobile number, Aadhaar, or PAN.', 'error');
-      return;
-    }
-    setSandboxStep('signin');
-    setSandboxPin('123456');
-    setSandboxOtp('654321');
-    setShowSandboxModal(true);
-  };
-
-  // Complete Sandbox Simulation and Ingest Documents
-  const handleCompleteSandbox = () => {
-    setShowSandboxModal(false);
-    showToast('✅ Citizen consent granted! Ingesting verified documents...', 'success');
-    handleExecuteFetch();
   };
 
   // Copy generated auth URL to clipboard
@@ -522,7 +495,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleOpenSandboxSimulation} className="space-y-4">
+              <form onSubmit={handleExecuteFetch} className="space-y-4">
                 
                 {/* 1. Identifier Type Tabs */}
                 <div>
@@ -712,23 +685,43 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   </div>
                 </div>
 
-                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTON */}
-                <div className="pt-2">
+                {/* 🚀 ACTION BUTTONS */}
+                <div className="pt-2 space-y-2.5">
+                  {/* Button 1: Instant In-Portal Fetch & Ingest */}
                   <button
                     type="submit"
                     disabled={isFetching}
-                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-xl flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 hover:from-sky-500 hover:to-indigo-500 shadow-indigo-500/20 hover:shadow-indigo-500/30"
+                    className="w-full py-3.5 px-5 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
                   >
                     {isFetching ? (
                       <>
-                        <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                        <span className="text-white font-black tracking-wide">Connecting to DigiLocker Government Gateway...</span>
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                        <span className="text-white font-black tracking-wide">Querying Government Vault & Fetching Data...</span>
                       </>
                     ) : (
                       <>
-                        <Shield className="w-5 h-5 text-white" />
-                        <span className="text-white font-black tracking-wide">🚀 Connect to DigiLocker (Citizen Sign-In, OTP & Checklist)</span>
-                        <ArrowRight className="w-4 h-4 text-white ml-1" />
+                        <CheckCircle className="w-4 h-4 text-white" />
+                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest DigiLocker Data</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Button 2: Connect via Live DigiLocker Portal */}
+                  <button
+                    type="button"
+                    onClick={handleRedirectToDigilocker}
+                    disabled={isGeneratingAuth}
+                    className="w-full py-2.5 px-4 rounded-xl font-bold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-sky-950 bg-sky-50 hover:bg-sky-100 border border-sky-300"
+                  >
+                    {isGeneratingAuth ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-600" />
+                        <span className="font-bold">Opening DigiLocker Portal...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="w-3.5 h-3.5 text-sky-700" />
+                        <span className="font-bold">🚀 Connect via Live DigiLocker Portal (SMS OTP to Mobile)</span>
                       </>
                     )}
                   </button>
@@ -1353,174 +1346,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 🌟 6. SANDBOX SIMULATION MODAL (Matching dd/mock_digilocker.php)           */}
-      {/* ========================================================================= */}
-      {showSandboxModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-scaleIn">
-            
-            {/* Header */}
-            <div className="bg-[#0d47a1] text-white p-4 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <Shield className="w-5 h-5 text-sky-300" />
-                <h3 className="text-sm font-black tracking-wide">DigiLocker Verification Portal</h3>
-              </div>
-              <span className="badge bg-emerald-500 text-white font-bold text-[9px] uppercase tracking-wider">
-                GOVERNMENT AUTH
-              </span>
-            </div>
-
-            {/* Body */}
-            <div className="p-6 space-y-4">
-              
-              {sandboxStep === 'signin' ? (
-                <>
-                  <div className="text-center space-y-1">
-                    <h4 className="text-base font-black text-slate-900">Citizen Sign In</h4>
-                    <p className="text-xs text-slate-500">Sign in with registered mobile number & OTP to authenticate with DigiLocker.</p>
-                  </div>
-
-                  <div className="space-y-3 text-xs">
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">Registered Mobile Number</label>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-slate-800 flex items-center justify-between">
-                        <span>+91 {identifierValue || '8610597895'}</span>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">6-Digit Security PIN</label>
-                      <input
-                        type="password"
-                        value={sandboxPin}
-                        onChange={(e) => setSandboxPin(e.target.value)}
-                        placeholder="123456"
-                        maxLength={6}
-                        className="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold text-center tracking-widest text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="font-bold text-slate-700">One Time Password (OTP)</label>
-                        <span className="text-[10px] text-emerald-600 font-bold font-mono">OTP Sent to Mobile ✓</span>
-                      </div>
-                      <input
-                        type="text"
-                        value={sandboxOtp}
-                        onChange={(e) => setSandboxOtp(e.target.value)}
-                        placeholder="654321"
-                        maxLength={6}
-                        className="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold text-center tracking-widest text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                      />
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        Dispatched via UIDAI SMS rail to +91 {identifierValue || '8610597895'}. Demo OTP: <span className="font-mono font-bold text-sky-600">654321</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setSandboxStep('consent')}
-                      className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
-                      style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
-                    >
-                      <span className="text-white font-black">Sign In & Authenticate ➔</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowSandboxModal(false)}
-                      className="w-full py-2 px-3 rounded-xl text-slate-500 hover:text-slate-700 text-xs font-bold cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="text-center space-y-1">
-                    <h4 className="text-base font-black text-slate-900">Consent & Document Selection</h4>
-                    <p className="text-xs text-slate-500">Select which authentic government records you authorize JOY TrueProfile to fetch:</p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-3">
-                    <div className="font-bold text-slate-900 flex items-center justify-between">
-                      <span>Certified Documents Checklist</span>
-                      <span className="text-[10px] font-mono text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        {selectedDocTypes.length} Selected
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                      {[
-                        { id: 'aadhaar', label: 'e-Aadhaar Identity & Demographics', issuer: 'UIDAI', icon: '🪪' },
-                        { id: 'pan', label: 'PAN Card / Income Tax', issuer: 'ITD / NSDL', icon: '💳' },
-                        { id: 'driving_license', label: 'Motor Vehicle Driving License', issuer: 'MoRTH', icon: '🚗' },
-                        { id: 'class_x', label: 'Class X School Certificate', issuer: 'CBSE', icon: '🎓' },
-                        { id: 'class_xii', label: 'Class XII Senior Secondary Certificate', issuer: 'CBSE', icon: '📜' },
-                        { id: 'epfo_uan', label: 'EPFO UAN Passbook & Service History', issuer: 'EPFO', icon: '💼' }
-                      ].map(doc => (
-                        <label
-                          key={doc.id}
-                          className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                            selectedDocTypes.includes(doc.id)
-                              ? 'bg-sky-50/80 border-sky-400 text-sky-950 font-bold shadow-2xs'
-                              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <input
-                              type="checkbox"
-                              checked={selectedDocTypes.includes(doc.id)}
-                              onChange={() => toggleDocType(doc.id)}
-                              className="rounded text-sky-600 focus:ring-sky-500"
-                            />
-                            <span>{doc.icon}</span>
-                            <div>
-                              <div className="text-xs font-bold leading-tight">{doc.label}</div>
-                              <div className="text-[10px] text-slate-400 font-normal">{doc.issuer}</div>
-                            </div>
-                          </div>
-                          <span className="text-[10px] text-emerald-600 font-mono font-bold">✓ Authentic</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={handleCompleteSandbox}
-                      className="w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
-                      style={{ backgroundColor: '#059669', color: '#ffffff' }}
-                    >
-                      <Check className="w-4 h-4 text-white" />
-                      <span className="text-white font-black">Allow & Ingest Selected Documents ➔</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowSandboxModal(false)}
-                      className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
-                    >
-                      Deny Access
-                    </button>
-                  </div>
-                </>
-              )}
-
-            </div>
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };
 
 export default DigiLockerSectionView;
+
