@@ -58,8 +58,12 @@ export const DigiLockerCallbackView = () => {
     const t1 = setTimeout(() => isMounted && setStage(2), 600);
     const t2 = setTimeout(() => isMounted && setStage(3), 1200);
 
+    // Retrieve client-side PKCE verifier from storage for resilience
+    const storedVerifier = (state && localStorage.getItem(`digilocker_verifier_${state}`)) || 
+                           localStorage.getItem('digilocker_code_verifier') || '';
+
     // Call callback exchange endpoint
-    api.handleDigilockerCallback({ code, state })
+    api.handleDigilockerCallback({ code, state, verifier: storedVerifier })
       .then(res => {
         if (!isMounted) return;
         clearTimeout(t1);
@@ -293,7 +297,7 @@ export const DigiLockerCallbackView = () => {
               </div>
 
               <Link
-                to="/hr"
+                to={localStorage.getItem('digilocker_return_url') || '/joy-man-power-service/hr/agilan/candidates'}
                 className="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 cursor-pointer transition-all active:scale-95"
               >
                 <span>Return to HR Workstation</span>

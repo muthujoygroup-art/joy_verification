@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# Automatically send any direct login.php requests to HR portal
+RewriteRule ^login\.php$ https://test2.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates [R=302,L]
+</IfModule>

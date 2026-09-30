@@ -191,18 +191,19 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
       if (res && res.success && res.auth_url) {
         setGeneratedAuthData(res);
-        setShowAuthModal(true);
-        showToast('🚀 Opening DigiLocker Gateway URL (api.digitallocker.gov.in)...', 'success');
-        
-        // Open official DigiLocker login page in a new window/tab
-        try {
-          const win = window.open(res.auth_url, '_blank', 'noopener,noreferrer');
-          if (!win || win.closed || typeof win.closed === 'undefined') {
-            setShowAuthModal(true);
-          }
-        } catch (popupErr) {
-          setShowAuthModal(true);
+        // Save OAuth state, verifier, and return path for resilient callback recovery
+        if (res.state && res.code_verifier) {
+          localStorage.setItem(`digilocker_verifier_${res.state}`, res.code_verifier);
+          localStorage.setItem('digilocker_code_verifier', res.code_verifier);
         }
+        if (res.state) {
+          localStorage.setItem('digilocker_last_state', res.state);
+        }
+        localStorage.setItem('digilocker_return_url', window.location.pathname);
+        showToast('🚀 Redirecting to DigiLocker Government Gateway (api.digitallocker.gov.in)...', 'info');
+        
+        // Immediate seamless redirect to official DigiLocker
+        window.location.href = res.auth_url;
       } else {
         showToast(res?.message || 'Failed to initiate DigiLocker redirection.', 'error');
       }
@@ -511,7 +512,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleExecuteFetch} className="space-y-4">
+              <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
                 
                 {/* 1. Identifier Type Tabs */}
                 <div>
@@ -701,23 +702,42 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   </div>
                 </div>
 
-                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTON */}
-                <div className="pt-2">
+                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTONS */}
+                <div className="pt-2 space-y-2.5">
                   <button
                     type="submit"
-                    disabled={isFetching}
-                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-emerald-600 hover:bg-emerald-500"
+                    disabled={isGeneratingAuth || isFetching}
+                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-indigo-600 hover:bg-indigo-500 shadow-indigo-200 hover:shadow-lg"
                   >
-                    {isFetching ? (
+                    {isGeneratingAuth ? (
                       <>
                         <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                        <span className="text-white font-black tracking-wide">Fetching & Ingesting Government Vault Documents...</span>
+                        <span className="text-white font-black tracking-wide">Connecting to DigiLocker Government Gateway...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-5 h-5 text-white" />
-                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest Official DigiLocker Documents</span>
+                        <ExternalLink className="w-5 h-5 text-white" />
+                        <span className="text-white font-black tracking-wide">🚀 Verify with DigiLocker (Official Redirect)</span>
                         <ArrowRight className="w-4 h-4 text-white ml-1" />
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExecuteFetch}
+                    disabled={isFetching || isGeneratingAuth}
+                    className="w-full py-3 px-4 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs disabled:opacity-50"
+                  >
+                    {isFetching ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-emerald-700" />
+                        <span>Querying Government Vault & Ingesting Documents...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-emerald-600" />
+                        <span>⚡ Direct In-Portal Fetch (Instant Vault Ingest)</span>
                       </>
                     )}
                   </button>
