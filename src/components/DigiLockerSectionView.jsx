@@ -48,10 +48,10 @@ import {
   generateIndividualDocumentPdf
 } from '../utils/digilockerExportUtils';
 
-export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
+export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab = 'create_fetch' }) => {
   const { candidates, showToast, refreshCandidates } = useApp();
 
-  const [activeSubTab, setActiveSubTab] = useState('create_fetch'); // 'create_fetch' | 'dossier' | 'compliance'
+  const [activeSubTab, setActiveSubTab] = useState(initialSubTab); // 'create_fetch' | 'dossier' | 'compliance'
   
   // Verification Form State
   const [userType, setUserType] = useState('individual'); // 'individual' | 'company'
@@ -91,15 +91,38 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
   // Purpose Catalogue from API / Backend
   const [purposesList, setPurposesList] = useState([]);
   
-  // Stored DigiLocker Records Cache
+  // Stored DigiLocker Records Cache - strictly genuinely verified records
   const [verifiedRecords, setVerifiedRecords] = useState(() => {
     try {
       const saved = localStorage.getItem('joy_digilocker_verified_records');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(r => 
+        (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) &&
+        (r.full_name || r.candidate_name || r.name) &&
+        (r.mobile || r.identifier_value || r.digilocker_id)
+      );
     } catch (e) {
       return [];
     }
   });
+
+  // Listen to Sidebar navigation events for switching sub-tabs directly
+  useEffect(() => {
+    const handlePortalNav = (e) => {
+      const { division, subDivision } = e.detail || {};
+      if (division === 'digilocker_dossier' || subDivision === 'dossier') {
+        setActiveSubTab('dossier');
+      } else if (division === 'digilocker_create' || subDivision === 'create_fetch') {
+        setActiveSubTab('create_fetch');
+      } else if (division === 'digilocker_compliance' || subDivision === 'compliance') {
+        setActiveSubTab('compliance');
+      }
+    };
+    window.addEventListener('portal_nav_navigate', handlePortalNav);
+    return () => window.removeEventListener('portal_nav_navigate', handlePortalNav);
+  }, []);
 
   // Load standard NeGD Purpose catalogue on mount
   useEffect(() => {
@@ -110,18 +133,22 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
     }).catch(() => {});
   }, []);
 
-  // Sync server DigiLocker records from database
+  // Sync server DigiLocker records from database (strictly verified only)
   const loadDbRecords = () => {
     api.getDigilockerRecords().then(res => {
-      if (res && Array.isArray(res.records) && res.records.length > 0) {
-        setVerifiedRecords(prev => {
-          const combined = [...res.records, ...prev];
-          const unique = Array.from(new Map(combined.map(item => [item.id || item.digilocker_id || item.mobile, item])).values());
-          try {
-            localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(unique));
-          } catch (e) {}
-          return unique;
-        });
+      if (res && Array.isArray(res.records)) {
+        const cleanRecords = res.records.filter(r => 
+          (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) &&
+          (r.full_name || r.candidate_name || r.name) &&
+          (r.mobile || r.identifier_value || r.digilocker_id)
+        );
+        const unique = Array.from(
+          new Map(cleanRecords.map(item => [item.digilocker_id || item.mobile || item.identifier_value || item.id, item])).values()
+        );
+        setVerifiedRecords(unique);
+        try {
+          localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(unique));
+        } catch (e) {}
       }
     }).catch(() => {});
   };

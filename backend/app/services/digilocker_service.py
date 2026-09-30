@@ -1025,24 +1025,62 @@ def handle_digilocker_callback(
     return res
 
 def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Retrieves all DigiLocker verification records stored in the database"""
+    """Retrieves all strictly verified DigiLocker candidate profiles stored in the database without duplicates"""
     try:
-        query = "SELECT * FROM digilocker_verifications ORDER BY created_at DESC"
+        query = """
+            SELECT DISTINCT ON (COALESCE(digilocker_id, identifier_value)) * 
+            FROM digilocker_verifications 
+            WHERE status = 'success'
+            ORDER BY COALESCE(digilocker_id, identifier_value), created_at DESC
+        """
         results = db.execute(text(query)).fetchall()
         records = []
+        seen_keys = set()
+        
         for row in results:
             row_dict = dict(row._mapping)
             
-            # Fetch associated documents
+            # Key for deduplication guarantee
+            dedup_key = (row_dict.get("digilocker_id") or row_dict.get("identifier_value") or row_dict.get("id") or "").strip()
+            if dedup_key and dedup_key in seen_keys:
+                continue
+            if dedup_key:
+                seen_keys.add(dedup_key)
+            
+            # Fetch associated authenticated documents
             v_id = row_dict.get("id")
             doc_rows = db.execute(
-                text("SELECT * FROM digilocker_documents WHERE verification_id = :v_id"),
+                text("SELECT * FROM digilocker_documents WHERE verification_id = :v_id ORDER BY created_at ASC"),
                 {"v_id": v_id}
             ).fetchall()
             
-            docs = [dict(d._mapping) for d in doc_rows]
+            docs = []
+            seen_doc_keys = set()
+            for d in doc_rows:
+                d_dict = dict(d._mapping)
+                doc_key = (d_dict.get("doc_uri") or f"{d_dict.get('doc_type')}_{d_dict.get('doc_no')}").strip()
+                if doc_key in seen_doc_keys:
+                    continue
+                seen_doc_keys.add(doc_key)
+                
+                # Standardize document object fields for frontend compatibility
+                d_dict["name"] = d_dict.get("document_name") or d_dict.get("name") or "Government Certificate"
+                d_dict["status"] = d_dict.get("doc_status") or "Verified"
+                d_dict["uri"] = d_dict.get("doc_uri")
+                docs.append(d_dict)
+            
             row_dict["documents"] = docs
             row_dict["documents_count"] = len(docs)
+            row_dict["candidate_name"] = row_dict.get("full_name") or "Verified Candidate"
+            row_dict["name"] = row_dict.get("full_name")
+            row_dict["mobile"] = row_dict.get("identifier_value")
+            row_dict["identifier"] = row_dict.get("identifier_value")
+            row_dict["account_status"] = "VERIFIED"
+            
+            if not row_dict.get("sha256_seal"):
+                seal_basis = f"{row_dict.get('digilocker_id')}:{row_dict.get('identifier_value')}"
+                row_dict["sha256_seal"] = f"SHA256:{hashlib.sha256(seal_basis.encode()).hexdigest()[:24].upper()}"
+            
             records.append(row_dict)
             
         return records

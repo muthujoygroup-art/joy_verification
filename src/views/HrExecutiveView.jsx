@@ -625,11 +625,11 @@ export const HrExecutiveView = () => {
             : statusFilter === 'Inactive' 
               ? c.status?.toLowerCase() === 'inactive' 
               : statusFilter === 'Verified'
-                ? c.status === 'Verified'
+                ? (c.status === 'Verified' || c.digilocker_verified === true || c.verification_status === 'Verified')
                 : statusFilter === 'Link Sent'
                   ? (c.status === 'Link Sent' || c.status?.toLowerCase()?.includes('link'))
                   : (statusFilter === 'Pending Verification' || statusFilter === 'Pending Verifications' || statusFilter === 'Pending' || statusFilter === 'In Verification')
-                    ? c.status !== 'Verified' && c.status?.toLowerCase() !== 'inactive'
+                    ? (c.status !== 'Verified' && !c.digilocker_verified && c.verification_status !== 'Verified' && c.status?.toLowerCase() !== 'inactive')
                     : c.status === statusFilter;
 
       return matchesSearch && matchesStatus;
