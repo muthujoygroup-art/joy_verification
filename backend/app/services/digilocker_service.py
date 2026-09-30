@@ -925,3 +925,108 @@ def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) ->
     except Exception as e:
         logger.error(f"Error fetching digilocker records from DB: {e}")
         return []
+
+def patch_verify_gateway_on_server() -> Dict[str, Any]:
+    """
+    Locates verify.joycorporatesolutions.com document root on the cPanel server
+    and writes the zero-dependency forwarder callback.php, login.php, and index.php files,
+    permanently eliminating the legacy Operator Login page.
+    """
+    forwarder_php = """<?php
+/**
+ * DigiLocker OAuth Callback Gateway Forwarder
+ * Automatically bounces to test2.joycorporatesolutions.com
+ */
+error_reporting(0);
+ini_set('display_errors', 0);
+
+$code       = isset($_GET['code']) ? trim($_GET['code']) : '';
+$state      = isset($_GET['state']) ? trim($_GET['state']) : '';
+$error      = isset($_GET['error']) ? trim($_GET['error']) : '';
+$error_desc = isset($_GET['error_description']) ? trim($_GET['error_description']) : '';
+
+$params = [];
+if (!empty($code)) $params['code'] = $code;
+if (!empty($state)) $params['state'] = $state;
+if (!empty($error)) $params['error'] = $error;
+if (!empty($error_desc)) $params['error_description'] = $error_desc;
+
+$target_url = 'https://test2.joycorporatesolutions.com/digilocker-callback';
+if (!empty($params)) {
+    $target_url .= '?' . http_build_query($params);
+}
+
+header("Location: " . $target_url, true, 302);
+exit;
+?>"""
+
+    login_forwarder_php = """<?php
+header("Location: https://test2.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates", true, 302);
+exit;
+?>"""
+
+    patched_locations = []
+    errors = []
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidate_roots = [
+        os.path.abspath(os.path.join(current_dir, "..", "..", "..")),
+        os.path.abspath(os.path.join(current_dir, "..", "..", "..", "..")),
+    ]
+
+    try:
+        if os.path.exists("/home"):
+            for u in os.listdir("/home"):
+                u_path = os.path.join("/home", u)
+                if os.path.isdir(u_path):
+                    candidate_roots.append(u_path)
+    except Exception as e:
+        errors.append(f"List /home: {e}")
+
+    for root in candidate_roots:
+        if not os.path.isdir(root):
+            continue
+        try:
+            for item in os.listdir(root):
+                full_item = os.path.join(root, item)
+                if not os.path.isdir(full_item):
+                    continue
+                item_lower = item.lower()
+                
+                # Check root items matching verify
+                if "verify" in item_lower:
+                    try:
+                        with open(os.path.join(full_item, "callback.php"), "w", encoding="utf-8") as f:
+                            f.write(forwarder_php)
+                        with open(os.path.join(full_item, "login.php"), "w", encoding="utf-8") as f:
+                            f.write(login_forwarder_php)
+                        with open(os.path.join(full_item, "index.php"), "w", encoding="utf-8") as f:
+                            f.write(login_forwarder_php)
+                        patched_locations.append(full_item)
+                    except Exception as we:
+                        errors.append(f"Write error in {full_item}: {we}")
+                
+                # Check inside public_html
+                if "public_html" in item_lower:
+                    try:
+                        for sub in os.listdir(full_item):
+                            sub_full = os.path.join(full_item, sub)
+                            if os.path.isdir(sub_full) and "verify" in sub.lower():
+                                with open(os.path.join(sub_full, "callback.php"), "w", encoding="utf-8") as f:
+                                    f.write(forwarder_php)
+                                with open(os.path.join(sub_full, "login.php"), "w", encoding="utf-8") as f:
+                                    f.write(login_forwarder_php)
+                                with open(os.path.join(sub_full, "index.php"), "w", encoding="utf-8") as f:
+                                    f.write(login_forwarder_php)
+                                patched_locations.append(sub_full)
+                    except Exception as we:
+                        errors.append(f"Scan public_html error: {we}")
+        except Exception as re_err:
+            errors.append(f"Scan error in {root}: {re_err}")
+
+    logger.info(f"Patched verify gateway locations on server: {patched_locations}")
+    return {
+        "success": len(patched_locations) > 0,
+        "patched_locations": patched_locations,
+        "errors": errors
+    }

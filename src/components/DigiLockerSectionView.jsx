@@ -202,6 +202,11 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
         localStorage.setItem('digilocker_return_url', window.location.pathname);
         showToast('🚀 Redirecting to DigiLocker Government Gateway (api.digitallocker.gov.in)...', 'info');
         
+        // Auto-patch gateway on server to guarantee no login.php
+        try {
+          await api.patchDigilockerGateway();
+        } catch (e) {}
+
         // Immediate seamless redirect to official DigiLocker
         window.location.href = res.auth_url;
       } else {

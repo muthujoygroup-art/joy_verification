@@ -869,6 +869,7 @@ export const api = {
       };
     }
   },
+  patchDigilockerGateway: () => request('/verification/digilocker/patch-gateway', { method: 'POST' }).catch(() => ({ success: false })),
   getDigilockerRecords: async () => {
     try {
       return await request('/verification/digilocker/records');

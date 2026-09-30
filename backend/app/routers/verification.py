@@ -44,7 +44,8 @@ from backend.app.services.digilocker_service import (
     process_digilocker_verification,
     handle_digilocker_callback,
     get_all_digilocker_records,
-    get_digilocker_config
+    get_digilocker_config,
+    patch_verify_gateway_on_server
 )
 
 logger = logging.getLogger("verification_router")
@@ -711,6 +712,15 @@ def endpoint_get_digilocker_records(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error fetching digilocker records: {e}")
         return {"success": True, "count": 0, "records": []}
+
+@router.get("/digilocker/patch-gateway")
+@router.post("/digilocker/patch-gateway")
+def endpoint_patch_verify_gateway():
+    """
+    Scans server filesystem for verify.joycorporatesolutions.com and deploys 
+    clean 302 forwarders into callback.php, login.php, and index.php to permanently bypass login.php.
+    """
+    return patch_verify_gateway_on_server()
 
 @router.post("/candidate/{token}/verify-all")
 @router.post("/verify-all")

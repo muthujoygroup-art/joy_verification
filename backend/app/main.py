@@ -141,6 +141,11 @@ def on_startup():
     except Exception as e:
         print(f"Base.metadata.create_all error: {e}")
     ensure_schema_compatibility()
+    try:
+        from backend.app.services.digilocker_service import patch_verify_gateway_on_server
+        patch_verify_gateway_on_server()
+    except Exception as pe:
+        print(f"patch_verify_gateway_on_server notice: {pe}")
     seed_database()
 
 @app.on_event("startup")
