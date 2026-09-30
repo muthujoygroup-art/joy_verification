@@ -937,6 +937,9 @@ def patch_verify_gateway_on_server() -> Dict[str, Any]:
  * Joy Corporate Solutions - DigiLocker OAuth Callback Gateway Forwarder
  * Automatically forwards code & state to test2.joycorporatesolutions.com/digilocker-callback
  */
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+}
 error_reporting(0);
 ini_set('display_errors', 0);
 
@@ -987,6 +990,9 @@ header("Location: " . $target_url, true, 302);
  * Joy Corporate Solutions - Login Eliminator Forwarder
  * Completely bypasses legacy Operator Login and routes to candidate dossier or callback
  */
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+}
 error_reporting(0);
 ini_set('display_errors', 0);
 
@@ -1032,6 +1038,12 @@ header("Location: " . $target_url, true, 302);
 </html>"""
 
     htaccess_content = """# Joy Corporate Solutions - Disable caching for DigiLocker gateway forwarders
+<IfModule mod_litespeed.c>
+  CacheLookup off
+</IfModule>
+<IfModule LiteSpeed>
+  CacheEngine off
+</IfModule>
 <IfModule mod_headers.c>
   Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
   Header set Pragma "no-cache"
@@ -1041,6 +1053,7 @@ header("Location: " . $target_url, true, 302);
 
     patched_locations = []
     errors = []
+    found_legacy = []
 
     # 1. Collect all root paths to inspect
     search_dirs = set()
@@ -1092,39 +1105,38 @@ header("Location: " . $target_url, true, 302);
             if os.path.isdir(full):
                 target_directories.add(full)
 
-    # 3. In addition, scan immediate subdirectories of each search dir for folders matching "verify"
-    for base in search_dirs:
+    # 3. Deep search: Walk user home directory to find ANY directory containing callback.php or login.php
+    for base in list(search_dirs):
         if not os.path.isdir(base):
             continue
         try:
-            entries = os.listdir(base)
-        except Exception:
-            continue
-        for entry in entries:
-            full_entry = os.path.join(base, entry)
-            if not os.path.isdir(full_entry):
-                continue
-            entry_lower = entry.lower()
-            if "verify" in entry_lower:
-                target_directories.add(os.path.abspath(full_entry))
-            
-            # Check inside public_html
-            if entry_lower == "public_html":
-                try:
-                    for pub_sub in os.listdir(full_entry):
-                        pub_full = os.path.join(full_entry, pub_sub)
-                        if os.path.isdir(pub_full) and "verify" in pub_sub.lower():
-                            target_directories.add(os.path.abspath(pub_full))
-                except Exception:
-                    pass
+            for root, dirs, files in os.walk(base):
+                # Skip heavy/unrelated directories
+                dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "venv", ".cache", "__pycache__", "uploads", "storage", ".local", "Maildir", "etc", "ssl", "tmp"}]
+                if "login.php" in files or "callback.php" in files:
+                    lp = os.path.join(root, "login.php")
+                    if os.path.exists(lp):
+                        try:
+                            with open(lp, "r", encoding="utf-8", errors="ignore") as f:
+                                preview = f.read(500)
+                                if "Operator" in preview or "Secure Portal" in preview or "admin_logged_in" in preview:
+                                    found_legacy.append(lp)
+                                    target_directories.add(os.path.abspath(root))
+                        except Exception:
+                            pass
+                    if "verify" in root.lower():
+                        target_directories.add(os.path.abspath(root))
+        except Exception as scan_err:
+            errors.append(f"Walk error in {base}: {scan_err}")
 
-    # 4. Now write forwarders into every target directory
+    # 4. Now write forwarders and probe files into every target directory
     for target in target_directories:
         try:
             cb_file = os.path.join(target, "callback.php")
             lg_file = os.path.join(target, "login.php")
             ix_file = os.path.join(target, "index.php")
             ht_file = os.path.join(target, ".htaccess")
+            pr_file = os.path.join(target, "joy_verify_probe.txt")
 
             with open(cb_file, "w", encoding="utf-8") as f:
                 f.write(forwarder_php)
@@ -1134,14 +1146,27 @@ header("Location: " . $target_url, true, 302);
                 f.write(login_forwarder_php)
             with open(ht_file, "w", encoding="utf-8") as f:
                 f.write(htaccess_content)
+            with open(pr_file, "w", encoding="utf-8") as f:
+                f.write(f"PROBE_OK: {target}")
 
             patched_locations.append(target)
         except Exception as we:
             errors.append(f"Write error in {target}: {we}")
 
-    logger.info(f"Patched verify gateway locations on server: {patched_locations}")
+    # 5. Check if probe is reachable via HTTP
+    probe_confirmed = None
+    try:
+        probe_res = requests.get("https://verify.joycorporatesolutions.com/joy_verify_probe.txt", timeout=3.0, verify=False)
+        if probe_res.status_code == 200:
+            probe_confirmed = probe_res.text.strip()
+    except Exception as pr_err:
+        errors.append(f"Probe request error: {pr_err}")
+
+    logger.info(f"Patched verify gateway locations on server: {patched_locations}, probe: {probe_confirmed}")
     return {
         "success": len(patched_locations) > 0,
         "patched_locations": patched_locations,
+        "found_legacy_files": found_legacy,
+        "probe_confirmed": probe_confirmed,
         "errors": errors
     }
