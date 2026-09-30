@@ -774,9 +774,10 @@ export const api = {
     body: JSON.stringify(payload),
   }),
   initiateDigilockerAuth: async (payload) => {
-    // Official whitelisted callback registered on DigiLocker API Setu Portal
-    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
-    const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
+    const portalOrigin = (typeof window !== 'undefined' && window.location?.origin) 
+      ? window.location.origin 
+      : 'https://test2.joycorporatesolutions.com';
+    const redirectUri = payload.redirect_uri || `${portalOrigin}/digilocker-callback`;
 
     try {
       return await request('/verification/digilocker/initiate-auth', {
@@ -836,8 +837,10 @@ export const api = {
     }
   },
   handleDigilockerCallback: (payload) => {
-    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
-    const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
+    const portalOrigin = (typeof window !== 'undefined' && window.location?.origin) 
+      ? window.location.origin 
+      : 'https://test2.joycorporatesolutions.com';
+    const redirectUri = payload.redirect_uri || `${portalOrigin}/digilocker-callback`;
 
     return request('/verification/digilocker/callback', {
       method: 'POST',
