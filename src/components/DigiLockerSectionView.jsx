@@ -513,39 +513,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
 
               <form onSubmit={handleExecuteFetch} className="space-y-4">
                 
-                {/* 1. Target Entity Selector */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Verification Target</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setUserType('individual')}
-                      className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                        userType === 'individual'
-                          ? 'bg-sky-50 border-sky-400 text-sky-950 shadow-2xs'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      <User className="w-3.5 h-3.5 text-sky-600" />
-                      <span>Individual (Citizen)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setUserType('company')}
-                      className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                        userType === 'company'
-                          ? 'bg-indigo-50 border-indigo-400 text-indigo-950 shadow-2xs'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Company (Entity Locker)</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. Identifier Type Tabs */}
+                {/* 1. Identifier Type Tabs */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Authentication Identifier</label>
                   <div className="grid grid-cols-3 gap-2">
@@ -734,7 +702,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </div>
 
                 {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTON */}
-                <div className="pt-2 space-y-2.5">
+                <div className="pt-2">
                   <button
                     type="submit"
                     disabled={isFetching}
@@ -753,34 +721,12 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                       </>
                     )}
                   </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowSandboxModal(true)}
-                      className="flex-1 py-2.5 px-3 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-950 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs"
-                    >
-                      <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Simulate In-Portal Candidate OTP Consent 🔐</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleRedirectToDigilocker}
-                      disabled={isGeneratingAuth}
-                      className="py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                      title="Open external DigiLocker Gateway URL"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                      <span>External Gateway</span>
-                    </button>
-                  </div>
                 </div>
 
               </form>
             </div>
 
-            {/* Right Column (5 Cols) - Live Telemetry & Result / Auth URL Preview */}
+            {/* Right Column (5 Cols) - Live Telemetry & Verified Repositories Overview */}
             <div className="lg:col-span-5 space-y-4">
               
               {/* Live Progress Stage */}
@@ -812,33 +758,45 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </div>
               )}
 
-              {/* Information & Quick Actions Card */}
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                <div className="flex items-center justify-between">
+              {/* Connected Government Repositories Card */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3.5">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                    <Info className="w-4 h-4 text-sky-600" />
-                    <span>DigiLocker Integration Options</span>
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>Connected Government Repositories</span>
                   </div>
-                  <span className="badge badge-indigo text-[9px] font-bold">PHP & Python Dual Engine</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold border border-emerald-200">
+                    6 Live Rails
+                  </span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2 leading-relaxed">
-                  <p>
-                    <strong>1. Direct In-Portal Fetch (Instant) ⚡:</strong> Instantly connects to the vault for the entered mobile number and extracts all 6 government certificates (Aadhaar, PAN, DL, CBSE X/XII, EPFO) directly into the candidate profile.
-                  </p>
-                  <p>
-                    <strong>2. Continue with DigiLocker Gateway 🚀:</strong> Initiates the official government redirection page where the candidate inputs their OTP and PIN for live biometric/consent verification.
-                  </p>
+                <div className="space-y-2 text-xs">
+                  <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">🪪 Aadhaar e-KYC XML</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">UIDAI Authenticated</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">💳 Electronic PAN Card</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">Income Tax Dept</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">🚗 Driving Licence</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">MoRTH Sarathi</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">🎓 Academic Records (X & XII)</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">CBSE National Depository</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">💼 EPFO UAN Passbook</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">EPFO Member Portal</span>
+                  </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleOpenSandboxSimulation}
-                  className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                >
-                  <FlaskConical className="w-4 h-4 text-purple-600" />
-                  <span>Test with Interactive Sandbox Simulation 🧪</span>
-                </button>
+                <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex items-center gap-1.5 font-medium">
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>256-bit SHA-256 encrypted & stored into PostgreSQL tables.</span>
+                </div>
               </div>
 
             </div>
