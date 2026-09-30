@@ -6,15 +6,16 @@ ini_set('display_errors', 0);
 require_once 'config.php';
 require_once 'api.php';
 
-// Auto-preserve login session on return
-$_SESSION['admin_logged_in'] = true;
-if (empty($_SESSION['admin_user'])) {
-    $_SESSION['admin_user'] = 'muthukumar@joyglobalcorp.com';
-}
-
 // 1. Extract OAuth Parameters
 $state = isset($_GET['state']) ? trim($_GET['state']) : '';
 $code  = isset($_GET['code']) ? trim($_GET['code']) : '';
+
+// If code is returned, forward directly to main HR Portal
+if (!empty($code)) {
+    $targetUrl = 'https://test2.joycorporatesolutions.com/digilocker-callback?code=' . urlencode($code) . (!empty($state) ? '&state=' . urlencode($state) : '');
+    header("Location: " . $targetUrl);
+    exit;
+}
 $error = '';
 
 // Retrieve saved PKCE state data

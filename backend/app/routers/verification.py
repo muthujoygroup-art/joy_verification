@@ -132,6 +132,7 @@ class DigilockerCallbackRequest(BaseModel):
     candidate_id: Optional[str] = None
     company_id: Optional[str] = None
     hr_id: Optional[str] = None
+    redirect_uri: Optional[str] = None
 
 class VerifyAllRequest(BaseModel):
     token: Optional[str] = None
@@ -677,6 +678,7 @@ def endpoint_digilocker_callback(
         candidate_id = payload.candidate_id if payload else request.query_params.get("candidate_id")
         company_id = payload.company_id if payload else request.query_params.get("company_id")
         hr_id = payload.hr_id if payload else request.query_params.get("hr_id")
+        redirect_uri = (payload.redirect_uri if payload else None) or request.query_params.get("redirect_uri")
 
         result = handle_digilocker_callback(
             db=db,
@@ -686,7 +688,8 @@ def endpoint_digilocker_callback(
             user_type=user_type,
             candidate_id=candidate_id,
             company_id=company_id,
-            hr_id=hr_id
+            hr_id=hr_id,
+            redirect_uri=redirect_uri
         )
         return result
     except Exception as e:

@@ -39,8 +39,8 @@ CITIZEN_CLIENT_SECRET = os.getenv("CITIZEN_CLIENT_SECRET", "8e975b5f3d401c251fc3
 ENTITY_CLIENT_ID = os.getenv("ENTITY_CLIENT_ID", "NU68486825")
 ENTITY_CLIENT_SECRET = os.getenv("ENTITY_CLIENT_SECRET", "0a1ede509b")
 
-# Redirect URI (Configured in DigiLocker / API Setu Portal)
-DEFAULT_REDIRECT_URI = os.getenv("DIGILOCKER_REDIRECT_URI", "https://verify.joycorporatesolutions.com/callback.php")
+# Redirect URI (Points to HR Portal Callback Route)
+DEFAULT_REDIRECT_URI = os.getenv("DIGILOCKER_REDIRECT_URI", "https://test2.joycorporatesolutions.com/digilocker-callback")
 
 # In-Memory PKCE State Cache for OAuth Authorization Sessions
 OAUTH_SESSION_STORE: Dict[str, Dict[str, Any]] = {}
@@ -134,7 +134,7 @@ def generate_authorization_url(
     config = get_digilocker_config(user_type)
     state = secrets.token_hex(16)
     verifier, challenge = generate_pkce_pair()
-    target_redirect = DEFAULT_REDIRECT_URI
+    target_redirect = redirect_uri or DEFAULT_REDIRECT_URI
 
     # Enforce strictly alphanumeric + space + underscore only (DigiLocker rule)
     raw_purpose = purpose or "Employee onboarding private sector"
@@ -172,6 +172,7 @@ def generate_authorization_url(
         "auth_type": auth_type,
         "identifier_value": identifier_value,
         "candidate_id": candidate_id,
+        "redirect_uri": target_redirect,
         "purpose": clean_purpose,
         "service_name": clean_service_name,
         "created_at": datetime.utcnow().isoformat()
@@ -183,6 +184,7 @@ def generate_authorization_url(
         "state": state,
         "code_verifier": verifier,
         "code_challenge": challenge,
+        "redirect_uri": target_redirect,
         "purpose": clean_purpose,
         "service_name": clean_service_name,
         "user_type": user_type,
@@ -196,18 +198,19 @@ def generate_authorization_url(
 # 🌐 LIVE HTTP CLIENT METHODS (Translated from PHP curl)
 # =====================================================================
 
-def exchange_code_for_token_live(code: str, verifier: str = "", user_type: str = "individual") -> Dict[str, Any]:
+def exchange_code_for_token_live(code: str, verifier: str = "", user_type: str = "individual", redirect_uri: str = "") -> Dict[str, Any]:
     """
     Exchanges OAuth2 authorization code for access token via live HTTP POST.
     Matches DigiLockerAPI::exchangeCodeForToken in PHP reference.
     """
     dl_config = get_digilocker_config(user_type)
+    target_redirect = redirect_uri or DEFAULT_REDIRECT_URI
     post_data = {
         "code": code,
         "grant_type": "authorization_code",
         "client_id": dl_config["client_id"],
         "client_secret": dl_config["client_secret"],
-        "redirect_uri": DEFAULT_REDIRECT_URI
+        "redirect_uri": target_redirect
     }
     if verifier:
         post_data["code_verifier"] = verifier
@@ -814,7 +817,8 @@ def handle_digilocker_callback(
     user_type: Optional[str] = None,
     candidate_id: Optional[str] = None,
     company_id: Optional[str] = None,
-    hr_id: Optional[str] = None
+    hr_id: Optional[str] = None,
+    redirect_uri: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Handles OAuth2 callback from DigiLocker / API Setu:
@@ -830,6 +834,7 @@ def handle_digilocker_callback(
     effective_identifier = session_data.get("identifier_value", "")
     effective_purpose = session_data.get("purpose", "Employee onboarding (private sector)")
     effective_service = session_data.get("service_name", "JoyVerify")
+    effective_redirect_uri = redirect_uri or session_data.get("redirect_uri", DEFAULT_REDIRECT_URI)
 
     logger.info(f"Processing DigiLocker OAuth callback for state={state}, user_type={effective_user_type}")
 
@@ -837,7 +842,8 @@ def handle_digilocker_callback(
     token_resp = exchange_code_for_token_live(
         code=code,
         verifier=effective_verifier,
-        user_type=effective_user_type
+        user_type=effective_user_type,
+        redirect_uri=effective_redirect_uri
     )
 
     access_token = token_resp.get("access_token") if token_resp.get("success") else None
