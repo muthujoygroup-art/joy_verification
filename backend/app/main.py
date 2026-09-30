@@ -58,6 +58,79 @@ async def add_performance_headers(request: Request, call_next):
 
 _startup_executed = False
 
+def ensure_schema_compatibility():
+    from sqlalchemy import text
+    try:
+        with engine.connect() as conn:
+            columns = [
+                ("candidates", "father_name", "VARCHAR(150)"),
+                ("candidates", "father_mobile", "VARCHAR(50)"),
+                ("candidates", "father_occupation", "VARCHAR(100)"),
+                ("candidates", "mother_name", "VARCHAR(150)"),
+                ("candidates", "mother_mobile", "VARCHAR(50)"),
+                ("candidates", "mother_occupation", "VARCHAR(100)"),
+                ("candidates", "spouse_name", "VARCHAR(150)"),
+                ("candidates", "spouse_mobile", "VARCHAR(50)"),
+                ("candidates", "spouse_occupation", "VARCHAR(100)"),
+                ("candidates", "siblings", "JSON DEFAULT '[]'"),
+                ("candidates", "children", "JSON DEFAULT '[]'"),
+                ("candidates", "languages", "JSON DEFAULT '[]'"),
+                ("candidates", "blood_group", "VARCHAR(20)"),
+                ("candidates", "native_state", "VARCHAR(100)"),
+                ("candidates", "native_district", "VARCHAR(100)"),
+                ("candidates", "identification_marks", "TEXT"),
+                ("candidates", "digilocker_data", "JSON DEFAULT '{}'"),
+                ("candidates", "digilocker_verified", "BOOLEAN DEFAULT FALSE"),
+                ("candidates", "specimen_signature", "TEXT"),
+                ("candidates", "industry_specialization", "JSON DEFAULT '{}'"),
+                ("candidates", "signing_papers", "JSON DEFAULT '{}'"),
+                ("candidates", "category_documents", "JSON DEFAULT '{}'"),
+                ("candidates", "manual_checks", "JSON DEFAULT '{}'"),
+                ("candidates", "portal_password", "VARCHAR(50) DEFAULT '1234'"),
+                ("candidates", "verified_attributes", "JSON DEFAULT '{}'"),
+                ("candidates", "face_images", "JSON DEFAULT '{}'"),
+                ("candidates", "risk_score", "FLOAT DEFAULT 0.0"),
+                ("candidates", "bgv_verdict", "VARCHAR(50) DEFAULT 'Pending'"),
+                ("candidates", "discrepancies_detected", "JSON DEFAULT '[]'"),
+                ("candidates", "employee_number", "VARCHAR(50)"),
+                ("candidates", "employee_type", "VARCHAR(50) DEFAULT 'it_tech'"),
+                ("candidates", "mother_tongue", "VARCHAR(50)"),
+                ("candidates", "languages_known", "VARCHAR(200)"),
+                ("candidates", "religion", "VARCHAR(50)"),
+                ("candidates", "caste", "VARCHAR(50)"),
+                ("candidates", "category", "VARCHAR(50) DEFAULT 'General'"),
+                ("candidates", "alternate_mobile", "VARCHAR(50)"),
+                ("candidates", "emergency_contact_name", "VARCHAR(150)"),
+                ("candidates", "emergency_contact_phone", "VARCHAR(50)"),
+                ("candidates", "qualification_category", "VARCHAR(100)"),
+                ("candidates", "highest_qualification", "VARCHAR(150)"),
+                ("candidates", "job_category", "VARCHAR(150)"),
+                ("candidates", "job_type", "VARCHAR(100)"),
+                ("candidates", "bank_name", "VARCHAR(150)"),
+                ("candidates", "bank_account_no", "VARCHAR(100)"),
+                ("candidates", "ifsc_code", "VARCHAR(50)"),
+                ("candidates", "nominee_name", "VARCHAR(150)"),
+                ("candidates", "nominee_relation", "VARCHAR(100)"),
+                ("candidates", "linked_in_url", "VARCHAR(255)"),
+                ("candidates", "github_url", "VARCHAR(255)"),
+                ("candidates", "portfolio_url", "VARCHAR(255)"),
+                ("candidates", "twitter_url", "VARCHAR(255)"),
+                ("candidates", "instagram_url", "VARCHAR(255)"),
+                ("candidates", "facebook_url", "VARCHAR(255)"),
+                ("candidates", "youtube_url", "VARCHAR(255)"),
+                ("companies", "logo_url", "VARCHAR(500)"),
+                ("companies", "is_active", "BOOLEAN DEFAULT TRUE"),
+                ("companies", "wallet_balance", "FLOAT DEFAULT 50000.0")
+            ]
+            for tbl, col, col_type in columns:
+                try:
+                    conn.execute(text(f"ALTER TABLE {tbl} ADD COLUMN IF NOT EXISTS {col} {col_type};"))
+                except Exception:
+                    pass
+            conn.commit()
+    except Exception as e:
+        print(f"ensure_schema_compatibility notice: {e}")
+
 def on_startup():
     global _startup_executed
     if _startup_executed:
@@ -67,6 +140,7 @@ def on_startup():
         Base.metadata.create_all(bind=engine)
     except Exception as e:
         print(f"Base.metadata.create_all error: {e}")
+    ensure_schema_compatibility()
     seed_database()
 
 @app.on_event("startup")

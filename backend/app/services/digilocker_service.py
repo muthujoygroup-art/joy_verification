@@ -8,6 +8,7 @@ Supports live API Setu HTTPS handshakes via httpx with robust fallback & Postgre
 
 import os
 import re
+import json
 import base64
 import hashlib
 import secrets
@@ -493,22 +494,44 @@ def process_digilocker_verification(
     clean_id = str(identifier).strip()
     clean_digits = "".join(c for c in clean_id if c.isdigit())
     
-    # 1. Resolve Candidate Record if exists
-    candidate: Optional[Candidate] = None
-    if candidate_id:
-        candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
-    
-    if not candidate:
-        if auth_type == "mobile" and len(clean_digits) >= 10:
-            candidate = db.query(Candidate).filter(
-                (Candidate.mobile == clean_digits[-10:]) | 
-                (Candidate.mobile.ilike(f"%{clean_digits[-10:]}%"))
-            ).first()
-        elif auth_type == "aadhaar" and len(clean_digits) >= 12:
-            candidate = db.query(Candidate).filter(Candidate.aadhaar_no == clean_digits[-12:]).first()
-        elif auth_type == "pan":
-            clean_pan = clean_id.upper()
-            candidate = db.query(Candidate).filter(Candidate.pan_no == clean_pan).first()
+    # 1. Resolve Candidate Record if exists (with resilient schema fallback)
+    candidate: Any = None
+    try:
+        if candidate_id:
+            candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
+        
+        if not candidate:
+            if auth_type == "mobile" and len(clean_digits) >= 10:
+                candidate = db.query(Candidate).filter(
+                    (Candidate.mobile == clean_digits[-10:]) | 
+                    (Candidate.mobile.ilike(f"%{clean_digits[-10:]}%"))
+                ).first()
+            elif auth_type == "aadhaar" and len(clean_digits) >= 12:
+                candidate = db.query(Candidate).filter(Candidate.aadhaar_no == clean_digits[-12:]).first()
+            elif auth_type == "pan":
+                clean_pan = clean_id.upper()
+                candidate = db.query(Candidate).filter(Candidate.pan_no == clean_pan).first()
+    except Exception as cand_q_err:
+        logger.warning(f"Could not query full Candidate model, falling back to safe SQL: {cand_q_err}")
+        db.rollback()
+        try:
+            raw_res = db.execute(
+                text("SELECT id, name, mobile, email, dob, gender, pan_no, uan_no, aadhaar_no, company_id, hr_id FROM candidates WHERE mobile LIKE :m OR mobile = :m_exact LIMIT 1"),
+                {"m": f"%{clean_digits[-10:]}%", "m_exact": clean_digits[-10:]}
+            ).fetchone()
+            if raw_res:
+                cand_map = dict(raw_res._mapping)
+                class CandidateProxy:
+                    pass
+                temp_c = CandidateProxy()
+                for k, v in cand_map.items():
+                    setattr(temp_c, k, v)
+                temp_c.permanent_address = None
+                temp_c.present_address = None
+                temp_c.pincode = None
+                candidate = temp_c
+        except Exception:
+            db.rollback()
 
     # Determine Candidate Profile Attributes
     full_name = candidate.name if candidate else ("Muthukumar P" if clean_id.endswith("1234") or "MUTHU" in clean_id.upper() else "Saravanakumar B")
@@ -719,9 +742,8 @@ def process_digilocker_verification(
         db.rollback()
 
     # 5. Enrich Candidate Record in PostgreSQL if matched
-    if candidate:
+    if candidate and hasattr(candidate, 'id') and candidate.id:
         try:
-            candidate.digilocker_verified = True
             cand_dl_data = {
                 "digilocker_id": digilocker_id,
                 "verified_at": now.isoformat(),
@@ -743,19 +765,29 @@ def process_digilocker_verification(
                 "documents": issued_documents,
                 "cryptographic_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
             }
-            candidate.digilocker_data = cand_dl_data
-            
-            # Sync verified attributes
-            verifs = dict(candidate.verifications_completed or {})
-            verifs["digilocker"] = True
-            verifs["aadhaar"] = True
-            verifs["pan"] = True
-            candidate.verifications_completed = verifs
 
-            db.commit()
-            db.refresh(candidate)
+            try:
+                db.execute(
+                    text("""
+                        UPDATE candidates 
+                        SET digilocker_verified = TRUE,
+                            digilocker_data = :dl_data
+                        WHERE id = :cid
+                    """),
+                    {
+                        "dl_data": json.dumps(cand_dl_data),
+                        "cid": candidate.id
+                    }
+                )
+                db.commit()
+            except Exception:
+                db.rollback()
+                if isinstance(candidate, Candidate):
+                    candidate.digilocker_verified = True
+                    candidate.digilocker_data = cand_dl_data
+                    db.commit()
         except Exception as cand_err:
-            logger.error(f"Error enriching candidate with digilocker data: {cand_err}")
+            logger.warning(f"Error enriching candidate with digilocker data: {cand_err}")
             db.rollback()
 
     # 6. Log API call in api_call_logs for Superadmin & Ledger Audits
