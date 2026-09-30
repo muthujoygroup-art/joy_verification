@@ -836,16 +836,14 @@ export const api = {
     }
   },
   handleDigilockerCallback: (payload) => {
-    const portalOrigin = (typeof window !== 'undefined' && window.location?.origin) 
-      ? window.location.origin 
-      : 'https://test2.joycorporatesolutions.com';
-    const dynamicRedirectUri = payload.redirect_uri || `${portalOrigin}/digilocker-callback`;
+    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
+    const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
 
     return request('/verification/digilocker/callback', {
       method: 'POST',
       body: JSON.stringify({
         ...payload,
-        redirect_uri: dynamicRedirectUri
+        redirect_uri: redirectUri
       }),
     });
   },
