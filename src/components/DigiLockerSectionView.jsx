@@ -511,7 +511,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
+              <form onSubmit={handleExecuteFetch} className="space-y-4">
                 
                 {/* 1. Target Entity Selector */}
                 <div>
@@ -733,48 +733,48 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   </div>
                 </div>
 
-                {/* 🚀 THE TWO PROMINENT ACTION BUTTONS */}
-                <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Button 1: Live Gateway */}
+                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTON */}
+                <div className="pt-2 space-y-2.5">
                   <button
                     type="submit"
-                    disabled={isGeneratingAuth}
-                    className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
-                    style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
+                    disabled={isFetching}
+                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-emerald-600 hover:bg-emerald-500"
                   >
-                    {isGeneratingAuth ? (
+                    {isFetching ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span className="text-white font-black">Opening DigiLocker Portal...</span>
+                        <RefreshCw className="w-5 h-5 animate-spin text-white" />
+                        <span className="text-white font-black tracking-wide">Fetching & Ingesting Government Vault Documents...</span>
                       </>
                     ) : (
                       <>
-                        <ExternalLink className="w-4 h-4 text-white" />
-                        <span className="text-white font-black">Continue with DigiLocker Gateway 🚀</span>
+                        <Sparkles className="w-5 h-5 text-white" />
+                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest Official DigiLocker Documents</span>
+                        <ArrowRight className="w-4 h-4 text-white ml-1" />
                       </>
                     )}
                   </button>
 
-                  {/* Button 2: Direct In-Portal Fetch */}
-                  <button
-                    type="button"
-                    onClick={handleExecuteFetch}
-                    disabled={isFetching}
-                    className="w-full py-3.5 px-4 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98"
-                    style={{ backgroundColor: '#059669', color: '#ffffff' }}
-                  >
-                    {isFetching ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span className="text-white font-black">Ingesting Vault Records...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 text-white" />
-                        <span className="text-white font-black">Direct In-Portal Fetch (Instant) ⚡</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowSandboxModal(true)}
+                      className="flex-1 py-2.5 px-3 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-950 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Simulate In-Portal Candidate OTP Consent 🔐</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleRedirectToDigilocker}
+                      disabled={isGeneratingAuth}
+                      className="py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                      title="Open external DigiLocker Gateway URL"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                      <span>External Gateway</span>
+                    </button>
+                  </div>
                 </div>
 
               </form>
