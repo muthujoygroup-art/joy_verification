@@ -784,7 +784,7 @@ export const api = {
   }),
   initiateDigilockerAuth: async (payload) => {
     // Official whitelisted redirect URI registered on NeGD DigiLocker API Setu for Client ID QEC8BCDA95
-    const officialRegisteredRedirect = window.location.origin + '/digilocker-callback';
+    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
     const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
 
     try {
@@ -845,7 +845,7 @@ export const api = {
     }
   },
   handleDigilockerCallback: (payload) => {
-    const officialRegisteredRedirect = window.location.origin + '/digilocker-callback';
+    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
     const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
 
     return request('/verification/digilocker/callback', {

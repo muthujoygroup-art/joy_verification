@@ -495,7 +495,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleExecuteFetch} className="space-y-4">
+              <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
                 
                 {/* 1. Identifier Type Tabs */}
                 <div>
@@ -686,45 +686,82 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </div>
 
                 {/* 🚀 ACTION BUTTONS */}
-                <div className="pt-2 space-y-2.5">
-                  {/* Button 1: Instant In-Portal Fetch & Ingest */}
+                <div className="pt-3 space-y-3">
+                  {/* Primary Button: Connect via Live DigiLocker Portal */}
                   <button
                     type="submit"
-                    disabled={isFetching}
-                    className="w-full py-3.5 px-5 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
+                    disabled={isGeneratingAuth}
+                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-lg flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-sky-600 hover:bg-sky-700 shadow-sky-600/25"
                   >
-                    {isFetching ? (
+                    {isGeneratingAuth ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span className="text-white font-black tracking-wide">Querying Government Vault & Fetching Data...</span>
+                        <RefreshCw className="w-5 h-5 animate-spin text-white" />
+                        <span className="text-white font-black tracking-wide">Connecting to DigiLocker Government Gateway...</span>
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="w-4 h-4 text-white" />
-                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest DigiLocker Data</span>
+                        <ExternalLink className="w-5 h-5 text-white" />
+                        <span className="text-white font-black tracking-wide">🚀 Connect to Live DigiLocker Portal (SMS OTP to Mobile)</span>
                       </>
                     )}
                   </button>
 
-                  {/* Button 2: Connect via Live DigiLocker Portal */}
-                  <button
-                    type="button"
-                    onClick={handleRedirectToDigilocker}
-                    disabled={isGeneratingAuth}
-                    className="w-full py-2.5 px-4 rounded-xl font-bold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-sky-950 bg-sky-50 hover:bg-sky-100 border border-sky-300"
-                  >
-                    {isGeneratingAuth ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-600" />
-                        <span className="font-bold">Opening DigiLocker Portal...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ExternalLink className="w-3.5 h-3.5 text-sky-700" />
-                        <span className="font-bold">🚀 Connect via Live DigiLocker Portal (SMS OTP to Mobile)</span>
-                      </>
-                    )}
-                  </button>
+                  {/* Share & Copy Link Options */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const cleanId = (identifierValue || '').trim();
+                        if (!cleanId) {
+                          showToast('⚠️ Please enter a Mobile Number first.', 'error');
+                          return;
+                        }
+                        const res = await api.initiateDigilockerAuth({
+                          user_type: userType,
+                          auth_type: authType,
+                          identifier_value: cleanId,
+                          purpose: customPurpose ? customPurpose.trim().slice(0, 50) : selectedPurpose,
+                          service_name: (serviceName || 'JoyVerify').trim().slice(0, 50),
+                          candidate_id: selectedCandidateId || undefined
+                        });
+                        if (res?.auth_url) {
+                          navigator.clipboard.writeText(res.auth_url);
+                          showToast('📋 DigiLocker authorization link copied to clipboard!', 'success');
+                        }
+                      }}
+                      className="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-2xs"
+                    >
+                      <Copy className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Copy Candidate Link</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const cleanId = (identifierValue || '').trim();
+                        if (!cleanId) {
+                          showToast('⚠️ Please enter a Mobile Number first.', 'error');
+                          return;
+                        }
+                        const res = await api.initiateDigilockerAuth({
+                          user_type: userType,
+                          auth_type: authType,
+                          identifier_value: cleanId,
+                          purpose: customPurpose ? customPurpose.trim().slice(0, 50) : selectedPurpose,
+                          service_name: (serviceName || 'JoyVerify').trim().slice(0, 50),
+                          candidate_id: selectedCandidateId || undefined
+                        });
+                        if (res?.auth_url) {
+                          const text = encodeURIComponent(`Hello, please complete your official DigiLocker document verification for Joy TrueProfile onboarding here: ${res.auth_url}`);
+                          window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                        }
+                      }}
+                      className="flex-1 py-2.5 px-3 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-2xs"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Share via WhatsApp</span>
+                    </button>
+                  </div>
                 </div>
 
               </form>

@@ -41,7 +41,7 @@ ENTITY_CLIENT_ID = os.getenv("ENTITY_CLIENT_ID", "NU68486825")
 ENTITY_CLIENT_SECRET = os.getenv("ENTITY_CLIENT_SECRET", "0a1ede509b")
 
 # Official Whitelisted Redirect URI registered on DigiLocker / API Setu Portal
-DEFAULT_REDIRECT_URI = os.getenv("DIGILOCKER_REDIRECT_URI", "https://test2.joycorporatesolutions.com/digilocker-callback")
+DEFAULT_REDIRECT_URI = os.getenv("DIGILOCKER_REDIRECT_URI", "https://verify.joycorporatesolutions.com/callback.php")
 
 # In-Memory PKCE State Cache for OAuth Authorization Sessions
 OAUTH_SESSION_STORE: Dict[str, Dict[str, Any]] = {}
