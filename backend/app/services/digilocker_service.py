@@ -118,6 +118,23 @@ def generate_pkce_pair() -> Tuple[str, str]:
     challenge = base64url_encode(digest)
     return verifier, challenge
 
+def format_dob(dob_val: Optional[str]) -> Optional[str]:
+    """Normalizes various DOB date formats (YYYYMMDD, DDMMYYYY, YYYY-MM-DD, DD/MM/YYYY) to DD-MM-YYYY"""
+    if not dob_val:
+        return None
+    raw = str(dob_val).strip()
+    if len(raw) == 8 and raw.isdigit():
+        if raw.startswith(('19', '20')):
+            return f"{raw[6:8]}-{raw[4:6]}-{raw[0:4]}"
+        return f"{raw[0:2]}-{raw[2:4]}-{raw[4:8]}"
+    if '-' in raw or '/' in raw:
+        parts = re.split(r'[-/]', raw)
+        if len(parts) == 3:
+            if len(parts[0]) == 4:
+                return f"{parts[2].zfill(2)}-{parts[1].zfill(2)}-{parts[0]}"
+            return f"{parts[0].zfill(2)}-{parts[1].zfill(2)}-{parts[2]}"
+    return raw
+
 def generate_authorization_url(
     user_type: str = "individual",
     auth_type: str = "mobile",
@@ -484,7 +501,8 @@ def process_digilocker_verification(
     candidate_id: Optional[str] = None,
     company_id: Optional[str] = None,
     hr_id: Optional[str] = None,
-    access_token: Optional[str] = None
+    access_token: Optional[str] = None,
+    token_payload: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Executes full DigiLocker verification, document retrieval, eAadhaar ingestion,
@@ -533,13 +551,20 @@ def process_digilocker_verification(
         except Exception:
             db.rollback()
 
-    # Determine Candidate Profile Attributes (Matching dd/api.php specs)
-    full_name = candidate.name if candidate else "Muthukumar P"
-    phone_display = clean_digits[-10:] if len(clean_digits) >= 10 else (candidate.mobile if candidate else "8610597895")
-    dob = candidate.dob if (candidate and candidate.dob) else "15-08-1992"
-    gender = candidate.gender if (candidate and candidate.gender) else "Male"
+    # Determine Base Candidate Profile Attributes (prioritize live token response if available)
+    full_name = candidate.name if candidate else ((token_payload.get("name") if token_payload and token_payload.get("name") else None) or "Muthukumar P")
+    phone_display = clean_digits[-10:] if len(clean_digits) >= 10 else (candidate.mobile if candidate else ((token_payload.get("mobile") if token_payload and token_payload.get("mobile") else None) or "8610597895"))
+    
+    raw_dob = (token_payload.get("dob") if token_payload and token_payload.get("dob") else None) or (candidate.dob if candidate else None)
+    dob = format_dob(raw_dob) or "15-08-1992"
+    
+    raw_g = (token_payload.get("gender") if token_payload and token_payload.get("gender") else None) or (candidate.gender if candidate else "Male")
+    gender = "Male" if str(raw_g).upper() in ["M", "MALE"] else ("Female" if str(raw_g).upper() in ["F", "FEMALE"] else str(raw_g))
+    
     father_name = getattr(candidate, "father_name", None) or "Periyasamy"
     email = candidate.email if (candidate and candidate.email) else (f"{re.sub(r'[^a-zA-Z0-9]', '', full_name.lower())}@joycorporatesolutions.com" if candidate else "muthukumar.p@joycorporatesolutions.com")
+    
+    digilocker_id = (token_payload.get("digilockerid") if token_payload and token_payload.get("digilockerid") else None) or f"DL{hashlib.md5(phone_display.encode()).hexdigest()[:8].upper()}"
     
     aadhaar_num = candidate.aadhaar_no if (candidate and candidate.aadhaar_no) else "589241028942"
     masked_aadhaar = f"XXXX-XXXX-{aadhaar_num[-4:]}" if len(aadhaar_num) >= 4 else "XXXX-XXXX-8942"
@@ -550,7 +575,6 @@ def process_digilocker_verification(
     
     address = (candidate.permanent_address or candidate.present_address) if candidate else "No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001"
     pincode = candidate.pincode if (candidate and candidate.pincode) else "620001"
-    digilocker_id = f"DL{hashlib.md5(phone_display.encode()).hexdigest()[:8].upper()}"
 
     # 2. Check if live access token is provided to query live API Setu
     issued_documents = []
@@ -558,7 +582,22 @@ def process_digilocker_verification(
         live_files_res = fetch_issued_files_live(access_token, user_type)
         if live_files_res.get("success") and live_files_res.get("files"):
             issued_documents = live_files_res["files"]
-        
+            
+            # Extract doc numbers from live documents
+            for d in issued_documents:
+                t_lower = str(d.get("doc_type", "")).lower()
+                n_lower = str(d.get("name", "")).lower()
+                u_lower = str(d.get("uri", "")).lower()
+                if "pan" in t_lower or "pan" in n_lower or "pan" in u_lower:
+                    if d.get("doc_no") and d.get("doc_no") != "N/A":
+                        pan_num = d.get("doc_no")
+                elif "driving" in t_lower or "dl" in t_lower or "license" in n_lower or "morth" in u_lower:
+                    if d.get("doc_no") and d.get("doc_no") != "N/A":
+                        dl_num = d.get("doc_no")
+                elif "uan" in t_lower or "epf" in n_lower or "epfindia" in u_lower:
+                    if d.get("doc_no") and d.get("doc_no") != "N/A":
+                        uan_num = d.get("doc_no")
+
         # Query live eAadhaar XML
         if user_type == "individual":
             live_xml_res = fetch_eaadhaar_live(access_token)
@@ -567,13 +606,18 @@ def process_digilocker_verification(
                 if parsed_xml.get("full_name"):
                     full_name = parsed_xml["full_name"]
                 if parsed_xml.get("dob"):
-                    dob = parsed_xml["dob"]
+                    dob = format_dob(parsed_xml["dob"])
                 if parsed_xml.get("gender"):
-                    gender = parsed_xml["gender"]
+                    g_xml = str(parsed_xml["gender"]).upper()
+                    gender = "Male" if g_xml in ["M", "MALE"] else ("Female" if g_xml in ["F", "FEMALE"] else parsed_xml["gender"])
                 if parsed_xml.get("address"):
                     address = parsed_xml["address"]
                 if parsed_xml.get("pincode"):
                     pincode = parsed_xml["pincode"]
+                if parsed_xml.get("co"):
+                    co_clean = re.sub(r'^(S/O|D/O|W/O|C/O)\s*', '', parsed_xml["co"], flags=re.IGNORECASE).strip()
+                    if co_clean:
+                        father_name = co_clean
 
     # 3. Build Standard Certified Documents if not populated from live token (Matching dd/api.php)
     if not issued_documents:
@@ -669,51 +713,118 @@ def process_digilocker_verification(
             if doc.get("doc_type") in clean_types or any(t in str(doc.get("doc_type", "")).lower() for t in clean_types)
         ]
 
-    verification_id = f"dlver_{secrets.token_hex(8)}"
-    session_id = f"dlsess_{secrets.token_hex(6)}"
+    # Deduplicate issued documents by URI and Doc No
+    unique_docs = []
+    seen_doc_keys = set()
+    for doc in issued_documents:
+        key = (doc.get("doc_uri") or doc.get("uri") or f"{doc.get('doc_type')}_{doc.get('doc_no')}_{doc.get('name')}").lower().strip()
+        if key not in seen_doc_keys:
+            seen_doc_keys.add(key)
+            unique_docs.append(doc)
+    issued_documents = unique_docs
+
     now = datetime.utcnow()
 
-    # 4. Save to digilocker_verifications table
+    # 4. Check for existing verification record to avoid duplicates
+    existing_ver = None
     try:
-        db.execute(
-            text("""
-                INSERT INTO digilocker_verifications (
-                    id, session_id, candidate_id, user_type, auth_type, identifier_value,
-                    digilocker_id, full_name, dob, gender, email, aadhaar_no, uan_no, pan_no, dl_no,
-                    address, pincode, status, purpose, service_name, company_id, hr_id, created_at
-                ) VALUES (
-                    :id, :session_id, :candidate_id, :user_type, :auth_type, :identifier_value,
-                    :digilocker_id, :full_name, :dob, :gender, :email, :aadhaar_no, :uan_no, :pan_no, :dl_no,
-                    :address, :pincode, 'success', :purpose, :service_name, :company_id, :hr_id, :created_at
-                )
-            """),
-            {
-                "id": verification_id,
-                "session_id": session_id,
-                "candidate_id": candidate.id if candidate else None,
-                "user_type": user_type,
-                "auth_type": auth_type,
-                "identifier_value": clean_id,
-                "digilocker_id": digilocker_id,
-                "full_name": full_name,
-                "dob": dob,
-                "gender": gender,
-                "email": email,
-                "aadhaar_no": masked_aadhaar,
-                "uan_no": uan_num,
-                "pan_no": pan_num,
-                "dl_no": dl_num,
-                "address": address,
-                "pincode": pincode,
-                "purpose": purpose[:50],
-                "service_name": service_name[:50],
-                "company_id": company_id or (candidate.company_id if candidate else "COMP001"),
-                "hr_id": hr_id or (candidate.hr_id if candidate else "hr-1"),
-                "created_at": now
-            }
-        )
-        
-        # Save documents to digilocker_documents
+        if candidate and candidate.id:
+            existing_ver = db.execute(
+                text("SELECT id FROM digilocker_verifications WHERE candidate_id = :cid ORDER BY created_at DESC LIMIT 1"),
+                {"cid": candidate.id}
+            ).fetchone()
+        if not existing_ver and phone_display:
+            existing_ver = db.execute(
+                text("SELECT id FROM digilocker_verifications WHERE identifier_value = :id_val OR digilocker_id = :dlid ORDER BY created_at DESC LIMIT 1"),
+                {"id_val": phone_display, "dlid": digilocker_id}
+            ).fetchone()
+    except Exception as check_err:
+        logger.warning(f"Error checking existing verification record: {check_err}")
+        db.rollback()
+
+    if existing_ver:
+        verification_id = existing_ver[0]
+        try:
+            db.execute(
+                text("""
+                    UPDATE digilocker_verifications
+                    SET full_name = :full_name, dob = :dob, gender = :gender, email = :email,
+                        aadhaar_no = :aadhaar_no, uan_no = :uan_no, pan_no = :pan_no, dl_no = :dl_no,
+                        address = :address, pincode = :pincode, status = 'success',
+                        purpose = :purpose, service_name = :service_name, created_at = :created_at
+                    WHERE id = :id
+                """),
+                {
+                    "id": verification_id,
+                    "full_name": full_name,
+                    "dob": dob,
+                    "gender": gender,
+                    "email": email,
+                    "aadhaar_no": masked_aadhaar,
+                    "uan_no": uan_num,
+                    "pan_no": pan_num,
+                    "dl_no": dl_num,
+                    "address": address,
+                    "pincode": pincode,
+                    "purpose": purpose[:50],
+                    "service_name": service_name[:50],
+                    "created_at": now
+                }
+            )
+            # Delete old documents for this verification to prevent duplicate doc entries
+            db.execute(text("DELETE FROM digilocker_documents WHERE verification_id = :vid"), {"vid": verification_id})
+            db.commit()
+        except Exception as upd_err:
+            logger.warning(f"Error updating existing verification record: {upd_err}")
+            db.rollback()
+    else:
+        verification_id = f"dlver_{secrets.token_hex(8)}"
+        session_id = f"dlsess_{secrets.token_hex(6)}"
+        try:
+            db.execute(
+                text("""
+                    INSERT INTO digilocker_verifications (
+                        id, session_id, candidate_id, user_type, auth_type, identifier_value,
+                        digilocker_id, full_name, dob, gender, email, aadhaar_no, uan_no, pan_no, dl_no,
+                        address, pincode, status, purpose, service_name, company_id, hr_id, created_at
+                    ) VALUES (
+                        :id, :session_id, :candidate_id, :user_type, :auth_type, :identifier_value,
+                        :digilocker_id, :full_name, :dob, :gender, :email, :aadhaar_no, :uan_no, :pan_no, :dl_no,
+                        :address, :pincode, 'success', :purpose, :service_name, :company_id, :hr_id, :created_at
+                    )
+                """),
+                {
+                    "id": verification_id,
+                    "session_id": session_id,
+                    "candidate_id": candidate.id if candidate else None,
+                    "user_type": user_type,
+                    "auth_type": auth_type,
+                    "identifier_value": clean_id,
+                    "digilocker_id": digilocker_id,
+                    "full_name": full_name,
+                    "dob": dob,
+                    "gender": gender,
+                    "email": email,
+                    "aadhaar_no": masked_aadhaar,
+                    "uan_no": uan_num,
+                    "pan_no": pan_num,
+                    "dl_no": dl_num,
+                    "address": address,
+                    "pincode": pincode,
+                    "purpose": purpose[:50],
+                    "service_name": service_name[:50],
+                    "company_id": company_id or (candidate.company_id if candidate else "COMP001"),
+                    "hr_id": hr_id or (candidate.hr_id if candidate else "hr-1"),
+                    "created_at": now
+                }
+            )
+            db.commit()
+        except Exception as ins_err:
+            logger.warning(f"Error inserting verification record: {ins_err}")
+            db.rollback()
+
+    # Save documents to digilocker_documents (deduplicated)
+    try:
         for doc in issued_documents:
             doc_id = f"dldoc_{secrets.token_hex(8)}"
             db.execute(
@@ -728,18 +839,18 @@ def process_digilocker_verification(
                     "id": doc_id,
                     "verification_id": verification_id,
                     "candidate_id": candidate.id if candidate else None,
-                    "document_name": doc.get("name", "Government Document"),
+                    "document_name": doc.get("name") or doc.get("document_name") or "Government Document",
                     "issuer": doc.get("issuer", "Government Body"),
                     "doc_no": doc.get("doc_no", "N/A"),
-                    "doc_uri": doc.get("doc_uri", ""),
+                    "doc_uri": doc.get("doc_uri", doc.get("uri", "")),
                     "doc_type": doc.get("doc_type", "certificate"),
                     "doc_status": doc.get("doc_status", "Verified"),
                     "created_at": now
                 }
             )
         db.commit()
-    except Exception as db_err:
-        logger.warning(f"Could not persist digilocker SQL record: {db_err}")
+    except Exception as doc_err:
+        logger.warning(f"Could not persist digilocker document records: {doc_err}")
         db.rollback()
 
     # 5. Enrich Candidate Record in PostgreSQL if matched
@@ -886,10 +997,10 @@ def handle_digilocker_callback(
 
     access_token = token_resp.get("access_token") if token_resp.get("success") else None
 
-    # Process full verification & DB persistence
+    # Process full verification & DB persistence with live token_payload
     res = process_digilocker_verification(
         db=db,
-        identifier=effective_identifier or (token_resp.get("digilockerid") or "8610597895"),
+        identifier=effective_identifier or (token_resp.get("mobile") or token_resp.get("digilockerid") or "8610597895"),
         auth_type=session_data.get("auth_type", "mobile"),
         user_type=effective_user_type,
         purpose=effective_purpose,
@@ -897,8 +1008,15 @@ def handle_digilocker_callback(
         candidate_id=effective_cand_id,
         company_id=company_id,
         hr_id=hr_id,
-        access_token=access_token
+        access_token=access_token,
+        token_payload=token_resp if token_resp.get("success") else None
     )
+
+    # Clean up session store
+    if state and state in OAUTH_SESSION_STORE:
+        OAUTH_SESSION_STORE.pop(state, None)
+
+    return res
 
     # Clean up session store
     if state and state in OAUTH_SESSION_STORE:
